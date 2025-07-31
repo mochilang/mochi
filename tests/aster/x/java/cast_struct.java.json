@@ -1,0 +1,330 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Main"
+          },
+          {
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "class_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "Todo"
+                  },
+                  {
+                    "kind": "class_body",
+                    "children": [
+                      {
+                        "kind": "field_declaration",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "String"
+                          },
+                          {
+                            "kind": "variable_declarator",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "title"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "constructor_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Todo"
+                          },
+                          {
+                            "kind": "formal_parameters",
+                            "children": [
+                              {
+                                "kind": "formal_parameter",
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "title"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "constructor_body",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "title"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "title"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "field_declaration",
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "text": "Todo"
+                  },
+                  {
+                    "kind": "variable_declarator",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "todo"
+                      },
+                      {
+                        "kind": "object_creation_expression",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "Todo"
+                          },
+                          {
+                            "kind": "argument_list",
+                            "children": [
+                              {
+                                "kind": "string_literal",
+                                "children": [
+                                  {
+                                    "kind": "string_fragment",
+                                    "text": "hi"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "class_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "Data1"
+                  },
+                  {
+                    "kind": "class_body",
+                    "children": [
+                      {
+                        "kind": "field_declaration",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "String"
+                          },
+                          {
+                            "kind": "variable_declarator",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "title"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "constructor_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Data1"
+                          },
+                          {
+                            "kind": "formal_parameters",
+                            "children": [
+                              {
+                                "kind": "formal_parameter",
+                                "children": [
+                                  {
+                                    "kind": "type_identifier",
+                                    "text": "String"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "title"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "constructor_body",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "children": [
+                                      {
+                                        "kind": "field_access",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "title"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "title"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "void_type",
+                    "text": "void"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "field_access",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "todo"
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "title"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,477 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Main"
+          },
+          {
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "boolean_type",
+                    "text": "boolean"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "boom"
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "string_literal",
+                                    "children": [
+                                      {
+                                        "kind": "string_fragment",
+                                        "text": "boom"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "true",
+                            "text": "true"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "void_type",
+                    "text": "void"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "ternary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "text": "\u0026\u0026",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "\u0026\u0026",
+                                            "children": [
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "\u003c",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "1"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "2"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "\u003c",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "2"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "3"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "children": [
+                                              {
+                                                "kind": "binary_expression",
+                                                "text": "\u003c",
+                                                "children": [
+                                                  {
+                                                    "kind": "decimal_integer_literal",
+                                                    "text": "3"
+                                                  },
+                                                  {
+                                                    "kind": "decimal_integer_literal",
+                                                    "text": "4"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "ternary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "text": "\u0026\u0026",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "\u0026\u0026",
+                                            "children": [
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "\u003c",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "1"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "2"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "\u003e",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "2"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "3"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "method_invocation",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "boom"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "ternary_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "text": "\u0026\u0026",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "\u0026\u0026",
+                                            "children": [
+                                              {
+                                                "kind": "binary_expression",
+                                                "text": "\u0026\u0026",
+                                                "children": [
+                                                  {
+                                                    "kind": "parenthesized_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "\u003c",
+                                                        "children": [
+                                                          {
+                                                            "kind": "decimal_integer_literal",
+                                                            "text": "1"
+                                                          },
+                                                          {
+                                                            "kind": "decimal_integer_literal",
+                                                            "text": "2"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "parenthesized_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "\u003c",
+                                                        "children": [
+                                                          {
+                                                            "kind": "decimal_integer_literal",
+                                                            "text": "2"
+                                                          },
+                                                          {
+                                                            "kind": "decimal_integer_literal",
+                                                            "text": "3"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "parenthesized_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "binary_expression",
+                                                    "text": "\u003e",
+                                                    "children": [
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "3"
+                                                      },
+                                                      {
+                                                        "kind": "decimal_integer_literal",
+                                                        "text": "4"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "method_invocation",
+                                            "children": [
+                                              {
+                                                "kind": "identifier",
+                                                "text": "boom"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "1"
+                                      },
+                                      {
+                                        "kind": "decimal_integer_literal",
+                                        "text": "0"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

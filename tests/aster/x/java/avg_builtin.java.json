@@ -1,0 +1,322 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "Main"
+          },
+          {
+            "kind": "class_body",
+            "children": [
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "type_identifier",
+                    "text": "String"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "q"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "type_identifier",
+                            "text": "Object"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "v"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "if_statement",
+                        "children": [
+                          {
+                            "kind": "parenthesized_expression",
+                            "children": [
+                              {
+                                "kind": "instanceof_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "v"
+                                  },
+                                  {
+                                    "kind": "type_identifier",
+                                    "text": "String"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "return_statement",
+                            "children": [
+                              {
+                                "kind": "binary_expression",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_fragment",
+                                            "text": "'"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "v"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "toString"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "string_literal",
+                                    "children": [
+                                      {
+                                        "kind": "string_fragment",
+                                        "text": "'"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "String"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "valueOf"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "v"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "method_declaration",
+                "children": [
+                  {
+                    "kind": "void_type",
+                    "text": "void"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "main"
+                  },
+                  {
+                    "kind": "formal_parameters",
+                    "children": [
+                      {
+                        "kind": "formal_parameter",
+                        "children": [
+                          {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "type_identifier",
+                                "text": "String"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "args"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "method_invocation",
+                            "children": [
+                              {
+                                "kind": "field_access",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "System"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "out"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "method_invocation",
+                                        "children": [
+                                          {
+                                            "kind": "method_invocation",
+                                            "children": [
+                                              {
+                                                "kind": "method_invocation",
+                                                "children": [
+                                                  {
+                                                    "kind": "field_access",
+                                                    "children": [
+                                                      {
+                                                        "kind": "field_access",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "java"
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "util"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "Arrays"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "stream"
+                                                  },
+                                                  {
+                                                    "kind": "argument_list",
+                                                    "children": [
+                                                      {
+                                                        "kind": "array_creation_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "integral_type",
+                                                            "text": "int"
+                                                          },
+                                                          {
+                                                            "kind": "array_initializer",
+                                                            "children": [
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "1"
+                                                              },
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "2"
+                                                              },
+                                                              {
+                                                                "kind": "decimal_integer_literal",
+                                                                "text": "3"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "average"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "orElse"
+                                          },
+                                          {
+                                            "kind": "argument_list",
+                                            "children": [
+                                              {
+                                                "kind": "decimal_integer_literal",
+                                                "text": "0"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
