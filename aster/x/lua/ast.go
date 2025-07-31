@@ -153,7 +153,7 @@ func convertProgram(root *sitter.Node, src []byte, opt Option) *Program {
 // leaf node. Keywords and punctuation are discarded to keep the JSON minimal.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "number", "string", "comment":
+	case "identifier", "number", "string", "comment", "true", "false", "nil", "table_constructor":
 		return true
 	default:
 		return false
