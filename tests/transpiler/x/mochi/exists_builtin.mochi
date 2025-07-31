@@ -1,0 +1,7 @@
+let data = [1,2]
+let flag = exists(
+  from x in data
+  where x == 1
+  select x
+)
+print(flag)

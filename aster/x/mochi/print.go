@@ -1,7 +1,6 @@
 package mochi
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -16,11 +15,7 @@ func Print(p *Program) (string, error) {
 		return "", fmt.Errorf("nil program")
 	}
 	n := toAST(&p.File.Node)
-	var buf bytes.Buffer
-	if err := mast.Fprint(&buf, n); err != nil {
-		return "", err
-	}
-	src := buf.String()
+	src := n.Source()
 	// Normalize query keywords that mast.Fprint doesn't handle exactly
 	src = strings.ReplaceAll(src, "union_all", "union all")
 	src = strings.ReplaceAll(src, "left_join", "left join")
@@ -39,7 +34,7 @@ func toAST(n *Node) *mast.Node {
 		return nil
 	}
 	a := &mast.Node{Kind: n.Kind}
-	if n.Text != "" {
+	if n.Text != "" || n.Kind == "string" {
 		a.Value = n.Text
 	}
 	for _, c := range n.Children {

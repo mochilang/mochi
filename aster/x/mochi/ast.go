@@ -89,8 +89,8 @@ func convert(n *mochiast.Node, withPos bool) *Node {
 	// original program structure.
 	if len(node.Children) == 0 && node.Text == "" {
 		switch node.Kind {
-		case "break", "continue":
-			// keep
+		case "break", "continue", "string":
+			// keep empty literal or control flow marker
 		default:
 			return nil
 		}
