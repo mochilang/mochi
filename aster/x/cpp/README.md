@@ -2,8 +2,8 @@
 
 Golden files for the C++ inspector and printer live in this directory.
 
-Completed programs: 25/103
-Date: 2025-07-31 18:15 GMT+7
+Completed programs: 35/103
+Date: 2025-07-31 18:26 GMT+7
 
 ## Checklist
 - [ ] append_builtin
@@ -46,19 +46,19 @@ Date: 2025-07-31 18:15 GMT+7
 - [ ] in_operator
 - [ ] in_operator_extended
 - [x] inner_join
-- [ ] join_multi
+- [x] join_multi
 - [ ] json_builtin
 - [ ] left_join
-- [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
+- [x] left_join_multi
+- [x] len_builtin
+- [x] len_map
+- [x] len_string
+- [x] let_and_print
+- [x] list_assign
+- [x] list_index
+- [x] list_nested_assign
 - [ ] list_set_ops
-- [ ] load_jsonl
+- [x] load_jsonl
 - [ ] load_yaml
 - [ ] map_assign
 - [ ] map_in_operator
