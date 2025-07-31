@@ -10,6 +10,13 @@ import (
 // struct tags.
 var IncludePos bool
 
+// Option controls how the AST is generated. When Positions is true the
+// Start/End fields of nodes are populated, otherwise they remain zero and are
+// omitted from the marshalled JSON due to the `omitempty` tags.
+type Option struct {
+	Positions bool
+}
+
 // Node represents a simplified Go AST node converted from tree-sitter.
 // Position fields are optional and omitted from the JSON when zero.
 type Node struct {

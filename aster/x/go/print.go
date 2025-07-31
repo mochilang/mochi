@@ -179,7 +179,11 @@ func writeForStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 	}
 	b.WriteString(indent(indentLevel))
 	b.WriteString("for ")
-	writeForClause(b, n.Children[0], indentLevel)
+	if n.Children[0].Kind == "range_clause" {
+		writeRangeClause(b, n.Children[0], indentLevel)
+	} else {
+		writeForClause(b, n.Children[0], indentLevel)
+	}
 	b.WriteString(" {\n")
 	writeBlock(b, n.Children[1], indentLevel+1)
 	b.WriteString(indent(indentLevel))
@@ -204,6 +208,19 @@ func writeForClause(b *bytes.Buffer, n *Node, indentLevel int) {
 	} else {
 		writeExpr(b, n.Children[2], indentLevel)
 	}
+}
+
+func writeRangeClause(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) != 2 {
+		return
+	}
+	if n.Children[0].Kind == "expression_list" {
+		writeExprList(b, n.Children[0], indentLevel)
+	} else {
+		writeExpr(b, n.Children[0], indentLevel)
+	}
+	b.WriteString(" := range ")
+	writeExpr(b, n.Children[1], indentLevel)
 }
 
 func writeIfStmt(b *bytes.Buffer, n *Node, indentLevel int) {
