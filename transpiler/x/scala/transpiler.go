@@ -40,6 +40,7 @@ var needsSHA256 bool
 var needsBigRat bool
 var needsRepeat bool
 var needsParseIntStr bool
+var needsMD5 bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -1076,26 +1077,31 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	if c.Type == "bigint" || c.Type == "int" {
-		needsBigInt = true
-		if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
+		if c.Type == "int" && inferType(c.Value) == "Double" {
 			c.Value.emit(w)
+			fmt.Fprint(w, ".toInt")
 		} else {
-			typ := inferType(c.Value)
-			fmt.Fprint(w, "BigInt(")
-			switch c.Value.(type) {
-			case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+			needsBigInt = true
+			if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
 				c.Value.emit(w)
-			default:
-				fmt.Fprint(w, "(")
-				c.Value.emit(w)
+			} else {
+				typ := inferType(c.Value)
+				fmt.Fprint(w, "BigInt(")
+				switch c.Value.(type) {
+				case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+					c.Value.emit(w)
+				default:
+					fmt.Fprint(w, "(")
+					c.Value.emit(w)
+					fmt.Fprint(w, ")")
+				}
+				if typ == "String" {
+					fmt.Fprint(w, ".charAt(0).toInt")
+				} else {
+					fmt.Fprint(w, ".toInt")
+				}
 				fmt.Fprint(w, ")")
 			}
-			if typ == "String" {
-				fmt.Fprint(w, ".charAt(0).toInt")
-			} else {
-				fmt.Fprint(w, ".toInt")
-			}
-			fmt.Fprint(w, ")")
 		}
 		return
 	} else if c.Type == "Int" {
@@ -1576,6 +1582,13 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    ArrayBuffer(sum.map(b => (b & 0xff).toInt): _*)\n")
 		buf.WriteString("  }\n\n")
 	}
+	if needsMD5 {
+		buf.WriteString("  private def _md5Hex(s: String): String = {\n")
+		buf.WriteString("    val md = java.security.MessageDigest.getInstance(\"MD5\")\n")
+		buf.WriteString("    md.update(s.getBytes)\n")
+		buf.WriteString("    md.digest().map(b => f\"$b%02x\").mkString\n")
+		buf.WriteString("  }\n\n")
+	}
 
 	var globals []Stmt
 	for _, st := range p.Stmts {
@@ -1644,6 +1657,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsJSON = false
 	needsBigInt = false
 	needsBigRat = false
+	needsMD5 = false
 	useNow = false
 	useLookupHost = false
 	builtinAliases = map[string]string{}
@@ -1873,6 +1887,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t = types.ExprType(st.Var.Value, env)
 			}
 			env.SetVar(st.Var.Name, t, true)
+			if typ == "" {
+				if ce, ok := e.(*CastExpr); ok && ce.Type == "Int" {
+					typ = "Int"
+				} else {
+					typ = toScalaTypeFromType(t)
+				}
+			}
 		}
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
@@ -2027,6 +2048,17 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					operators = append(operators[:i], operators[i+1:]...)
 					return
 				}
+				if lt == "Int" && rt == "BigInt" {
+					if _, ok := right.(*IntLit); ok {
+						right = &CastExpr{Value: right, Type: "Int"}
+						rt = "Int"
+					}
+				} else if rt == "Int" && lt == "BigInt" {
+					if _, ok := left.(*IntLit); ok {
+						left = &CastExpr{Value: left, Type: "Int"}
+						lt = "Int"
+					}
+				}
 				if op == "+" {
 					if lt == "String" || rt == "String" {
 						ex = &BinaryExpr{Left: left, Op: "+", Right: right}
@@ -2082,6 +2114,10 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "Int"}
 				} else if rt == "Int" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "Int"}
+				} else if lt == "BigInt" && (rt == "Double" || rt == "Float") {
+					left = &CastExpr{Value: left, Type: "Double"}
+				} else if rt == "BigInt" && (lt == "Double" || lt == "Float") {
+					right = &CastExpr{Value: right, Type: "Double"}
 				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
 					left = &CastExpr{Value: left, Type: "String"}
 					right = &CastExpr{Value: right, Type: "String"}
@@ -2528,6 +2564,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 								expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
 								skipCall = true
 							}
+							if fe.Name == "MD5Hex" && len(args) == 1 {
+								needsMD5 = true
+								expr = &CallExpr{Fn: &Name{Name: "_md5Hex"}, Args: []Expr{args[0]}}
+								skipCall = true
+							}
 						}
 					}
 				}
@@ -2557,6 +2598,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							expr = &StructLit{Name: typ, Fields: fields}
 							converted = true
 						}
+					}
+				}
+				if !converted {
+					if typ == "int" && inferTypeWithEnv(expr, env) == "Double" {
+						expr = &CastExpr{Value: expr, Type: "Int"}
+						converted = true
 					}
 				}
 				if !converted {
@@ -4131,6 +4178,9 @@ func inferType(e Expr) string {
 			return "Boolean"
 		}
 	case *CastExpr:
+		if ex.Type == "Int" {
+			return "Int"
+		}
 		return toScalaType(&parser.TypeRef{Simple: &ex.Type})
 	case *FunExpr:
 		parts := make([]string, len(ex.Params))
@@ -4261,7 +4311,8 @@ func isBigIntExpr(e Expr) bool {
 		}
 		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 	case *CastExpr:
-		if strings.ToLower(v.Type) == "bigint" || strings.ToLower(v.Type) == "int" {
+		t := strings.ToLower(v.Type)
+		if t == "bigint" || (t == "int" && v.Type == "int") {
 			return true
 		}
 		return isBigIntExpr(v.Value)
