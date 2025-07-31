@@ -166,7 +166,7 @@ func writeBegin(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "constant", "integer", "hash_key_symbol", "simple_symbol", "true", "false", "global_variable":
+	case "identifier", "constant", "integer", "float", "hash_key_symbol", "simple_symbol", "true", "false", "global_variable":
 		b.WriteString(n.Text)
 	case "string":
 		b.WriteByte('"')
@@ -192,7 +192,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 
 		// method call with receiver
 		writeExpr(b, n.Children[0], indent)
-		if len(n.Children) >= 2 && n.Children[1].Kind == "identifier" {
+		if len(n.Children) >= 2 && (n.Children[1].Kind == "identifier" || n.Children[1].Kind == "constant") {
 			b.WriteByte('.')
 			writeExpr(b, n.Children[1], indent)
 			idx := 2
@@ -202,6 +202,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			if len(n.Children) > idx && n.Children[idx].Kind == "do_block" {
 				writeDoBlock(b, n.Children[idx], indent)
+				idx++
+			}
+			if len(n.Children) > idx && n.Children[idx].Kind == "block" {
+				writeExpr(b, n.Children[idx], indent)
 			}
 		}
 	case "argument_list":
@@ -293,7 +297,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString("{")
 		if len(n.Children) > 0 {
 			b.WriteByte(' ')
-			writeExpr(b, n.Children[0], indent)
+			idx := 0
+			if n.Children[0].Kind == "block_parameters" {
+				writeBlockParameters(b, n.Children[0])
+				idx = 1
+				if idx < len(n.Children) {
+					b.WriteByte(' ')
+				}
+			}
+			for i := idx; i < len(n.Children); i++ {
+				if i > idx {
+					b.WriteString("; ")
+				}
+				writeExprForBlock(b, n.Children[i], indent)
+			}
 			b.WriteByte(' ')
 		}
 		b.WriteString("}")
@@ -321,12 +338,27 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		writeBegin(b, n, indent)
 	case "do_block":
 		writeDoBlock(b, n, indent)
+	case "class":
+		if len(n.Children) >= 2 {
+			b.WriteString("class ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('\n')
+			writeBody(b, n.Children[1], indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		}
 	case "block_parameters":
 		writeBlockParameters(b, n)
 	case "body_statement":
 		writeBody(b, n, indent)
 	case "method_parameters":
 		writeParameters(b, n)
+	case "operator_assignment":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ||= ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "conditional":
 		if len(n.Children) == 3 {
 			writeExpr(b, n.Children[0], indent)
@@ -345,8 +377,99 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(op)
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "module":
+		if len(n.Children) >= 2 {
+			b.WriteString("module ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('\n')
+			writeBody(b, n.Children[1], indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		}
+	case "singleton_method":
+		if len(n.Children) > 0 {
+			b.WriteString("def self.")
+			writeExpr(b, n.Children[0], indent)
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "method_parameters" {
+				writeParameters(b, n.Children[idx])
+				idx++
+			} else {
+				b.WriteString("()")
+			}
+			b.WriteByte('\n')
+			if idx < len(n.Children) {
+				writeBody(b, n.Children[idx], indent+1)
+			}
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		}
+	case "for":
+		if len(n.Children) >= 3 {
+			b.WriteString("for ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" in ")
+			if len(n.Children[1].Children) > 0 {
+				writeExpr(b, n.Children[1].Children[0], indent)
+			}
+			b.WriteByte('\n')
+			writeBody(b, n.Children[2], indent+1)
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+		}
+	case "do":
+		writeBody(b, n, indent)
 	default:
 		b.WriteString(n.Kind)
+	}
+}
+
+func writeExprForBlock(b *bytes.Buffer, n *Node, indent int) {
+	switch n.Kind {
+	case "if":
+		writeInlineIf(b, n)
+	case "block_body":
+		if len(n.Children) == 1 && n.Children[0].Kind == "if" {
+			writeInlineIf(b, n.Children[0])
+		} else {
+			writeBodyInline(b, n)
+		}
+	default:
+		writeExpr(b, n, indent)
+	}
+}
+
+func writeInlineIf(b *bytes.Buffer, n *Node) {
+	writeInlineIfChain(b, n, "if ")
+	b.WriteString(" end")
+}
+
+func writeInlineIfChain(b *bytes.Buffer, n *Node, prefix string) {
+	if len(n.Children) < 2 {
+		return
+	}
+	b.WriteString(prefix)
+	writeExpr(b, n.Children[0], 0)
+	b.WriteString(" then ")
+	writeBodyInline(b, n.Children[1])
+	if len(n.Children) > 2 {
+		c := n.Children[2]
+		if c.Kind == "elsif" {
+			b.WriteString(" elsif ")
+			writeInlineIfChain(b, c, "")
+		} else if c.Kind == "else" {
+			b.WriteString(" else ")
+			writeBodyInline(b, c)
+		}
+	}
+}
+
+func writeBodyInline(b *bytes.Buffer, n *Node) {
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString("; ")
+		}
+		writeExpr(b, c, 0)
 	}
 }
 
