@@ -23,7 +23,7 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 		opt = opts[0]
 	}
 	parser := sitter.NewParser()
-	parser.SetLanguage(tsz.GetLanguage())
+	parser.SetLanguage(sitter.NewLanguage(tsz.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	node, ok := convertNode(tree.RootNode(), []byte(src), opt.Positions)
 	if !ok {
