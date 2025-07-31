@@ -89,7 +89,8 @@ func TestPrint_Golden(t *testing.T) {
 	sort.Strings(files)
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.swift" {
+		base := filepath.Base(f)
+		if base == "two-sum.swift" {
 			selected = append(selected, f)
 		}
 	}
@@ -98,11 +99,15 @@ func TestPrint_Golden(t *testing.T) {
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".swift")
 		t.Run(name, func(t *testing.T) {
+			if _, err := os.Stat(filepath.Join(srcDir, name+".error")); err == nil {
+				t.Skipf("skip %s due to compile error", name)
+				return
+			}
 			data, err := os.ReadFile(src)
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
+                       prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}

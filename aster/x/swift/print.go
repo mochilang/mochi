@@ -3,27 +3,27 @@
 package swift
 
 import (
-	"bytes"
-	"fmt"
-	"strings"
+        "bytes"
+        "fmt"
+        "strings"
 )
 
 // Print returns Swift source code for the given Program.
 func Print(p *Program) (string, error) {
-	if p == nil || p.File == nil {
-		return "", fmt.Errorf("nil program")
-	}
-	var b bytes.Buffer
-	writeFile(&b, p.File, 0)
-	out := b.String()
-	if len(out) > 0 && out[len(out)-1] != '\n' {
-		out += "\n"
-	}
-	return out, nil
+        if p == nil || p.File == nil {
+                return "", fmt.Errorf("nil program")
+        }
+        var b bytes.Buffer
+        writeFile(&b, p.File, 0)
+        out := b.String()
+        if len(out) > 0 && out[len(out)-1] != '\n' {
+                out += "\n"
+        }
+        return out, nil
 }
 
 func indentStr(n int) string {
-	return strings.Repeat("    ", n)
+        return strings.Repeat("    ", n)
 }
 
 func writeFile(b *bytes.Buffer, f *SourceFile, indent int) {
@@ -287,23 +287,23 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "call_suffix":
 		writeCallSuffix(b, n)
-	case "value_arguments":
-		b.WriteByte('(')
-		for i, arg := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			if len(arg.Children) > 0 {
-				writeExpr(b, arg.Children[0], indent)
-			}
-		}
-		b.WriteByte(')')
-	default:
-		// fallback
-		for _, c := range n.Children {
-			writeExpr(b, c, indent)
-		}
-	}
+       case "value_arguments":
+               b.WriteByte('(')
+               for i, arg := range n.Children {
+                       if i > 0 {
+                               b.WriteString(", ")
+                       }
+                       if len(arg.Children) > 0 {
+                               writeExpr(b, arg.Children[0], indent)
+                       }
+               }
+               b.WriteByte(')')
+       default:
+               // fallback
+               for _, c := range n.Children {
+                       writeExpr(b, c, indent)
+               }
+       }
 }
 
 func isIndexingCall(callee *Node) bool {
