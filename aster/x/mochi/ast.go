@@ -6,10 +6,13 @@ import (
 	mochiast "mochi/ast"
 )
 
-// IncludePositions controls whether positional information is recorded in the
-// resulting AST nodes. When false the Start/End fields remain zero and are
-// omitted from the marshalled JSON due to the `omitempty` struct tags.
-var IncludePositions bool
+// Option controls how AST nodes are generated.
+type Option struct {
+	// WithPositions populates the positional fields when true. Since the
+	// underlying AST currently lacks precise offsets these fields remain
+	// zero even when requested.
+	WithPositions bool
+}
 
 // Node represents a simplified Mochi AST node. Leaf nodes that carry a textual
 // value populate the Text field. Position information follows 1-based line
@@ -24,15 +27,46 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Typed node aliases mirror the simplified Mochi grammar used in the tests.
+// Only node kinds that carry values or appear in the golden files are
+// enumerated here so Program can expose a slightly richer structure.
+type (
+	ProgramNode struct{ Node }
+	Fun         struct{ Node }
+	Param       struct{ Node }
+	Type        struct{ Node }
+	Let         struct{ Node }
+	Call        struct{ Node }
+	Selector    struct{ Node }
+	List        struct{ Node }
+	Map         struct{ Node }
+	Entry       struct{ Node }
+	Int         struct{ Node }
+	String      struct{ Node }
+	Range       struct{ Node }
+	Block       struct{ Node }
+	For         struct{ Node }
+	Binary      struct{ Node }
+	Index       struct{ Node }
+	If          struct{ Node }
+	Return      struct{ Node }
+	Unary       struct{ Node }
+	Query       struct{ Node }
+	Select      struct{ Node }
+	From        struct{ Node }
+	In          struct{ Node }
+	Source      struct{ Node }
+)
+
 // Program represents a parsed Mochi file. The root node is the program itself.
 type Program struct {
-	File *Node `json:"file"`
+	File *ProgramNode `json:"file"`
 }
 
-// toNode converts a node from the generic ast package into the JSON AST used
-// by this package. Pure syntax nodes with no textual value are omitted so the
-// resulting JSON remains small.
-func toNode(n *mochiast.Node) *Node {
+// convert transforms a node from the generic ast package into our Node
+// representation. When withPos is true the Start/End fields would be populated
+// if the underlying AST exposed them. Non-value leaves are omitted.
+func convert(n *mochiast.Node, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -40,13 +74,12 @@ func toNode(n *mochiast.Node) *Node {
 	if n.Value != nil {
 		node.Text = fmt.Sprint(n.Value)
 	}
-	if IncludePositions {
-		// Position information is currently unavailable when converting
-		// from the generic ast.Node type. The fields remain zero so they
-		// are omitted from the marshalled JSON.
+	if withPos {
+		// The mochi/ast package does not currently retain precise
+		// position information so the fields remain zero.
 	}
 	for _, c := range n.Children {
-		if child := toNode(c); child != nil {
+		if child := convert(c, withPos); child != nil {
 			node.Children = append(node.Children, child)
 		}
 	}

@@ -1,0 +1,298 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "twoSum",
+        "children": [
+          {
+            "kind": "param",
+            "text": "nums",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "target",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "n",
+            "children": [
+              {
+                "kind": "call",
+                "text": "len",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "nums"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "i",
+            "children": [
+              {
+                "kind": "range",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "n"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "for",
+                    "text": "j",
+                    "children": [
+                      {
+                        "kind": "range",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "int",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "if",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "==",
+                                "children": [
+                                  {
+                                    "kind": "binary",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "nums"
+                                          },
+                                          {
+                                            "kind": "selector",
+                                            "text": "i"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "nums"
+                                          },
+                                          {
+                                            "kind": "selector",
+                                            "text": "j"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "selector",
+                                    "text": "target"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "block",
+                                "children": [
+                                  {
+                                    "kind": "return",
+                                    "children": [
+                                      {
+                                        "kind": "list",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "i"
+                                          },
+                                          {
+                                            "kind": "selector",
+                                            "text": "j"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "unary",
+                    "text": "-",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "unary",
+                    "text": "-",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "result",
+        "children": [
+          {
+            "kind": "call",
+            "text": "twoSum",
+            "children": [
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "7"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "11"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "15"
+                  }
+                ]
+              },
+              {
+                "kind": "int",
+                "text": "9"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "result"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "result"
+              },
+              {
+                "kind": "int",
+                "text": "1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
