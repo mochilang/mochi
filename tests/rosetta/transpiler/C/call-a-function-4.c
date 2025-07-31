@@ -5,11 +5,13 @@
 #include <malloc.h>
 
 
-static int* list_append_int(int *arr, size_t *len, int val) {
-    arr = realloc(arr, (*len + 1) * sizeof(int));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
+typedef struct { const char **keys; int *vals; size_t len; } MapSI;
+
+static void map_set_si(const char *keys[], int vals[], size_t *len, const char *key, int val) {
+    for (size_t i = 0; i < *len; i++) {
+        if (strcmp(keys[i], key) == 0) { vals[i] = val; return; }
+    }
+    keys[*len] = key; vals[*len] = val; (*len)++;
 }
 
 #include <time.h>
@@ -38,21 +40,20 @@ static long long _mem(void) {
     return (long long)mi.uordblks;
 }
 
+int gifEncode(int out, int img, MapSI opts);
 int user_main();
 int main(void);
 
+int gifEncode(int out, int img, MapSI opts) {
+}
+
 int user_main() {
-    int *list = NULL;
-    size_t list_len = 0;
-    int a = 1LL;
-    int d = 2LL;
-    int e = 3LL;
-    int i = 4LL;
-    list = list_append_int(list, &list_len, a);
-    list = list_append_int(list, &list_len, d);
-    list = list_append_int(list, &list_len, e);
-    list = list_append_int(list, &list_len, i);
-    i = list_len;
+    const char* opts_keys[16] = {};
+    int opts_vals[16] = {};
+    size_t opts_len = 0;
+    MapSI opts = { opts_keys, opts_vals, opts_len };
+    map_set_si(opts_keys, opts_vals, &opts_len, "NumColors", 16LL);
+    gifEncode(NULL, NULL, opts);
 }
 
 int main(void) {

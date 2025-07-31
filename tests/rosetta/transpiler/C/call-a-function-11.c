@@ -5,11 +5,20 @@
 #include <malloc.h>
 
 
-static int* list_append_int(int *arr, size_t *len, int val) {
-    arr = realloc(arr, (*len + 1) * sizeof(int));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
+static char* str_concat(const char *a, const char *b) {
+    size_t len1 = strlen(a);
+    size_t len2 = strlen(b);
+    char *res = malloc(len1 + len2 + 1);
+    memcpy(res, a, len1);
+    memcpy(res + len1, b, len2);
+    res[len1 + len2] = 0;
+    return res;
+}
+
+static char* str_int(int v) {
+    char buf[32];
+    snprintf(buf, sizeof(buf), "%d", v);
+    return strdup(buf);
 }
 
 #include <time.h>
@@ -38,21 +47,32 @@ static long long _mem(void) {
     return (long long)mi.uordblks;
 }
 
+int zeroval(int ival);
+int zeroptr(int * ref, size_t ref_len);
 int user_main();
 int main(void);
 
+int zeroval(int ival) {
+    int x = ival;
+    x = 0LL;
+    return x;
+}
+
+int zeroptr(int * ref, size_t ref_len) {
+    ref[(int)(0LL)] = 0LL;
+}
+
 int user_main() {
-    int *list = NULL;
-    size_t list_len = 0;
-    int a = 1LL;
-    int d = 2LL;
-    int e = 3LL;
-    int i = 4LL;
-    list = list_append_int(list, &list_len, a);
-    list = list_append_int(list, &list_len, d);
-    list = list_append_int(list, &list_len, e);
-    list = list_append_int(list, &list_len, i);
-    i = list_len;
+    int i = 1LL;
+    puts(str_concat("initial: ", str_int(i)));
+    int tmp = zeroval(i);
+    puts(str_concat("zeroval: ", str_int(i)));
+    int box[1] = {i};
+    size_t box_len = 1;
+    zeroptr(box, box_len);
+    i = box[(int)(0LL)];
+    puts(str_concat("zeroptr: ", str_int(i)));
+    puts("pointer: 0");
 }
 
 int main(void) {
