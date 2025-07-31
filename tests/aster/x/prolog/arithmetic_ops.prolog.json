@@ -8,8 +8,13 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "initialization main"
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
             }
           ]
         },
@@ -26,8 +31,18 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "style_check(-singleton)"
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

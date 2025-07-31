@@ -62,15 +62,28 @@
           "kind": ",",
           "children": [
             {
-              "kind": "atom_length",
+              "kind": "reverse",
               "children": [
                 {
-                  "kind": "atom",
-                  "text": "mochi"
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "3"
+                    }
+                  ]
                 },
                 {
                   "kind": "var",
-                  "text": "L"
+                  "text": "R"
                 }
               ]
             },
@@ -79,7 +92,7 @@
               "children": [
                 {
                   "kind": "var",
-                  "text": "L"
+                  "text": "R"
                 }
               ]
             }

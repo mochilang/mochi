@@ -32,16 +32,7 @@ clause_ast(Head, Vs, Start, End, Dict) :-
 
 head_info(Term, Vs, Name, Params) :-
     Term =.. [Name|Args],
-    maplist(arg_name(Vs), Args, Params).
-
-arg_name(Vs, Var, Name) :- var(Var), !,
-    var_name(Vs, Var, Name).
-arg_name(_, Term, Name) :-
-    ( number(Term) -> Name = Term
-    ; string(Term) -> Name = Term
-    ; with_output_to(string(S), write_term(Term, [quoted(true),fullstop(false),spacing(next_argument)])),
-      normalize_space(atom(Name), S)
-    ).
+    maplist(term_json(Vs), Args, Params).
 
 var_name(Vs, Var, Name) :-
     ( member(Name0=Var0, Vs), Var == Var0 -> Name = Name0 ; Name = '_' ).

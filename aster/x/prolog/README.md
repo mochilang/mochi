@@ -29,7 +29,12 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 23. substring_builtin.pl
 24. sum_list.pl
 25. two-sum.pl
+26. reverse_list.pl
+27. palindrome.pl
+28. prime_check.pl
+29. even_numbers.pl
+30. sum_pairs.pl
 
-Completed **25/25** examples.
+Completed **30/30** examples.
 
-_Last updated: 2025-07-31 19:49 GMT+7_
+_Last updated: 2025-07-31 20:31 GMT+7_

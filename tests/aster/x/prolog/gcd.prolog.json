@@ -8,8 +8,13 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "initialization main"
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
             }
           ]
         },
@@ -26,8 +31,18 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "style_check(-singleton)"
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -44,7 +59,7 @@
           "kind": "gcd",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             },
             {
@@ -52,7 +67,7 @@
               "text": "0"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             }
           ]
@@ -70,15 +85,15 @@
           "kind": "gcd",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "B"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "D"
             }
           ]

@@ -8,8 +8,13 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "initialization main"
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
             }
           ]
         },
@@ -26,8 +31,18 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "style_check(-singleton)"
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -48,11 +63,11 @@
               "text": "0"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             }
           ]
@@ -70,15 +85,15 @@
           "kind": "factorial",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "N"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "A"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "F"
             }
           ]
