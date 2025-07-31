@@ -999,33 +999,8 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	}
 	if (strings.HasPrefix(idx.Container, "Map[") || strings.HasPrefix(idx.Container, "scala.collection.mutable.Map[")) && idx.Container != "Any" {
 		idx.Value.emit(w)
-		fmt.Fprint(w, ".getOrElse(")
+		fmt.Fprint(w, "(")
 		emitIndex()
-		fmt.Fprint(w, ", ")
-		t := idx.Type
-		if t == "" {
-			if strings.HasPrefix(idx.Container, "Map[") || strings.HasPrefix(idx.Container, "scala.collection.mutable.Map[") {
-				parts := strings.TrimSuffix(idx.Container[strings.Index(idx.Container, "[")+1:], "]")
-				kv := strings.SplitN(parts, ",", 2)
-				if len(kv) == 2 {
-					t = strings.TrimSpace(kv[1])
-				}
-			}
-			if t == "" {
-				t = "Any"
-			}
-		}
-		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
-			fmt.Fprintf(w, "%s()", t)
-		} else if t == "BigInt" {
-			fmt.Fprint(w, "BigInt(0)")
-		} else if t == "Double" || t == "Float" {
-			fmt.Fprint(w, "0.0")
-		} else if t == "Boolean" {
-			fmt.Fprint(w, "false")
-		} else {
-			fmt.Fprintf(w, "null.asInstanceOf[%s]", t)
-		}
 		fmt.Fprint(w, ")")
 	} else if idx.Container == "Any" {
 		if (idx.ForceMap) || (func() bool {
@@ -1107,7 +1082,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		} else {
 			typ := inferType(c.Value)
 			fmt.Fprint(w, "BigInt(")
-			c.Value.emit(w)
+			switch c.Value.(type) {
+			case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+				c.Value.emit(w)
+			default:
+				fmt.Fprint(w, "(")
+				c.Value.emit(w)
+				fmt.Fprint(w, ")")
+			}
 			if typ == "String" {
 				fmt.Fprint(w, ".charAt(0).toInt")
 			} else {
@@ -2783,8 +2765,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "int":
 		if len(args) == 1 {
 			needsBigInt = true
-			toInt := &FieldExpr{Receiver: args[0], Name: "toInt"}
-			return &CallExpr{Fn: &Name{Name: "BigInt"}, Args: []Expr{toInt}}, nil
+			return &CastExpr{Value: args[0], Type: "int"}, nil
 		}
 	case "indexOf":
 		if len(args) == 2 {
@@ -4080,6 +4061,13 @@ func inferType(e Expr) string {
 			}
 		}
 		return fmt.Sprintf("Map[%s,%s]", kt, vt)
+	case *CallExpr:
+		if n, ok := ex.Fn.(*Name); ok {
+			if n.Name == "String.valueOf" {
+				return "String"
+			}
+		}
+		return ""
 	case *StructLit:
 		return ex.Name
 	case *LenExpr:
@@ -4117,7 +4105,8 @@ func inferType(e Expr) string {
 		}
 		return inferType(ex.Value)
 	case *NowExpr:
-		return "Int"
+		needsBigInt = true
+		return "BigInt"
 	case *BinaryExpr:
 		switch ex.Op {
 		case "+", "-", "*", "/", "%":
@@ -4130,6 +4119,9 @@ func inferType(e Expr) string {
 			}
 			if lt == "Double" || rt == "Double" {
 				return "Double"
+			}
+			if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(ex.Left) || isBigIntExpr(ex.Right) {
+				return "BigInt"
 			}
 			if lt == "" || rt == "" {
 				return ""
