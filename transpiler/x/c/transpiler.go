@@ -1042,6 +1042,11 @@ func (f *FloatLit) emitExpr(w io.Writer) {
 	fmt.Fprintf(w, "%g", f.Value)
 }
 
+// NullLit represents a null literal, emitted as NULL.
+type NullLit struct{}
+
+func (n *NullLit) emitExpr(w io.Writer) { io.WriteString(w, "NULL") }
+
 type UnaryExpr struct {
 	Op   string
 	Expr Expr
@@ -1263,9 +1268,15 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		if keyT == "const char*" && valT == "int" {
 			needMapGetSI = true
 			io.WriteString(w, "map_get_si(")
-			io.WriteString(w, vr.Name+"_keys, ")
-			io.WriteString(w, vr.Name+"_vals, ")
-			io.WriteString(w, vr.Name+"_len, ")
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" {
+				io.WriteString(w, vr.Name+".keys, ")
+				io.WriteString(w, vr.Name+".vals, ")
+				io.WriteString(w, vr.Name+".len, ")
+			} else {
+				io.WriteString(w, vr.Name+"_keys, ")
+				io.WriteString(w, vr.Name+"_vals, ")
+				io.WriteString(w, vr.Name+"_len, ")
+			}
 			i.Index.emitExpr(w)
 			io.WriteString(w, ")")
 			return
@@ -1293,7 +1304,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 		if keyT == "const char*" && valT == "const char*" {
 			needMapGetSS = true
 			io.WriteString(w, "map_get_ss(")
-			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" {
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" {
 				io.WriteString(w, vr.Name+".keys, ")
 				io.WriteString(w, vr.Name+".vals, ")
 				io.WriteString(w, vr.Name+".len, ")
@@ -1310,7 +1321,7 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 			needMapGetSL = true
 			funcReturnTypes["map_get_sl"] = "const char*[]"
 			io.WriteString(w, "map_get_sl(")
-			if varTypes[vr.Name] == "MapSL" {
+			if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSI" {
 				io.WriteString(w, vr.Name+".keys, ")
 				io.WriteString(w, vr.Name+".vals, ")
 				io.WriteString(w, vr.Name+".lens, ")
@@ -1650,8 +1661,13 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "const char*" {
 				needContainsStr = true
 				io.WriteString(w, "contains_str(")
-				io.WriteString(w, vr.Name+"_keys, ")
-				io.WriteString(w, vr.Name+"_len, ")
+				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" {
+					io.WriteString(w, vr.Name+".keys, ")
+					io.WriteString(w, vr.Name+".len, ")
+				} else {
+					io.WriteString(w, vr.Name+"_keys, ")
+					io.WriteString(w, vr.Name+"_len, ")
+				}
 				b.Left.emitExpr(w)
 				io.WriteString(w, ")")
 				return
@@ -1659,8 +1675,13 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			if keyT == "int" {
 				needContainsMapInt = true
 				io.WriteString(w, "contains_map_int(")
-				io.WriteString(w, vr.Name+"_keys, ")
-				io.WriteString(w, vr.Name+"_len, ")
+				if varTypes[vr.Name] == "MapSL" || varTypes[vr.Name] == "MapSS" || varTypes[vr.Name] == "MapSI" {
+					io.WriteString(w, vr.Name+".keys, ")
+					io.WriteString(w, vr.Name+".len, ")
+				} else {
+					io.WriteString(w, vr.Name+"_keys, ")
+					io.WriteString(w, vr.Name+"_len, ")
+				}
 				b.Left.emitExpr(w)
 				io.WriteString(w, ")")
 				return
@@ -2178,6 +2199,9 @@ func (p *Program) Emit() []byte {
 	}
 	if needMapGetSS || needMapSetSS {
 		buf.WriteString("typedef struct { const char **keys; const char **vals; size_t len; } MapSS;\n\n")
+	}
+	if needMapGetSI || needMapSetSI {
+		buf.WriteString("typedef struct { const char **keys; int *vals; size_t len; } MapSI;\n\n")
 	}
 	if needMapGetSI {
 		buf.WriteString("static int map_get_si(const char *keys[], const int vals[], size_t len, const char *key) {\n")
@@ -3272,6 +3296,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
 			} else if valT == "const char*" {
 				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
+			} else if valT == "int" && keyT == "const char*" {
+				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %s_len };\n", s.Let.Name, s.Let.Name, s.Let.Name, s.Let.Name)
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
@@ -3453,6 +3479,8 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				fmt.Fprintf(&buf, "MapSL %s = { %s_keys, %s_vals, %s_lens, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
 			} else if valT == "const char*" {
 				fmt.Fprintf(&buf, "MapSS %s = { %s_keys, %s_vals, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
+			} else if valT == "int" && keyT == "const char*" {
+				fmt.Fprintf(&buf, "MapSI %s = { %s_keys, %s_vals, %s_len };\n", s.Var.Name, s.Var.Name, s.Var.Name, s.Var.Name)
 			}
 			return &RawStmt{Code: buf.String()}, nil
 		}
@@ -3545,9 +3573,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetSI = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_si(")
-				buf.WriteString(s.Assign.Name + "_keys, ")
-				buf.WriteString(s.Assign.Name + "_vals, &")
-				buf.WriteString(s.Assign.Name + "_len, ")
+				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" {
+					buf.WriteString(s.Assign.Name + ".keys, ")
+					buf.WriteString(s.Assign.Name + ".vals, &")
+					buf.WriteString(s.Assign.Name + ".len, ")
+				} else {
+					buf.WriteString(s.Assign.Name + "_keys, ")
+					buf.WriteString(s.Assign.Name + "_vals, &")
+					buf.WriteString(s.Assign.Name + "_len, ")
+				}
 				idxs[0].emitExpr(&buf)
 				buf.WriteString(", ")
 				if valT == "const char*" {
@@ -3575,7 +3609,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				needMapSetSS = true
 				var buf bytes.Buffer
 				buf.WriteString("map_set_ss(")
-				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" {
+				if varTypes[s.Assign.Name] == "MapSL" || varTypes[s.Assign.Name] == "MapSS" || varTypes[s.Assign.Name] == "MapSI" {
 					buf.WriteString(s.Assign.Name + ".keys, ")
 					buf.WriteString(s.Assign.Name + ".vals, &")
 					buf.WriteString(s.Assign.Name + ".len, ")
@@ -3642,7 +3676,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 				}
 				listVar := name + "_keys"
 				lenVar := name + "_len"
-				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+				if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" {
 					listVar = name + ".keys"
 					lenVar = name + ".len"
 				}
@@ -3668,7 +3702,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}
@@ -3690,7 +3724,7 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					}
 					listVar := name + "_keys"
 					lenVar := name + "_len"
-					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" {
+					if vt := varTypes[name]; vt == "MapSL" || vt == "MapSS" || vt == "MapSI" {
 						listVar = name + ".keys"
 						lenVar = name + ".len"
 					}
@@ -4210,6 +4244,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			if err != nil {
 				return nil, err
 			}
+			// propagate any new structs captured within the closure
+			for n, st := range localEnv.Structs() {
+				env.SetStruct(n, st)
+			}
+			structTypes = env.Structs()
 			clo.Body = append(pre, clo.Body...)
 			return clo, nil
 		}
@@ -5241,6 +5280,9 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &IntLit{Value: 0}
 	}
+	if lit.Null && len(u.Ops) == 0 {
+		return &NullLit{}
+	}
 	return nil
 }
 
@@ -5988,6 +6030,9 @@ func cTypeFromMochiType(t types.Type) string {
 			}
 			if _, ok2 := tt.Value.(types.StringType); ok2 {
 				return "MapSS"
+			}
+			if _, ok2 := tt.Value.(types.IntType); ok2 {
+				return "MapSI"
 			}
 			if _, ok2 := tt.Value.(types.AnyType); ok2 {
 				return "MapSS"

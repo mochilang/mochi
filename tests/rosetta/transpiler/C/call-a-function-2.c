@@ -3,14 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <math.h>
 
-
-static int* list_append_int(int *arr, size_t *len, int val) {
-    arr = realloc(arr, (*len + 1) * sizeof(int));
-    arr[*len] = val;
-    (*len)++;
-    return arr;
-}
+size_t f_len;
 
 #include <time.h>
 #include <stdlib.h>
@@ -38,21 +33,30 @@ static long long _mem(void) {
     return (long long)mi.uordblks;
 }
 
+int * f();
+int g(int a, double b);
+int h(const char* s, int * nums, size_t nums_len);
 int user_main();
 int main(void);
 
+int * f() {
+    return f_len = 2, (int[]){ 0LL, 0 };
+}
+
+int g(int a, double b) {
+    return 0LL;
+}
+
+int h(const char* s, int * nums, size_t nums_len) {
+}
+
 int user_main() {
-    int *list = NULL;
-    size_t list_len = 0;
-    int a = 1LL;
-    int d = 2LL;
-    int e = 3LL;
-    int i = 4LL;
-    list = list_append_int(list, &list_len, a);
-    list = list_append_int(list, &list_len, d);
-    list = list_append_int(list, &list_len, e);
-    list = list_append_int(list, &list_len, i);
-    i = list_len;
+    f();
+    g(1LL, 2);
+    int *res = f();
+    size_t res_len = f_len;
+    g(res[(int)(0LL)], res[(int)(1LL)]);
+    g(g(1LL, 2), 3);
 }
 
 int main(void) {
