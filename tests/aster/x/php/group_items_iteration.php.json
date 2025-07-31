@@ -1,0 +1,1367 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "data"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "array_creation_expression",
+                        "children": [
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "tag"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "a"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "val"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer",
+                                "text": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "array_creation_expression",
+                        "children": [
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "tag"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "a"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "val"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "array_creation_expression",
+                        "children": [
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "tag"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "array_element_initializer",
+                            "text": "=\u003e",
+                            "children": [
+                              {
+                                "kind": "encapsed_string",
+                                "children": [
+                                  {
+                                    "kind": "string_content",
+                                    "text": "val"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer",
+                                "text": "3"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "groups"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "anonymous_function",
+                        "children": [
+                          {
+                            "kind": "formal_parameters",
+                            "text": "()"
+                          },
+                          {
+                            "kind": "anonymous_function_use_clause",
+                            "children": [
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "data"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "compound_statement",
+                            "children": [
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "text": "=",
+                                    "children": [
+                                      {
+                                        "kind": "variable_name",
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "groups"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "array_creation_expression",
+                                        "text": "[]"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "foreach_statement",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "data"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "d"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "compound_statement",
+                                    "children": [
+                                      {
+                                        "kind": "expression_statement",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "text": "=",
+                                            "children": [
+                                              {
+                                                "kind": "variable_name",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "key"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "subscript_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "variable_name",
+                                                    "children": [
+                                                      {
+                                                        "kind": "name",
+                                                        "text": "d"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "encapsed_string",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "tag"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "expression_statement",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "text": "=",
+                                            "children": [
+                                              {
+                                                "kind": "variable_name",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "k"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "function_call_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "json_encode"
+                                                  },
+                                                  {
+                                                    "kind": "arguments",
+                                                    "children": [
+                                                      {
+                                                        "kind": "argument",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_name",
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "key"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "if_statement",
+                                        "children": [
+                                          {
+                                            "kind": "parenthesized_expression",
+                                            "children": [
+                                              {
+                                                "kind": "unary_op_expression",
+                                                "text": "!",
+                                                "children": [
+                                                  {
+                                                    "kind": "function_call_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "name",
+                                                        "text": "array_key_exists"
+                                                      },
+                                                      {
+                                                        "kind": "arguments",
+                                                        "children": [
+                                                          {
+                                                            "kind": "argument",
+                                                            "children": [
+                                                              {
+                                                                "kind": "variable_name",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "name",
+                                                                    "text": "k"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "argument",
+                                                            "children": [
+                                                              {
+                                                                "kind": "variable_name",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "name",
+                                                                    "text": "groups"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "compound_statement",
+                                            "children": [
+                                              {
+                                                "kind": "expression_statement",
+                                                "children": [
+                                                  {
+                                                    "kind": "assignment_expression",
+                                                    "text": "=",
+                                                    "children": [
+                                                      {
+                                                        "kind": "subscript_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_name",
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "groups"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "variable_name",
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "k"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "array_creation_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "array_element_initializer",
+                                                            "text": "=\u003e",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "text": "key"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "variable_name",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "name",
+                                                                    "text": "key"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "array_element_initializer",
+                                                            "text": "=\u003e",
+                                                            "children": [
+                                                              {
+                                                                "kind": "string",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "text": "items"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "array_creation_expression",
+                                                                "text": "[]"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "expression_statement",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "text": "=",
+                                            "children": [
+                                              {
+                                                "kind": "subscript_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "subscript_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "subscript_expression",
+                                                        "children": [
+                                                          {
+                                                            "kind": "variable_name",
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "groups"
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "variable_name",
+                                                            "children": [
+                                                              {
+                                                                "kind": "name",
+                                                                "text": "k"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "string",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_content",
+                                                            "text": "items"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "variable_name",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "d"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "expression_statement",
+                                "children": [
+                                  {
+                                    "kind": "assignment_expression",
+                                    "text": "=",
+                                    "children": [
+                                      {
+                                        "kind": "variable_name",
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "result"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "array_creation_expression",
+                                        "text": "[]"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "foreach_statement",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "groups"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "g"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "compound_statement",
+                                    "children": [
+                                      {
+                                        "kind": "expression_statement",
+                                        "children": [
+                                          {
+                                            "kind": "assignment_expression",
+                                            "text": "=",
+                                            "children": [
+                                              {
+                                                "kind": "subscript_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "variable_name",
+                                                    "children": [
+                                                      {
+                                                        "kind": "name",
+                                                        "text": "result"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "variable_name",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "g"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "result"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "text": "()"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "tmp"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "text": "[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "foreach_statement",
+        "children": [
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "groups"
+              }
+            ]
+          },
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "g"
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "total"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "foreach_statement",
+                "children": [
+                  {
+                    "kind": "subscript_expression",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "g"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "items"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "variable_name",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "x"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "compound_statement",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "assignment_expression",
+                            "text": "=",
+                            "children": [
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "total"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "binary_expression",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "total"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "subscript_expression",
+                                    "children": [
+                                      {
+                                        "kind": "variable_name",
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "x"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "encapsed_string",
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "text": "val"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "tmp"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "array_merge"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "tmp"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "array_creation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "array_element_initializer",
+                                        "children": [
+                                          {
+                                            "kind": "array_creation_expression",
+                                            "children": [
+                                              {
+                                                "kind": "array_element_initializer",
+                                                "text": "=\u003e",
+                                                "children": [
+                                                  {
+                                                    "kind": "encapsed_string",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "tag"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "subscript_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "variable_name",
+                                                        "children": [
+                                                          {
+                                                            "kind": "name",
+                                                            "text": "g"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "encapsed_string",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_content",
+                                                            "text": "key"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "array_element_initializer",
+                                                "text": "=\u003e",
+                                                "children": [
+                                                  {
+                                                    "kind": "encapsed_string",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "total"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "variable_name",
+                                                    "children": [
+                                                      {
+                                                        "kind": "name",
+                                                        "text": "total"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "result"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "text": "[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "foreach_statement",
+        "children": [
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "tmp"
+              }
+            ]
+          },
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "r"
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "subscript_expression",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "result"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "r"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "str_replace"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "false"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "False"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "function_call_expression",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "str_replace"
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "argument",
+                                    "children": [
+                                      {
+                                        "kind": "encapsed_string",
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "text": "true"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "argument",
+                                    "children": [
+                                      {
+                                        "kind": "encapsed_string",
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "text": "True"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "argument",
+                                    "children": [
+                                      {
+                                        "kind": "function_call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "name",
+                                            "text": "str_replace"
+                                          },
+                                          {
+                                            "kind": "arguments",
+                                            "children": [
+                                              {
+                                                "kind": "argument",
+                                                "children": [
+                                                  {
+                                                    "kind": "encapsed_string",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "'"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "argument",
+                                                "children": [
+                                                  {
+                                                    "kind": "function_call_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "name",
+                                                        "text": "str_replace"
+                                                      },
+                                                      {
+                                                        "kind": "arguments",
+                                                        "children": [
+                                                          {
+                                                            "kind": "argument",
+                                                            "children": [
+                                                              {
+                                                                "kind": "encapsed_string",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "text": ":"
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "argument",
+                                                            "children": [
+                                                              {
+                                                                "kind": "encapsed_string",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "string_content",
+                                                                    "text": ": "
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          },
+                                                          {
+                                                            "kind": "argument",
+                                                            "children": [
+                                                              {
+                                                                "kind": "function_call_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "name",
+                                                                    "text": "str_replace"
+                                                                  },
+                                                                  {
+                                                                    "kind": "arguments",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "encapsed_string",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "text": ","
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "encapsed_string",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "string_content",
+                                                                                "text": ", "
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "function_call_expression",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "name",
+                                                                                "text": "json_encode"
+                                                                              },
+                                                                              {
+                                                                                "kind": "arguments",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "argument",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "variable_name",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "name",
+                                                                                            "text": "result"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "argument",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "integer",
+                                                                                        "text": "1344"
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

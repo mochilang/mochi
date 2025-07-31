@@ -1,0 +1,121 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "x"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "5"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "if_statement",
+        "children": [
+          {
+            "kind": "parenthesized_expression",
+            "children": [
+              {
+                "kind": "binary_expression",
+                "text": "\u003e",
+                "children": [
+                  {
+                    "kind": "variable_name",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "x"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "integer",
+                    "text": "3"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "echo_statement",
+                "children": [
+                  {
+                    "kind": "sequence_expression",
+                    "children": [
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "big"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "name",
+                        "text": "PHP_EOL"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "else_clause",
+            "children": [
+              {
+                "kind": "compound_statement",
+                "children": [
+                  {
+                    "kind": "echo_statement",
+                    "children": [
+                      {
+                        "kind": "sequence_expression",
+                        "children": [
+                          {
+                            "kind": "encapsed_string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "small"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "name",
+                            "text": "PHP_EOL"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

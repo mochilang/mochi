@@ -209,6 +209,19 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		} else {
 			writeBlock(b, &Node{}, indent+1, true)
 		}
+	case "arrow_function":
+		b.WriteString("fn")
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "formal_parameters" {
+			writeParameters(b, n.Children[0])
+			idx = 1
+		} else {
+			b.WriteString("()")
+		}
+		b.WriteString(" => ")
+		if idx < len(n.Children) {
+			writeExpr(b, n.Children[idx], indent)
+		}
 	case "function_call_expression":
 		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indent)

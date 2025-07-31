@@ -1,0 +1,762 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "xs"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "text": "1"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "text": "2"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "text": "3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "ys"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "text": "[]"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "foreach_statement",
+        "children": [
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "xs"
+              }
+            ]
+          },
+          {
+            "kind": "variable_name",
+            "children": [
+              {
+                "kind": "name",
+                "text": "x"
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "if_statement",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "==",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "%",
+                            "children": [
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "x"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "integer",
+                                "text": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "compound_statement",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "assignment_expression",
+                            "text": "=",
+                            "children": [
+                              {
+                                "kind": "subscript_expression",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "ys"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "x"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "in_array"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "ys"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "in_array"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "integer",
+                                    "text": "2"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "ys"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "m"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "text": "=\u003e",
+                    "children": [
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "array_key_exists"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "encapsed_string",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "a"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "m"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "array_key_exists"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "encapsed_string",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "b"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "m"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "s"
+                  }
+                ]
+              },
+              {
+                "kind": "encapsed_string",
+                "children": [
+                  {
+                    "kind": "string_content",
+                    "text": "hello"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "str_contains"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "s"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "encapsed_string",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "ell"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "conditional_expression",
+                    "text": "? :",
+                    "children": [
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "str_contains"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "s"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "encapsed_string",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "foo"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "True"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "False"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
