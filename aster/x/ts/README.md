@@ -25,6 +25,31 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] for_list_collection.ts
 - [x] for_loop.ts
 - [x] for_map_collection.ts
+- [x] group_by_conditional_sum.ts
+- [x] group_by_having.ts
+- [x] group_by_join.ts
+- [x] group_by_left_join.ts
+- [x] group_by_multi_join.ts
+- [x] group_by_multi_join_sort.ts
+- [x] group_by_multi_sort.ts
+- [x] group_by_sort.ts
+- [x] group_items_iteration.ts
+- [x] if_else.ts
+- [x] if_then_else.ts
+- [x] if_then_else_nested.ts
+- [x] in_operator.ts
+- [x] in_operator_extended.ts
+- [x] inner_join.ts
+- [x] join_multi.ts
+- [x] json_builtin.ts
+- [x] left_join.ts
+- [x] left_join_multi.ts
+- [x] len_builtin.ts
+- [x] len_map.ts
+- [x] len_string.ts
+- [x] let_and_print.ts
+- [x] list_assign.ts
+- [x] list_index.ts
 
-Completed 20/20 on 2025-07-31 15:40 GMT+7.
+Completed 45/45 on 2025-07-31 18:18 GMT+7.
 

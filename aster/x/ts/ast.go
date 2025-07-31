@@ -143,7 +143,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 // isValueNode reports whether a node type represents a value that should be kept.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "string", "predefined_type", "comment", "shorthand_property_identifier", "true", "false":
+	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "string", "predefined_type", "comment", "shorthand_property_identifier", "true", "false", "null", "undefined":
 		return true
 	default:
 		return false

@@ -235,7 +235,7 @@ func writeTypeAnnotation(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "property_identifier", "type_identifier", "predefined_type", "number", "true", "false":
+	case "identifier", "property_identifier", "type_identifier", "predefined_type", "number", "true", "false", "null", "undefined":
 		b.WriteString(n.Text)
 	case "string":
 		b.WriteByte('"')
@@ -364,6 +364,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte('>')
+	case "new_expression":
+		if len(n.Children) > 0 {
+			b.WriteString("new ")
+			writeExpr(b, n.Children[0], indent)
+			for _, c := range n.Children[1:] {
+				writeExpr(b, c, indent)
+			}
+		}
+	case "object_type":
+		writeInterfaceBody(b, n, indent)
 	case "pair":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -491,6 +501,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "required_parameter":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
+		}
+	case "optional_parameter":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('?')
+		if len(n.Children) > 1 && n.Children[1].Kind == "type_annotation" {
+			writeTypeAnnotation(b, n.Children[1], indent)
 		}
 	default:
 		// Fallback: print children in order
