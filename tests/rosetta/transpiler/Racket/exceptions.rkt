@@ -57,27 +57,27 @@
 
 (let* ([_start_mem (current-memory-use)] [_start (now)])
   (let/ec _return (begin
-(define (os_Getenv name) (or (getenv name) ""))
-(define (os_Environ)
-  (for/list ([n (environment-variables-names (current-environment-variables))]) (let ([s (bytes->string/utf-8 n)]) (string-append s "=" (or (getenv s) "")))) )
-(define (hasPrefix s p)
+(define (foo)
   (let/ec _return (begin
-(if (> (cond [(string? p) (string-length p)] [(hash? p) (hash-count p)] [else (length p)]) (cond [(string? s) (string-length s)] [(hash? s) (hash-count s)] [else (length s)])) (let ()
-(_return #f)
+(displayln "let's foo...")
+(define a (list))
+(if (>= 12 (cond [(string? a) (string-length a)] [(hash? a) (hash-count a)] [else (length a)])) (let ()
+(_return (string-append "runtime error: index out of range [12] with length " (format "~a" (cond [(string? a) (string-length a)] [(hash? a) (hash-count a)] [else (length a)]))))
 ) (void))
-(_return (string=? (slice s 0 (cond [(string? p) (string-length p)] [(hash? p) (hash-count p)] [else (length p)])) p))
+(set! a (list-set a (int 12) 0))
+(_return "")
 ))
 )
-(define name "SHELL")
-(define prefix (string-append name "="))
-(let/ec _break (for ([v (os_Environ)])
-  (let/ec _cont
-(if (hasPrefix v prefix) (let ()
-(displayln (string-append (string-append name " has value ") (slice v (cond [(string? prefix) (string-length prefix)] [(hash? prefix) (hash-count prefix)] [else (length prefix)]) (cond [(string? v) (string-length v)] [(hash? v) (hash-count v)] [else (length v)]))))
-(_return void)
+(define (main)
+  (let/ec _return (begin
+(define err (foo))
+(if (> (cond [(string? err) (string-length err)] [(hash? err) (hash-count err)] [else (length err)]) 0) (let ()
+(displayln (string-append "Recovered from " err))
 ) (void))
-  )))
-(displayln (string-append name " not found"))
+(displayln "glad that's over.")
+))
+)
+(main)
   ))
   (let* ([_end (now)] [_end_mem (current-memory-use)]
          [_dur (- _end _start)]

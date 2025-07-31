@@ -1,0 +1,6 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/exponentiation-with-infix-operators-in-or-operating-on-the-base.rkt:59:18: begin (possibly implicit): the last form is not an expression
+  at: (begin (define (p x e) (let/ec _return (begin (define r 1.0) (define i 0) (let/ec _break (let loop () (if (< i (int e)) (let () (set! r (* r x)) (set! i (let ((__l i) (__r 1)) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l __r)))) ...
+  in: (begin (begin (define (p x e) (let/ec _return (begin (define r 1.0) (define i 0) (let/ec _break (let loop () (if (< i (int e)) (let () (set! r (* r x)) (set! i (let ((__l i) (__r 1)) (if (and (string? __l) (string? __r)) (string-append __l __r) (+ __l _...
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/exponentiation-with-infix-operators-in-or-operating-on-the-base.rkt:59:18
