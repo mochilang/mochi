@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 75/103 files
-Generated: 2025-07-31 20:35 GMT+7
+Completed 100/103 files
+Generated: 2025-07-31 21:13 GMT+7
 
 ## Checklist
 
@@ -85,3 +85,28 @@ Generated: 2025-07-31 20:35 GMT+7
 73. [x] pure_global_fold
 74. [x] python_auto
 75. [x] python_math
+76. [x] query_sum_select
+77. [x] record_assign
+78. [x] right_join
+79. [x] save_jsonl_stdout
+80. [x] short_circuit
+81. [x] slice
+82. [x] sort_stable
+83. [x] str_builtin
+84. [x] string_compare
+85. [x] string_concat
+86. [x] string_contains
+87. [x] string_in_operator
+88. [x] string_index
+89. [x] string_prefix_slice
+90. [x] substring_builtin
+91. [x] sum_builtin
+92. [x] tail_recursion
+93. [x] test_block
+94. [x] tree_sum
+95. [x] typed_let
+96. [x] typed_var
+97. [x] unary_neg
+98. [x] update_stmt
+99. [x] user_type_literal
+100. [x] values_builtin

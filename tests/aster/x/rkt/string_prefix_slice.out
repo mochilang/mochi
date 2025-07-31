@@ -1,0 +1,5 @@
+=: contract violation
+  expected: number?
+  given: "fore"
+  context...:
+   body of ""
