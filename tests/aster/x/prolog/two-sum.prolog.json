@@ -525,7 +525,7 @@
                                                                                                       "kind": "-\u003e",
                                                                                                       "children": [
                                                                                                         {
-                                                                                                          "kind": "=",
+                                                                                                          "kind": "=:=",
                                                                                                           "children": [
                                                                                                             {
                                                                                                               "kind": "var",
