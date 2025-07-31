@@ -35,6 +35,7 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "line_comment":
 		b.WriteString(n.Text)
+		b.WriteByte('\n')
 	case "function_or_value_defn":
 		b.WriteString(strings.Repeat("    ", indent))
 		b.WriteString("let ")
@@ -50,8 +51,10 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" = ")
 			writeExpr(b, n.Children[1])
 		}
+		b.WriteByte('\n')
 	default:
 		writeExpr(b, n)
+		b.WriteByte('\n')
 	}
 }
 
@@ -67,6 +70,25 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 				b.WriteByte('.')
 			}
 			writeExpr(b, c)
+		}
+	case "identifier_pattern", "value_declaration_left":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c)
+		}
+	case "const":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+		} else {
+			b.WriteString(n.Text)
+		}
+	case "range_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0])
+			b.WriteString(" .. ")
+			writeExpr(b, n.Children[1])
 		}
 	case "application_expression":
 		for i, c := range n.Children {

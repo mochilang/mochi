@@ -38,9 +38,11 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.fs" {
+		base := strings.TrimSuffix(filepath.Base(f), ".fs")
+		if _, err := os.Stat(filepath.Join(srcDir, base+".out")); err == nil {
 			selected = append(selected, f)
 		}
 	}
