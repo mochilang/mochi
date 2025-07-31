@@ -8,6 +8,7 @@
       },
       {
         "kind": "variable_declaration",
+        "text": "var",
         "children": [
           {
             "kind": "variable_declarator",
@@ -26,6 +27,7 @@
       },
       {
         "kind": "variable_declaration",
+        "text": "var",
         "children": [
           {
             "kind": "variable_declarator",
@@ -69,15 +71,18 @@
                       },
                       {
                         "kind": "binary_expression",
+                        "text": "%",
                         "children": [
                           {
                             "kind": "parenthesized_expression",
                             "children": [
                               {
                                 "kind": "binary_expression",
+                                "text": "+",
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "*",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -147,9 +152,11 @@
                     "children": [
                       {
                         "kind": "binary_expression",
+                        "text": "!==",
                         "children": [
                           {
                             "kind": "unary_expression",
+                            "text": "typeof",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -181,6 +188,7 @@
                             "children": [
                               {
                                 "kind": "binary_expression",
+                                "text": "??",
                                 "children": [
                                   {
                                     "kind": "member_expression",
@@ -231,9 +239,11 @@
                     "children": [
                       {
                         "kind": "binary_expression",
+                        "text": "!==",
                         "children": [
                           {
                             "kind": "unary_expression",
+                            "text": "typeof",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -311,6 +321,7 @@
         "children": [
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -334,6 +345,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -357,6 +369,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -384,6 +397,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "let",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -414,6 +428,7 @@
             "children": [
               {
                 "kind": "lexical_declaration",
+                "text": "let",
                 "children": [
                   {
                     "kind": "variable_declarator",
@@ -432,6 +447,7 @@
               },
               {
                 "kind": "binary_expression",
+                "text": "\u003c",
                 "children": [
                   {
                     "kind": "identifier",
@@ -445,6 +461,7 @@
               },
               {
                 "kind": "update_expression",
+                "text": "++",
                 "children": [
                   {
                     "kind": "identifier",
@@ -470,6 +487,7 @@
                             "children": [
                               {
                                 "kind": "binary_expression",
+                                "text": "+",
                                 "children": [
                                   {
                                     "kind": "identifier",
@@ -493,6 +511,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -516,6 +535,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -526,6 +546,7 @@
                   },
                   {
                     "kind": "binary_expression",
+                    "text": "-",
                     "children": [
                       {
                         "kind": "identifier",
@@ -543,6 +564,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -572,6 +594,7 @@
                         "children": [
                           {
                             "kind": "binary_expression",
+                            "text": "/",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -593,6 +616,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -616,6 +640,7 @@
           },
           {
             "kind": "lexical_declaration",
+            "text": "const",
             "children": [
               {
                 "kind": "variable_declarator",
@@ -649,6 +674,7 @@
                           },
                           {
                             "kind": "binary_expression",
+                            "text": "-",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -772,6 +798,10 @@
                                     ]
                                   }
                                 ]
+                              },
+                              {
+                                "kind": "null",
+                                "text": "null"
                               },
                               {
                                 "kind": "string",

@@ -91,6 +91,8 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		if kw := n.ChildByFieldName("kind"); kw != nil {
 			node.Text = kw.Utf8Text(src)
 		}
+	case "variable_declaration":
+		node.Text = "var"
 	}
 
 	if opt.Positions {
@@ -127,7 +129,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 // isValueNode reports whether a node type represents a value that should be kept.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "predefined_type", "comment":
+	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "predefined_type", "comment", "break_statement", "continue_statement", "null":
 		return true
 	default:
 		return false

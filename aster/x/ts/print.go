@@ -33,6 +33,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		b.WriteString(n.Text)
 		b.WriteByte('\n')
+	case "export_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("export ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('\n')
+		}
 	case "lexical_declaration":
 		kw := n.Text
 		if kw == "" {
@@ -48,6 +55,89 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeVarDeclarator(b, c, indent)
 		}
 		b.WriteString(";\n")
+	case "variable_declaration":
+		b.WriteString(ind)
+		b.WriteString("var ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
+		b.WriteString(";\n")
+	case "function_declaration":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("function ")
+			writeExpr(b, n.Children[0], indent)
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "formal_parameters" {
+				writeExpr(b, n.Children[idx], indent)
+				idx++
+			} else {
+				b.WriteString("()")
+			}
+			if idx < len(n.Children) && n.Children[idx].Kind == "type_annotation" {
+				writeTypeAnnotation(b, n.Children[idx], indent)
+				idx++
+			}
+			b.WriteByte(' ')
+			if idx < len(n.Children) {
+				writeBlock(b, n.Children[idx], indent)
+			}
+			b.WriteByte('\n')
+		}
+	case "for_statement":
+		if len(n.Children) >= 4 {
+			b.WriteString(ind)
+			b.WriteString("for (")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString("; ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString("; ")
+			writeExpr(b, n.Children[2], indent)
+			b.WriteString(") ")
+			if n.Children[3].Kind == "statement_block" {
+				writeBlock(b, n.Children[3], indent)
+			} else {
+				writeStmt(b, n.Children[3], indent)
+			}
+			b.WriteByte('\n')
+		}
+	case "for_in_statement":
+		if len(n.Children) >= 3 {
+			b.WriteString(ind)
+			b.WriteString("for (const ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" of ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(") ")
+			if n.Children[2].Kind == "statement_block" {
+				writeBlock(b, n.Children[2], indent)
+			} else {
+				writeStmt(b, n.Children[2], indent)
+			}
+			b.WriteByte('\n')
+		}
+	case "if_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("if (")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(") ")
+			writeBlock(b, n.Children[1], indent)
+			if len(n.Children) >= 3 {
+				b.WriteString(" else ")
+				writeBlock(b, n.Children[2], indent)
+			}
+			b.WriteByte('\n')
+		}
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(ind)
+		b.WriteString("continue;\n")
 	case "expression_statement":
 		if len(n.Children) > 0 {
 			b.WriteString(ind)
@@ -113,6 +203,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "property_identifier", "type_identifier", "predefined_type", "number":
 		b.WriteString(n.Text)
+	case "null":
+		b.WriteString("null")
 	case "string":
 		b.WriteByte('"')
 		if len(n.Children) > 0 {
@@ -165,7 +257,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			if op == "" {
 				op = "+"
 			}
-			b.WriteString(op)
+			if op == "typeof" {
+				b.WriteString("typeof ")
+			} else {
+				b.WriteString(op)
+			}
 			writeExpr(b, n.Children[0], indent)
 		}
 	case "parenthesized_expression":
@@ -242,6 +338,84 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "required_parameter":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
+		}
+	case "lexical_declaration":
+		kw := n.Text
+		if kw == "" {
+			kw = "const"
+		}
+		b.WriteString(kw)
+		b.WriteByte(' ')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
+	case "variable_declaration":
+		b.WriteString("var ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeVarDeclarator(b, c, indent)
+		}
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			op := n.Text
+			if op == "" {
+				op = "="
+			}
+			b.WriteString(" ")
+			b.WriteString(op)
+			b.WriteString(" ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "update_expression":
+		if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(n.Text)
+		}
+	case "object":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('}')
+	case "pair":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "interface_declaration":
+		if len(n.Children) >= 2 {
+			b.WriteString("interface ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "interface_body":
+		b.WriteByte('{')
+		if len(n.Children) > 0 {
+			b.WriteByte('\n')
+			for _, c := range n.Children {
+				writeExpr(b, c, indent+1)
+				b.WriteString(";\n")
+			}
+			b.WriteString(strings.Repeat("    ", indent))
+		}
+		b.WriteByte('}')
+	case "property_signature":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				writeTypeAnnotation(b, n.Children[1], indent)
+			}
 		}
 	default:
 		// Fallback: print children in order
