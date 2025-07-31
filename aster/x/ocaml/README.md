@@ -1,112 +1,108 @@
-# OCaml AST Printer
+# OCaml AST Printer Progress
 
-This directory holds utilities for inspecting OCaml source code and printing it back from a simplified AST. The golden tests exercise a sample of programs used in the transpiler tests.
+This directory holds utilities for inspecting OCaml source code and printing it back from a simplified AST.
 
-## Test Files
-
-1. append_builtin.ml
-2. avg_builtin.ml
-3. basic_compare.ml
-4. bench_block.ml
-5. binary_precedence.ml
-6. bool_chain.ml
-7. break_continue.ml
-8. cast_string_to_int.ml
-9. cast_struct.ml
-10. closure.ml
-11. count_builtin.ml
-12. cross_join.ml
-13. cross_join_filter.ml
-14. cross_join_triple.ml
-15. dataset_sort_take_limit.ml
-16. dataset_where_filter.ml
-17. exists_builtin.ml
-18. for_list_collection.ml
-19. for_loop.ml
-20. for_map_collection.ml
-21. fun_call.ml
-22. fun_expr_in_let.ml
-23. fun_three_args.ml
-24. go_auto.ml
-25. group_by.ml
-26. group_by_conditional_sum.ml
-27. group_by_having.ml
-28. group_by_join.ml
-29. group_by_left_join.ml
-30. group_by_multi_join.ml
-31. group_by_multi_sort.ml
-32. group_by_sort.ml
-33. group_items_iteration.ml
-34. if_else.ml
-35. if_then_else.ml
-36. if_then_else_nested.ml
-37. in_operator.ml
-38. in_operator_extended.ml
-39. inner_join.ml
-40. join_multi.ml
-41. json_builtin.ml
-42. left_join.ml
-43. left_join_multi.ml
-44. len_builtin.ml
-45. len_map.ml
-46. len_string.ml
-47. let_and_print.ml
-48. list_assign.ml
-49. list_index.ml
-50. list_nested_assign.ml
-51. list_set_ops.ml
-52. load_jsonl.ml
-53. load_yaml.ml
-54. map_assign.ml
-55. map_in_operator.ml
-56. map_index.ml
-57. map_int_key.ml
-58. map_literal_dynamic.ml
-59. map_membership.ml
-60. map_nested_assign.ml
-61. match_expr.ml
-62. match_full.ml
-63. math_ops.ml
-64. membership.ml
-65. min_max_builtin.ml
-66. mix_go_python.ml
-67. nested_function.ml
-68. order_by_map.ml
-69. outer_join.ml
-70. partial_application.ml
-71. print_hello.ml
-72. pure_fold.ml
-73. pure_global_fold.ml
-74. python_auto.ml
-75. python_math.ml
-76. query_sum_select.ml
-77. record_assign.ml
-78. right_join.ml
-79. save_jsonl_stdout.ml
-80. short_circuit.ml
-81. slice.ml
-82. sort_stable.ml
-83. str_builtin.ml
-84. string_compare.ml
-85. string_concat.ml
-86. string_contains.ml
-87. string_in_operator.ml
-88. string_index.ml
-89. string_prefix_slice.ml
-90. substring_builtin.ml
-91. sum_builtin.ml
-92. tail_recursion.ml
-93. test_block.ml
-94. tree_sum.ml
-95. two-sum.ml
-96. typed_let.ml
-97. typed_var.ml
-98. unary_neg.ml
-99. user_type_literal.ml
-100. values_builtin.ml
-101. var_assignment.ml
-102. while_loop.ml
-
-Checked: 102/102
-
-_Last updated: 2025-07-31 20:12 GMT+7_
+## Checklist (102/102)
+ 1. [x] append_builtin.ml
+ 2. [x] avg_builtin.ml
+ 3. [x] basic_compare.ml
+ 4. [x] bench_block.ml
+ 5. [x] binary_precedence.ml
+ 6. [x] bool_chain.ml
+ 7. [x] break_continue.ml
+ 8. [x] cast_string_to_int.ml
+ 9. [x] cast_struct.ml
+ 10. [x] closure.ml
+ 11. [x] count_builtin.ml
+ 12. [x] cross_join.ml
+ 13. [x] cross_join_filter.ml
+ 14. [x] cross_join_triple.ml
+ 15. [x] dataset_sort_take_limit.ml
+ 16. [x] dataset_where_filter.ml
+ 17. [x] exists_builtin.ml
+ 18. [x] for_list_collection.ml
+ 19. [x] for_loop.ml
+ 20. [x] for_map_collection.ml
+ 21. [x] fun_call.ml
+ 22. [x] fun_expr_in_let.ml
+ 23. [x] fun_three_args.ml
+ 24. [x] go_auto.ml
+ 25. [x] group_by.ml
+ 26. [x] group_by_conditional_sum.ml
+ 27. [x] group_by_having.ml
+ 28. [x] group_by_join.ml
+ 29. [x] group_by_left_join.ml
+ 30. [x] group_by_multi_join.ml
+ 31. [x] group_by_multi_sort.ml
+ 32. [x] group_by_sort.ml
+ 33. [x] group_items_iteration.ml
+ 34. [x] if_else.ml
+ 35. [x] if_then_else.ml
+ 36. [x] if_then_else_nested.ml
+ 37. [x] in_operator.ml
+ 38. [x] in_operator_extended.ml
+ 39. [x] inner_join.ml
+ 40. [x] join_multi.ml
+ 41. [x] json_builtin.ml
+ 42. [x] left_join.ml
+ 43. [x] left_join_multi.ml
+ 44. [x] len_builtin.ml
+ 45. [x] len_map.ml
+ 46. [x] len_string.ml
+ 47. [x] let_and_print.ml
+ 48. [x] list_assign.ml
+ 49. [x] list_index.ml
+ 50. [x] list_nested_assign.ml
+ 51. [x] list_set_ops.ml
+ 52. [x] load_jsonl.ml
+ 53. [x] load_yaml.ml
+ 54. [x] map_assign.ml
+ 55. [x] map_in_operator.ml
+ 56. [x] map_index.ml
+ 57. [x] map_int_key.ml
+ 58. [x] map_literal_dynamic.ml
+ 59. [x] map_membership.ml
+ 60. [x] map_nested_assign.ml
+ 61. [x] match_expr.ml
+ 62. [x] match_full.ml
+ 63. [x] math_ops.ml
+ 64. [x] membership.ml
+ 65. [x] min_max_builtin.ml
+ 66. [x] mix_go_python.ml
+ 67. [x] nested_function.ml
+ 68. [x] order_by_map.ml
+ 69. [x] outer_join.ml
+ 70. [x] partial_application.ml
+ 71. [x] print_hello.ml
+ 72. [x] pure_fold.ml
+ 73. [x] pure_global_fold.ml
+ 74. [x] python_auto.ml
+ 75. [x] python_math.ml
+ 76. [x] query_sum_select.ml
+ 77. [x] record_assign.ml
+ 78. [x] right_join.ml
+ 79. [x] save_jsonl_stdout.ml
+ 80. [x] short_circuit.ml
+ 81. [x] slice.ml
+ 82. [x] sort_stable.ml
+ 83. [x] str_builtin.ml
+ 84. [x] string_compare.ml
+ 85. [x] string_concat.ml
+ 86. [x] string_contains.ml
+ 87. [x] string_in_operator.ml
+ 88. [x] string_index.ml
+ 89. [x] string_prefix_slice.ml
+ 90. [x] substring_builtin.ml
+ 91. [x] sum_builtin.ml
+ 92. [x] tail_recursion.ml
+ 93. [x] test_block.ml
+ 94. [x] tree_sum.ml
+ 95. [x] two-sum.ml
+ 96. [x] typed_let.ml
+ 97. [x] typed_var.ml
+ 98. [x] unary_neg.ml
+ 99. [x] user_type_literal.ml
+ 100. [x] values_builtin.ml
+ 101. [x] var_assignment.ml
+ 102. [x] while_loop.ml
+Completed 102/102 at 2025-07-31 20:47 GMT+0700
