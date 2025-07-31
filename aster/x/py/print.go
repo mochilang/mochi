@@ -129,6 +129,14 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(":\n")
 			writeBlock(b, n.Children[2], indent+1)
 		}
+	case "while_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("while ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(":\n")
+			writeBlock(b, n.Children[1], indent+1)
+		}
 	case "assert_statement":
 		b.WriteString(ind)
 		b.WriteString("assert ")

@@ -51,6 +51,7 @@ type (
 	Dictionary          Node
 	Pair                Node
 	ForStatement        Node
+	WhileStatement      Node
 	ForInClause         Node
 	ArgumentList        Node
 	Lambda              Node

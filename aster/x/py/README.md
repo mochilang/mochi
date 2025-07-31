@@ -104,7 +104,11 @@ Python ASTs. The golden tests exercise a small set of example programs.
 98. typed_var.py
 99. unary_neg.py
 100. update_stmt.py
+101. user_type_literal.py
+102. values_builtin.py
+103. var_assignment.py
+104. while_loop.py
 
-Checked: 100/100
+Checked: 104/104
 
-_Last updated: 2025-07-31 18:35 GMT+7_
+_Last updated: 2025-07-31 19:15 GMT+7_
