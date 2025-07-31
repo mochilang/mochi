@@ -10,7 +10,7 @@ struct NResult {
 class Program {
     static int[] nums = new int[]{1, 2, 3};
     static string[] letters = new string[]{"A", "B"};
-    static NResult[] pairs = (from n in nums from l in letters ((n % 2) == 0) select new NResult{n = n, l = l}).ToArray();
+    static NResult[] pairs = (from n in nums from l in letters where ((n % 2) == 0) select new NResult{n = n, l = l}).ToArray();
     static void Main() {
         Console.WriteLine("--- Even pairs ---");
         foreach (var p in pairs) {

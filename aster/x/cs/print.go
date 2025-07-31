@@ -347,6 +347,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
+			if arg.Text != "" {
+				b.WriteString(arg.Text)
+				b.WriteByte(' ')
+			}
 			if len(arg.Children) > 0 {
 				writeExpr(b, arg.Children[0], indentLevel)
 			}
@@ -376,6 +380,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		b.WriteByte('}')
 	case "variable_declarator":
 		writeVarDeclarator(b, n, indentLevel)
+	case "declaration_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indentLevel)
+		}
 	case "parenthesized_expression":
 		b.WriteByte('(')
 		for i, c := range n.Children {

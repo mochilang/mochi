@@ -55,14 +55,32 @@ func convert(n *sitter.Node, src []byte) *Node {
 	}
 	node := &Node{Kind: n.Kind()}
 
-	// Capture operator tokens for expressions where tree-sitter stores the
-	// symbol in a separate field. This allows the printer to faithfully
-	// reconstruct the original source code.
+	// Capture operator tokens or argument modifiers that are represented
+	// as anonymous children by tree-sitter. This information is needed by
+	// the printer to faithfully reconstruct the source code.
 	switch n.Kind() {
-	case "binary_expression", "assignment_expression", "prefix_unary_expression",
-		"postfix_unary_expression":
+	case "binary_expression", "assignment_expression",
+		"prefix_unary_expression", "postfix_unary_expression":
 		if op := n.ChildByFieldName("operator"); op != nil {
 			node.Text = op.Utf8Text(src)
+		} else if n.ChildCount() > n.NamedChildCount() {
+			for i := uint(0); i < n.ChildCount(); i++ {
+				c := n.Child(i)
+				if !c.IsNamed() {
+					node.Text = c.Utf8Text(src)
+					break
+				}
+			}
+		}
+	case "argument":
+		if n.ChildCount() > n.NamedChildCount() {
+			for i := uint(0); i < n.ChildCount(); i++ {
+				c := n.Child(i)
+				if !c.IsNamed() {
+					node.Text = c.Utf8Text(src)
+					break
+				}
+			}
 		}
 	}
 	if IncludePositions {
