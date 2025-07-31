@@ -194,6 +194,7 @@
                   },
                   {
                     "kind": "binary_expression",
+                    "text": "\u003c",
                     "children": [
                       {
                         "kind": "identifier",
@@ -207,6 +208,7 @@
                   },
                   {
                     "kind": "update_expression",
+                    "text": "++",
                     "children": [
                       {
                         "kind": "identifier",
@@ -236,6 +238,7 @@
                                   },
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -253,6 +256,7 @@
                           },
                           {
                             "kind": "binary_expression",
+                            "text": "\u003c",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -266,6 +270,7 @@
                           },
                           {
                             "kind": "update_expression",
+                            "text": "++",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -284,9 +289,11 @@
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "==",
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "text": "+",
                                             "children": [
                                               {
                                                 "kind": "subscript_expression",
@@ -332,6 +339,7 @@
                                         "children": [
                                           {
                                             "kind": "assignment_expression",
+                                            "text": "=",
                                             "children": [
                                               {
                                                 "kind": "identifier",
@@ -350,6 +358,7 @@
                                         "children": [
                                           {
                                             "kind": "assignment_expression",
+                                            "text": "=",
                                             "children": [
                                               {
                                                 "kind": "identifier",

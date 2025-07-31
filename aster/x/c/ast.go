@@ -63,6 +63,16 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
+
+	// Capture operator text for expressions where tree-sitter stores it in an
+	// unnamed child field. This information is required when reconstructing the
+	// original source from the AST.
+	switch n.Kind() {
+	case "binary_expression", "assignment_expression", "update_expression", "unary_expression", "pointer_expression":
+		if op := n.ChildByFieldName("operator"); op != nil {
+			node.Text = op.Utf8Text(src)
+		}
+	}
 	if pos {
 		start := n.StartPosition()
 		end := n.EndPosition()
