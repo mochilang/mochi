@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"regexp"
+	"strings"
 
 	mast "mochi/ast"
 )
@@ -19,6 +21,13 @@ func Print(p *Program) (string, error) {
 		return "", err
 	}
 	src := buf.String()
+	// Normalize query keywords that mast.Fprint doesn't handle exactly
+	src = strings.ReplaceAll(src, "union_all", "union all")
+	src = strings.ReplaceAll(src, "left_join", "left join")
+	src = strings.ReplaceAll(src, "right_join", "right join")
+	src = strings.ReplaceAll(src, "outer_join", "outer join")
+	reSort := regexp.MustCompile(`(?m)^(\s*)sort (.+)$`)
+	src = reSort.ReplaceAllString(src, "${1}sort by ${2}")
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src += "\n"
 	}

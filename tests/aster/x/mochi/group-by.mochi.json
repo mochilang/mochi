@@ -1,0 +1,489 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "people",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Alice"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "30"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Paris"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Bob"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "15"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Hanoi"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Charlie"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "65"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Paris"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Diana"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "45"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Hanoi"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Eve"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "70"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Paris"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Frank"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "age"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "22"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "city"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Hanoi"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "stats",
+        "children": [
+          {
+            "kind": "query",
+            "text": "person",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "people"
+                  }
+                ]
+              },
+              {
+                "kind": "group_by",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "city",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "person"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "into",
+                    "text": "g"
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "map",
+                    "children": [
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "city"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "key",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "g"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "count"
+                          },
+                          {
+                            "kind": "call",
+                            "text": "count",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "g"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "entry",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "avg_age"
+                          },
+                          {
+                            "kind": "call",
+                            "text": "avg",
+                            "children": [
+                              {
+                                "kind": "query",
+                                "text": "p",
+                                "children": [
+                                  {
+                                    "kind": "source",
+                                    "children": [
+                                      {
+                                        "kind": "selector",
+                                        "text": "g"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "select",
+                                    "children": [
+                                      {
+                                        "kind": "selector",
+                                        "text": "age",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "p"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- People grouped by city ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "s",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "stats"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "city",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "s"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ": count ="
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "count",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "s"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": ", avg_age ="
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "avg_age",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "s"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

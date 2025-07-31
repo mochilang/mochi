@@ -1,0 +1,5 @@
+--- UNION ALL (with duplicates) ---
+Customer 1 - Alice
+Customer 2 - Bob
+Customer 2 - Bob
+Customer 3 - Charlie
