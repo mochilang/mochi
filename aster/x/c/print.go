@@ -72,6 +72,10 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeBlock(b, n.Children[2], indent+1)
 			b.WriteString(ind)
 			b.WriteString("}\n")
+		} else if n.Text != "" {
+			b.WriteString(ind)
+			b.WriteString(n.Text)
+			b.WriteByte('\n')
 		}
 	case "declaration":
 		b.WriteString(ind)
@@ -196,6 +200,13 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 
 func writeDeclaration(b *bytes.Buffer, n *Node) {
 	if len(n.Children) == 0 {
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		}
+		return
+	}
+	if n.Text != "" && len(n.Children) == 1 && n.Children[0].Kind == "init_declarator" {
+		b.WriteString(n.Text)
 		return
 	}
 	writeExpr(b, n.Children[0], 0)
