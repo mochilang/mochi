@@ -790,6 +790,26 @@ func (c *CmpExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
+	if (c.Op == "<" || c.Op == "<=" || c.Op == ">" || c.Op == ">=") &&
+		(isDynamicExpr(c.Left) || isDynamicExpr(c.Right)) {
+		fmt.Fprint(w, "string.Compare(Convert.ToString(")
+		c.Left.emit(w)
+		fmt.Fprint(w, "), Convert.ToString(")
+		c.Right.emit(w)
+		fmt.Fprint(w, "))")
+		switch c.Op {
+		case "<":
+			fmt.Fprint(w, " < 0")
+		case "<=":
+			fmt.Fprint(w, " <= 0")
+		case ">":
+			fmt.Fprint(w, " > 0")
+		case ">=":
+			fmt.Fprint(w, " >= 0")
+		}
+		fmt.Fprint(w, ")")
+		return
+	}
 	if (c.Op == "==" || c.Op == "!=") && ((isStringExpr(c.Left) && isBoolExpr(c.Right)) || (isBoolExpr(c.Left) && isStringExpr(c.Right))) {
 		if isBoolExpr(c.Left) {
 			fmt.Fprint(w, "Convert.ToString(")
@@ -1178,6 +1198,22 @@ func isStringExpr(e Expr) bool {
 		return true
 	case *FmtTopExpr:
 		return true
+	}
+	return false
+}
+
+func isDynamicExpr(e Expr) bool {
+	t := typeOfExpr(e)
+	if t == "" || t == "object" {
+		return true
+	}
+	if vr, ok := e.(*VarRef); ok {
+		if vt, ok2 := varTypes[vr.Name]; ok2 && (vt == "" || vt == "object") {
+			return true
+		}
+		if vt, ok2 := finalVarTypes[vr.Name]; ok2 && (vt == "" || vt == "object") {
+			return true
+		}
 	}
 	return false
 }
