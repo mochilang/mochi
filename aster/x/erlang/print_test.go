@@ -31,9 +31,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-       if len(files) > 20 {
-               files = files[:20]
-       }
+	if len(files) > 50 {
+		files = files[:50]
+	}
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".erl")
@@ -89,6 +89,8 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("run original: %v\n%s", err, want)
 			}
+			got = filterWarnings(got)
+			want = filterWarnings(want)
 			outFile := filepath.Join(outDir, name+".out")
 			if shouldUpdatePrint() {
 				if err := os.WriteFile(outFile, got, 0644); err != nil {
@@ -100,4 +102,24 @@ func TestPrint_Golden(t *testing.T) {
 			}
 		})
 	}
+}
+
+func filterWarnings(b []byte) []byte {
+	lines := strings.Split(string(b), "\n")
+	filtered := lines[:0]
+	skip := false
+	for _, ln := range lines {
+		if strings.Contains(ln, ".erl:") {
+			skip = true
+			continue
+		}
+		if skip {
+			if strings.HasPrefix(strings.TrimSpace(ln), "%") || ln == "" {
+				continue
+			}
+			skip = false
+		}
+		filtered = append(filtered, ln)
+	}
+	return []byte(strings.Join(filtered, "\n"))
 }

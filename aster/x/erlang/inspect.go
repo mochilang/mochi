@@ -24,17 +24,20 @@ func (p *Program) MarshalJSON() ([]byte, error) {
 }
 
 // InspectWithOption parses Erlang source code using tree-sitter and returns a Program.
+// When AllNodes is true the resulting AST retains every syntactic element so
+// that Print can faithfully reconstruct the original program.  When Positions
+// is true line and column numbers are populated for each node.
 func InspectWithOption(src string, opt Option) (*Program, error) {
-        parser := sitter.NewParser()
-        if err := parser.SetLanguage(sitter.NewLanguage(tserlang.Language())); err != nil {
-                return nil, fmt.Errorf("language: %w", err)
-        }
-        tree := parser.ParseCtx(context.Background(), []byte(src), nil)
-        root := convert(tree.RootNode(), []byte(src), opt)
-        if root == nil {
-                root = &Node{}
-        }
-        return &Program{Root: (*SourceFile)(root)}, nil
+	parser := sitter.NewParser()
+	if err := parser.SetLanguage(sitter.NewLanguage(tserlang.Language())); err != nil {
+		return nil, fmt.Errorf("language: %w", err)
+	}
+	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
+	root := convert(tree.RootNode(), []byte(src), opt)
+	if root == nil {
+		root = &Node{}
+	}
+	return &Program{Root: (*SourceFile)(root)}, nil
 }
 
 // Inspect parses Erlang source code using tree-sitter and returns a Program.
