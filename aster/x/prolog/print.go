@@ -47,6 +47,7 @@ func writeClause(b *strings.Builder, c *Node, indent int) {
 	if body != nil && !(body.Kind == "bool" && body.Text == "true") {
 		b.WriteString(" :-\n")
 		writeBody(b, body, indent+1)
+		b.WriteString(".")
 	} else {
 		b.WriteString(".")
 	}
