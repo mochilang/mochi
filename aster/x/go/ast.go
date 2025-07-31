@@ -138,6 +138,21 @@ func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 		}
 	}
 
+	if n.ChildCount() > n.NamedChildCount() {
+		switch node.Kind {
+		case "binary_expression":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				node.Text = string(src[op.StartByte():op.EndByte()])
+			}
+		case "unary_expression":
+			if n.ChildCount() >= 1 {
+				op := n.Child(0)
+				node.Text = string(src[op.StartByte():op.EndByte()])
+			}
+		}
+	}
+
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
