@@ -116,6 +116,21 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		}
 	}
 
+	if n.ChildCount() > n.NamedChildCount() {
+		switch node.Kind {
+		case "binary", "range":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				node.Text = string(src[op.StartByte():op.EndByte()])
+			}
+		case "unary":
+			if n.ChildCount() >= 2 {
+				op := n.Child(0)
+				node.Text = string(src[op.StartByte():op.EndByte()])
+			}
+		}
+	}
+
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if c := convert(child, src, pos); c != nil {
@@ -132,7 +147,8 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "constant", "integer", "string", "string_content",
-		"hash_key_symbol", "simple_symbol", "true", "false", "comment":
+		"hash_key_symbol", "simple_symbol", "true", "false", "comment",
+		"next", "break", "global_variable":
 		return true
 	default:
 		return false
@@ -145,7 +161,8 @@ func isValueNode(kind string) bool {
 // source code.
 func keepEmptyNode(kind string) bool {
 	switch kind {
-	case "array", "argument_list", "method_parameters", "block_parameters":
+	case "array", "argument_list", "method_parameters", "block_parameters",
+		"next", "break":
 		return true
 	default:
 		return false
