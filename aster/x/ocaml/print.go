@@ -10,7 +10,7 @@ import (
 
 // Print returns OCaml source code for the given Program.
 func Print(p *Program) (string, error) {
-	if p == nil {
+	if p == nil || p.File == nil {
 		return "", fmt.Errorf("nil program")
 	}
 	var b bytes.Buffer

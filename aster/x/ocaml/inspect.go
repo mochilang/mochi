@@ -21,9 +21,9 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	}
 	root := convert(tree.RootNode(), data, includePos)
 	if root == nil {
-		return &Program{}, nil
+		root = &Node{}
 	}
-	return &Program{File: CompilationUnit{Node: *root}}, nil
+	return &Program{File: &CompilationUnit{Node: *root}}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program ensuring stable field order.
