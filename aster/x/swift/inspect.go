@@ -12,6 +12,9 @@ import (
 // Program represents a parsed Swift source file.
 type Program struct {
 	File *SourceFile `json:"file"`
+	// Src holds the original Swift source code used to generate the AST.
+	// It is omitted from the marshalled JSON output.
+	Src string `json:"-"`
 }
 
 // Option controls how Inspect behaves. When Positions is true the
@@ -34,7 +37,10 @@ func Inspect(src string, opts ...Option) (*Program, error) {
 	p.SetLanguage(sitter.NewLanguage(tsswift.Language()))
 	b := []byte(src)
 	tree := p.Parse(b, nil)
-	return &Program{File: ConvertFile(tree.RootNode(), b, withPos, withComments)}, nil
+	return &Program{
+		File: ConvertFile(tree.RootNode(), b, withPos, withComments),
+		Src:  src,
+	}, nil
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output.
