@@ -304,20 +304,29 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	switch n.Kind {
 	case "identifier", "integer_literal", "real_literal", "boolean_literal", "implicit_type", "predefined_type", "modifier":
 		b.WriteString(n.Text)
-       case "member_access_expression":
-               if len(n.Children) == 2 {
-                       writeExpr(b, n.Children[0], indentLevel)
-                       b.WriteByte('.')
-                       writeExpr(b, n.Children[1], indentLevel)
-               }
-       case "qualified_name":
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteByte('.')
-                       }
-                       writeExpr(b, c, indentLevel)
-               }
-       case "invocation_expression":
+	case "string_literal":
+		b.WriteByte('"')
+		for _, c := range n.Children {
+			b.WriteString(c.Text)
+		}
+		if n.Text != "" && len(n.Children) == 0 {
+			b.WriteString(n.Text)
+		}
+		b.WriteByte('"')
+	case "member_access_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteByte('.')
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "qualified_name":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('.')
+			}
+			writeExpr(b, c, indentLevel)
+		}
+	case "invocation_expression":
 		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indentLevel)
 			if len(n.Children) > 1 {
@@ -376,6 +385,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			op := n.Text
 			if op == "" {
 				op = "+"
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indentLevel)
+			op := n.Text
+			if op == "" {
+				op = "="
 			}
 			b.WriteByte(' ')
 			b.WriteString(op)
