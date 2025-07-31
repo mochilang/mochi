@@ -2,9 +2,9 @@
 
 Generated files for C# programs live under `tests/aster/x/cs`.
 
-Last updated: 2025-07-31 15:54 GMT+7
+Last updated: 2025-07-31 20:46 GMT+7
 
-## Golden Test Checklist (20/20)
+## Golden Test Checklist (25/25)
 - [x] append_builtin.cs
 - [x] avg_builtin.cs
 - [x] basic_compare.cs
@@ -25,3 +25,8 @@ Last updated: 2025-07-31 15:54 GMT+7
 - [x] for_list_collection.cs
 - [x] for_loop.cs
 - [x] for_map_collection.cs
+- [x] fun_call.cs
+- [x] fun_expr_in_let.cs
+- [x] fun_three_args.cs
+- [x] go_auto.cs
+- [x] group_by.cs

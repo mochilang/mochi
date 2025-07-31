@@ -37,8 +37,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 20 {
-		files = files[:20]
+        if len(files) > 25 {
+                files = files[:25]
 	}
 
 	for _, src := range files {
@@ -88,7 +88,8 @@ func TestPrint_Golden(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(tmp, "Program.cs"), []byte(out), 0644); err != nil {
 				t.Fatal(err)
 			}
-			cmd := exec.Command("dotnet", "run", "--project", proj)
+        cmd := exec.Command("dotnet", "run", "--project", proj)
+        cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, got)
@@ -98,7 +99,9 @@ func TestPrint_Golden(t *testing.T) {
 			proj2 := filepath.Join(tmp2, "orig.csproj")
 			_ = os.WriteFile(proj2, []byte(csproj), 0644)
 			_ = os.WriteFile(filepath.Join(tmp2, "Program.cs"), data, 0644)
-			want, err := exec.Command("dotnet", "run", "--project", proj2).CombinedOutput()
+        cmd2 := exec.Command("dotnet", "run", "--project", proj2)
+        cmd2.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
+        want, err := cmd2.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, want)
 				return
