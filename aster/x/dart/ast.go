@@ -71,7 +71,12 @@ func isValueNode(kind string) bool {
 		"string_literal", "escape_sequence", "comment",
 		"true", "false", "void_type", "null",
 		"final_builtin", "const_builtin", "inferred_type", "this",
-		"required":
+		"required",
+		// operators that influence printing
+		"additive_operator", "multiplicative_operator",
+		"relational_operator", "equality_operator",
+		"minus_operator", "negation_operator", "tilde_operator",
+		"assignment_operator":
 		return true
 	default:
 		return false
