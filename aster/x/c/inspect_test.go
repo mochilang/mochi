@@ -54,9 +54,9 @@ func TestInspectGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-       if len(files) > 25 {
-               files = files[:25]
-       }
+	if len(files) > 50 {
+		files = files[:50]
+	}
 
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".c")

@@ -153,15 +153,11 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(ind)
 			b.WriteString("if (")
 			writeExpr(b, n.Children[0], 0)
-			b.WriteString(") {\n")
-			writeBlock(b, n.Children[1], indent+1)
-			b.WriteString(ind)
-			b.WriteString("}")
+			b.WriteString(") ")
+			writeBlockOrStmt(b, n.Children[1], indent)
 			if len(n.Children) >= 3 {
-				b.WriteString(" else {\n")
-				writeBlock(b, n.Children[2], indent+1)
-				b.WriteString(ind)
-				b.WriteString("}")
+				b.WriteString(" else ")
+				writeBlockOrStmt(b, n.Children[2], indent)
 			}
 			b.WriteByte('\n')
 		}
@@ -182,6 +178,28 @@ func writeBlock(b *bytes.Buffer, n *Node, indent int) {
 	for _, c := range n.Children {
 		writeStmt(b, c, indent)
 	}
+}
+
+func writeBlockOrStmt(b *bytes.Buffer, n *Node, indent int) {
+	if n == nil {
+		b.WriteString("{}")
+		return
+	}
+	if n.Kind == "else_clause" && len(n.Children) > 0 {
+		writeBlockOrStmt(b, n.Children[0], indent)
+		return
+	}
+	if n.Kind == "compound_statement" {
+		b.WriteString("{\n")
+		writeBlock(b, n, indent+1)
+		b.WriteString(strings.Repeat("    ", indent))
+		b.WriteString("}")
+		return
+	}
+	b.WriteString("{\n")
+	writeStmt(b, n, indent+1)
+	b.WriteString(strings.Repeat("    ", indent))
+	b.WriteString("}")
 }
 
 func writeFieldDeclList(b *bytes.Buffer, n *Node, indent int) {
@@ -434,8 +452,38 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "pointer_expression":
 		if len(n.Children) > 0 {
-			b.WriteByte('*')
+			op := n.Text
+			if op == "" {
+				op = "*"
+			}
+			b.WriteString(op)
 			writeExpr(b, n.Children[0], indent)
+		}
+	case "array_declarator":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('[')
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indent)
+		}
+		b.WriteByte(']')
+	case "unary_expression":
+		if len(n.Children) == 1 {
+			op := n.Text
+			if op == "" {
+				op = "-"
+			}
+			b.WriteString(op)
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indent)
 		}
 	case "cast_expression":
 		if len(n.Children) == 2 {
@@ -461,6 +509,18 @@ func writeArgumentList(b *bytes.Buffer, n *Node) {
 }
 
 func writeBinaryExpr(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) == 1 {
+		writeExpr(b, n.Children[0], indent)
+		op := n.Text
+		if op == "" {
+			op = "+"
+		}
+		b.WriteByte(' ')
+		b.WriteString(op)
+		b.WriteByte(' ')
+		b.WriteString("0")
+		return
+	}
 	if len(n.Children) != 2 {
 		for i, c := range n.Children {
 			if i > 0 {
