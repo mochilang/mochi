@@ -1,0 +1,101 @@
+{
+  "root": {
+    "kind": "source",
+    "children": [
+      {
+        "kind": "binary_operator",
+        "text": "=",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "f"
+          },
+          {
+            "kind": "anonymous_function",
+            "children": [
+              {
+                "kind": "stab_clause",
+                "children": [
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "x"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "body",
+                    "children": [
+                      {
+                        "kind": "binary_operator",
+                        "text": "*",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "x"
+                          },
+                          {
+                            "kind": "integer",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "children": [
+          {
+            "kind": "dot",
+            "children": [
+              {
+                "kind": "alias",
+                "text": "IO"
+              },
+              {
+                "kind": "identifier",
+                "text": "puts"
+              }
+            ]
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "call",
+                "children": [
+                  {
+                    "kind": "dot",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "f"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "integer",
+                        "text": "5"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

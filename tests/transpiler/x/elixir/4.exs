@@ -1,0 +1,1 @@
+Enum.each([1, 2, 3], fn x -> IO.puts(x) end)
