@@ -68,6 +68,28 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" ")
 			writeBlock(b, n.Children[2], indent+1, true)
 		}
+	case "anonymous_function":
+		if len(n.Children) >= 2 {
+			b.WriteString("function")
+			idx := 0
+			if n.Children[0].Kind == "formal_parameters" {
+				writeParameters(b, n.Children[0])
+				idx = 1
+			} else {
+				b.WriteString("()")
+			}
+			if idx < len(n.Children) && n.Children[idx].Kind == "anonymous_function_use_clause" {
+				b.WriteString(" use ")
+				writeUseClause(b, n.Children[idx])
+				idx++
+			}
+			b.WriteByte(' ')
+			if idx < len(n.Children) {
+				writeBlock(b, n.Children[idx], indent+1, true)
+			} else {
+				writeBlock(b, &Node{}, indent+1, true)
+			}
+		}
 	case "for_statement":
 		if len(n.Children) == 4 {
 			writeIndent(b, indent)
@@ -166,6 +188,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "simple_parameter":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
+		}
+	case "anonymous_function":
+		b.WriteString("function")
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "formal_parameters" {
+			writeParameters(b, n.Children[0])
+			idx = 1
+		} else {
+			b.WriteString("()")
+		}
+		if idx < len(n.Children) && n.Children[idx].Kind == "anonymous_function_use_clause" {
+			b.WriteString(" use ")
+			writeUseClause(b, n.Children[idx])
+			idx++
+		}
+		b.WriteByte(' ')
+		if idx < len(n.Children) {
+			writeBlock(b, n.Children[idx], indent+1, true)
+		} else {
+			writeBlock(b, &Node{}, indent+1, true)
 		}
 	case "function_call_expression":
 		if len(n.Children) >= 2 {
@@ -267,6 +309,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeArguments(b *bytes.Buffer, n *Node) {
+	b.WriteByte('(')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeExpr(b, c, 0)
+	}
+	b.WriteByte(')')
+}
+
+func writeUseClause(b *bytes.Buffer, n *Node) {
 	b.WriteByte('(')
 	for i, c := range n.Children {
 		if i > 0 {
