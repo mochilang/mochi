@@ -1,0 +1,14 @@
+run: exit status 254
+../../../tests/transpiler/x/dart/outer_join.dart:49:3: Error: A value of type 'List<dynamic>' can't be assigned to a variable of type 'List<Result>'.
+ - 'List' is from 'dart:core'.
+ - 'Result' is from '../../../tests/transpiler/x/dart/outer_join.dart'.
+})();
+  ^
+../../../tests/transpiler/x/dart/outer_join.dart:52:13: Error: A value of type 'Order' can't be assigned to a variable of type 'bool'.
+ - 'Order' is from '../../../tests/transpiler/x/dart/outer_join.dart'.
+    if (row.order) {
+            ^
+../../../tests/transpiler/x/dart/outer_join.dart:53:13: Error: A value of type 'Customer' can't be assigned to a variable of type 'bool'.
+ - 'Customer' is from '../../../tests/transpiler/x/dart/outer_join.dart'.
+    if (row.customer) {
+            ^
