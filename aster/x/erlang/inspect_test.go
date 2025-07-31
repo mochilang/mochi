@@ -54,18 +54,9 @@ func TestInspectGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		switch base {
-		case "append_builtin.erl", "avg_builtin.erl", "basic_compare.erl", "binary_precedence.erl", "bool_chain.erl":
-			selected = append(selected, f)
-		}
-		if len(selected) == 5 {
-			break
-		}
+	if len(files) > 10 {
+		files = files[:10]
 	}
-	files = selected
 
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".erl")
