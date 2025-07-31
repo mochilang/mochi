@@ -14,14 +14,24 @@ import (
 // serialisation. Only leaves that carry a value keep their text to keep the
 // output small. Position fields are omitted when zero so callers can opt out of
 // them.
+// Node mirrors a tree-sitter node in a compact form suitable for JSON
+// serialisation. Position fields are omitted when zero so callers can choose
+// whether to include them via the Option argument in Inspect.
 type Node struct {
-	Kind     string `json:"kind"`
-	Text     string `json:"text,omitempty"`
-	Start    int    `json:"start,omitempty"`
-	End      int    `json:"end,omitempty"`
-	StartCol int    `json:"startCol,omitempty"`
-	EndCol   int    `json:"endCol,omitempty"`
-	Children []Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	End      int     `json:"end,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
+}
+
+// Option controls how the AST is generated.
+// When Positions is true the Start/End fields of nodes are populated,
+// otherwise they remain zero and are omitted from the JSON output.
+type Option struct {
+	Positions bool
 }
 
 // The following aliases give a slightly more structured view of the Lua syntax
@@ -33,27 +43,40 @@ type (
 	Field               Node
 	FieldList           Node
 	ForGeneric          Node
+	ForNumeric          Node
 	ForStatement        Node
+	Function            Node
 	FunctionArguments   Node
+	FunctionBody        Node
 	FunctionCall        Node
+	FunctionName        Node
+	FunctionStatement   Node
 	Identifier          Node
 	IdentifierList      Node
-	Null                Node
+	IfStatement         Node
 	Number              Node
+	ParameterList       Node
+	ReturnStatement     Node
 	String              Node
 	TableConstructor    Node
+	UnaryOperation      Node
 	VariableDeclaration Node
 	VariableDeclarator  Node
+	BinaryOperation     Node
 )
 
-// convertNode converts a tree-sitter node into our Node representation. Pure
-// syntax leaves (keywords, punctuation) are dropped to keep the resulting JSON
-// compact.
-func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
-	start := n.StartPosition()
-	end := n.EndPosition()
-	node := Node{Kind: n.Kind()}
-	if withPos {
+// convert recursively converts a tree-sitter node into our Node representation.
+// Pure syntax leaves (keywords, punctuation) are dropped so the resulting JSON
+// stays compact.
+func convert(n *sitter.Node, src []byte, opt Option) *Node {
+	if n == nil {
+		return nil
+	}
+
+	node := &Node{Kind: n.Kind()}
+	if opt.Positions {
+		start := n.StartPosition()
+		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
@@ -62,39 +85,38 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (Node, bool) {
 
 	if n.NamedChildCount() == 0 {
 		if !isValueNode(n.Kind()) {
-			return Node{}, false
+			return nil
 		}
 		text := n.Utf8Text(src)
 		if strings.TrimSpace(text) == "" {
-			return Node{}, false
+			return nil
 		}
 		node.Text = text
-		return node, true
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
-		child := n.NamedChild(uint(i))
+	for i := uint(0); i < n.NamedChildCount(); i++ {
+		child := n.NamedChild(i)
 		if child == nil {
 			continue
 		}
-		if cn, ok := convertNode(child, src, withPos); ok {
+		if cn := convert(child, src, opt); cn != nil {
 			node.Children = append(node.Children, cn)
 		}
 	}
 
 	if len(node.Children) == 0 && node.Text == "" {
-		return Node{}, false
+		return nil
 	}
-	return node, true
+	return node
 }
 
 // convertProgram converts the tree-sitter root node into a Program structure.
-func convertProgram(root *sitter.Node, src []byte, withPos bool) *Program {
-	n, ok := convertNode(root, src, withPos)
-	if !ok {
+func convertProgram(root *sitter.Node, src []byte, opt Option) *Program {
+	n := convert(root, src, opt)
+	if n == nil {
 		return &Program{}
 	}
-	pn := ProgramNode(n)
+	pn := ProgramNode(*n)
 	return &Program{Root: &pn}
 }
 
