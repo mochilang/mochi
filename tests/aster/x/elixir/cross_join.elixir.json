@@ -8,6 +8,7 @@
       },
       {
         "kind": "binary_operator",
+        "text": "=",
         "children": [
           {
             "kind": "identifier",
@@ -160,6 +161,7 @@
       },
       {
         "kind": "binary_operator",
+        "text": "=",
         "children": [
           {
             "kind": "identifier",
@@ -336,6 +338,7 @@
       },
       {
         "kind": "binary_operator",
+        "text": "=",
         "children": [
           {
             "kind": "identifier",
@@ -353,6 +356,7 @@
                 "children": [
                   {
                     "kind": "binary_operator",
+                    "text": "\u003c-",
                     "children": [
                       {
                         "kind": "identifier",
@@ -366,6 +370,7 @@
                   },
                   {
                     "kind": "binary_operator",
+                    "text": "\u003c-",
                     "children": [
                       {
                         "kind": "identifier",
