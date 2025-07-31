@@ -5,6 +5,7 @@ package rkt
 import (
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 // Print returns Racket source code for the given Program.
@@ -13,7 +14,7 @@ func Print(p *Program) (string, error) {
 		return "", fmt.Errorf("nil program")
 	}
 	var b bytes.Buffer
-	writeProgram(&b, p.Root)
+	writeProgram(&b, p.Root, 0)
 	out := b.String()
 	if len(out) > 0 && out[len(out)-1] != '\n' {
 		out += "\n"
@@ -21,20 +22,23 @@ func Print(p *Program) (string, error) {
 	return out, nil
 }
 
-func writeProgram(b *bytes.Buffer, n *ProgramNode) {
-	for _, c := range n.Children {
-		writeTop(b, c)
+func writeProgram(b *bytes.Buffer, n *ProgramNode, indent int) {
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteByte('\n')
+		}
+		writeTop(b, c, indent)
 	}
 }
 
-func writeTop(b *bytes.Buffer, n *Node) {
-	writeNode(b, n)
+func writeTop(b *bytes.Buffer, n *Node, indent int) {
+	writeNode(b, n, indent)
 	if b.Len() == 0 || b.Bytes()[b.Len()-1] != '\n' {
 		b.WriteByte('\n')
 	}
 }
 
-func writeNode(b *bytes.Buffer, n *Node) {
+func writeNode(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "comment", "number", "string", "symbol":
 		b.WriteString(n.Text)
@@ -57,15 +61,20 @@ func writeNode(b *bytes.Buffer, n *Node) {
 		b.WriteByte('(')
 		for i, c := range n.Children {
 			if i > 0 {
-				b.WriteByte(' ')
+				if c.Kind == "list" {
+					b.WriteByte('\n')
+					b.WriteString(strings.Repeat("  ", indent+1))
+				} else {
+					b.WriteByte(' ')
+				}
 			}
-			writeNode(b, c)
+			writeNode(b, c, indent+1)
 		}
 		b.WriteByte(')')
 	case "quote":
 		b.WriteByte('\'')
 		if len(n.Children) > 0 {
-			writeNode(b, n.Children[0])
+			writeNode(b, n.Children[0], indent)
 		} else if n.Text != "" {
 			b.WriteString(n.Text)
 		}

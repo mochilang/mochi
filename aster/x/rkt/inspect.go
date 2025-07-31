@@ -3,6 +3,8 @@
 package rkt
 
 import (
+	"encoding/json"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 	racket "github.com/tree-sitter/tree-sitter-racket/bindings/go"
 )
@@ -10,6 +12,12 @@ import (
 // Program represents a parsed Racket source file.
 type Program struct {
 	Root *ProgramNode `json:"root"`
+}
+
+// MarshalJSON implements json.Marshaler for Program to ensure stable output order.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }
 
 // Options control how Inspect produces the AST.
