@@ -75,6 +75,36 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] print_hello.ts
 - [x] pure_fold.ts
 - [x] pure_global_fold.ts
+- [x] python_auto.ts
+- [x] python_math.ts
+- [x] query_sum_select.ts
+- [x] record_assign.ts
+- [x] right_join.ts
+- [x] save_jsonl_stdout.ts
+- [x] short_circuit.ts
+- [x] slice.ts
+- [x] sort_stable.ts
+- [x] str_builtin.ts
+- [x] string_compare.ts
+- [x] string_concat.ts
+- [x] string_contains.ts
+- [x] string_in_operator.ts
+- [x] string_index.ts
+- [x] string_prefix_slice.ts
+- [x] substring_builtin.ts
+- [x] sum_builtin.ts
+- [x] tail_recursion.ts
+- [x] test_block.ts
+- [x] tree_sum.ts
+- [x] two-sum.ts
+- [x] typed_let.ts
+- [x] typed_var.ts
+- [x] unary_neg.ts
+- [x] update_stmt.ts
+- [x] user_type_literal.ts
+- [x] values_builtin.ts
+- [x] var_assignment.ts
+- [x] while_loop.ts
 
-Completed 75/75 on 2025-07-31 18:35 GMT+7.
+Completed 105/105 on 2025-07-31 19:18 GMT+7.
 

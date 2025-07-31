@@ -125,37 +125,37 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 				writeStmt(b, body, indent+1)
 			}
 		}
-        case "if_statement":
-                if len(n.Children) >= 2 {
-                        b.WriteString(ind)
-                        b.WriteString("if (")
-                        writeExpr(b, n.Children[0], indent)
-                        b.WriteString(")")
-                        body := n.Children[1]
-                        if body.Kind == "statement_block" {
-                                b.WriteByte(' ')
-                                writeBlock(b, body, indent)
-                                b.WriteByte('\n')
-                        } else {
-                                b.WriteByte('\n')
-                                writeStmt(b, body, indent+1)
-                        }
-                        for _, c := range n.Children[2:] {
-                                if c.Kind != "else_clause" || len(c.Children) == 0 {
-                                        continue
-                                }
-                                b.WriteString(ind)
-                                b.WriteString("else ")
-                                child := c.Children[0]
-                                if child.Kind == "statement_block" {
-                                        writeBlock(b, child, indent)
-                                        b.WriteByte('\n')
-                                } else {
-                                        b.WriteByte('\n')
-                                        writeStmt(b, child, indent+1)
-                                }
-                        }
-                }
+	case "if_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("if (")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(")")
+			body := n.Children[1]
+			if body.Kind == "statement_block" {
+				b.WriteByte(' ')
+				writeBlock(b, body, indent)
+				b.WriteByte('\n')
+			} else {
+				b.WriteByte('\n')
+				writeStmt(b, body, indent+1)
+			}
+			for _, c := range n.Children[2:] {
+				if c.Kind != "else_clause" || len(c.Children) == 0 {
+					continue
+				}
+				b.WriteString(ind)
+				b.WriteString("else ")
+				child := c.Children[0]
+				if child.Kind == "statement_block" {
+					writeBlock(b, child, indent)
+					b.WriteByte('\n')
+				} else {
+					b.WriteByte('\n')
+					writeStmt(b, child, indent+1)
+				}
+			}
+		}
 	case "break_statement":
 		b.WriteString(ind)
 		b.WriteString("break\n")
@@ -173,6 +173,30 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 				b.WriteByte('\n')
 			default:
 				writeStmt(b, child, indent)
+			}
+		}
+	case "type_alias_declaration":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("type ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(";\n")
+		}
+	case "while_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("while ")
+			writeExpr(b, n.Children[0], indent)
+			body := n.Children[1]
+			if body.Kind == "statement_block" {
+				b.WriteByte(' ')
+				writeBlock(b, body, indent)
+				b.WriteByte('\n')
+			} else {
+				b.WriteByte('\n')
+				writeStmt(b, body, indent+1)
 			}
 		}
 	case "interface_declaration":
@@ -389,6 +413,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "object_type":
 		writeInterfaceBody(b, n, indent)
+	case "union_type":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(" | ")
+			}
+			writeExpr(b, c, indent)
+		}
+	case "literal_type":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "pair":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -454,6 +489,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			b.WriteString(op)
 			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "augmented_assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			op := n.Text
+			if op == "" {
+				op = "+="
+			}
+			b.WriteString(" ")
+			b.WriteString(op)
+			b.WriteString(" ")
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "update_expression":

@@ -1,6 +1,7 @@
 package ts
 
 import (
+	"encoding/json"
 	sitter "github.com/tree-sitter/go-tree-sitter"
 	tstypescript "github.com/tree-sitter/tree-sitter-typescript/bindings/go"
 )
@@ -22,5 +23,14 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	p.SetLanguage(sitter.NewLanguage(tstypescript.LanguageTypescript()))
 	tree := p.Parse([]byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), opt)
+	if root == nil {
+		root = &Node{}
+	}
 	return &Program{Root: (*ProgramNode)(root), Source: src}, nil
+}
+
+// MarshalJSON implements json.Marshaler for Program to provide stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }

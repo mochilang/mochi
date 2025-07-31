@@ -31,21 +31,23 @@ func TestPrint_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-    sort.Strings(files)
-    if len(files) > 75 {
-            files = files[:75]
-    }
-    if len(files) > 50 {
-            files = files[50:75]
-    }
+	sort.Strings(files)
+	if len(files) > 120 {
+		files = files[:120]
+	}
+	if len(files) > 75 {
+		files = files[75:]
+	} else {
+		files = []string{}
+	}
 	var filtered []string
-        for _, f := range files {
-                base := filepath.Base(f)
-                if strings.Contains(base, "bench_block") || strings.Contains(base, "load_jsonl") || strings.Contains(base, "load_yaml") {
-                        continue
-                }
-                filtered = append(filtered, f)
-        }
+	for _, f := range files {
+		base := filepath.Base(f)
+		if strings.Contains(base, "bench_block") || strings.Contains(base, "load_jsonl") || strings.Contains(base, "load_yaml") {
+			continue
+		}
+		filtered = append(filtered, f)
+	}
 	files = filtered
 
 	for idx, src := range files {
