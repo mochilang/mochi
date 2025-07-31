@@ -807,6 +807,17 @@ func (f *FieldExpr) emit(w io.Writer) {
 	f.Receiver.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, rustIdent(f.Name))
+	rt := inferType(f.Receiver)
+	if strings.HasPrefix(rt, "&") {
+		rt = rt[1:]
+		if st, ok := structTypes[rt]; ok {
+			if ft, ok2 := st.Fields[f.Name]; ok2 {
+				if types.IsStructType(ft) {
+					io.WriteString(w, ".clone()")
+				}
+			}
+		}
+	}
 }
 
 // MethodCallExpr represents `receiver.method(args...)`.
@@ -939,11 +950,18 @@ func (a *AppendExpr) emit(w io.Writer) {
 	} else {
 		if _, ok := a.Elem.(*NameRef); ok {
 			et := inferType(a.Elem)
-			if et != "i64" && et != "bool" && et != "f64" && !strings.HasPrefix(et, "&") {
-				a.Elem.emit(w)
+			clone := false
+			if strings.HasPrefix(et, "&") {
+				base := strings.TrimPrefix(et, "&")
+				if _, ok := structTypes[base]; ok {
+					clone = true
+				}
+			} else if et != "i64" && et != "bool" && et != "f64" {
+				clone = true
+			}
+			a.Elem.emit(w)
+			if clone {
 				io.WriteString(w, ".clone()")
-			} else {
-				a.Elem.emit(w)
 			}
 		} else {
 			a.Elem.emit(w)
@@ -1277,6 +1295,13 @@ func (v *VarDecl) emit(w io.Writer) {
 				io.WriteString(w, " as i64)")
 				return
 			}
+			if _, ok := v.Expr.(*NameRef); ok && v.Type != "" && !strings.HasPrefix(v.Type, "&") {
+				if _, ok2 := structTypes[v.Type]; ok2 {
+					v.Expr.emit(w)
+					io.WriteString(w, ".clone()")
+					return
+				}
+			}
 			v.Expr.emit(w)
 		}
 	} else if v.Type != "" {
@@ -1411,6 +1436,22 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 		s.Target.emit(w)
 	}
 	io.WriteString(w, " = ")
+	typ := inferType(s.Target)
+	if typ == "String" {
+		switch v := s.Value.(type) {
+		case *StringLit:
+			io.WriteString(w, "String::from(")
+			v.emit(w)
+			io.WriteString(w, ")")
+			return
+		case *NameRef:
+			if inferType(s.Value) == "&str" {
+				v.emit(w)
+				io.WriteString(w, ".to_string()")
+				return
+			}
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -2686,6 +2727,33 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		// iterator variable as a signed integer to avoid numerous
 		// conversions when used in arithmetic expressions.
 		varTypes[n.Name] = "i64"
+	} else if _, ok := varTypes[n.Name]; !ok {
+		if strings.HasPrefix(itType, "Vec<") {
+			typ := strings.TrimSuffix(strings.TrimPrefix(itType, "Vec<"), ">")
+			if typ == "String" {
+				varTypes[n.Name] = "String"
+				stringVars[n.Name] = true
+				byRef = false
+			} else if byRef {
+				varTypes[n.Name] = "&" + typ
+			} else {
+				varTypes[n.Name] = typ
+			}
+		} else if strings.HasPrefix(itType, "HashMap<") {
+			parts := strings.TrimPrefix(itType, "HashMap<")
+			if idx := strings.Index(parts, ","); idx > 0 {
+				kt := strings.TrimSpace(parts[:idx])
+				iter = &MethodCallExpr{Receiver: iter, Name: "keys"}
+				if kt == "String" || kt == "&str" {
+					varTypes[n.Name] = "String"
+					stringVars[n.Name] = true
+				} else {
+					varTypes[n.Name] = kt
+				}
+			}
+		} else {
+			varTypes[n.Name] = "i64"
+		}
 	}
 	body := make([]Stmt, 0, len(n.Body))
 	for _, st := range n.Body {
