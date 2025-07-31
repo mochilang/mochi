@@ -68,6 +68,7 @@ type Options struct {
 func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "type_identifier", "decimal_integer_literal",
+		"decimal_floating_point_literal",
 		"string_literal", "escape_sequence", "comment",
 		"true", "false", "void_type", "null",
 		"final_builtin", "const_builtin", "inferred_type", "this",
