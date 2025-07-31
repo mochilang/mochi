@@ -64,6 +64,7 @@
                       },
                       {
                         "kind": "token_tree",
+                        "text": "(\"{}\", \"hello\")",
                         "start": 3,
                         "end": 3,
                         "startCol": 12,
