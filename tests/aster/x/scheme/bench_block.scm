@@ -97,6 +97,6 @@
               (- end7 start6) 1000)))
         (begin
           (display
-            (string-append
-              (number->string dur8)))
+            (string-append "{\n  \"duration_us\": "
+              (number->string dur8) ",\n  \"memory_bytes\": 0,\n  \"name\": \"simple\"\n}"))
           (newline))))))
