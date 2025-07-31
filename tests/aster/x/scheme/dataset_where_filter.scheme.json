@@ -1,0 +1,801 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "people"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Alice\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"age\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "30"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Bob\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"age\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "15"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Charlie\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"age\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "65"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Diana\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"age\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "45"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "adults"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res5"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "person"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "if"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "\u003e="
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "hash-table-ref"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "person"
+                                    },
+                                    {
+                                      "kind": "string",
+                                      "text": "\"age\""
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "18"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "set!"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "res5"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "append"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "res5"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "list"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "alist-\u003ehash-table"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "list"
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "cons"
+                                                    },
+                                                    {
+                                                      "kind": "string",
+                                                      "text": "\"name\""
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "person"
+                                                        },
+                                                        {
+                                                          "kind": "string",
+                                                          "text": "\"name\""
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "cons"
+                                                    },
+                                                    {
+                                                      "kind": "string",
+                                                      "text": "\"age\""
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "hash-table-ref"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "person"
+                                                        },
+                                                        {
+                                                          "kind": "string",
+                                                          "text": "\"age\""
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "cons"
+                                                    },
+                                                    {
+                                                      "kind": "string",
+                                                      "text": "\"is_senior\""
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "\u003e="
+                                                        },
+                                                        {
+                                                          "kind": "list",
+                                                          "children": [
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "hash-table-ref"
+                                                            },
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "person"
+                                                            },
+                                                            {
+                                                              "kind": "string",
+                                                              "text": "\"age\""
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": "number",
+                                                          "text": "60"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "quote"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "nil"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "people"
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "res5"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "string",
+          "text": "\"--- Adults ---\""
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "for-each"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lambda"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "person"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "person"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\"is\""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "person"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"age\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-ref"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "person"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"is_senior\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\" (senior)\n          \""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "symbol",
+          "text": "adults"
+        }
+      ]
+    }
+  ]
+}
