@@ -56,59 +56,15 @@
       "kind": "clause",
       "children": [
         {
-          "kind": "fib",
+          "kind": "print_evens",
           "children": [
             {
-              "kind": "number",
-              "text": "0"
+              "kind": "var",
+              "text": "I"
             },
-            {
-              "kind": "number",
-              "text": "0"
-            }
-          ]
-        },
-        {
-          "kind": "bool",
-          "text": "true"
-        }
-      ]
-    },
-    {
-      "kind": "clause",
-      "children": [
-        {
-          "kind": "fib",
-          "children": [
-            {
-              "kind": "number",
-              "text": "1"
-            },
-            {
-              "kind": "number",
-              "text": "1"
-            }
-          ]
-        },
-        {
-          "kind": "bool",
-          "text": "true"
-        }
-      ]
-    },
-    {
-      "kind": "clause",
-      "children": [
-        {
-          "kind": "fib",
-          "children": [
             {
               "kind": "var",
               "text": "N"
-            },
-            {
-              "kind": "var",
-              "text": "F"
             }
           ]
         },
@@ -116,15 +72,132 @@
           "kind": ",",
           "children": [
             {
-              "kind": "\u003e",
+              "kind": "=\u003c",
               "children": [
                 {
                   "kind": "var",
-                  "text": "N"
+                  "text": "I"
                 },
                 {
-                  "kind": "number",
-                  "text": "1"
+                  "kind": "var",
+                  "text": "N"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "0"
+                    },
+                    {
+                      "kind": "mod",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "I"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "I"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "is",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "I1"
+                            },
+                            {
+                              "kind": "+",
+                              "children": [
+                                {
+                                  "kind": "var",
+                                  "text": "I"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "1"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "print_evens",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "I1"
+                            },
+                            {
+                              "kind": "var",
+                              "text": "N"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "print_evens",
+          "children": [
+            {
+              "kind": "var",
+              "text": "I"
+            },
+            {
+              "kind": "var",
+              "text": "N"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003c",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "I"
+                },
+                {
+                  "kind": "var",
+                  "text": "N"
                 }
               ]
             },
@@ -136,14 +209,14 @@
                   "children": [
                     {
                       "kind": "var",
-                      "text": "N1"
+                      "text": "I1"
                     },
                     {
-                      "kind": "-",
+                      "kind": "+",
                       "children": [
                         {
                           "kind": "var",
-                          "text": "N"
+                          "text": "I"
                         },
                         {
                           "kind": "number",
@@ -154,87 +227,15 @@
                   ]
                 },
                 {
-                  "kind": ",",
+                  "kind": "print_evens",
                   "children": [
                     {
-                      "kind": "is",
-                      "children": [
-                        {
-                          "kind": "var",
-                          "text": "N2"
-                        },
-                        {
-                          "kind": "-",
-                          "children": [
-                            {
-                              "kind": "var",
-                              "text": "N"
-                            },
-                            {
-                              "kind": "number",
-                              "text": "2"
-                            }
-                          ]
-                        }
-                      ]
+                      "kind": "var",
+                      "text": "I1"
                     },
                     {
-                      "kind": ",",
-                      "children": [
-                        {
-                          "kind": "fib",
-                          "children": [
-                            {
-                              "kind": "var",
-                              "text": "N1"
-                            },
-                            {
-                              "kind": "var",
-                              "text": "F1"
-                            }
-                          ]
-                        },
-                        {
-                          "kind": ",",
-                          "children": [
-                            {
-                              "kind": "fib",
-                              "children": [
-                                {
-                                  "kind": "var",
-                                  "text": "N2"
-                                },
-                                {
-                                  "kind": "var",
-                                  "text": "F2"
-                                }
-                              ]
-                            },
-                            {
-                              "kind": "is",
-                              "children": [
-                                {
-                                  "kind": "var",
-                                  "text": "F"
-                                },
-                                {
-                                  "kind": "+",
-                                  "children": [
-                                    {
-                                      "kind": "var",
-                                      "text": "F1"
-                                    },
-                                    {
-                                      "kind": "var",
-                                      "text": "F2"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
+                      "kind": "var",
+                      "text": "N"
                     }
                   ]
                 }
@@ -248,32 +249,40 @@
       "kind": "clause",
       "children": [
         {
+          "kind": "print_evens",
+          "children": [
+            {
+              "kind": "var",
+              "text": "_"
+            },
+            {
+              "kind": "var",
+              "text": "_"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
           "kind": "main"
         },
         {
-          "kind": ",",
+          "kind": "print_evens",
           "children": [
             {
-              "kind": "fib",
-              "children": [
-                {
-                  "kind": "number",
-                  "text": "6"
-                },
-                {
-                  "kind": "var",
-                  "text": "R"
-                }
-              ]
+              "kind": "number",
+              "text": "0"
             },
             {
-              "kind": "writeln",
-              "children": [
-                {
-                  "kind": "var",
-                  "text": "R"
-                }
-              ]
+              "kind": "number",
+              "text": "4"
             }
           ]
         }

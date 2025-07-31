@@ -113,6 +113,16 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 			writeTerm(b, c, indent, false)
 		}
 		b.WriteByte(']')
+	case "[|]":
+		if len(n.Children) == 2 {
+			b.WriteByte('[')
+			writeTerm(b, n.Children[0], indent, false)
+			b.WriteString("|")
+			writeTerm(b, n.Children[1], indent, false)
+			b.WriteByte(']')
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case "{}":
 		b.WriteString("_{")
 		for i, c := range n.Children {
@@ -122,6 +132,16 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 			writeTerm(b, c, indent, false)
 		}
 		b.WriteByte('}')
+	case ".":
+		if len(n.Children) == 2 {
+			b.WriteByte('[')
+			writeTerm(b, n.Children[0], indent, false)
+			b.WriteString("|")
+			writeTerm(b, n.Children[1], indent, false)
+			b.WriteByte(']')
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case ":":
 		if len(n.Children) == 2 {
 			writeTerm(b, n.Children[0], indent, true)

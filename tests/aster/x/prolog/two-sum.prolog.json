@@ -8,8 +8,18 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "style_check(-singleton)"
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -26,15 +36,15 @@
           "kind": "get_item",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Container"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Key"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Val"
             }
           ]
@@ -138,15 +148,15 @@
           "kind": "get_item",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Container"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Index"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Val"
             }
           ]
@@ -218,15 +228,15 @@
           "kind": "get_item",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "List"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Index"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Val"
             }
           ]
@@ -257,15 +267,15 @@
           "kind": "twosum",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Nums"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Target"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Res"
             }
           ]
@@ -721,15 +731,15 @@
           "kind": "twosum",
           "children": [
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Nums"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Target"
             },
             {
-              "kind": "atom",
+              "kind": "var",
               "text": "Res"
             }
           ]
@@ -961,8 +971,17 @@
           "kind": ":-",
           "children": [
             {
-              "kind": "atom",
-              "text": "initialization(main, main)"
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                },
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
             }
           ]
         },

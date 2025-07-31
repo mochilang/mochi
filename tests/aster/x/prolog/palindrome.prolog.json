@@ -56,55 +56,68 @@
       "kind": "clause",
       "children": [
         {
+          "kind": "is_palindrome",
+          "children": [
+            {
+              "kind": "var",
+              "text": "L"
+            }
+          ]
+        },
+        {
+          "kind": "reverse",
+          "children": [
+            {
+              "kind": "var",
+              "text": "L"
+            },
+            {
+              "kind": "var",
+              "text": "L"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
           "kind": "main"
         },
         {
-          "kind": ",",
+          "kind": ";",
           "children": [
             {
-              "kind": "=",
+              "kind": "-\u003e",
               "children": [
                 {
-                  "kind": "var",
-                  "text": "A"
-                },
-                {
-                  "kind": "list",
+                  "kind": "is_palindrome",
                   "children": [
-                    {
-                      "kind": "number",
-                      "text": "1"
-                    },
-                    {
-                      "kind": "number",
-                      "text": "2"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "kind": ",",
-              "children": [
-                {
-                  "kind": "append",
-                  "children": [
-                    {
-                      "kind": "var",
-                      "text": "A"
-                    },
                     {
                       "kind": "list",
                       "children": [
                         {
                           "kind": "number",
+                          "text": "1"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        },
+                        {
+                          "kind": "number",
                           "text": "3"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
                         }
                       ]
-                    },
-                    {
-                      "kind": "var",
-                      "text": "R1"
                     }
                   ]
                 },
@@ -112,10 +125,19 @@
                   "kind": "writeln",
                   "children": [
                     {
-                      "kind": "var",
-                      "text": "R1"
+                      "kind": "bool",
+                      "text": "true"
                     }
                   ]
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "bool",
+                  "text": "false"
                 }
               ]
             }

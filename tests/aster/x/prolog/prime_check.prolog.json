@@ -56,23 +56,123 @@
       "kind": "clause",
       "children": [
         {
-          "kind": "fib",
+          "kind": "has_factor",
+          "children": [
+            {
+              "kind": "var",
+              "text": "N"
+            },
+            {
+              "kind": "var",
+              "text": "F"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=\u003c",
+              "children": [
+                {
+                  "kind": "*",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "F"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "F"
+                    }
+                  ]
+                },
+                {
+                  "kind": "var",
+                  "text": "N"
+                }
+              ]
+            },
+            {
+              "kind": ";",
+              "children": [
+                {
+                  "kind": "=:=",
+                  "children": [
+                    {
+                      "kind": "mod",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "F"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "number",
+                      "text": "0"
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "is",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "F1"
+                        },
+                        {
+                          "kind": "+",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "F"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "has_factor",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "F1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "is_prime",
           "children": [
             {
               "kind": "number",
-              "text": "0"
-            },
-            {
-              "kind": "var",
-              "text": "A"
-            },
-            {
-              "kind": "var",
-              "text": "_"
-            },
-            {
-              "kind": "var",
-              "text": "A"
+              "text": "2"
             }
           ]
         },
@@ -86,23 +186,11 @@
       "kind": "clause",
       "children": [
         {
-          "kind": "fib",
+          "kind": "is_prime",
           "children": [
             {
               "kind": "var",
               "text": "N"
-            },
-            {
-              "kind": "var",
-              "text": "A"
-            },
-            {
-              "kind": "var",
-              "text": "B"
-            },
-            {
-              "kind": "var",
-              "text": "F"
             }
           ]
         },
@@ -118,80 +206,23 @@
                 },
                 {
                   "kind": "number",
-                  "text": "0"
+                  "text": "2"
                 }
               ]
             },
             {
-              "kind": ",",
+              "kind": "\\+",
               "children": [
                 {
-                  "kind": "is",
+                  "kind": "has_factor",
                   "children": [
                     {
                       "kind": "var",
-                      "text": "N1"
+                      "text": "N"
                     },
                     {
-                      "kind": "-",
-                      "children": [
-                        {
-                          "kind": "var",
-                          "text": "N"
-                        },
-                        {
-                          "kind": "number",
-                          "text": "1"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "kind": ",",
-                  "children": [
-                    {
-                      "kind": "is",
-                      "children": [
-                        {
-                          "kind": "var",
-                          "text": "C"
-                        },
-                        {
-                          "kind": "+",
-                          "children": [
-                            {
-                              "kind": "var",
-                              "text": "A"
-                            },
-                            {
-                              "kind": "var",
-                              "text": "B"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "kind": "fib",
-                      "children": [
-                        {
-                          "kind": "var",
-                          "text": "N1"
-                        },
-                        {
-                          "kind": "var",
-                          "text": "B"
-                        },
-                        {
-                          "kind": "var",
-                          "text": "C"
-                        },
-                        {
-                          "kind": "var",
-                          "text": "F"
-                        }
-                      ]
+                      "kind": "number",
+                      "text": "2"
                     }
                   ]
                 }
@@ -208,26 +239,28 @@
           "kind": "main"
         },
         {
-          "kind": ",",
+          "kind": ";",
           "children": [
             {
-              "kind": "fib",
+              "kind": "-\u003e",
               "children": [
                 {
-                  "kind": "number",
-                  "text": "6"
+                  "kind": "is_prime",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "7"
+                    }
+                  ]
                 },
                 {
-                  "kind": "number",
-                  "text": "0"
-                },
-                {
-                  "kind": "number",
-                  "text": "1"
-                },
-                {
-                  "kind": "var",
-                  "text": "F"
+                  "kind": "writeln",
+                  "children": [
+                    {
+                      "kind": "bool",
+                      "text": "true"
+                    }
+                  ]
                 }
               ]
             },
@@ -235,8 +268,8 @@
               "kind": "writeln",
               "children": [
                 {
-                  "kind": "var",
-                  "text": "F"
+                  "kind": "bool",
+                  "text": "false"
                 }
               ]
             }
