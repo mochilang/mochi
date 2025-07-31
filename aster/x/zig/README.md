@@ -2,9 +2,9 @@
 
 This directory holds golden test inputs and outputs for the Zig aster package.
 
-Updated: 2025-07-31 19:03 +07
+Updated: 2025-07-31 19:52 +07
 
-## Program checklist (50/50)
+## Program checklist (75/75)
 
 1. append_builtin
 2. avg_builtin
@@ -56,3 +56,28 @@ Updated: 2025-07-31 19:03 +07
 48. list_nested_assign
 49. list_set_ops
 50. load_jsonl
+51. load_yaml
+52. map_assign
+53. map_in_operator
+54. map_index
+55. map_int_key
+56. map_literal_dynamic
+57. map_membership
+58. map_nested_assign
+59. match_expr
+60. match_full
+61. math_ops
+62. membership
+63. min_max_builtin
+64. nested_function
+65. order_by_map
+66. outer_join
+67. partial_application
+68. print_hello
+69. pure_fold
+70. pure_global_fold
+71. query_sum_select
+72. record_assign
+73. right_join
+74. save_jsonl_stdout
+75. short_circuit

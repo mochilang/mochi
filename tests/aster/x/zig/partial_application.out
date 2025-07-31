@@ -1,0 +1,2 @@
+tests/aster/x/zig/partial_application.zig:9:18: error: expected 2 argument(s), found 1
+tests/aster/x/zig/partial_application.zig:4:1: note: function declared here

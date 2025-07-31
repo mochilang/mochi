@@ -1,0 +1,2 @@
+tests/aster/x/zig/pure_global_fold.zig:5:16: error: use of undeclared identifier 'k'
+tests/aster/x/zig/pure_global_fold.zig:9:11: error: unused local constant

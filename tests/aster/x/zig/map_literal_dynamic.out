@@ -1,0 +1,3 @@
+tests/aster/x/zig/map_literal_dynamic.zig:8:5: error: expected type 'void', found 'error{AccessDenied,Unexpected,DiskQuota,FileTooBig,InputOutput,NoSpaceLeft,DeviceBusy,InvalidArgument,BrokenPipe,SystemResources,OperationAborted,NotOpenForWriting,LockViolation,WouldBlock,ConnectionResetByPeer}'
+tests/aster/x/zig/map_literal_dynamic.zig:4:15: note: function cannot return an error
+/tmp/zig-0.12.0/lib/std/fmt.zig:471:5: error: invalid format string 's' for type 'i64'

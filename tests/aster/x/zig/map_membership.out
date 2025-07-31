@@ -1,0 +1,3 @@
+tests/aster/x/zig/map_membership.zig:6:76: error: expected type '[]const u8', found 'hash_map.HashMap([]const u8,i64,hash_map.StringContext,80)'
+/tmp/zig-0.12.0/lib/std/hash_map.zig:366:12: note: struct declared here
+/tmp/zig-0.12.0/lib/std/mem.zig:1335:44: note: parameter type declared here

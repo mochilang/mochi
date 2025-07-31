@@ -48,11 +48,24 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		writeFuncDecl(b, n, indentLevel)
 	case "for_statement":
 		writeForStmt(b, n, indentLevel)
+	case "while_statement":
+		writeWhileStmt(b, n, indentLevel)
 	case "if_statement":
 		writeIfStmt(b, n, indentLevel)
 	case "labeled_statement":
-		if len(n.Children) > 0 && n.Children[0].Kind == "for_statement" {
-			writeForStmt(b, &n.Children[0], indentLevel)
+		if len(n.Children) > 0 {
+			switch n.Children[0].Kind {
+			case "for_statement":
+				writeForStmt(b, &n.Children[0], indentLevel)
+			case "while_statement":
+				writeWhileStmt(b, &n.Children[0], indentLevel)
+			case "if_statement":
+				writeIfStmt(b, &n.Children[0], indentLevel)
+			default:
+				b.WriteString(ind)
+				writeExpr(b, n, indentLevel)
+				b.WriteByte('\n')
+			}
 		} else {
 			b.WriteString(ind)
 			writeExpr(b, n, indentLevel)
@@ -179,6 +192,24 @@ func writeForStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 	b.WriteString("{\n")
 	if len(block.Children) > 0 {
 		writeBlock(b, &block.Children[0], indentLevel+1)
+	}
+	b.WriteString(ind)
+	b.WriteString("}\n")
+}
+
+func writeWhileStmt(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	ind := indent(indentLevel)
+	b.WriteString(ind)
+	b.WriteString("while (")
+	writeExpr(b, &n.Children[0], indentLevel)
+	b.WriteString(") ")
+	blockExpr := &n.Children[1]
+	b.WriteString("{\n")
+	if len(blockExpr.Children) > 0 {
+		writeBlock(b, &blockExpr.Children[0], indentLevel+1)
 	}
 	b.WriteString(ind)
 	b.WriteString("}\n")
