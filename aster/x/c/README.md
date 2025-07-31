@@ -2,9 +2,9 @@
 
 Generated files for C programs live under `tests/aster/x/c`.
 
-Last updated: 2025-07-31 15:14 GMT+7
+Last updated: 2025-07-31 15:31 GMT+7
 
-## Golden Test Checklist (20/20)
+## Golden Test Checklist (25/25)
 - [x] append_builtin.c
 - [x] avg_builtin.c
 - [x] basic_compare.c
@@ -25,4 +25,9 @@ Last updated: 2025-07-31 15:14 GMT+7
 - [x] for_list_collection.c
 - [x] for_loop.c
 - [x] for_map_collection.c
+- [x] fun_call.c
+- [x] fun_expr_in_let.c
+- [x] fun_three_args.c
+- [x] go_auto.c
+- [x] group_by.c
 
