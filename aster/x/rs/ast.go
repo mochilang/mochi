@@ -119,9 +119,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		node.EndCol = int(ep.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Kind()) {
-			text := n.Utf8Text(src)
+       if n.NamedChildCount() == 0 {
+               if isValueNode(n.Kind()) {
+                       text := n.Utf8Text(src)
 			// When the literal is preceded by a minus sign tree-sitter
 			// does not include it in the integer token. Capture it so
 			// we can print negative numbers correctly.
@@ -132,10 +132,15 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 				}
 			}
 			node.Text = text
-		} else {
-			return nil
-		}
-	}
+               } else {
+               switch n.Kind() {
+               case "break_expression", "continue_expression", "return_expression":
+                       // keep empty node so Print can reproduce the control flow keyword
+               default:
+                       return nil
+               }
+               }
+       }
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := convert(n.NamedChild(uint(i)), src, opt)
@@ -144,9 +149,14 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
-		return nil
-	}
+       if len(node.Children) == 0 && node.Text == "" {
+               switch node.Kind {
+               case "break_expression", "continue_expression", "return_expression":
+                       // keep empty statement nodes
+               default:
+                       return nil
+               }
+       }
 
 	return node
 }
@@ -157,9 +167,9 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "field_identifier", "type_identifier", "primitive_type",
 		"integer_literal", "string_content", "escape_sequence", "mutable_specifier",
-		"arguments", "parameters", "self", "token_tree", "line_comment",
-		"true", "false":
-		return true
+               "arguments", "parameters", "self", "token_tree", "line_comment",
+               "true", "false", "boolean_literal":
+               return true
 	default:
 		return false
 	}

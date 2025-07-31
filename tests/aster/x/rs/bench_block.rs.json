@@ -224,6 +224,23 @@
                     "endCol": 47
                   }
                 ]
+              },
+              {
+                "kind": "arguments",
+                "start": 4,
+                "end": 4,
+                "startCol": 47,
+                "endCol": 54,
+                "children": [
+                  {
+                    "kind": "boolean_literal",
+                    "text": "false",
+                    "start": 4,
+                    "end": 4,
+                    "startCol": 48,
+                    "endCol": 53
+                  }
+                ]
               }
             ]
           }
@@ -832,6 +849,14 @@
                                                             "startCol": 32,
                                                             "endCol": 56,
                                                             "children": [
+                                                              {
+                                                                "kind": "boolean_literal",
+                                                                "text": "true",
+                                                                "start": 11,
+                                                                "end": 11,
+                                                                "startCol": 33,
+                                                                "endCol": 37
+                                                              },
                                                               {
                                                                 "kind": "scoped_identifier",
                                                                 "start": 11,

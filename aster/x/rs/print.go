@@ -133,14 +133,20 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(";")
 		}
 		b.WriteByte('\n')
-	case "return_expression":
-		b.WriteString(ind)
-		b.WriteString("return ")
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
-		}
-		b.WriteByte('\n')
-	case "static_item":
+       case "return_expression":
+               b.WriteString(ind)
+               b.WriteString("return ")
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+               b.WriteByte('\n')
+       case "break_expression":
+               b.WriteString(ind)
+               b.WriteString("break\n")
+       case "continue_expression":
+               b.WriteString(ind)
+               b.WriteString("continue\n")
+       case "static_item":
 		b.WriteString(ind)
 		b.WriteString("static ")
 		if len(n.Children) >= 1 {
@@ -318,27 +324,33 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('&')
 			writeExpr(b, n.Children[0], indent)
 		}
-	case "reference_type":
-		b.WriteByte('&')
-		if len(n.Children) > 0 && n.Children[0].Kind == "mutable_specifier" {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(' ')
-			if len(n.Children) > 1 {
-				writeExpr(b, n.Children[1], indent)
-			}
-		} else if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
-		}
-	case "self_parameter":
-		b.WriteString("&self")
-	case "lifetime":
-		b.WriteByte('\'')
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
-		} else {
-			b.WriteString(n.Text)
-		}
-	case "scoped_identifier":
+       case "reference_type":
+               b.WriteByte('&')
+               if len(n.Children) > 0 && n.Children[0].Kind == "mutable_specifier" {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteByte(' ')
+                       if len(n.Children) > 1 {
+                               writeExpr(b, n.Children[1], indent)
+                       }
+               } else if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+       case "self_parameter":
+               b.WriteString("&self")
+       case "lifetime":
+               b.WriteByte('\'')
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               } else {
+                       b.WriteString(n.Text)
+               }
+       case "parameter":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(": ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "scoped_identifier":
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString("::")
@@ -399,27 +411,47 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(')')
-	case "field_initializer_list":
-		b.WriteString("{")
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			writeFieldInit(b, c, indent)
-		}
-		b.WriteString("}")
-	case "field_initializer":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(": ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "try_expression":
-		if len(n.Children) == 1 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte('?')
-		}
-	case "for_expression":
+       case "field_initializer_list":
+               b.WriteString("{")
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteString(", ")
+                       }
+                       writeFieldInit(b, c, indent)
+               }
+               b.WriteString("}")
+       case "field_initializer":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(": ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "try_expression":
+               if len(n.Children) == 1 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteByte('?')
+               }
+       case "closure_expression":
+               b.WriteByte('|')
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+               b.WriteByte('|')
+               idx := 1
+               if len(n.Children) > idx && n.Children[idx].Kind != "block" {
+                       b.WriteString(" -> ")
+                       writeExpr(b, n.Children[idx], indent)
+                       idx++
+               }
+               if len(n.Children) > idx {
+                       b.WriteByte(' ')
+                       writeExpr(b, n.Children[idx], indent)
+               }
+       case "break_expression":
+               b.WriteString("break")
+       case "continue_expression":
+               b.WriteString("continue")
+       case "for_expression":
 		if len(n.Children) == 3 {
 			b.WriteString("for ")
 			writeExpr(b, n.Children[0], indent)
@@ -465,20 +497,53 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				writeExpr(b, n.Children[0], indent)
 			}
 		}
-	case "token_tree":
-		b.WriteString(n.Text)
-	case "attribute":
-		for i, c := range n.Children {
-			if i > 0 {
-				// no separator
-			}
-			writeExpr(b, c, indent)
-		}
-	default:
-		if n.Text != "" {
-			b.WriteString(n.Text)
-		} else {
-			b.WriteString(n.Kind)
+       case "token_tree":
+               b.WriteString(n.Text)
+       case "attribute":
+               for i, c := range n.Children {
+                       if i > 0 {
+                               // no separator
+                       }
+                       writeExpr(b, c, indent)
+               }
+       case "abstract_type":
+               b.WriteString("impl ")
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteString(" + ")
+                       }
+                       writeExpr(b, c, indent)
+               }
+       case "function_type":
+               if len(n.Children) >= 1 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+               b.WriteByte('(')
+               if len(n.Children) >= 2 {
+                       for i, c := range n.Children[1].Children {
+                               if i > 0 {
+                                       b.WriteString(", ")
+                               }
+                               writeExpr(b, c, indent)
+                       }
+               }
+               b.WriteByte(')')
+               if len(n.Children) >= 3 {
+                       b.WriteString(" -> ")
+                       writeExpr(b, n.Children[2], indent)
+               }
+       case "closure_parameters":
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteString(", ")
+                       }
+                       writeExpr(b, c, indent)
+               }
+       default:
+               if n.Text != "" {
+                       b.WriteString(n.Text)
+               } else {
+                       b.WriteString(n.Kind)
 		}
 	}
 }
