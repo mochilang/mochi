@@ -33,9 +33,15 @@ func TestPrint_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 	var selected []string
+	wanted := map[string]bool{
+		"append_builtin.py": true,
+		"cross_join.py":     true,
+		"two-sum.py":        true,
+		"string_concat.py":  true,
+		"print_hello.py":    true,
+	}
 	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.py" || base == "cross_join.py" {
+		if wanted[filepath.Base(f)] {
 			selected = append(selected, f)
 		}
 	}

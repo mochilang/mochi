@@ -238,6 +238,23 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "conditional_expression":
+		if len(n.Children) >= 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" if ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" else ")
+			writeExpr(b, n.Children[2], indent)
+		}
+	case "parenthesized_expression":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString("; ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
 	case "binary_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
