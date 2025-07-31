@@ -34,7 +34,8 @@ func TestPrint_Golden(t *testing.T) {
 	sort.Strings(files)
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.clj" {
+		base := filepath.Base(f)
+		if base == "two-sum.clj" || base == "cross_join.clj" {
 			selected = append(selected, f)
 		}
 	}

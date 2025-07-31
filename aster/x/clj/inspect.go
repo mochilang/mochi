@@ -16,6 +16,16 @@ type Program struct {
 	Forms []*Form `json:"forms"`
 }
 
+// Option controls how Inspect behaves.
+// Currently no options are honored but the structure mirrors other
+// language packages and allows future extensions.
+type Option struct {
+	// Positions enables positional information in the resulting AST.
+	// Clojure inspection via babashka currently does not provide
+	// positions so this field is ignored.
+	Positions bool
+}
+
 // rawNode mirrors the JSON structure produced by the babashka script.
 // It is converted into the generic Node type by toNode.
 type rawNode struct {
@@ -109,6 +119,13 @@ var babashkaCmd = "bb"
 // generic Node structure defined in ast.go. Position information is not
 // currently provided.
 func Inspect(src string) (*Program, error) {
+	return InspectWithOption(src, Option{})
+}
+
+// InspectWithOption behaves like Inspect but allows callers to specify whether
+// additional information should be captured. The returned AST structure is the
+// same regardless of the options provided.
+func InspectWithOption(src string, opt Option) (*Program, error) {
 	if err := EnsureBabashka(); err != nil {
 		return nil, err
 	}
