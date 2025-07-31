@@ -1,0 +1,386 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 9,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 10,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 1,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "a",
+                "start": 2,
+                "end": 2,
+                "endCol": 1
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 4,
+            "end": 2,
+            "endCol": 10,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 4,
+                "end": 2,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 5,
+                    "end": 2,
+                    "endCol": 6,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 5,
+                        "end": 2,
+                        "endCol": 6
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 8,
+                    "end": 2,
+                    "endCol": 9,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 2,
+                        "startCol": 8,
+                        "end": 2,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 4,
+        "end": 8,
+        "endCol": 11,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 4,
+            "end": 4,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 4,
+            "startCol": 5,
+            "end": 8,
+            "endCol": 11,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 4,
+                "startCol": 6,
+                "end": 8,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "start": 4,
+                    "startCol": 6,
+                    "end": 8,
+                    "endCol": 4,
+                    "children": [
+                      {
+                        "kind": "function_definition",
+                        "start": 4,
+                        "startCol": 7,
+                        "end": 8,
+                        "endCol": 3,
+                        "children": [
+                          {
+                            "kind": "parameters",
+                            "start": 4,
+                            "startCol": 15,
+                            "end": 4,
+                            "endCol": 26,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "lst",
+                                "start": 4,
+                                "startCol": 16,
+                                "end": 4,
+                                "endCol": 19
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "item",
+                                "start": 4,
+                                "startCol": 21,
+                                "end": 4,
+                                "endCol": 25
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "block",
+                            "start": 5,
+                            "end": 7,
+                            "endCol": 10,
+                            "children": [
+                              {
+                                "kind": "variable_declaration",
+                                "start": 5,
+                                "end": 5,
+                                "endCol": 31,
+                                "children": [
+                                  {
+                                    "kind": "assignment_statement",
+                                    "start": 5,
+                                    "startCol": 6,
+                                    "end": 5,
+                                    "endCol": 31,
+                                    "children": [
+                                      {
+                                        "kind": "variable_list",
+                                        "start": 5,
+                                        "startCol": 6,
+                                        "end": 5,
+                                        "endCol": 9,
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "res",
+                                            "start": 5,
+                                            "startCol": 6,
+                                            "end": 5,
+                                            "endCol": 9
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "expression_list",
+                                        "start": 5,
+                                        "startCol": 12,
+                                        "end": 5,
+                                        "endCol": 31,
+                                        "children": [
+                                          {
+                                            "kind": "table_constructor",
+                                            "start": 5,
+                                            "startCol": 12,
+                                            "end": 5,
+                                            "endCol": 31,
+                                            "children": [
+                                              {
+                                                "kind": "field",
+                                                "start": 5,
+                                                "startCol": 13,
+                                                "end": 5,
+                                                "endCol": 30,
+                                                "children": [
+                                                  {
+                                                    "kind": "function_call",
+                                                    "start": 5,
+                                                    "startCol": 13,
+                                                    "end": 5,
+                                                    "endCol": 30,
+                                                    "children": [
+                                                      {
+                                                        "kind": "dot_index_expression",
+                                                        "start": 5,
+                                                        "startCol": 13,
+                                                        "end": 5,
+                                                        "endCol": 25,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "table",
+                                                            "start": 5,
+                                                            "startCol": 13,
+                                                            "end": 5,
+                                                            "endCol": 18
+                                                          },
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "unpack",
+                                                            "start": 5,
+                                                            "startCol": 19,
+                                                            "end": 5,
+                                                            "endCol": 25
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "arguments",
+                                                        "start": 5,
+                                                        "startCol": 25,
+                                                        "end": 5,
+                                                        "endCol": 30,
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "lst",
+                                                            "start": 5,
+                                                            "startCol": 26,
+                                                            "end": 5,
+                                                            "endCol": 29
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "function_call",
+                                "start": 6,
+                                "end": 6,
+                                "endCol": 23,
+                                "children": [
+                                  {
+                                    "kind": "dot_index_expression",
+                                    "start": 6,
+                                    "end": 6,
+                                    "endCol": 12,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "table",
+                                        "start": 6,
+                                        "end": 6,
+                                        "endCol": 5
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "insert",
+                                        "start": 6,
+                                        "startCol": 6,
+                                        "end": 6,
+                                        "endCol": 12
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "arguments",
+                                    "start": 6,
+                                    "startCol": 12,
+                                    "end": 6,
+                                    "endCol": 23,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "res",
+                                        "start": 6,
+                                        "startCol": 13,
+                                        "end": 6,
+                                        "endCol": 16
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "item",
+                                        "start": 6,
+                                        "startCol": 18,
+                                        "end": 6,
+                                        "endCol": 22
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "return_statement",
+                                "start": 7,
+                                "end": 7,
+                                "endCol": 10,
+                                "children": [
+                                  {
+                                    "kind": "expression_list",
+                                    "start": 7,
+                                    "startCol": 7,
+                                    "end": 7,
+                                    "endCol": 10,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "res",
+                                        "start": 7,
+                                        "startCol": 7,
+                                        "end": 7,
+                                        "endCol": 10
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 8,
+                    "startCol": 4,
+                    "end": 8,
+                    "endCol": 10,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "a",
+                        "start": 8,
+                        "startCol": 5,
+                        "end": 8,
+                        "endCol": 6
+                      },
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 8,
+                        "startCol": 8,
+                        "end": 8,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
