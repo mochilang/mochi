@@ -220,28 +220,33 @@ func writeClassParameters(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeForExpression(b *bytes.Buffer, n *Node, indent int) {
-	if len(n.Children) < 2 {
-		return
-	}
-	ind := strings.Repeat("  ", indent)
-	enums := n.Children[0]
-	body := n.Children[1]
-	b.WriteString(ind)
-	b.WriteString("for (")
-	for i, e := range enums.Children {
-		if i > 0 {
-			b.WriteString("; ")
-		}
-		if len(e.Children) == 2 {
-			b.WriteString(e.Children[0].Text)
-			b.WriteString(" <- ")
-			writeExpr(b, e.Children[1], indent)
-		}
-	}
-	b.WriteString(") {\n")
-	writeBlock(b, body, indent+1)
-	b.WriteString(ind)
-	b.WriteString("}\n")
+        if len(n.Children) < 2 {
+                return
+        }
+        ind := strings.Repeat("  ", indent)
+        enums := n.Children[0]
+        body := n.Children[1]
+        b.WriteString(ind)
+        b.WriteString("for (")
+        for i, e := range enums.Children {
+                if i > 0 {
+                        b.WriteString("; ")
+                }
+                if len(e.Children) == 2 {
+                        b.WriteString(e.Children[0].Text)
+                        b.WriteString(" <- ")
+                        writeExpr(b, e.Children[1], indent)
+                }
+        }
+        if body.Kind == "block" {
+                b.WriteString(") {\n")
+                writeBlock(b, body, indent+1)
+                b.WriteString(ind)
+                b.WriteString("}\n")
+        } else {
+                b.WriteString(") yield ")
+                writeExpr(b, body, indent)
+        }
 }
 
 func writeIfExpression(b *bytes.Buffer, n *Node, indent int) {
@@ -311,17 +316,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('.')
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "parenthesized_expression":
-		b.WriteByte('(')
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
-		}
-		b.WriteByte(')')
-	case "infix_expression":
-		if len(n.Children) >= 3 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(' ')
-			writeExpr(b, n.Children[1], indent)
+       case "parenthesized_expression":
+               b.WriteByte('(')
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+               b.WriteByte(')')
+       case "tuple_expression", "tuple_type", "tuple_pattern":
+               b.WriteByte('(')
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteString(", ")
+                       }
+                       writeExpr(b, c, indent)
+               }
+               b.WriteByte(')')
+       case "infix_expression":
+               if len(n.Children) >= 3 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteByte(' ')
+                       writeExpr(b, n.Children[1], indent)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[2], indent)
 			for i := 3; i < len(n.Children); i++ {
@@ -331,13 +345,36 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		} else if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "lambda_expression":
-		if len(n.Children) >= 2 {
-			b.WriteByte('(')
-			if len(n.Children[0].Children) > 0 {
-				for i, bind := range n.Children[0].Children {
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "ascription_expression":
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(": _*")
+               }
+       case "case_block":
+               b.WriteString("{ ")
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteByte(' ')
+                       }
+                       writeExpr(b, c, indent)
+               }
+               b.WriteString(" }")
+       case "case_clause":
+               b.WriteString("case ")
+               if len(n.Children) >= 1 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+               if len(n.Children) >= 2 {
+                       b.WriteString(" => ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "lambda_expression":
+               if len(n.Children) >= 2 {
+                       b.WriteByte('(')
+                       if len(n.Children[0].Children) > 0 {
+                               for i, bind := range n.Children[0].Children {
 					if i > 0 {
 						b.WriteString(", ")
 					}
@@ -353,12 +390,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(") => ")
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "block":
-		b.WriteString("{\n")
-		writeBlock(b, n, indent+1)
-		b.WriteString(strings.Repeat("  ", indent))
-		b.WriteString("}")
-	default:
-		b.WriteString(n.Kind)
-	}
+       case "block":
+               b.WriteString("{\n")
+               writeBlock(b, n, indent+1)
+               b.WriteString(strings.Repeat("  ", indent))
+               b.WriteString("}")
+       case "indented_block":
+               b.WriteString("{\n")
+               writeBlock(b, n, indent+1)
+               b.WriteString(strings.Repeat("  ", indent))
+               b.WriteString("}")
+       default:
+               b.WriteString(n.Kind)
+       }
 }
