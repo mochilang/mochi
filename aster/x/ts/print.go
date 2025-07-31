@@ -106,7 +106,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(ind)
 			b.WriteString("for (const ")
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" of ")
+			kw := n.Text
+			if kw == "" {
+				kw = "of"
+			}
+			b.WriteByte(' ')
+			b.WriteString(kw)
+			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteString(")")
 			body := n.Children[2]
@@ -229,7 +235,7 @@ func writeTypeAnnotation(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "property_identifier", "type_identifier", "predefined_type", "number":
+	case "identifier", "property_identifier", "type_identifier", "predefined_type", "number", "true", "false":
 		b.WriteString(n.Text)
 	case "string":
 		b.WriteByte('"')
@@ -315,6 +321,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(']')
+	case "shorthand_property_identifier":
+		b.WriteString(n.Text)
+	case "array_pattern":
+		b.WriteByte('[')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(']')
 	case "spread_element":
 		b.WriteString("...")
 		if len(n.Children) > 0 {
@@ -334,11 +351,40 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte('}')
+	case "generic_type":
+		for _, c := range n.Children {
+			writeExpr(b, c, indent)
+		}
+	case "type_arguments":
+		b.WriteByte('<')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('>')
 	case "pair":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(": ")
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "property_signature":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0], indent)
+			if n.Children[1].Kind == "type_annotation" {
+				writeTypeAnnotation(b, n.Children[1], indent)
+				if len(n.Children) > 2 {
+					b.WriteString(" = ")
+					writeExpr(b, n.Children[2], indent)
+				}
+			} else {
+				b.WriteString(": ")
+				writeExpr(b, n.Children[1], indent)
+			}
+		} else if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "lexical_declaration":
 		kw := n.Text
@@ -394,6 +440,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(op)
 			writeExpr(b, n.Children[0], indent)
 		}
+	case "ternary_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indent)
+		}
 	case "arrow_function":
 		var params *Node
 		var body *Node
@@ -404,12 +458,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				params = n.Children[0]
 				body = n.Children[1]
 			} else {
-				params = nil
-				body = n.Children[len(n.Children)-1]
+				params = n.Children[0]
+				body = n.Children[1]
 			}
 		}
 		if params != nil {
-			writeParameters(b, params, indent)
+			if params.Kind == "formal_parameters" {
+				writeParameters(b, params, indent)
+			} else {
+				writeExpr(b, params, indent)
+			}
 		} else {
 			b.WriteString("()")
 		}

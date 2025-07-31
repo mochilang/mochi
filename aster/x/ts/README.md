@@ -15,6 +15,16 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] cast_struct.ts
 - [x] closure.ts
 - [x] break_continue.ts
+- [x] count_builtin.ts
+- [x] cross_join.ts
+- [x] cross_join_filter.ts
+- [x] cross_join_triple.ts
+- [x] dataset_sort_take_limit.ts
+- [x] dataset_where_filter.ts
+- [x] exists_builtin.ts
+- [x] for_list_collection.ts
+- [x] for_loop.ts
+- [x] for_map_collection.ts
 
-Completed 10/10 on 2025-07-31 15:23 GMT+7.
+Completed 20/20 on 2025-07-31 15:40 GMT+7.
 

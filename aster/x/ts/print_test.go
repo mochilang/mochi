@@ -27,23 +27,23 @@ func TestPrint_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "aster", "x", "ts")
 	os.MkdirAll(outDir, 0o755)
 
-       files, err := filepath.Glob(filepath.Join(srcDir, "*.ts"))
-       if err != nil {
-               t.Fatal(err)
-       }
-       sort.Strings(files)
-       if len(files) > 10 {
-               files = files[:10]
-       }
-       var filtered []string
-       for _, f := range files {
-               base := filepath.Base(f)
-               if strings.Contains(base, "bench_block") {
-                       continue
-               }
-               filtered = append(filtered, f)
-       }
-       files = filtered
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.ts"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sort.Strings(files)
+	if len(files) > 20 {
+		files = files[:20]
+	}
+	var filtered []string
+	for _, f := range files {
+		base := filepath.Base(f)
+		if strings.Contains(base, "bench_block") {
+			continue
+		}
+		filtered = append(filtered, f)
+	}
+	files = filtered
 
 	for idx, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".ts")

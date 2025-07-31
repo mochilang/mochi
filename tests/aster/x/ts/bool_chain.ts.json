@@ -75,6 +75,15 @@
                     ]
                   }
                 ]
+              },
+              {
+                "kind": "return_statement",
+                "children": [
+                  {
+                    "kind": "true",
+                    "text": "true"
+                  }
+                ]
               }
             ]
           }
