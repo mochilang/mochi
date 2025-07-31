@@ -1,0 +1,1019 @@
+{
+  "root": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "function_call_expression",
+            "children": [
+              {
+                "kind": "name",
+                "text": "ini_set"
+              },
+              {
+                "kind": "arguments",
+                "children": [
+                  {
+                    "kind": "argument",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "memory_limit"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "argument",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "-1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "now_seed"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "now_seeded"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "s"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "getenv"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "string",
+                            "children": [
+                              {
+                                "kind": "string_content",
+                                "text": "MOCHI_NOW_SEED"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "if_statement",
+        "children": [
+          {
+            "kind": "parenthesized_expression",
+            "children": [
+              {
+                "kind": "binary_expression",
+                "text": "\u0026\u0026",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "!==",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "s"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "binary_expression",
+                    "text": "!==",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "s"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": "''"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "now_seed"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call_expression",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "intval"
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "argument",
+                                "children": [
+                                  {
+                                    "kind": "variable_name",
+                                    "children": [
+                                      {
+                                        "kind": "name",
+                                        "text": "s"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "now_seeded"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_definition",
+        "children": [
+          {
+            "kind": "name",
+            "text": "_now"
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "global_declaration",
+                "children": [
+                  {
+                    "kind": "variable_name",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "now_seed"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "variable_name",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "now_seeded"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "if_statement",
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "now_seeded"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "compound_statement",
+                    "children": [
+                      {
+                        "kind": "expression_statement",
+                        "children": [
+                          {
+                            "kind": "assignment_expression",
+                            "text": "=",
+                            "children": [
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "now_seed"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "binary_expression",
+                                "text": "%",
+                                "children": [
+                                  {
+                                    "kind": "parenthesized_expression",
+                                    "children": [
+                                      {
+                                        "kind": "binary_expression",
+                                        "text": "+",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "*",
+                                            "children": [
+                                              {
+                                                "kind": "variable_name",
+                                                "children": [
+                                                  {
+                                                    "kind": "name",
+                                                    "text": "now_seed"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "integer",
+                                                "text": "1664525"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "integer",
+                                            "text": "1013904223"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "integer",
+                                    "text": "2147483647"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "return_statement",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "now_seed"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "return_statement",
+                "children": [
+                  {
+                    "kind": "function_call_expression",
+                    "children": [
+                      {
+                        "kind": "name",
+                        "text": "hrtime"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__start_mem"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "memory_get_usage"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__start"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "_now"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "n"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "1000"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "s"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "i"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "1"
+              }
+            ]
+          },
+          {
+            "kind": "binary_expression",
+            "text": "\u003c",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "i"
+                  }
+                ]
+              },
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "n"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "update_expression",
+            "text": "++",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "i"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "compound_statement",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "assignment_expression",
+                    "text": "=",
+                    "children": [
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "s"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "s"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "i"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__end"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "_now"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__end_mem"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "memory_get_usage"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__duration"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "intdiv"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "-",
+                            "children": [
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "__end"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "variable_name",
+                                "children": [
+                                  {
+                                    "kind": "name",
+                                    "text": "__start"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "text": "1000"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__mem_diff"
+                  }
+                ]
+              },
+              {
+                "kind": "integer",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__bench"
+                  }
+                ]
+              },
+              {
+                "kind": "array_creation_expression",
+                "children": [
+                  {
+                    "kind": "array_element_initializer",
+                    "text": "=\u003e",
+                    "children": [
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "duration_us"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "__duration"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "text": "=\u003e",
+                    "children": [
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "memory_bytes"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "variable_name",
+                        "children": [
+                          {
+                            "kind": "name",
+                            "text": "__mem_diff"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "array_element_initializer",
+                    "text": "=\u003e",
+                    "children": [
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "name"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "encapsed_string",
+                        "children": [
+                          {
+                            "kind": "string_content",
+                            "text": "simple"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__j"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "json_encode"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "__bench"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "integer",
+                            "text": "128"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "expression_statement",
+        "children": [
+          {
+            "kind": "assignment_expression",
+            "text": "=",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__j"
+                  }
+                ]
+              },
+              {
+                "kind": "function_call_expression",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "str_replace"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "argument",
+                        "children": [
+                          {
+                            "kind": "variable_name",
+                            "children": [
+                              {
+                                "kind": "name",
+                                "text": "__j"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "echo_statement",
+        "children": [
+          {
+            "kind": "sequence_expression",
+            "children": [
+              {
+                "kind": "variable_name",
+                "children": [
+                  {
+                    "kind": "name",
+                    "text": "__j"
+                  }
+                ]
+              },
+              {
+                "kind": "name",
+                "text": "PHP_EOL"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

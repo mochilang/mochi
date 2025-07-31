@@ -112,7 +112,12 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 			}
 			node.Text = text
 		} else {
-			return nil
+			switch n.Kind() {
+			case "break_statement", "continue_statement":
+				// keep empty node to round-trip control flow
+			default:
+				return nil
+			}
 		}
 	}
 
@@ -145,7 +150,7 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
+	if len(node.Children) == 0 && node.Text == "" && node.Kind != "break_statement" && node.Kind != "continue_statement" {
 		return nil
 	}
 	return node
