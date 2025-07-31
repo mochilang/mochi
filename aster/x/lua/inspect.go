@@ -2,6 +2,7 @@ package lua
 
 import (
 	"context"
+	"encoding/json"
 
 	tslua "github.com/tree-sitter-grammars/tree-sitter-lua/bindings/go"
 	sitter "github.com/tree-sitter/go-tree-sitter"
@@ -32,4 +33,10 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 // resulting AST will include positional information.
 func InspectWithPositions(src string) (*Program, error) {
 	return InspectWithOption(src, Option{Positions: true})
+}
+
+// MarshalJSON implements json.Marshaler for Program to ensure stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }

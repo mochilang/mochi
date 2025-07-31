@@ -30,14 +30,20 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	ind := strings.Repeat("  ", indent)
 	switch n.Kind {
 	case "function_declaration":
-		if len(n.Children) >= 2 {
+		if len(n.Children) >= 1 {
 			b.WriteString(ind)
 			b.WriteString("function ")
 			writeExpr(b, n.Children[0], indent)
-			writeParams(b, n.Children[1])
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "parameters" {
+				writeParams(b, n.Children[idx])
+				idx++
+			} else {
+				b.WriteString("()")
+			}
 			b.WriteByte('\n')
-			if len(n.Children) > 2 {
-				writeBlock(b, n.Children[2], indent+1)
+			if idx < len(n.Children) {
+				writeBlock(b, n.Children[idx], indent+1)
 			}
 			b.WriteString(ind)
 			b.WriteString("end\n")
@@ -73,6 +79,24 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "if_statement":
 		writeIfStatement(b, n, indent)
+	case "do_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("do\n")
+			writeBlock(b, n.Children[0], indent+1)
+			b.WriteString(ind)
+			b.WriteString("end\n")
+		}
+	case "while_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("while ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" do\n")
+			writeBlock(b, n.Children[1], indent+1)
+			b.WriteString(ind)
+			b.WriteString("end\n")
+		}
 	case "function_call":
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
