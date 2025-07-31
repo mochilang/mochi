@@ -1,0 +1,135 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "for-each"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lambda"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "n"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "n"
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            },
+            {
+              "kind": "number",
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

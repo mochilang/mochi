@@ -1,0 +1,732 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "products"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Laptop\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Smartphone\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "900"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Tablet\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Monitor\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "300"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Keyboard\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "100"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Mouse\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "50"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "alist-\u003ehash-table"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "list"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"Headphones\""
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cons"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        },
+                        {
+                          "kind": "number",
+                          "text": "200"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "expensive"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res4"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "p"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "set!"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "res4"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "append"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "res4"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "list"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "p"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "products"
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "res4"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "string",
+          "text": "\"--- Top products (excluding most expensive)\n   ---\""
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "for-each"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lambda"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "item"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "item"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"name\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\"costs $\""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "item"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"price\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "symbol",
+          "text": "expensive"
+        }
+      ]
+    }
+  ]
+}

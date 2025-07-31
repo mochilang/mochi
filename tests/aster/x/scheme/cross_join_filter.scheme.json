@@ -1,0 +1,515 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "nums"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            },
+            {
+              "kind": "number",
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "letters"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "string",
+              "text": "\"A\""
+            },
+            {
+              "kind": "string",
+              "text": "\"B\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "pairs"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res2"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "n"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "for-each"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "lambda"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "l"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "if"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "="
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "modulo"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "n"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "2"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "0"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "set!"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "res2"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "append"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "res2"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "list"
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "alist-\u003ehash-table"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "list"
+                                                        },
+                                                        {
+                                                          "kind": "list",
+                                                          "children": [
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "cons"
+                                                            },
+                                                            {
+                                                              "kind": "string",
+                                                              "text": "\"n\""
+                                                            },
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "n"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": "list",
+                                                          "children": [
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "cons"
+                                                            },
+                                                            {
+                                                              "kind": "string",
+                                                              "text": "\"l\""
+                                                            },
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "l"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "quote"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "nil"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "letters"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "nums"
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "res2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "string",
+          "text": "\"--- Even pairs ---\""
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "for-each"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "lambda"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "p"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "p"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"n\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\" \""
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "display"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table-ref"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "p"
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"l\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "newline"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "symbol",
+          "text": "pairs"
+        }
+      ]
+    }
+  ]
+}

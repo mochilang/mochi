@@ -1,21 +1,31 @@
-# Scheme AST Printing Progress
+# Scheme AST Printer Progress
 
-This directory stores golden tests for inspecting and printing Scheme code.
+Generated files for Scheme programs live under `tests/aster/x/scheme`.
 
-- **Completed:** 12 / 87
-- **Last Update:** 2025-07-31 15:26 GMT+7
+Last updated: 2025-07-31 18:24 GMT+7
 
-## Available Examples
-
-- `append_builtin.scm`
-- `avg_builtin.scm`
-- `basic_compare.scm`
-- `bench_block.scm`
-- `binary_precedence.scm`
-- `bool_chain.scm`
-- `break_continue.scm`
-- `cast_string_to_int.scm`
-- `cast_struct.scm`
-- `closure.scm`
-- `cross_join.scm`
-- `two-sum.scm`
+## Golden Test Checklist (24/87)
+- [x] append_builtin.scm
+- [x] avg_builtin.scm
+- [x] basic_compare.scm
+- [x] bench_block.scm
+- [x] binary_precedence.scm
+- [x] bool_chain.scm
+- [x] break_continue.scm
+- [x] cast_string_to_int.scm
+- [x] cast_struct.scm
+- [x] closure.scm
+- [x] count_builtin.scm
+- [x] cross_join.scm
+- [x] cross_join_filter.scm
+- [x] cross_join_triple.scm
+- [x] dataset_sort_take_limit.scm
+- [x] dataset_where_filter.scm
+- [x] exists_builtin.scm
+- [x] for_list_collection.scm
+- [x] for_loop.scm
+- [x] for_map_collection.scm
+- [x] fun_call.scm
+- [x] fun_expr_in_let.scm
+- [x] fun_three_args.scm
+- [x] two-sum.scm

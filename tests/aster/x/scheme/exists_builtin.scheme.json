@@ -1,0 +1,318 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "data"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "flag"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "null?"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "let"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "res6"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "list"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "begin"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "for-each"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "lambda"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "x"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "if"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "="
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "set!"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "res6"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "append"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "res6"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "list"
+                                                },
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "x"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "quote"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "nil"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "data"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "res6"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "\"false\""
+            },
+            {
+              "kind": "string",
+              "text": "\"true\""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "symbol",
+              "text": "flag"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    }
+  ]
+}
