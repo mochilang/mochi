@@ -28,6 +28,32 @@ func writeProgram(b *bytes.Buffer, n *Node, indent int) {
 	}
 }
 
+func isTypeKind(kind string) bool {
+	switch kind {
+	case "integral_type", "floating_point_type", "void_type", "array_type", "type_identifier":
+		return true
+	default:
+		return false
+	}
+}
+
+func writeType(b *bytes.Buffer, n *Node) {
+	if n == nil {
+		return
+	}
+	switch n.Kind {
+	case "array_type":
+		if len(n.Children) > 0 {
+			writeType(b, n.Children[0])
+		}
+		b.WriteString("[]")
+	case "integral_type", "floating_point_type", "void_type", "type_identifier":
+		b.WriteString(n.Text)
+	default:
+		writeExpr(b, n, 0)
+	}
+}
+
 func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	ind := strings.Repeat("    ", indent)
 	switch n.Kind {
@@ -87,8 +113,10 @@ func writeField(b *bytes.Buffer, n *Node, indent int) {
 	}
 	ind := strings.Repeat("    ", indent)
 	b.WriteString(ind)
-	b.WriteString("static int[] ")
-	vd := n.Children[0]
+	b.WriteString("static ")
+	writeType(b, n.Children[0])
+	b.WriteByte(' ')
+	vd := n.Children[1]
 	if len(vd.Children) > 0 {
 		b.WriteString(vd.Children[0].Text)
 	}
@@ -105,8 +133,9 @@ func writeLocalVar(b *bytes.Buffer, n *Node, indent int) {
 	}
 	ind := strings.Repeat("    ", indent)
 	b.WriteString(ind)
-	b.WriteString("int ")
-	vd := n.Children[0]
+	writeType(b, n.Children[0])
+	b.WriteByte(' ')
+	vd := n.Children[1]
 	if len(vd.Children) > 0 {
 		b.WriteString(vd.Children[0].Text)
 	}
@@ -122,25 +151,38 @@ func writeMethod(b *bytes.Buffer, n *Node, indent int) {
 		return
 	}
 	ind := strings.Repeat("    ", indent)
-	name := n.Children[0].Text
 	b.WriteString(ind)
-	switch name {
-	case "main":
-		b.WriteString("public static void ")
-	case "twoSum":
-		b.WriteString("static int[] ")
-	default:
-		b.WriteString("static void ")
+	idx := 0
+	var name string
+	if isTypeKind(n.Children[0].Kind) {
+		name = n.Children[1].Text
+		if name == "main" {
+			b.WriteString("public static ")
+		} else {
+			b.WriteString("static ")
+		}
+		writeType(b, n.Children[0])
+		b.WriteByte(' ')
+		idx = 2
+	} else {
+		name = n.Children[0].Text
+		if name == "main" {
+			b.WriteString("public static void ")
+		} else {
+			b.WriteString("static void ")
+		}
+		idx = 1
 	}
 	b.WriteString(name)
-	if len(n.Children) > 1 {
-		writeParameters(b, n.Children[1])
+	if idx < len(n.Children) && n.Children[idx].Kind == "formal_parameters" {
+		writeParameters(b, n.Children[idx])
+		idx++
 	} else {
 		b.WriteString("()")
 	}
-	if len(n.Children) > 2 {
+	if idx < len(n.Children) {
 		b.WriteString(" {\n")
-		writeProgram(b, n.Children[2], indent+1)
+		writeProgram(b, n.Children[idx], indent+1)
 		b.WriteString(ind)
 		b.WriteString("}\n")
 	} else {
@@ -155,12 +197,12 @@ func writeParameters(b *bytes.Buffer, n *Node) {
 			b.WriteString(", ")
 		}
 		if p.Kind == "formal_parameter" {
-			if len(p.Children) == 2 && p.Children[0].Kind == "array_type" {
-				b.WriteString("String[] ")
+			if len(p.Children) == 2 {
+				writeType(b, p.Children[0])
+				b.WriteByte(' ')
 				b.WriteString(p.Children[1].Text)
-			} else if len(p.Children) >= 1 {
-				b.WriteString("int ")
-				b.WriteString(p.Children[len(p.Children)-1].Text)
+			} else if len(p.Children) == 1 {
+				writeType(b, p.Children[0])
 			}
 		}
 	}
@@ -176,7 +218,10 @@ func writeFor(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString("for (")
 	init := n.Children[0]
 	if init.Kind == "local_variable_declaration" {
-		writeLocalVar(b, init, 0)
+		var tmp bytes.Buffer
+		writeLocalVar(&tmp, init, 0)
+		s := strings.TrimSuffix(tmp.String(), ";")
+		b.WriteString(s)
 	} else {
 		writeExpr(b, init, indent)
 	}
@@ -222,7 +267,8 @@ func writeArgumentList(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "decimal_integer_literal", "true", "false":
+	case "identifier", "decimal_integer_literal", "true", "false",
+		"integral_type", "floating_point_type", "void_type", "type_identifier":
 		b.WriteString(n.Text)
 	case "method_invocation":
 		if len(n.Children) >= 2 {
@@ -246,11 +292,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "array_creation_expression":
-		b.WriteString("new int[]{")
 		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
+			b.WriteString("new ")
+			writeType(b, n.Children[0])
+			b.WriteString("[]{")
+			if len(n.Children) > 1 {
+				writeExpr(b, n.Children[1], indent)
+			}
+			b.WriteString("}")
 		}
-		b.WriteString("}")
 	case "array_initializer":
 		for i, c := range n.Children {
 			if i > 0 {

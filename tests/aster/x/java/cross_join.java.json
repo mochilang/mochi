@@ -144,6 +144,10 @@
                         "kind": "field_declaration",
                         "children": [
                           {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
+                          {
                             "kind": "variable_declarator",
                             "children": [
                               {
@@ -185,6 +189,10 @@
                               {
                                 "kind": "formal_parameter",
                                 "children": [
+                                  {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
                                   {
                                     "kind": "identifier",
                                     "text": "id"
@@ -270,6 +278,10 @@
                       {
                         "kind": "method_declaration",
                         "children": [
+                          {
+                            "kind": "boolean_type",
+                            "text": "boolean"
+                          },
                           {
                             "kind": "identifier",
                             "text": "containsKey"
@@ -533,6 +545,10 @@
                         "kind": "field_declaration",
                         "children": [
                           {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
+                          {
                             "kind": "variable_declarator",
                             "children": [
                               {
@@ -547,6 +563,10 @@
                         "kind": "field_declaration",
                         "children": [
                           {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
+                          {
                             "kind": "variable_declarator",
                             "children": [
                               {
@@ -560,6 +580,10 @@
                       {
                         "kind": "field_declaration",
                         "children": [
+                          {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
                           {
                             "kind": "variable_declarator",
                             "children": [
@@ -585,6 +609,10 @@
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
+                                  {
                                     "kind": "identifier",
                                     "text": "id"
                                   }
@@ -594,6 +622,10 @@
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
+                                  {
                                     "kind": "identifier",
                                     "text": "customerId"
                                   }
@@ -602,6 +634,10 @@
                               {
                                 "kind": "formal_parameter",
                                 "children": [
+                                  {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
                                   {
                                     "kind": "identifier",
                                     "text": "total"
@@ -701,6 +737,10 @@
                       {
                         "kind": "method_declaration",
                         "children": [
+                          {
+                            "kind": "boolean_type",
+                            "text": "boolean"
+                          },
                           {
                             "kind": "identifier",
                             "text": "containsKey"
@@ -1344,6 +1384,10 @@
                                     "kind": "local_variable_declaration",
                                     "children": [
                                       {
+                                        "kind": "integral_type",
+                                        "text": "int"
+                                      },
+                                      {
                                         "kind": "variable_declarator",
                                         "children": [
                                           {
@@ -1361,6 +1405,10 @@
                                   {
                                     "kind": "local_variable_declaration",
                                     "children": [
+                                      {
+                                        "kind": "integral_type",
+                                        "text": "int"
+                                      },
                                       {
                                         "kind": "variable_declarator",
                                         "children": [
@@ -1387,6 +1435,10 @@
                                       {
                                         "kind": "local_variable_declaration",
                                         "children": [
+                                          {
+                                            "kind": "integral_type",
+                                            "text": "int"
+                                          },
                                           {
                                             "kind": "variable_declarator",
                                             "children": [
@@ -1614,6 +1666,10 @@
                         "kind": "field_declaration",
                         "children": [
                           {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
+                          {
                             "kind": "variable_declarator",
                             "children": [
                               {
@@ -1627,6 +1683,10 @@
                       {
                         "kind": "field_declaration",
                         "children": [
+                          {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
                           {
                             "kind": "variable_declarator",
                             "children": [
@@ -1660,6 +1720,10 @@
                         "kind": "field_declaration",
                         "children": [
                           {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
+                          {
                             "kind": "variable_declarator",
                             "children": [
                               {
@@ -1684,6 +1748,10 @@
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
+                                  {
                                     "kind": "identifier",
                                     "text": "orderId"
                                   }
@@ -1692,6 +1760,10 @@
                               {
                                 "kind": "formal_parameter",
                                 "children": [
+                                  {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
                                   {
                                     "kind": "identifier",
                                     "text": "orderCustomerId"
@@ -1714,6 +1786,10 @@
                               {
                                 "kind": "formal_parameter",
                                 "children": [
+                                  {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
                                   {
                                     "kind": "identifier",
                                     "text": "orderTotal"
@@ -1840,6 +1916,10 @@
                       {
                         "kind": "method_declaration",
                         "children": [
+                          {
+                            "kind": "boolean_type",
+                            "text": "boolean"
+                          },
                           {
                             "kind": "identifier",
                             "text": "containsKey"
@@ -2069,6 +2149,10 @@
               {
                 "kind": "method_declaration",
                 "children": [
+                  {
+                    "kind": "void_type",
+                    "text": "void"
+                  },
                   {
                     "kind": "identifier",
                     "text": "main"

@@ -16,6 +16,15 @@
                 "kind": "field_declaration",
                 "children": [
                   {
+                    "kind": "array_type",
+                    "children": [
+                      {
+                        "kind": "integral_type",
+                        "text": "int"
+                      }
+                    ]
+                  },
+                  {
                     "kind": "variable_declarator",
                     "children": [
                       {
@@ -35,6 +44,10 @@
                               {
                                 "kind": "array_creation_expression",
                                 "children": [
+                                  {
+                                    "kind": "integral_type",
+                                    "text": "int"
+                                  },
                                   {
                                     "kind": "array_initializer",
                                     "children": [
@@ -74,6 +87,15 @@
                 "kind": "method_declaration",
                 "children": [
                   {
+                    "kind": "array_type",
+                    "children": [
+                      {
+                        "kind": "integral_type",
+                        "text": "int"
+                      }
+                    ]
+                  },
+                  {
                     "kind": "identifier",
                     "text": "twoSum"
                   },
@@ -84,6 +106,15 @@
                         "kind": "formal_parameter",
                         "children": [
                           {
+                            "kind": "array_type",
+                            "children": [
+                              {
+                                "kind": "integral_type",
+                                "text": "int"
+                              }
+                            ]
+                          },
+                          {
                             "kind": "identifier",
                             "text": "nums"
                           }
@@ -92,6 +123,10 @@
                       {
                         "kind": "formal_parameter",
                         "children": [
+                          {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
                           {
                             "kind": "identifier",
                             "text": "target"
@@ -106,6 +141,10 @@
                       {
                         "kind": "local_variable_declaration",
                         "children": [
+                          {
+                            "kind": "integral_type",
+                            "text": "int"
+                          },
                           {
                             "kind": "variable_declarator",
                             "children": [
@@ -136,6 +175,10 @@
                           {
                             "kind": "local_variable_declaration",
                             "children": [
+                              {
+                                "kind": "integral_type",
+                                "text": "int"
+                              },
                               {
                                 "kind": "variable_declarator",
                                 "children": [
@@ -182,6 +225,10 @@
                                   {
                                     "kind": "local_variable_declaration",
                                     "children": [
+                                      {
+                                        "kind": "integral_type",
+                                        "text": "int"
+                                      },
                                       {
                                         "kind": "variable_declarator",
                                         "children": [
@@ -289,6 +336,10 @@
                                                     "kind": "array_creation_expression",
                                                     "children": [
                                                       {
+                                                        "kind": "integral_type",
+                                                        "text": "int"
+                                                      },
+                                                      {
                                                         "kind": "array_initializer",
                                                         "children": [
                                                           {
@@ -324,6 +375,10 @@
                             "kind": "array_creation_expression",
                             "children": [
                               {
+                                "kind": "integral_type",
+                                "text": "int"
+                              },
+                              {
                                 "kind": "array_initializer",
                                 "children": [
                                   {
@@ -357,6 +412,10 @@
               {
                 "kind": "method_declaration",
                 "children": [
+                  {
+                    "kind": "void_type",
+                    "text": "void"
+                  },
                   {
                     "kind": "identifier",
                     "text": "main"
