@@ -1,0 +1,201 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "initialization main"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "style_check(-singleton)"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "factorial",
+          "children": [
+            {
+              "kind": "number",
+              "text": "0"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "factorial",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "N"
+            },
+            {
+              "kind": "atom",
+              "text": "F"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003e",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "N"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "N1"
+                    },
+                    {
+                      "kind": "-",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "factorial",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N1"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "F1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "is",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "F"
+                        },
+                        {
+                          "kind": "*",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "N"
+                            },
+                            {
+                              "kind": "var",
+                              "text": "F1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "factorial",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "5"
+                },
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

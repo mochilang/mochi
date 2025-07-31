@@ -168,6 +168,30 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 		} else {
 			writeFunctor(b, n, indent)
 		}
+	case "*":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent, true)
+			b.WriteString(" * ")
+			writeTerm(b, n.Children[1], indent, true)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "/":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent, true)
+			b.WriteString(" / ")
+			writeTerm(b, n.Children[1], indent, true)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "mod":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent, true)
+			b.WriteString(" mod ")
+			writeTerm(b, n.Children[1], indent, true)
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case "=:=", "=\\=", "<", "<=", ">", ">=":
 		if len(n.Children) == 2 {
 			writeTerm(b, n.Children[0], indent, true)

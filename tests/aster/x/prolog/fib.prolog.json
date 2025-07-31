@@ -1,0 +1,268 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "initialization main"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "style_check(-singleton)"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "fib",
+          "children": [
+            {
+              "kind": "number",
+              "text": "0"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "fib",
+          "children": [
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "fib",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "N"
+            },
+            {
+              "kind": "atom",
+              "text": "F"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003e",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "N"
+                },
+                {
+                  "kind": "number",
+                  "text": "1"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "N1"
+                    },
+                    {
+                      "kind": "-",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "is",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N2"
+                        },
+                        {
+                          "kind": "-",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "N"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "fib",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "N1"
+                            },
+                            {
+                              "kind": "var",
+                              "text": "F1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": "fib",
+                              "children": [
+                                {
+                                  "kind": "var",
+                                  "text": "N2"
+                                },
+                                {
+                                  "kind": "var",
+                                  "text": "F2"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "is",
+                              "children": [
+                                {
+                                  "kind": "var",
+                                  "text": "F"
+                                },
+                                {
+                                  "kind": "+",
+                                  "children": [
+                                    {
+                                      "kind": "var",
+                                      "text": "F1"
+                                    },
+                                    {
+                                      "kind": "var",
+                                      "text": "F2"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "fib",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "6"
+                },
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
