@@ -37,14 +37,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.cs" || base == "cross_join.cs" {
-			selected = append(selected, f)
-		}
+	if len(files) > 5 {
+		files = files[:5]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".cs")
@@ -94,6 +89,7 @@ func TestPrint_Golden(t *testing.T) {
 				t.Fatal(err)
 			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
+			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, got)
@@ -103,7 +99,9 @@ func TestPrint_Golden(t *testing.T) {
 			proj2 := filepath.Join(tmp2, "orig.csproj")
 			_ = os.WriteFile(proj2, []byte(csproj), 0644)
 			_ = os.WriteFile(filepath.Join(tmp2, "Program.cs"), data, 0644)
-			want, err := exec.Command("dotnet", "run", "--project", proj2).CombinedOutput()
+			cmd2 := exec.Command("dotnet", "run", "--project", proj2)
+			cmd2.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
+			want, err := cmd2.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, want)
 				return
