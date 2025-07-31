@@ -102,6 +102,13 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	}
 
 	node := &Node{Kind: n.Kind()}
+	// Store the raw text for certain nodes so that Print can faithfully
+	// reconstruct the original source when important tokens are not part of
+	// the named children (for example the minus sign of a negative integer
+	// inside a token tree).
+	if n.Kind() == "token_tree" {
+		node.Text = n.Utf8Text(src)
+	}
 	if opt.Positions {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
@@ -113,7 +120,17 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 
 	if n.NamedChildCount() == 0 {
 		if isValueNode(n.Kind()) {
-			node.Text = n.Utf8Text(src)
+			text := n.Utf8Text(src)
+			// When the literal is preceded by a minus sign tree-sitter
+			// does not include it in the integer token. Capture it so
+			// we can print negative numbers correctly.
+			if n.Kind() == "integer_literal" {
+				start := n.StartByte()
+				if start > 0 && src[start-1] == '-' {
+					text = "-" + text
+				}
+			}
+			node.Text = text
 		} else {
 			return nil
 		}
