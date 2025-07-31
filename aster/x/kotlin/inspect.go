@@ -11,7 +11,8 @@ import (
 
 // Program represents a parsed Kotlin source file.
 type Program struct {
-	Root SourceFile `json:"root"`
+    Root   SourceFile `json:"root"`
+    Source string     `json:"-"`
 }
 
 // Option configures how Inspect behaves.
@@ -31,11 +32,11 @@ func Inspect(src string, opts ...Option) (*Program, error) {
 	p.SetLanguage(sitter.NewLanguage(ts.Language()))
 	data := []byte(src)
 	tree := p.Parse(data, nil)
-	root := convert(tree.RootNode(), data, withPos)
-	if root == nil {
-		return &Program{}, nil
-	}
-	return &Program{Root: SourceFile{Node: *root}}, nil
+        root := convert(tree.RootNode(), data, withPos)
+        if root == nil {
+                return &Program{Source: src}, nil
+        }
+        return &Program{Root: SourceFile{Node: *root}, Source: src}, nil
 }
 
 // MarshalJSON ensures stable output for Program.
