@@ -1,0 +1,108 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "initialization main"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "style_check(-singleton)"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ";",
+          "children": [
+            {
+              "kind": "-\u003e",
+              "children": [
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "=:=",
+                      "children": [
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "\u003e",
+                      "children": [
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "writeln",
+                  "children": [
+                    {
+                      "kind": "bool",
+                      "text": "true"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "bool",
+                  "text": "false"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
