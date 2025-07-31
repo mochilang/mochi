@@ -2,9 +2,9 @@
 
 Generated files for Kotlin programs live under `tests/aster/x/kotlin`.
 
-Last updated: 2025-07-31 18:43 GMT+7
+Last updated: 2025-07-31 19:47 GMT+7
 
-## Golden Test Checklist (50/50)
+## Golden Test Checklist (75/75)
 - [x] append_builtin.kt
 - [x] avg_builtin.kt
 - [x] basic_compare.kt
@@ -55,4 +55,29 @@ Last updated: 2025-07-31 18:43 GMT+7
 - [x] list_assign.kt
 - [x] list_index.kt
 - [x] list_nested_assign.kt
+- [x] list_set_ops.kt
+- [x] load_jsonl.kt
+- [x] load_yaml.kt
+- [x] map_assign.kt
+- [x] map_in_operator.kt
+- [x] map_index.kt
+- [x] map_int_key.kt
+- [x] map_literal_dynamic.kt
+- [x] map_membership.kt
+- [x] map_nested_assign.kt
+- [x] match_expr.kt
+- [x] match_full.kt
+- [x] math_ops.kt
+- [x] membership.kt
+- [x] min_max_builtin.kt
+- [x] nested_function.kt
+- [x] order_by_map.kt
+- [x] outer_join.kt
+- [x] partial_application.kt
+- [x] print_hello.kt
+- [x] pure_fold.kt
+- [x] pure_global_fold.kt
+- [x] python_auto.kt
+- [x] python_math.kt
+- [x] query_sum_select.kt
 

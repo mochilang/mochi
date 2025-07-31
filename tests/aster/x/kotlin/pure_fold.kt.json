@@ -1,0 +1,148 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "triple"
+          },
+          {
+            "kind": "function_value_parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "x"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "user_type",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "Int"
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "return_expression",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "*",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "x"
+                          },
+                          {
+                            "kind": "number_literal",
+                            "text": "3"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "triple"
+                                  },
+                                  {
+                                    "kind": "value_arguments",
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "binary_expression",
+                                            "text": "+",
+                                            "children": [
+                                              {
+                                                "kind": "number_literal",
+                                                "text": "1"
+                                              },
+                                              {
+                                                "kind": "number_literal",
+                                                "text": "2"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

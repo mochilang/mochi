@@ -1,0 +1,230 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "add"
+          },
+          {
+            "kind": "function_value_parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "a"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "b"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "user_type",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "Int"
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "return_expression",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "a"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "add5"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "lambda_literal",
+                        "children": [
+                          {
+                            "kind": "lambda_parameters",
+                            "children": [
+                              {
+                                "kind": "variable_declaration",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "p1"
+                                  },
+                                  {
+                                    "kind": "user_type",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "add"
+                              },
+                              {
+                                "kind": "value_arguments",
+                                "children": [
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "number_literal",
+                                        "text": "5"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "p1"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "add5"
+                                  },
+                                  {
+                                    "kind": "value_arguments",
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "number_literal",
+                                            "text": "3"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
