@@ -96,6 +96,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteByte('\n')
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break\n")
+	case "continue_statement":
+		b.WriteString(ind)
+		b.WriteString("continue\n")
 	case "function_definition":
 		if len(n.Children) >= 2 {
 			b.WriteString(ind)
@@ -364,6 +370,22 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte('=')
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "lambda":
+		b.WriteString("lambda ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(": ")
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "lambda_parameters":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
 		}
 	case "conditional_expression":
 		if len(n.Children) == 3 {

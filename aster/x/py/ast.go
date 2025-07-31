@@ -81,7 +81,10 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		if isValueNode(node.Kind) {
 			node.Text = n.Utf8Text(src)
 		} else {
-			if node.Kind != "block" {
+			switch node.Kind {
+			case "block", "break_statement", "continue_statement":
+				// keep empty node
+			default:
 				return nil
 			}
 		}
@@ -106,7 +109,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" && !isValueNode(node.Kind) && node.Kind != "block" {
+	if len(node.Children) == 0 && node.Text == "" && !isValueNode(node.Kind) && node.Kind != "block" && node.Kind != "break_statement" && node.Kind != "continue_statement" {
 		return nil
 	}
 
