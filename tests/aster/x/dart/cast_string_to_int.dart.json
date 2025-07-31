@@ -10,6 +10,10 @@
         "kind": "function_signature",
         "children": [
           {
+            "kind": "void_type",
+            "text": "void"
+          },
+          {
             "kind": "identifier",
             "text": "main"
           }
@@ -42,7 +46,7 @@
                                 "children": [
                                   {
                                     "kind": "string_literal",
-                                    "text": "\"hello\""
+                                    "text": "\"1995\""
                                   }
                                 ]
                               }

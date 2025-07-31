@@ -27,11 +27,64 @@ func indent(b *bytes.Buffer, n int) {
 	}
 }
 
+func writeImport(b *bytes.Buffer, n *Node, indentLevel int) {
+	indent(b, indentLevel)
+	uri := findImportURI(n)
+	if uri != "" {
+		b.WriteString("import ")
+		b.WriteString(uri)
+		b.WriteString(";")
+		b.WriteByte('\n')
+	}
+}
+
+func findImportURI(n *Node) string {
+	if n == nil {
+		return ""
+	}
+	if n.Kind == "string_literal" {
+		return n.Text
+	}
+	for _, c := range n.Children {
+		if s := findImportURI(c); s != "" {
+			return s
+		}
+	}
+	return ""
+}
+
+func writeTopLevelVar(b *bytes.Buffer, typ *Node, list *Node, indentLevel int) {
+	indent(b, indentLevel)
+	writeExpr(b, typ)
+	b.WriteByte(' ')
+	if len(list.Children) > 0 {
+		id := list.Children[0]
+		if len(id.Children) > 0 {
+			writeExpr(b, id.Children[0])
+		}
+		if len(id.Children) > 1 {
+			b.WriteString(" = ")
+			writeExpr(b, id.Children[1])
+		}
+	}
+	b.WriteString(";")
+	b.WriteByte('\n')
+}
+
 func writeProgram(b *bytes.Buffer, n *ProgramNode, indentLevel int) {
 	for i := 0; i < len(n.Children); i++ {
 		c := n.Children[i]
 		if c.Kind == "function_signature" && i+1 < len(n.Children) && n.Children[i+1].Kind == "function_body" {
 			writeFunction(b, c, n.Children[i+1], indentLevel)
+			i++
+			continue
+		}
+		if c.Kind == "import_or_export" {
+			writeImport(b, c, indentLevel)
+			continue
+		}
+		if c.Kind == "type_identifier" && i+1 < len(n.Children) && n.Children[i+1].Kind == "initialized_identifier_list" {
+			writeTopLevelVar(b, c, n.Children[i+1], indentLevel)
 			i++
 			continue
 		}
@@ -113,6 +166,14 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeVarDef(b, n.Children[0])
 		}
 		b.WriteString(";")
+		b.WriteByte('\n')
+	case "break_statement":
+		indent(b, indentLevel)
+		b.WriteString("break;")
+		b.WriteByte('\n')
+	case "continue_statement":
+		indent(b, indentLevel)
+		b.WriteString("continue;")
 		b.WriteByte('\n')
 	case "for_statement":
 		if len(n.Children) >= 2 {
@@ -575,6 +636,57 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 			for i := 1; i < len(n.Children); i++ {
 				writeExpr(b, n.Children[i])
 			}
+		}
+	case "if_element":
+		if len(n.Children) >= 2 {
+			b.WriteString("if (")
+			writeExpr(b, n.Children[0])
+			b.WriteString(") ")
+			for i := 1; i < len(n.Children); i++ {
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "logical_and_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+			for i := 1; i < len(n.Children); i++ {
+				b.WriteString(" && ")
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "logical_or_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+			for i := 1; i < len(n.Children); i++ {
+				b.WriteString(" || ")
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "assignment_expression":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0])
+			b.WriteString(" = ")
+			for i := 1; i < len(n.Children); i++ {
+				if i > 1 {
+					// extra children like selectors
+				}
+				writeExpr(b, n.Children[i])
+			}
+		}
+	case "set_or_map_literal":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c)
+		}
+		b.WriteByte('}')
+	case "pair":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0])
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1])
 		}
 	case "this":
 		b.WriteString("this")
