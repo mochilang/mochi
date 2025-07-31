@@ -37,10 +37,10 @@ func TestPrint_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	sort.Strings(files)
-	if len(files) > 50 {
-		files = files[:50]
-	}
+       sort.Strings(files)
+       if len(files) > 75 {
+               files = files[:75]
+       }
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".dart")

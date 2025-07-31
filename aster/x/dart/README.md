@@ -54,5 +54,30 @@ This folder contains golden test data for printing Dart ASTs back into source co
 - [x] 48. let_and_print.dart
 - [x] 49. list_assign.dart
 - [x] 50. list_index.dart
+- [x] 51. list_nested_assign.dart
+- [x] 52. list_set_ops.dart
+- [x] 53. load_yaml.dart
+- [x] 54. map_assign.dart
+- [x] 55. map_in_operator.dart
+- [x] 56. map_index.dart
+- [x] 57. map_int_key.dart
+- [x] 58. map_literal_dynamic.dart
+- [x] 59. map_membership.dart
+- [x] 60. map_nested_assign.dart
+- [x] 61. match_expr.dart
+- [x] 62. match_full.dart
+- [x] 63. math_ops.dart
+- [x] 64. membership.dart
+- [x] 65. min_max_builtin.dart
+- [x] 66. nested_function.dart
+- [x] 67. order_by_map.dart
+- [x] 68. outer_join.dart
+- [x] 69. partial_application.dart
+- [x] 70. print_hello.dart
+- [x] 71. pure_fold.dart
+- [x] 72. pure_global_fold.dart
+- [x] 73. python_auto.dart
+- [x] 74. python_math.dart
+- [x] 75. query_sum_select.dart
 
-Completed 50/50 at 2025-07-31 18:35 GMT+7
+Completed 75/75 at 2025-07-31 19:11 GMT+7
