@@ -68,6 +68,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		writeBlock(b, n, indentLevel)
 	case "if_statement":
 		writeIfStmt(b, n, indentLevel)
+	case "assignment_statement":
+		writeAssignmentStmt(b, n, indentLevel)
 	default:
 		// treat as expression statement
 		b.WriteString(indent(indentLevel))
@@ -359,16 +361,8 @@ func writeBinaryExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		return
 	}
 	left, right := n.Children[0], n.Children[1]
-	op := "+"
-	if right.Kind == "identifier" && right.Text == "n" {
-		op = "<"
-	} else if right.Kind == "identifier" && right.Text == "target" {
-		op = "=="
-	} else if left.Kind == "int_literal" && left.Text == "0" && right.Kind == "int_literal" && right.Text == "1" {
-		op = "-"
-	} else if right.Kind == "int_literal" && right.Text == "1" {
-		op = "+"
-	} else if left.Kind == "index_expression" && right.Kind == "index_expression" {
+	op := n.Text
+	if op == "" {
 		op = "+"
 	}
 	writeExpr(b, left, indentLevel)
@@ -388,4 +382,15 @@ func containsFmt(n *Node) bool {
 		}
 	}
 	return false
+}
+
+func writeAssignmentStmt(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) != 2 {
+		return
+	}
+	b.WriteString(indent(indentLevel))
+	writeExpr(b, n.Children[0], indentLevel)
+	b.WriteString(" = ")
+	writeExpr(b, n.Children[1], indentLevel)
+	b.WriteByte('\n')
 }
