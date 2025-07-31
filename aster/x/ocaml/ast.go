@@ -129,7 +129,9 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "comment", "constructor_name", "module_name", "number",
 		"rel_operator", "string", "string_content", "unit",
-		"value_name", "value_pattern":
+		"value_name", "value_pattern", "boolean",
+		"add_operator", "sign_operator", "prefix_operator",
+		"assign_operator":
 		return true
 	default:
 		return false
