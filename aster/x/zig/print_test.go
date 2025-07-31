@@ -22,9 +22,10 @@ func shouldUpdate() bool {
 }
 
 func TestPrint_Golden(t *testing.T) {
-	if _, err := zigcode.EnsureZig(); err != nil {
-		t.Skipf("zig not installed: %v", err)
-	}
+       zigc, err := zigcode.EnsureZig()
+       if err != nil {
+               t.Skipf("zig not installed: %v", err)
+       }
 	root := repoRoot(t)
 	srcDir := filepath.Join(root, "tests", "transpiler", "x", "zig")
 	outDir := filepath.Join(root, "tests", "aster", "x", "zig")
@@ -35,9 +36,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 10 {
-		files = files[:10]
-	}
+       if len(files) > 25 {
+               files = files[:25]
+       }
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".zig")
@@ -79,13 +80,13 @@ func TestPrint_Golden(t *testing.T) {
 					t.Fatalf("write out: %v", err)
 				}
 			}
-			cmd := exec.Command("zig", "run", filepath.Base(outPath))
-			cmd.Dir = filepath.Dir(outPath)
-			got, err := cmd.CombinedOutput()
-			if err != nil {
-				t.Fatalf("run printed: %v\n%s", err, got)
-			}
-			wantCmd := exec.Command("zig", "run", filepath.Base(src))
+                       cmd := exec.Command(zigc, "run", filepath.Base(outPath))
+                       cmd.Dir = filepath.Dir(outPath)
+                       got, err := cmd.CombinedOutput()
+                       if err != nil {
+                               t.Fatalf("run printed: %v\n%s", err, got)
+                       }
+                       wantCmd := exec.Command(zigc, "run", filepath.Base(src))
 			wantCmd.Dir = filepath.Dir(src)
 			want, err := wantCmd.CombinedOutput()
 			if err != nil {
