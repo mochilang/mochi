@@ -1,0 +1,7 @@
+jsexpr->string: expected argument of type <legal JSON key value>; given: "age"
+  context...:
+   /usr/share/racket/collects/json/main.rkt:: loop
+   /usr/share/racket/collects/json/main.rkt:: write-json*
+   /usr/share/racket/collects/json/main.rkt:: jsexpr->string
+   /usr/share/racket/collects/racket/private/for.rkt:
+   body of ""
