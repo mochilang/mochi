@@ -274,14 +274,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			for _, r := range n.Children[1:] {
 				b.WriteByte(' ')
-				if r.Kind == "for_in_clause" {
+				switch r.Kind {
+				case "for_in_clause":
 					b.WriteString("for ")
 					if len(r.Children) >= 2 {
 						writeExpr(b, r.Children[0], indent)
 						b.WriteString(" in ")
 						writeExpr(b, r.Children[1], indent)
 					}
-				} else {
+				case "if_clause":
+					b.WriteString("if ")
+					if len(r.Children) > 0 {
+						writeExpr(b, r.Children[0], indent)
+					}
+				default:
 					writeExpr(b, r, indent)
 				}
 			}
@@ -401,6 +407,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('[')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
+		}
+	case "slice":
+		switch len(n.Children) {
+		case 0:
+			b.WriteString(":")
+		case 1:
+			b.WriteByte(':')
+			writeExpr(b, n.Children[0], indent)
+		default:
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(':')
+			writeExpr(b, n.Children[1], indent)
 		}
 	default:
 		// unsupported; write kind
