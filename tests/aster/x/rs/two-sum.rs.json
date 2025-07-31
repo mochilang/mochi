@@ -302,6 +302,7 @@
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "text": "+",
                                             "start": 5,
                                             "end": 5,
                                             "startCol": 18,
@@ -367,6 +368,7 @@
                                                 "children": [
                                                   {
                                                     "kind": "binary_expression",
+                                                    "text": "==",
                                                     "start": 6,
                                                     "end": 6,
                                                     "startCol": 16,
@@ -381,6 +383,7 @@
                                                         "children": [
                                                           {
                                                             "kind": "binary_expression",
+                                                            "text": "+",
                                                             "start": 6,
                                                             "end": 6,
                                                             "startCol": 17,
