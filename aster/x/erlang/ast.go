@@ -72,9 +72,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	if n == nil {
 		return nil
 	}
-	start := n.StartPoint()
-	end := n.EndPoint()
-	node := &Node{Kind: n.Type()}
+	start := n.StartPosition()
+	end := n.EndPosition()
+	node := &Node{Kind: n.Kind()}
 	if opt.Positions {
 		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
@@ -83,14 +83,14 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Type()) {
-			node.Text = n.Content(src)
+		if isValueNode(n.Kind()) {
+			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
 		}
 	}
 
-	for i := 0; i < int(n.NamedChildCount()); i++ {
+	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
 			continue

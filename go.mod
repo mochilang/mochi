@@ -59,7 +59,10 @@ require (
 	github.com/tree-sitter/tree-sitter-scheme v0.24.7
 )
 
-require github.com/tree-sitter/tree-sitter-elixir v0.3.4
+require (
+	github.com/tree-sitter/tree-sitter-elixir v0.3.4
+	github.com/tree-sitter/tree-sitter-erlang v0.0.0-20250613112728-07dad1469ecb
+)
 
 require (
 	github.com/alexflint/go-scalar v1.2.0 // indirect
@@ -124,3 +127,5 @@ require (
 )
 
 replace github.com/tree-sitter/tree-sitter-elixir => github.com/elixir-lang/tree-sitter-elixir v0.3.4
+
+replace github.com/tree-sitter/tree-sitter-erlang => github.com/WhatsApp/tree-sitter-erlang v0.0.0-20250613112728-07dad1469ecb
