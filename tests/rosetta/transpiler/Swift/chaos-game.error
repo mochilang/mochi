@@ -1,0 +1,45 @@
+signal: illegal instruction
+
+*** Signal 4: Backtracing from 0x557dcbbc8022... done ***
+
+*** Program crashed: Illegal instruction at 0x0000557dcbbc8022 ***
+
+Thread 0 "main" crashed:
+
+0      0x0000557dcbbc8022 main + 82 in main
+1 [ra] 0x00007feccb5811ca <unknown> in libc.so.6
+2 [ra] 0x00007feccb58128b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x18573120ebfe7101  1753924597352132865
+rdx 0x00007ffe22118378  7c 95 11 22 fe 7f 00 00 00 00 00 00 00 00 00 00  |··"þ···········
+rcx 0x00000000688ac3f5  1753924597
+rbx 0x000000000001d894  120980
+rsi 0x0000000000000000  0
+rdi 0x00007ffe22118050  78 83 11 22 fe 7f 00 00 e0 02 0c cd ec 7f 00 00  x··"þ···à··Íì···
+rbp 0x00007ffe22118250  f0 82 11 22 fe 7f 00 00 ca 11 58 cb ec 7f 00 00  ð··"þ···Ê·XËì···
+rsp 0x00007ffe22118240  00 71 fe eb 20 31 57 18 00 30 f3 00 00 00 00 00  ·qþë 1W··0ó·····
+ r8 0x00007feccd081080  9c d8 01 00 01 00 00 00 98 64 32 6b 31 02 00 00  ·Ø·······d2k1···
+ r9 0x00007feccd081080  9c d8 01 00 01 00 00 00 98 64 32 6b 31 02 00 00  ·Ø·······d2k1···
+r10 0x00007feccba52630  65 18 0a 00 12 03 0c 00 50 39 13 00 00 00 00 00  e·······P9······
+r11 0x00007feccbb70950  f2 0f 58 05 f8 14 3d 00 c3 0f 1f 80 00 00 00 00  ò·X·ø·=·Ã·······
+r12 0x0000000000000001  1
+r13 0x0000000000000000  0
+r14 0x0000557dcbbc9c88  03 00 00 00 00 00 00 00 e8 9f bc cb 7d 55 00 00  ········è·¼Ë}U··
+r15 0x00007feccd0bf000  e0 02 0c cd ec 7f 00 00 15 00 00 00 00 00 00 00  à··Íì···········
+rip 0x0000557dcbbc8022  0f 0b 66 66 66 2e 0f 1f 84 00 00 00 00 00 55 48  ··fff.········UH
+
+rflags 0x0000000000010202  
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (18 omitted):
+
+0x0000557dcbbc5000–0x0000557dcbbc8990 6e1a257c350be739a8cae3b31cc38cf6fc66e5e2 main      /tmp/TestSwiftTranspiler_Rosetta_Golden1280643636/001/main
+0x00007feccb557000–0x00007feccb706cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so.6
+
+Backtrace took 0.00s
+

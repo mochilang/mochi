@@ -1,0 +1,96 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:43:28: warning: forced cast of 'Int' to same type has no effect
+41 |         var sn: Int = 0
+42 |         func New() -> Box {
+43 |             sn = ((sn + 1) as! Int)
+   |                            `- warning: forced cast of 'Int' to same type has no effect
+44 |             var b: Box = Box(secret: sn)
+45 |             if (sn == 1) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:44:30: error: missing argument for parameter 'Contents' in call
+42 |         func New() -> Box {
+43 |             sn = ((sn + 1) as! Int)
+44 |             var b: Box = Box(secret: sn)
+   |                              `- error: missing argument for parameter 'Contents' in call
+45 |             if (sn == 1) {
+46 |                 b.Contents = "rabbit"
+   :
+59 |     let New = (funcs[0] as! Any)
+60 |     let Count = (funcs[1] as! Any)
+61 |     struct Box {
+   |            `- note: 'init(Contents:secret:)' declared here
+62 |         var Contents: String
+63 |         var secret: Int
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:51:23: warning: forced cast of 'Box' to same type has no effect
+49 |             }
+50 |             
+51 |             return (b as! Box)
+   |                       `- warning: forced cast of 'Box' to same type has no effect
+52 |         }
+53 |         func Count() -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:54:24: warning: forced cast of 'Int' to same type has no effect
+52 |         }
+53 |         func Count() -> Int {
+54 |             return (sn as! Int)
+   |                        `- warning: forced cast of 'Int' to same type has no effect
+55 |         }
+56 |         return ([(New as! Any), (Count as! Any)] as! [Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:56:23: warning: forced cast from '() -> Box' to 'Any' always succeeds; did you mean to use 'as'?
+54 |             return (sn as! Int)
+55 |         }
+56 |         return ([(New as! Any), (Count as! Any)] as! [Any])
+   |                       `- warning: forced cast from '() -> Box' to 'Any' always succeeds; did you mean to use 'as'?
+57 |     }
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:56:40: warning: forced cast from '() -> Int' to 'Any' always succeeds; did you mean to use 'as'?
+54 |             return (sn as! Int)
+55 |         }
+56 |         return ([(New as! Any), (Count as! Any)] as! [Any])
+   |                                        `- warning: forced cast from '() -> Int' to 'Any' always succeeds; did you mean to use 'as'?
+57 |     }
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:56:50: error: cannot convert return expression of type '[Any]' to return type '[() -> Any]'
+54 |             return (sn as! Int)
+55 |         }
+56 |         return ([(New as! Any), (Count as! Any)] as! [Any])
+   |                                                  |- error: cannot convert return expression of type '[Any]' to return type '[() -> Any]'
+   |                                                  `- note: arguments to generic parameter 'Element' ('Any' and '() -> Any') are expected to be equal
+57 |     }
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:58:38: warning: forced cast from '[() -> Any]' to '[Any]' always succeeds; did you mean to use 'as'?
+56 |         return ([(New as! Any), (Count as! Any)] as! [Any])
+57 |     }
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+   |                                      `- warning: forced cast from '[() -> Any]' to '[Any]' always succeeds; did you mean to use 'as'?
+59 |     let New = (funcs[0] as! Any)
+60 |     let Count = (funcs[1] as! Any)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:59:25: warning: forced cast of 'Any' to same type has no effect
+57 |     }
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+59 |     let New = (funcs[0] as! Any)
+   |                         `- warning: forced cast of 'Any' to same type has no effect
+60 |     let Count = (funcs[1] as! Any)
+61 |     struct Box {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:60:27: warning: forced cast of 'Any' to same type has no effect
+58 |     let funcs: [Any] = (newFactory() as! [Any])
+59 |     let New = (funcs[0] as! Any)
+60 |     let Count = (funcs[1] as! Any)
+   |                           `- warning: forced cast of 'Any' to same type has no effect
+61 |     struct Box {
+62 |         var Contents: String
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden203717630/001/main.swift:66:17: error: cannot find 'secret' in scope
+64 |     }
+65 |     func Box_TellSecret(_ self: Box) -> Int {
+66 |         return (secret as! Int)
+   |                 `- error: cannot find 'secret' in scope
+67 |     }
+68 |     let _benchEnd = _now()
