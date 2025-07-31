@@ -35,14 +35,44 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		b.WriteString(n.Text)
 		b.WriteByte('\n')
+	case "future_import_statement":
+		b.WriteString(ind)
+		b.WriteString("from __future__ import ")
+		writeDottedNames(b, n.Children)
+		b.WriteByte('\n')
+	case "import_from_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("from ")
+			writeDottedName(b, n.Children[0])
+			b.WriteString(" import ")
+			writeDottedNames(b, n.Children[1:])
+			b.WriteByte('\n')
+		}
+	case "decorated_definition":
+		if len(n.Children) == 0 {
+			return
+		}
+		for _, d := range n.Children[:len(n.Children)-1] {
+			b.WriteString(ind)
+			writeDecorator(b, d, indent)
+		}
+		writeStmt(b, n.Children[len(n.Children)-1], indent)
+	case "class_definition":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("class ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(":\n")
+			writeBlock(b, n.Children[1], indent+1)
+		}
 	case "expression_statement":
 		if len(n.Children) > 0 {
+			b.WriteString(ind)
 			c := n.Children[0]
 			if c.Kind == "assignment" {
-				b.WriteString(ind)
 				writeAssignment(b, c, indent)
 			} else {
-				b.WriteString(ind)
 				writeExpr(b, c, indent)
 			}
 			b.WriteByte('\n')
@@ -50,6 +80,7 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "assignment":
 		b.WriteString(ind)
 		writeAssignment(b, n, indent)
+		b.WriteByte('\n')
 	case "return_statement":
 		b.WriteString(ind)
 		b.WriteString("return")
@@ -88,7 +119,6 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 	case "block":
 		writeBlock(b, n, indent)
 	default:
-		// treat as expression statement
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
 		b.WriteByte('\n')
@@ -107,7 +137,11 @@ func writeAssignment(b *bytes.Buffer, n *Node, indent int) {
 		return
 	}
 	writeExpr(b, n.Children[0], indent)
-	b.WriteString(" = ")
+	if n.Children[1].Kind == "type" {
+		b.WriteString(": ")
+	} else {
+		b.WriteString(" = ")
+	}
 	writeExpr(b, n.Children[1], indent)
 }
 
@@ -126,8 +160,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "integer", "float", "true", "false", "none":
 		b.WriteString(n.Text)
-	case "string":
-		if len(n.Children) > 0 {
+	case "string", "string_content":
+		if n.Text != "" {
+			fmt.Fprintf(b, "%q", n.Text)
+		} else if len(n.Children) > 0 {
 			fmt.Fprintf(b, "%q", n.Children[0].Text)
 		} else {
 			b.WriteString("\"\"")
@@ -136,11 +172,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte('(')
-			for i, arg := range n.Children[1].Children {
-				if i > 0 {
-					b.WriteString(", ")
+			if len(n.Children) > 1 {
+				for i, arg := range n.Children[1].Children {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					writeExpr(b, arg, indent)
 				}
-				writeExpr(b, arg, indent)
 			}
 			b.WriteByte(')')
 		}
@@ -153,6 +191,53 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(')')
+	case "attribute":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('.')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "list":
+		b.WriteByte('[')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(']')
+	case "list_comprehension":
+		b.WriteByte('[')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+			for _, r := range n.Children[1:] {
+				b.WriteByte(' ')
+				if r.Kind == "for_in_clause" {
+					b.WriteString("for ")
+					if len(r.Children) >= 2 {
+						writeExpr(b, r.Children[0], indent)
+						b.WriteString(" in ")
+						writeExpr(b, r.Children[1], indent)
+					}
+				} else {
+					writeExpr(b, r, indent)
+				}
+			}
+		}
+		b.WriteByte(']')
+	case "for_in_clause":
+		// handled by list comprehension
+	case "type":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "dotted_name":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('.')
+			}
+			writeExpr(b, c, indent)
+		}
 	case "binary_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -170,15 +255,6 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" == ")
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "list":
-		b.WriteByte('[')
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			writeExpr(b, c, indent)
-		}
-		b.WriteByte(']')
 	case "subscript":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -189,5 +265,38 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	default:
 		// unsupported; write kind
 		b.WriteString(n.Kind)
+	}
+}
+
+func writeDecorator(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) == 1 {
+		b.WriteString("@")
+		writeExpr(b, n.Children[0], indent)
+		b.WriteByte('\n')
+	}
+}
+
+func writeDottedNames(b *bytes.Buffer, list []*Node) {
+	for i, n := range list {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeDottedName(b, n)
+	}
+}
+
+func writeDottedName(b *bytes.Buffer, n *Node) {
+	if n == nil {
+		return
+	}
+	if n.Kind == "dotted_name" {
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('.')
+			}
+			writeExpr(b, c, 0)
+		}
+	} else {
+		writeExpr(b, n, 0)
 	}
 }
