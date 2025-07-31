@@ -1,0 +1,178 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "countdown",
+          "children": [
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        },
+        {
+          "kind": "writeln",
+          "children": [
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "countdown",
+          "children": [
+            {
+              "kind": "var",
+              "text": "N"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003e",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "N"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "writeln",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "N"
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "is",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N1"
+                        },
+                        {
+                          "kind": "-",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "N"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "countdown",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N1"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": "countdown",
+          "children": [
+            {
+              "kind": "number",
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

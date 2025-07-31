@@ -1,0 +1,127 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "atom_chars",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "abc"
+                },
+                {
+                  "kind": "var",
+                  "text": "Chars"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "reverse",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Chars"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "RevChars"
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "atom_chars",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "R"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "RevChars"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "R"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

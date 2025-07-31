@@ -1,0 +1,232 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "power",
+          "children": [
+            {
+              "kind": "var",
+              "text": "_"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "power",
+          "children": [
+            {
+              "kind": "var",
+              "text": "X"
+            },
+            {
+              "kind": "var",
+              "text": "N"
+            },
+            {
+              "kind": "var",
+              "text": "R"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003e",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "N"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "N1"
+                    },
+                    {
+                      "kind": "-",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "N"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "1"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "power",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "X"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "N1"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "R1"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "is",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "R"
+                        },
+                        {
+                          "kind": "*",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "X"
+                            },
+                            {
+                              "kind": "var",
+                              "text": "R1"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "power",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "2"
+                },
+                {
+                  "kind": "number",
+                  "text": "5"
+                },
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "R"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
