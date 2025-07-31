@@ -3,15 +3,22 @@
 package zig
 
 import (
-	"context"
+        "context"
+        "encoding/json"
 
-	tsz "github.com/tree-sitter-grammars/tree-sitter-zig/bindings/go"
-	sitter "github.com/tree-sitter/go-tree-sitter"
+        tsz "github.com/tree-sitter-grammars/tree-sitter-zig/bindings/go"
+        sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
 // Program describes a parsed Zig source file.
 type Program struct {
-	Root *SourceFile `json:"root"`
+        Root *SourceFile `json:"root"`
+}
+
+// MarshalJSON implements json.Marshaler for Program to provide stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+        type Alias Program
+        return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }
 
 // Inspect parses Zig source code using tree-sitter.
