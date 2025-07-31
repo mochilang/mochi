@@ -182,6 +182,15 @@ fun _add(a: BigRat, b: BigRat): BigRat = a.add(b)
 fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
+		"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
+    val md = java.security.MessageDigest.getInstance("SHA-256")
+    val arr = ByteArray(bs.size)
+    for (i in bs.indices) arr[i] = bs[i].toByte()
+    val hash = md.digest(arr)
+    val res = mutableListOf<Int>()
+    for (b in hash) res.add((b.toInt() and 0xff))
+    return res
+}`,
 	}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
@@ -203,6 +212,7 @@ fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
 		"_sub":            "BigRat",
 		"_mul":            "BigRat",
 		"_div":            "BigRat",
+		"_sha256":         "MutableList<Int>",
 		"indexOf":         "Int",
 	}
 }
@@ -264,7 +274,9 @@ type IndexAssignStmt struct {
 func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	if ix, ok := s.Target.(*IndexExpr); ok {
-		ix.emitTarget(w)
+		io.WriteString(w, "(")
+		ix.emit(w)
+		io.WriteString(w, ")")
 	} else {
 		s.Target.emit(w)
 	}
@@ -617,6 +629,10 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 			}
 		} else if isString {
 			io.WriteString(w, ".toString()")
+		} else if isList && ix.Type != "" && (baseType == "" || strings.Contains(baseType, "Any")) {
+			io.WriteString(w, " as "+ix.Type)
+		} else if ix.ForceBang {
+			io.WriteString(w, "!!")
 		}
 	}
 }
@@ -1190,9 +1206,10 @@ type LetStmt struct {
 	Value Expr
 }
 
-func (s *LetStmt) emit(w io.Writer, indentLevel int) { // 'let' is immutable
+func (s *LetStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	io.WriteString(w, "val "+safeName(s.Name))
+	// use 'var' to match Mochi semantics where let bindings may be reassigned
+	io.WriteString(w, "var "+safeName(s.Name))
 	if s.Type != "" {
 		io.WriteString(w, ": "+s.Type)
 	}
@@ -1494,7 +1511,11 @@ func (l *TypedListLit) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		e.emit(w)
+		if guessType(e) != l.ElemType && l.ElemType != "" {
+			(&CastExpr{Value: e, Type: l.ElemType}).emit(w)
+		} else {
+			e.emit(w)
+		}
 	}
 	io.WriteString(w, ")")
 }
@@ -2810,9 +2831,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 				if typ == "Long" {
-					env.SetVar(st.Let.Name, types.Int64Type{}, false)
+					env.SetVar(st.Let.Name, types.Int64Type{}, true)
 				} else {
-					env.SetVar(st.Let.Name, tt, false)
+					env.SetVar(st.Let.Name, tt, true)
 				}
 			}
 		case st.Var != nil:
@@ -3213,9 +3234,9 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					}
 				}
 				if typ == "Long" {
-					env.SetVar(s.Let.Name, types.Int64Type{}, false)
+					env.SetVar(s.Let.Name, types.Int64Type{}, true)
 				} else {
-					env.SetVar(s.Let.Name, tt, false)
+					env.SetVar(s.Let.Name, tt, true)
 				}
 			}
 		case s.Var != nil:
@@ -4574,6 +4595,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			if tname == "" {
 				force = false
 			}
+			if ix, ok := expr.(*IndexExpr); ok && ix.Type != "" {
+				expr = &CastExpr{Value: ix, Type: ix.Type}
+			}
 			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
@@ -4810,6 +4834,19 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &ExistsExpr{Value: arg}, nil
+		case "contains":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			str, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			sub, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &ContainsExpr{Str: str, Sub: sub}, nil
 		case "substring":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
@@ -4933,6 +4970,13 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return &CallExpr{Func: "_denom", Args: args}, nil
 				}
 				return &IntLit{Value: 1}, nil
+			}
+			if name == "sha256" {
+				if len(args) != 1 {
+					return nil, fmt.Errorf("sha256 expects one argument")
+				}
+				useHelper("sha256")
+				return &CallExpr{Func: "_sha256", Args: args}, nil
 			}
 			if name == "now" {
 				if len(args) != 0 {
