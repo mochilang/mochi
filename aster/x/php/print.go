@@ -310,6 +310,26 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		} else if len(n.Children) == 1 {
 			writeExpr(b, n.Children[0], indent)
 		}
+	case "match_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("match (")
+			cond := n.Children[0]
+			if cond.Kind == "parenthesized_expression" && len(cond.Children) > 0 {
+				writeExpr(b, cond.Children[0], indent)
+			} else {
+				writeExpr(b, cond, indent)
+			}
+			b.WriteString(") {\n")
+			if blk := n.Children[1]; blk.Kind == "match_block" {
+				for _, c := range blk.Children {
+					writeIndent(b, indent+1)
+					writeMatchArm(b, c, indent+1)
+					b.WriteString(",\n")
+				}
+			}
+			writeIndent(b, indent)
+			b.WriteByte('}')
+		}
 	case "conditional_expression":
 		if len(n.Children) == 3 {
 			writeExpr(b, n.Children[0], indent)
@@ -352,5 +372,29 @@ func writeUseClause(b *bytes.Buffer, n *Node) {
 func writeIndent(b *bytes.Buffer, indent int) {
 	for i := 0; i < indent; i++ {
 		b.WriteString("    ")
+	}
+}
+
+func writeMatchArm(b *bytes.Buffer, n *Node, indent int) {
+	switch n.Kind {
+	case "match_conditional_expression":
+		if len(n.Children) >= 2 {
+			condList := n.Children[0]
+			for i, c := range condList.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, c, indent)
+			}
+			b.WriteString(" => ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "match_default_expression":
+		b.WriteString("default => ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+	default:
+		writeExpr(b, n, indent)
 	}
 }
