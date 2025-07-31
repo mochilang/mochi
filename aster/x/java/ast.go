@@ -9,6 +9,11 @@ import sitter "github.com/tree-sitter/go-tree-sitter"
 // tree-sitter nodes are kept to reduce noise. Leaf nodes store their
 // raw source text in Text. Position information is recorded using row
 // and column numbers (1-based rows).
+// Node represents a minimal AST node used in the JSON output. Only
+// named tree-sitter nodes are retained. Leaf nodes that carry a value
+// expose it through the Text field. When the positions are omitted the
+// related fields remain zero and disappear from the marshalled JSON due
+// to the `omitempty` tags.
 type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
@@ -19,32 +24,65 @@ type Node struct {
 	Children []*Node `json:"children,omitempty"`
 }
 
+// Options controls how the AST is generated.
+// When Positions is false (the default) the position fields are left zero
+// and therefore omitted from the JSON output.
+type Options struct {
+	Positions bool
+}
+
 // The following aliases mirror the node kinds that appear in the JSON output.
 // Only nodes that may hold textual values are represented to keep the
 // structure compact.
 type (
-	SourceFile          Node
-	ClassDeclaration    Node
-	MethodDeclaration   Node
-	FormalParameters    Node
-	FormalParameter     Node
-	ArrayType           Node
-	TypeIdentifier      Node
-	Identifier          Node
-	ClassBody           Node
-	Block               Node
-	ExpressionStatement Node
-	MethodInvocation    Node
-	FieldAccess         Node
-	ArgumentList        Node
-	StringLiteral       Node
-	StringFragment      Node
+	ProgramNode              Node
+	ClassDeclaration         Node
+	ClassBody                Node
+	FieldDeclaration         Node
+	VariableDeclarator       Node
+	ArrayCreationExpression  Node
+	ArrayInitializer         Node
+	ArrayAccess              Node
+	ArrayType                Node
+	AssignmentExpression     Node
+	BinaryExpression         Node
+	UnaryExpression          Node
+	UpdateExpression         Node
+	CastExpression           Node
+	ObjectCreationExpression Node
+	ParenthesizedExpression  Node
+	ForStatement             Node
+	EnhancedForStatement     Node
+	IfStatement              Node
+	ReturnStatement          Node
+	LocalVariableDeclaration Node
+	MethodDeclaration        Node
+	ConstructorDeclaration   Node
+	ConstructorBody          Node
+	FormalParameters         Node
+	FormalParameter          Node
+	ArgumentList             Node
+	MethodInvocation         Node
+	FieldAccess              Node
+	GenericType              Node
+	ScopedTypeIdentifier     Node
+	Identifier               Node
+	TypeIdentifier           Node
+	TypeArguments            Node
+	Block                    Node
+	ExpressionStatement      Node
+	StringLiteral            Node
+	StringFragment           Node
+	DecimalIntegerLiteral    Node
+	True                     Node
+	False                    Node
+	This                     Node
 )
 
-// toNode converts a tree-sitter node into our Node representation. When withPos
-// is true positional information is recorded, otherwise the fields remain zero
-// and are omitted from the JSON output.
-func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
+// convert transforms a tree-sitter node into our Node representation. When
+// withPos is true positional information is recorded, otherwise the fields
+// remain zero and are omitted from the JSON output.
+func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -71,7 +109,7 @@ func toNode(n *sitter.Node, src []byte, withPos bool) *Node {
 		if child == nil {
 			continue
 		}
-		if c := toNode(child, src, withPos); c != nil {
+		if c := convert(child, src, withPos); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
