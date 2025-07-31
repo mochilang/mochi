@@ -1,0 +1,186 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "function_call",
+        "start": 2,
+        "end": 2,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 2,
+            "end": 2,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 2,
+            "startCol": 5,
+            "end": 2,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 2,
+                "startCol": 6,
+                "end": 2,
+                "endCol": 13,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "*",
+                    "start": 2,
+                    "startCol": 7,
+                    "end": 2,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "6",
+                        "start": 2,
+                        "startCol": 7,
+                        "end": 2,
+                        "endCol": 8
+                      },
+                      {
+                        "kind": "number",
+                        "text": "7",
+                        "start": 2,
+                        "startCol": 11,
+                        "end": 2,
+                        "endCol": 12
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 4,
+        "end": 4,
+        "endCol": 15,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 4,
+            "end": 4,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 4,
+            "startCol": 5,
+            "end": 4,
+            "endCol": 15,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 4,
+                "startCol": 6,
+                "end": 4,
+                "endCol": 14,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "//",
+                    "start": 4,
+                    "startCol": 7,
+                    "end": 4,
+                    "endCol": 13,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "7",
+                        "start": 4,
+                        "startCol": 7,
+                        "end": 4,
+                        "endCol": 8
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 4,
+                        "startCol": 12,
+                        "end": 4,
+                        "endCol": 13
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 13,
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "%",
+                    "start": 6,
+                    "startCol": 7,
+                    "end": 6,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "7",
+                        "start": 6,
+                        "startCol": 7,
+                        "end": 6,
+                        "endCol": 8
+                      },
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 6,
+                        "startCol": 11,
+                        "end": 6,
+                        "endCol": 12
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

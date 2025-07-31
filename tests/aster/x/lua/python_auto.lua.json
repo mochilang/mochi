@@ -1,0 +1,452 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 104,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 4,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math",
+                "start": 2,
+                "end": 2,
+                "endCol": 4
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 7,
+            "end": 2,
+            "endCol": 104,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 7,
+                "end": 2,
+                "endCol": 104,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 8,
+                    "end": 2,
+                    "endCol": 24,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt",
+                        "start": 2,
+                        "startCol": 8,
+                        "end": 2,
+                        "endCol": 12
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 2,
+                        "startCol": 15,
+                        "end": 2,
+                        "endCol": 24,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math",
+                            "start": 2,
+                            "startCol": 15,
+                            "end": 2,
+                            "endCol": 19
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "sqrt",
+                            "start": 2,
+                            "startCol": 20,
+                            "end": 2,
+                            "endCol": 24
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 26,
+                    "end": 2,
+                    "endCol": 40,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pow",
+                        "start": 2,
+                        "startCol": 26,
+                        "end": 2,
+                        "endCol": 29
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 2,
+                        "startCol": 32,
+                        "end": 2,
+                        "endCol": 40,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math",
+                            "start": 2,
+                            "startCol": 32,
+                            "end": 2,
+                            "endCol": 36
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "pow",
+                            "start": 2,
+                            "startCol": 37,
+                            "end": 2,
+                            "endCol": 40
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 42,
+                    "end": 2,
+                    "endCol": 56,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sin",
+                        "start": 2,
+                        "startCol": 42,
+                        "end": 2,
+                        "endCol": 45
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 2,
+                        "startCol": 48,
+                        "end": 2,
+                        "endCol": 56,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math",
+                            "start": 2,
+                            "startCol": 48,
+                            "end": 2,
+                            "endCol": 52
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "sin",
+                            "start": 2,
+                            "startCol": 53,
+                            "end": 2,
+                            "endCol": 56
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 58,
+                    "end": 2,
+                    "endCol": 72,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "log",
+                        "start": 2,
+                        "startCol": 58,
+                        "end": 2,
+                        "endCol": 61
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 2,
+                        "startCol": 64,
+                        "end": 2,
+                        "endCol": 72,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math",
+                            "start": 2,
+                            "startCol": 64,
+                            "end": 2,
+                            "endCol": 68
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "log",
+                            "start": 2,
+                            "startCol": 69,
+                            "end": 2,
+                            "endCol": 72
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 74,
+                    "end": 2,
+                    "endCol": 86,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pi",
+                        "start": 2,
+                        "startCol": 74,
+                        "end": 2,
+                        "endCol": 76
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "start": 2,
+                        "startCol": 79,
+                        "end": 2,
+                        "endCol": 86,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math",
+                            "start": 2,
+                            "startCol": 79,
+                            "end": 2,
+                            "endCol": 83
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "pi",
+                            "start": 2,
+                            "startCol": 84,
+                            "end": 2,
+                            "endCol": 86
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 88,
+                    "end": 2,
+                    "endCol": 103,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "e",
+                        "start": 2,
+                        "startCol": 88,
+                        "end": 2,
+                        "endCol": 89
+                      },
+                      {
+                        "kind": "function_call",
+                        "start": 2,
+                        "startCol": 92,
+                        "end": 2,
+                        "endCol": 103,
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "start": 2,
+                            "startCol": 92,
+                            "end": 2,
+                            "endCol": 100,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "math",
+                                "start": 2,
+                                "startCol": 92,
+                                "end": 2,
+                                "endCol": 96
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "exp",
+                                "start": 2,
+                                "startCol": 97,
+                                "end": 2,
+                                "endCol": 100
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 2,
+                            "startCol": 100,
+                            "end": 2,
+                            "endCol": 103,
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "1",
+                                "start": 2,
+                                "startCol": 101,
+                                "end": 2,
+                                "endCol": 102
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 4,
+        "end": 4,
+        "endCol": 20,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 4,
+            "end": 4,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 4,
+            "startCol": 5,
+            "end": 4,
+            "endCol": 20,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 4,
+                "startCol": 6,
+                "end": 4,
+                "endCol": 19,
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "start": 4,
+                    "startCol": 6,
+                    "end": 4,
+                    "endCol": 15,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "math",
+                        "start": 4,
+                        "startCol": 6,
+                        "end": 4,
+                        "endCol": 10
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt",
+                        "start": 4,
+                        "startCol": 11,
+                        "end": 4,
+                        "endCol": 15
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 4,
+                    "startCol": 15,
+                    "end": 4,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "16",
+                        "start": 4,
+                        "startCol": 16,
+                        "end": 4,
+                        "endCol": 18
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "dot_index_expression",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 13,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "math",
+                    "start": 6,
+                    "startCol": 6,
+                    "end": 6,
+                    "endCol": 10
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "pi",
+                    "start": 6,
+                    "startCol": 11,
+                    "end": 6,
+                    "endCol": 13
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

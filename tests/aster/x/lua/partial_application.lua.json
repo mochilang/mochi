@@ -1,0 +1,295 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 11,
+    "children": [
+      {
+        "kind": "function_declaration",
+        "start": 2,
+        "end": 4,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "add",
+            "start": 2,
+            "startCol": 9,
+            "end": 2,
+            "endCol": 12
+          },
+          {
+            "kind": "parameters",
+            "start": 2,
+            "startCol": 12,
+            "end": 2,
+            "endCol": 18,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "a",
+                "start": 2,
+                "startCol": 13,
+                "end": 2,
+                "endCol": 14
+              },
+              {
+                "kind": "identifier",
+                "text": "b",
+                "start": 2,
+                "startCol": 16,
+                "end": 2,
+                "endCol": 17
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 3,
+            "startCol": 2,
+            "end": 3,
+            "endCol": 16,
+            "children": [
+              {
+                "kind": "return_statement",
+                "start": 3,
+                "startCol": 2,
+                "end": 3,
+                "endCol": 16,
+                "children": [
+                  {
+                    "kind": "expression_list",
+                    "start": 3,
+                    "startCol": 9,
+                    "end": 3,
+                    "endCol": 16,
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "start": 3,
+                        "startCol": 9,
+                        "end": 3,
+                        "endCol": 16,
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "+",
+                            "start": 3,
+                            "startCol": 10,
+                            "end": 3,
+                            "endCol": 15,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "a",
+                                "start": 3,
+                                "startCol": 10,
+                                "end": 3,
+                                "endCol": 11
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "b",
+                                "start": 3,
+                                "startCol": 14,
+                                "end": 3,
+                                "endCol": 15
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 6,
+        "end": 8,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 6,
+            "end": 6,
+            "endCol": 4,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "add5",
+                "start": 6,
+                "end": 6,
+                "endCol": 4
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 6,
+            "startCol": 7,
+            "end": 8,
+            "endCol": 3,
+            "children": [
+              {
+                "kind": "function_definition",
+                "start": 6,
+                "startCol": 7,
+                "end": 8,
+                "endCol": 3,
+                "children": [
+                  {
+                    "kind": "parameters",
+                    "start": 6,
+                    "startCol": 15,
+                    "end": 6,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "p0",
+                        "start": 6,
+                        "startCol": 16,
+                        "end": 6,
+                        "endCol": 18
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 7,
+                    "end": 7,
+                    "endCol": 17,
+                    "children": [
+                      {
+                        "kind": "return_statement",
+                        "start": 7,
+                        "end": 7,
+                        "endCol": 17,
+                        "children": [
+                          {
+                            "kind": "expression_list",
+                            "start": 7,
+                            "startCol": 7,
+                            "end": 7,
+                            "endCol": 17,
+                            "children": [
+                              {
+                                "kind": "function_call",
+                                "start": 7,
+                                "startCol": 7,
+                                "end": 7,
+                                "endCol": 17,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "add",
+                                    "start": 7,
+                                    "startCol": 7,
+                                    "end": 7,
+                                    "endCol": 10
+                                  },
+                                  {
+                                    "kind": "arguments",
+                                    "start": 7,
+                                    "startCol": 10,
+                                    "end": 7,
+                                    "endCol": 17,
+                                    "children": [
+                                      {
+                                        "kind": "number",
+                                        "text": "5",
+                                        "start": 7,
+                                        "startCol": 11,
+                                        "end": 7,
+                                        "endCol": 12
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "p0",
+                                        "start": 7,
+                                        "startCol": 14,
+                                        "end": 7,
+                                        "endCol": 16
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 10,
+        "end": 10,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 10,
+            "end": 10,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 10,
+            "startCol": 5,
+            "end": 10,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 10,
+                "startCol": 6,
+                "end": 10,
+                "endCol": 13,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "add5",
+                    "start": 10,
+                    "startCol": 6,
+                    "end": 10,
+                    "endCol": 10
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 10,
+                    "startCol": 10,
+                    "end": 10,
+                    "endCol": 13,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 10,
+                        "startCol": 11,
+                        "end": 10,
+                        "endCol": 12
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

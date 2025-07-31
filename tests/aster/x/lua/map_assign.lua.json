@@ -1,0 +1,180 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 7,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 20,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 6,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "scores",
+                "start": 2,
+                "end": 2,
+                "endCol": 6
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 9,
+            "end": 2,
+            "endCol": 20,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 9,
+                "end": 2,
+                "endCol": 20,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 10,
+                    "end": 2,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "alice",
+                        "start": 2,
+                        "startCol": 10,
+                        "end": 2,
+                        "endCol": 15
+                      },
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 18,
+                        "end": 2,
+                        "endCol": 19
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "start": 4,
+        "end": 4,
+        "endCol": 14,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 4,
+            "end": 4,
+            "endCol": 10,
+            "children": [
+              {
+                "kind": "dot_index_expression",
+                "start": 4,
+                "end": 4,
+                "endCol": 10,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "scores",
+                    "start": 4,
+                    "end": 4,
+                    "endCol": 6
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "bob",
+                    "start": 4,
+                    "startCol": 7,
+                    "end": 4,
+                    "endCol": 10
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 4,
+            "startCol": 13,
+            "end": 4,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "number",
+                "text": "2",
+                "start": 4,
+                "startCol": 13,
+                "end": 4,
+                "endCol": 14
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 6,
+        "end": 6,
+        "endCol": 17,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 6,
+            "end": 6,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 6,
+            "startCol": 5,
+            "end": 6,
+            "endCol": 17,
+            "children": [
+              {
+                "kind": "dot_index_expression",
+                "start": 6,
+                "startCol": 6,
+                "end": 6,
+                "endCol": 16,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "scores",
+                    "start": 6,
+                    "startCol": 6,
+                    "end": 6,
+                    "endCol": 12
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "bob",
+                    "start": 6,
+                    "startCol": 13,
+                    "end": 6,
+                    "endCol": 16
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

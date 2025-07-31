@@ -1,0 +1,257 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 10,
+    "children": [
+      {
+        "kind": "function_declaration",
+        "start": 2,
+        "end": 7,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "outer",
+            "start": 2,
+            "startCol": 9,
+            "end": 2,
+            "endCol": 14
+          },
+          {
+            "kind": "parameters",
+            "start": 2,
+            "startCol": 14,
+            "end": 2,
+            "endCol": 17,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "x",
+                "start": 2,
+                "startCol": 15,
+                "end": 2,
+                "endCol": 16
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 3,
+            "startCol": 2,
+            "end": 6,
+            "endCol": 17,
+            "children": [
+              {
+                "kind": "function_declaration",
+                "start": 3,
+                "startCol": 2,
+                "end": 5,
+                "endCol": 5,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "inner",
+                    "start": 3,
+                    "startCol": 11,
+                    "end": 3,
+                    "endCol": 16
+                  },
+                  {
+                    "kind": "parameters",
+                    "start": 3,
+                    "startCol": 16,
+                    "end": 3,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "y",
+                        "start": 3,
+                        "startCol": 17,
+                        "end": 3,
+                        "endCol": 18
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 4,
+                    "startCol": 4,
+                    "end": 4,
+                    "endCol": 18,
+                    "children": [
+                      {
+                        "kind": "return_statement",
+                        "start": 4,
+                        "startCol": 4,
+                        "end": 4,
+                        "endCol": 18,
+                        "children": [
+                          {
+                            "kind": "expression_list",
+                            "start": 4,
+                            "startCol": 11,
+                            "end": 4,
+                            "endCol": 18,
+                            "children": [
+                              {
+                                "kind": "parenthesized_expression",
+                                "start": 4,
+                                "startCol": 11,
+                                "end": 4,
+                                "endCol": 18,
+                                "children": [
+                                  {
+                                    "kind": "binary_expression",
+                                    "text": "+",
+                                    "start": 4,
+                                    "startCol": 12,
+                                    "end": 4,
+                                    "endCol": 17,
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "x",
+                                        "start": 4,
+                                        "startCol": 12,
+                                        "end": 4,
+                                        "endCol": 13
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "y",
+                                        "start": 4,
+                                        "startCol": 16,
+                                        "end": 4,
+                                        "endCol": 17
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "return_statement",
+                "start": 6,
+                "startCol": 2,
+                "end": 6,
+                "endCol": 17,
+                "children": [
+                  {
+                    "kind": "expression_list",
+                    "start": 6,
+                    "startCol": 9,
+                    "end": 6,
+                    "endCol": 17,
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "start": 6,
+                        "startCol": 9,
+                        "end": 6,
+                        "endCol": 17,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "inner",
+                            "start": 6,
+                            "startCol": 9,
+                            "end": 6,
+                            "endCol": 14
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 6,
+                            "startCol": 14,
+                            "end": 6,
+                            "endCol": 17,
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "5",
+                                "start": 6,
+                                "startCol": 15,
+                                "end": 6,
+                                "endCol": 16
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "start": 9,
+        "end": 9,
+        "endCol": 15,
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print",
+            "start": 9,
+            "end": 9,
+            "endCol": 5
+          },
+          {
+            "kind": "arguments",
+            "start": 9,
+            "startCol": 5,
+            "end": 9,
+            "endCol": 15,
+            "children": [
+              {
+                "kind": "function_call",
+                "start": 9,
+                "startCol": 6,
+                "end": 9,
+                "endCol": 14,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "outer",
+                    "start": 9,
+                    "startCol": 6,
+                    "end": 9,
+                    "endCol": 11
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 9,
+                    "startCol": 11,
+                    "end": 9,
+                    "endCol": 14,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 9,
+                        "startCol": 12,
+                        "end": 9,
+                        "endCol": 13
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
