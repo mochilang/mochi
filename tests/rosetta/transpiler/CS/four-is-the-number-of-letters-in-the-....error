@@ -1,0 +1,4 @@
+dotnet run: exit status 1
+/tmp/TestCSTranspiler_Rosetta_Golden652839352/001/Program.cs(219,46): error CS1503: Argument 1: cannot convert from 'object' to 'long' [/tmp/TestCSTranspiler_Rosetta_Golden652839352/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

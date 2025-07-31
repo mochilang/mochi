@@ -207,6 +207,8 @@ func (s *LetStmt) emit(w io.Writer) {
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s = ", t, name)
+	} else if t == "object" {
+		fmt.Fprintf(w, "object %s = ", name)
 	} else if isNullExpr(s.Value) {
 		fmt.Fprintf(w, "object %s = ", name)
 	} else {
@@ -236,6 +238,8 @@ func (s *VarStmt) emit(w io.Writer) {
 	}
 	if t != "" && t != "object" {
 		fmt.Fprintf(w, "%s %s", t, name)
+	} else if t == "object" {
+		fmt.Fprintf(w, "object %s", name)
 	} else if isNullExpr(s.Value) {
 		fmt.Fprintf(w, "object %s", name)
 	} else {
@@ -3534,6 +3538,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						conv = fmt.Sprintf("Enumerable.ToArray(%s.Cast<%s>())", exprString(arg), elem)
 					}
 					args[i] = &RawExpr{Code: conv, Type: types[i]}
+				} else if i < len(types) && typeOfExpr(arg) == "object" {
+					switch types[i] {
+					case "long":
+						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToInt64(%s)", exprString(arg)), Type: "long"}
+					case "double":
+						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToDouble(%s)", exprString(arg)), Type: "double"}
+					case "string":
+						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToString(%s)", exprString(arg)), Type: "string"}
+					}
 				}
 			}
 		}
