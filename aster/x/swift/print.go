@@ -42,6 +42,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeFuncDecl(b, n, indent)
 	case "property_declaration":
 		writePropertyDecl(b, n, indent)
+	case "import_declaration":
+		b.WriteString(indentStr(indent))
+		b.WriteString("import ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
 	case "for_statement":
 		writeForStmt(b, n, indent)
 	case "if_statement":
@@ -204,7 +211,13 @@ func writeType(b *bytes.Buffer, n *Node) {
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "bang":
-		b.WriteString(n.Text)
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			for _, c := range n.Children {
+				writeExpr(b, c, indent)
+			}
+		}
 	case "line_string_literal":
 		b.WriteByte('"')
 		if len(n.Children) > 0 {
@@ -237,18 +250,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte(']')
 	case "tuple_expression":
-		if len(n.Children) == 1 {
-			writeExpr(b, n.Children[0], indent)
-		} else {
-			b.WriteByte('(')
-			for i, c := range n.Children {
-				if i > 0 {
-					b.WriteString(", ")
-				}
-				writeExpr(b, c, indent)
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
 			}
-			b.WriteByte(')')
+			writeExpr(b, c, indent)
 		}
+		if len(n.Children) == 1 {
+			// Preserve parentheses around single expression
+		}
+		b.WriteByte(')')
 	case "additive_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
@@ -319,11 +331,27 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(')')
 		}
 	case "lambda_literal":
-		b.WriteString("{\n")
+		b.WriteByte('{')
 		for _, c := range n.Children {
-			writeStmt(b, c, indent+1)
+			if c.Kind == "statements" {
+				for i, s := range c.Children {
+					if i > 0 {
+						b.WriteByte(' ')
+					}
+					start := b.Len()
+					writeStmt(b, s, 0)
+					if b.Len() > start && b.Bytes()[b.Len()-1] == '\n' {
+						b.Truncate(b.Len() - 1)
+					}
+				}
+			} else {
+				start := b.Len()
+				writeStmt(b, c, 0)
+				if b.Len() > start && b.Bytes()[b.Len()-1] == '\n' {
+					b.Truncate(b.Len() - 1)
+				}
+			}
 		}
-		b.WriteString(indentStr(indent))
 		b.WriteByte('}')
 	case "postfix_expression":
 		if len(n.Children) == 2 && n.Children[1].Kind == "bang" {
@@ -377,18 +405,21 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func isIndexingCall(callee *Node) bool {
-	if callee.Kind == "simple_identifier" {
-		name := callee.Text
-		if name == "print" || name == "twoSum" {
-			return false
-		}
+	if callee.Kind != "simple_identifier" {
+		return false
+	}
+	name := callee.Text
+	switch name {
+	case "print", "twoSum", "String", "Double":
+		return false
 	}
 	return true
 }
 
 func writeCallSuffix(b *bytes.Buffer, n *Node) {
 	for _, c := range n.Children {
-		if c.Kind == "value_arguments" {
+		switch c.Kind {
+		case "value_arguments", "lambda_literal":
 			writeExpr(b, c, 0)
 		}
 	}
@@ -398,12 +429,23 @@ func writeValueArguments(b *bytes.Buffer, n *Node) {
 	if n.Kind != "value_arguments" {
 		return
 	}
+	b.WriteByte('(')
 	for i, arg := range n.Children {
 		if i > 0 {
 			b.WriteString(", ")
 		}
-		if len(arg.Children) > 0 {
+		if len(arg.Children) == 1 {
+			writeExpr(b, arg.Children[0], 0)
+		} else if len(arg.Children) >= 2 && arg.Children[0].Kind == "value_argument_label" {
+			label := arg.Children[0]
+			if len(label.Children) > 0 {
+				writeExpr(b, label.Children[0], 0)
+			}
+			b.WriteString(": ")
+			writeExpr(b, arg.Children[1], 0)
+		} else if len(arg.Children) > 0 {
 			writeExpr(b, arg.Children[0], 0)
 		}
 	}
+	b.WriteByte(')')
 }
