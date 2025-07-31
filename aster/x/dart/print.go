@@ -431,7 +431,7 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node) {
 	switch n.Kind {
-	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null", "required":
+	case "identifier", "decimal_integer_literal", "decimal_floating_point_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null", "required":
 		b.WriteString(n.Text)
 	case "type_arguments":
 		b.WriteByte('<')
@@ -515,14 +515,34 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 			}
 		}
 	case "function_expression":
-		if len(n.Children) >= 2 {
-			writeParameters(b, n.Children[0])
-			b.WriteString(" => ")
-			writeExpr(b, n.Children[1])
+		switch len(n.Children) {
+		case 1:
+			b.WriteString("() ")
+			writeExpr(b, n.Children[0])
+		case 2:
+			if n.Children[0].Kind == "formal_parameter_list" {
+				writeParameters(b, n.Children[0])
+				b.WriteByte(' ')
+				writeExpr(b, n.Children[1])
+			} else {
+				writeExpr(b, n.Children[0])
+				writeExpr(b, n.Children[1])
+			}
+		default:
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, c)
+			}
 		}
 	case "function_expression_body":
 		if len(n.Children) == 1 {
-			writeExpr(b, n.Children[0])
+			if n.Children[0].Kind == "block" {
+				writeBlock(b, n.Children[0], 0)
+			} else {
+				writeExpr(b, n.Children[0])
+			}
 		} else if len(n.Children) > 0 {
 			writeBlock(b, n.Children[0], 0)
 		}
@@ -612,6 +632,8 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 			writeExpr(b, arg)
 		}
 		b.WriteByte(')')
+	case "block":
+		writeBlock(b, n, 0)
 	case "argument":
 		for _, c := range n.Children {
 			writeExpr(b, c)
@@ -692,14 +714,27 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 			}
 		}
 	case "set_or_map_literal":
-		b.WriteByte('{')
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
+		if len(n.Children) > 0 && n.Children[0].Kind == "type_arguments" {
+			writeExpr(b, n.Children[0])
+			b.WriteByte('{')
+			start := 1
+			for i := start; i < len(n.Children); i++ {
+				if i > start {
+					b.WriteString(", ")
+				}
+				writeExpr(b, n.Children[i])
 			}
-			writeExpr(b, c)
+			b.WriteByte('}')
+		} else {
+			b.WriteByte('{')
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, c)
+			}
+			b.WriteByte('}')
 		}
-		b.WriteByte('}')
 	case "pair":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0])

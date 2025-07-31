@@ -34,5 +34,25 @@ This folder contains golden test data for printing Dart ASTs back into source co
 - [x] 28. group_by_join.dart
 - [x] 29. group_by_left_join.dart
 - [x] 30. group_by_multi_join.dart
+- [x] 31. group_by_multi_join_sort.dart
+- [x] 32. group_by_multi_sort.dart
+- [x] 33. group_by_sort.dart
+- [x] 34. group_items_iteration.dart
+- [x] 35. if_else.dart
+- [x] 36. if_then_else.dart
+- [x] 37. if_then_else_nested.dart
+- [x] 38. in_operator.dart
+- [x] 39. in_operator_extended.dart
+- [x] 40. inner_join.dart
+- [x] 41. join_multi.dart
+- [x] 42. json_builtin.dart
+- [x] 43. left_join.dart
+- [x] 44. left_join_multi.dart
+- [x] 45. len_builtin.dart
+- [x] 46. len_map.dart
+- [x] 47. len_string.dart
+- [x] 48. let_and_print.dart
+- [x] 49. list_assign.dart
+- [x] 50. list_index.dart
 
-Completed 30/30 at 2025-07-31 18:20 GMT+7
+Completed 50/50 at 2025-07-31 18:35 GMT+7
