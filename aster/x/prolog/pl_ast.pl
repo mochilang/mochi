@@ -51,7 +51,9 @@ term_json(Vs, Term, JSON) :-
     var_name(Vs, Term, Name),
     JSON = _{var:Name}.
 term_json(_, Term, Term) :-
-    ( number(Term) ; string(Term) ), !.
+    number(Term), !.
+term_json(_, Term, _{string:Term}) :-
+    string(Term), !.
 term_json(_, Term, Atom) :-
     atom(Term), !,
     Atom = Term.

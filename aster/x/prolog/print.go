@@ -4,6 +4,7 @@ package prolog
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -47,6 +48,7 @@ func writeClause(b *strings.Builder, c *Node, indent int) {
 	if body != nil && !(body.Kind == "bool" && body.Text == "true") {
 		b.WriteString(" :-\n")
 		writeBody(b, body, indent+1)
+		b.WriteString(".")
 	} else {
 		b.WriteString(".")
 	}
@@ -97,6 +99,12 @@ func writeTerm(b *strings.Builder, n *Node, indent int) {
 	switch n.Kind {
 	case "var", "number", "bool":
 		b.WriteString(n.Text)
+	case "string":
+		if n.Text != "" && len(n.Children) == 0 {
+			b.WriteString(strconv.Quote(n.Text))
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case "atom":
 		writeAtom(b, n.Text)
 	case "list":
@@ -133,19 +141,31 @@ func writeTerm(b *strings.Builder, n *Node, indent int) {
 			writeTerm(b, c, indent)
 		}
 	case ";":
+		if indent > 0 {
+			b.WriteByte('(')
+		}
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString("; ")
 			}
 			writeTerm(b, c, indent)
 		}
+		if indent > 0 {
+			b.WriteByte(')')
+		}
 	case "-\u003e":
+		if indent > 0 {
+			b.WriteByte('(')
+		}
 		if len(n.Children) == 2 {
 			writeTerm(b, n.Children[0], indent)
 			b.WriteString(" -> ")
 			writeTerm(b, n.Children[1], indent)
 		} else {
 			writeFunctor(b, n, indent)
+		}
+		if indent > 0 {
+			b.WriteByte(')')
 		}
 	default:
 		writeFunctor(b, n, indent)

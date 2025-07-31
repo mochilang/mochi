@@ -23,6 +23,7 @@ type Term struct {
 	Args    []Term   `json:"args,omitempty"`
 	List    []Term   `json:"-"`
 	Atom    string   `json:"-"`
+	String  string   `json:"-"`
 	Number  *float64 `json:"-"`
 	Bool    *bool    `json:"-"`
 	Text    string   `json:"-"`
@@ -112,6 +113,8 @@ func termToNode(t Term) *Node {
 		return &Node{Kind: "number", Text: t.Text}
 	case t.Bool != nil:
 		return &Node{Kind: "bool", Text: t.Text}
+	case t.String != "":
+		return &Node{Kind: "string", Text: t.String}
 	case t.Atom != "":
 		return &Node{Kind: "atom", Text: t.Atom}
 	case t.List != nil:
@@ -222,6 +225,7 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 	t.Args = nil
 	t.List = nil
 	t.Atom = ""
+	t.String = ""
 	t.Number = nil
 	t.Bool = nil
 	t.Text = ""
@@ -248,6 +252,13 @@ func (t *Term) UnmarshalJSON(b []byte) error {
 				}
 			}
 			t.Text = t.Functor
+			return nil
+		}
+		if s, ok := obj["string"]; ok {
+			if err := json.Unmarshal(s, &t.String); err != nil {
+				return err
+			}
+			t.Text = t.String
 			return nil
 		}
 		for k, v := range obj {
@@ -313,6 +324,10 @@ func (t Term) MarshalJSON() ([]byte, error) {
 		return json.Marshal(*t.Number)
 	case t.Bool != nil:
 		return json.Marshal(*t.Bool)
+	case t.String != "":
+		return json.Marshal(struct {
+			String string `json:"string"`
+		}{t.String})
 	default:
 		return json.Marshal(t.Atom)
 	}

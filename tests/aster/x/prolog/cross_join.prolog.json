@@ -83,7 +83,7 @@
                                   "text": "name"
                                 },
                                 {
-                                  "kind": "atom",
+                                  "kind": "string",
                                   "text": "Alice"
                                 }
                               ]
@@ -119,7 +119,7 @@
                                   "text": "name"
                                 },
                                 {
-                                  "kind": "atom",
+                                  "kind": "string",
                                   "text": "Bob"
                                 }
                               ]
@@ -155,7 +155,7 @@
                                   "text": "name"
                                 },
                                 {
-                                  "kind": "atom",
+                                  "kind": "string",
                                   "text": "Charlie"
                                 }
                               ]
@@ -406,7 +406,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Alice"
                                                 }
                                               ]
@@ -478,7 +478,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Bob"
                                                 }
                                               ]
@@ -550,7 +550,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Charlie"
                                                 }
                                               ]
@@ -622,7 +622,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Alice"
                                                 }
                                               ]
@@ -694,7 +694,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Bob"
                                                 }
                                               ]
@@ -766,7 +766,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Charlie"
                                                 }
                                               ]
@@ -838,7 +838,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Alice"
                                                 }
                                               ]
@@ -910,7 +910,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Bob"
                                                 }
                                               ]
@@ -982,7 +982,7 @@
                                                   "text": "pairedCustomerName"
                                                 },
                                                 {
-                                                  "kind": "atom",
+                                                  "kind": "string",
                                                   "text": "Charlie"
                                                 }
                                               ]
@@ -1019,7 +1019,7 @@
                           "kind": "writeln",
                           "children": [
                             {
-                              "kind": "atom",
+                              "kind": "string",
                               "text": "--- Cross Join: All order-customer pairs ---"
                             }
                           ]
@@ -1080,7 +1080,7 @@
                                                       "text": "pairedCustomerName"
                                                     },
                                                     {
-                                                      "kind": "atom",
+                                                      "kind": "string",
                                                       "text": "Alice"
                                                     }
                                                   ]
@@ -1115,7 +1115,7 @@
                                   "kind": "writeln",
                                   "children": [
                                     {
-                                      "kind": "atom",
+                                      "kind": "string",
                                       "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Alice"
                                     }
                                   ]
@@ -1176,7 +1176,7 @@
                                                               "text": "pairedCustomerName"
                                                             },
                                                             {
-                                                              "kind": "atom",
+                                                              "kind": "string",
                                                               "text": "Bob"
                                                             }
                                                           ]
@@ -1211,7 +1211,7 @@
                                           "kind": "writeln",
                                           "children": [
                                             {
-                                              "kind": "atom",
+                                              "kind": "string",
                                               "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Bob"
                                             }
                                           ]
@@ -1272,7 +1272,7 @@
                                                                       "text": "pairedCustomerName"
                                                                     },
                                                                     {
-                                                                      "kind": "atom",
+                                                                      "kind": "string",
                                                                       "text": "Charlie"
                                                                     }
                                                                   ]
@@ -1307,7 +1307,7 @@
                                                   "kind": "writeln",
                                                   "children": [
                                                     {
-                                                      "kind": "atom",
+                                                      "kind": "string",
                                                       "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie"
                                                     }
                                                   ]
@@ -1368,7 +1368,7 @@
                                                                               "text": "pairedCustomerName"
                                                                             },
                                                                             {
-                                                                              "kind": "atom",
+                                                                              "kind": "string",
                                                                               "text": "Alice"
                                                                             }
                                                                           ]
@@ -1403,7 +1403,7 @@
                                                           "kind": "writeln",
                                                           "children": [
                                                             {
-                                                              "kind": "atom",
+                                                              "kind": "string",
                                                               "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Alice"
                                                             }
                                                           ]
@@ -1464,7 +1464,7 @@
                                                                                       "text": "pairedCustomerName"
                                                                                     },
                                                                                     {
-                                                                                      "kind": "atom",
+                                                                                      "kind": "string",
                                                                                       "text": "Bob"
                                                                                     }
                                                                                   ]
@@ -1499,7 +1499,7 @@
                                                                   "kind": "writeln",
                                                                   "children": [
                                                                     {
-                                                                      "kind": "atom",
+                                                                      "kind": "string",
                                                                       "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Bob"
                                                                     }
                                                                   ]
@@ -1560,7 +1560,7 @@
                                                                                               "text": "pairedCustomerName"
                                                                                             },
                                                                                             {
-                                                                                              "kind": "atom",
+                                                                                              "kind": "string",
                                                                                               "text": "Charlie"
                                                                                             }
                                                                                           ]
@@ -1595,7 +1595,7 @@
                                                                           "kind": "writeln",
                                                                           "children": [
                                                                             {
-                                                                              "kind": "atom",
+                                                                              "kind": "string",
                                                                               "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie"
                                                                             }
                                                                           ]
@@ -1656,7 +1656,7 @@
                                                                                                       "text": "pairedCustomerName"
                                                                                                     },
                                                                                                     {
-                                                                                                      "kind": "atom",
+                                                                                                      "kind": "string",
                                                                                                       "text": "Alice"
                                                                                                     }
                                                                                                   ]
@@ -1691,7 +1691,7 @@
                                                                                   "kind": "writeln",
                                                                                   "children": [
                                                                                     {
-                                                                                      "kind": "atom",
+                                                                                      "kind": "string",
                                                                                       "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Alice"
                                                                                     }
                                                                                   ]
@@ -1752,7 +1752,7 @@
                                                                                                               "text": "pairedCustomerName"
                                                                                                             },
                                                                                                             {
-                                                                                                              "kind": "atom",
+                                                                                                              "kind": "string",
                                                                                                               "text": "Bob"
                                                                                                             }
                                                                                                           ]
@@ -1787,7 +1787,7 @@
                                                                                           "kind": "writeln",
                                                                                           "children": [
                                                                                             {
-                                                                                              "kind": "atom",
+                                                                                              "kind": "string",
                                                                                               "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Bob"
                                                                                             }
                                                                                           ]
@@ -1848,7 +1848,7 @@
                                                                                                                       "text": "pairedCustomerName"
                                                                                                                     },
                                                                                                                     {
-                                                                                                                      "kind": "atom",
+                                                                                                                      "kind": "string",
                                                                                                                       "text": "Charlie"
                                                                                                                     }
                                                                                                                   ]
@@ -1880,7 +1880,7 @@
                                                                                               "kind": "writeln",
                                                                                               "children": [
                                                                                                 {
-                                                                                                  "kind": "atom",
+                                                                                                  "kind": "string",
                                                                                                   "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie"
                                                                                                 }
                                                                                               ]
