@@ -12,7 +12,14 @@ import (
 // Inspect parses the given C# source code using tree-sitter and returns a
 // Program describing its syntax tree. Position information is included only when
 // IncludePositions is set to true.
-func Inspect(src string) (*Program, error) {
+type Option struct {
+	Positions bool
+}
+
+func Inspect(src string) (*Program, error) { return InspectWithOption(src, Option{}) }
+
+func InspectWithOption(src string, opt Option) (*Program, error) {
+	IncludePositions = opt.Positions
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(csharp.Language()))
 	data := []byte(src)

@@ -38,6 +38,8 @@ func writeCompilationUnit(b *bytes.Buffer, n *CompilationUnit, indentLevel int) 
 			b.WriteString(";\n")
 		case "class_declaration":
 			writeClassDecl(b, c, indentLevel)
+		case "struct_declaration":
+			writeStructDecl(b, c, indentLevel)
 		default:
 			writeStmt(b, c, indentLevel)
 		}
@@ -50,6 +52,27 @@ func writeClassDecl(b *bytes.Buffer, n *Node, indentLevel int) {
 	}
 	b.WriteString(indent(indentLevel))
 	b.WriteString("class ")
+	if len(n.Children) > 0 && n.Children[0].Kind == "identifier" {
+		b.WriteString(n.Children[0].Text)
+	}
+	b.WriteString(" {\n")
+	if len(n.Children) > 1 {
+		if n.Children[1].Kind == "declaration_list" {
+			for _, m := range n.Children[1].Children {
+				writeMemberDecl(b, m, indentLevel+1)
+			}
+		}
+	}
+	b.WriteString(indent(indentLevel))
+	b.WriteString("}\n")
+}
+
+func writeStructDecl(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) == 0 {
+		return
+	}
+	b.WriteString(indent(indentLevel))
+	b.WriteString("struct ")
 	if len(n.Children) > 0 && n.Children[0].Kind == "identifier" {
 		b.WriteString(n.Children[0].Text)
 	}
@@ -142,6 +165,11 @@ func writeMethodDecl(b *bytes.Buffer, n *Node, indentLevel int) {
 	} else {
 		b.WriteString("()")
 	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "arrow_expression_clause" {
+		writeArrowClause(b, n.Children[idx], indentLevel)
+		b.WriteString(";\n")
+		return
+	}
 	b.WriteString(" {\n")
 	if idx < len(n.Children) {
 		if n.Children[idx].Kind == "block" {
@@ -150,6 +178,13 @@ func writeMethodDecl(b *bytes.Buffer, n *Node, indentLevel int) {
 	}
 	b.WriteString(indent(indentLevel))
 	b.WriteString("}\n")
+}
+
+func writeArrowClause(b *bytes.Buffer, n *Node, indentLevel int) {
+	b.WriteString(" => ")
+	for _, c := range n.Children {
+		writeExpr(b, c, indentLevel)
+	}
 }
 
 func writeParameterList(b *bytes.Buffer, n *Node) {
@@ -205,6 +240,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		b.WriteString(";\n")
 	case "for_statement":
 		writeForStatement(b, n, indentLevel)
+	case "foreach_statement":
+		writeForeachStatement(b, n, indentLevel)
 	case "if_statement":
 		writeIfStatement(b, n, indentLevel)
 	case "block":
@@ -233,6 +270,23 @@ func writeForStatement(b *bytes.Buffer, n *Node, indentLevel int) {
 	b.WriteString("}\n")
 }
 
+func writeForeachStatement(b *bytes.Buffer, n *Node, indentLevel int) {
+	if len(n.Children) < 4 {
+		return
+	}
+	b.WriteString(indent(indentLevel))
+	b.WriteString("foreach (")
+	writeExpr(b, n.Children[0], indentLevel)
+	b.WriteByte(' ')
+	writeExpr(b, n.Children[1], indentLevel)
+	b.WriteString(" in ")
+	writeExpr(b, n.Children[2], indentLevel)
+	b.WriteString(") {\n")
+	writeBlock(b, n.Children[3], indentLevel+1)
+	b.WriteString(indent(indentLevel))
+	b.WriteString("}\n")
+}
+
 func writeIfStatement(b *bytes.Buffer, n *Node, indentLevel int) {
 	if len(n.Children) < 2 {
 		return
@@ -250,13 +304,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	switch n.Kind {
 	case "identifier", "integer_literal", "real_literal", "boolean_literal", "implicit_type", "predefined_type", "modifier":
 		b.WriteString(n.Text)
-	case "member_access_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indentLevel)
-			b.WriteByte('.')
-			writeExpr(b, n.Children[1], indentLevel)
-		}
-	case "invocation_expression":
+       case "member_access_expression":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indentLevel)
+                       b.WriteByte('.')
+                       writeExpr(b, n.Children[1], indentLevel)
+               }
+       case "qualified_name":
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteByte('.')
+                       }
+                       writeExpr(b, c, indentLevel)
+               }
+       case "invocation_expression":
 		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indentLevel)
 			if len(n.Children) > 1 {
@@ -355,6 +416,52 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			}
 		}
 		b.WriteByte(']')
+	case "object_creation_expression":
+		b.WriteString("new ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		}
+		for i, c := range n.Children[1:] {
+			if i == 0 && c.Kind != "initializer_expression" {
+				writeExpr(b, c, indentLevel)
+				continue
+			}
+			writeExpr(b, c, indentLevel)
+		}
+	case "interpolated_string_expression":
+		b.WriteString("$\"")
+		for _, c := range n.Children {
+			switch c.Kind {
+			case "string_content", "string_literal_content":
+				b.WriteString(c.Text)
+			case "interpolation":
+				b.WriteByte('{')
+				for _, e := range c.Children {
+					writeExpr(b, e, indentLevel)
+				}
+				b.WriteByte('}')
+			}
+		}
+		b.WriteByte('"')
+	case "query_expression":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indentLevel)
+		}
+	case "from_clause":
+		if len(n.Children) == 2 {
+			b.WriteString("from ")
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" in ")
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "select_clause":
+		if len(n.Children) == 1 {
+			b.WriteString("select ")
+			writeExpr(b, n.Children[0], indentLevel)
+		}
 	default:
 		for _, c := range n.Children {
 			writeExpr(b, c, indentLevel)
