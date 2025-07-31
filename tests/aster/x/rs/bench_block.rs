@@ -13,7 +13,7 @@ fn _now() -> i64 {
         }
     }
     if NOW_SEEDED.load(Ordering::SeqCst) {
-        let seed = (NOW_SEED.load(Ordering::SeqCst)*1664525 + 1013904223) % 2147483647;
+        let seed = (NOW_SEED.load(Ordering::SeqCst) * 1664525 + 1013904223) % 2147483647;
         NOW_SEED.store(seed, Ordering::SeqCst);
         seed
     } else {

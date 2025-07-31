@@ -1,6 +1,8 @@
 package rs
 
 import (
+	"strings"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
@@ -107,8 +109,18 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	// the named children (for example the minus sign of a negative integer
 	// inside a token tree).
 	switch n.Kind() {
-	case "token_tree", "unary_expression", "binary_expression", "call_expression":
+	case "token_tree":
 		node.Text = n.Utf8Text(src)
+	case "unary_expression":
+		if n.ChildCount() > 0 {
+			op := n.Child(0)
+			node.Text = op.Utf8Text(src)
+		}
+	case "binary_expression":
+		if n.ChildCount() >= 3 {
+			op := n.Child(1)
+			node.Text = strings.TrimSpace(op.Utf8Text(src))
+		}
 	}
 	if opt.Positions {
 		sp := n.StartPosition()
@@ -158,7 +170,7 @@ func isValueNode(kind string) bool {
 	case "identifier", "field_identifier", "type_identifier", "primitive_type",
 		"integer_literal", "string_content", "escape_sequence", "mutable_specifier",
 		"arguments", "parameters", "self", "token_tree", "line_comment",
-		"true", "false":
+		"true", "false", "boolean_literal", "break_expression", "continue_expression":
 		return true
 	default:
 		return false
