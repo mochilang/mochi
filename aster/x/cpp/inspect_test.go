@@ -55,10 +55,10 @@ func TestInspect_Golden(t *testing.T) {
 		if base == "bench_block.cpp" || base == "closure.cpp" {
 			continue
 		}
-		count++
-		if count <= 20 {
-			continue
-		}
+               count++
+               if count <= 30 {
+                       continue
+               }
 		selected = append(selected, f)
 		if len(selected) >= 10 {
 			break

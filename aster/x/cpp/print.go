@@ -106,14 +106,25 @@ func writeFunctionDefinition(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeFunctionDeclarator(b *bytes.Buffer, n *Node, indent int) {
-	if len(n.Children) == 0 {
+	if n == nil {
 		return
 	}
-	writeExpr(b, n.Children[0], indent)
-	if len(n.Children) > 1 {
-		writeParameterList(b, n.Children[1])
+	idx := 0
+	if n.Text != "" {
+		b.WriteString(n.Text)
+	} else if len(n.Children) > 0 && n.Children[0].Kind != "parameter_list" {
+		writeExpr(b, n.Children[0], indent)
+		idx = 1
+	}
+	if idx < len(n.Children) && n.Children[idx].Kind == "parameter_list" {
+		writeParameterList(b, n.Children[idx])
+		idx++
 	} else {
 		b.WriteString("()")
+	}
+	for ; idx < len(n.Children); idx++ {
+		b.WriteByte(' ')
+		writeExpr(b, n.Children[idx], indent)
 	}
 }
 
@@ -388,6 +399,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			op = detectOperator(n)
 		}
 		writeBinaryOp(b, n, indent, op)
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "update_expression":
 		op := strings.TrimSpace(n.Text)
 		prefix := false
