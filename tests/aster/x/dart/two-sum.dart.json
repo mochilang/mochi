@@ -64,6 +64,10 @@
                     "kind": "initialized_variable_definition",
                     "children": [
                       {
+                        "kind": "final_builtin",
+                        "text": "final"
+                      },
+                      {
                         "kind": "type_identifier",
                         "text": "int"
                       },
@@ -105,6 +109,10 @@
                           {
                             "kind": "initialized_variable_definition",
                             "children": [
+                              {
+                                "kind": "inferred_type",
+                                "text": "var"
+                              },
                               {
                                 "kind": "identifier",
                                 "text": "i"
@@ -161,6 +169,10 @@
                                   {
                                     "kind": "initialized_variable_definition",
                                     "children": [
+                                      {
+                                        "kind": "inferred_type",
+                                        "text": "var"
+                                      },
                                       {
                                         "kind": "identifier",
                                         "text": "j"
@@ -367,6 +379,10 @@
                   {
                     "kind": "initialized_variable_definition",
                     "children": [
+                      {
+                        "kind": "final_builtin",
+                        "text": "final"
+                      },
                       {
                         "kind": "type_identifier",
                         "text": "List"
