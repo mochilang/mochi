@@ -46,6 +46,20 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteString("]\n")
+	case "mod_item":
+		b.WriteString(ind)
+		b.WriteString("mod ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(" {\n")
+		if len(n.Children) > 1 {
+			for _, d := range n.Children[1].Children {
+				writeStmt(b, d, indent+1)
+			}
+		}
+		b.WriteString(ind)
+		b.WriteString("}\n")
 	case "struct_item":
 		b.WriteString(ind)
 		b.WriteString("struct ")
@@ -146,6 +160,29 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteByte('\n')
+	case "const_item":
+		b.WriteString(ind)
+		idx := 0
+		if idx < len(n.Children) && n.Children[idx].Kind == "visibility_modifier" {
+			writeExpr(b, n.Children[idx], indent)
+			b.WriteByte(' ')
+			idx++
+		}
+		b.WriteString("const ")
+		if idx < len(n.Children) {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		if idx < len(n.Children) {
+			b.WriteString(": ")
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		if idx < len(n.Children) {
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[idx], indent)
+		}
+		b.WriteString(";\n")
 	case "static_item":
 		b.WriteString(ind)
 		b.WriteString("static ")
