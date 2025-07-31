@@ -7,7 +7,7 @@
         "children": [
           {
             "kind": "identifier",
-            "text": "makeAdder"
+            "text": "sum3"
           },
           {
             "kind": "function_value_parameters",
@@ -17,7 +17,43 @@
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "n"
+                    "text": "a"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "b"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "c"
                   },
                   {
                     "kind": "user_type",
@@ -33,30 +69,11 @@
             ]
           },
           {
-            "kind": "function_type",
+            "kind": "user_type",
             "children": [
               {
-                "kind": "function_type_parameters",
-                "children": [
-                  {
-                    "kind": "user_type",
-                    "children": [
-                      {
-                        "kind": "identifier",
-                        "text": "Int"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "kind": "user_type",
-                "children": [
-                  {
-                    "kind": "identifier",
-                    "text": "Int"
-                  }
-                ]
+                "kind": "identifier",
+                "text": "Int"
               }
             ]
           },
@@ -70,44 +87,31 @@
                     "kind": "return_expression",
                     "children": [
                       {
-                        "kind": "lambda_literal",
+                        "kind": "binary_expression",
+                        "text": "+",
                         "children": [
                           {
-                            "kind": "lambda_parameters",
+                            "kind": "parenthesized_expression",
                             "children": [
                               {
-                                "kind": "variable_declaration",
+                                "kind": "binary_expression",
+                                "text": "+",
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "x"
+                                    "text": "a"
                                   },
                                   {
-                                    "kind": "user_type",
-                                    "children": [
-                                      {
-                                        "kind": "identifier",
-                                        "text": "Int"
-                                      }
-                                    ]
+                                    "kind": "identifier",
+                                    "text": "b"
                                   }
                                 ]
                               }
                             ]
                           },
                           {
-                            "kind": "binary_expression",
-                            "text": "+",
-                            "children": [
-                              {
-                                "kind": "identifier",
-                                "text": "x"
-                              },
-                              {
-                                "kind": "identifier",
-                                "text": "n"
-                              }
-                            ]
+                            "kind": "identifier",
+                            "text": "c"
                           }
                         ]
                       }
@@ -133,71 +137,6 @@
                 "kind": "block",
                 "children": [
                   {
-                    "kind": "property_declaration",
-                    "children": [
-                      {
-                        "kind": "variable_declaration",
-                        "children": [
-                          {
-                            "kind": "identifier",
-                            "text": "add10"
-                          },
-                          {
-                            "kind": "function_type",
-                            "children": [
-                              {
-                                "kind": "function_type_parameters",
-                                "children": [
-                                  {
-                                    "kind": "user_type",
-                                    "children": [
-                                      {
-                                        "kind": "identifier",
-                                        "text": "Int"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "user_type",
-                                "children": [
-                                  {
-                                    "kind": "identifier",
-                                    "text": "Int"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "call_expression",
-                        "children": [
-                          {
-                            "kind": "identifier",
-                            "text": "makeAdder"
-                          },
-                          {
-                            "kind": "value_arguments",
-                            "children": [
-                              {
-                                "kind": "value_argument",
-                                "children": [
-                                  {
-                                    "kind": "number_literal",
-                                    "text": "10"
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
                     "kind": "call_expression",
                     "children": [
                       {
@@ -215,7 +154,7 @@
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "add10"
+                                    "text": "sum3"
                                   },
                                   {
                                     "kind": "value_arguments",
@@ -225,7 +164,25 @@
                                         "children": [
                                           {
                                             "kind": "number_literal",
-                                            "text": "7"
+                                            "text": "1"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "number_literal",
+                                            "text": "2"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "number_literal",
+                                            "text": "3"
                                           }
                                         ]
                                       }

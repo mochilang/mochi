@@ -23,68 +23,7 @@
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "customers"
-                          },
-                          {
-                            "kind": "user_type",
-                            "children": [
-                              {
-                                "kind": "identifier",
-                                "text": "MutableList"
-                              },
-                              {
-                                "kind": "type_arguments",
-                                "children": [
-                                  {
-                                    "kind": "type_projection",
-                                    "children": [
-                                      {
-                                        "kind": "user_type",
-                                        "children": [
-                                          {
-                                            "kind": "identifier",
-                                            "text": "MutableMap"
-                                          },
-                                          {
-                                            "kind": "type_arguments",
-                                            "children": [
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "String"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "Any"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
+                            "text": "people"
                           }
                         ]
                       },
@@ -111,33 +50,6 @@
                                       {
                                         "kind": "value_arguments",
                                         "children": [
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "id"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "1"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
                                           {
                                             "kind": "value_argument",
                                             "children": [
@@ -169,6 +81,33 @@
                                                 ]
                                               }
                                             ]
+                                          },
+                                          {
+                                            "kind": "value_argument",
+                                            "children": [
+                                              {
+                                                "kind": "infix_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_literal",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "age"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "to"
+                                                  },
+                                                  {
+                                                    "kind": "number_literal",
+                                                    "text": "30"
+                                                  }
+                                                ]
+                                              }
+                                            ]
                                           }
                                         ]
                                       }
@@ -189,33 +128,6 @@
                                       {
                                         "kind": "value_arguments",
                                         "children": [
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "id"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "2"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
                                           {
                                             "kind": "value_argument",
                                             "children": [
@@ -247,6 +159,33 @@
                                                 ]
                                               }
                                             ]
+                                          },
+                                          {
+                                            "kind": "value_argument",
+                                            "children": [
+                                              {
+                                                "kind": "infix_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "string_literal",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "age"
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "to"
+                                                  },
+                                                  {
+                                                    "kind": "number_literal",
+                                                    "text": "15"
+                                                  }
+                                                ]
+                                              }
+                                            ]
                                           }
                                         ]
                                       }
@@ -267,33 +206,6 @@
                                       {
                                         "kind": "value_arguments",
                                         "children": [
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "id"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "3"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
                                           {
                                             "kind": "value_argument",
                                             "children": [
@@ -325,141 +237,6 @@
                                                 ]
                                               }
                                             ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "property_declaration",
-                    "children": [
-                      {
-                        "kind": "variable_declaration",
-                        "children": [
-                          {
-                            "kind": "identifier",
-                            "text": "orders"
-                          },
-                          {
-                            "kind": "user_type",
-                            "children": [
-                              {
-                                "kind": "identifier",
-                                "text": "MutableList"
-                              },
-                              {
-                                "kind": "type_arguments",
-                                "children": [
-                                  {
-                                    "kind": "type_projection",
-                                    "children": [
-                                      {
-                                        "kind": "user_type",
-                                        "children": [
-                                          {
-                                            "kind": "identifier",
-                                            "text": "MutableMap"
-                                          },
-                                          {
-                                            "kind": "type_arguments",
-                                            "children": [
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "String"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "Int"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "kind": "call_expression",
-                        "children": [
-                          {
-                            "kind": "identifier",
-                            "text": "mutableListOf"
-                          },
-                          {
-                            "kind": "value_arguments",
-                            "children": [
-                              {
-                                "kind": "value_argument",
-                                "children": [
-                                  {
-                                    "kind": "call_expression",
-                                    "children": [
-                                      {
-                                        "kind": "identifier",
-                                        "text": "mutableMapOf"
-                                      },
-                                      {
-                                        "kind": "value_arguments",
-                                        "children": [
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "id"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "100"
-                                                  }
-                                                ]
-                                              }
-                                            ]
                                           },
                                           {
                                             "kind": "value_argument",
@@ -472,7 +249,7 @@
                                                     "children": [
                                                       {
                                                         "kind": "string_content",
-                                                        "text": "customerId"
+                                                        "text": "age"
                                                       }
                                                     ]
                                                   },
@@ -482,34 +259,7 @@
                                                   },
                                                   {
                                                     "kind": "number_literal",
-                                                    "text": "1"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "total"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "250"
+                                                    "text": "65"
                                                   }
                                                 ]
                                               }
@@ -545,7 +295,7 @@
                                                     "children": [
                                                       {
                                                         "kind": "string_content",
-                                                        "text": "id"
+                                                        "text": "name"
                                                       }
                                                     ]
                                                   },
@@ -554,8 +304,13 @@
                                                     "text": "to"
                                                   },
                                                   {
-                                                    "kind": "number_literal",
-                                                    "text": "101"
+                                                    "kind": "string_literal",
+                                                    "children": [
+                                                      {
+                                                        "kind": "string_content",
+                                                        "text": "Diana"
+                                                      }
+                                                    ]
                                                   }
                                                 ]
                                               }
@@ -572,7 +327,7 @@
                                                     "children": [
                                                       {
                                                         "kind": "string_content",
-                                                        "text": "customerId"
+                                                        "text": "age"
                                                       }
                                                     ]
                                                   },
@@ -582,134 +337,7 @@
                                                   },
                                                   {
                                                     "kind": "number_literal",
-                                                    "text": "2"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "total"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "125"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              {
-                                "kind": "value_argument",
-                                "children": [
-                                  {
-                                    "kind": "call_expression",
-                                    "children": [
-                                      {
-                                        "kind": "identifier",
-                                        "text": "mutableMapOf"
-                                      },
-                                      {
-                                        "kind": "value_arguments",
-                                        "children": [
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "id"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "102"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "customerId"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "1"
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          },
-                                          {
-                                            "kind": "value_argument",
-                                            "children": [
-                                              {
-                                                "kind": "infix_expression",
-                                                "children": [
-                                                  {
-                                                    "kind": "string_literal",
-                                                    "children": [
-                                                      {
-                                                        "kind": "string_content",
-                                                        "text": "total"
-                                                      }
-                                                    ]
-                                                  },
-                                                  {
-                                                    "kind": "identifier",
-                                                    "text": "to"
-                                                  },
-                                                  {
-                                                    "kind": "number_literal",
-                                                    "text": "300"
+                                                    "text": "45"
                                                   }
                                                 ]
                                               }
@@ -735,68 +363,7 @@
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "result"
-                          },
-                          {
-                            "kind": "user_type",
-                            "children": [
-                              {
-                                "kind": "identifier",
-                                "text": "MutableList"
-                              },
-                              {
-                                "kind": "type_arguments",
-                                "children": [
-                                  {
-                                    "kind": "type_projection",
-                                    "children": [
-                                      {
-                                        "kind": "user_type",
-                                        "children": [
-                                          {
-                                            "kind": "identifier",
-                                            "text": "MutableMap"
-                                          },
-                                          {
-                                            "kind": "type_arguments",
-                                            "children": [
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "String"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              },
-                                              {
-                                                "kind": "type_projection",
-                                                "children": [
-                                                  {
-                                                    "kind": "user_type",
-                                                    "children": [
-                                                      {
-                                                        "kind": "identifier",
-                                                        "text": "Int"
-                                                      }
-                                                    ]
-                                                  }
-                                                ]
-                                              }
-                                            ]
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
+                            "text": "adults"
                           }
                         ]
                       },
@@ -896,32 +463,47 @@
                                         "children": [
                                           {
                                             "kind": "identifier",
-                                            "text": "o"
+                                            "text": "person"
                                           }
                                         ]
                                       },
                                       {
                                         "kind": "identifier",
-                                        "text": "orders"
+                                        "text": "people"
                                       },
                                       {
                                         "kind": "block",
                                         "children": [
                                           {
-                                            "kind": "for_statement",
+                                            "kind": "if_expression",
                                             "children": [
                                               {
-                                                "kind": "variable_declaration",
+                                                "kind": "binary_expression",
+                                                "text": "\u003e=",
                                                 "children": [
                                                   {
-                                                    "kind": "identifier",
-                                                    "text": "c"
+                                                    "kind": "index_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "identifier",
+                                                        "text": "person"
+                                                      },
+                                                      {
+                                                        "kind": "string_literal",
+                                                        "children": [
+                                                          {
+                                                            "kind": "string_content",
+                                                            "text": "age"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  },
+                                                  {
+                                                    "kind": "number_literal",
+                                                    "text": "18"
                                                   }
                                                 ]
-                                              },
-                                              {
-                                                "kind": "identifier",
-                                                "text": "customers"
                                               },
                                               {
                                                 "kind": "block",
@@ -969,7 +551,7 @@
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "string_content",
-                                                                                    "text": "orderId"
+                                                                                    "text": "name"
                                                                                   }
                                                                                 ]
                                                                               },
@@ -982,89 +564,7 @@
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "identifier",
-                                                                                    "text": "o"
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "string_literal",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "text": "id"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "value_argument",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "infix_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "string_literal",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "text": "orderCustomerId"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "identifier",
-                                                                                "text": "to"
-                                                                              },
-                                                                              {
-                                                                                "kind": "index_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "identifier",
-                                                                                    "text": "o"
-                                                                                  },
-                                                                                  {
-                                                                                    "kind": "string_literal",
-                                                                                    "children": [
-                                                                                      {
-                                                                                        "kind": "string_content",
-                                                                                        "text": "customerId"
-                                                                                      }
-                                                                                    ]
-                                                                                  }
-                                                                                ]
-                                                                              }
-                                                                            ]
-                                                                          }
-                                                                        ]
-                                                                      },
-                                                                      {
-                                                                        "kind": "value_argument",
-                                                                        "children": [
-                                                                          {
-                                                                            "kind": "infix_expression",
-                                                                            "children": [
-                                                                              {
-                                                                                "kind": "string_literal",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "string_content",
-                                                                                    "text": "pairedCustomerName"
-                                                                                  }
-                                                                                ]
-                                                                              },
-                                                                              {
-                                                                                "kind": "identifier",
-                                                                                "text": "to"
-                                                                              },
-                                                                              {
-                                                                                "kind": "index_expression",
-                                                                                "children": [
-                                                                                  {
-                                                                                    "kind": "identifier",
-                                                                                    "text": "c"
+                                                                                    "text": "person"
                                                                                   },
                                                                                   {
                                                                                     "kind": "string_literal",
@@ -1092,7 +592,7 @@
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "string_content",
-                                                                                    "text": "orderTotal"
+                                                                                    "text": "age"
                                                                                   }
                                                                                 ]
                                                                               },
@@ -1105,18 +605,69 @@
                                                                                 "children": [
                                                                                   {
                                                                                     "kind": "identifier",
-                                                                                    "text": "o"
+                                                                                    "text": "person"
                                                                                   },
                                                                                   {
                                                                                     "kind": "string_literal",
                                                                                     "children": [
                                                                                       {
                                                                                         "kind": "string_content",
-                                                                                        "text": "total"
+                                                                                        "text": "age"
                                                                                       }
                                                                                     ]
                                                                                   }
                                                                                 ]
+                                                                              }
+                                                                            ]
+                                                                          }
+                                                                        ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "value_argument",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "binary_expression",
+                                                                            "text": "\u003e=",
+                                                                            "children": [
+                                                                              {
+                                                                                "kind": "infix_expression",
+                                                                                "children": [
+                                                                                  {
+                                                                                    "kind": "string_literal",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "string_content",
+                                                                                        "text": "is_senior"
+                                                                                      }
+                                                                                    ]
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "identifier",
+                                                                                    "text": "to"
+                                                                                  },
+                                                                                  {
+                                                                                    "kind": "index_expression",
+                                                                                    "children": [
+                                                                                      {
+                                                                                        "kind": "identifier",
+                                                                                        "text": "person"
+                                                                                      },
+                                                                                      {
+                                                                                        "kind": "string_literal",
+                                                                                        "children": [
+                                                                                          {
+                                                                                            "kind": "string_content",
+                                                                                            "text": "age"
+                                                                                          }
+                                                                                        ]
+                                                                                      }
+                                                                                    ]
+                                                                                  }
+                                                                                ]
+                                                                              },
+                                                                              {
+                                                                                "kind": "number_literal",
+                                                                                "text": "60"
                                                                               }
                                                                             ]
                                                                           }
@@ -1170,7 +721,7 @@
                                 "children": [
                                   {
                                     "kind": "string_content",
-                                    "text": "--- Cross Join: All order-customer pairs ---"
+                                    "text": "--- Adults ---"
                                   }
                                 ]
                               }
@@ -1188,13 +739,13 @@
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "entry"
+                            "text": "person"
                           }
                         ]
                       },
                       {
                         "kind": "identifier",
-                        "text": "result"
+                        "text": "adults"
                       },
                       {
                         "kind": "block",
@@ -1232,32 +783,18 @@
                                                         "kind": "value_argument",
                                                         "children": [
                                                           {
-                                                            "kind": "string_literal",
-                                                            "children": [
-                                                              {
-                                                                "kind": "string_content",
-                                                                "text": "Order"
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "value_argument",
-                                                        "children": [
-                                                          {
                                                             "kind": "index_expression",
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "entry"
+                                                                "text": "person"
                                                               },
                                                               {
                                                                 "kind": "string_literal",
                                                                 "children": [
                                                                   {
                                                                     "kind": "string_content",
-                                                                    "text": "orderId"
+                                                                    "text": "name"
                                                                   }
                                                                 ]
                                                               }
@@ -1273,7 +810,7 @@
                                                             "children": [
                                                               {
                                                                 "kind": "string_content",
-                                                                "text": "(customerId:"
+                                                                "text": "is"
                                                               }
                                                             ]
                                                           }
@@ -1287,14 +824,14 @@
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "entry"
+                                                                "text": "person"
                                                               },
                                                               {
                                                                 "kind": "string_literal",
                                                                 "children": [
                                                                   {
                                                                     "kind": "string_content",
-                                                                    "text": "orderCustomerId"
+                                                                    "text": "age"
                                                                   }
                                                                 ]
                                                               }
@@ -1306,75 +843,48 @@
                                                         "kind": "value_argument",
                                                         "children": [
                                                           {
-                                                            "kind": "string_literal",
+                                                            "kind": "if_expression",
                                                             "children": [
                                                               {
-                                                                "kind": "string_content",
-                                                                "text": ", total: "
-                                                              },
-                                                              {
-                                                                "kind": "string_content",
-                                                                "text": "$"
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "value_argument",
-                                                        "children": [
-                                                          {
-                                                            "kind": "index_expression",
-                                                            "children": [
-                                                              {
-                                                                "kind": "identifier",
-                                                                "text": "entry"
+                                                                "kind": "binary_expression",
+                                                                "text": "!=",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "index_expression",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "person"
+                                                                      },
+                                                                      {
+                                                                        "kind": "string_literal",
+                                                                        "children": [
+                                                                          {
+                                                                            "kind": "string_content",
+                                                                            "text": "is_senior"
+                                                                          }
+                                                                        ]
+                                                                      }
+                                                                    ]
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "null"
+                                                                  }
+                                                                ]
                                                               },
                                                               {
                                                                 "kind": "string_literal",
                                                                 "children": [
                                                                   {
                                                                     "kind": "string_content",
-                                                                    "text": "orderTotal"
+                                                                    "text": " (senior)"
                                                                   }
                                                                 ]
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "value_argument",
-                                                        "children": [
-                                                          {
-                                                            "kind": "string_literal",
-                                                            "children": [
-                                                              {
-                                                                "kind": "string_content",
-                                                                "text": ") paired with"
-                                                              }
-                                                            ]
-                                                          }
-                                                        ]
-                                                      },
-                                                      {
-                                                        "kind": "value_argument",
-                                                        "children": [
-                                                          {
-                                                            "kind": "index_expression",
-                                                            "children": [
-                                                              {
-                                                                "kind": "identifier",
-                                                                "text": "entry"
                                                               },
                                                               {
                                                                 "kind": "string_literal",
-                                                                "children": [
-                                                                  {
-                                                                    "kind": "string_content",
-                                                                    "text": "pairedCustomerName"
-                                                                  }
-                                                                ]
+                                                                "text": "\"\""
                                                               }
                                                             ]
                                                           }

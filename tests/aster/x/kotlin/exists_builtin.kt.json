@@ -1,0 +1,267 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "data"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "mutableListOf"
+                          },
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "number_literal",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "number_literal",
+                                    "text": "2"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "flag"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "navigation_expression",
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "run"
+                                  },
+                                  {
+                                    "kind": "annotated_lambda",
+                                    "children": [
+                                      {
+                                        "kind": "lambda_literal",
+                                        "children": [
+                                          {
+                                            "kind": "property_declaration",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declaration",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "_res"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "call_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "mutableListOf"
+                                                  },
+                                                  {
+                                                    "kind": "type_arguments",
+                                                    "children": [
+                                                      {
+                                                        "kind": "type_projection",
+                                                        "children": [
+                                                          {
+                                                            "kind": "user_type",
+                                                            "children": [
+                                                              {
+                                                                "kind": "identifier",
+                                                                "text": "Int"
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "for_statement",
+                                            "children": [
+                                              {
+                                                "kind": "variable_declaration",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "x"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "data"
+                                              },
+                                              {
+                                                "kind": "block",
+                                                "children": [
+                                                  {
+                                                    "kind": "if_expression",
+                                                    "children": [
+                                                      {
+                                                        "kind": "binary_expression",
+                                                        "text": "==",
+                                                        "children": [
+                                                          {
+                                                            "kind": "identifier",
+                                                            "text": "x"
+                                                          },
+                                                          {
+                                                            "kind": "number_literal",
+                                                            "text": "1"
+                                                          }
+                                                        ]
+                                                      },
+                                                      {
+                                                        "kind": "block",
+                                                        "children": [
+                                                          {
+                                                            "kind": "call_expression",
+                                                            "children": [
+                                                              {
+                                                                "kind": "navigation_expression",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "_res"
+                                                                  },
+                                                                  {
+                                                                    "kind": "identifier",
+                                                                    "text": "add"
+                                                                  }
+                                                                ]
+                                                              },
+                                                              {
+                                                                "kind": "value_arguments",
+                                                                "children": [
+                                                                  {
+                                                                    "kind": "value_argument",
+                                                                    "children": [
+                                                                      {
+                                                                        "kind": "identifier",
+                                                                        "text": "x"
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                ]
+                                                              }
+                                                            ]
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "_res"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "isNotEmpty"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "flag"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

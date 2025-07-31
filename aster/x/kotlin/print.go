@@ -309,13 +309,27 @@ func writeLambdaLiteral(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteByte('}')
 }
 
+func writeAnnotatedLambda(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) > 0 {
+		writeLambdaLiteral(b, n.Children[0], indent)
+	}
+}
+
 func writeCall(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) == 0 {
 		return
 	}
 	writeExpr(b, n.Children[0], indent)
 	if len(n.Children) > 1 {
-		writeValueArgs(b, n.Children[1], indent)
+		switch n.Children[1].Kind {
+		case "value_arguments":
+			writeValueArgs(b, n.Children[1], indent)
+		case "annotated_lambda":
+			b.WriteByte(' ')
+			writeAnnotatedLambda(b, n.Children[1], indent)
+		default:
+			writeExpr(b, n.Children[1], indent)
+		}
 	} else {
 		b.WriteString("()")
 	}

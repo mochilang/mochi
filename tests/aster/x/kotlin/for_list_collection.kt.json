@@ -16,42 +16,14 @@
                 "kind": "block",
                 "children": [
                   {
-                    "kind": "property_declaration",
+                    "kind": "for_statement",
                     "children": [
                       {
                         "kind": "variable_declaration",
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "a"
-                          },
-                          {
-                            "kind": "user_type",
-                            "children": [
-                              {
-                                "kind": "identifier",
-                                "text": "MutableList"
-                              },
-                              {
-                                "kind": "type_arguments",
-                                "children": [
-                                  {
-                                    "kind": "type_projection",
-                                    "children": [
-                                      {
-                                        "kind": "user_type",
-                                        "children": [
-                                          {
-                                            "kind": "identifier",
-                                            "text": "Int"
-                                          }
-                                        ]
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
+                            "text": "n"
                           }
                         ]
                       },
@@ -82,37 +54,41 @@
                                     "text": "2"
                                   }
                                 ]
+                              },
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "number_literal",
+                                    "text": "3"
+                                  }
+                                ]
                               }
                             ]
                           }
                         ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "call_expression",
-                    "children": [
-                      {
-                        "kind": "identifier",
-                        "text": "println"
                       },
                       {
-                        "kind": "value_arguments",
+                        "kind": "block",
                         "children": [
                           {
-                            "kind": "value_argument",
+                            "kind": "call_expression",
                             "children": [
                               {
-                                "kind": "binary_expression",
-                                "text": "+",
+                                "kind": "identifier",
+                                "text": "println"
+                              },
+                              {
+                                "kind": "value_arguments",
                                 "children": [
                                   {
-                                    "kind": "identifier",
-                                    "text": "a"
-                                  },
-                                  {
-                                    "kind": "number_literal",
-                                    "text": "3"
+                                    "kind": "value_argument",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "n"
+                                      }
+                                    ]
                                   }
                                 ]
                               }
