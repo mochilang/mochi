@@ -370,6 +370,13 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 				b.WriteString(", ")
 			}
 			c := n.Children[i]
+			if c.Kind == "spread_element" {
+				b.WriteString("...")
+				if len(c.Children) > 0 {
+					writeExpr(b, c.Children[0])
+				}
+				continue
+			}
 			if c.Kind == "identifier" && i+1 < len(n.Children) && n.Children[i+1].Kind == "selector" {
 				writeExpr(b, c)
 				writeExpr(b, n.Children[i+1])
@@ -380,31 +387,113 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		}
 		b.WriteByte(']')
 	case "additive_expression":
-		if len(n.Children) >= 2 {
-			for i := 0; i < len(n.Children)-1; i++ {
-				writeExpr(b, n.Children[i])
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+			for i := 1; i < len(n.Children); i += 2 {
+				if i < len(n.Children) {
+					op := n.Children[i]
+					if op.Kind == "additive_operator" {
+						b.WriteByte(' ')
+						b.WriteString(op.Text)
+						b.WriteByte(' ')
+					} else {
+						writeExpr(b, op)
+					}
+				}
+				if i+1 < len(n.Children) {
+					writeExpr(b, n.Children[i+1])
+				}
 			}
-			b.WriteString(" + ")
-			writeExpr(b, n.Children[len(n.Children)-1])
 		}
 	case "unary_expression":
 		if len(n.Children) == 1 {
-			b.WriteByte('-')
 			writeExpr(b, n.Children[0])
-		}
-	case "relational_expression":
-		if len(n.Children) == 2 {
+		} else if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0])
-			b.WriteString(" < ")
 			writeExpr(b, n.Children[1])
 		}
-	case "equality_expression":
-		if len(n.Children) >= 2 {
+	case "prefix_operator":
+		for _, c := range n.Children {
+			writeExpr(b, c)
+		}
+	case "multiplicative_expression":
+		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0])
-			for i := 1; i < len(n.Children)-1; i++ {
+			for i := 1; i < len(n.Children); i += 2 {
+				if i < len(n.Children) {
+					op := n.Children[i]
+					if op.Kind == "multiplicative_operator" {
+						b.WriteByte(' ')
+						b.WriteString(op.Text)
+						b.WriteByte(' ')
+					} else {
+						writeExpr(b, op)
+					}
+				}
+				if i+1 < len(n.Children) {
+					writeExpr(b, n.Children[i+1])
+				}
+			}
+		}
+	case "function_expression":
+		if len(n.Children) >= 2 {
+			writeParameters(b, n.Children[0])
+			b.WriteString(" => ")
+			writeExpr(b, n.Children[1])
+		}
+	case "function_expression_body":
+		if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0])
+		} else if len(n.Children) > 0 {
+			writeBlock(b, n.Children[0], 0)
+		}
+	case "parenthesized_expression":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c)
+		}
+		b.WriteByte(')')
+	case "relational_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+			if len(n.Children) >= 3 {
+				op := n.Children[1]
+				if op.Kind == "relational_operator" {
+					b.WriteByte(' ')
+					b.WriteString(op.Text)
+					b.WriteByte(' ')
+				} else {
+					writeExpr(b, op)
+				}
+				writeExpr(b, n.Children[2])
+			}
+		}
+	case "equality_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0])
+			if len(n.Children) >= 3 {
+				op := n.Children[1]
+				if op.Kind == "equality_operator" {
+					b.WriteByte(' ')
+					b.WriteString(op.Text)
+					b.WriteByte(' ')
+				} else {
+					writeExpr(b, op)
+				}
+				writeExpr(b, n.Children[2])
+			}
+		}
+	case "conditional_expression":
+		if len(n.Children) >= 3 {
+			for i := 0; i < len(n.Children)-2; i++ {
 				writeExpr(b, n.Children[i])
 			}
-			b.WriteString(" == ")
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[len(n.Children)-2])
+			b.WriteString(" : ")
 			writeExpr(b, n.Children[len(n.Children)-1])
 		}
 	case "postfix_expression":
