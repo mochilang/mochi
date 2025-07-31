@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 50/103 files
-Generated: 2025-07-31 19:49 +0700
+Completed 75/103 files
+Generated: 2025-07-31 20:35 GMT+7
 
 ## Checklist
 
@@ -59,3 +59,29 @@ Generated: 2025-07-31 19:49 +0700
 48. [x] list_assign
 49. [x] list_index
 50. [x] list_nested_assign
+
+51. [x] list_set_ops
+52. [x] load_jsonl
+53. [x] load_yaml
+54. [x] map_assign
+55. [x] map_in_operator
+56. [x] map_index
+57. [x] map_int_key
+58. [x] map_literal_dynamic
+59. [x] map_membership
+60. [x] map_nested_assign
+61. [x] match_expr
+62. [x] match_full
+63. [x] math_ops
+64. [x] membership
+65. [x] min_max_builtin
+66. [x] mix_go_python
+67. [x] nested_function
+68. [x] order_by_map
+69. [x] outer_join
+70. [x] partial_application
+71. [x] print_hello
+72. [x] pure_fold
+73. [x] pure_global_fold
+74. [x] python_auto
+75. [x] python_math
