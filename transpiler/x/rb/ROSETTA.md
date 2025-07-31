@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-07-30 17:51 UTC
+Last updated: 2025-07-30 18:10 UTC
 
 ## Checklist (480/491)
 | Index | Name | Status | Duration | Memory |
@@ -206,60 +206,60 @@ Last updated: 2025-07-30 17:51 UTC
 | 197 | chinese-remainder-theorem | ✓ | 36µs | 9.7 KB |
 | 198 | chinese-zodiac | ✓ | 74µs | 18.6 KB |
 | 199 | cholesky-decomposition-1 | ✓ | 197µs | 27.8 KB |
-| 200 | cholesky-decomposition | ✓ | 161µs | 22.2 KB |
-| 201 | chowla-numbers | ✓ | 46µs | 8.8 KB |
-| 202 | church-numerals-1 | ✓ | 182µs | 34.3 KB |
-| 203 | church-numerals-2 | ✓ | 4µs | 856 B |
-| 204 | circles-of-given-radius-through-two-points | ✓ | 230µs | 25.9 KB |
-| 205 | circular-primes | ✓ | 428µs | 214.3 KB |
-| 206 | cistercian-numerals | ✓ | 947µs | 515.7 KB |
-| 207 | comma-quibbling | ✓ | 88µs | 10.9 KB |
-| 208 | compiler-virtual-machine-interpreter | ✓ | 799µs | 214.3 KB |
+| 200 | cholesky-decomposition | ✓ | 165µs | 22.2 KB |
+| 201 | chowla-numbers | ✓ | 16µs | 8.8 KB |
+| 202 | church-numerals-1 | ✓ | 231µs | 34.3 KB |
+| 203 | church-numerals-2 | ✓ | 7µs | 856 B |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 218µs | 24.7 KB |
+| 205 | circular-primes | ✓ | 383µs | 214.3 KB |
+| 206 | cistercian-numerals | ✓ | 1.317ms | 515.7 KB |
+| 207 | comma-quibbling | ✓ | 36µs | 10.9 KB |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 451µs | 154.0 KB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 210 | compound-data-type | ✓ | 26µs | 1.2 KB |
-| 211 | concurrent-computing-1 | ✓ | 55µs | 9.0 KB |
-| 212 | concurrent-computing-2 | ✓ | 28µs | 9.0 KB |
-| 213 | concurrent-computing-3 | ✓ | 35µs | 9.4 KB |
+| 210 | compound-data-type | ✓ | 25µs | 1.2 KB |
+| 211 | concurrent-computing-1 | ✓ | 25µs | 9.0 KB |
+| 212 | concurrent-computing-2 | ✓ | 24µs | 9.0 KB |
+| 213 | concurrent-computing-3 | ✓ | 30µs | 9.4 KB |
 | 214 | conditional-structures-1 | ✓ | 2µs | 472 B |
-| 215 | conditional-structures-10 | ✓ | 20µs | 8.9 KB |
-| 216 | conditional-structures-2 | ✓ | 2µs | 472 B |
+| 215 | conditional-structures-10 | ✓ | 18µs | 8.9 KB |
+| 216 | conditional-structures-2 | ✓ | 3µs | 472 B |
 | 217 | conditional-structures-3 | ✓ | 2µs | 472 B |
-| 218 | conditional-structures-4 | ✓ | 3µs | 600 B |
-| 219 | conditional-structures-5 | ✓ | 2µs | 472 B |
+| 218 | conditional-structures-4 | ✓ | 8µs | 600 B |
+| 219 | conditional-structures-5 | ✓ | 3µs | 472 B |
 | 220 | conditional-structures-6 | ✓ | 3µs | 472 B |
-| 221 | conditional-structures-7 | ✓ | 4µs | 600 B |
-| 222 | conditional-structures-8 | ✓ | 2µs | 472 B |
+| 221 | conditional-structures-7 | ✓ | 3µs | 600 B |
+| 222 | conditional-structures-8 | ✓ | 3µs | 472 B |
 | 223 | conditional-structures-9 | ✓ | 2µs | 472 B |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 | ✓ | 26µs | 1.1 KB |
-| 226 | constrained-genericity-2 | ✓ | 24µs | 1.1 KB |
-| 227 | constrained-genericity-3 | ✓ | 28µs | 1.1 KB |
-| 228 | constrained-genericity-4 | ✓ | 108µs | 12.7 KB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 4.166ms | 1.0 MB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 1.965ms | 1.7 MB |
-| 231 | continued-fraction | ✓ | 82µs | 30.5 KB |
-| 232 | convert-decimal-number-to-rational | ✓ | 45µs | 14.3 KB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 22µs | 10.5 KB |
-| 234 | convex-hull | ✓ | 173µs | 26.5 KB |
-| 235 | conways-game-of-life | ✓ | 1.297435s | 1.5 MB |
-| 236 | copy-a-string-1 | ✓ | 1µs | 512 B |
-| 237 | copy-a-string-2 | ✓ | 35µs | 9.4 KB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 57µs | 17.3 KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 55µs | 17.4 KB |
-| 240 | count-in-factors | ✓ | 1.745ms | 29.2 KB |
-| 241 | count-in-octal-1 | ✓ | 211µs | 55.6 KB |
-| 242 | count-in-octal-2 | ✓ | 219.848ms | -25260 B |
-| 243 | count-in-octal-3 | ✓ | 55µs | 19.1 KB |
-| 244 | count-in-octal-4 | ✓ | 36µs | 13.1 KB |
+| 225 | constrained-genericity-1 | ✓ | 24µs | 1.1 KB |
+| 226 | constrained-genericity-2 | ✓ | 26µs | 1.1 KB |
+| 227 | constrained-genericity-3 | ✓ | 22µs | 1.1 KB |
+| 228 | constrained-genericity-4 | ✓ | 87µs | 12.7 KB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 3.614ms | 1.0 MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 5.981ms | 1.7 MB |
+| 231 | continued-fraction | ✓ | 113µs | 30.5 KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 61µs | 14.3 KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 49µs | 10.5 KB |
+| 234 | convex-hull | ✓ | 294µs | 26.5 KB |
+| 235 | conways-game-of-life | ✓ | 1.860947s | 1.4 MB |
+| 236 | copy-a-string-1 | ✓ | 2µs | 512 B |
+| 237 | copy-a-string-2 | ✓ | 24µs | 9.4 KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 37µs | 17.3 KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 50µs | 17.4 KB |
+| 240 | count-in-factors | ✓ | 2.675ms | 29.2 KB |
+| 241 | count-in-octal-1 | ✓ | 262µs | 55.6 KB |
+| 242 | count-in-octal-2 | ✓ | 286.097ms | -24260 B |
+| 243 | count-in-octal-3 | ✓ | 78µs | 19.1 KB |
+| 244 | count-in-octal-4 | ✓ | 47µs | 13.1 KB |
 | 245 | count-occurrences-of-a-substring | ✓ | 46µs | 10.5 KB |
-| 246 | count-the-coins-1 | ✓ | 44µs | 10.7 KB |
-| 247 | count-the-coins-2 | ✓ | 3.833ms | 3.9 MB |
-| 248 | cramers-rule | ✓ | 259µs | 103.7 KB |
-| 249 | crc-32-1 | ✓ | 3.957ms | 304.5 KB |
-| 250 | crc-32-2 | ✓ | 3.912ms | 304.6 KB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 103µs | 1.4 KB |
-| 252 | create-a-file | ✓ | 26µs | 10.4 KB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 48µs | 10.8 KB |
+| 246 | count-the-coins-1 | ✓ | 31µs | 10.7 KB |
+| 247 | count-the-coins-2 | ✓ | 15.539ms | 3.9 MB |
+| 248 | cramers-rule | ✓ | 349µs | 103.7 KB |
+| 249 | crc-32-1 | ✓ | 6.735ms | 304.5 KB |
+| 250 | crc-32-2 | ✓ | 6.819ms | 304.6 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 15µs | 1.4 KB |
+| 252 | create-a-file | ✓ | 54µs | 10.4 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 92µs | 10.8 KB |
 | 254 | create-an-html-table | ✓ | 33µs | 13.4 KB |
 | 255 | create-an-object-at-a-given-address | ✓ | 126µs | 19.9 KB |
 | 256 | csv-data-manipulation | ✓ | 47µs | 17.7 KB |
