@@ -2291,6 +2291,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funRets["_div"] = "BigRat"
 	funRets["_num"] = "BigInteger"
 	funRets["_denom"] = "BigInteger"
+	funRets["Convert.ToInt64"] = "long"
+	funRets["Convert.ToDouble"] = "double"
+	funRets["Convert.ToString"] = "string"
 	for _, st := range p.Statements {
 		s, err := compileStmt(prog, st)
 		if err != nil {
@@ -3574,6 +3577,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						conv = fmt.Sprintf("Enumerable.ToArray(%s.Cast<%s>())", exprString(arg), elem)
 					}
 					args[i] = &RawExpr{Code: conv, Type: types[i]}
+				} else if i < len(types) && typeOfExpr(arg) == "object" && strings.HasSuffix(types[i], "[]") {
+					args[i] = &RawExpr{Code: fmt.Sprintf("(%s)%s", types[i], exprString(arg)), Type: types[i]}
 				} else if i < len(types) && typeOfExpr(arg) == "object" {
 					switch types[i] {
 					case "long":
