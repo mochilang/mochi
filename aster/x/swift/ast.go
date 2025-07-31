@@ -104,7 +104,7 @@ type (
 
 // convert transforms a tree-sitter node into the Go AST representation.
 // The conversion is recursive and ignores anonymous children.
-func convert(n *sitter.Node, src []byte, withPos bool) *Node {
+func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node {
 	if n == nil {
 		return nil
 	}
@@ -119,7 +119,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 	}
 
 	if n.NamedChildCount() == 0 {
-		if isValueNode(out.Kind) {
+		if isValueNode(out.Kind) && (keepComments || out.Kind != "comment") {
 			out.Text = n.Utf8Text(src)
 		} else {
 			return nil
@@ -128,7 +128,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {
 		child := n.NamedChild(uint(i))
-		if c := convert(child, src, withPos); c != nil {
+		if c := convert(child, src, withPos, keepComments); c != nil {
 			out.Children = append(out.Children, c)
 		}
 	}
@@ -153,11 +153,11 @@ func isValueNode(kind string) bool {
 
 // ConvertFile converts the tree-sitter root node of a Swift file into a
 // SourceFile AST value.
-func ConvertFile(n *sitter.Node, src []byte, withPos bool) *SourceFile {
+func ConvertFile(n *sitter.Node, src []byte, withPos bool, keepComments bool) *SourceFile {
 	if n == nil {
 		return nil
 	}
-	root := convert(n, src, withPos)
+	root := convert(n, src, withPos, keepComments)
 	if root == nil {
 		return nil
 	}

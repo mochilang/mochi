@@ -59,7 +59,7 @@ func TestInspect_Golden(t *testing.T) {
 				t.Logf("skip %s due to compile error", name)
 				return
 			}
-			prog, err := swift.Inspect(string(data))
+			prog, err := swift.Inspect(string(data), swift.Option{Comments: true})
 			if err != nil {
 				t.Logf("skip %s: %v", name, err)
 				return

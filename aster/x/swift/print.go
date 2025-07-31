@@ -197,6 +197,22 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(']')
+	case "dictionary_literal":
+		b.WriteByte('[')
+		for i := 0; i < len(n.Children); i += 2 {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if i+1 >= len(n.Children) {
+				break
+			}
+			key := n.Children[i]
+			val := n.Children[i+1]
+			writeExpr(b, key, indent)
+			b.WriteString(": ")
+			writeExpr(b, val, indent)
+		}
+		b.WriteByte(']')
 	case "tuple_expression":
 		if len(n.Children) == 1 {
 			writeExpr(b, n.Children[0], indent)
@@ -241,6 +257,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeType(b, n.Children[1])
 			b.WriteByte(')')
 		}
+	case "lambda_literal":
+		b.WriteString("{\n")
+		for _, c := range n.Children {
+			writeStmt(b, c, indent+1)
+		}
+		b.WriteString(indentStr(indent))
+		b.WriteByte('}')
 	case "navigation_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
