@@ -130,7 +130,8 @@ func isValueNode(kind string) bool {
 		"hex_integer_literal", "octal_integer_literal", "binary_integer_literal",
 		"decimal_floating_point_literal", "hex_floating_point_literal",
 		"string_literal", "string_fragment", "character_literal",
-		"true", "false", "null", "this":
+		"true", "false", "null", "this",
+		"integral_type", "floating_point_type", "void_type", "boolean_type", "primitive_type":
 		return true
 	default:
 		return false
