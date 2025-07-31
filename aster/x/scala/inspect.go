@@ -9,15 +9,20 @@ import (
 // default positional information is omitted. Pass an Options value with
 // Positions=true to include it.
 func Inspect(src string, opts ...Options) (*Program, error) {
-	var withPos bool
+	var opt Options
 	if len(opts) > 0 {
-		withPos = opts[0].Positions
+		opt = opts[0]
 	}
+	return InspectWithOptions(src, opt)
+}
+
+// InspectWithOptions behaves like Inspect but accepts an explicit Options value.
+func InspectWithOptions(src string, opt Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tscala.Language()))
 	data := []byte(src)
 	tree := parser.Parse(data, nil)
-	n := convert(tree.RootNode(), data, withPos)
+	n := convert(tree.RootNode(), data, opt.Positions)
 	if n == nil {
 		return &Program{}, nil
 	}

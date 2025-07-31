@@ -69,6 +69,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(ind)
 			b.WriteString("}\n")
 		}
+	case "class_definition":
+		writeClassDefinition(b, n, indent)
 	case "function_definition":
 		writeFunctionDefinition(b, n, indent)
 	case "val_definition":
@@ -159,6 +161,35 @@ func writeValDefinition(b *bytes.Buffer, n *Node, indent int) {
 		writeExpr(b, n.Children[idx], indent)
 	}
 	b.WriteByte('\n')
+}
+
+func writeClassDefinition(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) == 0 {
+		return
+	}
+	ind := strings.Repeat("  ", indent)
+	b.WriteString(ind)
+	b.WriteString("case class ")
+	b.WriteString(n.Children[0].Text)
+	if len(n.Children) > 1 {
+		writeClassParameters(b, n.Children[1], indent)
+	}
+	b.WriteByte('\n')
+}
+
+func writeClassParameters(b *bytes.Buffer, n *Node, indent int) {
+	b.WriteByte('(')
+	for i, p := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		if len(p.Children) >= 2 {
+			b.WriteString(p.Children[0].Text)
+			b.WriteString(": ")
+			writeExpr(b, p.Children[1], indent)
+		}
+	}
+	b.WriteByte(')')
 }
 
 func writeForExpression(b *bytes.Buffer, n *Node, indent int) {
