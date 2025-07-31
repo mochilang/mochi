@@ -1,0 +1,1 @@
+tests/aster/x/zig/short_circuit.zig:10:62: error: ambiguous use of '&&'; use 'and' for logical AND, or change whitespace to ' & &' for bitwise AND

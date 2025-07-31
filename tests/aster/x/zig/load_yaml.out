@@ -1,0 +1,2 @@
+tests/aster/x/zig/load_yaml.zig:30:9: error: local variable is never mutated
+tests/aster/x/zig/load_yaml.zig:30:9: note: consider using 'const'

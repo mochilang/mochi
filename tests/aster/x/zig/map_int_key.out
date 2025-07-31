@@ -1,0 +1,2 @@
+tests/aster/x/zig/map_int_key.zig:6:5: error: expected type 'void', found 'error{AccessDenied,Unexpected,DiskQuota,FileTooBig,InputOutput,NoSpaceLeft,DeviceBusy,InvalidArgument,BrokenPipe,SystemResources,OperationAborted,NotOpenForWriting,LockViolation,WouldBlock,ConnectionResetByPeer}'
+tests/aster/x/zig/map_int_key.zig:4:15: note: function cannot return an error

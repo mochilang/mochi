@@ -1,0 +1,1 @@
+tests/aster/x/zig/query_sum_select.zig:10:24: error: use of undeclared identifier 'sum'

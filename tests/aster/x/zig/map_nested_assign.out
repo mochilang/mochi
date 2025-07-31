@@ -1,0 +1,2 @@
+tests/aster/x/zig/map_nested_assign.zig:5:119: error: redefinition of label 'blk'
+tests/aster/x/zig/map_nested_assign.zig:5:16: note: previous definition here
