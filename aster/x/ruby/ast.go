@@ -7,11 +7,13 @@ import (
 	tsruby "github.com/tree-sitter/tree-sitter-ruby/bindings/go"
 )
 
-// IncludePos controls whether positional information is populated when
-// converting tree-sitter nodes. When false (the default) the position
-// fields remain zero and are omitted from the marshalled JSON due to the
-// `omitempty` struct tags.
-var IncludePos bool
+// Options controls how the AST is produced when parsing source code.
+// When IncludePositions is false (the default) all positional fields
+// remain zero and are omitted from the JSON due to the `omitempty`
+// struct tags.
+type Options struct {
+	IncludePositions bool
+}
 
 // Node represents a node in the Ruby syntax tree as produced by tree-sitter.
 // Node represents a tree-sitter node in a simplified form. Only leaf nodes
@@ -25,8 +27,8 @@ type Node struct {
 	Kind     string  `json:"kind"`
 	Text     string  `json:"text,omitempty"`
 	Start    int     `json:"start,omitempty"`
-	StartCol int     `json:"startCol,omitempty"`
 	End      int     `json:"end,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
 	EndCol   int     `json:"endCol,omitempty"`
 	Children []*Node `json:"children,omitempty"`
 }
@@ -61,12 +63,16 @@ type (
 
 // Parse converts Ruby source code into a Node tree using tree-sitter.
 // Parse converts Ruby source code into a Node tree using tree-sitter.
-func Parse(src string) (*Node, error) {
+func Parse(src string, opts ...Options) (*Node, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tsruby.Language()))
 	data := []byte(src)
 	tree := parser.Parse(data, nil)
-	root := convert(tree.RootNode(), data, IncludePos)
+	var withPos bool
+	if len(opts) > 0 {
+		withPos = opts[0].IncludePositions
+	}
+	root := convert(tree.RootNode(), data, withPos)
 	if root == nil {
 		return nil, nil
 	}
@@ -74,12 +80,12 @@ func Parse(src string) (*Node, error) {
 }
 
 // ParseFile reads Ruby source code from a file and parses it using Parse.
-func ParseFile(path string) (*Node, error) {
+func ParseFile(path string, opts ...Options) (*Node, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	return Parse(string(data))
+	return Parse(string(data), opts...)
 }
 
 // convert converts a tree-sitter node into our Node representation. Pure
@@ -95,8 +101,8 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		start := n.StartPosition()
 		end := n.EndPosition()
 		node.Start = int(start.Row) + 1
-		node.StartCol = int(start.Column)
 		node.End = int(end.Row) + 1
+		node.StartCol = int(start.Column)
 		node.EndCol = int(end.Column)
 	}
 
