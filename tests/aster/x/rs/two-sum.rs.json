@@ -247,6 +247,7 @@
                                                           },
                                                           {
                                                             "kind": "token_tree",
+                                                            "text": "[i as i64, j as i64]",
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
@@ -300,14 +301,15 @@
                       },
                       {
                         "kind": "token_tree",
+                        "text": "[-1, -1]",
                         "children": [
                           {
                             "kind": "integer_literal",
-                            "text": "1"
+                            "text": "-1"
                           },
                           {
                             "kind": "integer_literal",
-                            "text": "1"
+                            "text": "-1"
                           }
                         ]
                       }
@@ -359,6 +361,7 @@
                               },
                               {
                                 "kind": "token_tree",
+                                "text": "[2, 7, 11, 15]",
                                 "children": [
                                   {
                                     "kind": "integer_literal",
@@ -402,6 +405,7 @@
                       },
                       {
                         "kind": "token_tree",
+                        "text": "(\"{}\", result[0])",
                         "children": [
                           {
                             "kind": "string_literal",
@@ -418,6 +422,7 @@
                           },
                           {
                             "kind": "token_tree",
+                            "text": "[0]",
                             "children": [
                               {
                                 "kind": "integer_literal",
@@ -443,6 +448,7 @@
                       },
                       {
                         "kind": "token_tree",
+                        "text": "(\"{}\", result[1])",
                         "children": [
                           {
                             "kind": "string_literal",
@@ -459,6 +465,7 @@
                           },
                           {
                             "kind": "token_tree",
+                            "text": "[1]",
                             "children": [
                               {
                                 "kind": "integer_literal",
