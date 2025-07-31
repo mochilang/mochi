@@ -113,6 +113,12 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 			op := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
 			node.Text = op
 		}
+	} else if n.Kind() == "pointer_expression" && n.NamedChildCount() == 1 {
+		child := n.NamedChild(0)
+		if child != nil {
+			op := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
+			node.Text = op
+		}
 	} else if n.Kind() == "function_declarator" && n.NamedChildCount() >= 1 {
 		child := n.NamedChild(0)
 		if child != nil {
