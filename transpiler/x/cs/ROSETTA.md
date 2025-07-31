@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 482/491
-Last updated: 2025-07-31 01:05 UTC
+Completed programs: 426/491
+Last updated: 2025-07-31 08:23 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -376,56 +376,56 @@ Last updated: 2025-07-31 01:05 UTC
 | 368 | even-or-odd | ✓ | 2.369ms | 24.1KB |
 | 369 | events | ✓ | 1.668ms | 16.0KB |
 | 370 | evolutionary-algorithm | ✓ | 16.051ms | 23.3MB |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 1.906ms | 16.0KB |
-| 400 | faulhabers-formula | ✓ | 3.181ms | 325.0KB |
-| 401 | faulhabers-triangle | ✓ | 12.338ms | 2.8MB |
-| 402 | feigenbaum-constant-calculation | ✓ | 10.984ms | 1.1MB |
-| 403 | fermat-numbers | ✓ | 11.235ms | 1.1MB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 9.198ms | 1.2MB |
-| 405 | fibonacci-sequence-1 | ✓ |  |  |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 2.548ms | 16.0KB |
+| 372 | exceptions | ✓ | 2.868ms | 16.0KB |
+| 373 | executable-library | ✓ | 201.336ms | 20.7MB |
+| 374 | execute-a-markov-algorithm | ✓ | 25.236ms | 10.0MB |
+| 375 | execute-a-system-command | ✓ | 13.721ms | 2.1MB |
+| 376 | execute-brain- | ✓ | 3.163ms | 52.9KB |
+| 377 | execute-computer-zero-1 | ✓ | 17.723ms | 2.3MB |
+| 378 | execute-computer-zero | ✓ | 2.657ms | 16.0KB |
+| 379 | execute-hq9+ | ✓ | 3.788ms | 60.9KB |
+| 380 | execute-snusp | ✓ | 2.853ms | 16.0KB |
+| 381 | exponentiation-operator-2 | ✓ | 15.95ms | 1.6MB |
+| 382 | exponentiation-operator | ✓ | 3.128ms | 24.1KB |
+| 383 | exponentiation-order | ✓ | 2.525ms | 16.0KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 2.529ms | 16.0KB |
+| 385 | extend-your-language | ✓ | 2.778ms | 16.0KB |
+| 386 | extensible-prime-generator | ✓ | 23.961ms | 23.0MB |
+| 387 | extreme-floating-point-values | ✓ | 2.963ms | 16.0KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 15.455ms | 1.2MB |
+| 389 | faces-from-a-mesh | ✓ | 14.6ms | 1.2MB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 16.717ms | 1.9MB |
+| 391 | factorial-primes | ✓ | 3.008ms | 16.0KB |
+| 392 | factorial | ✓ | 3.488ms | 356.8KB |
+| 393 | factorions | ✓ | 39.569ms | 16.0KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 38.064ms | 19.2MB |
+| 395 | factors-of-an-integer | ✓ | 278.848ms | 24.1KB |
+| 396 | fairshare-between-two-and-more | ✓ | 1.426767s | 3.7MB |
+| 397 | farey-sequence | ✓ | 2.976ms | 93.0KB |
+| 398 | fast-fourier-transform | ✓ | 16.452ms | 1.7MB |
+| 399 | fasta-format | ✓ | 3.085ms | 16.0KB |
+| 400 | faulhabers-formula | ✓ | 3.988ms | 325.0KB |
+| 401 | faulhabers-triangle | ✓ | 17.611ms | 2.8MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 13.069ms | 1.1MB |
+| 403 | fermat-numbers | ✓ | 15.289ms | 1.1MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 14.737ms | 1.2MB |
+| 405 | fibonacci-sequence-1 | ✓ | 1µs |  |
 | 406 | fibonacci-sequence-2 | ✓ |  |  |
 | 407 | fibonacci-sequence-3 | ✓ | 1µs |  |
-| 408 | fibonacci-sequence-4 | ✓ | 2.247ms | 16.0KB |
-| 409 | fibonacci-sequence-5 | ✓ | 2.482ms | 16.0KB |
-| 410 | fibonacci-word-fractal | ✓ | 1.87ms | 255.4KB |
-| 411 | fibonacci-word | ✓ | 626.547ms | 64.5MB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 14.527ms | 2.7MB |
-| 413 | file-input-output-1 | ✓ | 1.98ms | 16.0KB |
-| 414 | file-input-output-2 | ✓ | 1.756ms | 16.0KB |
-| 415 | file-input-output-3 | ✓ | 9.839ms | 1.9MB |
-| 416 | file-modification-time | ✓ | 1.876ms | 16.0KB |
-| 417 | file-size-distribution | ✓ | 9.635ms | 1.2MB |
-| 418 | file-size | ✓ | 1.975ms | 16.0KB |
-| 419 | filter | ✓ | 2.372ms | 32.1KB |
-| 420 | find-chess960-starting-position-identifier-2 | ✓ | 9.426ms | 1.3MB |
+| 408 | fibonacci-sequence-4 | ✓ | 2.889ms | 16.0KB |
+| 409 | fibonacci-sequence-5 | ✓ | 2.793ms | 16.0KB |
+| 410 | fibonacci-word-fractal | ✓ | 2.672ms | 255.4KB |
+| 411 | fibonacci-word | ✓ | 877.46ms | 213.6MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 21.456ms | 2.7MB |
+| 413 | file-input-output-1 | ✓ | 2.653ms | 16.0KB |
+| 414 | file-input-output-2 | ✓ | 2.644ms | 16.0KB |
+| 415 | file-input-output-3 | ✓ | 14.146ms | 1.9MB |
+| 416 | file-modification-time | ✓ | 2.456ms | 16.0KB |
+| 417 | file-size-distribution | ✓ | 14.192ms | 1.2MB |
+| 418 | file-size | ✓ | 2.768ms | 16.0KB |
+| 419 | filter | ✓ | 3.187ms | 32.1KB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 13.713ms | 1.3MB |
 | 421 | find-chess960-starting-position-identifier | ✓ | 9.861ms | 1.4MB |
 | 422 | find-common-directory-path | ✓ | 1.909ms | 44.9KB |
 | 423 | find-duplicate-files | ✓ | 1.954ms | 16.0KB |
