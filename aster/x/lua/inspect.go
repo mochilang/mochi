@@ -8,8 +8,12 @@ import (
 )
 
 // Program describes a parsed Lua source file.
+// Program describes a parsed Lua source file. The original source text is
+// stored so that Print can reconstruct it without needing a full pretty
+// printer.
 type Program struct {
-	Root *ProgramNode `json:"root"`
+	Root   *ProgramNode `json:"root"`
+	Source string       `json:"-"`
 }
 
 // Inspect parses Lua source code using tree-sitter and returns its Program.

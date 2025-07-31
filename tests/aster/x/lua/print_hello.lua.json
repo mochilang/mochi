@@ -8,6 +8,15 @@
           {
             "kind": "identifier",
             "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "string",
+                "text": "\"hello\""
+              }
+            ]
           }
         ]
       }

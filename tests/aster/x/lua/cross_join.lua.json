@@ -1,0 +1,683 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "customers"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "table_constructor",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "3"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "name"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "orders"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "table_constructor",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "100"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "250"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "101"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "125"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "table_constructor",
+                        "children": [
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "id"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "102"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "customerId"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "field",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "total"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "300"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "result"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "children": [
+              {
+                "kind": "variable_list",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "o"
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs"
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "orders"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "for_statement",
+                "children": [
+                  {
+                    "kind": "for_generic_clause",
+                    "children": [
+                      {
+                        "kind": "variable_list",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "_"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "c"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "expression_list",
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "ipairs"
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "customers"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "table"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "insert"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "result"
+                              },
+                              {
+                                "kind": "table_constructor",
+                                "children": [
+                                  {
+                                    "kind": "field",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderId"
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "id"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderCustomerId"
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "customerId"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "pairedCustomerName"
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "c"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "name"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "field",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "orderTotal"
+                                      },
+                                      {
+                                        "kind": "dot_index_expression",
+                                        "children": [
+                                          {
+                                            "kind": "identifier",
+                                            "text": "o"
+                                          },
+                                          {
+                                            "kind": "identifier",
+                                            "text": "total"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "children": [
+              {
+                "kind": "variable_list",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_"
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "entry"
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs"
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "result"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print"
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "format"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderId"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderCustomerId"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "orderTotal"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "entry"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "pairedCustomerName"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
