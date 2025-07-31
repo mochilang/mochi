@@ -29,7 +29,7 @@ func ensureScheme(t *testing.T) {
 func TestPrint_Golden(t *testing.T) {
 	ensureScheme(t)
 	root := repoRoot(t)
-	srcDir := filepath.Join(root, "tests", "human", "x", "scheme")
+	srcDir := filepath.Join(root, "tests", "transpiler", "x", "scheme")
 	outDir := filepath.Join(root, "tests", "aster", "x", "scheme")
 	os.MkdirAll(outDir, 0o755)
 
@@ -41,7 +41,8 @@ func TestPrint_Golden(t *testing.T) {
 
 	var selected []string
 	for _, f := range files {
-		if filepath.Base(f) == "two-sum.scm" {
+		base := filepath.Base(f)
+		if base == "cross_join.scm" {
 			selected = append(selected, f)
 		}
 	}
