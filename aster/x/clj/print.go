@@ -53,6 +53,27 @@ func writeNode(b *bytes.Buffer, n *Node) {
 			b.WriteByte(')')
 			return
 		}
+		// Print common reader macros when their canonical form is present
+		if len(n.Children) == 2 && n.Children[0].Kind == "symbol" {
+			switch n.Children[0].Text {
+			case "quote":
+				b.WriteByte('\'')
+				writeNode(b, n.Children[1])
+				return
+			case "quasiquote":
+				b.WriteByte('`')
+				writeNode(b, n.Children[1])
+				return
+			case "unquote":
+				b.WriteByte('~')
+				writeNode(b, n.Children[1])
+				return
+			case "unquote-splicing":
+				b.WriteString("~@")
+				writeNode(b, n.Children[1])
+				return
+			}
+		}
 		b.WriteByte('(')
 		for i, c := range n.Children {
 			if i > 0 {
