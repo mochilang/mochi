@@ -35,7 +35,8 @@ func TestPrint_Golden(t *testing.T) {
 	var selected []string
 	for _, f := range files {
 		base := filepath.Base(f)
-		if base == "two-sum.rb" || base == "cross_join.rb" {
+		switch base {
+		case "append_builtin.rb", "avg_builtin.rb", "basic_compare.rb", "binary_precedence.rb", "two-sum.rb":
 			selected = append(selected, f)
 		}
 	}

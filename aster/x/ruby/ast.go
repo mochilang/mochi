@@ -116,6 +116,51 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		}
 	}
 
+	if n.Kind() == "string" && node.Text == "" {
+		node.Text = string(src[n.StartByte():n.EndByte()])
+	}
+
+	switch n.Kind() {
+	case "binary":
+		left := n.ChildByFieldName("left")
+		op := n.ChildByFieldName("operator")
+		right := n.ChildByFieldName("right")
+		if c := convert(left, src, pos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+		if op != nil {
+			node.Children = append(node.Children, &Node{Kind: "operator", Text: op.Kind()})
+		}
+		if c := convert(right, src, pos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+		return node
+	case "unary":
+		op := n.ChildByFieldName("operator")
+		operand := n.ChildByFieldName("operand")
+		if op != nil {
+			node.Children = append(node.Children, &Node{Kind: "operator", Text: op.Kind()})
+		}
+		if c := convert(operand, src, pos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+		return node
+	case "range":
+		begin := n.ChildByFieldName("begin")
+		op := n.ChildByFieldName("operator")
+		endn := n.ChildByFieldName("end")
+		if c := convert(begin, src, pos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+		if op != nil {
+			node.Children = append(node.Children, &Node{Kind: "operator", Text: op.Kind()})
+		}
+		if c := convert(endn, src, pos); c != nil {
+			node.Children = append(node.Children, c)
+		}
+		return node
+	}
+
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if c := convert(child, src, pos); c != nil {
@@ -132,7 +177,8 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "constant", "integer", "string", "string_content",
-		"hash_key_symbol", "simple_symbol", "true", "false", "comment":
+		"hash_key_symbol", "simple_symbol", "true", "false", "comment",
+		"global_variable", "instance_variable":
 		return true
 	default:
 		return false
@@ -150,4 +196,8 @@ func keepEmptyNode(kind string) bool {
 	default:
 		return false
 	}
+}
+
+func needsText(kind string) bool {
+	return false
 }

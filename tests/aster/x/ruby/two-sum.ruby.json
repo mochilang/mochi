@@ -65,6 +65,10 @@
                             "text": "0"
                           },
                           {
+                            "kind": "operator",
+                            "text": "..."
+                          },
+                          {
                             "kind": "identifier",
                             "text": "n"
                           }
@@ -108,10 +112,18 @@
                                             "text": "i"
                                           },
                                           {
+                                            "kind": "operator",
+                                            "text": "+"
+                                          },
+                                          {
                                             "kind": "integer",
                                             "text": "1"
                                           }
                                         ]
+                                      },
+                                      {
+                                        "kind": "operator",
+                                        "text": "..."
                                       },
                                       {
                                         "kind": "identifier",
@@ -163,6 +175,10 @@
                                                     ]
                                                   },
                                                   {
+                                                    "kind": "operator",
+                                                    "text": "+"
+                                                  },
+                                                  {
                                                     "kind": "element_reference",
                                                     "children": [
                                                       {
@@ -176,6 +192,10 @@
                                                     ]
                                                   }
                                                 ]
+                                              },
+                                              {
+                                                "kind": "operator",
+                                                "text": "=="
                                               },
                                               {
                                                 "kind": "identifier",
@@ -238,6 +258,10 @@
                             "kind": "unary",
                             "children": [
                               {
+                                "kind": "operator",
+                                "text": "-"
+                              },
+                              {
                                 "kind": "integer",
                                 "text": "1"
                               }
@@ -246,6 +270,10 @@
                           {
                             "kind": "unary",
                             "children": [
+                              {
+                                "kind": "operator",
+                                "text": "-"
+                              },
                               {
                                 "kind": "integer",
                                 "text": "1"

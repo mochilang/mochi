@@ -128,14 +128,18 @@ func writeBegin(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "constant", "integer", "hash_key_symbol", "simple_symbol", "true", "false":
+	case "identifier", "constant", "integer", "hash_key_symbol", "simple_symbol", "true", "false", "global_variable", "instance_variable":
 		b.WriteString(n.Text)
 	case "string":
-		b.WriteByte('"')
-		if len(n.Children) > 0 {
-			b.WriteString(n.Children[0].Text)
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			b.WriteByte('"')
+			if len(n.Children) > 0 {
+				b.WriteString(n.Children[0].Text)
+			}
+			b.WriteByte('"')
 		}
-		b.WriteByte('"')
 	case "string_content":
 		b.WriteString(n.Text)
 	case "call":
@@ -191,23 +195,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "binary":
-		if len(n.Children) == 2 {
-			op := "+"
-			if n.Children[1].Kind == "identifier" && n.Children[1].Text == "target" {
-				op = "=="
-			} else if n.Children[1].Kind == "call" && n.Children[0].Kind == "identifier" {
-				op = "<<"
-			}
+		if len(n.Children) == 3 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
-			b.WriteString(op)
+			b.WriteString(n.Children[1].Text)
 			b.WriteByte(' ')
-			writeExpr(b, n.Children[1], indent)
+			writeExpr(b, n.Children[2], indent)
 		}
 	case "unary":
-		b.WriteByte('-')
-		if len(n.Children) > 0 {
-			writeExpr(b, n.Children[0], indent)
+		if len(n.Children) == 2 {
+			b.WriteString(n.Children[0].Text)
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "element_reference":
 		if len(n.Children) == 2 {
@@ -240,10 +238,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "method_parameters":
 		writeParameters(b, n)
 	case "range":
-		if len(n.Children) == 2 {
+		if len(n.Children) >= 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString("...")
+			b.WriteString(n.Children[1].Text)
+			if len(n.Children) > 2 {
+				writeExpr(b, n.Children[2], indent)
+			}
+		}
+	case "conditional":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" ? ")
 			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indent)
 		}
 	default:
 		b.WriteString(n.Kind)
