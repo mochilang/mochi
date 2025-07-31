@@ -23,31 +23,31 @@
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "a"
+                            "text": "square"
                           },
                           {
-                            "kind": "user_type",
+                            "kind": "function_type",
                             "children": [
                               {
-                                "kind": "identifier",
-                                "text": "MutableList"
-                              },
-                              {
-                                "kind": "type_arguments",
+                                "kind": "function_type_parameters",
                                 "children": [
                                   {
-                                    "kind": "type_projection",
+                                    "kind": "user_type",
                                     "children": [
                                       {
-                                        "kind": "user_type",
-                                        "children": [
-                                          {
-                                            "kind": "identifier",
-                                            "text": "Int"
-                                          }
-                                        ]
+                                        "kind": "identifier",
+                                        "text": "Int"
                                       }
                                     ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "user_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Int"
                                   }
                                 ]
                               }
@@ -56,32 +56,42 @@
                         ]
                       },
                       {
-                        "kind": "call_expression",
+                        "kind": "lambda_literal",
                         "children": [
                           {
-                            "kind": "identifier",
-                            "text": "mutableListOf"
-                          },
-                          {
-                            "kind": "value_arguments",
+                            "kind": "lambda_parameters",
                             "children": [
                               {
-                                "kind": "value_argument",
+                                "kind": "variable_declaration",
                                 "children": [
                                   {
-                                    "kind": "number_literal",
-                                    "text": "1"
+                                    "kind": "identifier",
+                                    "text": "x"
+                                  },
+                                  {
+                                    "kind": "user_type",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Int"
+                                      }
+                                    ]
                                   }
                                 ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_expression",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "x"
                               },
                               {
-                                "kind": "value_argument",
-                                "children": [
-                                  {
-                                    "kind": "number_literal",
-                                    "text": "2"
-                                  }
-                                ]
+                                "kind": "identifier",
+                                "text": "x"
                               }
                             ]
                           }
@@ -103,16 +113,25 @@
                             "kind": "value_argument",
                             "children": [
                               {
-                                "kind": "binary_expression",
-                                "text": "+",
+                                "kind": "call_expression",
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "a"
+                                    "text": "square"
                                   },
                                   {
-                                    "kind": "number_literal",
-                                    "text": "3"
+                                    "kind": "value_arguments",
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "number_literal",
+                                            "text": "6"
+                                          }
+                                        ]
+                                      }
+                                    ]
                                   }
                                 ]
                               }
