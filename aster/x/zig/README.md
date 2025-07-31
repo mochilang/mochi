@@ -2,9 +2,9 @@
 
 This directory holds golden test inputs and outputs for the Zig aster package.
 
-Updated: 2025-07-31 18:30 +07
+Updated: 2025-07-31 19:03 +07
 
-## Program checklist (25/25)
+## Program checklist (50/50)
 
 1. append_builtin
 2. avg_builtin
@@ -31,3 +31,28 @@ Updated: 2025-07-31 18:30 +07
 23. group_by
 24. group_by_conditional_sum
 25. group_by_having
+26. group_by_join
+27. group_by_left_join
+28. group_by_multi_join
+29. group_by_multi_join_sort
+30. group_by_multi_sort
+31. group_by_sort
+32. group_items_iteration
+33. if_else
+34. if_then_else
+35. if_then_else_nested
+36. in_operator
+37. in_operator_extended
+38. inner_join
+39. join_multi
+40. left_join
+41. left_join_multi
+42. len_builtin
+43. len_map
+44. len_string
+45. let_and_print
+46. list_assign
+47. list_index
+48. list_nested_assign
+49. list_set_ops
+50. load_jsonl
