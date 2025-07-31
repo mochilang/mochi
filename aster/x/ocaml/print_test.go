@@ -31,25 +31,6 @@ func ensureOCaml(t *testing.T) string {
 	return ""
 }
 
-func repoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal("cannot determine working directory")
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
-
 func TestPrint_Golden(t *testing.T) {
 	ocamlPath := ensureOCaml(t)
 	if ocamlPath == "" {

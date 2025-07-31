@@ -86,7 +86,7 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "value_name", "value_pattern", "number", "rel_operator", "add_operator", "sign_operator", "prefix_operator", "boolean":
+	case "value_name", "value_pattern", "number", "rel_operator", "add_operator", "sign_operator", "prefix_operator", "boolean", "assign_operator":
 		b.WriteString(n.Text)
 	case "value_path":
 		for i, c := range n.Children {
@@ -125,6 +125,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "let_expression":
 		if len(n.Children) == 2 {
+			b.WriteString(strings.Repeat("  ", indent))
 			writeValueDefinition(b, &n.Children[0].Children[0], indent)
 			b.WriteString(" in\n")
 			writeExpr(b, &n.Children[1], indent)
@@ -167,6 +168,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "for_expression":
 		if len(n.Children) >= 4 {
+			b.WriteString(strings.Repeat("  ", indent))
 			b.WriteString("for ")
 			writeExpr(b, &n.Children[0], indent)
 			b.WriteString(" = ")
@@ -199,6 +201,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "if_expression":
 		if len(n.Children) >= 2 {
+			b.WriteString(strings.Repeat("  ", indent))
 			b.WriteString("if ")
 			writeExpr(b, &n.Children[0], indent)
 			b.WriteString(" then ")
