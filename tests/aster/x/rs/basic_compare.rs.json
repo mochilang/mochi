@@ -72,7 +72,7 @@
                     "children": [
                       {
                         "kind": "binary_expression",
-                        "text": "10 - 3",
+                        "text": "-",
                         "start": 3,
                         "end": 3,
                         "startCol": 18,
@@ -132,7 +132,7 @@
                     "children": [
                       {
                         "kind": "binary_expression",
-                        "text": "2 + 2",
+                        "text": "+",
                         "start": 4,
                         "end": 4,
                         "startCol": 18,

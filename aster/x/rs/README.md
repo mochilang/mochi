@@ -2,12 +2,17 @@
 
 This directory holds golden files for the Rust AST printer used in tests.
 
-## Generated Samples (5/5)
+## Generated Samples (10/10)
 
-- [x] append_builtin.rs
-- [x] avg_builtin.rs
-- [x] basic_compare.rs
-- [x] bench_block.rs
-- [x] binary_precedence.rs
+1. [x] append_builtin.rs
+2. [x] avg_builtin.rs
+3. [x] basic_compare.rs
+4. [x] bench_block.rs
+5. [x] binary_precedence.rs
+6. [x] bool_chain.rs
+7. [x] break_continue.rs
+8. [x] cast_string_to_int.rs
+9. [x] cast_struct.rs
+10. [x] closure.rs
 
-Updated: 2025-07-31 14:26 GMT+7
+Updated: 2025-07-31 15:22 GMT+7

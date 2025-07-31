@@ -32,11 +32,14 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
+	if len(files) > 10 {
+		files = files[:10]
 	}
 
 	for _, src := range files {
+		if _, err := os.Stat(strings.TrimSuffix(src, ".rs") + ".error"); err == nil {
+			continue
+		}
 		name := strings.TrimSuffix(filepath.Base(src), ".rs")
 		t.Run(name, func(t *testing.T) {
 			data, err := os.ReadFile(src)

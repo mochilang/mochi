@@ -194,7 +194,6 @@
           },
           {
             "kind": "call_expression",
-            "text": "AtomicBool::new(false)",
             "start": 4,
             "end": 4,
             "startCol": 32,
@@ -222,6 +221,23 @@
                     "end": 4,
                     "startCol": 44,
                     "endCol": 47
+                  }
+                ]
+              },
+              {
+                "kind": "arguments",
+                "start": 4,
+                "end": 4,
+                "startCol": 47,
+                "endCol": 54,
+                "children": [
+                  {
+                    "kind": "boolean_literal",
+                    "text": "false",
+                    "start": 4,
+                    "end": 4,
+                    "startCol": 48,
+                    "endCol": 53
                   }
                 ]
               }
@@ -253,7 +269,6 @@
           },
           {
             "kind": "call_expression",
-            "text": "AtomicI64::new(0)",
             "start": 5,
             "end": 5,
             "startCol": 29,
@@ -358,7 +373,7 @@
                     "children": [
                       {
                         "kind": "unary_expression",
-                        "text": "!NOW_SEEDED.load(Ordering::SeqCst)",
+                        "text": "!",
                         "start": 7,
                         "end": 7,
                         "startCol": 7,
@@ -366,7 +381,6 @@
                         "children": [
                           {
                             "kind": "call_expression",
-                            "text": "NOW_SEEDED.load(Ordering::SeqCst)",
                             "start": 7,
                             "end": 7,
                             "startCol": 8,
@@ -490,7 +504,6 @@
                                       },
                                       {
                                         "kind": "call_expression",
-                                        "text": "std::env::var(\"MOCHI_NOW_SEED\")",
                                         "start": 8,
                                         "end": 8,
                                         "startCol": 23,
@@ -623,7 +636,6 @@
                                                   },
                                                   {
                                                     "kind": "call_expression",
-                                                    "text": "s.parse::\u003ci64\u003e()",
                                                     "start": 9,
                                                     "end": 9,
                                                     "startCol": 27,
@@ -708,7 +720,6 @@
                                                     "children": [
                                                       {
                                                         "kind": "call_expression",
-                                                        "text": "NOW_SEED.store(v, Ordering::SeqCst)",
                                                         "start": 10,
                                                         "end": 10,
                                                         "startCol": 16,
@@ -794,7 +805,6 @@
                                                     "children": [
                                                       {
                                                         "kind": "call_expression",
-                                                        "text": "NOW_SEEDED.store(true, Ordering::SeqCst)",
                                                         "start": 11,
                                                         "end": 11,
                                                         "startCol": 16,
@@ -832,6 +842,14 @@
                                                             "startCol": 32,
                                                             "endCol": 56,
                                                             "children": [
+                                                              {
+                                                                "kind": "boolean_literal",
+                                                                "text": "true",
+                                                                "start": 11,
+                                                                "end": 11,
+                                                                "startCol": 33,
+                                                                "endCol": 37
+                                                              },
                                                               {
                                                                 "kind": "scoped_identifier",
                                                                 "start": 11,
@@ -897,7 +915,6 @@
                     "children": [
                       {
                         "kind": "call_expression",
-                        "text": "NOW_SEEDED.load(Ordering::SeqCst)",
                         "start": 15,
                         "end": 15,
                         "startCol": 7,
@@ -988,7 +1005,7 @@
                               },
                               {
                                 "kind": "binary_expression",
-                                "text": "(NOW_SEED.load(Ordering::SeqCst)*1664525 + 1013904223) % 2147483647",
+                                "text": "%",
                                 "start": 16,
                                 "end": 16,
                                 "startCol": 19,
@@ -1003,7 +1020,7 @@
                                     "children": [
                                       {
                                         "kind": "binary_expression",
-                                        "text": "NOW_SEED.load(Ordering::SeqCst)*1664525 + 1013904223",
+                                        "text": "+",
                                         "start": 16,
                                         "end": 16,
                                         "startCol": 20,
@@ -1011,7 +1028,7 @@
                                         "children": [
                                           {
                                             "kind": "binary_expression",
-                                            "text": "NOW_SEED.load(Ordering::SeqCst)*1664525",
+                                            "text": "*",
                                             "start": 16,
                                             "end": 16,
                                             "startCol": 20,
@@ -1019,7 +1036,6 @@
                                             "children": [
                                               {
                                                 "kind": "call_expression",
-                                                "text": "NOW_SEED.load(Ordering::SeqCst)",
                                                 "start": 16,
                                                 "end": 16,
                                                 "startCol": 20,
@@ -1129,7 +1145,6 @@
                             "children": [
                               {
                                 "kind": "call_expression",
-                                "text": "NOW_SEED.store(seed, Ordering::SeqCst)",
                                 "start": 17,
                                 "end": 17,
                                 "startCol": 8,
@@ -1239,7 +1254,6 @@
                                 "children": [
                                   {
                                     "kind": "call_expression",
-                                    "text": "SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos()",
                                     "start": 20,
                                     "end": 20,
                                     "startCol": 8,
@@ -1254,7 +1268,6 @@
                                         "children": [
                                           {
                                             "kind": "call_expression",
-                                            "text": "SystemTime::now().duration_since(UNIX_EPOCH).unwrap()",
                                             "start": 20,
                                             "end": 20,
                                             "startCol": 8,
@@ -1269,7 +1282,6 @@
                                                 "children": [
                                                   {
                                                     "kind": "call_expression",
-                                                    "text": "SystemTime::now().duration_since(UNIX_EPOCH)",
                                                     "start": 20,
                                                     "end": 20,
                                                     "startCol": 8,
@@ -1284,7 +1296,6 @@
                                                         "children": [
                                                           {
                                                             "kind": "call_expression",
-                                                            "text": "SystemTime::now()",
                                                             "start": 20,
                                                             "end": 20,
                                                             "startCol": 8,
@@ -1454,7 +1465,6 @@
                 "children": [
                   {
                     "kind": "call_expression",
-                    "text": "std::env::set_var(\"MOCHI_NOW_SEED\", \"1\")",
                     "start": 24,
                     "end": 24,
                     "startCol": 8,
@@ -1574,7 +1584,6 @@
                   },
                   {
                     "kind": "call_expression",
-                    "text": "_now()",
                     "start": 25,
                     "end": 25,
                     "startCol": 22,
@@ -1759,7 +1768,7 @@
                                     "children": [
                                       {
                                         "kind": "binary_expression",
-                                        "text": "s + i",
+                                        "text": "+",
                                         "start": 29,
                                         "end": 29,
                                         "startCol": 13,
@@ -1820,7 +1829,6 @@
                   },
                   {
                     "kind": "call_expression",
-                    "text": "_now()",
                     "start": 31,
                     "end": 31,
                     "startCol": 20,
@@ -1878,7 +1886,7 @@
                     "children": [
                       {
                         "kind": "binary_expression",
-                        "text": "(_end - _start) / 1000",
+                        "text": "/",
                         "start": 32,
                         "end": 32,
                         "startCol": 28,
@@ -1893,7 +1901,7 @@
                             "children": [
                               {
                                 "kind": "binary_expression",
-                                "text": "_end - _start",
+                                "text": "-",
                                 "start": 32,
                                 "end": 32,
                                 "startCol": 29,
