@@ -95,10 +95,15 @@ var (
 	currentFuncName   string
 	currentFuncReturn string
 
+	currentLocals map[string]bool
+
 	benchMain bool
 
 	// track local variable declarations so they can be adjusted
 	declStmts map[string]*DeclStmt
+	// track inner function declarations that are ignored during
+	// transpilation so references to them can be stubbed out
+	localFuncs map[string]bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -180,6 +185,7 @@ type Function struct {
 	Return   string
 	Body     []Stmt
 	VarTypes map[string]string
+	Locals   map[string]bool
 }
 
 type Stmt interface {
@@ -1381,6 +1387,12 @@ func (i *IndexExpr) emitExpr(w io.Writer) {
 type VarRef struct{ Name string }
 
 func (v *VarRef) emitExpr(w io.Writer) {
+	if currentLocals != nil {
+		if _, ok := currentLocals[v.Name]; ok {
+			io.WriteString(w, "0")
+			return
+		}
+	}
 	switch v.Name {
 	case "math.pi":
 		io.WriteString(w, "3.141592653589793")
@@ -2621,6 +2633,7 @@ func (p *Program) Emit() []byte {
 		varTypes = f.VarTypes
 		currentFuncName = f.Name
 		currentFuncReturn = f.Return
+		currentLocals = f.Locals
 		ret := f.Return
 		if ret == "" {
 			ret = "int"
@@ -2683,6 +2696,7 @@ func (p *Program) Emit() []byte {
 		varTypes = prevVars
 		currentFuncName = ""
 		currentFuncReturn = ""
+		currentLocals = nil
 	}
 	return buf.Bytes()
 }
@@ -2880,6 +2894,11 @@ func compileStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Import != nil:
+		return nil, nil
+	case s.Fun != nil:
+		if localFuncs != nil {
+			localFuncs[s.Fun.Name] = true
+		}
 		return nil, nil
 	case s.Expr != nil:
 		call := s.Expr.Expr.Binary.Left.Value.Target.Call
@@ -4168,6 +4187,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	currentEnv = localEnv
 	prevVarTypes := varTypes
 	varTypes = make(map[string]string)
+	localFuncs = map[string]bool{}
 	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
@@ -4273,10 +4293,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	for name, st := range localEnv.Structs() {
 		prevEnv.SetStruct(name, st)
 	}
-	fnInfo := &Function{Name: name, Params: params, Body: body, Return: ret, VarTypes: varTypes}
+	fnInfo := &Function{Name: name, Params: params, Body: body, Return: ret, VarTypes: varTypes, Locals: localFuncs}
 	currentEnv = prevEnv
 	varTypes = prevVarTypes
 	declStmts = nil
+	localFuncs = nil
 	return fnInfo, nil
 }
 
