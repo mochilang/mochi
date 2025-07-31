@@ -1,3 +1,45 @@
+## Progress (2025-07-31 04:58 UTC)
+- cs: benchmark binary digits (progress 103/105)
+
+## Progress (2025-07-31 04:58 UTC)
+- cs: benchmark bin given limits (progress 103/105)
+
+## Progress (2025-07-31 04:57 UTC)
+- cs transpiler: cast dict from object (progress 103/105)
+
+## Progress (2025-07-31 04:55 UTC)
+- cs transpiler: handle len on object (progress 103/105)
+
+## Progress (2025-07-31 04:55 UTC)
+- cs transpiler: handle len on object (progress 103/105)
+
+## Progress (2025-07-31 04:53 UTC)
+- cs: benchmark bernoulli numbers (progress 103/105)
+
+## Progress (2025-07-31 04:53 UTC)
+- cs: benchmark bernoulli numbers (progress 103/105)
+
+## Progress (2025-07-31 04:53 UTC)
+- cs: benchmark benfords law (progress 103/105)
+
+## Progress (2025-07-31 04:53 UTC)
+- cs: update rosetta benchmark for bell numbers (progress 103/105)
+
+## Progress (2025-07-31 04:52 UTC)
+- cs: update rosetta benchmark for base64 decode (progress 103/105)
+
+## Progress (2025-07-31 11:48 +0700)
+- cs transpiler: retain var type on object assign (progress 103/105)
+
+## Progress (2025-07-31 11:48 +0700)
+- cs transpiler: retain var type on object assign (progress 103/105)
+
+## Progress (2025-07-31 11:48 +0700)
+- cs transpiler: retain var type on object assign (progress 103/105)
+
+## Progress (2025-07-31 11:48 +0700)
+- cs transpiler: retain var type on object assign (progress 103/105)
+
 ## Progress (2025-07-31 10:42 +0700)
 - merge python printer into py (progress 103/105)
 
@@ -2455,6 +2497,20 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

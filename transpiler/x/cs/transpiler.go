@@ -2094,19 +2094,25 @@ func (a *AvgExpr) emit(w io.Writer) {
 type LenExpr struct{ Arg Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
-	l.Arg.emit(w)
 	t := typeOfExpr(l.Arg)
 	name := ""
 	if vr, ok := l.Arg.(*VarRef); ok {
 		name = vr.Name
 	}
 	if mapVars[name] {
+		l.Arg.emit(w)
 		fmt.Fprint(w, ".Count")
 		return
 	}
 	if strings.HasPrefix(t, "Dictionary<") && !strings.HasSuffix(t, "[]") || isMapExpr(l.Arg) {
+		l.Arg.emit(w)
 		fmt.Fprint(w, ".Count")
+	} else if t == "" || t == "object" {
+		fmt.Fprint(w, "Convert.ToString(")
+		l.Arg.emit(w)
+		fmt.Fprint(w, ").Length")
 	} else {
+		l.Arg.emit(w)
 		fmt.Fprint(w, ".Length")
 	}
 }
@@ -3587,6 +3593,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToDouble(%s)", exprString(arg)), Type: "double"}
 					case "string":
 						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToString(%s)", exprString(arg)), Type: "string"}
+					default:
+						if strings.HasPrefix(types[i], "Dictionary<") {
+							args[i] = &RawExpr{Code: fmt.Sprintf("(%s)%s", types[i], exprString(arg)), Type: types[i]}
+						}
 					}
 				}
 			}
