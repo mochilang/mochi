@@ -3319,6 +3319,23 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				prog.Imports = append(prog.Imports, fmt.Sprintf("using %s = System.Math;", s.Import.As))
 				importAliases[s.Import.As] = "math"
 				return nil, nil
+			} else if s.Import.Path == "\"subprocess\"" || s.Import.Path == "subprocess" {
+				if _, ok := importAliases[s.Import.As]; !ok {
+					stub := "using System.Diagnostics;\n" +
+						fmt.Sprintf("static class %s {\n", s.Import.As) +
+						"    public static string getoutput(string cmd) {\n" +
+						"        var psi = new ProcessStartInfo(\"/bin/sh\", \"-c \" + cmd) { RedirectStandardOutput = true };\n" +
+						"        using var p = Process.Start(psi);\n" +
+						"        var output = p.StandardOutput.ReadToEnd();\n" +
+						"        p.WaitForExit();\n" +
+						"        return output.TrimEnd('\\n');\n" +
+						"    }\n" +
+						"}\n"
+					prog.Imports = append(prog.Imports, stub)
+				}
+				importAliases[s.Import.As] = "subprocess"
+				varTypes[s.Import.As] = "dynamic"
+				return nil, nil
 			}
 		} else if prog != nil && s.Import.Auto && s.Import.Lang != nil && *s.Import.Lang == "go" {
 			path := strings.Trim(s.Import.Path, "\"")
