@@ -21,13 +21,13 @@ struct OResult {
     public override string ToString() => $"{{orderId: {orderId}, orderCustomerId: {orderCustomerId}, pairedCustomerName: {pairedCustomerName}, orderTotal: {orderTotal}}}";
 }
 class Program {
-    static Customer[] customers = new Customer[]{new Customer{id1, name}, new Customer{id2, name}, new Customer{id3, name}};
-    static Order[] orders = new Order[]{new Order{id100, customerId1, total250}, new Order{id101, customerId2, total125}, new Order{id102, customerId1, total300}};
-    static OResult[] result = (from o in orders from c in customers select new OResult{orderIdo.id, orderCustomerIdo.customerId, pairedCustomerNamec.name, orderTotalo.total}).ToArray();
+    static Customer[] customers = new Customer[]{new Customer{id = 1, name = "Alice"}, new Customer{id = 2, name = "Bob"}, new Customer{id = 3, name = "Charlie"}};
+    static Order[] orders = new Order[]{new Order{id = 100, customerId = 1, total = 250}, new Order{id = 101, customerId = 2, total = 125}, new Order{id = 102, customerId = 1, total = 300}};
+    static OResult[] result = (from o in orders from c in customers select new OResult{orderId = o.id, orderCustomerId = o.customerId, pairedCustomerName = c.name, orderTotal = o.total}).ToArray();
     static void Main() {
-        Console.WriteLine();
+        Console.WriteLine("--- Cross Join: All order-customer pairs ---");
         foreach (var entry in result) {
-            Console.WriteLine(string.Join(, new object[]{, entry.orderId, , entry.orderCustomerId, , entry.orderTotal, , entry.pairedCustomerName}).TrimEnd());
+            Console.WriteLine(string.Join(" ", new object[]{"Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName}).TrimEnd());
         }
     }
 }
