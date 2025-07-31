@@ -34,7 +34,17 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 28. prime_check.pl
 29. even_numbers.pl
 30. sum_pairs.pl
+31. downcase_atom.pl
+32. upcase_atom.pl
+33. nth0_builtin.pl
+34. sort_list.pl
+35. max_list.pl
+36. min_list.pl
+37. atom_codes.pl
+38. atom_chars.pl
+39. sub_atom.pl
+40. atom_length_builtin.pl
 
-Completed **30/30** examples.
+Completed **40/40** examples.
 
-_Last updated: 2025-07-31 20:31 GMT+7_
+_Last updated: 2025-07-31 20:45 GMT+7_

@@ -177,6 +177,13 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 		} else {
 			writeFunctor(b, n, indent)
 		}
+	case "\\+":
+		if len(n.Children) == 1 {
+			b.WriteString("\\+ ")
+			writeTerm(b, n.Children[0], indent, true)
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case "-":
 		if len(n.Children) == 2 {
 			writeTerm(b, n.Children[0], indent, true)
