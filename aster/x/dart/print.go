@@ -147,6 +147,16 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 
 func writeVarDef(b *bytes.Buffer, n *Node) {
 	idx := 0
+	// Optional qualifiers like 'final', 'const', or inferred 'var'.
+	if idx < len(n.Children) {
+		switch n.Children[idx].Kind {
+		case "final_builtin", "const_builtin", "inferred_type":
+			b.WriteString(n.Children[idx].Text)
+			b.WriteByte(' ')
+			idx++
+		}
+	}
+	// Type information if present.
 	if idx < len(n.Children) && n.Children[idx].Kind == "type_identifier" {
 		writeExpr(b, n.Children[idx])
 		idx++
@@ -155,8 +165,11 @@ func writeVarDef(b *bytes.Buffer, n *Node) {
 			idx++
 		}
 		b.WriteByte(' ')
-	} else {
-		b.WriteString("var ")
+	} else if idx < len(n.Children) && n.Children[idx].Kind == "inferred_type" {
+		// handle 'var' when preceding type was not printed above
+		b.WriteString(n.Children[idx].Text)
+		b.WriteByte(' ')
+		idx++
 	}
 	if idx < len(n.Children) && n.Children[idx].Kind == "identifier" {
 		writeExpr(b, n.Children[idx])
