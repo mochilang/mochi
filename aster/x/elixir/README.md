@@ -1,4 +1,4 @@
-# Elixir AST Print Progress (30/30 completed)
+# Elixir AST Print Progress (50/50 completed)
 
 This file tracks golden tests for the Elixir AST printer.
 
@@ -11,27 +11,46 @@ This file tracks golden tests for the Elixir AST printer.
 6. [x] cast_string_to_int
 7. [x] cast_struct
 8. [x] closure
-9. [x] cross_join
-10. [x] print_hello
-11. [x] count_builtin
-12. [x] cross_join_filter
-13. [x] dataset_sort_take_limit
-14. [x] dataset_where_filter
-15. [x] exists_builtin
-16. [x] for_list_collection
-17. [x] for_loop
-18. [x] for_map_collection
-19. [x] fun_call
-20. [x] fun_expr_in_let
-21. [x] fun_three_args
-22. [x] go_auto
-23. [x] group_by_sort
-24. [x] len_builtin
-25. [x] len_map
-26. [x] len_string
-27. [x] let_and_print
-28. [x] list_assign
-29. [x] list_index
-30. [x] map_assign
-
-Updated: 2025-07-31 18:41 GMT+7
+9. [x] count_builtin
+10. [x] cross_join
+11. [x] cross_join_filter
+12. [x] dataset_sort_take_limit
+13. [x] dataset_where_filter
+14. [x] exists_builtin
+15. [x] for_list_collection
+16. [x] for_loop
+17. [x] for_map_collection
+18. [x] fun_call
+19. [x] fun_expr_in_let
+20. [x] fun_three_args
+21. [x] go_auto
+22. [x] group_by_sort
+23. [x] len_builtin
+24. [x] len_map
+25. [x] len_string
+26. [x] let_and_print
+27. [x] list_assign
+28. [x] list_index
+29. [x] map_assign
+30. [x] map_in_operator
+31. [x] map_index
+32. [x] map_int_key
+33. [x] map_literal_dynamic
+34. [x] map_membership
+35. [x] map_nested_assign
+36. [x] math_ops
+37. [x] membership
+38. [x] min_max_builtin
+39. [x] nested_function
+40. [x] partial_application
+41. [x] print_hello
+42. [x] pure_fold
+43. [x] python_auto
+44. [x] python_math
+45. [x] query_sum_select
+46. [x] string_compare
+47. [x] string_concat
+48. [x] string_contains
+49. [x] substring_builtin
+50. [x] sum_builtin
+Updated: 2025-07-31 19:26 GMT+7
