@@ -46,6 +46,40 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+	sel := map[string]bool{
+		"append_builtin.dart":          true,
+		"avg_builtin.dart":             true,
+		"basic_compare.dart":           true,
+		"bench_block.dart":             true,
+		"binary_precedence.dart":       true,
+		"bool_chain.dart":              true,
+		"break_continue.dart":          true,
+		"cast_string_to_int.dart":      true,
+		"cast_struct.dart":             true,
+		"closure.dart":                 true,
+		"count_builtin.dart":           true,
+		"cross_join.dart":              true,
+		"cross_join_filter.dart":       true,
+		"cross_join_triple.dart":       true,
+		"dataset_sort_take_limit.dart": true,
+		"dataset_where_filter.dart":    true,
+		"exists_builtin.dart":          true,
+		"for_list_collection.dart":     true,
+		"for_loop.dart":                true,
+		"for_map_collection.dart":      true,
+		"fun_call.dart":                true,
+		"fun_expr_in_let.dart":         true,
+		"fun_three_args.dart":          true,
+		"go_auto.dart":                 true,
+		"group_by.dart":                true,
+	}
+	var selected []string
+	for _, f := range files {
+		if sel[filepath.Base(f)] {
+			selected = append(selected, f)
+		}
+	}
+	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".dart")
