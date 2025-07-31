@@ -9,5 +9,10 @@ This directory contains utilities for generating and printing simplified Swift A
 - [x] 3. basic_compare.swift
 - [x] 4. bench_block.swift
 - [x] 5. binary_precedence.swift
+- [x] 6. bool_chain.swift
+- [x] 7. break_continue.swift
+- [x] 8. cast_string_to_int.swift
+- [x] 9. cast_struct.swift
+- [x] 10. closure.swift
 
-Completed 5/102 at 2025-07-31 19:06 GMT+7
+Completed 10/102 at 2025-07-31 20:03 GMT+7
