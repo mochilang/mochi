@@ -1,0 +1,66 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "string"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sub"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "\"mochi\""
+                      },
+                      {
+                        "kind": "binary_expression",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "number",
+                            "text": "1"
+                          },
+                          {
+                            "kind": "number",
+                            "text": "1"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "number",
+                        "text": "4"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

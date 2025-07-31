@@ -78,7 +78,36 @@ This directory contains utilities for inspecting Lua source code and printing it
 73. pure_fold.lua
 74. pure_global_fold.lua
 75. python_auto.lua
+76. python_math.lua
+77. query_sum_select.lua
+78. record_assign.lua
+79. right_join.lua
+80. save_jsonl_stdout.lua
+81. short_circuit.lua
+82. slice.lua
+83. sort_stable.lua
+84. str_builtin.lua
+85. string_compare.lua
+86. string_concat.lua
+87. string_contains.lua
+88. string_in_operator.lua
+89. string_index.lua
+90. string_prefix_slice.lua
+91. substring_builtin.lua
+92. sum_builtin.lua
+93. tail_recursion.lua
+94. test_block.lua
+95. tree_sum.lua
+96. two-sum.lua
+97. typed_let.lua
+98. typed_var.lua
+99. unary_neg.lua
+100. update_stmt.lua
+101. user_type_literal.lua
+102. values_builtin.lua
+103. var_assignment.lua
+104. while_loop.lua
 
-Checked: 75/75
+Checked: 104/104
 
-_Last updated: 2025-07-31 20:19 GMT+0700_
+_Last updated: 2025-07-31 21:05 GMT+0700_

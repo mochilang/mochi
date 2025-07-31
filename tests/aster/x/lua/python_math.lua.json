@@ -1,0 +1,773 @@
+{
+  "root": {
+    "kind": "chunk",
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "math"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "table_constructor",
+                "children": [
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt"
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "sqrt"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pow"
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "pow"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "sin"
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "sin"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "log"
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "log"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "pi"
+                      },
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "pi"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "e"
+                      },
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "math"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "exp"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "number",
+                                "text": "1"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "r"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "number",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "area"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "binary_expression",
+                    "text": "*",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "pi"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "function_call",
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "math"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "pow"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "r"
+                              },
+                              {
+                                "kind": "number",
+                                "text": "2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "root"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sqrt"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "49"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "sin45"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "sin"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "parenthesized_expression",
+                        "children": [
+                          {
+                            "kind": "binary_expression",
+                            "text": "/",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "math"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "pi"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "number",
+                                "text": "4"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assignment_statement",
+        "children": [
+          {
+            "kind": "variable_list",
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "log_e"
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "children": [
+              {
+                "kind": "function_call",
+                "children": [
+                  {
+                    "kind": "dot_index_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "math"
+                      },
+                      {
+                        "kind": "identifier",
+                        "text": "log"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "arguments",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "math"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "e"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "gsub"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "string"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "format"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Circle area with r = %s =\u003e %s\""
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "r"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "area"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"%s+$\""
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "gsub"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "string"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "format"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"Square root of 49: %s\""
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "root"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"%s+$\""
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "gsub"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "string"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "format"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"sin(π/4): %s\""
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "sin45"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"%s+$\""
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_call",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "print"
+          },
+          {
+            "kind": "arguments",
+            "children": [
+              {
+                "kind": "parenthesized_expression",
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "children": [
+                      {
+                        "kind": "dot_index_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "string"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "gsub"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "arguments",
+                        "children": [
+                          {
+                            "kind": "function_call",
+                            "children": [
+                              {
+                                "kind": "dot_index_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "string"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "format"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "arguments",
+                                "children": [
+                                  {
+                                    "kind": "string",
+                                    "text": "\"log(e): %s\""
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "log_e"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"%s+$\""
+                          },
+                          {
+                            "kind": "string",
+                            "text": "\"\""
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
