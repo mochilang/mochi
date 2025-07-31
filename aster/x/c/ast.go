@@ -8,7 +8,18 @@ import (
 // converting tree-sitter nodes. When false (the default) the position fields
 // remain zero and are omitted from the marshalled JSON due to the `omitempty`
 // struct tags.
+// IncludePos controls whether positional information is recorded when
+// converting tree-sitter nodes. When false (the default) the position
+// fields remain zero and are omitted from the JSON output due to the
+// `omitempty` struct tags. Use InspectWithOption to override this
+// behaviour on a per-call basis.
 var IncludePos bool
+
+// Option controls how the AST is generated. When Positions is true the
+// Start/End fields of nodes are populated, otherwise they remain zero.
+type Option struct {
+	Positions bool
+}
 
 // Node represents a tree-sitter node with byte offsets and optional text.
 // Node represents a simplified syntax tree node. Only nodes that carry useful
