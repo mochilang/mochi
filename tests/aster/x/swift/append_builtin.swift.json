@@ -65,6 +65,7 @@
                     "children": [
                       {
                         "kind": "additive_expression",
+                        "text": "+",
                         "children": [
                           {
                             "kind": "call_expression",
@@ -80,6 +81,7 @@
                                         "children": [
                                           {
                                             "kind": "additive_expression",
+                                            "text": "+",
                                             "children": [
                                               {
                                                 "kind": "line_string_literal",
@@ -95,6 +97,7 @@
                                                 "children": [
                                                   {
                                                     "kind": "additive_expression",
+                                                    "text": "+",
                                                     "children": [
                                                       {
                                                         "kind": "simple_identifier",

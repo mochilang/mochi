@@ -36,6 +36,7 @@
                                     "children": [
                                       {
                                         "kind": "multiplicative_expression",
+                                        "text": "/",
                                         "children": [
                                           {
                                             "kind": "call_expression",

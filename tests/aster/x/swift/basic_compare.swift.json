@@ -23,6 +23,7 @@
             "children": [
               {
                 "kind": "additive_expression",
+                "text": "-",
                 "children": [
                   {
                     "kind": "integer_literal",
@@ -55,6 +56,7 @@
             "children": [
               {
                 "kind": "additive_expression",
+                "text": "+",
                 "children": [
                   {
                     "kind": "integer_literal",
@@ -125,6 +127,7 @@
                                 "children": [
                                   {
                                     "kind": "equality_expression",
+                                    "text": "==",
                                     "children": [
                                       {
                                         "kind": "simple_identifier",
@@ -185,6 +188,7 @@
                                 "children": [
                                   {
                                     "kind": "comparison_expression",
+                                    "text": "\u003c",
                                     "children": [
                                       {
                                         "kind": "simple_identifier",

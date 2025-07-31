@@ -3,6 +3,8 @@
 package swift
 
 import (
+	"strings"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
@@ -123,6 +125,23 @@ func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node 
 			out.Text = n.Utf8Text(src)
 		} else {
 			return nil
+		}
+	}
+
+	if n.ChildCount() > n.NamedChildCount() {
+		switch out.Kind {
+		case "additive_expression", "multiplicative_expression", "range_expression",
+			"equality_expression", "comparison_expression", "conjunction_expression",
+			"disjunction_expression", "nil_coalescing_expression", "as_expression":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				out.Text = strings.TrimSpace(op.Utf8Text(src))
+			}
+		case "prefix_expression":
+			if n.ChildCount() >= 2 && !n.Child(0).IsNamed() {
+				op := n.Child(0)
+				out.Text = strings.TrimSpace(op.Utf8Text(src))
+			}
 		}
 	}
 
