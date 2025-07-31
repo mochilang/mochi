@@ -1,6 +1,24 @@
 dotnet run: exit status 134
-Unhandled exception. Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?)
-   at CallSite.Target(Closure, CallSite, Object)
-   at System.Dynamic.UpdateDelegates.UpdateAndExecute1[T0,TRet](CallSite site, T0 arg0)
-   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden4031194903/001/Program.cs:line 177
-   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden4031194903/001/Program.cs:line 197
+SEQUENCE:
+    0: ATCAGAGGAGTCAATCAGTTTAATTCACTTTTCCTTTGGGGTTTATCGGCCCAATTCGGCGGAGTTTAACCCACGGAGCACACGACGATAAAACTAAATAATCTTGCCTGGGTCGAATGTGGACGGTAGCTCCCAGGTCCCCACACAACCTCGGATACGCACAATAGTTAGCTGAAAGAAGGGCAAGTGTTTTCCACCTGCCCCGCTTCTACCTAAACCCGAACATAGACTATGCAACTCTAGTTGGCGG
+
+BASE COUNT:
+    A:   1
+    C:   1
+    G:   0
+    T:   1
+    ------
+    Σ: 250
+    ======
+
+WEIGHTS (ex 300):
+  Change: 100
+  Delete: 100
+  Insert: 100
+
+MUTATIONS (10):
+  Insert @113 'C'
+Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at Program.mutate(Int64 s_14, String dna_15, Int64[] w_16) in /tmp/TestCSTranspiler_Rosetta_Golden202729420/001/Program.cs:line 133
+   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden202729420/001/Program.cs:line 209
+   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden202729420/001/Program.cs:line 222

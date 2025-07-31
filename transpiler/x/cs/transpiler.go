@@ -2923,7 +2923,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			if t := typeOfExpr(val); t != "" {
+			if t := typeOfExpr(val); t != "" && t != "object" {
 				name := s.Assign.Name
 				if alias, ok := varAliases[name]; ok {
 					name = alias
