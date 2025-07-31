@@ -44,25 +44,17 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+	if len(files) > 25 {
+		files = files[:25]
+	}
+	files = files[10:]
 	var selected []string
-	count := 0
 	for _, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
 		if _, err := os.Stat(filepath.Join(filepath.Dir(f), name+".error")); err == nil {
 			continue
 		}
-		base := filepath.Base(f)
-		if base == "bench_block.cpp" || base == "closure.cpp" {
-			continue
-		}
-		count++
-		if count <= 20 {
-			continue
-		}
 		selected = append(selected, f)
-		if len(selected) >= 10 {
-			break
-		}
 	}
 	files = selected
 

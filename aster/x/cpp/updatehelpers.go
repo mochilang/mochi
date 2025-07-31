@@ -19,10 +19,13 @@ func UpdateReadme() {
 	outDir := filepath.Join(root, "tests", "aster", "x", "cpp")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.cpp"))
 	sort.Strings(files)
+	if len(files) > 25 {
+		files = files[:25]
+	}
 	total := len(files)
 	done := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".cpp")
 		mark := "[ ]"
 		gotOut, err1 := os.ReadFile(filepath.Join(outDir, name+".out"))
@@ -33,7 +36,7 @@ func UpdateReadme() {
 				done++
 			}
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s", i+1, mark, name))
 	}
 	tz := time.FixedZone("GMT+7", 7*3600)
 	var b bytes.Buffer

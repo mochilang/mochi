@@ -15,7 +15,7 @@ std::vector<PairsItem> pairs = ([] {
     std::vector<PairsItem> __items;
     for (auto n : nums) {
         for (auto l : letters) {
-            if ((n % 2) == 0) {
+            if (((n % 2) == 0)) {
                 __items.push_back(PairsItem{.n = n, .l = l});
             }
         }

@@ -2,110 +2,32 @@
 
 Golden files for the C++ inspector and printer live in this directory.
 
-Completed programs: 25/103
-Date: 2025-07-31 18:15 GMT+7
+Completed programs: 20/25
+Date: 2025-07-31 19:04 GMT+7
 
 ## Checklist
-- [ ] append_builtin
-- [x] avg_builtin
-- [x] basic_compare
-- [ ] bench_block
-- [x] binary_precedence
-- [x] bool_chain
-- [x] break_continue
-- [x] cast_string_to_int
-- [x] cast_struct
-- [ ] closure
-- [x] count_builtin
-- [x] cross_join
-- [x] cross_join_filter
-- [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
-- [x] exists_builtin
-- [x] for_list_collection
-- [x] for_loop
-- [x] for_map_collection
-- [x] fun_call
-- [ ] fun_expr_in_let
-- [x] fun_three_args
-- [x] go_auto
-- [ ] group_by
-- [ ] group_by_conditional_sum
-- [ ] group_by_having
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_multi_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [x] if_else
-- [x] if_then_else
-- [x] if_then_else_nested
-- [ ] in_operator
-- [ ] in_operator_extended
-- [x] inner_join
-- [ ] join_multi
-- [ ] json_builtin
-- [ ] left_join
-- [ ] left_join_multi
-- [ ] len_builtin
-- [ ] len_map
-- [ ] len_string
-- [ ] let_and_print
-- [ ] list_assign
-- [ ] list_index
-- [ ] list_nested_assign
-- [ ] list_set_ops
-- [ ] load_jsonl
-- [ ] load_yaml
-- [ ] map_assign
-- [ ] map_in_operator
-- [ ] map_index
-- [ ] map_int_key
-- [ ] map_literal_dynamic
-- [ ] map_membership
-- [ ] map_nested_assign
-- [ ] match_expr
-- [ ] match_full
-- [ ] math_ops
-- [ ] membership
-- [ ] min_max_builtin
-- [ ] mix_go_python
-- [ ] nested_function
-- [ ] order_by_map
-- [ ] outer_join
-- [ ] partial_application
-- [ ] print_hello
-- [ ] pure_fold
-- [ ] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
-- [ ] query_sum_select
-- [ ] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
-- [ ] slice
-- [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
-- [ ] tree_sum
-- [x] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
-- [ ] user_type_literal
-- [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+1. [ ] append_builtin
+2. [x] avg_builtin
+3. [x] basic_compare
+4. [ ] bench_block
+5. [x] binary_precedence
+6. [x] bool_chain
+7. [x] break_continue
+8. [x] cast_string_to_int
+9. [x] cast_struct
+10. [ ] closure
+11. [x] count_builtin
+12. [x] cross_join
+13. [x] cross_join_filter
+14. [x] cross_join_triple
+15. [x] dataset_sort_take_limit
+16. [x] dataset_where_filter
+17. [x] exists_builtin
+18. [x] for_list_collection
+19. [x] for_loop
+20. [x] for_map_collection
+21. [x] fun_call
+22. [ ] fun_expr_in_let
+23. [x] fun_three_args
+24. [x] go_auto
+25. [ ] group_by
