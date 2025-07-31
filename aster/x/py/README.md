@@ -4,7 +4,6 @@ This directory contains utilities for generating and printing simplified
 Python ASTs. The golden tests exercise a small set of example programs.
 
 ## Test Files
-
 1. append_builtin.py
 2. avg_builtin.py
 3. basic_compare.py
@@ -30,7 +29,32 @@ Python ASTs. The golden tests exercise a small set of example programs.
 23. fun_three_args.py
 24. go_auto.py
 25. group_by.py
+26. group_by_conditional_sum.py
+27. group_by_having.py
+28. group_by_join.py
+29. group_by_left_join.py
+30. group_by_multi_join.py
+31. group_by_multi_join_sort.py
+32. group_by_multi_sort.py
+33. group_by_sort.py
+34. group_items_iteration.py
+35. if_else.py
+36. if_then_else.py
+37. if_then_else_nested.py
+38. in_operator.py
+39. in_operator_extended.py
+40. inner_join.py
+41. join_multi.py
+42. json_builtin.py
+43. left_join.py
+44. left_join_multi.py
+45. len_builtin.py
+46. len_map.py
+47. len_string.py
+48. let_and_print.py
+49. list_assign.py
+50. list_index.py
 
-Checked: 25/25
+Checked: 50/50
 
-_Last updated: 2025-07-31 15:28 GMT+7_
+_Last updated: 2025-07-31 15:43 GMT+0700_
