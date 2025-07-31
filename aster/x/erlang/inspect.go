@@ -4,6 +4,7 @@ package erlang
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	sitter "github.com/tree-sitter/go-tree-sitter"
@@ -14,6 +15,12 @@ import (
 // Program represents a parsed Erlang source file.
 type Program struct {
 	Root *SourceFile `json:"root"`
+}
+
+// MarshalJSON implements json.Marshaler for Program to ensure stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }
 
 // InspectWithOption parses Erlang source code using tree-sitter and returns a Program.
