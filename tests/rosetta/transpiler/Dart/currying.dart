@@ -68,7 +68,7 @@ void _main() {
   print("4³ = " + (cube(4.0)).toString());
   Foo a = Foo(value: 2);
   var fn1 = ((b) => Foo_Method(a, b));
-  var fn2 = ((f, b) => f.Method(b));
+  var fn2 = ((f, b) => Foo_Method(f, b));
   print("2 + 2 = " + (Foo_Method(a, 2)).toString());
   print("2 + 3 = " + (fn1(3)).toString());
   print("2 + 4 = " + (fn2(a, 4)).toString());

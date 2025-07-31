@@ -40,7 +40,7 @@ void addEdge(String u, String v, int w) {
   if (!graph.containsKey(u)) {
     graph[u] = <String, int>{};
   }
-  graph[u]![v] = w;
+  graph[u]!![v] = w;
   if (!graph.containsKey(v)) {
     graph[v] = <String, int>{};
   }
@@ -61,13 +61,13 @@ List<String> removeAt(List<String> xs, int idx) {
 Map<String, dynamic> dijkstra(String source) {
   Map<String, int> dist = <String, int>{};
   Map<String, String> prev = <String, String>{};
-  for (String v in graph!.keys) {
+  for (String v in graph.keys) {
     dist[v] = INF;
     prev[v] = "";
   }
   dist[source] = 0;
   List<String> q = <String>[];
-  for (String v in graph!.keys) {
+  for (String v in graph.keys) {
     q = [...q, v];
   }
   while (q.length > 0) {
@@ -76,7 +76,7 @@ Map<String, dynamic> dijkstra(String source) {
     int i = 1;
     while (i < q.length) {
     String v = q[i];
-    if ((dist[v] ?? 0) < (dist[u] ?? 0)) {
+    if (dist[v]! < dist[u]!) {
     u = v;
     bestIdx = i;
   }
@@ -84,9 +84,9 @@ Map<String, dynamic> dijkstra(String source) {
   }
     q = removeAt(q, bestIdx);
     for (var v in graph[u]!.keys) {
-    num alt = (dist[u] ?? 0) + (graph[u]![v] ?? 0);
-    if (alt < (dist[v] ?? 0)) {
-    dist[v] = (alt).toInt();
+    num alt = dist[u]! + graph[u]![v]!;
+    if (alt < dist[v]!) {
+    dist[v] = alt;
     prev[v] = u;
   }
   }
@@ -97,8 +97,8 @@ Map<String, dynamic> dijkstra(String source) {
 String path(Map<String, String> prev, String v) {
   String s = v;
   String cur = v;
-  while ((prev[cur] ?? "") != "") {
-    cur = (prev[cur] ?? "");
+  while (prev[cur]! != "") {
+    cur = prev[cur]!;
     s = cur + s;
   }
   return s;
@@ -117,8 +117,8 @@ void _main() {
   Map<String, dynamic> res = dijkstra("a");
   Map<String, int> dist = res["dist"]! as Map<String, int>;
   Map<String, String> prev = res["prev"]! as Map<String, String>;
-  print("Distance to e: " + ((dist["e"] ?? 0)).toString() + ", Path: " + path(prev, "e"));
-  print("Distance to f: " + ((dist["f"] ?? 0)).toString() + ", Path: " + path(prev, "f"));
+  print("Distance to e: " + (dist["e"]!).toString() + ", Path: " + path(prev, "e"));
+  print("Distance to f: " + (dist["f"]!).toString() + ", Path: " + path(prev, "f"));
 }
 
 void _start() {

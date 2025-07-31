@@ -1,7 +1,0 @@
-run: exit status 254
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:63:10: Error: Method not found: 'Add'.
-  return Add(NewTinyInt(1));
-         ^^^
-../../../tests/rosetta/transpiler/Dart/define-a-primitive-data-type.dart:67:10: Error: Method not found: 'Sub'.
-  return Sub(NewTinyInt(1));
-         ^^^
