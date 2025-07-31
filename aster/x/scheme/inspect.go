@@ -36,9 +36,6 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	p := sitter.NewParser()
 	p.SetLanguage(sitter.NewLanguage(tsscheme.Language()))
 	data := []byte(src)
-	prev := IncludePos
-	IncludePos = opt.Positions
-	defer func() { IncludePos = prev }()
 	tree := p.Parse(data, nil)
-	return convertProgram(tree.RootNode(), data), nil
+	return convertProgram(tree.RootNode(), data, opt.Positions), nil
 }

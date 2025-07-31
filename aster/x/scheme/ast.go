@@ -6,23 +6,18 @@ import (
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
-// IncludePos controls whether the conversion functions record positional
-// information on the produced AST nodes. When false (the default) the fields
-// remain zero and will be omitted from the JSON output because of the
-// `omitempty` struct tags.
-var IncludePos bool
-
 // Node mirrors a tree-sitter node. Only leaves carrying semantic text keep the
 // Text field populated so the resulting JSON remains compact. Position fields
-// are optional and only populated when IncludePos is true.
+// are optional and only populated when conversion is requested with positions
+// enabled.
 type Node struct {
-        Kind     string  `json:"kind"`
-        Text     string  `json:"text,omitempty"`
-        Start    int     `json:"start,omitempty"`
-        End      int     `json:"end,omitempty"`
-        StartCol int     `json:"startCol,omitempty"`
-        EndCol   int     `json:"endCol,omitempty"`
-        Children []*Node `json:"children,omitempty"`
+	Kind     string  `json:"kind"`
+	Text     string  `json:"text,omitempty"`
+	Start    int     `json:"start,omitempty"`
+	End      int     `json:"end,omitempty"`
+	StartCol int     `json:"startCol,omitempty"`
+	EndCol   int     `json:"endCol,omitempty"`
+	Children []*Node `json:"children,omitempty"`
 }
 
 // The following typed aliases mirror the subset of tree-sitter node kinds that
@@ -54,19 +49,19 @@ func isValueNode(kind string) bool {
 }
 
 // convertNode converts a tree-sitter node to our Node representation.
-func convertNode(n *sitter.Node, src []byte) *Node {
+func convertNode(n *sitter.Node, src []byte, positions bool) *Node {
 	if n == nil {
 		return nil
 	}
 
 	node := &Node{Kind: n.Kind()}
-	if IncludePos {
+	if positions {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
-        node.Start = int(sp.Row) + 1
-        node.End = int(ep.Row) + 1
-        node.StartCol = int(sp.Column)
-        node.EndCol = int(ep.Column)
+		node.Start = int(sp.Row) + 1
+		node.End = int(ep.Row) + 1
+		node.StartCol = int(sp.Column)
+		node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
@@ -78,7 +73,7 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
-		if c := convertNode(n.NamedChild(i), src); c != nil {
+		if c := convertNode(n.NamedChild(i), src, positions); c != nil {
 			node.Children = append(node.Children, c)
 		}
 	}
@@ -90,13 +85,13 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 }
 
 // convertProgram converts the root tree-sitter node into a Program.
-func convertProgram(root *sitter.Node, src []byte) *Program {
+func convertProgram(root *sitter.Node, src []byte, positions bool) *Program {
 	if root == nil {
 		return &Program{}
 	}
 	var forms []*Form
 	for i := uint(0); i < root.NamedChildCount(); i++ {
-		if n := convertNode(root.NamedChild(i), src); n != nil {
+		if n := convertNode(root.NamedChild(i), src, positions); n != nil {
 			forms = append(forms, (*Form)(n))
 		}
 	}

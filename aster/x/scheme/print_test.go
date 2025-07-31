@@ -39,15 +39,6 @@ func TestPrint_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "cross_join.scm" {
-			selected = append(selected, f)
-		}
-	}
-	files = selected
-
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".scm")
 		t.Run(name, func(t *testing.T) {
