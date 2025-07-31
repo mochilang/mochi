@@ -91,6 +91,10 @@
                             "kind": "optional_formal_parameters",
                             "children": [
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -98,7 +102,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -109,6 +119,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -116,7 +130,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -250,6 +270,10 @@
                             "kind": "optional_formal_parameters",
                             "children": [
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -257,7 +281,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -268,6 +298,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -275,7 +309,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -286,6 +326,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -293,7 +337,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -454,6 +504,10 @@
                             "kind": "optional_formal_parameters",
                             "children": [
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -461,7 +515,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -472,6 +532,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -479,7 +543,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -490,6 +560,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -497,7 +571,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -508,6 +588,10 @@
                                 ]
                               },
                               {
+                                "kind": "required",
+                                "text": "required"
+                              },
+                              {
                                 "kind": "formal_parameter",
                                 "children": [
                                   {
@@ -515,7 +599,13 @@
                                     "children": [
                                       {
                                         "kind": "this",
-                                        "text": "this"
+                                        "text": "this",
+                                        "children": [
+                                          {
+                                            "kind": "this",
+                                            "text": "this"
+                                          }
+                                        ]
                                       },
                                       {
                                         "kind": "identifier",
@@ -1363,6 +1453,7 @@
                                               },
                                               {
                                                 "kind": "string_literal",
+                                                "text": "\", total: \\$\"",
                                                 "children": [
                                                   {
                                                     "kind": "escape_sequence",

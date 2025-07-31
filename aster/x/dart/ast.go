@@ -70,7 +70,8 @@ func isValueNode(kind string) bool {
 	case "identifier", "type_identifier", "decimal_integer_literal",
 		"string_literal", "escape_sequence", "comment",
 		"true", "false", "void_type", "null",
-		"final_builtin", "const_builtin", "inferred_type", "this":
+		"final_builtin", "const_builtin", "inferred_type", "this",
+		"required":
 		return true
 	default:
 		return false
@@ -93,17 +94,18 @@ func toNode(n *sitter.Node, src []byte, pos bool) *Node {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if isValueNode(n.Kind()) {
-			node.Text = n.Utf8Text(src)
-		} else {
-			// discard pure syntax leaves
-			return nil
-		}
+	if isValueNode(n.Kind()) {
+		node.Text = n.Utf8Text(src)
+	} else if n.NamedChildCount() == 0 {
+		// discard pure syntax leaves
+		return nil
 	}
 
-	for i := uint(0); i < n.NamedChildCount(); i++ {
-		child := n.NamedChild(i)
+	for i := uint(0); i < n.ChildCount(); i++ {
+		child := n.Child(i)
+		if !child.IsNamed() && !isValueNode(child.Kind()) {
+			continue
+		}
 		if c := toNode(child, src, pos); c != nil {
 			node.Children = append(node.Children, c)
 		}
