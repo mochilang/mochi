@@ -248,6 +248,42 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeNode(b, c, indent)
 		}
+	case "try_expr":
+		var i int
+		b.WriteString("try\n")
+		for i = 0; i < len(n.Children); i++ {
+			c := n.Children[i]
+			if c.Kind == "catch_clause" {
+				break
+			}
+			writeIndent(b, indent+1)
+			writeNode(b, c, indent+1)
+			if i < len(n.Children)-1 && n.Children[i+1].Kind != "catch_clause" {
+				b.WriteString(",\n")
+			} else {
+				b.WriteByte('\n')
+			}
+		}
+		if i < len(n.Children) && n.Children[i].Kind == "catch_clause" {
+			writeIndent(b, indent+1)
+			b.WriteString("catch\n")
+			for j := i; j < len(n.Children); j++ {
+				if j > i {
+					b.WriteString(";\n")
+				}
+				writeIndent(b, indent+2)
+				writeNode(b, n.Children[j], indent+2)
+			}
+			b.WriteByte('\n')
+		}
+		writeIndent(b, indent)
+		b.WriteString("end")
+	case "catch_clause":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" -> ")
+			writeNode(b, n.Children[1], indent)
+		}
 	case "generator":
 		if len(n.Children) == 2 {
 			writeNode(b, n.Children[0], indent)
