@@ -333,11 +333,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "unary_operator":
-		if len(n.Children) == 1 {
-			b.WriteByte('-')
-			writeExpr(b, n.Children[0], indent)
-		}
+       case "unary_operator":
+               if len(n.Children) == 1 {
+                       b.WriteByte('-')
+                       writeExpr(b, n.Children[0], indent)
+               }
+       case "not_operator":
+               if len(n.Children) == 1 {
+                       b.WriteString("not ")
+                       writeExpr(b, n.Children[0], indent)
+               }
 	case "comparison_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
