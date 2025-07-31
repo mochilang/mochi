@@ -392,6 +392,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('.')
 			writeExpr(b, n.Children[0], indent)
 		}
+	case "abstract_function_declarator":
+		if len(n.Children) > 0 {
+			writeParameterList(b, n.Children[0])
+		} else {
+			b.WriteString("()")
+		}
 	case "lambda_expression":
 		if len(n.Children) >= 2 {
 			writeExpr(b, n.Children[0], indent)
