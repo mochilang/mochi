@@ -65,7 +65,7 @@ func isValueLeaf(n *sitter.Node) bool {
 	}
 	switch n.Kind() {
 	case "identifier", "simple_identifier", "type_identifier", "integer_literal",
-		"string_literal", "string_content":
+		"string_literal", "string_content", "class_modifier":
 		return true
 	}
 	if strings.HasSuffix(n.Kind(), "_identifier") {
@@ -99,6 +99,13 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
+		}
+	} else {
+		switch n.Kind() {
+		case "binary_expression":
+			if op := n.ChildByFieldName("operator"); op != nil {
+				node.Text = op.Utf8Text(src)
+			}
 		}
 	}
 

@@ -51,6 +51,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		writeCall(b, n, indent)
 		b.WriteByte('\n')
+	case "class_declaration":
+		writeClass(b, n, indent)
 	case "block":
 		writeBlock(b, n, indent)
 	default:
@@ -77,9 +79,13 @@ func writeFunction(b *bytes.Buffer, n *Node, indent int) {
 	} else {
 		b.WriteString("()")
 	}
-	if i < len(n.Children) && n.Children[i].Kind == "user_type" {
+	if i < len(n.Children) && (n.Children[i].Kind == "user_type" || n.Children[i].Kind == "function_type") {
 		b.WriteString(": ")
-		writeType(b, n.Children[i])
+		if n.Children[i].Kind == "function_type" {
+			writeFunctionType(b, n.Children[i])
+		} else {
+			writeType(b, n.Children[i])
+		}
 		i++
 	}
 	b.WriteByte(' ')
@@ -107,11 +113,57 @@ func writeProperty(b *bytes.Buffer, n *Node, indent int) {
 	}
 	if len(vd.Children) > 1 {
 		b.WriteString(": ")
-		writeType(b, vd.Children[1])
+		if vd.Children[1].Kind == "function_type" {
+			writeFunctionType(b, vd.Children[1])
+		} else {
+			writeType(b, vd.Children[1])
+		}
 	}
 	if len(n.Children) > 1 {
 		b.WriteString(" = ")
 		writeExpr(b, n.Children[1], indent)
+	}
+	b.WriteByte('\n')
+}
+
+func writeClass(b *bytes.Buffer, n *Node, indent int) {
+	ind := strings.Repeat("    ", indent)
+	b.WriteString(ind)
+	b.WriteString("data class ")
+	if len(n.Children) == 0 {
+		b.WriteByte('\n')
+		return
+	}
+	i := 0
+	if n.Children[0].Kind == "modifiers" {
+		// modifiers already include 'data'
+		i++
+	}
+	if i < len(n.Children) && n.Children[i].Kind == "identifier" {
+		b.WriteString(n.Children[i].Text)
+		i++
+	}
+	if i < len(n.Children) && n.Children[i].Kind == "primary_constructor" {
+		b.WriteByte('(')
+		if len(n.Children[i].Children) > 0 {
+			params := n.Children[i].Children[0]
+			for j := range params.Children {
+				if j > 0 {
+					b.WriteString(", ")
+				}
+				p := params.Children[j]
+				if len(p.Children) >= 1 {
+					b.WriteString("val ")
+					writeExpr(b, p.Children[0], indent)
+					if len(p.Children) > 1 {
+						b.WriteString(": ")
+						writeType(b, p.Children[1])
+					}
+				}
+			}
+		}
+		b.WriteByte(')')
+		i++
 	}
 	b.WriteByte('\n')
 }
@@ -202,6 +254,61 @@ func writeTypeArguments(b *bytes.Buffer, n *Node) {
 	b.WriteByte('>')
 }
 
+func writeFunctionType(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 0 {
+		return
+	}
+	b.WriteByte('(')
+	var idx int
+	if n.Children[0].Kind == "function_type_parameters" {
+		for i := range n.Children[0].Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(n.Children[0].Children[i].Children) > 0 {
+				writeType(b, n.Children[0].Children[i].Children[0])
+			}
+		}
+		idx = 1
+	}
+	b.WriteString(") -> ")
+	if idx < len(n.Children) {
+		writeType(b, n.Children[idx])
+	}
+}
+
+func writeLambdaParams(b *bytes.Buffer, n *Node) {
+	for i := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		if len(n.Children[i].Children) > 0 {
+			writeExpr(b, n.Children[i].Children[0], 0)
+			if len(n.Children[i].Children) > 1 {
+				b.WriteString(": ")
+				writeType(b, n.Children[i].Children[1])
+			}
+		}
+	}
+}
+
+func writeLambdaLiteral(b *bytes.Buffer, n *Node, indent int) {
+	b.WriteByte('{')
+	i := 0
+	if len(n.Children) > 0 && n.Children[0].Kind == "lambda_parameters" {
+		writeLambdaParams(b, n.Children[0])
+		i = 1
+		b.WriteString(" -> ")
+	}
+	for ; i < len(n.Children); i++ {
+		if i > 1 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, n.Children[i], indent)
+	}
+	b.WriteByte('}')
+}
+
 func writeCall(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) == 0 {
 		return
@@ -220,8 +327,12 @@ func writeValueArgs(b *bytes.Buffer, n *Node, indent int) {
 		if i > 0 {
 			b.WriteString(", ")
 		}
-		if len(n.Children[i].Children) > 0 {
+		if len(n.Children[i].Children) == 1 {
 			writeExpr(b, n.Children[i].Children[0], indent)
+		} else if len(n.Children[i].Children) == 2 {
+			writeExpr(b, n.Children[i].Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[i].Children[1], indent)
 		}
 	}
 	b.WriteByte(')')
@@ -271,17 +382,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[2], indent)
 		}
+	case "lambda_literal":
+		writeLambdaLiteral(b, n, indent)
+	case "function_type":
+		writeFunctionType(b, n)
 	case "binary_expression":
 		if len(n.Children) == 2 {
-			op := "+"
-			if n.Children[0].Kind == "number_literal" && n.Children[0].Text == "0" &&
-				n.Children[1].Kind == "number_literal" && n.Children[1].Text == "1" {
-				op = "-"
-			} else if n.Children[1].Kind == "identifier" && n.Children[1].Text == "target" {
-				op = "=="
-			}
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" " + op + " ")
+			if n.Text != "" {
+				b.WriteString(" " + n.Text + " ")
+			} else {
+				b.WriteByte(' ')
+			}
 			writeExpr(b, n.Children[1], indent)
 		}
 	default:

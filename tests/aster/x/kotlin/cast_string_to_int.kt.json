@@ -29,11 +29,25 @@
                             "kind": "value_argument",
                             "children": [
                               {
-                                "kind": "string_literal",
+                                "kind": "call_expression",
                                 "children": [
                                   {
-                                    "kind": "string_content",
-                                    "text": "hello"
+                                    "kind": "navigation_expression",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_content",
+                                            "text": "1995"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "identifier",
+                                        "text": "toInt"
+                                      }
+                                    ]
                                   }
                                 ]
                               }
