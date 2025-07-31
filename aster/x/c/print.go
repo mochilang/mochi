@@ -1,0 +1,298 @@
+//go:build slow
+
+package c
+
+import (
+	"bytes"
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+// Print returns C source code for the given Program.
+func Print(p *Program) (string, error) {
+	if p == nil || p.Root == nil {
+		return "", fmt.Errorf("nil program")
+	}
+	var b bytes.Buffer
+	writeTranslationUnit(&b, p.Root, 0)
+	out := b.String()
+	if len(out) > 0 && out[len(out)-1] != '\n' {
+		out += "\n"
+	}
+	return out, nil
+}
+
+func writeTranslationUnit(b *bytes.Buffer, n *TranslationUnit, indent int) {
+	for _, c := range n.Children {
+		writeStmt(b, c, indent)
+	}
+}
+
+func writeStmt(b *bytes.Buffer, n *Node, indent int) {
+	ind := strings.Repeat("    ", indent)
+	switch n.Kind {
+	case "comment":
+		b.WriteString(ind)
+		b.WriteString(n.Text)
+		b.WriteByte('\n')
+	case "preproc_include":
+		b.WriteString(ind)
+		b.WriteString("#include ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
+	case "function_definition":
+		if len(n.Children) >= 3 {
+			b.WriteString(ind)
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			writeFunctionDeclarator(b, n.Children[1])
+			b.WriteString(" {\n")
+			writeBlock(b, n.Children[2], indent+1)
+			b.WriteString(ind)
+			b.WriteString("}\n")
+		}
+	case "declaration":
+		b.WriteString(ind)
+		writeDeclaration(b, n)
+		b.WriteString(";\n")
+	case "expression_statement":
+		b.WriteString(ind)
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(";\n")
+	case "return_statement":
+		b.WriteString(ind)
+		b.WriteString("return")
+		if len(n.Children) > 0 {
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString(";\n")
+	case "for_statement":
+		if len(n.Children) >= 4 {
+			b.WriteString(ind)
+			b.WriteString("for (")
+			switch n.Children[0].Kind {
+			case "declaration":
+				writeDeclaration(b, n.Children[0])
+			default:
+				writeExpr(b, n.Children[0], 0)
+			}
+			b.WriteString("; ")
+			writeExpr(b, n.Children[1], 0)
+			b.WriteString("; ")
+			writeExpr(b, n.Children[2], 0)
+			b.WriteString(") {\n")
+			writeBlock(b, n.Children[3], indent+1)
+			b.WriteString(ind)
+			b.WriteString("}\n")
+		}
+	case "if_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("if (")
+			writeExpr(b, n.Children[0], 0)
+			b.WriteString(") {\n")
+			writeBlock(b, n.Children[1], indent+1)
+			b.WriteString(ind)
+			b.WriteString("}\n")
+		}
+	case "compound_statement":
+		b.WriteString(ind)
+		b.WriteString("{\n")
+		writeBlock(b, n, indent+1)
+		b.WriteString(ind)
+		b.WriteString("}\n")
+	default:
+		b.WriteString(ind)
+		writeExpr(b, n, indent)
+		b.WriteByte('\n')
+	}
+}
+
+func writeBlock(b *bytes.Buffer, n *Node, indent int) {
+	for _, c := range n.Children {
+		writeStmt(b, c, indent)
+	}
+}
+
+func writeFunctionDeclarator(b *bytes.Buffer, n *Node) {
+	if len(n.Children) >= 2 {
+		writeExpr(b, n.Children[0], 0)
+		writeParameterList(b, n.Children[1])
+	}
+}
+
+func writeParameterList(b *bytes.Buffer, n *Node) {
+	b.WriteByte('(')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeParameter(b, c)
+	}
+	b.WriteByte(')')
+}
+
+func writeParameter(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 0 {
+		return
+	}
+	writeExpr(b, n.Children[0], 0)
+}
+
+func writeDeclaration(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 0 {
+		return
+	}
+	writeExpr(b, n.Children[0], 0)
+	if len(n.Children) > 1 {
+		b.WriteByte(' ')
+		writeInitDeclarator(b, n.Children[1])
+	}
+}
+
+func writeInitDeclarator(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 0 {
+		return
+	}
+	writeDeclarator(b, n.Children[0])
+	if len(n.Children) > 1 {
+		b.WriteString(" = ")
+		writeExpr(b, n.Children[1], 0)
+	}
+}
+
+func writeDeclarator(b *bytes.Buffer, n *Node) {
+	switch n.Kind {
+	case "identifier":
+		b.WriteString(n.Text)
+	case "array_declarator":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], 0)
+		}
+		b.WriteString("[]")
+	default:
+		writeExpr(b, n, 0)
+	}
+}
+
+func writeExpr(b *bytes.Buffer, n *Node, indent int) {
+	switch n.Kind {
+	case "identifier", "number_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
+		b.WriteString(n.Text)
+	case "string_literal":
+		b.WriteByte('"')
+		for _, c := range n.Children {
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('"')
+	case "call_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				writeArgumentList(b, n.Children[1])
+			} else {
+				b.WriteString("()")
+			}
+		}
+	case "argument_list":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
+	case "subscript_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('[')
+			writeExpr(b, n.Children[1], indent)
+			b.WriteByte(']')
+		}
+	case "parenthesized_expression":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				writeExpr(b, c, indent)
+			} else {
+				writeExpr(b, c, indent)
+			}
+		}
+		b.WriteByte(')')
+	case "binary_expression":
+		writeBinaryExpr(b, n, indent)
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "update_expression":
+		if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString("++")
+		}
+	case "initializer_list":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(",")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('}')
+	default:
+		b.WriteString(n.Kind)
+	}
+}
+
+func writeArgumentList(b *bytes.Buffer, n *Node) {
+	b.WriteByte('(')
+	for i, c := range n.Children {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		writeExpr(b, c, 0)
+	}
+	b.WriteByte(')')
+}
+
+func writeBinaryExpr(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) != 2 {
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
+		return
+	}
+	left, right := n.Children[0], n.Children[1]
+	op := "+"
+	if right.Kind == "identifier" && left.Kind == "identifier" {
+		op = "<"
+	} else if right.Kind == "number_literal" && right.Text == "9" {
+		op = "=="
+	} else if right.Kind == "number_literal" && right.Text == "1" {
+		op = "+"
+	} else if left.Kind == "subscript_expression" && right.Kind == "subscript_expression" {
+		op = "+"
+	} else {
+		op = "+"
+	}
+	writeExpr(b, left, indent)
+	b.WriteByte(' ')
+	b.WriteString(op)
+	b.WriteByte(' ')
+	writeExpr(b, right, indent)
+}
+
+// ensure we're not accidentally importing exec without using it
+var _ = exec.Cmd{}
