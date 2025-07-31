@@ -2741,6 +2741,11 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if prog != nil && blockDepth == 0 {
+			for m := range mutatedVars {
+				if exprUsesVar(val, m) {
+					return &VarStmt{Name: alias, Value: val}, nil
+				}
+			}
 			g := &Global{Name: alias, Value: val}
 			prog.Globals = append(prog.Globals, g)
 			globalDecls[s.Var.Name] = g
