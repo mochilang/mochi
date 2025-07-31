@@ -2,9 +2,9 @@
 
 This directory contains utilities for inspecting Erlang source code using Tree-sitter and printing it back from the parsed AST. Golden tests verify that the printed source matches the original program output.
 
-Last updated: 2025-07-31 19:13 GMT+7
+Last updated: 2025-07-31 19:43 GMT+7
 
-## Golden Test Checklist (50/50)
+## Golden Test Checklist (103/103)
 1. [x] append_builtin.erl
 2. [x] avg_builtin.erl
 3. [x] basic_compare.erl
@@ -55,3 +55,56 @@ Last updated: 2025-07-31 19:13 GMT+7
 48. [x] let_and_print.erl
 49. [x] list_assign.erl
 50. [x] list_index.erl
+51. [x] list_nested_assign.erl
+52. [x] list_set_ops.erl
+53. [x] load_jsonl.erl
+54. [x] load_yaml.erl
+55. [x] map_assign.erl
+56. [x] map_in_operator.erl
+57. [x] map_index.erl
+58. [x] map_int_key.erl
+59. [x] map_literal_dynamic.erl
+60. [x] map_membership.erl
+61. [x] map_nested_assign.erl
+62. [x] match_expr.erl
+63. [x] match_full.erl
+64. [x] math_ops.erl
+65. [x] membership.erl
+66. [x] min_max_builtin.erl
+67. [x] nested_function.erl
+68. [x] order_by_map.erl
+69. [x] outer_join.erl
+70. [x] partial_application.erl
+71. [x] print_hello.erl
+72. [x] pure_fold.erl
+73. [x] pure_global_fold.erl
+74. [x] python_auto.erl
+75. [x] python_math.erl
+76. [x] query_sum_select.erl
+77. [x] record_assign.erl
+78. [x] right_join.erl
+79. [x] save_jsonl_stdout.erl
+80. [x] short_circuit.erl
+81. [x] slice.erl
+82. [x] sort_stable.erl
+83. [x] str_builtin.erl
+84. [x] string_compare.erl
+85. [x] string_concat.erl
+86. [x] string_contains.erl
+87. [x] string_in_operator.erl
+88. [x] string_index.erl
+89. [x] string_prefix_slice.erl
+90. [x] substring_builtin.erl
+91. [x] sum_builtin.erl
+92. [x] tail_recursion.erl
+93. [x] test_block.erl
+94. [x] tree_sum.erl
+95. [x] two-sum.erl
+96. [x] typed_let.erl
+97. [x] typed_var.erl
+98. [x] unary_neg.erl
+99. [x] update_stmt.erl
+100. [x] user_type_literal.erl
+101. [x] values_builtin.erl
+102. [x] var_assignment.erl
+103. [x] while_loop.erl
