@@ -395,6 +395,35 @@ func writeValueArgs(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteByte(')')
 }
 
+func writeWhenExpr(b *bytes.Buffer, n *Node, indent int) {
+	ind := strings.Repeat("    ", indent)
+	b.WriteString("when (")
+	idx := 0
+	if len(n.Children) > 0 && n.Children[0].Kind == "when_subject" {
+		if len(n.Children[0].Children) > 0 {
+			writeExpr(b, n.Children[0].Children[0], indent)
+		}
+		idx = 1
+	}
+	b.WriteString(") {\n")
+	for ; idx < len(n.Children); idx++ {
+		c := n.Children[idx]
+		b.WriteString(ind)
+		b.WriteString("    ")
+		if len(c.Children) == 2 {
+			writeExpr(b, c.Children[0], indent)
+			b.WriteString(" -> ")
+			writeExpr(b, c.Children[1], indent)
+		} else if len(c.Children) == 1 {
+			b.WriteString("else -> ")
+			writeExpr(b, c.Children[0], indent)
+		}
+		b.WriteByte('\n')
+	}
+	b.WriteString(ind)
+	b.WriteByte('}')
+}
+
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "integer_literal", "number_literal", "simple_identifier":
@@ -422,6 +451,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
 		}
+	case "when_expression":
+		writeWhenExpr(b, n, indent)
 	case "parenthesized_expression":
 		b.WriteByte('(')
 		for i := range n.Children {
