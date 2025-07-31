@@ -40,6 +40,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString("from __future__ import ")
 		writeDottedNames(b, n.Children)
 		b.WriteByte('\n')
+	case "import_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("import ")
+			writeDottedName(b, n.Children[0])
+			b.WriteByte('\n')
+		}
 	case "import_from_statement":
 		if len(n.Children) >= 2 {
 			b.WriteString(ind)
@@ -90,13 +97,21 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte('\n')
 	case "function_definition":
-		if len(n.Children) >= 3 {
+		if len(n.Children) >= 2 {
 			b.WriteString(ind)
 			b.WriteString("def ")
 			writeExpr(b, n.Children[0], indent)
-			writeParameters(b, n.Children[1])
+			idx := 1
+			if idx < len(n.Children) && n.Children[idx].Kind == "parameters" {
+				writeParameters(b, n.Children[idx])
+				idx++
+			} else {
+				b.WriteString("()")
+			}
 			b.WriteString(":\n")
-			writeBlock(b, n.Children[2], indent+1)
+			if idx < len(n.Children) {
+				writeBlock(b, n.Children[idx], indent+1)
+			}
 		}
 	case "for_statement":
 		if len(n.Children) >= 3 {
@@ -116,6 +131,42 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(":\n")
 			writeBlock(b, n.Children[1], indent+1)
 		}
+	case "global_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("global ")
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, c, 0)
+			}
+			b.WriteByte('\n')
+		}
+	case "try_statement":
+		if len(n.Children) > 0 {
+			b.WriteString(ind)
+			b.WriteString("try:\n")
+			writeBlock(b, n.Children[0], indent+1)
+			for _, ex := range n.Children[1:] {
+				if ex.Kind != "except_clause" {
+					continue
+				}
+				b.WriteString(ind)
+				b.WriteString("except")
+				if len(ex.Children) > 0 {
+					b.WriteByte(' ')
+					writeExpr(b, ex.Children[0], indent)
+				}
+				b.WriteString(":\n")
+				if len(ex.Children) > 1 {
+					writeBlock(b, ex.Children[1], indent+1)
+				} else {
+					b.WriteString(strings.Repeat("    ", indent+1))
+					b.WriteString("pass\n")
+				}
+			}
+		}
 	case "block":
 		writeBlock(b, n, indent)
 	default:
@@ -126,6 +177,11 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeBlock(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) == 0 {
+		b.WriteString(strings.Repeat("    ", indent))
+		b.WriteString("pass\n")
+		return
+	}
 	for _, c := range n.Children {
 		writeStmt(b, c, indent)
 	}
@@ -238,10 +294,31 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "dictionary":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte('}')
+	case "pair":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "binary_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" + ")
+			op := "+"
+			if n.Text != "" {
+				op = strings.TrimSpace(n.Text)
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "unary_operator":
@@ -252,8 +329,49 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "comparison_operator":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" == ")
+			op := "=="
+			if n.Text != "" {
+				op = strings.TrimSpace(n.Text)
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "boolean_operator":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			op := "and"
+			if n.Text != "" {
+				op = strings.TrimSpace(n.Text)
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "parenthesized_expression":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
+	case "keyword_argument":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('=')
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" if ")
+			writeExpr(b, n.Children[1], indent)
+			b.WriteString(" else ")
+			writeExpr(b, n.Children[2], indent)
 		}
 	case "subscript":
 		if len(n.Children) == 2 {
