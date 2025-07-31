@@ -1,61 +1,61 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 467/491
-Last updated: 2025-07-31 09:21 +0700
+Completed programs: 466/491
+Last updated: 2025-07-31 10:06 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 2.465ms | 32.1KB |
-| 2 | 100-doors-3 | ✓ | 2.266ms | 24.1KB |
-| 3 | 100-doors | ✓ | 16.294ms | 2.3MB |
-| 4 | 100-prisoners | ✓ | 176.496ms | 1.4MB |
-| 5 | 15-puzzle-game | ✓ | 3.183ms | 24.1KB |
-| 6 | 15-puzzle-solver | ✓ | 2.292ms | 16.0KB |
-| 7 | 2048 | ✓ | 3.004ms | 69.0KB |
-| 8 | 21-game | ✓ | 2.772ms | 24.1KB |
-| 9 | 24-game-solve | ✓ | 23.015ms | 13.9MB |
-| 10 | 24-game | ✓ | 16.84ms | 2.1MB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 15.268ms | 16.7MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 567.108ms | 186.3MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 7.373ms | 3.1MB |
-| 14 | 99-bottles-of-beer | ✓ | 3.374ms | 52.9KB |
-| 15 | a+b | ✓ | 4.344ms | 24.1KB |
-| 16 | abbreviations-automatic | ✓ | 5.738ms | 1.1MB |
-| 17 | abbreviations-easy | ✓ | 6.092ms | 133.0KB |
-| 18 | abbreviations-simple | ✓ | 21.837ms | 1.5MB |
-| 19 | abc-problem | ✓ | 6.474ms | 157.0KB |
-| 20 | abelian-sandpile-model-identity | ✓ | 3.479ms | 44.9KB |
-| 21 | abelian-sandpile-model | ✓ | 4.217ms | 69.0KB |
-| 22 | abstract-type | ✓ | 3.616ms | 16.0KB |
-| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 86.481ms | 16.0KB |
-| 24 | abundant-odd-numbers | ✓ | 94.338ms | 10.7MB |
-| 25 | accumulator-factory | ✓ | 15.965ms | 1.7MB |
-| 26 | achilles-numbers | ✓ | 20.12ms | 2.2MB |
-| 27 | ackermann-function-2 | ✓ | 1.225ms | 16.0KB |
-| 28 | ackermann-function-3 | ✓ | 10.557471s | 16.8MB |
-| 29 | ackermann-function | ✓ | 919µs | 16.0KB |
-| 30 | active-directory-connect | ✓ | 898µs | 16.0KB |
-| 31 | active-directory-search-for-a-user | ✓ | 5.765ms | 1.1MB |
-| 32 | active-object | ✓ | 1.318ms | 1.9MB |
-| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 1.45ms | 24.1KB |
-| 34 | additive-primes | ✓ | 5.726ms | 1.1MB |
-| 35 | address-of-a-variable | ✓ | 1.055ms | 16.0KB |
+| 1 | 100-doors-2 | ✓ | 1.751ms | 32.1KB |
+| 2 | 100-doors-3 | ✓ | 2.099ms | 24.1KB |
+| 3 | 100-doors | ✓ | 14.282ms | 2.4MB |
+| 4 | 100-prisoners | ✓ | 174.531ms | 20.6MB |
+| 5 | 15-puzzle-game | ✓ | 2.418ms | 46.6KB |
+| 6 | 15-puzzle-solver | ✓ | 1.672ms | 16.0KB |
+| 7 | 2048 | ✓ | 2.362ms | 1.2MB |
+| 8 | 21-game | ✓ | 2.165ms | 24.1KB |
+| 9 | 24-game-solve | ✓ | 4.454ms | 6.0MB |
+| 10 | 24-game | ✓ | 11.906ms | 2.1MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 21.747ms | 18.7MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 333.984ms | 193.0MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 12.72ms | 5.5MB |
+| 14 | 99-bottles-of-beer | ✓ | 2.209ms | 52.9KB |
+| 15 | a+b | ✓ | 11.433ms | 2.1MB |
+| 16 | abbreviations-automatic | ✓ | 2.779ms | 1.1MB |
+| 17 | abbreviations-easy | ✓ | 3.476ms | 133.0KB |
+| 18 | abbreviations-simple | ✓ | 11.021ms | 1.6MB |
+| 19 | abc-problem | ✓ | 3.466ms | 157.0KB |
+| 20 | abelian-sandpile-model-identity | ✓ | 2.307ms | 44.9KB |
+| 21 | abelian-sandpile-model | ✓ | 2.131ms | 69.0KB |
+| 22 | abstract-type | ✓ | 1.712ms | 16.0KB |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 61.256ms | 16.0KB |
+| 24 | abundant-odd-numbers | ✓ | 71.17ms | 5.2MB |
+| 25 | accumulator-factory |   | 15.965ms | 1.7MB |
+| 26 | achilles-numbers | ✓ | 10.41ms | 2.2MB |
+| 27 | ackermann-function-2 | ✓ | 2.182ms | 16.0KB |
+| 28 | ackermann-function-3 | ✓ | 10.45781s | 16.8MB |
+| 29 | ackermann-function | ✓ | 1.994ms | 16.0KB |
+| 30 | active-directory-connect | ✓ | 1.968ms | 16.0KB |
+| 31 | active-directory-search-for-a-user | ✓ | 10.734ms | 1.1MB |
+| 32 | active-object | ✓ | 2.661ms | 1.9MB |
+| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 2.09ms | 24.1KB |
+| 34 | additive-primes | ✓ | 8.215ms | 1.1MB |
+| 35 | address-of-a-variable | ✓ | 2.043ms | 16.0KB |
 | 36 | adfgvx-cipher |   |  |  |
-| 37 | aks-test-for-primes | ✓ | 958µs | 24.1KB |
-| 38 | algebraic-data-types | ✓ | 26.02ms | 3.3MB |
-| 39 | align-columns | ✓ | 4.195ms | 1.9MB |
-| 40 | aliquot-sequence-classifications | ✓ | 36.965ms | 3.0MB |
-| 41 | almkvist-giullera-formula-for-pi | ✓ | 84.673ms | 18.3MB |
-| 42 | almost-prime | ✓ | 3.366ms | 24.1KB |
-| 43 | amb | ✓ | 13.625ms | 1.0MB |
-| 44 | amicable-pairs | ✓ | 250.872ms | 1.1MB |
-| 45 | anagrams-deranged-anagrams | ✓ | 14.195ms | 1.2MB |
-| 46 | anagrams | ✓ | 14.023ms | 1.3MB |
-| 47 | angle-difference-between-two-bearings-1 | ✓ | 2.768ms | 16.0KB |
-| 48 | angle-difference-between-two-bearings-2 | ✓ | 3.03ms | 16.0KB |
-| 49 | angles-geometric-normalization-and-conversion | ✓ | 3.77ms | 32.1KB |
-| 50 | animate-a-pendulum | ✓ | 15.182ms | 1.5MB |
+| 37 | aks-test-for-primes | ✓ | 1.829ms | 24.1KB |
+| 38 | algebraic-data-types | ✓ | 17.737ms | 3.5MB |
+| 39 | align-columns | ✓ | 2.809ms | 1.8MB |
+| 40 | aliquot-sequence-classifications | ✓ | 19.127ms | 3.3MB |
+| 41 | almkvist-giullera-formula-for-pi | ✓ | 48.44ms | 21.4MB |
+| 42 | almost-prime | ✓ | 2.175ms | 24.1KB |
+| 43 | amb | ✓ | 8.327ms | 1.0MB |
+| 44 | amicable-pairs | ✓ | 83.467ms | 1.1MB |
+| 45 | anagrams-deranged-anagrams | ✓ | 9.606ms | 1.2MB |
+| 46 | anagrams | ✓ | 8.832ms | 1.3MB |
+| 47 | angle-difference-between-two-bearings-1 | ✓ | 1.93ms | 16.0KB |
+| 48 | angle-difference-between-two-bearings-2 | ✓ | 1.915ms | 16.0KB |
+| 49 | angles-geometric-normalization-and-conversion | ✓ | 2.339ms | 32.1KB |
+| 50 | animate-a-pendulum | ✓ | 8.717ms | 1.5MB |
 | 51 | animation | ✓ | 12.806ms | 1.3MB |
 | 52 | anonymous-recursion-1 | ✓ | 2.55ms | 16.0KB |
 | 53 | anonymous-recursion-2 | ✓ | 3.023ms | 16.0KB |

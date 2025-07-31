@@ -3,20 +3,9 @@ dotnet run: exit status 134
 
   | A D F G V X
 ---------------
-A | J 1 F 9 4 S 
-D | W N R 8 V I 
-F | H E X M A C 
-G | O 6 5 Y P 3 
-V | 2 U B D G Z 
-X | 0 L Q 7 K T 
-
-The key is VJ1D6MN35
-
-Plaintext : ATTACKAT1200AM
-Unhandled exception. Microsoft.CSharp.RuntimeBinder.RuntimeBinderException: Operator '>' cannot be applied to operands of type 'string' and 'string'
-   at CallSite.Target(Closure, CallSite, Object, Object)
-   at System.Dynamic.UpdateDelegates.UpdateAndExecute2[T0,T1,TRet](CallSite site, T0 arg0, T1 arg1)
-   at Program.orderKey(String key) in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 143
-   at Program.encrypt(String[] polybius, String key, String plainText) in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 207
-   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 337
-   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden1171387361/001/Program.cs:line 347
+Unhandled exception. System.ArgumentOutOfRangeException: Index and length must refer to a location within the string. (Parameter 'length')
+   at System.String.ThrowSubstringArgumentOutOfRange(Int32 startIndex, Int32 length)
+   at System.String.Substring(Int32 startIndex, Int32 length)
+   at Program.createPolybius() in /tmp/TestCSTranspiler_Rosetta_Golden1638318740/001/Program.cs:line 101
+   at Program.main() in /tmp/TestCSTranspiler_Rosetta_Golden1638318740/001/Program.cs:line 335
+   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden1638318740/001/Program.cs:line 348
