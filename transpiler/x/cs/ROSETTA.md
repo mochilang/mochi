@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 466/491
-Last updated: 2025-07-31 10:06 +0700
+Last updated: 2025-07-31 10:42 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -56,56 +56,56 @@ Last updated: 2025-07-31 10:06 +0700
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 1.915ms | 16.0KB |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 2.339ms | 32.1KB |
 | 50 | animate-a-pendulum | ✓ | 8.717ms | 1.5MB |
-| 51 | animation | ✓ | 12.806ms | 1.3MB |
-| 52 | anonymous-recursion-1 | ✓ | 2.55ms | 16.0KB |
-| 53 | anonymous-recursion-2 | ✓ | 3.023ms | 16.0KB |
-| 54 | anonymous-recursion | ✓ | 2.733ms | 16.0KB |
-| 55 | anti-primes | ✓ | 42.424ms | 1.1MB |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 2.605ms | 16.0KB |
-| 57 | apply-a-callback-to-an-array-1 | ✓ | 2.726ms | 16.0KB |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 16.906ms | 2.2MB |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 2.9ms | 16.0KB |
-| 60 | approximate-equality | ✓ | 3.166ms | 16.0KB |
-| 61 | arbitrary-precision-integers-included- | ✓ | 10.623ms | 2.8MB |
-| 62 | archimedean-spiral | ✓ | 18.515ms | 11.4MB |
-| 63 | arena-storage-pool | ✓ | 17.442ms | 2.5MB |
-| 64 | arithmetic-complex | ✓ | 2.923ms | 16.0KB |
-| 65 | arithmetic-derivative | ✓ | 14.854ms | 1.9MB |
-| 66 | arithmetic-evaluation | ✓ | 14.258ms | 1.1MB |
-| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 3.518ms | 16.0KB |
-| 68 | arithmetic-geometric-mean | ✓ | 14.814ms | 1.6MB |
-| 69 | arithmetic-integer-1 | ✓ | 3.054ms | 16.0KB |
-| 70 | arithmetic-integer-2 | ✓ | 2.933ms | 16.0KB |
+| 51 | animation | ✓ | 14.947ms | 1.2MB |
+| 52 | anonymous-recursion-1 | ✓ | 2.736ms | 16.0KB |
+| 53 | anonymous-recursion-2 | ✓ | 2.931ms | 16.0KB |
+| 54 | anonymous-recursion | ✓ | 3.172ms | 16.0KB |
+| 55 | anti-primes | ✓ | 25.207ms | 1.1MB |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 3.189ms | 16.0KB |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 2.682ms | 16.0KB |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 17.832ms | 2.2MB |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 2.298ms | 16.0KB |
+| 60 | approximate-equality | ✓ | 2.983ms | 16.0KB |
+| 61 | arbitrary-precision-integers-included- | ✓ | 11.29ms | 2.8MB |
+| 62 | archimedean-spiral | ✓ | 22.595ms | 11.4MB |
+| 63 | arena-storage-pool | ✓ | 17.498ms | 2.4MB |
+| 64 | arithmetic-complex | ✓ | 2.958ms | 16.0KB |
+| 65 | arithmetic-derivative | ✓ | 14.267ms | 1.9MB |
+| 66 | arithmetic-evaluation | ✓ | 13.945ms | 1.1MB |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 3.154ms | 16.0KB |
+| 68 | arithmetic-geometric-mean | ✓ | 2.852ms | 16.0KB |
+| 69 | arithmetic-integer-1 | ✓ | 2.779ms | 16.0KB |
+| 70 | arithmetic-integer-2 | ✓ | 2.747ms | 16.0KB |
 | 71 | arithmetic-numbers |   |  |  |
-| 72 | arithmetic-rational | ✓ | 2.823ms | 16.0KB |
-| 73 | array-concatenation | ✓ | 3.471ms | 16.0KB |
-| 74 | array-length | ✓ | 2.724ms | 16.0KB |
-| 75 | arrays | ✓ | 4.92ms | 24.1KB |
-| 76 | ascending-primes | ✓ | 13.849ms | 1.1MB |
-| 77 | ascii-art-diagram-converter | ✓ | 2.778ms | 16.0KB |
-| 78 | assertions | ✓ | 2.383ms | 16.0KB |
-| 79 | associative-array-creation | ✓ | 3.191ms | 16.0KB |
-| 80 | associative-array-iteration | ✓ | 15.854ms | 2.3MB |
-| 81 | associative-array-merging | ✓ | 11.802ms | 1.1MB |
-| 82 | atomic-updates | ✓ | 2.968ms | 16.0KB |
-| 83 | attractive-numbers | ✓ | 2.697ms | 32.1KB |
-| 84 | average-loop-length | ✓ | 52.588ms | 11.7MB |
-| 85 | averages-arithmetic-mean | ✓ | 10.67ms | 2.6MB |
-| 86 | averages-mean-time-of-day | ✓ | 8.313ms | 2.5MB |
-| 87 | averages-median-1 | ✓ | 8.209ms | 2.4MB |
-| 88 | averages-median-2 | ✓ | 8.385ms | 2.5MB |
-| 89 | averages-median-3 | ✓ | 10.765ms | 2.6MB |
-| 90 | averages-mode | ✓ | 1.187ms | 16.0KB |
-| 91 | averages-pythagorean-means | ✓ | 7.904ms | 1.7MB |
-| 92 | averages-root-mean-square | ✓ | 1.616ms | 1.7MB |
-| 93 | averages-simple-moving-average | ✓ | 8.337ms | 2.1MB |
+| 72 | arithmetic-rational | ✓ | 2.536ms | 16.0KB |
+| 73 | array-concatenation | ✓ | 3.205ms | 16.0KB |
+| 74 | array-length | ✓ | 2.404ms | 16.0KB |
+| 75 | arrays | ✓ | 3.22ms | 24.1KB |
+| 76 | ascending-primes | ✓ | 13.936ms | 1.1MB |
+| 77 | ascii-art-diagram-converter | ✓ | 2.53ms | 16.0KB |
+| 78 | assertions | ✓ | 2.592ms | 16.0KB |
+| 79 | associative-array-creation | ✓ | 3.358ms | 16.0KB |
+| 80 | associative-array-iteration | ✓ | 18.079ms | 2.2MB |
+| 81 | associative-array-merging | ✓ | 13.083ms | 1.1MB |
+| 82 | atomic-updates | ✓ | 3.037ms | 16.0KB |
+| 83 | attractive-numbers | ✓ | 2.753ms | 32.1KB |
+| 84 | average-loop-length | ✓ | 47.065ms | 22.4MB |
+| 85 | averages-arithmetic-mean | ✓ | 18.407ms | 2.6MB |
+| 86 | averages-mean-time-of-day | ✓ | 18.838ms | 2.5MB |
+| 87 | averages-median-1 | ✓ | 16.824ms | 2.4MB |
+| 88 | averages-median-2 | ✓ | 17.448ms | 2.5MB |
+| 89 | averages-median-3 | ✓ | 19.204ms | 2.6MB |
+| 90 | averages-mode | ✓ | 3.169ms | 24.1KB |
+| 91 | averages-pythagorean-means | ✓ | 14.677ms | 1.6MB |
+| 92 | averages-root-mean-square | ✓ | 14.922ms | 1.7MB |
+| 93 | averages-simple-moving-average | ✓ | 18.439ms | 2.1MB |
 | 94 | avl-tree |   |  |  |
 | 95 | b-zier-curves-intersections |   |  |  |
-| 96 | babbage-problem | ✓ | 1.154ms | 16.0KB |
-| 97 | babylonian-spiral | ✓ |  |  |
-| 98 | balanced-brackets | ✓ | 5.441ms | 1.1MB |
-| 99 | balanced-ternary | ✓ | 7.368ms | 1.6MB |
-| 100 | barnsley-fern | ✓ | 4.064ms | 9.9MB |
+| 96 | babbage-problem | ✓ | 2.496ms | 16.0KB |
+| 97 | babylonian-spiral | ✓ | 17.288ms | 2.5MB |
+| 98 | balanced-brackets | ✓ | 13.744ms | 1.1MB |
+| 99 | balanced-ternary | ✓ | 13.929ms | 1.2MB |
+| 100 | barnsley-fern | ✓ | 4.221ms | 3.4MB |
 | 101 | base64-decode-data | ✓ |  |  |
 | 102 | bell-numbers | ✓ |  |  |
 | 103 | benfords-law | ✓ | 8.442ms | 6.2MB |
