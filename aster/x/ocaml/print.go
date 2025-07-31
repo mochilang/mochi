@@ -213,6 +213,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(strings.Repeat("  ", indent))
 			b.WriteString("done")
 		}
+	case "while_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("while ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" do\n")
+			writeExpr(b, n.Children[1], indent+1)
+			b.WriteByte('\n')
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("done")
+		}
 	case "do_clause":
 		for i, c := range n.Children {
 			if i > 0 {
