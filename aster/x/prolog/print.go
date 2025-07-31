@@ -1,3 +1,5 @@
+//go:build slow
+
 package prolog
 
 import (
@@ -16,7 +18,7 @@ func Print(p *Program) (string, error) {
 		if c.Kind != "clause" {
 			continue
 		}
-		writeClause(&b, c)
+		writeClause(&b, c, 0)
 	}
 	out := b.String()
 	if len(out) > 0 && out[len(out)-1] != '\n' {
@@ -25,7 +27,7 @@ func Print(p *Program) (string, error) {
 	return out, nil
 }
 
-func writeClause(b *strings.Builder, c *Node) {
+func writeClause(b *strings.Builder, c *Node, indent int) {
 	if len(c.Children) == 0 {
 		return
 	}
@@ -37,16 +39,18 @@ func writeClause(b *strings.Builder, c *Node) {
 	// directive
 	if head.Kind == ":-" && len(head.Children) == 1 {
 		b.WriteString(":- ")
-		writeTerm(b, head.Children[0])
+		writeTerm(b, head.Children[0], indent)
 		b.WriteString(".\n")
 		return
 	}
 	writeHead(b, head)
 	if body != nil && !(body.Kind == "bool" && body.Text == "true") {
-		b.WriteString(" :- ")
-		writeTerm(b, body)
+		b.WriteString(" :-\n")
+		writeBody(b, body, indent+1)
+	} else {
+		b.WriteString(".")
 	}
-	b.WriteString(".\n")
+	b.WriteString("\n")
 }
 
 func writeHead(b *strings.Builder, n *Node) {
@@ -63,14 +67,33 @@ func writeHead(b *strings.Builder, n *Node) {
 			if c.Kind == "atom" && len(c.Text) > 0 && unicode.IsUpper(rune(c.Text[0])) {
 				b.WriteString(c.Text)
 			} else {
-				writeTerm(b, c)
+				writeTerm(b, c, 0)
 			}
 		}
 		b.WriteByte(')')
 	}
 }
 
-func writeTerm(b *strings.Builder, n *Node) {
+func writeBody(b *strings.Builder, n *Node, indent int) {
+	ind := strings.Repeat("    ", indent)
+	switch n.Kind {
+	case ",":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(",\n")
+				b.WriteString(ind)
+			} else {
+				b.WriteString(ind)
+			}
+			writeBody(b, c, indent)
+		}
+	default:
+		b.WriteString(ind)
+		writeTerm(b, n, indent)
+	}
+}
+
+func writeTerm(b *strings.Builder, n *Node, indent int) {
 	switch n.Kind {
 	case "var", "number", "bool":
 		b.WriteString(n.Text)
@@ -82,7 +105,7 @@ func writeTerm(b *strings.Builder, n *Node) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c)
+			writeTerm(b, c, indent)
 		}
 		b.WriteByte(']')
 	case "{}":
@@ -91,45 +114,45 @@ func writeTerm(b *strings.Builder, n *Node) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c)
+			writeTerm(b, c, indent)
 		}
 		b.WriteByte('}')
 	case ":":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0])
+			writeTerm(b, n.Children[0], indent)
 			b.WriteString(": ")
-			writeTerm(b, n.Children[1])
+			writeTerm(b, n.Children[1], indent)
 		} else {
-			writeFunctor(b, n)
+			writeFunctor(b, n, indent)
 		}
 	case ",":
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c)
+			writeTerm(b, c, indent)
 		}
 	case ";":
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString("; ")
 			}
-			writeTerm(b, c)
+			writeTerm(b, c, indent)
 		}
 	case "-\u003e":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0])
+			writeTerm(b, n.Children[0], indent)
 			b.WriteString(" -> ")
-			writeTerm(b, n.Children[1])
+			writeTerm(b, n.Children[1], indent)
 		} else {
-			writeFunctor(b, n)
+			writeFunctor(b, n, indent)
 		}
 	default:
-		writeFunctor(b, n)
+		writeFunctor(b, n, indent)
 	}
 }
 
-func writeFunctor(b *strings.Builder, n *Node) {
+func writeFunctor(b *strings.Builder, n *Node, indent int) {
 	b.WriteString(n.Kind)
 	if len(n.Children) > 0 {
 		b.WriteByte('(')
@@ -137,7 +160,7 @@ func writeFunctor(b *strings.Builder, n *Node) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c)
+			writeTerm(b, c, indent)
 		}
 		b.WriteByte(')')
 	}
