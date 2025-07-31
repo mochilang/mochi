@@ -31,18 +31,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		switch base {
-		case "append_builtin.erl", "avg_builtin.erl", "basic_compare.erl", "binary_precedence.erl", "bool_chain.erl":
-			selected = append(selected, f)
-		}
-		if len(selected) == 5 {
-			break
-		}
+	if len(files) > 10 {
+		files = files[:10]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".erl")
@@ -86,8 +77,10 @@ func TestPrint_Golden(t *testing.T) {
 			}
 			cmd := exec.Command("escript", outPath)
 			cmd.Dir = filepath.Dir(outPath)
+			cmd.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 			cmd2 := exec.Command("escript", src)
 			cmd2.Dir = filepath.Dir(src)
+			cmd2.Env = append(os.Environ(), "MOCHI_NOW_SEED=1")
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Fatalf("run printed: %v\n%s", err, got)
