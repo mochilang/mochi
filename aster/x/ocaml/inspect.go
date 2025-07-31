@@ -1,6 +1,8 @@
 package ocaml
 
 import (
+	"encoding/json"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 	tsocaml "github.com/tree-sitter/tree-sitter-ocaml/bindings/go"
 )
@@ -22,4 +24,10 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 		return &Program{}, nil
 	}
 	return &Program{File: CompilationUnit{Node: *root}}, nil
+}
+
+// MarshalJSON implements json.Marshaler for Program ensuring stable field order.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
 }
