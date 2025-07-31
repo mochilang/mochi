@@ -17,7 +17,9 @@ type Program struct {
 }
 
 // Inspect parses the given F# source code using tree-sitter. Positional fields
-// are omitted unless IncludePositions is set to true.
+// are omitted unless IncludePositions is set to true. Operator nodes such as
+// infix_op and prefix_op are retained so the printer can reconstruct
+// expressions.
 func Inspect(src string) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(fsharp.LanguageFSharp()))

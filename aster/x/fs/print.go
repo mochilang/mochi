@@ -123,9 +123,20 @@ func writeExpr(b *bytes.Buffer, n *Node) {
 		}
 		b.WriteByte(')')
 	case "infix_expression":
-		if len(n.Children) == 2 {
+		if len(n.Children) == 3 && n.Children[1].Kind == "infix_op" {
+			writeExpr(b, n.Children[0])
+			b.WriteByte(' ')
+			b.WriteString(strings.TrimSpace(n.Children[1].Text))
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[2])
+		} else if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0])
 			b.WriteString(" + ")
+			writeExpr(b, n.Children[1])
+		}
+	case "prefixed_expression":
+		if len(n.Children) == 2 && n.Children[0].Kind == "prefix_op" {
+			b.WriteString(strings.TrimSpace(n.Children[0].Text))
 			writeExpr(b, n.Children[1])
 		}
 	default:
