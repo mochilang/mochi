@@ -31,6 +31,9 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 }
 
 // Inspect parses Erlang source code using tree-sitter and returns a Program.
+// Inspect parses Erlang source code using tree-sitter and returns a Program.
+// The resulting AST includes all syntactic nodes so that it can be converted
+// back to source code using Print.
 func Inspect(src string) (*Program, error) {
-	return InspectWithOption(src, Option{})
+	return InspectWithOption(src, Option{AllNodes: true, Positions: true})
 }

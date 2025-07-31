@@ -62,9 +62,13 @@ type (
 )
 
 // Option controls how the AST is generated.
+// Option controls how the AST is generated.
 type Option struct {
 	// Positions includes line/column information when true.
 	Positions bool
+	// AllNodes keeps leaf nodes that normally would be discarded. This can
+	// be useful when round-tripping the AST back to source code.
+	AllNodes bool
 }
 
 // convert converts a tree-sitter Node into our Node representation.
@@ -82,7 +86,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
+	if opt.AllNodes {
+		node.Text = n.Utf8Text(src)
+	} else if n.NamedChildCount() == 0 {
 		if isValueNode(n.Kind()) {
 			node.Text = n.Utf8Text(src)
 		} else {
@@ -100,7 +106,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
+	if len(node.Children) == 0 && node.Text == "" && !opt.AllNodes {
 		return nil
 	}
 	return node
