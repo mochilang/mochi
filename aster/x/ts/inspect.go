@@ -22,5 +22,5 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	p.SetLanguage(sitter.NewLanguage(tstypescript.LanguageTypescript()))
 	tree := p.Parse([]byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), opt)
-	return &Program{Root: (*ProgramNode)(root)}, nil
+	return &Program{Root: (*ProgramNode)(root), Source: src}, nil
 }

@@ -67,7 +67,8 @@ type (
 
 // Program is the root of a parsed TypeScript source file.
 type Program struct {
-	Root *ProgramNode `json:"root"`
+	Root   *ProgramNode `json:"root"`
+	Source string       `json:"-"`
 }
 
 // convert transforms a tree-sitter node into a *Node. Non-value leaves are
@@ -77,6 +78,21 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		return nil
 	}
 	node := &Node{Kind: n.Kind()}
+
+	// Capture operator text and declaration kind from special fields so the
+	// printer can faithfully reconstruct the source code without relying on
+	// the original text.
+	switch n.Kind() {
+	case "binary_expression", "assignment_expression", "unary_expression", "update_expression":
+		if op := n.ChildByFieldName("operator"); op != nil {
+			node.Text = op.Utf8Text(src)
+		}
+	case "lexical_declaration":
+		if kw := n.ChildByFieldName("kind"); kw != nil {
+			node.Text = kw.Utf8Text(src)
+		}
+	}
+
 	if opt.Positions {
 		start := n.StartPosition()
 		end := n.EndPosition()
