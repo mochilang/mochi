@@ -113,13 +113,19 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	default:
 		if n.NamedChildCount() == 0 {
 			if !isValueNode(n.Kind()) {
-				return nil
+				switch n.Kind() {
+				case "block", "break_statement":
+					// keep empty statement nodes
+				default:
+					return nil
+				}
+			} else {
+				text := n.Utf8Text(src)
+				if strings.TrimSpace(text) == "" {
+					return nil
+				}
+				node.Text = text
 			}
-			text := n.Utf8Text(src)
-			if strings.TrimSpace(text) == "" {
-				return nil
-			}
-			node.Text = text
 		}
 	}
 
@@ -133,7 +139,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
+	if len(node.Children) == 0 && node.Text == "" && node.Kind != "block" && node.Kind != "break_statement" {
 		return nil
 	}
 	return node

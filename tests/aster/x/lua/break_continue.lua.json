@@ -1,0 +1,556 @@
+{
+  "root": {
+    "kind": "chunk",
+    "start": 1,
+    "end": 14,
+    "children": [
+      {
+        "kind": "assignment_statement",
+        "start": 2,
+        "end": 2,
+        "endCol": 37,
+        "children": [
+          {
+            "kind": "variable_list",
+            "start": 2,
+            "end": 2,
+            "endCol": 7,
+            "children": [
+              {
+                "kind": "identifier",
+                "text": "numbers",
+                "start": 2,
+                "end": 2,
+                "endCol": 7
+              }
+            ]
+          },
+          {
+            "kind": "expression_list",
+            "start": 2,
+            "startCol": 10,
+            "end": 2,
+            "endCol": 37,
+            "children": [
+              {
+                "kind": "table_constructor",
+                "start": 2,
+                "startCol": 10,
+                "end": 2,
+                "endCol": 37,
+                "children": [
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 11,
+                    "end": 2,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "1",
+                        "start": 2,
+                        "startCol": 11,
+                        "end": 2,
+                        "endCol": 12
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 14,
+                    "end": 2,
+                    "endCol": 15,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "2",
+                        "start": 2,
+                        "startCol": 14,
+                        "end": 2,
+                        "endCol": 15
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 17,
+                    "end": 2,
+                    "endCol": 18,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "3",
+                        "start": 2,
+                        "startCol": 17,
+                        "end": 2,
+                        "endCol": 18
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 20,
+                    "end": 2,
+                    "endCol": 21,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "4",
+                        "start": 2,
+                        "startCol": 20,
+                        "end": 2,
+                        "endCol": 21
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 23,
+                    "end": 2,
+                    "endCol": 24,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "5",
+                        "start": 2,
+                        "startCol": 23,
+                        "end": 2,
+                        "endCol": 24
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 26,
+                    "end": 2,
+                    "endCol": 27,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "6",
+                        "start": 2,
+                        "startCol": 26,
+                        "end": 2,
+                        "endCol": 27
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 29,
+                    "end": 2,
+                    "endCol": 30,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "7",
+                        "start": 2,
+                        "startCol": 29,
+                        "end": 2,
+                        "endCol": 30
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 32,
+                    "end": 2,
+                    "endCol": 33,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "8",
+                        "start": 2,
+                        "startCol": 32,
+                        "end": 2,
+                        "endCol": 33
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "start": 2,
+                    "startCol": 35,
+                    "end": 2,
+                    "endCol": 36,
+                    "children": [
+                      {
+                        "kind": "number",
+                        "text": "9",
+                        "start": 2,
+                        "startCol": 35,
+                        "end": 2,
+                        "endCol": 36
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "for_statement",
+        "start": 4,
+        "end": 13,
+        "endCol": 3,
+        "children": [
+          {
+            "kind": "for_generic_clause",
+            "start": 4,
+            "startCol": 4,
+            "end": 4,
+            "endCol": 27,
+            "children": [
+              {
+                "kind": "variable_list",
+                "start": 4,
+                "startCol": 4,
+                "end": 4,
+                "endCol": 8,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "_",
+                    "start": 4,
+                    "startCol": 4,
+                    "end": 4,
+                    "endCol": 5
+                  },
+                  {
+                    "kind": "identifier",
+                    "text": "n",
+                    "start": 4,
+                    "startCol": 7,
+                    "end": 4,
+                    "endCol": 8
+                  }
+                ]
+              },
+              {
+                "kind": "expression_list",
+                "start": 4,
+                "startCol": 12,
+                "end": 4,
+                "endCol": 27,
+                "children": [
+                  {
+                    "kind": "function_call",
+                    "start": 4,
+                    "startCol": 12,
+                    "end": 4,
+                    "endCol": 27,
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "ipairs",
+                        "start": 4,
+                        "startCol": 12,
+                        "end": 4,
+                        "endCol": 18
+                      },
+                      {
+                        "kind": "arguments",
+                        "start": 4,
+                        "startCol": 18,
+                        "end": 4,
+                        "endCol": 27,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "numbers",
+                            "start": 4,
+                            "startCol": 19,
+                            "end": 4,
+                            "endCol": 26
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "start": 5,
+            "startCol": 2,
+            "end": 12,
+            "endCol": 14,
+            "children": [
+              {
+                "kind": "if_statement",
+                "start": 5,
+                "startCol": 2,
+                "end": 7,
+                "endCol": 5,
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "start": 5,
+                    "startCol": 5,
+                    "end": 5,
+                    "endCol": 19,
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "==",
+                        "start": 5,
+                        "startCol": 6,
+                        "end": 5,
+                        "endCol": 18,
+                        "children": [
+                          {
+                            "kind": "parenthesized_expression",
+                            "start": 5,
+                            "startCol": 6,
+                            "end": 5,
+                            "endCol": 13,
+                            "children": [
+                              {
+                                "kind": "binary_expression",
+                                "text": "%",
+                                "start": 5,
+                                "startCol": 7,
+                                "end": 5,
+                                "endCol": 12,
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "n",
+                                    "start": 5,
+                                    "startCol": 7,
+                                    "end": 5,
+                                    "endCol": 8
+                                  },
+                                  {
+                                    "kind": "number",
+                                    "text": "2",
+                                    "start": 5,
+                                    "startCol": 11,
+                                    "end": 5,
+                                    "endCol": 12
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "number",
+                            "text": "0",
+                            "start": 5,
+                            "startCol": 17,
+                            "end": 5,
+                            "endCol": 18
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 6,
+                    "startCol": 4,
+                    "end": 6,
+                    "endCol": 17,
+                    "children": [
+                      {
+                        "kind": "goto_statement",
+                        "start": 6,
+                        "startCol": 4,
+                        "end": 6,
+                        "endCol": 17,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "__cont_1",
+                            "start": 6,
+                            "startCol": 9,
+                            "end": 6,
+                            "endCol": 17
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "if_statement",
+                "start": 8,
+                "startCol": 2,
+                "end": 10,
+                "endCol": 5,
+                "children": [
+                  {
+                    "kind": "parenthesized_expression",
+                    "start": 8,
+                    "startCol": 5,
+                    "end": 8,
+                    "endCol": 12,
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "\u003e",
+                        "start": 8,
+                        "startCol": 6,
+                        "end": 8,
+                        "endCol": 11,
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "n",
+                            "start": 8,
+                            "startCol": 6,
+                            "end": 8,
+                            "endCol": 7
+                          },
+                          {
+                            "kind": "number",
+                            "text": "7",
+                            "start": 8,
+                            "startCol": 10,
+                            "end": 8,
+                            "endCol": 11
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "block",
+                    "start": 9,
+                    "startCol": 4,
+                    "end": 9,
+                    "endCol": 9,
+                    "children": [
+                      {
+                        "kind": "break_statement",
+                        "start": 9,
+                        "startCol": 4,
+                        "end": 9,
+                        "endCol": 9
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "function_call",
+                "start": 11,
+                "startCol": 2,
+                "end": 11,
+                "endCol": 43,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "print",
+                    "start": 11,
+                    "startCol": 2,
+                    "end": 11,
+                    "endCol": 7
+                  },
+                  {
+                    "kind": "arguments",
+                    "start": 11,
+                    "startCol": 7,
+                    "end": 11,
+                    "endCol": 43,
+                    "children": [
+                      {
+                        "kind": "function_call",
+                        "start": 11,
+                        "startCol": 8,
+                        "end": 11,
+                        "endCol": 42,
+                        "children": [
+                          {
+                            "kind": "dot_index_expression",
+                            "start": 11,
+                            "startCol": 8,
+                            "end": 11,
+                            "endCol": 21,
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "string",
+                                "start": 11,
+                                "startCol": 8,
+                                "end": 11,
+                                "endCol": 14
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "format",
+                                "start": 11,
+                                "startCol": 15,
+                                "end": 11,
+                                "endCol": 21
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "arguments",
+                            "start": 11,
+                            "startCol": 21,
+                            "end": 11,
+                            "endCol": 42,
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "\"odd number: %s\"",
+                                "start": 11,
+                                "startCol": 22,
+                                "end": 11,
+                                "endCol": 38
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "n",
+                                "start": 11,
+                                "startCol": 40,
+                                "end": 11,
+                                "endCol": 41
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "label_statement",
+                "start": 12,
+                "startCol": 2,
+                "end": 12,
+                "endCol": 14,
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "__cont_1",
+                    "start": 12,
+                    "startCol": 4,
+                    "end": 12,
+                    "endCol": 12
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
