@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 98/493
-Last updated: 2025-07-31 00:26 +0700
+Completed: 99/491
+Last updated: 2025-07-31 01:10 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -109,7 +109,7 @@ Last updated: 2025-07-31 00:26 +0700
 | 102 | bell-numbers | ✓ | 62.855ms | 20.7 MB |
 | 103 | benfords-law | ✓ |  |  |
 | 104 | bernoulli-numbers |   |  |  |
-| 105 | best-shuffle |   |  |  |
+| 105 | best-shuffle | ✓ |  |  |
 | 106 | bifid-cipher | ✓ |  |  |
 | 107 | bin-given-limits | ✓ |  |  |
 | 108 | binary-digits | ✓ | 40.119ms | 18.8 MB |
@@ -129,7 +129,7 @@ Last updated: 2025-07-31 00:26 +0700
 | 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.140733s | 21.7 MB |
 | 123 | bitmap-read-a-ppm-file | ✓ |  |  |
 | 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 125 | bitmap-write-a-ppm-file |   |  |  |
+| 125 | bitmap-write-a-ppm-file | ✓ | 46.038ms | 22.2 MB |
 | 126 | bitmap |   |  |  |
 | 127 | bitwise-io-1 |   |  |  |
 | 128 | bitwise-io-2 |   |  |  |
