@@ -83,16 +83,22 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if !isValueNode(n.Kind()) {
-			return nil
-		}
-		text := n.Utf8Text(src)
-		if strings.TrimSpace(text) == "" {
-			return nil
-		}
-		node.Text = text
-	}
+       // Tree-sitter represents Lua string literals with an intermediate
+       // `string` node that contains a `string_content` child. The content node
+       // is not useful for our purposes, but if we only looked at named leaf
+       // nodes we would drop the actual literal value. Handle this case by
+       // capturing the full source text of the string node itself even though it
+       // technically has a child.
+       if n.NamedChildCount() == 0 || n.Kind() == "string" {
+               if !isValueNode(n.Kind()) && n.Kind() != "string" {
+                       return nil
+               }
+               text := n.Utf8Text(src)
+               if strings.TrimSpace(text) == "" {
+                       return nil
+               }
+               node.Text = text
+       }
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
@@ -114,10 +120,10 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 func convertProgram(root *sitter.Node, src []byte, opt Option) *Program {
 	n := convert(root, src, opt)
 	if n == nil {
-		return &Program{}
+		return &Program{Source: string(src)}
 	}
 	pn := ProgramNode(*n)
-	return &Program{Root: &pn}
+	return &Program{Root: &pn, Source: string(src)}
 }
 
 // isValueNode reports whether the given node kind should be kept when it is a
