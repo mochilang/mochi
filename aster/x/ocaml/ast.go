@@ -103,6 +103,16 @@ func convert(n *sitter.Node, src []byte, pos bool) *Node {
 		node.EndCol = int(ep.Column)
 	}
 
+	if n.ChildCount() > n.NamedChildCount() {
+		switch node.Kind {
+		case "infix_expression", "cons_expression", "cons_pattern":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				node.Text = op.Utf8Text(src)
+			}
+		}
+	}
+
 	if n.NamedChildCount() == 0 {
 		if isValueNode(n.Kind()) {
 			node.Text = n.Utf8Text(src)

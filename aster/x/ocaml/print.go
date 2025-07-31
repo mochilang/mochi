@@ -189,7 +189,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[len(n.Children)-1], indent)
 		}
 	case "infix_expression":
-		if len(n.Children) == 3 {
+		switch len(n.Children) {
+		case 2:
+			writeExpr(b, n.Children[0], indent)
+			op := strings.TrimSpace(n.Text)
+			if op != "" {
+				b.WriteByte(' ')
+				b.WriteString(op)
+				b.WriteByte(' ')
+			}
+			writeExpr(b, n.Children[1], indent)
+		case 3:
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
