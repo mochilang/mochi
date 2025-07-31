@@ -5,7 +5,7 @@ class Program {
     static int b = (2 + 2);
     static void Main() {
         Console.WriteLine(a);
-        Console.WriteLine(((a == 7)"true""false"));
-        Console.WriteLine(((b < 5)"true""false"));
+        Console.WriteLine(((a == 7) ? "true" : "false"));
+        Console.WriteLine(((b < 5) ? "true" : "false"));
     }
 }

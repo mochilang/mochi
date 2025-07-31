@@ -37,8 +37,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
+	if len(files) > 10 {
+		files = files[:10]
 	}
 
 	for _, src := range files {
@@ -81,7 +81,7 @@ func TestPrint_Golden(t *testing.T) {
 			}
 			tmp := t.TempDir()
 			proj := filepath.Join(tmp, "app.csproj")
-			csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup></Project>`
+			csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><NoWarn>CS0649</NoWarn></PropertyGroup></Project>`
 			if err := os.WriteFile(proj, []byte(csproj), 0644); err != nil {
 				t.Fatal(err)
 			}
@@ -89,6 +89,7 @@ func TestPrint_Golden(t *testing.T) {
 				t.Fatal(err)
 			}
 			cmd := exec.Command("dotnet", "run", "--project", proj)
+			cmd.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
 			got, err := cmd.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, got)
@@ -98,7 +99,9 @@ func TestPrint_Golden(t *testing.T) {
 			proj2 := filepath.Join(tmp2, "orig.csproj")
 			_ = os.WriteFile(proj2, []byte(csproj), 0644)
 			_ = os.WriteFile(filepath.Join(tmp2, "Program.cs"), data, 0644)
-			want, err := exec.Command("dotnet", "run", "--project", proj2).CombinedOutput()
+			cmd2 := exec.Command("dotnet", "run", "--project", proj2)
+			cmd2.Env = append(os.Environ(), "DOTNET_NOLOGO=1", "DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1")
+			want, err := cmd2.CombinedOutput()
 			if err != nil {
 				t.Skipf("dotnet run error: %v\n%s", err, want)
 				return

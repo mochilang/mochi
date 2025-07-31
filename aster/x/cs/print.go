@@ -238,6 +238,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, n.Children[0], indentLevel)
 		}
 		b.WriteString(";\n")
+	case "break_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("continue;\n")
 	case "for_statement":
 		writeForStatement(b, n, indentLevel)
 	case "foreach_statement":
@@ -304,6 +310,22 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	switch n.Kind {
 	case "identifier", "integer_literal", "real_literal", "boolean_literal", "implicit_type", "predefined_type", "modifier":
 		b.WriteString(n.Text)
+	case "generic_name":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		}
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "type_argument_list":
+		b.WriteByte('<')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indentLevel)
+		}
+		b.WriteByte('>')
 	case "string_literal":
 		b.WriteByte('"')
 		for _, c := range n.Children {
@@ -379,6 +401,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, c, indentLevel)
 		}
 		b.WriteByte(')')
+	case "cast_expression":
+		if len(n.Children) == 2 {
+			b.WriteByte('(')
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteByte(')')
+			writeExpr(b, n.Children[1], indentLevel)
+		}
 	case "binary_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indentLevel)
@@ -402,6 +431,14 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			b.WriteString(op)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indentLevel)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indentLevel)
 		}
 	case "prefix_unary_expression":
 		op := n.Text
@@ -448,6 +485,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 				continue
 			}
 			writeExpr(b, c, indentLevel)
+		}
+	case "lambda_expression":
+		if len(n.Children) >= 1 {
+			writeParameterList(b, n.Children[0])
+		} else {
+			b.WriteString("()")
+		}
+		b.WriteString(" => ")
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[1], indentLevel)
 		}
 	case "interpolated_string_expression":
 		b.WriteString("$\"")

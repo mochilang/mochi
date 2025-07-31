@@ -104,6 +104,8 @@ func isValueNode(kind string) bool {
 		"string_literal_content",
 		"implicit_type", "predefined_type", "modifier", "comment":
 		return true
+	case "break_statement", "continue_statement":
+		return true
 	default:
 		return false
 	}
