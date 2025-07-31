@@ -14,6 +14,7 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] cast_string_to_int.ts
 - [x] cast_struct.ts
 - [x] closure.ts
+- [x] break_continue.ts
 
-Completed 8/8 on 2025-07-31 15:06 GMT+7.
+Completed 10/10 on 2025-07-31 15:23 GMT+7.
 

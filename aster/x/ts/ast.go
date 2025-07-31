@@ -104,13 +104,15 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if isValueNode(node.Kind) {
-			node.Text = n.Utf8Text(src)
-		} else {
-			return nil
-		}
-	}
+        if n.NamedChildCount() == 0 {
+                if isValueNode(node.Kind) {
+                        node.Text = n.Utf8Text(src)
+                } else if keepLeaf(node.Kind) {
+                        // keep empty leaf nodes like break/continue statements
+                } else {
+                        return nil
+                }
+        }
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
@@ -119,19 +121,31 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		}
 	}
 
-	if len(node.Children) == 0 && node.Text == "" {
-		return nil
-	}
+        if len(node.Children) == 0 && node.Text == "" && !keepLeaf(node.Kind) {
+                return nil
+        }
 
 	return node
 }
 
 // isValueNode reports whether a node type represents a value that should be kept.
 func isValueNode(kind string) bool {
-	switch kind {
-	case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "predefined_type", "comment":
-		return true
-	default:
-		return false
-	}
+        switch kind {
+        case "identifier", "property_identifier", "type_identifier", "number", "string_fragment", "predefined_type", "comment":
+                return true
+        default:
+                return false
+        }
+}
+
+// keepLeaf reports whether a leaf node with no children should still be
+// retained in the AST so that the printer can reconstruct statements that do
+// not carry textual payload, like `break` or `continue`.
+func keepLeaf(kind string) bool {
+        switch kind {
+        case "break_statement", "continue_statement":
+                return true
+        default:
+                return false
+        }
 }
