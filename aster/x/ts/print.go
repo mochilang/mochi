@@ -125,22 +125,37 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 				writeStmt(b, body, indent+1)
 			}
 		}
-	case "if_statement":
-		if len(n.Children) >= 2 {
-			b.WriteString(ind)
-			b.WriteString("if (")
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(")")
-			body := n.Children[1]
-			if body.Kind == "statement_block" {
-				b.WriteByte(' ')
-				writeBlock(b, body, indent)
-				b.WriteByte('\n')
-			} else {
-				b.WriteByte('\n')
-				writeStmt(b, body, indent+1)
-			}
-		}
+        case "if_statement":
+                if len(n.Children) >= 2 {
+                        b.WriteString(ind)
+                        b.WriteString("if (")
+                        writeExpr(b, n.Children[0], indent)
+                        b.WriteString(")")
+                        body := n.Children[1]
+                        if body.Kind == "statement_block" {
+                                b.WriteByte(' ')
+                                writeBlock(b, body, indent)
+                                b.WriteByte('\n')
+                        } else {
+                                b.WriteByte('\n')
+                                writeStmt(b, body, indent+1)
+                        }
+                        for _, c := range n.Children[2:] {
+                                if c.Kind != "else_clause" || len(c.Children) == 0 {
+                                        continue
+                                }
+                                b.WriteString(ind)
+                                b.WriteString("else ")
+                                child := c.Children[0]
+                                if child.Kind == "statement_block" {
+                                        writeBlock(b, child, indent)
+                                        b.WriteByte('\n')
+                                } else {
+                                        b.WriteByte('\n')
+                                        writeStmt(b, child, indent+1)
+                                }
+                        }
+                }
 	case "break_statement":
 		b.WriteString(ind)
 		b.WriteString("break\n")
