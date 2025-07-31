@@ -191,6 +191,18 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 		_, err := io.WriteString(w, ").toList()")
 		return err
 	}
+	if elem == "int" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := expr.emit(w); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, " as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
+			return err
+		}
+		return nil
+	}
 	if _, err := io.WriteString(w, "List<"+elem+">.from("); err != nil {
 		return err
 	}
@@ -562,7 +574,8 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		return err
 	}
 
-	if targetType == "BigInt" && inferType(s.Value) == "int" {
+	valType := inferType(s.Value)
+	if targetType == "BigInt" && valType == "int" {
 		if lit, ok := s.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
 			return err
@@ -575,6 +588,19 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		}
 		_, err := io.WriteString(w, ")")
 		return err
+	}
+	if targetType == "int" && valType == "BigInt" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
+	if strings.HasPrefix(targetType, "List<") && valType != targetType {
+		return emitListConversion(w, s.Value, targetType)
 	}
 	baseType := strings.TrimSuffix(targetType, "?")
 	if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(baseType, "List<") {
@@ -640,7 +666,8 @@ func (s *LetStmt) emit(w io.Writer) error {
 			return err
 		}
 	}
-	if typ == "BigInt" && inferType(s.Value) == "int" {
+	valType := inferType(s.Value)
+	if typ == "BigInt" && valType == "int" {
 		if lit, ok := s.Value.(*IntLit); ok {
 			_, err := fmt.Fprintf(w, "BigInt.from(%d)", lit.Value)
 			return err
@@ -652,6 +679,16 @@ func (s *LetStmt) emit(w io.Writer) error {
 			return err
 		}
 		_, err := io.WriteString(w, ")")
+		return err
+	}
+	if typ == "int" && valType == "BigInt" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
 		return err
 	}
 	return s.Value.emit(w)
@@ -671,7 +708,7 @@ func (s *ReturnStmt) emit(w io.Writer) error {
 			return err
 		}
 		valType := inferType(s.Value)
-		if currentRetType == "int" && valType == "num" {
+		if currentRetType == "int" && (valType == "num" || valType == "BigInt") {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -1295,12 +1332,41 @@ func (c *CallExpr) emit(w io.Writer) error {
 			sel.Field = "padLeft"
 		}
 	}
-	if n, ok := c.Func.(*Name); ok && n.Name == "keys" && len(c.Args) == 1 {
-		if strings.HasPrefix(inferType(c.Args[0]), "Map<") {
+	if n, ok := c.Func.(*Name); ok {
+		if n.Name == "keys" && len(c.Args) == 1 {
+			if strings.HasPrefix(inferType(c.Args[0]), "Map<") {
+				if err := c.Args[0].emit(w); err != nil {
+					return err
+				}
+				_, err := io.WriteString(w, ".keys")
+				return err
+			}
+		}
+		if n.Name == "contains" && len(c.Args) == 2 {
+			typ := inferType(c.Args[0])
+			if strings.HasPrefix(typ, "Map<") {
+				if err := c.Args[0].emit(w); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ".containsKey("); err != nil {
+					return err
+				}
+				if err := c.Args[1].emit(w); err != nil {
+					return err
+				}
+				_, err := io.WriteString(w, ")")
+				return err
+			}
 			if err := c.Args[0].emit(w); err != nil {
 				return err
 			}
-			_, err := io.WriteString(w, ".keys")
+			if _, err := io.WriteString(w, ".contains("); err != nil {
+				return err
+			}
+			if err := c.Args[1].emit(w); err != nil {
+				return err
+			}
+			_, err := io.WriteString(w, ")")
 			return err
 		}
 	}

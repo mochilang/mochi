@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 346/491
+Compiled and ran: 354/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -363,17 +363,17 @@ Compiled and ran: 346/491
 | 354 | environment-variables-1 | ✓ | 5.584ms | 2.4 MB |
 | 355 | environment-variables-2 | ✓ | 7.878ms | 1.7 MB |
 | 356 | equal-prime-and-composite-sums | ✓ | 28.781681s | 11.1 MB |
-| 357 | equilibrium-index |   |  |  |
+| 357 | equilibrium-index | ✓ | 555.676ms | 10.2 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 41.151ms | 18.2 MB |
+| 360 | esthetic-numbers | ✓ | 36.984999s | 13.3 MB |
+| 361 | ethiopian-multiplication | ✓ | 13.46ms | 10.7 MB |
 | 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
+| 363 | euler-method | ✓ | 20.305ms | 10.0 MB |
+| 364 | eulers-constant-0.5772... | ✓ | 24.712ms | 7.7 MB |
+| 365 | eulers-identity | ✓ | 8.163ms | 3.5 MB |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
+| 367 | evaluate-binomial-coefficients | ✓ | 23.023ms | 8.4 MB |
 | 368 | even-or-odd |   |  |  |
 | 369 | events |   |  |  |
 | 370 | evolutionary-algorithm |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 346/491
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-31 00:54 +0700_
+_Last updated: 2025-07-31 07:45 +0700_
