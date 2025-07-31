@@ -1,6 +1,9 @@
 package java
 
-import sitter "github.com/tree-sitter/go-tree-sitter"
+import (
+	sitter "github.com/tree-sitter/go-tree-sitter"
+	"strings"
+)
 
 // Node represents a minimal JSON-serialisable AST node.  Only named
 // tree-sitter nodes are kept to reduce noise.  Leaf nodes store the raw
@@ -96,6 +99,23 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 		node.EndCol = int(ep.Column)
 	}
 
+	if n.Kind() == "binary_expression" && n.ChildCount() >= 3 {
+		op := n.Child(1)
+		if op != nil && !op.IsNamed() {
+			node.Text = strings.TrimSpace(op.Utf8Text(src))
+		}
+	} else if n.Kind() == "unary_expression" && n.ChildCount() >= 2 {
+		op := n.Child(0)
+		if op != nil && !op.IsNamed() {
+			node.Text = strings.TrimSpace(op.Utf8Text(src))
+		}
+	} else if n.Kind() == "update_expression" && n.ChildCount() >= 2 {
+		op := n.Child(n.ChildCount() - 1)
+		if op != nil && !op.IsNamed() {
+			node.Text = strings.TrimSpace(op.Utf8Text(src))
+		}
+	}
+
 	if n.NamedChildCount() == 0 {
 		if isValueNode(node.Kind) {
 			node.Text = n.Utf8Text(src)
@@ -130,7 +150,7 @@ func isValueNode(kind string) bool {
 		"hex_integer_literal", "octal_integer_literal", "binary_integer_literal",
 		"decimal_floating_point_literal", "hex_floating_point_literal",
 		"string_literal", "string_fragment", "character_literal",
-		"true", "false", "null", "this",
+		"true", "false", "null", "null_literal", "this",
 		"integral_type", "floating_point_type", "void_type", "boolean_type", "primitive_type":
 		return true
 	default:
