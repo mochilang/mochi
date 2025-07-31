@@ -66,7 +66,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		}
-	case "symbol", "string", "number":
+	case "symbol", "string", "number", "boolean":
 		b.WriteString(n.Text)
 	default:
 		if n.Text != "" {

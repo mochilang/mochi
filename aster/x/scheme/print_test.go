@@ -39,15 +39,6 @@ func TestPrint_Golden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "cross_join.scm" {
-			selected = append(selected, f)
-		}
-	}
-	files = selected
-
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".scm")
 		t.Run(name, func(t *testing.T) {
@@ -55,7 +46,7 @@ func TestPrint_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := scheme.Inspect(string(data))
+			prog, err := scheme.InspectWithOption(string(data), scheme.Option{Comments: true})
 			if err != nil {
 				t.Fatalf("inspect: %v", err)
 			}
