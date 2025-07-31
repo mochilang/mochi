@@ -78,6 +78,7 @@
       },
       {
         "kind": "for_in_statement",
+        "text": "of",
         "children": [
           {
             "kind": "identifier",
