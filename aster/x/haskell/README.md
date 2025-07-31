@@ -28,31 +28,31 @@ Generated files for Haskell programs live under `tests/aster/x/haskell`.
 23. [x] go_auto.hs
 24. [x] group_by.hs
 25. [x] group_by_conditional_sum.hs
-26. [ ] group_by_having.hs
-27. [ ] group_by_join.hs
-28. [ ] group_by_left_join.hs
-29. [ ] group_by_multi_join.hs
-30. [ ] group_by_multi_join_sort.hs
-31. [ ] group_by_multi_sort.hs
-32. [ ] group_by_sort.hs
-33. [ ] group_items_iteration.hs
-34. [ ] if_else.hs
-35. [ ] if_then_else.hs
-36. [ ] if_then_else_nested.hs
-37. [ ] in_operator.hs
-38. [ ] in_operator_extended.hs
-39. [ ] inner_join.hs
-40. [ ] join_multi.hs
-41. [ ] json_builtin.hs
-42. [ ] left_join.hs
-43. [ ] left_join_multi.hs
-44. [ ] len_builtin.hs
-45. [ ] len_map.hs
-46. [ ] len_string.hs
-47. [ ] let_and_print.hs
-48. [ ] list_assign.hs
-49. [ ] list_index.hs
-50. [ ] list_nested_assign.hs
+26. [x] group_by_having.hs
+27. [x] group_by_join.hs
+28. [x] group_by_left_join.hs
+29. [x] group_by_multi_join.hs
+30. [x] group_by_multi_join_sort.hs
+31. [x] group_by_multi_sort.hs
+32. [x] group_by_sort.hs
+33. [x] group_items_iteration.hs
+34. [x] if_else.hs
+35. [x] if_then_else.hs
+36. [x] if_then_else_nested.hs
+37. [x] in_operator.hs
+38. [x] in_operator_extended.hs
+39. [x] inner_join.hs
+40. [x] join_multi.hs
+41. [x] json_builtin.hs
+42. [x] left_join.hs
+43. [x] left_join_multi.hs
+44. [x] len_builtin.hs
+45. [x] len_map.hs
+46. [x] len_string.hs
+47. [x] let_and_print.hs
+48. [x] list_assign.hs
+49. [x] list_index.hs
+50. [x] list_nested_assign.hs
 51. [ ] list_set_ops.hs
 52. [ ] load_jsonl.hs
 53. [ ] load_yaml.hs
@@ -100,4 +100,4 @@ Generated files for Haskell programs live under `tests/aster/x/haskell`.
 95. [ ] var_assignment.hs
 96. [ ] while_loop.hs
 
-Completed 25/96 at 2025-07-31 20:44 GMT+7
+Completed 50/96 at 2025-07-31 21:00 GMT+7
