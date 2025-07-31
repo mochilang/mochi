@@ -1,5 +1,0 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Racket/biorhythms.rkt:226:10: contains: unbound identifier
-  in: contains
-  location...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/biorhythms.rkt:226:10
