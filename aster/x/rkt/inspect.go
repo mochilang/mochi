@@ -11,9 +11,8 @@ import (
 
 // Program represents a parsed Racket source file.
 type Program struct {
-	Root   *ProgramNode `json:"root"`
-	Source string       `json:"source,omitempty"`
-	Lang   string       `json:"lang,omitempty"`
+	Root *ProgramNode `json:"root"`
+	Lang string       `json:"lang,omitempty"`
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output order.
@@ -26,8 +25,6 @@ func (p *Program) MarshalJSON() ([]byte, error) {
 type Options struct {
 	// Positions includes line/column information when true.
 	Positions bool
-	// Source includes the original source code in the Program when true.
-	Source bool
 }
 
 // Inspect parses Racket source code using tree-sitter.
@@ -45,9 +42,6 @@ func Inspect(src string, opts ...Options) (*Program, error) {
 	prog := convertProgram(tree.RootNode(), data, opt.Positions)
 	if prog == nil {
 		prog = &Program{}
-	}
-	if opt.Source {
-		prog.Source = src
 	}
 	if prog.Root != nil {
 		for _, c := range prog.Root.Children {
