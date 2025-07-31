@@ -43,9 +43,7 @@ int main(void) {
         if ((person.is_senior)) {
             printf("%s is %d  (senior)\n", person.name, person.age);
         } else {
-            {
-                printf("%s is %d\n", person.name, person.age);
-            }
+            printf("%s is %d\n", person.name, person.age);
         }
     }
     return 0;

@@ -3,8 +3,8 @@
 Generated files for C programs live under `tests/aster/x/c`.
 
 
-Checked: 25/25
-_Last updated: 2025-07-31 20:32 GMT+7_
+Checked: 50/50
+_Last updated: 2025-07-31 20:43 GMT+7_
 
 ## Golden Test Checklist
 1. [x] append_builtin.c
@@ -32,4 +32,28 @@ _Last updated: 2025-07-31 20:32 GMT+7_
 23. [x] fun_three_args.c
 24. [x] go_auto.c
 25. [x] group_by.c
-
+26. [x] group_by_conditional_sum.c
+27. [x] group_by_having.c
+28. [x] group_by_join.c
+29. [x] group_by_left_join.c
+30. [x] group_by_multi_join.c
+31. [x] group_by_multi_join_sort.c
+32. [x] group_by_sort.c
+33. [x] if_else.c
+34. [x] if_then_else.c
+35. [x] if_then_else_nested.c
+36. [x] in_operator.c
+37. [x] in_operator_extended.c
+38. [x] inner_join.c
+39. [x] join_multi.c
+40. [x] json_builtin.c
+41. [x] left_join.c
+42. [x] left_join_multi.c
+43. [x] len_builtin.c
+44. [x] len_map.c
+45. [x] len_string.c
+46. [x] let_and_print.c
+47. [x] list_assign.c
+48. [x] list_index.c
+49. [x] list_nested_assign.c
+50. [x] list_set_ops.c

@@ -38,7 +38,33 @@ func inspect(src string, pos bool) (*Program, error) {
 	parser.SetLanguage(sitter.NewLanguage(tsc.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
 	root := convert(tree.RootNode(), []byte(src), pos)
+	fixTrailing(root)
 	return &Program{Root: (*TranslationUnit)(root)}, nil
+}
+
+func fixTrailing(n *Node) {
+	if n == nil {
+		return
+	}
+	var fn *Node
+	var idx int
+	count := 0
+	for i, c := range n.Children {
+		if c.Kind == "function_definition" {
+			fn = c
+			idx = i
+			count++
+		}
+	}
+	if count != 1 || fn == nil || len(fn.Children) < 3 || len(n.Children) <= idx+1 {
+		return
+	}
+	body := fn.Children[2]
+	if body.Kind != "compound_statement" {
+		return
+	}
+	body.Children = append(body.Children, n.Children[idx+1:]...)
+	n.Children = n.Children[:idx+1]
 }
 
 // MarshalJSON ensures stable output ordering.
