@@ -234,6 +234,15 @@ func writeIf(b *bytes.Buffer, n *Node, indent int) {
 	writeExpr(b, n.Children[0], indent)
 	b.WriteString(") ")
 	writeBlock(b, n.Children[1], indent)
+	if len(n.Children) >= 3 {
+		b.WriteString(ind)
+		b.WriteString("else ")
+		if n.Children[2].Kind == "if_expression" {
+			writeIf(b, n.Children[2], indent)
+		} else {
+			writeBlock(b, n.Children[2], indent)
+		}
+	}
 }
 
 func writeBlock(b *bytes.Buffer, n *Node, indent int) {
@@ -501,6 +510,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" in ")
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "if_expression":
+		writeIfExpr(b, n, indent)
 	case "unary_expression":
 		if len(n.Children) == 1 {
 			if n.Text != "" {
@@ -545,5 +556,19 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		} else {
 			b.WriteString(n.Kind)
 		}
+	}
+}
+
+func writeIfExpr(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	b.WriteString("if (")
+	writeExpr(b, n.Children[0], indent)
+	b.WriteString(") ")
+	writeExpr(b, n.Children[1], indent)
+	if len(n.Children) >= 3 {
+		b.WriteString(" else ")
+		writeExpr(b, n.Children[2], indent)
 	}
 }
