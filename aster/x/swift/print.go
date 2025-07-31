@@ -261,52 +261,35 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			// Preserve parentheses around single expression
 		}
 		b.WriteByte(')')
-	case "additive_expression":
+	case "additive_expression", "multiplicative_expression", "range_expression",
+		"equality_expression", "comparison_expression", "conjunction_expression",
+		"disjunction_expression", "nil_coalescing_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" + ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "multiplicative_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" * ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "range_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString("..<")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "equality_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" == ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "comparison_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" < ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "conjunction_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" && ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "disjunction_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" || ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "nil_coalescing_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" ?? ")
+			op := n.Text
+			if op == "" {
+				switch n.Kind {
+				case "range_expression":
+					op = "..<"
+				case "nil_coalescing_expression":
+					op = "??"
+				case "conjunction_expression":
+					op = "&&"
+				case "disjunction_expression":
+					op = "||"
+				case "equality_expression":
+					op = "=="
+				case "comparison_expression":
+					op = "<"
+				case "multiplicative_expression":
+					op = "*"
+				default:
+					op = "+"
+				}
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "ternary_expression":
@@ -319,14 +302,36 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "prefix_expression":
 		if len(n.Children) == 1 {
-			b.WriteByte('-')
+			op := n.Text
+			if op == "" {
+				op = "-"
+			}
+			b.WriteString(op)
 			writeExpr(b, n.Children[0], indent)
+		} else if len(n.Children) == 2 {
+			if n.Children[0].Kind == "bang" {
+				b.WriteString(n.Children[0].Text)
+				writeExpr(b, n.Children[1], indent)
+			} else {
+				op := n.Text
+				if op == "" {
+					op = "-"
+				}
+				b.WriteString(op)
+				writeExpr(b, n.Children[1], indent)
+			}
 		}
 	case "as_expression":
 		if len(n.Children) == 2 {
 			b.WriteByte('(')
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" as! ")
+			op := n.Text
+			if op == "" {
+				op = "as!"
+			}
+			b.WriteByte(' ')
+			b.WriteString(op)
+			b.WriteByte(' ')
 			writeType(b, n.Children[1])
 			b.WriteByte(')')
 		}
@@ -386,16 +391,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "call_suffix":
 		writeCallSuffix(b, n)
 	case "value_arguments":
-		b.WriteByte('(')
-		for i, arg := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			if len(arg.Children) > 0 {
-				writeExpr(b, arg.Children[0], indent)
-			}
-		}
-		b.WriteByte(')')
+		writeValueArguments(b, n)
 	default:
 		// fallback
 		for _, c := range n.Children {

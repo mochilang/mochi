@@ -6,5 +6,8 @@ This directory contains utilities for generating and printing simplified Swift A
 
 - [x] 1. append_builtin.swift
 - [x] 2. avg_builtin.swift
+- [x] 3. basic_compare.swift
+- [x] 4. bench_block.swift
+- [x] 5. binary_precedence.swift
 
-Completed 2/102 at 2025-07-31 18:29 GMT+7
+Completed 5/102 at 2025-07-31 19:06 GMT+7

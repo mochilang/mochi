@@ -260,15 +260,18 @@
                               },
                               {
                                 "kind": "multiplicative_expression",
+                                "text": "%",
                                 "children": [
                                   {
                                     "kind": "tuple_expression",
                                     "children": [
                                       {
                                         "kind": "additive_expression",
+                                        "text": "+",
                                         "children": [
                                           {
                                             "kind": "multiplicative_expression",
+                                            "text": "*",
                                             "children": [
                                               {
                                                 "kind": "simple_identifier",
@@ -330,6 +333,7 @@
                                     "children": [
                                       {
                                         "kind": "multiplicative_expression",
+                                        "text": "*",
                                         "children": [
                                           {
                                             "kind": "navigation_expression",
@@ -473,6 +477,7 @@
                   },
                   {
                     "kind": "range_expression",
+                    "text": "..\u003c",
                     "children": [
                       {
                         "kind": "integer_literal",
@@ -534,6 +539,7 @@
                                     "children": [
                                       {
                                         "kind": "additive_expression",
+                                        "text": "+",
                                         "children": [
                                           {
                                             "kind": "call_expression",
@@ -690,12 +696,14 @@
                                     "children": [
                                       {
                                         "kind": "multiplicative_expression",
+                                        "text": "/",
                                         "children": [
                                           {
                                             "kind": "tuple_expression",
                                             "children": [
                                               {
                                                 "kind": "additive_expression",
+                                                "text": "-",
                                                 "children": [
                                                   {
                                                     "kind": "simple_identifier",
@@ -738,6 +746,7 @@
                                     "children": [
                                       {
                                         "kind": "additive_expression",
+                                        "text": "-",
                                         "children": [
                                           {
                                             "kind": "simple_identifier",
