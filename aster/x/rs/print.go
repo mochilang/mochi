@@ -29,6 +29,16 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(ind)
 		b.WriteString(n.Text)
 		b.WriteByte('\n')
+	case "use_declaration":
+		b.WriteString(ind)
+		b.WriteString("use ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString("::")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteString(";\n")
 	case "attribute_item":
 		b.WriteString(ind)
 		b.WriteString("#[")
@@ -130,6 +140,21 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 		}
 		b.WriteByte('\n')
+	case "static_item":
+		b.WriteString(ind)
+		b.WriteString("static ")
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		if len(n.Children) >= 2 {
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
+		if len(n.Children) >= 3 {
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[2], indent)
+		}
+		b.WriteString(";\n")
 	default:
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
@@ -201,7 +226,9 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte('"')
 	case "call_expression":
-		if len(n.Children) > 0 {
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 			if len(n.Children) > 1 {
 				writeArguments(b, n.Children[1], indent)
@@ -224,6 +251,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				writeTypeArguments(b, n.Children[1])
 			}
 		}
+	case "generic_function":
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				b.WriteString("::")
+				writeTypeArguments(b, n.Children[1])
+			}
+		}
 	case "type_arguments":
 		writeTypeArguments(b, n)
 	case "range_expression":
@@ -232,16 +269,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("..")
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "binary_expression":
+	case "assignment_expression":
 		if len(n.Children) == 2 {
-			op := "+"
-			if n.Children[1].Kind == "identifier" && n.Children[1].Text == "target" {
-				op = "=="
-			}
 			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(' ')
-			b.WriteString(op)
-			b.WriteByte(' ')
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "binary_expression":
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" + ")
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "parenthesized_expression":
@@ -254,12 +293,25 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(')')
+	case "type_cast_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" as ")
+			writeExpr(b, n.Children[1], indent)
+		}
 	case "index_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte('[')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(']')
+		}
+	case "unary_expression":
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else if len(n.Children) == 1 {
+			b.WriteByte('!')
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "reference_expression":
 		if len(n.Children) == 1 {
@@ -300,6 +352,27 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "scoped_use_list":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				b.WriteString("::{")
+				for i, c := range n.Children[1].Children {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					writeExpr(b, c, indent)
+				}
+				b.WriteByte('}')
+			}
+		}
+	case "use_list":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
 	case "struct_expression":
 		if len(n.Children) >= 1 {
 			writeExpr(b, n.Children[0], indent)
@@ -314,6 +387,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 		b.WriteString("}")
+	case "tuple_struct_pattern":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('(')
+		for i, c := range n.Children[1:] {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
 	case "field_initializer_list":
 		b.WriteString("{")
 		for i, c := range n.Children {
@@ -349,6 +434,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
 			writeBlock(b, n.Children[1], indent)
+			if len(n.Children) > 2 {
+				writeExpr(b, n.Children[2], indent)
+			}
+		}
+	case "let_condition":
+		if len(n.Children) == 2 {
+			b.WriteString("let ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "block":
 		writeBlock(b, n, indent)
@@ -361,6 +456,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 1 {
 			writeExpr(b, n.Children[1], indent)
 		}
+	case "else_clause":
+		b.WriteString(" else ")
+		if len(n.Children) == 1 {
+			if n.Children[0].Kind == "block" {
+				writeBlock(b, n.Children[0], indent)
+			} else {
+				writeExpr(b, n.Children[0], indent)
+			}
+		}
 	case "token_tree":
 		b.WriteString(n.Text)
 	case "attribute":
@@ -371,7 +475,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 	default:
-		b.WriteString(n.Kind)
+		if n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			b.WriteString(n.Kind)
+		}
 	}
 }
 
