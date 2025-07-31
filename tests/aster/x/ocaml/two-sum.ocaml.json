@@ -115,6 +115,10 @@
                                         "kind": "sign_expression",
                                         "children": [
                                           {
+                                            "kind": "sign_operator",
+                                            "text": "-"
+                                          },
+                                          {
                                             "kind": "number",
                                             "text": "1"
                                           }
@@ -123,6 +127,10 @@
                                       {
                                         "kind": "sign_expression",
                                         "children": [
+                                          {
+                                            "kind": "sign_operator",
+                                            "text": "-"
+                                          },
                                           {
                                             "kind": "number",
                                             "text": "1"
@@ -161,6 +169,10 @@
                                             "text": "ref"
                                           }
                                         ]
+                                      },
+                                      {
+                                        "kind": "boolean",
+                                        "text": "false"
                                       }
                                     ]
                                   }
@@ -195,6 +207,10 @@
                                         ]
                                       },
                                       {
+                                        "kind": "add_operator",
+                                        "text": "-"
+                                      },
+                                      {
                                         "kind": "number",
                                         "text": "1"
                                       }
@@ -226,6 +242,10 @@
                                                     ]
                                                   },
                                                   {
+                                                    "kind": "add_operator",
+                                                    "text": "+"
+                                                  },
+                                                  {
                                                     "kind": "number",
                                                     "text": "1"
                                                   }
@@ -242,6 +262,10 @@
                                                         "text": "n"
                                                       }
                                                     ]
+                                                  },
+                                                  {
+                                                    "kind": "add_operator",
+                                                    "text": "-"
                                                   },
                                                   {
                                                     "kind": "number",
@@ -301,6 +325,10 @@
                                                                     ]
                                                                   }
                                                                 ]
+                                                              },
+                                                              {
+                                                                "kind": "add_operator",
+                                                                "text": "+"
                                                               },
                                                               {
                                                                 "kind": "application_expression",
@@ -382,6 +410,10 @@
                                                                         ]
                                                                       },
                                                                       {
+                                                                        "kind": "assign_operator",
+                                                                        "text": ":="
+                                                                      },
+                                                                      {
                                                                         "kind": "list_expression",
                                                                         "children": [
                                                                           {
@@ -417,6 +449,14 @@
                                                                             "text": "stop"
                                                                           }
                                                                         ]
+                                                                      },
+                                                                      {
+                                                                        "kind": "assign_operator",
+                                                                        "text": ":="
+                                                                      },
+                                                                      {
+                                                                        "kind": "boolean",
+                                                                        "text": "true"
                                                                       }
                                                                     ]
                                                                   }
@@ -438,6 +478,10 @@
                                               {
                                                 "kind": "prefix_expression",
                                                 "children": [
+                                                  {
+                                                    "kind": "prefix_operator",
+                                                    "text": "!"
+                                                  },
                                                   {
                                                     "kind": "value_path",
                                                     "children": [
@@ -488,6 +532,10 @@
                               {
                                 "kind": "prefix_expression",
                                 "children": [
+                                  {
+                                    "kind": "prefix_operator",
+                                    "text": "!"
+                                  },
                                   {
                                     "kind": "value_path",
                                     "children": [
