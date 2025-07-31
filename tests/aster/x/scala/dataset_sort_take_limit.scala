@@ -4,10 +4,17 @@ object Main {
   def main(args: Array[String]): Unit = {
     case class Item(name: String, price: Int)
     val products: ArrayBuffer[Item] = ArrayBuffer(Item("Laptop", 1500), Item("Smartphone", 900), Item("Tablet", 600), Item("Monitor", 300), Item("Keyboard", 100), Item("Mouse", 50), Item("Headphones", 200))
-    val expensive: ArrayBuffer[Item] = ({ var _tmp = ArrayBuffer[(Int,Item)]() ; for (p <- products) { _tmp.append((0 - p.price, p)) }; var _res = _tmp.sortBy(_._1).map(_._2).drop(1).take(3); _res })
+    val expensive: ArrayBuffer[Item] = ({
+      var _tmp = ArrayBuffer[(Int, Item)]()
+      for (p <- products) {
+        _tmp.append((0 - p.price, p))
+      }
+      var _res = _tmp.sortBy().map().drop(1).take(3)
+      _res
+    })
     println("--- Top products (excluding most expensive) ---")
     for (item <- expensive) {
-    println(List(item.name, "costs $", item.price).mkString(" "))
-  }
+      println(List(item.name, "costs $", item.price).mkString(" "))
+    }
   }
 }

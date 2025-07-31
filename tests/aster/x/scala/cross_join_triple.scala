@@ -6,10 +6,20 @@ object Main {
     val nums: ArrayBuffer[Int] = ArrayBuffer(1, 2)
     val letters: ArrayBuffer[String] = ArrayBuffer("A", "B")
     val bools: ArrayBuffer[Boolean] = ArrayBuffer(true, false)
-    val combos: ArrayBuffer[QueryItem] = ({ var _res = ArrayBuffer[QueryItem]() ; for (n <- nums) { for (l <- letters) { for (b <- bools) { _res.append(QueryItem(n, l, b)) } } }; _res })
+    val combos: ArrayBuffer[QueryItem] = ({
+      var _res = ArrayBuffer[QueryItem]()
+      for (n <- nums) {
+        for (l <- letters) {
+          for (b <- bools) {
+            _res.append(QueryItem(n, l, b))
+          }
+        }
+      }
+      _res
+    })
     println("--- Cross Join of three lists ---")
     for (c <- combos) {
-    println(List(c.n, c.l, c.b).mkString(" "))
-  }
+      println(List(c.n, c.l, c.b).mkString(" "))
+    }
   }
 }

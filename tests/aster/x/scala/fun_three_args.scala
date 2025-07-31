@@ -4,7 +4,6 @@ object Main {
   def sum3(a: Int, b: Int, c: Int): Int = {
     return a + b + c
   }
-
   def main(args: Array[String]): Unit = {
     println(sum3(1, 2, 3))
   }

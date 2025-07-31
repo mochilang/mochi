@@ -3,7 +3,7 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
     println(2 + 3)
-    println(3.14)
+    println()
     println(42)
   }
 }

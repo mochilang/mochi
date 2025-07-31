@@ -3,7 +3,7 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
     var scores = Map[String, Int]
-    assignment_expression
+    scores("bob") = 2
     println(scores("bob"))
   }
 }

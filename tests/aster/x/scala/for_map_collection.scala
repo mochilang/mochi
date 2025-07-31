@@ -2,9 +2,9 @@
 import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   def main(args: Array[String]): Unit = {
-    var m: Map[String,Int] = Map("a" -> 1, "b" -> 2)
+    var m = Map[String, Int]
     for (k <- m.keys) {
-    println(k)
-  }
+      println(k)
+    }
   }
 }

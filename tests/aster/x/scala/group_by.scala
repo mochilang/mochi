@@ -2,13 +2,8 @@
 import scala.collection.mutable.{ArrayBuffer, Map}
 object Main {
   case class Item(name: String, age: Int, city: String)
-  
   def main(args: Array[String]): Unit = {
     val people: ArrayBuffer[Item] = ArrayBuffer(Item("Alice", 30, "Paris"), Item("Bob", 15, "Hanoi"), Item("Charlie", 65, "Paris"), Item("Diana", 45, "Hanoi"), Item("Eve", 70, "Paris"), Item("Frank", 22, "Hanoi"))
-    val stats: ArrayBuffer[Any] = ArrayBuffer.from((for (person <- people) yield (person.city, Map("person" -> person)))).groupBy(_._1).map{ case (k, arr) => Map("key" -> k, "items" -> ArrayBuffer(arr.map(_._2).toSeq: _*)) }.map(g => Map("city" -> g("key"), "count" -> g("items").size, "avg_age" -> (for (p <- g) yield p.age).sum / (for (p <- g) yield p.age).size)))
-    println("--- People grouped by city ---")
-    for (s <- stats) {
-      println(List(s.city, ": count =", s.count, ", avg_age =", s.avg_age).mkString(" "))
-    }
+    val stats: ArrayBuffer[Any] = ERROR
   }
 }
