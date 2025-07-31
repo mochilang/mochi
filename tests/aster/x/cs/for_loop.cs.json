@@ -84,6 +84,7 @@
                           },
                           {
                             "kind": "postfix_unary_expression",
+                            "text": "++",
                             "children": [
                               {
                                 "kind": "identifier",

@@ -518,11 +518,31 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		}
 		b.WriteByte('"')
 	case "query_expression":
-		for i, c := range n.Children {
+		for i := 0; i < len(n.Children); i++ {
 			if i > 0 {
 				b.WriteByte(' ')
 			}
+			c := n.Children[i]
 			writeExpr(b, c, indentLevel)
+			if c.Kind == "group_clause" && i+1 < len(n.Children) && n.Children[i+1].Kind == "identifier" {
+				b.WriteString(" into ")
+				writeExpr(b, n.Children[i+1], indentLevel)
+				i++
+			}
+		}
+	case "group_clause":
+		if len(n.Children) == 2 {
+			b.WriteString("group ")
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" by ")
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "let_clause":
+		if len(n.Children) == 2 {
+			b.WriteString("let ")
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indentLevel)
 		}
 	case "from_clause":
 		if len(n.Children) == 2 {

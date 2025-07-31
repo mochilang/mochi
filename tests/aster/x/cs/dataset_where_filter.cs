@@ -15,7 +15,7 @@ struct PersonResult {
 }
 class Program {
     static People[] people = new People[]{new People{name = "Alice", age = 30}, new People{name = "Bob", age = 15}, new People{name = "Charlie", age = 65}, new People{name = "Diana", age = 45}};
-    static PersonResult[] adults = (from person in people (person.age >= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age >= 60)}).ToArray();
+    static PersonResult[] adults = (from person in people where (person.age >= 18) select new PersonResult{name = person.name, age = person.age, is_senior = (person.age >= 60)}).ToArray();
     static void Main() {
         Console.WriteLine("--- Adults ---");
         foreach (var person in adults) {
