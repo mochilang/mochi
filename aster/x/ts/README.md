@@ -50,6 +50,31 @@ and printing it back. Golden tests ensure round-tripping for a subset of samples
 - [x] let_and_print.ts
 - [x] list_assign.ts
 - [x] list_index.ts
+- [x] list_nested_assign.ts
+- [x] list_set_ops.ts
+- [x] load_jsonl.ts
+- [x] load_yaml.ts
+- [x] map_assign.ts
+- [x] map_in_operator.ts
+- [x] map_index.ts
+- [x] map_int_key.ts
+- [x] map_literal_dynamic.ts
+- [x] map_membership.ts
+- [x] map_nested_assign.ts
+- [x] match_expr.ts
+- [x] match_full.ts
+- [x] math_ops.ts
+- [x] membership.ts
+- [x] min_max_builtin.ts
+- [x] mix_go_python.ts
+- [x] nested_function.ts
+- [x] order_by_map.ts
+- [x] outer_join.ts
+- [x] pairs_loop.ts
+- [x] partial_application.ts
+- [x] print_hello.ts
+- [x] pure_fold.ts
+- [x] pure_global_fold.ts
 
-Completed 45/45 on 2025-07-31 18:18 GMT+7.
+Completed 75/75 on 2025-07-31 18:35 GMT+7.
 
