@@ -1,0 +1,104 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "initialization main"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "style_check(-singleton)"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "foo",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "X"
+            }
+          ]
+        },
+        {
+          "kind": "bar",
+          "children": [
+            {
+              "kind": "var",
+              "text": "X"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "bar",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "X"
+            }
+          ]
+        },
+        {
+          "kind": "writeln",
+          "children": [
+            {
+              "kind": "var",
+              "text": "X"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": "foo",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "hello"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

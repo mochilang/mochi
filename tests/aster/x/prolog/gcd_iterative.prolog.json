@@ -1,0 +1,190 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "initialization main"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "style_check(-singleton)"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "gcd",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "A"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            },
+            {
+              "kind": "atom",
+              "text": "A"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "gcd",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "A"
+            },
+            {
+              "kind": "atom",
+              "text": "B"
+            },
+            {
+              "kind": "atom",
+              "text": "D"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "\u003e",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "B"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "R"
+                    },
+                    {
+                      "kind": "mod",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "A"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "B"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "gcd",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "B"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "R"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "D"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "gcd",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "48"
+                },
+                {
+                  "kind": "number",
+                  "text": "18"
+                },
+                {
+                  "kind": "var",
+                  "text": "G"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "G"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

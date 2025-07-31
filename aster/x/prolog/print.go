@@ -65,7 +65,7 @@ func writeHead(b *strings.Builder, n *Node) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			if c.Kind == "atom" && len(c.Text) > 0 && unicode.IsUpper(rune(c.Text[0])) {
+			if c.Kind == "atom" && len(c.Text) > 0 && (unicode.IsUpper(rune(c.Text[0])) || c.Text == "_") {
 				b.WriteString(c.Text)
 			} else {
 				writeTerm(b, c, 0, true)
@@ -114,7 +114,7 @@ func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 		}
 		b.WriteByte(']')
 	case "{}":
-		b.WriteByte('{')
+		b.WriteString("_{")
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString(", ")
