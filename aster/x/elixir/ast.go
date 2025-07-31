@@ -3,6 +3,8 @@
 package elixir
 
 import (
+	"strings"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
@@ -87,6 +89,15 @@ func convert(n *sitter.Node, src []byte) *Node {
 		}
 	}
 
+	if n.ChildCount() > n.NamedChildCount() && node.Kind == "binary_operator" {
+		if n.ChildCount() >= 3 {
+			op := n.Child(1)
+			if op != nil && !op.IsNamed() {
+				node.Text = strings.TrimSpace(op.Utf8Text(src))
+			}
+		}
+	}
+
 	for i := uint(0); i < n.NamedChildCount(); i++ {
 		child := n.NamedChild(i)
 		if child == nil {
@@ -106,12 +117,12 @@ func convert(n *sitter.Node, src []byte) *Node {
 // isValueNode reports whether the given node kind represents a value that
 // should be preserved even when it has no named children.
 func isValueNode(kind string) bool {
-        switch kind {
-        case "identifier", "atom", "integer", "float", "char", "string",
-               "string_line", "string_content", "quoted_content", "keyword",
-               "comment", "alias":
-                return true
-        default:
-                return false
-        }
+	switch kind {
+	case "identifier", "atom", "integer", "float", "char", "string",
+		"string_line", "string_content", "quoted_content", "keyword",
+		"comment", "alias":
+		return true
+	default:
+		return false
+	}
 }
