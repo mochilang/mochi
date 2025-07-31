@@ -107,6 +107,18 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 				node.Text = "post" + after
 			}
 		}
+	} else if n.Kind() == "reference_declarator" && n.NamedChildCount() >= 1 {
+		child := n.NamedChild(0)
+		if child != nil {
+			op := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
+			node.Text = op
+		}
+	} else if n.Kind() == "unary_expression" && n.NamedChildCount() == 1 {
+		child := n.NamedChild(0)
+		if child != nil {
+			op := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
+			node.Text = op
+		}
 	} else if n.Kind() == "lambda_expression" && n.NamedChildCount() >= 1 {
 		first := n.NamedChild(0)
 		if first != nil {
@@ -139,7 +151,8 @@ func isValueNode(kind string) bool {
 		"system_lib_string", "primitive_type", "type_identifier",
 		"string_content", "escape_sequence", "field_identifier",
 		"namespace_identifier", "auto", "character", "lambda_capture_specifier",
-		"true", "false", "break_statement", "continue_statement":
+		"true", "false", "break_statement", "continue_statement",
+		"type_qualifier":
 		return true
 	default:
 		return false
