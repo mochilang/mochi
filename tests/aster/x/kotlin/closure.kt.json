@@ -1,0 +1,250 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "makeAdder"
+          },
+          {
+            "kind": "function_value_parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "n"
+                  },
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "function_type",
+            "children": [
+              {
+                "kind": "function_type_parameters",
+                "children": [
+                  {
+                    "kind": "user_type",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "Int"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "user_type",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "Int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "return_expression",
+                    "children": [
+                      {
+                        "kind": "lambda_literal",
+                        "children": [
+                          {
+                            "kind": "lambda_parameters",
+                            "children": [
+                              {
+                                "kind": "variable_declaration",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "x"
+                                  },
+                                  {
+                                    "kind": "user_type",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary_expression",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "identifier",
+                                "text": "x"
+                              },
+                              {
+                                "kind": "identifier",
+                                "text": "n"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "add10"
+                          },
+                          {
+                            "kind": "function_type",
+                            "children": [
+                              {
+                                "kind": "function_type_parameters",
+                                "children": [
+                                  {
+                                    "kind": "user_type",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "Int"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "user_type",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "Int"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "makeAdder"
+                          },
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "number_literal",
+                                    "text": "10"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "call_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "add10"
+                                  },
+                                  {
+                                    "kind": "value_arguments",
+                                    "children": [
+                                      {
+                                        "kind": "value_argument",
+                                        "children": [
+                                          {
+                                            "kind": "number_literal",
+                                            "text": "7"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

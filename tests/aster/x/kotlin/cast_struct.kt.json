@@ -1,0 +1,150 @@
+{
+  "root": {
+    "kind": "source_file",
+    "children": [
+      {
+        "kind": "class_declaration",
+        "children": [
+          {
+            "kind": "modifiers",
+            "children": [
+              {
+                "kind": "class_modifier",
+                "text": "data"
+              }
+            ]
+          },
+          {
+            "kind": "identifier",
+            "text": "Todo"
+          },
+          {
+            "kind": "primary_constructor",
+            "children": [
+              {
+                "kind": "class_parameters",
+                "children": [
+                  {
+                    "kind": "class_parameter",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "title"
+                      },
+                      {
+                        "kind": "user_type",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "String"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "main"
+          },
+          {
+            "kind": "function_body",
+            "children": [
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "property_declaration",
+                    "children": [
+                      {
+                        "kind": "variable_declaration",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "todo"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call_expression",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "Todo"
+                          },
+                          {
+                            "kind": "value_arguments",
+                            "children": [
+                              {
+                                "kind": "value_argument",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "title"
+                                  },
+                                  {
+                                    "kind": "string_literal",
+                                    "children": [
+                                      {
+                                        "kind": "string_content",
+                                        "text": "hi"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "println"
+                      },
+                      {
+                        "kind": "value_arguments",
+                        "children": [
+                          {
+                            "kind": "value_argument",
+                            "children": [
+                              {
+                                "kind": "navigation_expression",
+                                "children": [
+                                  {
+                                    "kind": "identifier",
+                                    "text": "todo"
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "text": "title"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

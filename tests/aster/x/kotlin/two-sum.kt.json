@@ -179,6 +179,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -208,12 +209,14 @@
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "==",
                                         "children": [
                                           {
                                             "kind": "parenthesized_expression",
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "text": "+",
                                                 "children": [
                                                   {
                                                     "kind": "index_expression",
@@ -321,6 +324,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "-",
                                     "children": [
                                       {
                                         "kind": "number_literal",
@@ -339,6 +343,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "-",
                                     "children": [
                                       {
                                         "kind": "number_literal",
