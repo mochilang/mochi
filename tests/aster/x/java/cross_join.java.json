@@ -1,5 +1,5 @@
 {
-  "root": {
+  "file": {
     "kind": "program",
     "children": [
       {
