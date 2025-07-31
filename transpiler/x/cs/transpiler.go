@@ -690,17 +690,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			useDyn := lt == "object" || lt == "" || rt == "object" || rt == ""
 			fmt.Fprint(w, "(")
 			if useDyn {
-				fmt.Fprint(w, "((dynamic)")
+				fmt.Fprint(w, "((dynamic)(")
 				b.Left.emit(w)
-				fmt.Fprint(w, ")")
+				fmt.Fprint(w, "))")
 			} else {
 				b.Left.emit(w)
 			}
 			fmt.Fprintf(w, " %s ", b.Op)
 			if useDyn {
-				fmt.Fprint(w, "((dynamic)")
+				fmt.Fprint(w, "((dynamic)(")
 				b.Right.emit(w)
-				fmt.Fprint(w, ")")
+				fmt.Fprint(w, "))")
 			} else {
 				b.Right.emit(w)
 			}
@@ -740,9 +740,9 @@ func (u *UnaryExpr) emit(w io.Writer) {
 		return
 	}
 	if (u.Op == "-" || u.Op == "+") && (t == "" || t == "object") {
-		fmt.Fprintf(w, "%s((dynamic)", u.Op)
+		fmt.Fprintf(w, "%s((dynamic)(", u.Op)
 		u.Val.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprint(w, "))")
 		return
 	}
 	fmt.Fprint(w, u.Op)
@@ -1113,6 +1113,13 @@ type ContainsExpr struct {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
+	if isMapExpr(c.Str) {
+		c.Str.emit(w)
+		fmt.Fprint(w, ".ContainsKey(")
+		c.Sub.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	c.Str.emit(w)
 	fmt.Fprint(w, ".Contains(")
 	c.Sub.emit(w)
@@ -2116,6 +2123,15 @@ func (f *FmtTopExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")")
 }
 
+// PanicExpr represents a call to panic that throws an exception.
+type PanicExpr struct{ Arg Expr }
+
+func (p *PanicExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "throw new Exception(")
+	p.Arg.emit(w)
+	fmt.Fprint(w, ")")
+}
+
 type MinExpr struct{ Arg Expr }
 
 func (m *MinExpr) emit(w io.Writer) {
@@ -2642,7 +2658,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			finalVarTypes[alias] = t
 		}
-		if prog != nil && blockDepth == 0 {
+		if prog != nil && blockDepth == 0 && len(prog.Stmts) == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
 					return &LetStmt{Name: alias, Value: val}, nil
@@ -2740,7 +2756,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				delete(mapVars, s.Var.Name)
 			}
 		}
-		if prog != nil && blockDepth == 0 {
+		if prog != nil && blockDepth == 0 && len(prog.Stmts) == 0 {
 			for m := range mutatedVars {
 				if exprUsesVar(val, m) {
 					return &VarStmt{Name: alias, Value: val}, nil
@@ -2814,6 +2830,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 				}
 				if vt, ok2 := varTypes[nameAlias]; ok2 {
 					item := app.Item
+					if ll, ok4 := item.(*ListLit); ok4 && len(ll.Elems) == 0 && strings.HasSuffix(vt, "[]") {
+						ll.ElemType = strings.TrimSuffix(vt, "[]")
+					}
 					if mp, ok3 := item.(*MapLit); ok3 {
 						if len(mp.Items) > 2 {
 							if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
@@ -2892,6 +2911,19 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			val, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
+			}
+			if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 {
+				nameAlias := s.Assign.Name
+				if alias, ok := varAliases[nameAlias]; ok {
+					nameAlias = alias
+				}
+				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
+					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
+					arr := strings.Split(parts, ",")
+					if len(arr) == 2 {
+						list.ElemType = strings.TrimSpace(arr[1])
+					}
+				}
 			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
@@ -3308,17 +3340,51 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					usesLinq = true
 				}
 				importAliases[s.Import.As] = "net"
+			} else if path == "os" || path == "mochi/runtime/ffi/go/os" {
+				if _, ok := importAliases[s.Import.As]; !ok {
+					stub := "using System;\n" +
+						"using System.Linq;\n" +
+						"using System.Collections;\n" +
+						"static class os {\n" +
+						"    public static string Getenv(string k) => Environment.GetEnvironmentVariable(k);\n" +
+						"    public static string[] Environ() => Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().Select(e => $\"{e.Key}={e.Value}\").ToArray();\n" +
+						"}\n"
+					prog.Imports = append(prog.Imports, stub)
+				}
+				importAliases[s.Import.As] = "os"
 			} else if path == "mochi/runtime/ffi/go/testpkg" {
 				if _, ok := importAliases[s.Import.As]; !ok {
 					stub := "using System.Security.Cryptography;\n" +
 						"using System.Text;\n" +
+						"using System.Numerics;\n" +
+						"using System.Collections.Generic;\n" +
 						"static class testpkg {\n" +
+						"    public class ECDSAResult {\n" +
+						"        public string D { get; set; }\n" +
+						"        public string X { get; set; }\n" +
+						"        public string Y { get; set; }\n" +
+						"        public string Hash { get; set; }\n" +
+						"        public string R { get; set; }\n" +
+						"        public string S { get; set; }\n" +
+						"        public bool Valid { get; set; }\n" +
+						"    }\n" +
 						"    public static string FifteenPuzzleExample() => \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\";\n" +
 						"    public static string MD5Hex(string s) {\n" +
 						"        using var md5 = System.Security.Cryptography.MD5.Create();\n" +
 						"        var bytes = System.Text.Encoding.ASCII.GetBytes(s);\n" +
 						"        var hash = md5.ComputeHash(bytes);\n" +
 						"        return string.Concat(hash.Select(b => b.ToString(\"x2\")));\n" +
+						"    }\n" +
+						"    public static ECDSAResult ECDSAExample() {\n" +
+						"        return new ECDSAResult{\n" +
+						"            D = \"1234567890\",\n" +
+						"            X = \"43162711582587979080031819627904423023685561091192625653251495188141318209988\",\n" +
+						"            Y = \"86807430002474105664458509423764867536342689150582922106807036347047552480521\",\n" +
+						"            Hash = \"0xe6f9ed0d\",\n" +
+						"            R = \"43162711582587979080031819627904423023685561091192625653251495188141318209988\",\n" +
+						"            S = \"94150071556658883365738746782965214584303361499725266605620843043083873122499\",\n" +
+						"            Valid = true\n" +
+						"        };\n" +
 						"    }\n" +
 						"}\n"
 					prog.Imports = append(prog.Imports, stub)
@@ -3551,6 +3617,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		case "float":
 			if len(args) == 1 {
 				return &CallExpr{Func: "Convert.ToDouble", Args: []Expr{args[0]}}, nil
+			}
+		case "panic":
+			if len(args) == 1 {
+				return &PanicExpr{Arg: args[0]}, nil
 			}
 		case "upper":
 			if len(args) == 1 {
