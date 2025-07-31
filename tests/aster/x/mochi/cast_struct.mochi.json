@@ -1,0 +1,72 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "type",
+        "text": "Todo",
+        "children": [
+          {
+            "kind": "field",
+            "text": "title",
+            "children": [
+              {
+                "kind": "type",
+                "text": "string"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "todo",
+        "children": [
+          {
+            "kind": "cast",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "title"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "hi"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "type",
+                "text": "Todo"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "selector",
+            "text": "title",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "todo"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
