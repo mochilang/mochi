@@ -1,0 +1,9 @@
+let listA = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}]
+let listB = [{id: 2, name: "Bob"}, {id: 3, name: "Charlie"}]
+let result = ((from x in listA
+               select x) union (from x in listB
+               select x))
+print("--- UNION (deduplicated) ---")
+for x in result {
+  print(((("Customer " + str(x.id)) + " - ") + x.name))
+}

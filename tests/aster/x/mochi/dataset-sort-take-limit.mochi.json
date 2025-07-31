@@ -1,0 +1,364 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "let",
+        "text": "products",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Laptop"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1500"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Smartphone"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "900"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Tablet"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "600"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Monitor"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "300"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Keyboard"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "100"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Mouse"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "50"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "name"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "Headphones"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "200"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "expensive",
+        "children": [
+          {
+            "kind": "query",
+            "text": "p",
+            "children": [
+              {
+                "kind": "source",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "products"
+                  }
+                ]
+              },
+              {
+                "kind": "sort",
+                "children": [
+                  {
+                    "kind": "unary",
+                    "text": "-",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "price",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "p"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "skip",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  }
+                ]
+              },
+              {
+                "kind": "take",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "3"
+                  }
+                ]
+              },
+              {
+                "kind": "select",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "p"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "string",
+            "text": "--- Top products (excluding most expensive) ---"
+          }
+        ]
+      },
+      {
+        "kind": "for",
+        "text": "item",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "expensive"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "name",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "item"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "costs $"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "price",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "item"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
