@@ -30,40 +30,41 @@ type Node struct {
 // tree-sitter node kinds that appear in the tests.  Only nodes that may carry a
 // textual value or are referenced directly are enumerated here.
 type (
-	ProgramNode             Node
-	ExpressionStatement     Node
-	CallExpression          Node
-	MemberExpression        Node
-	Arguments               Node
-	Identifier              Node
-	PropertyIdentifier      Node
-	String                  Node
-	StringFragment          Node
-	Number                  Node
-	ExportStatement         Node
-	InterfaceDeclaration    Node
-	InterfaceBody           Node
-	PropertySignature       Node
-	PredefinedType          Node
-	TypeIdentifier          Node
-	TypeAnnotation          Node
-	VariableDeclarator      Node
-	LexicalDeclaration      Node
-	StatementBlock          Node
-	ForInStatement          Node
-	ReturnStatement         Node
-	BinaryExpression        Node
-	AssignmentExpression    Node
-	Pair                    Node
-	ArrowFunction           Node
-	ParenthesizedExpression Node
-	SubscriptExpression     Node
-	Array                   Node
-	ArrayPattern            Node
-	ArrayType               Node
-	Object                  Node
-	SpreadElement           Node
-	Comment                 Node
+	ProgramNode                   Node
+	ExpressionStatement           Node
+	CallExpression                Node
+	MemberExpression              Node
+	Arguments                     Node
+	Identifier                    Node
+	PropertyIdentifier            Node
+	String                        Node
+	StringFragment                Node
+	Number                        Node
+	ExportStatement               Node
+	InterfaceDeclaration          Node
+	InterfaceBody                 Node
+	PropertySignature             Node
+	PredefinedType                Node
+	TypeIdentifier                Node
+	TypeAnnotation                Node
+	VariableDeclarator            Node
+	LexicalDeclaration            Node
+	StatementBlock                Node
+	ForInStatement                Node
+	ReturnStatement               Node
+	BinaryExpression              Node
+	AssignmentExpression          Node
+	AugmentedAssignmentExpression Node
+	Pair                          Node
+	ArrowFunction                 Node
+	ParenthesizedExpression       Node
+	SubscriptExpression           Node
+	Array                         Node
+	ArrayPattern                  Node
+	ArrayType                     Node
+	Object                        Node
+	SpreadElement                 Node
+	Comment                       Node
 )
 
 // Program is the root of a parsed TypeScript source file.
@@ -84,7 +85,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	// printer can faithfully reconstruct the source code without relying on
 	// the original text.
 	switch n.Kind() {
-	case "binary_expression", "assignment_expression", "unary_expression", "update_expression":
+	case "binary_expression", "assignment_expression", "augmented_assignment_expression", "unary_expression", "update_expression":
 		if op := n.ChildByFieldName("operator"); op != nil {
 			node.Text = op.Utf8Text(src)
 		}
