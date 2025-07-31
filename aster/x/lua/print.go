@@ -97,6 +97,23 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(ind)
 			b.WriteString("end\n")
 		}
+	case "break_statement":
+		b.WriteString(ind)
+		b.WriteString("break\n")
+	case "goto_statement":
+		b.WriteString(ind)
+		b.WriteString("goto ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
+	case "label_statement":
+		b.WriteString(ind)
+		b.WriteString("::")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteString("::\n")
 	case "function_call":
 		b.WriteString(ind)
 		writeExpr(b, n, indent)
@@ -274,8 +291,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte('}')
 	case "field":
-		if len(n.Children) > 0 {
+		switch len(n.Children) {
+		case 1:
 			writeExpr(b, n.Children[0], indent)
+		case 2:
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "function_definition":
 		b.WriteString("function")
