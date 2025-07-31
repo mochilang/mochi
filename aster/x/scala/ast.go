@@ -41,6 +41,8 @@ type (
 	Block                   struct{ Node }
 	String                  struct{ Node }
 	IntegerLiteral          struct{ Node }
+	BooleanLiteral          struct{ Node }
+	OperatorIdentifier      struct{ Node }
 	Enumerator              struct{ Node }
 	Enumerators             struct{ Node }
 	FieldExpression         struct{ Node }
@@ -115,7 +117,7 @@ func convert(n *sitter.Node, src []byte, withPos bool) *Node {
 // meaningful value that should be preserved in the JSON output.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "type_identifier", "integer_literal", "string", "comment":
+	case "identifier", "type_identifier", "integer_literal", "string", "comment", "boolean_literal", "operator_identifier":
 		return true
 	default:
 		return false

@@ -108,18 +108,27 @@ func writeBlock(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeFunctionDefinition(b *bytes.Buffer, n *Node, indent int) {
-	if len(n.Children) < 4 {
+	if len(n.Children) < 3 {
 		return
 	}
 	ind := strings.Repeat("  ", indent)
 	name := n.Children[0]
-	params := n.Children[1]
-	ret := n.Children[2]
-	body := n.Children[3]
+	var params *Node
+	idx := 1
+	if len(n.Children) > 3 {
+		params = n.Children[1]
+		idx = 2
+	}
+	ret := n.Children[idx]
+	body := n.Children[idx+1]
 	b.WriteString(ind)
 	b.WriteString("def ")
 	b.WriteString(name.Text)
-	writeParameters(b, params, indent)
+	if params != nil {
+		writeParameters(b, params, indent)
+	} else {
+		b.WriteString("()")
+	}
 	b.WriteString(": ")
 	writeExpr(b, ret, indent)
 	b.WriteString(" = {\n")
@@ -276,7 +285,7 @@ func writeArguments(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "integer_literal", "string", "type_identifier":
+	case "identifier", "integer_literal", "string", "type_identifier", "boolean_literal", "operator_identifier":
 		b.WriteString(n.Text)
 	case "generic_type", "generic_function":
 		if len(n.Children) > 0 {
@@ -309,26 +318,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte(')')
 	case "infix_expression":
-		if len(n.Children) == 3 {
+		if len(n.Children) >= 3 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[2], indent)
+			for i := 3; i < len(n.Children); i++ {
+				b.WriteByte(' ')
+				writeExpr(b, n.Children[i], indent)
+			}
 		} else if len(n.Children) == 2 {
-			left := n.Children[0]
-			right := n.Children[1]
-			writeExpr(b, left, indent)
-			// heuristic for operator
-			op := "+"
-			if left.Kind == "integer_literal" && left.Text == "0" && right.Kind == "integer_literal" && right.Text == "1" {
-				op = "-"
-			}
-			if right.Kind == "identifier" && right.Text == "target" {
-				op = "=="
-			}
-			b.WriteString(" " + op + " ")
-			writeExpr(b, right, indent)
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			writeExpr(b, n.Children[1], indent)
 		}
 	case "block":
 		b.WriteString("{\n")
