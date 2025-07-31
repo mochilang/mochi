@@ -29,15 +29,16 @@ type Option struct {
 // rawNode mirrors the JSON structure produced by the babashka script.
 // It is converted into the generic Node type by toNode.
 type rawNode struct {
-	Sym    string     `json:"sym,omitempty"`
-	Kw     string     `json:"kw,omitempty"`
-	Str    string     `json:"str,omitempty"`
-	Num    *float64   `json:"num,omitempty"`
-	Bool   *bool      `json:"bool,omitempty"`
-	Nil    bool       `json:"nil,omitempty"`
-	List   []*rawNode `json:"list,omitempty"`
-	Vector []*rawNode `json:"vector,omitempty"`
-	Map    []rawEntry `json:"map,omitempty"`
+	Sym     string     `json:"sym,omitempty"`
+	Kw      string     `json:"kw,omitempty"`
+	Str     string     `json:"str,omitempty"`
+	Num     *float64   `json:"num,omitempty"`
+	Bool    *bool      `json:"bool,omitempty"`
+	Nil     bool       `json:"nil,omitempty"`
+	List    []*rawNode `json:"list,omitempty"`
+	Vector  []*rawNode `json:"vector,omitempty"`
+	Map     []rawEntry `json:"map,omitempty"`
+	Unknown string     `json:"unknown,omitempty"`
 }
 
 type rawEntry struct {
@@ -90,6 +91,8 @@ func toNode(r *rawNode) *Node {
 			n.Children = append(n.Children, en)
 		}
 		return n
+	case r.Unknown != "":
+		return &Node{Kind: "unknown", Text: r.Unknown}
 	}
 	return nil
 }

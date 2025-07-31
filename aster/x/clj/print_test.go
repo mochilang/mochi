@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 
@@ -26,15 +27,13 @@ func TestPrint_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "aster", "x", "clj")
 	os.MkdirAll(outDir, 0o755)
 
-	files := []string{
-		"append_builtin.clj",
-		"avg_builtin.clj",
-		"basic_compare.clj",
-		"bench_block.clj",
-		"binary_precedence.clj",
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.clj"))
+	if err != nil {
+		t.Fatal(err)
 	}
-	for i, f := range files {
-		files[i] = filepath.Join(srcDir, f)
+	sort.Strings(files)
+	if len(files) > 20 {
+		files = files[:20]
 	}
 
 	for _, src := range files {
