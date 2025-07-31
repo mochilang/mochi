@@ -54,9 +54,9 @@ func TestInspectGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	if len(files) > 10 {
-		files = files[:10]
-	}
+       if len(files) > 20 {
+               files = files[:20]
+       }
 
 	for _, path := range files {
 		name := strings.TrimSuffix(filepath.Base(path), ".erl")
