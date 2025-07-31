@@ -106,15 +106,27 @@ func convert(n *sitter.Node, src []byte) *Node {
 		}
 	}
 
-	for i := uint(0); i < n.NamedChildCount(); i++ {
-		child := n.NamedChild(i)
-		if child == nil {
-			continue
-		}
-		if c := convert(child, src); c != nil {
-			node.Children = append(node.Children, c)
-		}
-	}
+       for i := uint(0); i < n.NamedChildCount(); i++ {
+               child := n.NamedChild(i)
+               if child == nil {
+                       continue
+               }
+               if c := convert(child, src); c != nil {
+                       node.Children = append(node.Children, c)
+               }
+       }
+
+       // Include un-named value children such as boolean literals
+       for i := n.NamedChildCount(); i < n.ChildCount(); i++ {
+               child := n.Child(i)
+               if child == nil || child.IsNamed() {
+                       continue
+               }
+               kind := child.Kind()
+               if isValueNode(kind) {
+                       node.Children = append(node.Children, &Node{Kind: kind, Text: strings.TrimSpace(child.Utf8Text(src))})
+               }
+       }
 
 	if len(node.Children) == 0 && node.Text == "" {
 		return nil
@@ -126,10 +138,10 @@ func convert(n *sitter.Node, src []byte) *Node {
 // should be preserved even when it has no named children.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "atom", "integer", "float", "char", "string",
-		"string_line", "string_content", "quoted_content", "keyword",
-		"comment", "alias", "true", "false":
-		return true
+        case "identifier", "atom", "integer", "float", "char", "string",
+                "string_line", "string_content", "quoted_content", "keyword",
+                "comment", "alias", "true", "false", "nil":
+                return true
 	default:
 		return false
 	}

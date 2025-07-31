@@ -60,8 +60,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "alias", "atom", "integer":
-		b.WriteString(n.Text)
+    case "identifier", "alias", "atom", "integer", "float", "char", "true", "false", "nil":
+                b.WriteString(n.Text)
 	case "string":
 		if len(n.Children) == 0 {
 			if strings.HasPrefix(n.Text, "\"") && strings.HasSuffix(n.Text, "\"") {
@@ -86,12 +86,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteByte('}')
 	case "quoted_content", "string_content":
 		b.WriteString(n.Text)
-	case "call":
-		if len(n.Children) == 0 {
-			return
-		}
-		f := n.Children[0]
-		if f.Kind == "identifier" && f.Text == "for" {
+        case "call":
+                if len(n.Children) == 0 {
+                        return
+                }
+                f := n.Children[0]
+                if f.Kind == "identifier" && f.Text == "IO" {
+                        // fallthrough to generic handling
+                }
+                if f.Kind == "identifier" && f.Text == "for" {
 			b.WriteString("for ")
 			if len(n.Children) > 1 {
 				writeForArgs(b, n.Children[1], indent)
@@ -187,16 +190,39 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			b.WriteByte(']')
 		}
-	case "map":
-		b.WriteString("%{")
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
-			}
-			writeExpr(b, c, indent)
-		}
-		b.WriteString("}")
-	case "map_content", "keywords":
+        case "map":
+                b.WriteString("%{")
+                for i, c := range n.Children {
+                        if i > 0 {
+                                b.WriteString(", ")
+                        }
+                        writeExpr(b, c, indent)
+                }
+                b.WriteString("}")
+        case "map_index":
+                if len(n.Children) == 2 {
+                        writeExpr(b, n.Children[0], indent)
+                        b.WriteByte('[')
+                        writeExpr(b, n.Children[1], indent)
+                        b.WriteByte(']')
+                }
+        case "access_call":
+                if len(n.Children) == 2 {
+                        writeExpr(b, n.Children[0], indent)
+                        b.WriteByte('[')
+                        writeExpr(b, n.Children[1], indent)
+                        b.WriteByte(']')
+                }
+        case "tuple":
+                b.WriteByte('{')
+                for i, c := range n.Children {
+                        if i > 0 {
+                                b.WriteString(", ")
+                        }
+                        writeExpr(b, c, indent)
+                }
+                b.WriteByte('}')
+        case "map_content", "keywords":
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString(", ")

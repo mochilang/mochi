@@ -1,4 +1,4 @@
-# Elixir AST Print Progress (20/20 completed)
+# Elixir AST Print Progress (30/30 completed)
 
 This file tracks golden tests for the Elixir AST printer.
 
@@ -23,5 +23,15 @@ This file tracks golden tests for the Elixir AST printer.
 18. [x] for_map_collection
 19. [x] fun_call
 20. [x] fun_expr_in_let
+21. [x] fun_three_args
+22. [x] go_auto
+23. [x] group_by_sort
+24. [x] len_builtin
+25. [x] len_map
+26. [x] len_string
+27. [x] let_and_print
+28. [x] list_assign
+29. [x] list_index
+30. [x] map_assign
 
-Updated: 2025-07-31 18:23 GMT+7
+Updated: 2025-07-31 18:41 GMT+7
