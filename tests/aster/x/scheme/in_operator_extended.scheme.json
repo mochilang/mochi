@@ -1,0 +1,1481 @@
+{
+  "forms": [
+    {
+      "kind": "comment",
+      "text": ";; Generated on 2025-07-21 17:26 +0700"
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "import"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "srfi"
+            },
+            {
+              "kind": "number",
+              "text": "69"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "chibi"
+            },
+            {
+              "kind": "symbol",
+              "text": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "xs"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "list"
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            },
+            {
+              "kind": "number",
+              "text": "3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "ys"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "let"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "res35"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "list"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "begin"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for-each"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "lambda"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "if"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "="
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "modulo"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "x"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "2"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "set!"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "res35"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "append"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "res35"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "list"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "quote"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "nil"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "xs"
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "res35"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "ys"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ys"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "m"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "alist-\u003ehash-table"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "list"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "cons"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "\"a\""
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"a\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"a\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"a\""
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"b\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "m"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"b\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"b\""
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "m"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "define"
+        },
+        {
+          "kind": "symbol",
+          "text": "s"
+        },
+        {
+          "kind": "string",
+          "text": "\"hello\""
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"ell\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"ell\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"ell\""
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "display"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "if"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "cond"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "string?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "string-contains"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"foo\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "hash-table?"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "s"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "hash-table-exists?"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"foo\""
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "else"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "member"
+                            },
+                            {
+                              "kind": "string",
+                              "text": "\"foo\""
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"true\""
+                        },
+                        {
+                          "kind": "string",
+                          "text": "\"false\""
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "newline"
+        }
+      ]
+    }
+  ]
+}
