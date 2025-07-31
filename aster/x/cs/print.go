@@ -242,6 +242,12 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		writeForStatement(b, n, indentLevel)
 	case "foreach_statement":
 		writeForeachStatement(b, n, indentLevel)
+	case "break_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("break;\n")
+	case "continue_statement":
+		b.WriteString(indent(indentLevel))
+		b.WriteString("continue;\n")
 	case "if_statement":
 		writeIfStatement(b, n, indentLevel)
 	case "block":
@@ -426,6 +432,29 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			writeExpr(b, n.Children[0], indentLevel)
 			writeExpr(b, n.Children[1], indentLevel)
 		}
+	case "generic_name":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indentLevel)
+		}
+		if len(n.Children) > 1 {
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "type_argument_list":
+		b.WriteByte('<')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indentLevel)
+		}
+		b.WriteByte('>')
+	case "cast_expression":
+		if len(n.Children) == 2 {
+			b.WriteByte('(')
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteByte(')')
+			writeExpr(b, n.Children[1], indentLevel)
+		}
 	case "bracketed_argument_list":
 		b.WriteByte('[')
 		for i, arg := range n.Children {
@@ -448,6 +477,20 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 				continue
 			}
 			writeExpr(b, c, indentLevel)
+		}
+	case "lambda_expression":
+		if len(n.Children) == 2 {
+			writeParameterList(b, n.Children[0])
+			b.WriteString(" => ")
+			writeExpr(b, n.Children[1], indentLevel)
+		}
+	case "conditional_expression":
+		if len(n.Children) == 3 {
+			writeExpr(b, n.Children[0], indentLevel)
+			b.WriteString(" ? ")
+			writeExpr(b, n.Children[1], indentLevel)
+			b.WriteString(" : ")
+			writeExpr(b, n.Children[2], indentLevel)
 		}
 	case "interpolated_string_expression":
 		b.WriteString("$\"")

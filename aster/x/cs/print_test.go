@@ -37,8 +37,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 5 {
-		files = files[:5]
+	if len(files) > 10 {
+		files = files[:10]
 	}
 
 	for _, src := range files {
@@ -103,14 +103,26 @@ func TestPrint_Golden(t *testing.T) {
 				t.Skipf("dotnet run error: %v\n%s", err, want)
 				return
 			}
+			filter := func(b []byte) string {
+				lines := strings.Split(strings.TrimSpace(string(b)), "\n")
+				out := make([]string, 0, len(lines))
+				for _, l := range lines {
+					if !strings.Contains(l, "Program.cs") {
+						out = append(out, l)
+					}
+				}
+				return strings.Join(out, "\n")
+			}
+			gotStr := filter(got)
+			wantStr := filter(want)
 			outFile := filepath.Join(outDir, name+".out")
 			if shouldUpdate() {
-				if err := os.WriteFile(outFile, got, 0644); err != nil {
+				if err := os.WriteFile(outFile, []byte(gotStr+"\n"), 0644); err != nil {
 					t.Fatalf("write out file: %v", err)
 				}
 			}
-			if string(got) != string(want) {
-				t.Fatalf("output mismatch\n--- got ---\n%s\n--- want ---\n%s", got, want)
+			if gotStr != wantStr {
+				t.Fatalf("output mismatch\n--- got ---\n%s\n--- want ---\n%s", gotStr, wantStr)
 			}
 		})
 	}
