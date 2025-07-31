@@ -1,5 +1,5 @@
-## Progress (2025-07-30 21:21 +0700)
-- swift transpiler: add substr builtin; rosetta 402
+## Progress (2025-07-31 00:47 +0700)
+- swift: transpile rosetta program 142
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
