@@ -120,7 +120,7 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 // carries textual content worth keeping in the JSON representation.
 func isValueNode(kind string) bool {
 	switch kind {
-	case "identifier", "integer", "float", "string", "true", "false", "none", "comment", "string_content":
+	case "identifier", "integer", "float", "string", "true", "false", "none", "comment", "string_content", "dictionary", "list":
 		return true
 	default:
 		return false
