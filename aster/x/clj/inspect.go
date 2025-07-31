@@ -126,6 +126,7 @@ func Inspect(src string) (*Program, error) {
 // additional information should be captured. The returned AST structure is the
 // same regardless of the options provided.
 func InspectWithOption(src string, opt Option) (*Program, error) {
+	IncludePositions = opt.Positions
 	if err := EnsureBabashka(); err != nil {
 		return nil, err
 	}
