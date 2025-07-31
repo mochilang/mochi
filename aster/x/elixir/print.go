@@ -97,7 +97,49 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			return
 		}
+		if f.Kind == "identifier" && f.Text == "defmodule" {
+			b.WriteString("defmodule ")
+			if len(n.Children) > 1 && n.Children[1].Kind == "arguments" && len(n.Children[1].Children) > 0 {
+				writeExpr(b, n.Children[1].Children[0], indent)
+			}
+			b.WriteString(" do\n")
+			if len(n.Children) > 2 && n.Children[2].Kind == "do_block" {
+				writeBlock(b, n.Children[2], indent+1)
+			}
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+			return
+		}
+		if f.Kind == "identifier" && f.Text == "def" {
+			b.WriteString("def ")
+			if len(n.Children) > 1 && n.Children[1].Kind == "arguments" && len(n.Children[1].Children) > 0 {
+				fc := n.Children[1].Children[0]
+				if fc.Kind == "call" && len(fc.Children) > 0 {
+					writeExpr(b, fc.Children[0], indent)
+					if len(fc.Children) > 1 {
+						writeArguments(b, fc.Children[1], indent)
+					} else {
+						b.WriteString("()")
+					}
+				} else {
+					writeExpr(b, fc, indent)
+				}
+			}
+			b.WriteString(" do\n")
+			if len(n.Children) > 2 && n.Children[2].Kind == "do_block" {
+				writeBlock(b, n.Children[2], indent+1)
+			}
+			b.WriteString(strings.Repeat("  ", indent))
+			b.WriteString("end")
+			return
+		}
 		writeExpr(b, f, indent)
+		if len(n.Children) == 1 {
+			if f.Kind != "dot" {
+				b.WriteString("()")
+			}
+			return
+		}
 		for _, c := range n.Children[1:] {
 			if c.Kind == "arguments" {
 				writeArguments(b, c, indent)
@@ -112,11 +154,16 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 	case "dot":
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteByte('.')
+		if len(n.Children) == 1 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte('.')
+		} else {
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteByte('.')
+				}
+				writeExpr(b, c, indent)
 			}
-			writeExpr(b, c, indent)
 		}
 	case "arguments":
 		writeArguments(b, n, indent)
@@ -191,6 +238,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "block":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(" ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
 	default:
 		if n.Text != "" {
 			b.WriteString(n.Text)
