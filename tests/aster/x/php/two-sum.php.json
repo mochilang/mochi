@@ -50,6 +50,7 @@
                 "children": [
                   {
                     "kind": "assignment_expression",
+                    "text": "=",
                     "children": [
                       {
                         "kind": "variable_name",
@@ -97,6 +98,7 @@
                 "children": [
                   {
                     "kind": "assignment_expression",
+                    "text": "=",
                     "children": [
                       {
                         "kind": "variable_name",
@@ -115,6 +117,7 @@
                   },
                   {
                     "kind": "binary_expression",
+                    "text": "\u003c",
                     "children": [
                       {
                         "kind": "variable_name",
@@ -138,6 +141,7 @@
                   },
                   {
                     "kind": "update_expression",
+                    "text": "++",
                     "children": [
                       {
                         "kind": "variable_name",
@@ -158,6 +162,7 @@
                         "children": [
                           {
                             "kind": "assignment_expression",
+                            "text": "=",
                             "children": [
                               {
                                 "kind": "variable_name",
@@ -170,6 +175,7 @@
                               },
                               {
                                 "kind": "binary_expression",
+                                "text": "+",
                                 "children": [
                                   {
                                     "kind": "variable_name",
@@ -190,6 +196,7 @@
                           },
                           {
                             "kind": "binary_expression",
+                            "text": "\u003c",
                             "children": [
                               {
                                 "kind": "variable_name",
@@ -213,6 +220,7 @@
                           },
                           {
                             "kind": "update_expression",
+                            "text": "++",
                             "children": [
                               {
                                 "kind": "variable_name",
@@ -236,9 +244,11 @@
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "==",
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "text": "+",
                                             "children": [
                                               {
                                                 "kind": "subscript_expression",
@@ -365,6 +375,7 @@
                         "children": [
                           {
                             "kind": "unary_op_expression",
+                            "text": "-",
                             "children": [
                               {
                                 "kind": "integer",
@@ -379,6 +390,7 @@
                         "children": [
                           {
                             "kind": "unary_op_expression",
+                            "text": "-",
                             "children": [
                               {
                                 "kind": "integer",
@@ -401,6 +413,7 @@
         "children": [
           {
             "kind": "assignment_expression",
+            "text": "=",
             "children": [
               {
                 "kind": "variable_name",
@@ -495,6 +508,7 @@
                 "children": [
                   {
                     "kind": "conditional_expression",
+                    "text": "? :",
                     "children": [
                       {
                         "kind": "function_call_expression",
@@ -620,6 +634,7 @@
                 "children": [
                   {
                     "kind": "conditional_expression",
+                    "text": "? :",
                     "children": [
                       {
                         "kind": "function_call_expression",
