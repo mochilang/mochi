@@ -4,9 +4,12 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 
 ## Test Files
 
-1. cross_join.pl
-2. two-sum.pl
+1. append_builtin.pl
+2. avg_builtin.pl
+3. basic_compare.pl
+4. cross_join.pl
+5. two-sum.pl
 
-Checked: 2/2
+Checked: 5/5
 
-_Last updated: 2025-07-31 15:30 GMT+7_
+_Last updated: 2025-07-31 19:02 GMT+7_

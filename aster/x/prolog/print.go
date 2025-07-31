@@ -39,7 +39,7 @@ func writeClause(b *strings.Builder, c *Node, indent int) {
 	// directive
 	if head.Kind == ":-" && len(head.Children) == 1 {
 		b.WriteString(":- ")
-		writeTerm(b, head.Children[0], indent)
+		writeTerm(b, head.Children[0], indent, false)
 		b.WriteString(".\n")
 		return
 	}
@@ -68,7 +68,7 @@ func writeHead(b *strings.Builder, n *Node) {
 			if c.Kind == "atom" && len(c.Text) > 0 && unicode.IsUpper(rune(c.Text[0])) {
 				b.WriteString(c.Text)
 			} else {
-				writeTerm(b, c, 0)
+				writeTerm(b, c, 0, true)
 			}
 		}
 		b.WriteByte(')')
@@ -86,15 +86,19 @@ func writeBody(b *strings.Builder, n *Node, indent int) {
 			} else {
 				b.WriteString(ind)
 			}
-			writeBody(b, c, indent)
+			if c.Kind == "-\u003e" || c.Kind == ";" {
+				writeTerm(b, c, indent, true)
+			} else {
+				writeBody(b, c, indent)
+			}
 		}
 	default:
 		b.WriteString(ind)
-		writeTerm(b, n, indent)
+		writeTerm(b, n, indent, false)
 	}
 }
 
-func writeTerm(b *strings.Builder, n *Node, indent int) {
+func writeTerm(b *strings.Builder, n *Node, indent int, arg bool) {
 	switch n.Kind {
 	case "var", "number", "bool":
 		b.WriteString(n.Text)
@@ -106,7 +110,7 @@ func writeTerm(b *strings.Builder, n *Node, indent int) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c, indent)
+			writeTerm(b, c, indent, false)
 		}
 		b.WriteByte(']')
 	case "{}":
@@ -115,76 +119,102 @@ func writeTerm(b *strings.Builder, n *Node, indent int) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c, indent)
+			writeTerm(b, c, indent, false)
 		}
 		b.WriteByte('}')
 	case ":":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(": ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
 		}
 	case "=":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" = ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
 		}
 	case "is":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" is ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
 		}
 	case "+":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" + ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else if len(n.Children) == 1 {
 			b.WriteByte('+')
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
 		}
 	case "-":
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" - ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else if len(n.Children) == 1 {
 			b.WriteByte('-')
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "=:=", "=\\=", "<", "<=", ">", ">=":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent, true)
+			b.WriteString(" " + n.Kind + " ")
+			writeTerm(b, n.Children[1], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
 		}
 	case ",":
+		if arg {
+			b.WriteByte('(')
+		}
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c, indent)
+			writeTerm(b, c, indent, false)
+		}
+		if arg {
+			b.WriteByte(')')
 		}
 	case ";":
+		if arg {
+			b.WriteByte('(')
+		}
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString("; ")
 			}
-			writeTerm(b, c, indent)
+			writeTerm(b, c, indent, false)
+		}
+		if arg {
+			b.WriteByte(')')
 		}
 	case "-\u003e":
+		if arg {
+			b.WriteByte('(')
+		}
 		if len(n.Children) == 2 {
-			writeTerm(b, n.Children[0], indent)
+			writeTerm(b, n.Children[0], indent, true)
 			b.WriteString(" -> ")
-			writeTerm(b, n.Children[1], indent)
+			writeTerm(b, n.Children[1], indent, true)
 		} else {
 			writeFunctor(b, n, indent)
+		}
+		if arg {
+			b.WriteByte(')')
 		}
 	default:
 		writeFunctor(b, n, indent)
@@ -199,7 +229,7 @@ func writeFunctor(b *strings.Builder, n *Node, indent int) {
 			if i > 0 {
 				b.WriteString(", ")
 			}
-			writeTerm(b, c, indent)
+			writeTerm(b, c, indent, true)
 		}
 		b.WriteByte(')')
 	}
