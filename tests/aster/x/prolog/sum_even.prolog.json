@@ -1,0 +1,271 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "sum_even",
+          "children": [
+            {
+              "kind": "list"
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "sum_even",
+          "children": [
+            {
+              "kind": "[|]",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "H"
+                },
+                {
+                  "kind": "var",
+                  "text": "T"
+                }
+              ]
+            },
+            {
+              "kind": "var",
+              "text": "S"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "is",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "0"
+                },
+                {
+                  "kind": "mod",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "H"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "sum_even",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "T"
+                    },
+                    {
+                      "kind": "var",
+                      "text": "S1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "is",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "S"
+                    },
+                    {
+                      "kind": "+",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "S1"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "H"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "sum_even",
+          "children": [
+            {
+              "kind": "[|]",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "_"
+                },
+                {
+                  "kind": "var",
+                  "text": "T"
+                }
+              ]
+            },
+            {
+              "kind": "var",
+              "text": "S"
+            }
+          ]
+        },
+        {
+          "kind": "sum_even",
+          "children": [
+            {
+              "kind": "var",
+              "text": "T"
+            },
+            {
+              "kind": "var",
+              "text": "S"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "sum_even",
+              "children": [
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "3"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "4"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "5"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "6"
+                    }
+                  ]
+                },
+                {
+                  "kind": "var",
+                  "text": "S"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "S"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

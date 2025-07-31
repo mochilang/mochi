@@ -4,47 +4,57 @@ This directory contains utilities for inspecting Prolog programs using SWI-Prolo
 
 ## Test Files
 
-1. append_builtin.pl
-2. arithmetic_ops.pl
-3. atom_length.pl
-4. avg_builtin.pl
-5. basic_compare.pl
-6. bool_ops.pl
-7. cross_join.pl
-8. dictionary_lookup.pl
-9. division_mod.pl
-10. factorial.pl
-11. factorial_tail.pl
-12. fib.pl
-13. fibonacci_tail.pl
-14. for_loop.pl
-15. gcd.pl
-16. gcd_iterative.pl
-17. list_length.pl
-18. member_check.pl
-19. nested_call.pl
-20. not_operator.pl
-21. print_hello.pl
-22. string_concat.pl
-23. substring_builtin.pl
-24. sum_list.pl
-25. two-sum.pl
-26. reverse_list.pl
-27. palindrome.pl
-28. prime_check.pl
-29. even_numbers.pl
-30. sum_pairs.pl
-31. downcase_atom.pl
-32. upcase_atom.pl
-33. nth0_builtin.pl
-34. sort_list.pl
-35. max_list.pl
-36. min_list.pl
-37. atom_codes.pl
-38. atom_chars.pl
-39. sub_atom.pl
-40. atom_length_builtin.pl
+1. [x] append_builtin.pl
+2. [x] arithmetic_ops.pl
+3. [x] atom_chars.pl
+4. [x] atom_codes.pl
+5. [x] atom_length.pl
+6. [x] atom_length_builtin.pl
+7. [x] avg_builtin.pl
+8. [x] basic_compare.pl
+9. [x] bool_ops.pl
+10. [x] countdown.pl
+11. [x] cross_join.pl
+12. [x] dictionary_lookup.pl
+13. [x] division_mod.pl
+14. [x] downcase_atom.pl
+15. [x] even_numbers.pl
+16. [x] factorial.pl
+17. [x] factorial_tail.pl
+18. [x] fib.pl
+19. [x] fibonacci_tail.pl
+20. [x] first_element.pl
+21. [x] flatten_list.pl
+22. [x] for_loop.pl
+23. [x] gcd.pl
+24. [x] gcd_iterative.pl
+25. [x] last_element.pl
+26. [x] list_length.pl
+27. [x] max_list.pl
+28. [x] member_check.pl
+29. [x] min_list.pl
+30. [x] nested_call.pl
+31. [x] not_operator.pl
+32. [x] nth0_builtin.pl
+33. [x] palindrome.pl
+34. [x] power.pl
+35. [x] prime_check.pl
+36. [x] print_hello.pl
+37. [x] reverse_atom_builtin.pl
+38. [x] reverse_list.pl
+39. [x] sort_list.pl
+40. [x] string_concat.pl
+41. [x] string_length_builtin.pl
+42. [x] string_upper.pl
+43. [x] sub_atom.pl
+44. [x] substring_builtin.pl
+45. [x] sum_even.pl
+46. [x] sum_list.pl
+47. [x] sum_pairs.pl
+48. [x] two-sum.pl
+49. [x] unique_elements.pl
+50. [x] upcase_atom.pl
 
-Completed **40/40** examples.
+Completed **50/50** examples.
 
-_Last updated: 2025-07-31 20:45 GMT+7_
+_Last updated: 2025-07-31 20:58 GMT+07_
