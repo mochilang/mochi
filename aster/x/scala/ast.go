@@ -50,6 +50,8 @@ type (
 	ParenthesizedExpression struct{ Node }
 	ReturnExpression        struct{ Node }
 	ValDefinition           struct{ Node }
+	VarDefinition           struct{ Node }
+	GenericFunction         struct{ Node }
 )
 
 // Option controls how the AST is generated.
