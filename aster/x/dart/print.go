@@ -298,22 +298,41 @@ func writeParameters(b *bytes.Buffer, n *Node) {
 	b.WriteByte('(')
 	if len(n.Children) == 1 && n.Children[0].Kind == "optional_formal_parameters" {
 		b.WriteByte('{')
-		for i, p := range n.Children[0].Children {
-			if i > 0 {
+		list := n.Children[0].Children
+		first := true
+		for i := 0; i < len(list); {
+			if !first {
 				b.WriteString(", ")
 			}
-			if len(p.Children) > 0 {
-				writeParameter(b, p.Children[0])
+			first = false
+			if list[i].Kind == "required" {
+				b.WriteString("required ")
+				i++
+			}
+			if i < len(list) && len(list[i].Children) > 0 {
+				writeParameter(b, list[i].Children[0])
+				i++
+			} else {
+				i++
 			}
 		}
 		b.WriteByte('}')
 	} else {
-		for i, c := range n.Children {
-			if i > 0 {
+		first := true
+		for i := 0; i < len(n.Children); {
+			if !first {
 				b.WriteString(", ")
 			}
-			if len(c.Children) > 0 {
-				writeParameter(b, c.Children[0])
+			first = false
+			if n.Children[i].Kind == "required" {
+				b.WriteString("required ")
+				i++
+			}
+			if i < len(n.Children) && len(n.Children[i].Children) > 0 {
+				writeParameter(b, n.Children[i].Children[0])
+				i++
+			} else {
+				i++
 			}
 		}
 	}
@@ -333,7 +352,7 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node) {
 	switch n.Kind {
-	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null":
+	case "identifier", "decimal_integer_literal", "string_literal", "comment", "type_identifier", "void_type", "true", "false", "null", "required":
 		b.WriteString(n.Text)
 	case "type_arguments":
 		b.WriteByte('<')
