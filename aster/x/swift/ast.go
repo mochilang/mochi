@@ -142,6 +142,11 @@ func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node 
 				op := n.Child(0)
 				out.Text = strings.TrimSpace(op.Utf8Text(src))
 			}
+		case "control_transfer_statement", "class_declaration", "property_declaration", "value_argument":
+			if n.ChildCount() >= 1 && !n.Child(0).IsNamed() {
+				kw := n.Child(0)
+				out.Text = strings.TrimSpace(kw.Utf8Text(src))
+			}
 		}
 	}
 
@@ -163,7 +168,7 @@ func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node 
 func isValueNode(kind string) bool {
 	switch kind {
 	case "simple_identifier", "integer_literal", "line_str_text",
-		"type_identifier", "comment", "bang":
+		"type_identifier", "comment", "bang", "boolean_literal":
 		return true
 	default:
 		return false

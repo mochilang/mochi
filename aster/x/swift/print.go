@@ -42,6 +42,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeFuncDecl(b, n, indent)
 	case "property_declaration":
 		writePropertyDecl(b, n, indent)
+	case "class_declaration":
+		writeClassDecl(b, n, indent)
 	case "import_declaration":
 		b.WriteString(indentStr(indent))
 		b.WriteString("import ")
@@ -65,7 +67,11 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteByte('\n')
 	case "control_transfer_statement":
 		b.WriteString(indentStr(indent))
-		b.WriteString("return")
+		kw := n.Text
+		if kw == "" {
+			kw = "return"
+		}
+		b.WriteString(kw)
 		if len(n.Children) > 0 {
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[0], indent)
@@ -124,15 +130,50 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 	writeType(b, n.Children[2])
 }
 
+func writeClassDecl(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) < 2 {
+		return
+	}
+	kw := n.Text
+	if kw == "" {
+		kw = "class"
+	}
+	b.WriteString(indentStr(indent))
+	b.WriteString(kw)
+	b.WriteByte(' ')
+	writeExpr(b, n.Children[0], indent)
+	b.WriteString(" {\n")
+	if len(n.Children) > 1 {
+		body := n.Children[1]
+		for _, c := range body.Children {
+			writeStmt(b, c, indent+1)
+		}
+	}
+	b.WriteString(indentStr(indent))
+	b.WriteString("}\n")
+}
+
 func writePropertyDecl(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) < 2 {
 		return
 	}
 	b.WriteString(indentStr(indent))
-	b.WriteString("let ")
+	kw := n.Text
+	if kw == "" {
+		kw = "let"
+	}
+	b.WriteString(kw)
+	b.WriteByte(' ')
 	writePattern(b, n.Children[0])
-	b.WriteString(" = ")
-	writeExpr(b, n.Children[1], indent)
+	if n.Children[1].Kind == "type_annotation" {
+		b.WriteString(": ")
+		if len(n.Children[1].Children) > 0 {
+			writeType(b, n.Children[1].Children[0])
+		}
+	} else {
+		b.WriteString(" = ")
+		writeExpr(b, n.Children[1], indent)
+	}
 	b.WriteByte('\n')
 }
 
@@ -210,7 +251,7 @@ func writeType(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "bang":
+	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "bang", "boolean_literal":
 		if n.Text != "" {
 			b.WriteString(n.Text)
 		} else {
