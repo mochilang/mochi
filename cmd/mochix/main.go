@@ -539,7 +539,7 @@ func runInspect(cmd *InspectCmd) error {
 	case "hs":
 		prog, err = hsast.Inspect(src)
 	case "java":
-		prog, err = javaast.Inspect(src, false)
+		prog, err = javaast.Inspect(src, javaast.Options{})
 	case "kotlin", "kt":
 		prog, err = kotlinast.Inspect(src)
 	case "lua":

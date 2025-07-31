@@ -97,7 +97,7 @@ func TestInspectGolden(t *testing.T) {
 			return json.MarshalIndent(p, "", "  ")
 		},
 		"java": func(src string) ([]byte, error) {
-			p, err := javaast.Inspect(src, false)
+			p, err := javaast.Inspect(src, javaast.Options{})
 			if err != nil {
 				return nil, err
 			}

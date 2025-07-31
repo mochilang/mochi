@@ -62,7 +62,7 @@ func TestInspect_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read src: %v", err)
 			}
-			prog, err := javaast.Inspect(string(data), false)
+			prog, err := javaast.Inspect(string(data), javaast.Options{})
 			if err != nil {
 				t.Skipf("inspect error: %v", err)
 				return
