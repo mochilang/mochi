@@ -37,14 +37,9 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	var selected []string
-	for _, f := range files {
-		base := filepath.Base(f)
-		if base == "two-sum.cs" || base == "cross_join.cs" {
-			selected = append(selected, f)
-		}
+	if len(files) > 5 {
+		files = files[:5]
 	}
-	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".cs")
