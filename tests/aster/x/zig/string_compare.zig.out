@@ -1,0 +1,1 @@
+string_compare.zig:4:84: error: invalid operands to binary expression: 'Enum' and 'EnumLiteral'
