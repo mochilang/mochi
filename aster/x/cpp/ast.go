@@ -1,6 +1,8 @@
 package cpp
 
 import (
+	"strings"
+
 	sitter "github.com/tree-sitter/go-tree-sitter"
 )
 
@@ -86,6 +88,13 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 			node.Text = n.Utf8Text(src)
 		} else {
 			return nil
+		}
+	} else if n.Kind() == "binary_expression" && n.NamedChildCount() >= 2 {
+		left := n.NamedChild(0)
+		right := n.NamedChild(1)
+		if left != nil && right != nil {
+			opBytes := src[left.EndByte():right.StartByte()]
+			node.Text = strings.TrimSpace(string(opBytes))
 		}
 	}
 
