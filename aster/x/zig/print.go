@@ -239,7 +239,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 			}
 		}
 	case "field_expression":
-		if len(n.Children) == 2 {
+		if len(n.Children) == 1 {
+			b.WriteByte('.')
+			writeExpr(b, &n.Children[0], indentLevel)
+		} else if len(n.Children) == 2 {
 			writeExpr(b, &n.Children[0], indentLevel)
 			b.WriteByte('.')
 			writeExpr(b, &n.Children[1], indentLevel)
@@ -282,9 +285,32 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		} else if len(n.Children) == 1 {
 			writeExpr(b, &n.Children[0], indentLevel)
 		}
+	case "struct_declaration":
+		b.WriteString("struct {\n")
+		for i := range n.Children {
+			if n.Children[i].Kind == "container_field" {
+				b.WriteString(indent(indentLevel + 1))
+				writeExpr(b, &n.Children[i], indentLevel+1)
+				b.WriteString(",\n")
+			}
+		}
+		b.WriteString(indent(indentLevel))
+		b.WriteByte('}')
+	case "container_field":
+		if len(n.Children) >= 2 {
+			writeExpr(b, &n.Children[0], indentLevel)
+			b.WriteString(": ")
+			writeExpr(b, &n.Children[1], indentLevel)
+		}
 	case "struct_initializer":
 		if len(n.Children) >= 2 {
 			writeExpr(b, &n.Children[0], indentLevel)
+			writeExpr(b, &n.Children[1], indentLevel)
+		}
+	case "assignment_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, &n.Children[0], indentLevel)
+			b.WriteString(" = ")
 			writeExpr(b, &n.Children[1], indentLevel)
 		}
 	case "initializer_list":
@@ -321,6 +347,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		writeBlock(b, n, indentLevel+1)
 		b.WriteString(indent(indentLevel))
 		b.WriteString("}")
+	case "block_label":
+		if len(n.Children) > 0 {
+			writeExpr(b, &n.Children[0], indentLevel)
+		}
+		b.WriteByte(':')
+	case "labeled_type_expression":
+		if len(n.Children) >= 2 {
+			writeExpr(b, &n.Children[0], indentLevel)
+			b.WriteByte(' ')
+			writeExpr(b, &n.Children[1], indentLevel)
+		}
 	case "labeled_statement":
 		if len(n.Children) > 0 {
 			writeExpr(b, &n.Children[0], indentLevel)
@@ -336,6 +373,35 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 		}
 	case "return_expression":
 		writeReturn(b, n, indentLevel)
+	case "break_expression":
+		b.WriteString("break")
+		if len(n.Children) > 0 {
+			b.WriteByte(' ')
+			for i := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, &n.Children[i], indentLevel)
+			}
+		}
+	case "break_label":
+		b.WriteByte(':')
+		if len(n.Children) > 0 {
+			writeExpr(b, &n.Children[0], indentLevel)
+		}
+	case "catch_expression":
+		if len(n.Children) == 2 {
+			writeExpr(b, &n.Children[0], indentLevel)
+			b.WriteString(" catch ")
+			writeExpr(b, &n.Children[1], indentLevel)
+		} else {
+			for i := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, &n.Children[i], indentLevel)
+			}
+		}
 	case "for_statement":
 		writeForStmt(b, n, indentLevel)
 	case "if_statement":
