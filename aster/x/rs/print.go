@@ -48,22 +48,57 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString("]\n")
 	case "mod_item":
 		b.WriteString(ind)
-		b.WriteString("mod ")
-		if len(n.Children) > 0 {
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "visibility_modifier" {
 			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			idx++
+		}
+		b.WriteString("mod ")
+		if len(n.Children) > idx {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
 		}
 		b.WriteString(" {\n")
-		if len(n.Children) > 1 {
-			for _, d := range n.Children[1].Children {
+		if len(n.Children) > idx {
+			for _, d := range n.Children[idx].Children {
 				writeStmt(b, d, indent+1)
+			}
+		}
+		b.WriteString(ind)
+		b.WriteString("}\n")
+	case "enum_item":
+		b.WriteString(ind)
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "visibility_modifier" {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			idx++
+		}
+		b.WriteString("enum ")
+		if len(n.Children) > idx {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		b.WriteString(" {\n")
+		if len(n.Children) > idx {
+			for _, v := range n.Children[idx].Children {
+				b.WriteString(strings.Repeat("    ", indent+1))
+				writeEnumVariant(b, v)
+				b.WriteString(",\n")
 			}
 		}
 		b.WriteString(ind)
 		b.WriteString("}\n")
 	case "struct_item":
 		b.WriteString(ind)
-		b.WriteString("struct ")
 		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "visibility_modifier" {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			idx++
+		}
+		b.WriteString("struct ")
 		if len(n.Children) > idx {
 			writeExpr(b, n.Children[idx], indent)
 			idx++
@@ -102,11 +137,17 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString("}\n")
 	case "function_item":
 		b.WriteString(ind)
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "visibility_modifier" {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			idx++
+		}
 		b.WriteString("fn ")
-		if len(n.Children) >= 2 {
-			writeExpr(b, n.Children[0], 0)
-			writeParameters(b, n.Children[1])
-			idx := 2
+		if len(n.Children) >= idx+2 {
+			writeExpr(b, n.Children[idx], 0)
+			writeParameters(b, n.Children[idx+1])
+			idx += 2
 			if len(n.Children) > idx && n.Children[idx].Kind != "block" {
 				b.WriteString(" -> ")
 				writeExpr(b, n.Children[idx], 0)
@@ -185,17 +226,25 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(";\n")
 	case "static_item":
 		b.WriteString(ind)
-		b.WriteString("static ")
-		if len(n.Children) >= 1 {
+		idx := 0
+		if len(n.Children) > 0 && n.Children[0].Kind == "visibility_modifier" {
 			writeExpr(b, n.Children[0], indent)
+			b.WriteByte(' ')
+			idx++
 		}
-		if len(n.Children) >= 2 {
+		b.WriteString("static ")
+		if len(n.Children) >= idx+1 {
+			writeExpr(b, n.Children[idx], indent)
+			idx++
+		}
+		if len(n.Children) >= idx+1 {
 			b.WriteString(": ")
-			writeExpr(b, n.Children[1], indent)
+			writeExpr(b, n.Children[idx], indent)
+			idx++
 		}
-		if len(n.Children) >= 3 {
+		if len(n.Children) >= idx+1 {
 			b.WriteString(" = ")
-			writeExpr(b, n.Children[2], indent)
+			writeExpr(b, n.Children[idx], indent)
 		}
 		b.WriteString(";\n")
 	default:
@@ -228,6 +277,29 @@ func writeFieldInit(b *bytes.Buffer, n *Node, indent int) {
 		writeExpr(b, n.Children[0], indent)
 		b.WriteString(": ")
 		writeExpr(b, n.Children[1], indent)
+	}
+}
+
+func writeEnumVariant(b *bytes.Buffer, n *Node) {
+	if len(n.Children) == 0 {
+		return
+	}
+	writeExpr(b, n.Children[0], 0)
+	if len(n.Children) > 1 {
+		b.WriteString(" { ")
+		for i, f := range n.Children[1].Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			if len(f.Children) == 2 {
+				writeExpr(b, f.Children[0], 0)
+				b.WriteString(": ")
+				writeExpr(b, f.Children[1], 0)
+			} else {
+				writeExpr(b, f, 0)
+			}
+		}
+		b.WriteString(" }")
 	}
 }
 
@@ -580,6 +652,49 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteString("}")
 	case "field_initializer":
+		if len(n.Children) == 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(": ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "match_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("match ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" { ")
+			for i, arm := range n.Children[1].Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, arm, indent)
+			}
+			b.WriteString(" }")
+		}
+	case "match_arm":
+		if len(n.Children) >= 2 {
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" => ")
+			writeExpr(b, n.Children[1], indent)
+		}
+	case "match_pattern":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+	case "struct_pattern":
+		if len(n.Children) >= 1 {
+			writeExpr(b, n.Children[0], indent)
+			if len(n.Children) > 1 {
+				b.WriteString(" { ")
+				for i, fp := range n.Children[1:] {
+					if i > 0 {
+						b.WriteString(", ")
+					}
+					writeExpr(b, fp, indent)
+				}
+				b.WriteString(" }")
+			}
+		}
+	case "field_pattern":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(": ")

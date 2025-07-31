@@ -2,13 +2,17 @@
 mod math {
     pub const pi: f64 = std::f64::consts::PI;
     pub const e: f64 = std::f64::consts::E;
-    fn pub() -> parameters {
+    pub fn sqrt(x: f64) -> f64 {
+        x.sqrt()
     }
-    fn pub() -> parameters {
+    pub fn pow(x: f64, y: f64) -> f64 {
+        x.powf(y)
     }
-    fn pub() -> parameters {
+    pub fn sin(x: f64) -> f64 {
+        x.sin()
     }
-    fn pub() -> parameters {
+    pub fn log(x: f64) -> f64 {
+        x.ln()
     }
 }
 fn main() {
