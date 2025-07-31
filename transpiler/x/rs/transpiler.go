@@ -642,12 +642,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 			if idxT == "" && strings.HasPrefix(inferType(i.Target), "HashMap<String") {
 				idxT = "String"
 			}
-			if idxT != "String" {
-				io.WriteString(w, "&")
-			}
-			i.Index.emit(w)
-			if idxT == "String" {
+			switch idxT {
+			case "String":
+				i.Index.emit(w)
 				io.WriteString(w, ".as_str()")
+			case "&str":
+				i.Index.emit(w)
+			default:
+				io.WriteString(w, "&")
+				i.Index.emit(w)
 			}
 			io.WriteString(w, "]")
 			if !indexLHS {
@@ -689,12 +692,15 @@ func (i *IndexExpr) emit(w io.Writer) {
 	case *MapLit:
 		i.Target.emit(w)
 		io.WriteString(w, "[")
-		if inferType(i.Index) != "String" {
-			io.WriteString(w, "&")
-		}
-		i.Index.emit(w)
-		if inferType(i.Index) == "String" {
+		switch inferType(i.Index) {
+		case "String":
+			i.Index.emit(w)
 			io.WriteString(w, ".as_str()")
+		case "&str":
+			i.Index.emit(w)
+		default:
+			io.WriteString(w, "&")
+			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
 		if !indexLHS {
@@ -708,9 +714,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 	i.Target.emit(w)
 	if strings.HasPrefix(inferType(i.Target), "HashMap") {
 		io.WriteString(w, "[")
-		i.Index.emit(w)
-		if inferType(i.Index) == "String" {
+		switch inferType(i.Index) {
+		case "String":
+			i.Index.emit(w)
 			io.WriteString(w, ".as_str()")
+		case "&str":
+			i.Index.emit(w)
+		default:
+			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
 		if !indexLHS {
@@ -731,13 +742,17 @@ func (i *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, " as usize")
 			}
 			io.WriteString(w, "]")
-		} else if inferType(i.Index) == "String" {
-			io.WriteString(w, "[")
-			i.Index.emit(w)
-			io.WriteString(w, ".as_str()]")
 		} else {
 			io.WriteString(w, "[")
-			i.Index.emit(w)
+			switch inferType(i.Index) {
+			case "String":
+				i.Index.emit(w)
+				io.WriteString(w, ".as_str()")
+			case "&str":
+				i.Index.emit(w)
+			default:
+				i.Index.emit(w)
+			}
 			io.WriteString(w, "]")
 		}
 	}
@@ -1409,16 +1424,48 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				s.Value.emit(w)
 				lockedMap = ""
 				io.WriteString(w, "; _map.insert(")
-				idx.Index.emit(w)
-				io.WriteString(w, ".clone(), _val); }")
+				switch inferType(idx.Index) {
+				case "String":
+					if _, ok := idx.Index.(*StringLit); ok {
+						io.WriteString(w, "String::from(")
+						idx.Index.emit(w)
+						io.WriteString(w, ")")
+					} else {
+						idx.Index.emit(w)
+						io.WriteString(w, ".clone()")
+					}
+				case "&str":
+					idx.Index.emit(w)
+					io.WriteString(w, ".to_string()")
+				default:
+					idx.Index.emit(w)
+					io.WriteString(w, ".clone()")
+				}
+				io.WriteString(w, ", _val); }")
 				indexLHS = old
 				return
 			}
 			// local hash map
 			idx.Target.emit(w)
 			io.WriteString(w, ".insert(")
-			idx.Index.emit(w)
-			io.WriteString(w, ".clone(), ")
+			switch inferType(idx.Index) {
+			case "String":
+				if _, ok := idx.Index.(*StringLit); ok {
+					io.WriteString(w, "String::from(")
+					idx.Index.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					idx.Index.emit(w)
+					io.WriteString(w, ".clone()")
+				}
+			case "&str":
+				idx.Index.emit(w)
+				io.WriteString(w, ".to_string()")
+			default:
+				idx.Index.emit(w)
+				io.WriteString(w, ".clone()")
+			}
+			io.WriteString(w, ", ")
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			indexLHS = old
@@ -1561,28 +1608,48 @@ func (b *BinaryExpr) emit(w io.Writer) {
 					name = newName
 				}
 				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap().contains_key(&")
-				b.Left.emit(w)
+				io.WriteString(w, ".lock().unwrap().contains_key(")
+				if inferType(b.Left) == "&str" {
+					b.Left.emit(w)
+				} else {
+					io.WriteString(w, "&")
+					b.Left.emit(w)
+				}
 				io.WriteString(w, ")")
 			} else {
 				b.Right.emit(w)
-				io.WriteString(w, ".contains_key(&")
-				b.Left.emit(w)
+				io.WriteString(w, ".contains_key(")
+				if inferType(b.Left) == "&str" {
+					b.Left.emit(w)
+				} else {
+					io.WriteString(w, "&")
+					b.Left.emit(w)
+				}
 				io.WriteString(w, ")")
 			}
 			return
 		}
 		if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
 			b.Right.emit(w)
-			io.WriteString(w, ".contains_key(&")
-			b.Left.emit(w)
+			io.WriteString(w, ".contains_key(")
+			if inferType(b.Left) == "&str" {
+				b.Left.emit(w)
+			} else {
+				io.WriteString(w, "&")
+				b.Left.emit(w)
+			}
 			io.WriteString(w, ")")
 			return
 		}
 		if _, ok := b.Right.(*MapLit); ok {
 			b.Right.emit(w)
-			io.WriteString(w, ".contains_key(&")
-			b.Left.emit(w)
+			io.WriteString(w, ".contains_key(")
+			if inferType(b.Left) == "&str" {
+				b.Left.emit(w)
+			} else {
+				io.WriteString(w, "&")
+				b.Left.emit(w)
+			}
 			io.WriteString(w, ")")
 			return
 		}
