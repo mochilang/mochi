@@ -14,6 +14,7 @@ import (
 // zero and are omitted from the JSON output.
 type Option struct {
 	Positions bool
+	Comments  bool
 }
 
 // MarshalJSON implements json.Marshaler for Program to ensure stable output
@@ -27,7 +28,7 @@ func (p *Program) MarshalJSON() ([]byte, error) {
 // describing its syntax tree. Position information is omitted by default; use
 // InspectWithOption to enable it.
 func Inspect(src string) (*Program, error) {
-	return InspectWithOption(src, Option{})
+	return InspectWithOption(src, Option{Comments: true})
 }
 
 // InspectWithOption behaves like Inspect but allows callers to control whether
@@ -40,5 +41,5 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	IncludePos = opt.Positions
 	defer func() { IncludePos = prev }()
 	tree := p.Parse(data, nil)
-	return convertProgram(tree.RootNode(), data), nil
+	return convertProgram(tree.RootNode(), data, opt.Comments), nil
 }
