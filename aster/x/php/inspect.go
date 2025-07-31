@@ -6,7 +6,7 @@ import "encoding/json"
 // The root node is a ProgramNode mirroring the "program" rule in the grammar.
 type Program struct {
 	Root   *ProgramNode `json:"root,omitempty"`
-	source string       `json:"-"`
+	Source string       `json:"-"`
 }
 
 // Inspect parses PHP source code using tree-sitter and returns its AST.
@@ -20,9 +20,9 @@ func Inspect(src string, opts *Options) (*Program, error) {
 	}
 	root := convert(tree.RootNode(), []byte(src), o)
 	if root == nil {
-		return &Program{Root: nil, source: src}, nil
+		return &Program{Root: nil, Source: src}, nil
 	}
-	return &Program{Root: (*ProgramNode)(root), source: src}, nil
+	return &Program{Root: (*ProgramNode)(root), Source: src}, nil
 }
 
 // MarshalJSON ensures stable output for Program.
