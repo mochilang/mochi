@@ -984,7 +984,15 @@ func (b *BoolLit) emit(w io.Writer) {
 // FloatLit represents a floating point literal.
 type FloatLit struct{ Value float64 }
 
-func (f *FloatLit) emit(w io.Writer) { fmt.Fprintf(w, "%g", f.Value) }
+func (f *FloatLit) emit(w io.Writer) {
+	s := strconv.FormatFloat(f.Value, 'g', -1, 64)
+	if !strings.ContainsAny(s, ".eE") {
+		if !strings.Contains(s, ".") {
+			s += ".0"
+		}
+	}
+	fmt.Fprint(w, s)
+}
 
 // IndexExpr represents xs[i].
 type IndexExpr struct {

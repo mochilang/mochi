@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 426/491
-Last updated: 2025-07-31 08:23 +0700
+Completed programs: 438/491
+Last updated: 2025-07-31 02:12 UTC
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -455,19 +455,19 @@ Last updated: 2025-07-31 08:23 +0700
 | 447 | flow-control-structures-2 | ✓ | 1.893ms | 16.0KB |
 | 448 | flow-control-structures-3 | ✓ | 1.88ms | 16.0KB |
 | 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm |   |  |  |
-| 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle |   |  |  |
-| 453 | forest-fire |   |  |  |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
-| 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 2.477ms | 32.1KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 9.725ms | 1.2MB |
+| 452 | floyds-triangle | ✓ | 2.154ms | 24.1KB |
+| 453 | forest-fire | ✓ | 2.109ms | 380.9KB |
+| 454 | fork-2 | ✓ | 1.985ms | 16.0KB |
+| 455 | fork | ✓ | 1.913ms | 16.0KB |
+| 456 | formal-power-series | ✓ | 11.369ms | 1.8MB |
+| 457 | formatted-numeric-output | ✓ | 8.96ms | 1.1MB |
+| 458 | forward-difference | ✓ | 9.877ms | 1.2MB |
+| 459 | four-bit-adder-1 | ✓ | 2.083ms | 16.0KB |
+| 460 | four-is-magic | ✓ | 3.101ms | 32.1KB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
+| 462 | fractal-tree | ✓ | 10.381ms | 3.4MB |
 | 463 | fractran |   |  |  |
 | 464 | french-republican-calendar |   |  |  |
 | 465 | ftp |   |  |  |
