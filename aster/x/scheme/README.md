@@ -1,16 +1,19 @@
 # Scheme AST Printing Progress
 
-This directory stores golden tests for inspecting and printing Scheme code.
+Generated files for Scheme programs live under `tests/aster/x/scheme`.
 
-- **Completed:** 7 / 87
-- **Last Update:** 2025-07-31 14:22 GMT+7
+Last updated: 2025-07-31 15:44 GMT+7
 
-## Available Examples
+## Golden Test Checklist (10/87)
+- [x] 1. append_builtin.scm
+- [x] 2. avg_builtin.scm
+- [x] 3. basic_compare.scm
+- [x] 4. bench_block.scm
+- [x] 5. binary_precedence.scm
+- [x] 6. bool_chain.scm
+- [x] 7. break_continue.scm
+- [x] 8. cast_string_to_int.scm
+- [x] 9. cross_join.scm
+- [x] 10. two-sum.scm
 
-- `append_builtin.scm`
-- `avg_builtin.scm`
-- `basic_compare.scm`
-- `bench_block.scm`
-- `binary_precedence.scm`
-- `cross_join.scm`
-- `two-sum.scm`
+Completed 10/87 at 2025-07-31 15:44 GMT+7
