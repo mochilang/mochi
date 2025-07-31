@@ -1,4 +1,4 @@
-func main (regs=26)
+func __main (regs=26)
   // let n = 20
   Const        r5, 20
   Move         r0, r5
@@ -17,14 +17,12 @@ func main (regs=26)
   SetGlobal    3,3,0,0
   // for i in 0..repeat {
   Const        r7, 0
-  Const        r6, 1000
   Move         r9, r7
 L1:
-  LessInt      r10, r9, r6
+  LessInt      r10, r9, r1
   JumpIfFalse  r10, L0
   // last = sum_loop(n)
-  Const        r5, 20
-  Move         r11, r5
+  Move         r11, r0
   Call         r12, sum_loop, r11
   Move         r2, r12
   SetGlobal    2,2,0,0
