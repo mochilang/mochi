@@ -63,7 +63,9 @@ func TestInspect_Golden(t *testing.T) {
 				t.Fatalf("marshal: %v", err)
 			}
 			out = append(out, '\n')
-			goldenPath := filepath.Join(outDir, name+".LANGUAGE.json")
+			// Golden files now mirror the original extension for consistency with
+			// other languages.
+			goldenPath := filepath.Join(outDir, name+".scala.json")
 			if *update {
 				if err := os.WriteFile(goldenPath, out, 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
