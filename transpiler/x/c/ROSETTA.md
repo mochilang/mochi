@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (115/491) - Last updated 2025-07-31 18:33 +0700:
+Checklist of programs that currently transpile and run (116/491) - Last updated 2025-07-31 19:58 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -174,7 +174,7 @@ Checklist of programs that currently transpile and run (115/491) - Last updated 
 | 167 | canonicalize-cidr |  |  |  |
 | 168 | cantor-set |  |  |  |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.26ms | 34.0 KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 622us | 7.2 KB |
 | 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |  |  |  |

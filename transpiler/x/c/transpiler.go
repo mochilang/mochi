@@ -404,10 +404,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 				tmpName = fmt.Sprintf("__tmp%d", tempCounter)
 				tempCounter++
 				ceCopy := *ce
-				decl := ret
-				if strings.HasSuffix(ret, "[]") {
-					decl = strings.TrimSuffix(ret, "[]") + "*"
-				}
+				decl := listPtrType(ret)
 				tmpLen = tmpName + "_len"
 				if ce.Func == "_slice_int" || ce.Func == "_slice_double" || ce.Func == "_slice_str" {
 					if len(ceCopy.Args) == 5 {
@@ -1611,6 +1608,39 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 	if strings.HasPrefix(fn, "math.") {
 		fn = strings.TrimPrefix(fn, "math.")
 	}
+
+	var pre bytes.Buffer
+	tmpName := ""
+	tmpLen := ""
+	firstCall := ""
+	if len(c.Args) > 0 {
+		if ce, ok := c.Args[0].(*CallExpr); ok {
+			if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+				tmpName = fmt.Sprintf("__tmp%d", tempCounter)
+				tempCounter++
+				ceCopy := *ce
+				decl := listPtrType(ret)
+				tmpLen = ce.Func + "_len"
+				firstCall = ce.Func
+				if ce.Func == "_slice_int" || ce.Func == "_slice_double" || ce.Func == "_slice_str" {
+					if len(ceCopy.Args) == 5 {
+						tmpLen = tmpName + "_len"
+						ceCopy.Args[4] = &UnaryExpr{Op: "&", Expr: &VarRef{Name: tmpLen}}
+						pre.WriteString(fmt.Sprintf("size_t %s = 0; ", tmpLen))
+					}
+				}
+				pre.WriteString(fmt.Sprintf("%s %s = ", decl, tmpName))
+				ceCopy.emitExpr(&pre)
+				pre.WriteString("; ")
+			}
+		}
+	}
+
+	if pre.Len() > 0 {
+		io.WriteString(w, "({")
+		io.WriteString(w, pre.String())
+	}
+
 	io.WriteString(w, fn)
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
@@ -1621,6 +1651,21 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
 		}
+		if i == 0 && tmpName != "" {
+			io.WriteString(w, tmpName)
+			if strings.HasSuffix(paramType, "[][]") {
+				io.WriteString(w, ", ")
+				io.WriteString(w, firstCall+"_len")
+				io.WriteString(w, ", ")
+				io.WriteString(w, firstCall+"_lens")
+				io.WriteString(w, ", ")
+				io.WriteString(w, firstCall+"_len")
+			} else if strings.HasSuffix(paramType, "[]") {
+				io.WriteString(w, ", ")
+				io.WriteString(w, firstCall+"_len")
+			}
+			continue
+		}
 		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
 			io.WriteString(w, "&")
 		}
@@ -1628,6 +1673,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		emitExtraArgs(w, paramType, a)
 	}
 	io.WriteString(w, ")")
+
+	if pre.Len() > 0 {
+		io.WriteString(w, ";})")
+	}
 }
 
 type BinaryExpr struct {
@@ -6063,6 +6112,12 @@ func cTypeFromMochiType(t types.Type) string {
 	default:
 		return "int"
 	}
+}
+
+func listPtrType(t string) string {
+	cnt := strings.Count(t, "[]")
+	base := strings.TrimSuffix(t, strings.Repeat("[]", cnt))
+	return base + strings.Repeat("*", cnt)
 }
 
 func anyToExpr(v any) Expr {
