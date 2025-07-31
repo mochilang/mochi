@@ -1,0 +1,938 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "poolPut",
+        "children": [
+          {
+            "kind": "param",
+            "text": "p",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "x",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "call",
+                "text": "append",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "p"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "x"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "poolGet",
+        "children": [
+          {
+            "kind": "param",
+            "text": "p",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "map",
+            "children": [
+              {
+                "kind": "type",
+                "text": "string"
+              },
+              {
+                "kind": "type",
+                "text": "any"
+              }
+            ]
+          },
+          {
+            "kind": "if",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "==",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "len",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "p"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "print",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "pool empty"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "return",
+                    "children": [
+                      {
+                        "kind": "map",
+                        "children": [
+                          {
+                            "kind": "entry",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "pool"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "p"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "entry",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "val"
+                              },
+                              {
+                                "kind": "int",
+                                "text": "0"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "idx",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "-",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "len",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "p"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "v",
+            "children": [
+              {
+                "kind": "index",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "p"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "idx"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "p",
+            "children": [
+              {
+                "kind": "index",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "p"
+                  },
+                  {
+                    "kind": "start",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "end",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "idx"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "map",
+                "children": [
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "pool"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "p"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "entry",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "val"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "v"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "clearPool",
+        "children": [
+          {
+            "kind": "param",
+            "text": "p",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "var",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "j",
+            "children": [
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "i"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "j"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolPut",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolPut",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "j"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "res1",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolGet",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res1"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "pool"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "list",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res1"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "val"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "res2",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolGet",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res2"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "pool"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "list",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res2"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "val"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "4"
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "int",
+                "text": "5"
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "i"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "j"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolPut",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolPut",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "j"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "call",
+                "text": "clearPool",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "res3",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolGet",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res3"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "pool"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "list",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res3"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "val"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "res4",
+            "children": [
+              {
+                "kind": "call",
+                "text": "poolGet",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "pool"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "pool",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res4"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "pool"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "list",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "cast",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res4"
+                      },
+                      {
+                        "kind": "string",
+                        "text": "val"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "7"
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "j",
+            "children": [
+              {
+                "kind": "int",
+                "text": "8"
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "i"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "j"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

@@ -30,7 +30,7 @@ func toAST(n *Node) *mast.Node {
 		return nil
 	}
 	a := &mast.Node{Kind: n.Kind}
-	if n.Text != "" {
+	if n.Text != "" || n.Kind == "string" {
 		a.Value = n.Text
 	}
 	for _, c := range n.Children {

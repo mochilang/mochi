@@ -1,0 +1,7 @@
+// Mochi implementation of Rosetta "Array-length" task
+fun main() {
+  let arr = ["apple", "orange", "pear"]
+  print("Length of " + str(arr) + " is " + str(len(arr)) + ".")
+}
+
+main()

@@ -1,0 +1,456 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "countDivisors",
+        "children": [
+          {
+            "kind": "param",
+            "text": "n",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "int"
+          },
+          {
+            "kind": "if",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "n"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "return",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "count",
+            "children": [
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "2"
+              }
+            ]
+          },
+          {
+            "kind": "while",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c=",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "binary",
+                    "text": "/",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "n"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "2"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "if",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "==",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "%",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "n"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "int",
+                            "text": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "assign",
+                            "text": "count",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "count"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "i",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "count"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "string",
+                "text": "The first 20 anti-primes are:"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "maxDiv",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "count",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "n",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "line",
+            "children": [
+              {
+                "kind": "string"
+              }
+            ]
+          },
+          {
+            "kind": "while",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "count"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "20"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "let",
+                    "text": "d",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "countDivisors",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "if",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003e",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "d"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "maxDiv"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "assign",
+                            "text": "line",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "binary",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "selector",
+                                        "text": "line"
+                                      },
+                                      {
+                                        "kind": "call",
+                                        "text": "str",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "n"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": " "
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "assign",
+                            "text": "maxDiv",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "d"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "assign",
+                            "text": "count",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "count"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "n",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "line",
+            "children": [
+              {
+                "kind": "call",
+                "text": "substring",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "line"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  },
+                  {
+                    "kind": "binary",
+                    "text": "-",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "len",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "line"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "line"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

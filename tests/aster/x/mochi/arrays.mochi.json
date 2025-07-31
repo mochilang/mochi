@@ -1,0 +1,1057 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "listStr",
+        "children": [
+          {
+            "kind": "param",
+            "text": "xs",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "string"
+          },
+          {
+            "kind": "var",
+            "text": "s",
+            "children": [
+              {
+                "kind": "string",
+                "text": "["
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "while",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "call",
+                    "text": "len",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "xs"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "s",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "s"
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "index",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "xs"
+                                  },
+                                  {
+                                    "kind": "selector",
+                                    "text": "i"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "if",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003c",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "int",
+                                "text": "1"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "len",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "xs"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "assign",
+                            "text": "s",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "s"
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": " "
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "i",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "assign",
+            "text": "s",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  },
+                  {
+                    "kind": "string",
+                    "text": "]"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "a",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "len(a) = "
+              },
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "len",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "int",
+            "text": "3"
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a[0] = "
+              },
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "s",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "start",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  }
+                ]
+              },
+              {
+                "kind": "end",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "4"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "cap_s",
+        "children": [
+          {
+            "kind": "int",
+            "text": "5"
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "len(s) = "
+                      },
+                      {
+                        "kind": "call",
+                        "text": "str",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "len",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "s"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "  cap(s) = "
+                  }
+                ]
+              },
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "cap_s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "s",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "start",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  }
+                ]
+              },
+              {
+                "kind": "end",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "5"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "int",
+            "text": "22"
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              },
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "int",
+            "text": "22"
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "s",
+        "children": [
+          {
+            "kind": "call",
+            "text": "append",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              },
+              {
+                "kind": "int",
+                "text": "4"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "s",
+        "children": [
+          {
+            "kind": "call",
+            "text": "append",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              },
+              {
+                "kind": "int",
+                "text": "5"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "s",
+        "children": [
+          {
+            "kind": "call",
+            "text": "append",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              },
+              {
+                "kind": "int",
+                "text": "6"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "cap_s",
+        "children": [
+          {
+            "kind": "int",
+            "text": "10"
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "len(s) = "
+                      },
+                      {
+                        "kind": "call",
+                        "text": "str",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "len",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "s"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "  cap(s) = "
+                  }
+                ]
+              },
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "cap_s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "children": [
+          {
+            "kind": "index",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "int",
+                "text": "4"
+              }
+            ]
+          },
+          {
+            "kind": "unary",
+            "text": "-",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "s"
+      },
+      {
+        "kind": "for",
+        "text": "i",
+        "children": [
+          {
+            "kind": "range",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              },
+              {
+                "kind": "int",
+                "text": "8"
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "assign",
+                "text": "s",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "append",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "s"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "assign",
+        "text": "cap_s",
+        "children": [
+          {
+            "kind": "int",
+            "text": "8"
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "s = "
+              },
+              {
+                "kind": "call",
+                "text": "listStr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "string",
+                        "text": "len(s) = "
+                      },
+                      {
+                        "kind": "call",
+                        "text": "str",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "len",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "s"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "  cap(s) = "
+                  }
+                ]
+              },
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "cap_s"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

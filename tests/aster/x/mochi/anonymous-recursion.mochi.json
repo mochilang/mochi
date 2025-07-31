@@ -1,0 +1,304 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "fib",
+        "children": [
+          {
+            "kind": "param",
+            "text": "n",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "int"
+          },
+          {
+            "kind": "if",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "n"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "return",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "n"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "fib",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "fib",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "n"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "2"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "var",
+            "text": "i",
+            "children": [
+              {
+                "kind": "unary",
+                "text": "-",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "while",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c=",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "10"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "if",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u003c",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "0"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "print",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "binary",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "string",
+                                        "text": "fib("
+                                      },
+                                      {
+                                        "kind": "call",
+                                        "text": "str",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "i"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": ") returned error: negative n is forbidden"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "print",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "binary",
+                                    "text": "+",
+                                    "children": [
+                                      {
+                                        "kind": "binary",
+                                        "text": "+",
+                                        "children": [
+                                          {
+                                            "kind": "string",
+                                            "text": "fib("
+                                          },
+                                          {
+                                            "kind": "call",
+                                            "text": "str",
+                                            "children": [
+                                              {
+                                                "kind": "selector",
+                                                "text": "i"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "string",
+                                        "text": ") = "
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "kind": "call",
+                                    "text": "str",
+                                    "children": [
+                                      {
+                                        "kind": "call",
+                                        "text": "fib",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "i"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "i",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

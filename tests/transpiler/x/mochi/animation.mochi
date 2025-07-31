@@ -1,0 +1,25 @@
+// Mochi implementation of Rosetta "Animation" task
+// Simulates moving "Hello World!" text with direction changes.
+
+let msg = "Hello World! "
+var shift = 0
+var inc = 1
+var clicks = 0
+var frames = 0
+
+while clicks < 5 {
+  var line = ""
+  var i = 0
+  while i < len(msg) {
+    let idx = (shift + i) % len(msg)
+    line = line + msg[idx:idx+1]
+    i = i + 1
+  }
+  print(line)
+  shift = (shift + inc) % len(msg)
+  frames = frames + 1
+  if frames % len(msg) == 0 {
+    inc = len(msg) - inc
+    clicks = clicks + 1
+  }
+}

@@ -1,0 +1,357 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "each",
+        "children": [
+          {
+            "kind": "param",
+            "text": "xs",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "f",
+            "children": [
+              {
+                "kind": "typefun",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "x",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "xs"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "f",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "x"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "Map",
+        "children": [
+          {
+            "kind": "param",
+            "text": "xs",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "f",
+            "children": [
+              {
+                "kind": "typefun",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  },
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "r",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "x",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "xs"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "r",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "r"
+                          },
+                          {
+                            "kind": "call",
+                            "text": "f",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "x"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "r"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "let",
+            "text": "s",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              },
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "3"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "4"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "5"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "each",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              },
+              {
+                "kind": "funexpr",
+                "children": [
+                  {
+                    "kind": "param",
+                    "text": "i",
+                    "children": [
+                      {
+                        "kind": "type",
+                        "text": "int"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "type",
+                    "text": "any"
+                  },
+                  {
+                    "kind": "call",
+                    "text": "print",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "str",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "call",
+                "text": "str",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "Map",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "s"
+                      },
+                      {
+                        "kind": "funexpr",
+                        "children": [
+                          {
+                            "kind": "param",
+                            "text": "i",
+                            "children": [
+                              {
+                                "kind": "type",
+                                "text": "int"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "type",
+                            "text": "int"
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

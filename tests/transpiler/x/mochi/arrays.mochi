@@ -1,0 +1,53 @@
+// Mochi translation of Go arrays example from Rosetta Code
+
+fun listStr(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i + 1 < len(xs) { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+var a = [0, 0, 0, 0, 0]
+print("len(a) = " + str(len(a)))
+print("a = " + listStr(a))
+
+a[0] = 3
+print("a = " + listStr(a))
+print("a[0] = " + str(a[0]))
+
+var s = a[0:4]
+var cap_s = 5
+print("s = " + listStr(s))
+print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))
+
+s = a[0:5]
+print("s = " + listStr(s))
+
+ a[0] = 22
+ s[0] = 22
+print("a = " + listStr(a))
+print("s = " + listStr(s))
+
+s = append(s, 4)
+s = append(s, 5)
+s = append(s, 6)
+cap_s = 10
+print("s = " + listStr(s))
+print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))
+
+a[4] = -1
+print("a = " + listStr(a))
+print("s = " + listStr(s))
+
+s = []
+for i in 0..8 {
+  s = append(s, 0)
+}
+cap_s = 8
+print("s = " + listStr(s))
+print("len(s) = " + str(len(s)) + "  cap(s) = " + str(cap_s))

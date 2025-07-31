@@ -1,0 +1,44 @@
+let PI = 3.141592653589793
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n)*(2*n+1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n-1)*(2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+let degreesIncr = 0.1 * PI / 180.0
+let turns = 2.0
+let stop = 360.0 * turns * 10.0 * degreesIncr
+let width = 600.0
+let centre = width / 2.0
+let a = 1.0
+let b = 20.0
+var theta = 0.0
+var count = 0
+while theta < stop {
+  let r = a + b * theta
+  let x = r * cosApprox(theta)
+  let y = r * sinApprox(theta)
+  if count % 100 == 0 {
+    print(str(centre + x) + "," + str(centre - y))
+  }
+  theta = theta + degreesIncr
+  count = count + 1
+}

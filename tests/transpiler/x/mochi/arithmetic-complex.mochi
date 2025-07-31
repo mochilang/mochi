@@ -1,0 +1,52 @@
+# Mochi implementation of Rosetta "Arithmetic/Complex" task
+# Adapted from the Go version in tests/rosetta/x/Go/arithmetic-complex.go
+
+type Complex {
+  re: float
+  im: float
+}
+
+fun add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun mul(a: Complex, b: Complex): Complex {
+  return Complex {
+    re: a.re * b.re - a.im * b.im,
+    im: a.re * b.im + a.im * b.re,
+  }
+}
+
+fun neg(a: Complex): Complex {
+  return Complex { re: -a.re, im: -a.im }
+}
+
+fun inv(a: Complex): Complex {
+  let denom = a.re * a.re + a.im * a.im
+  return Complex { re: a.re / denom, im: -a.im / denom }
+}
+
+fun conj(a: Complex): Complex {
+  return Complex { re: a.re, im: -a.im }
+}
+
+fun cstr(a: Complex): string {
+  var s = "(" + str(a.re)
+  if a.im >= 0 {
+    s = s + "+" + str(a.im) + "i)"
+  } else {
+    s = s + str(a.im) + "i)"
+  }
+  return s
+}
+
+let a = Complex { re: 1.0, im: 1.0 }
+let b = Complex { re: 3.14159, im: 1.25 }
+
+print("a:       " + cstr(a))
+print("b:       " + cstr(b))
+print("a + b:   " + cstr(add(a, b)))
+print("a * b:   " + cstr(mul(a, b)))
+print("-a:      " + cstr(neg(a)))
+print("1 / a:   " + cstr(inv(a)))
+print("a\u0305:       " + cstr(conj(a)))

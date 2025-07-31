@@ -1,0 +1,66 @@
+// Mochi implementation of Rosetta "Arena storage pool" task
+// Translated from Go version in tests/rosetta/x/Go/arena-storage-pool.go
+
+fun poolPut(p: list<int>, x: int): list<int> {
+  return append(p, x)
+}
+
+fun poolGet(p: list<int>): map<string, any> {
+  if len(p) == 0 {
+    print("pool empty")
+    return {"pool": p, "val": 0}
+  }
+  let idx = len(p) - 1
+  let v = p[idx]
+  p = p[0:idx]
+  return {"pool": p, "val": v}
+}
+
+fun clearPool(p: list<int>): list<int> {
+  return []
+}
+
+fun main() {
+  var pool: list<int> = []
+  // Allocate some integers
+  var i = 1
+  var j = 2
+  print(str(i + j))
+
+  // Put them into the pool
+  pool = poolPut(pool, i)
+  pool = poolPut(pool, j)
+  i = 0
+  j = 0
+
+  // Get them back from the pool
+  let res1 = poolGet(pool)
+  pool = res1["pool"] as list<int>
+  i = res1["val"] as int
+  let res2 = poolGet(pool)
+  pool = res2["pool"] as list<int>
+  j = res2["val"] as int
+  i = 4
+  j = 5
+  print(str(i + j))
+
+  // Put back and clear pool to simulate GC
+  pool = poolPut(pool, i)
+  pool = poolPut(pool, j)
+  i = 0
+  j = 0
+  pool = clearPool(pool)
+
+  // Get again (pool is empty)
+  let res3 = poolGet(pool)
+  pool = res3["pool"] as list<int>
+  i = res3["val"] as int
+  let res4 = poolGet(pool)
+  pool = res4["pool"] as list<int>
+  j = res4["val"] as int
+  i = 7
+  j = 8
+  print(str(i + j))
+}
+
+main()

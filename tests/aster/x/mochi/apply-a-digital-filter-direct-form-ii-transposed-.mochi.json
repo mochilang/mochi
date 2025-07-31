@@ -1,0 +1,779 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "applyFilter",
+        "children": [
+          {
+            "kind": "param",
+            "text": "input",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "float"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "float"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "b",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "float"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "float"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "out",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "float"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "scale",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "/",
+                "children": [
+                  {
+                    "kind": "float",
+                    "text": "1"
+                  },
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "i",
+            "children": [
+              {
+                "kind": "int",
+                "text": "0"
+              }
+            ]
+          },
+          {
+            "kind": "while",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003c",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "call",
+                    "text": "len",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "input"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "var",
+                    "text": "tmp",
+                    "children": [
+                      {
+                        "kind": "float",
+                        "text": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "var",
+                    "text": "j",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "while",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u0026\u0026",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "\u003c=",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "j"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "\u003c",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "j"
+                              },
+                              {
+                                "kind": "call",
+                                "text": "len",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "assign",
+                            "text": "tmp",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "tmp"
+                                  },
+                                  {
+                                    "kind": "binary",
+                                    "text": "*",
+                                    "children": [
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "b"
+                                          },
+                                          {
+                                            "kind": "selector",
+                                            "text": "j"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "input"
+                                          },
+                                          {
+                                            "kind": "binary",
+                                            "text": "-",
+                                            "children": [
+                                              {
+                                                "kind": "selector",
+                                                "text": "i"
+                                              },
+                                              {
+                                                "kind": "selector",
+                                                "text": "j"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "assign",
+                            "text": "j",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "j"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "j",
+                    "children": [
+                      {
+                        "kind": "int",
+                        "text": "0"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "while",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "\u0026\u0026",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "\u003c",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "j"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "i"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "\u003c",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "j"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call",
+                                "text": "len",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "block",
+                        "children": [
+                          {
+                            "kind": "assign",
+                            "text": "tmp",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "-",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "tmp"
+                                  },
+                                  {
+                                    "kind": "binary",
+                                    "text": "*",
+                                    "children": [
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "a"
+                                          },
+                                          {
+                                            "kind": "binary",
+                                            "text": "+",
+                                            "children": [
+                                              {
+                                                "kind": "selector",
+                                                "text": "j"
+                                              },
+                                              {
+                                                "kind": "int",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "index",
+                                        "children": [
+                                          {
+                                            "kind": "selector",
+                                            "text": "out"
+                                          },
+                                          {
+                                            "kind": "binary",
+                                            "text": "-",
+                                            "children": [
+                                              {
+                                                "kind": "binary",
+                                                "text": "-",
+                                                "children": [
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "i"
+                                                  },
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "j"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "int",
+                                                "text": "1"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "assign",
+                            "text": "j",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "j"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "out",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "out"
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "tmp"
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "scale"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "assign",
+                    "text": "i",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "int",
+                            "text": "1"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "out"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "a",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "float",
+                "text": "1"
+              },
+              {
+                "kind": "float",
+                "text": "-2.7756e-16"
+              },
+              {
+                "kind": "float",
+                "text": "0.33333333"
+              },
+              {
+                "kind": "float",
+                "text": "-1.85e-17"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "b",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "float",
+                "text": "0.16666667"
+              },
+              {
+                "kind": "float",
+                "text": "0.5"
+              },
+              {
+                "kind": "float",
+                "text": "0.5"
+              },
+              {
+                "kind": "float",
+                "text": "0.16666667"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "sig",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "float",
+                "text": "-0.917843918645"
+              },
+              {
+                "kind": "float",
+                "text": "0.141984778794"
+              },
+              {
+                "kind": "float",
+                "text": "1.20536903482"
+              },
+              {
+                "kind": "float",
+                "text": "0.190286794412"
+              },
+              {
+                "kind": "float",
+                "text": "-0.662370894973"
+              },
+              {
+                "kind": "float",
+                "text": "-1.00700480494"
+              },
+              {
+                "kind": "float",
+                "text": "-0.404707073677"
+              },
+              {
+                "kind": "float",
+                "text": "0.800482325044"
+              },
+              {
+                "kind": "float",
+                "text": "0.743500089861"
+              },
+              {
+                "kind": "float",
+                "text": "1.01090520172"
+              },
+              {
+                "kind": "float",
+                "text": "0.741527555207"
+              },
+              {
+                "kind": "float",
+                "text": "0.277841675195"
+              },
+              {
+                "kind": "float",
+                "text": "0.400833448236"
+              },
+              {
+                "kind": "float",
+                "text": "-0.2085993586"
+              },
+              {
+                "kind": "float",
+                "text": "-0.172842103641"
+              },
+              {
+                "kind": "float",
+                "text": "-0.134316096293"
+              },
+              {
+                "kind": "float",
+                "text": "0.0259303398477"
+              },
+              {
+                "kind": "float",
+                "text": "0.490105989562"
+              },
+              {
+                "kind": "float",
+                "text": "0.549391221511"
+              },
+              {
+                "kind": "float",
+                "text": "0.9047198589"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "res",
+        "children": [
+          {
+            "kind": "call",
+            "text": "applyFilter",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "sig"
+              },
+              {
+                "kind": "selector",
+                "text": "a"
+              },
+              {
+                "kind": "selector",
+                "text": "b"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "k",
+        "children": [
+          {
+            "kind": "int",
+            "text": "0"
+          }
+        ]
+      },
+      {
+        "kind": "while",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "\u003c",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "k"
+              },
+              {
+                "kind": "call",
+                "text": "len",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "res"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "index",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "res"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "k"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "assign",
+                "text": "k",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "k"
+                      },
+                      {
+                        "kind": "int",
+                        "text": "1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

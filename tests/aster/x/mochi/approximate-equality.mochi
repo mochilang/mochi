@@ -1,0 +1,38 @@
+fun abs(x: float): float {
+  if (x < 0) {
+    return -x
+  }
+  return x
+}
+fun maxf(a: float, b: float): float {
+  if (a > b) {
+    return a
+  }
+  return b
+}
+fun isClose(a: float, b: float): bool {
+  let relTol = 1e-09
+  let t = abs((a - b))
+  let u = (relTol * maxf(abs(a), abs(b)))
+  return (t <= u)
+}
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while (i < 10) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+fun main() {
+  let root2 = sqrtApprox(2)
+  let pairs = [[1.0000000000000002e+14, 1.0000000000000002e+14], [100.01, 100.011], [(1.0000000000000002e+13 / 10000), 1.0000000000000001e+09], [0.001, 0.0010000001], [1.01e-22, 0], [(root2 * root2), 2], [((-root2) * root2), -2], [1e+17, 1e+17], [3.141592653589793, 3.141592653589793]]
+  for pair in pairs {
+    let a = pair[0]
+    let b = pair[1]
+    let s = if isClose(a, b) then "≈" else "≉"
+    print(((((str(a) + " ") + s) + " ") + str(b)))
+  }
+}
+main()

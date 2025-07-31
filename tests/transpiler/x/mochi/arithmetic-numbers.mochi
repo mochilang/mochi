@@ -1,0 +1,136 @@
+// Mochi implementation of Rosetta "Arithmetic numbers" task
+// Translated from Go version in tests/rosetta/x/Go/arithmetic-numbers.go
+
+fun sieve(limit: int): list<int> {
+  var spf: list<int> = []
+  var i = 0
+  while i <= limit {
+    spf = append(spf, 0)
+    i = i + 1
+  }
+  i = 2
+  while i <= limit {
+    if spf[i] == 0 {
+      spf[i] = i
+      if i * i <= limit {
+        var j = i * i
+        while j <= limit {
+          if spf[j] == 0 { spf[j] = i }
+          j = j + i
+        }
+      }
+    }
+    i = i + 1
+  }
+  return spf
+}
+
+fun primesFrom(spf: list<int>, limit: int): list<int> {
+  var primes: list<int> = []
+  var i = 3
+  while i <= limit {
+    if spf[i] == i { primes = append(primes, i) }
+    i = i + 1
+  }
+  return primes
+}
+
+fun pad3(n: int): string {
+  var s = str(n)
+  while len(s) < 3 { s = " " + s }
+  return s
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var out = ""
+  var i = len(s) - 1
+  var c = 0
+  while i >= 0 {
+    out = substring(s, i, i+1) + out
+    c = c + 1
+    if c % 3 == 0 && i > 0 { out = "," + out }
+    i = i - 1
+  }
+  return out
+}
+
+fun primeCount(primes: list<int>, last: int, spf: list<int>): int {
+  var lo = 0
+  var hi = len(primes)
+  while lo < hi {
+    var mid = ((lo + hi) / 2) as int
+    if primes[mid] < last {
+      lo = mid + 1
+    } else {
+      hi = mid
+    }
+  }
+  var count = lo + 1  // account for prime 2
+  if spf[last] != last { count = count - 1 }
+  return count
+}
+
+fun arithmeticNumbers(limit: int, spf: list<int>): list<int> {
+  var arr: list<int> = [1]
+  var n = 3
+  while len(arr) < limit {
+    if spf[n] == n {
+      arr = append(arr, n)
+    } else {
+      var x = n
+      var sigma = 1
+      var tau = 1
+      while x > 1 {
+        var p = spf[x]
+        if p == 0 { p = x }
+        var cnt = 0
+        var power = p
+        var sum = 1
+        while x % p == 0 {
+          x = x / p
+          cnt = cnt + 1
+          sum = sum + power
+          power = power * p
+        }
+        sigma = sigma * sum
+        tau = tau * (cnt + 1)
+      }
+      if sigma % tau == 0 { arr = append(arr, n) }
+    }
+    n = n + 1
+  }
+  return arr
+}
+
+fun main() {
+  let limit = 1228663
+  let spf = sieve(limit)
+  let primes = primesFrom(spf, limit)
+  let arr = arithmeticNumbers(1000000, spf)
+
+  print("The first 100 arithmetic numbers are:")
+  var i = 0
+  while i < 100 {
+    var line = ""
+    var j = 0
+    while j < 10 {
+      line = line + pad3(arr[i + j])
+      if j < 9 { line = line + " " }
+      j = j + 1
+    }
+    print(line)
+    i = i + 10
+  }
+
+  for x in [1000, 10000, 100000, 1000000] {
+    let last = arr[x - 1]
+    let lastc = commatize(last)
+    print("\nThe " + commatize(x) + "th arithmetic number is: " + lastc)
+    let pc = primeCount(primes, last, spf)
+    let comp = x - pc - 1
+    print("The count of such numbers <= " + lastc + " which are composite is " + commatize(comp) + ".")
+  }
+}
+
+main()

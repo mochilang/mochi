@@ -1,0 +1,108 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "let",
+            "text": "arr",
+            "children": [
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "apple"
+                  },
+                  {
+                    "kind": "string",
+                    "text": "orange"
+                  },
+                  {
+                    "kind": "string",
+                    "text": "pear"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "string",
+                                "text": "Length of "
+                              },
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "arr"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": " is "
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "call",
+                        "text": "str",
+                        "children": [
+                          {
+                            "kind": "call",
+                            "text": "len",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "arr"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "string",
+                    "text": "."
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

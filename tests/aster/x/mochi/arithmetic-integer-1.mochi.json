@@ -1,0 +1,441 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "main",
+        "children": [
+          {
+            "kind": "let",
+            "text": "a",
+            "children": [
+              {
+                "kind": "int",
+                "text": "12"
+              }
+            ]
+          },
+          {
+            "kind": "let",
+            "text": "b",
+            "children": [
+              {
+                "kind": "int",
+                "text": "8"
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string",
+                                "text": " + "
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " = "
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string",
+                                "text": " - "
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " = "
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string",
+                                "text": " * "
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " = "
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "*",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string",
+                                "text": " / "
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " = "
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "cast",
+                        "children": [
+                          {
+                            "kind": "group",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "/",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  },
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "type",
+                            "text": "int"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "call",
+            "text": "print",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "+",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "string",
+                                "text": " % "
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "call",
+                            "text": "str",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "string",
+                        "text": " = "
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "%",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "b"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "main"
+      }
+    ]
+  }
+}

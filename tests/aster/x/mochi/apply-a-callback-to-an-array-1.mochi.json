@@ -1,0 +1,74 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "for",
+        "text": "i",
+        "children": [
+          {
+            "kind": "in",
+            "children": [
+              {
+                "kind": "list",
+                "children": [
+                  {
+                    "kind": "int",
+                    "text": "1"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "2"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "3"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "4"
+                  },
+                  {
+                    "kind": "int",
+                    "text": "5"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "call",
+                "text": "print",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "*",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "i"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

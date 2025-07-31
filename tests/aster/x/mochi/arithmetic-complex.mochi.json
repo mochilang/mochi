@@ -1,0 +1,1078 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "type",
+        "text": "Complex",
+        "children": [
+          {
+            "kind": "field",
+            "text": "re",
+            "children": [
+              {
+                "kind": "type",
+                "text": "float"
+              }
+            ]
+          },
+          {
+            "kind": "field",
+            "text": "im",
+            "children": [
+              {
+                "kind": "type",
+                "text": "float"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "add",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "b",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "Complex"
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "Complex",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "re",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "re",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "re",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "im",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "im",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "b"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "mul",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "b",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "Complex"
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "Complex",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "re",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "re",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "re",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "im",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "im",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "re",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "im",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "binary",
+                            "text": "*",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "im",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "selector",
+                                "text": "re",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "b"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "neg",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "Complex"
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "Complex",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "re",
+                    "children": [
+                      {
+                        "kind": "unary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "re",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "unary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "im",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "inv",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "Complex"
+          },
+          {
+            "kind": "let",
+            "text": "denom",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "binary",
+                    "text": "*",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "re",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "re",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "binary",
+                    "text": "*",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "im",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "im",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "Complex",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "re",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "/",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "re",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "denom"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "/",
+                        "children": [
+                          {
+                            "kind": "unary",
+                            "text": "-",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "im",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "a"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "denom"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "conj",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "Complex"
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "struct",
+                "text": "Complex",
+                "children": [
+                  {
+                    "kind": "field",
+                    "text": "re",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "re",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "field",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "unary",
+                        "text": "-",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "im",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "a"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "cstr",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "Complex"
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "string"
+          },
+          {
+            "kind": "var",
+            "text": "s",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "+",
+                "children": [
+                  {
+                    "kind": "string",
+                    "text": "("
+                  },
+                  {
+                    "kind": "call",
+                    "text": "str",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "re",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "a"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "if",
+            "children": [
+              {
+                "kind": "binary",
+                "text": "\u003e=",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "im",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "int",
+                    "text": "0"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "s",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "s"
+                                  },
+                                  {
+                                    "kind": "string",
+                                    "text": "+"
+                                  }
+                                ]
+                              },
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "im",
+                                    "children": [
+                                      {
+                                        "kind": "selector",
+                                        "text": "a"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "i)"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "s",
+                    "children": [
+                      {
+                        "kind": "binary",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "binary",
+                            "text": "+",
+                            "children": [
+                              {
+                                "kind": "selector",
+                                "text": "s"
+                              },
+                              {
+                                "kind": "call",
+                                "text": "str",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "im",
+                                    "children": [
+                                      {
+                                        "kind": "selector",
+                                        "text": "a"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "string",
+                            "text": "i)"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "s"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "a",
+        "children": [
+          {
+            "kind": "struct",
+            "text": "Complex",
+            "children": [
+              {
+                "kind": "field",
+                "text": "re",
+                "children": [
+                  {
+                    "kind": "float",
+                    "text": "1"
+                  }
+                ]
+              },
+              {
+                "kind": "field",
+                "text": "im",
+                "children": [
+                  {
+                    "kind": "float",
+                    "text": "1"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "let",
+        "text": "b",
+        "children": [
+          {
+            "kind": "struct",
+            "text": "Complex",
+            "children": [
+              {
+                "kind": "field",
+                "text": "re",
+                "children": [
+                  {
+                    "kind": "float",
+                    "text": "3.14159"
+                  }
+                ]
+              },
+              {
+                "kind": "field",
+                "text": "im",
+                "children": [
+                  {
+                    "kind": "float",
+                    "text": "1.25"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a:       "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "b:       "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "b"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a + b:   "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "add",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a * b:   "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "mul",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      },
+                      {
+                        "kind": "selector",
+                        "text": "b"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "-a:      "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "neg",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "1 / a:   "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "inv",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "binary",
+            "text": "+",
+            "children": [
+              {
+                "kind": "string",
+                "text": "a̅:       "
+              },
+              {
+                "kind": "call",
+                "text": "cstr",
+                "children": [
+                  {
+                    "kind": "call",
+                    "text": "conj",
+                    "children": [
+                      {
+                        "kind": "selector",
+                        "text": "a"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,553 @@
+{
+  "file": {
+    "kind": "program",
+    "children": [
+      {
+        "kind": "fun",
+        "text": "concatInts",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "b",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "int"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "out",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "v",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "out",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "out"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "v"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "v",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "b"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "out",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "out"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "v"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "out"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "fun",
+        "text": "concatAny",
+        "children": [
+          {
+            "kind": "param",
+            "text": "a",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "any"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "param",
+            "text": "b",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "any"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "any"
+              }
+            ]
+          },
+          {
+            "kind": "var",
+            "text": "out",
+            "children": [
+              {
+                "kind": "type",
+                "text": "list",
+                "children": [
+                  {
+                    "kind": "type",
+                    "text": "any"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "v",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "out",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "out"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "v"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "for",
+            "text": "v",
+            "children": [
+              {
+                "kind": "in",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "b"
+                  }
+                ]
+              },
+              {
+                "kind": "block",
+                "children": [
+                  {
+                    "kind": "assign",
+                    "text": "out",
+                    "children": [
+                      {
+                        "kind": "call",
+                        "text": "append",
+                        "children": [
+                          {
+                            "kind": "selector",
+                            "text": "out"
+                          },
+                          {
+                            "kind": "selector",
+                            "text": "v"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "return",
+            "children": [
+              {
+                "kind": "selector",
+                "text": "out"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "a",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              },
+              {
+                "kind": "int",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "b",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "7"
+              },
+              {
+                "kind": "int",
+                "text": "12"
+              },
+              {
+                "kind": "int",
+                "text": "60"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "str",
+            "children": [
+              {
+                "kind": "call",
+                "text": "concatInts",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "a"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "b"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "i",
+        "children": [
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "any"
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              },
+              {
+                "kind": "int",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "j",
+        "children": [
+          {
+            "kind": "type",
+            "text": "list",
+            "children": [
+              {
+                "kind": "type",
+                "text": "any"
+              }
+            ]
+          },
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "string",
+                "text": "Crosby"
+              },
+              {
+                "kind": "string",
+                "text": "Stills"
+              },
+              {
+                "kind": "string",
+                "text": "Nash"
+              },
+              {
+                "kind": "string",
+                "text": "Young"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "str",
+            "children": [
+              {
+                "kind": "call",
+                "text": "concatAny",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "i"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "j"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "l",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "1"
+              },
+              {
+                "kind": "int",
+                "text": "2"
+              },
+              {
+                "kind": "int",
+                "text": "3"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "var",
+        "text": "m",
+        "children": [
+          {
+            "kind": "list",
+            "children": [
+              {
+                "kind": "int",
+                "text": "7"
+              },
+              {
+                "kind": "int",
+                "text": "12"
+              },
+              {
+                "kind": "int",
+                "text": "60"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "call",
+        "text": "print",
+        "children": [
+          {
+            "kind": "call",
+            "text": "str",
+            "children": [
+              {
+                "kind": "call",
+                "text": "concatInts",
+                "children": [
+                  {
+                    "kind": "selector",
+                    "text": "l"
+                  },
+                  {
+                    "kind": "selector",
+                    "text": "m"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

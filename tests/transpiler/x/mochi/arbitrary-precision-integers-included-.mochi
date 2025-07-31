@@ -1,0 +1,32 @@
+// Mochi translation of Rosetta "Arbitrary precision integers included" task
+
+fun pow_int(base: int, exp: int): int {
+  var result = 1
+  var b = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = result * b }
+    b = b * b
+    e = (e / 2) as int
+  }
+  return result
+}
+
+fun pow_big(base: bigint, exp: int): bigint {
+  var result: bigint = 1
+  var b: bigint = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = result * b }
+    b = b * b
+    e = (e / 2) as int
+  }
+  return result
+}
+
+var e1 = pow_int(3, 2)
+var e2 = pow_int(4, e1)
+var base: bigint = 5
+var x: bigint = pow_big(base, e2)
+var s = str(x)
+print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))

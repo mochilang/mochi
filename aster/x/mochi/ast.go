@@ -86,10 +86,12 @@ func convert(n *mochiast.Node, withPos bool) *Node {
 
 	// Preserve control flow statements like break and continue even if they
 	// have no text or children so the printed output can reconstruct the
-	// original program structure.
+	// original program structure. String literals with empty text also need
+	// to be kept so that round-tripping works for declarations like
+	// `var s = ""`.
 	if len(node.Children) == 0 && node.Text == "" {
 		switch node.Kind {
-		case "break", "continue":
+		case "break", "continue", "string":
 			// keep
 		default:
 			return nil
