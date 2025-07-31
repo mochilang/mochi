@@ -11,9 +11,9 @@ class Main {
             int _benchDuration = (_now() - _benchStart) / 1000;
             int _benchMemory = _mem() - _benchMem;
             System.out.println("{");
-            System.out.println("  duration_us: " + _benchDuration + ",");
-            System.out.println("  memory_bytes: " + _benchMemory + ",");
-            System.out.println("  name: simple");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"simple\"");
             System.out.println("}");
         }
     }
