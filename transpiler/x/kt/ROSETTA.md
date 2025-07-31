@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-31 01:05 +0700
+Last updated: 2025-07-31 08:02 +0700
 
-Completed tasks: **133/491**
+Completed tasks: **141/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -115,15 +115,15 @@ Completed tasks: **133/491**
 | 104 | bernoulli-numbers | ✓ | 88.28ms | 835.6 KB |
 | 105 | best-shuffle | ✓ | 16.53ms | 114.1 KB |
 | 106 | bifid-cipher | ✓ | 59.19ms | 118.3 KB |
-| 107 | bin-given-limits |  |  |  |
-| 108 | binary-digits |  |  |  |
-| 109 | binary-search |  |  |  |
+| 107 | bin-given-limits | ✓ |  |  |
+| 108 | binary-digits | ✓ |  |  |
+| 109 | binary-search | ✓ |  |  |
 | 110 | binary-strings |  |  |  |
-| 111 | bioinformatics-base-count |  |  |  |
-| 112 | bioinformatics-global-alignment |  |  |  |
-| 113 | bioinformatics-sequence-mutation |  |  |  |
-| 114 | biorhythms |  |  |  |
-| 115 | bitcoin-address-validation |  |  |  |
+| 111 | bioinformatics-base-count | ✓ |  |  |
+| 112 | bioinformatics-global-alignment | ✓ |  |  |
+| 113 | bioinformatics-sequence-mutation | ✓ |  |  |
+| 114 | biorhythms | ✓ |  |  |
+| 115 | bitcoin-address-validation | ✓ |  |  |
 | 116 | bitmap-b-zier-curves-cubic |  |  |  |
 | 117 | bitmap-b-zier-curves-quadratic |  |  |  |
 | 118 | bitmap-bresenhams-line-algorithm |  |  |  |

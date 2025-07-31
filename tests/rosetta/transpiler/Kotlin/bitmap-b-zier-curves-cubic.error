@@ -1,0 +1,27 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:33:29: error: expecting ')'
+        ((b)["data"] as Any?[y]!![x]) = p
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:33:29: error: no get method providing array access
+        ((b)["data"] as Any?[y]!![x]) = p
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:33:37: error: unexpected tokens (use ';' to separate expressions on the same line)
+        ((b)["data"] as Any?[y]!![x]) = p
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:44:33: error: expecting ')'
+            ((b)["data"] as Any?[y]!![x]) = p
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:44:33: error: no get method providing array access
+            ((b)["data"] as Any?[y]!![x]) = p
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:44:41: error: unexpected tokens (use ';' to separate expressions on the same line)
+            ((b)["data"] as Any?[y]!![x]) = p
+                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:33:9: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+        ((b)["data"] as Any?[y]!![x]) = p
+        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/bitmap-b-zier-curves-cubic.kt:44:13: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out Int, ???>.get(key: Int): ??? defined in kotlin.collections
+            ((b)["data"] as Any?[y]!![x]) = p
+            ^
