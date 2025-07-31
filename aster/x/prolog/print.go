@@ -125,6 +125,44 @@ func writeTerm(b *strings.Builder, n *Node, indent int) {
 		} else {
 			writeFunctor(b, n, indent)
 		}
+	case "=":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent)
+			b.WriteString(" = ")
+			writeTerm(b, n.Children[1], indent)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "is":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent)
+			b.WriteString(" is ")
+			writeTerm(b, n.Children[1], indent)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "+":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent)
+			b.WriteString(" + ")
+			writeTerm(b, n.Children[1], indent)
+		} else if len(n.Children) == 1 {
+			b.WriteByte('+')
+			writeTerm(b, n.Children[0], indent)
+		} else {
+			writeFunctor(b, n, indent)
+		}
+	case "-":
+		if len(n.Children) == 2 {
+			writeTerm(b, n.Children[0], indent)
+			b.WriteString(" - ")
+			writeTerm(b, n.Children[1], indent)
+		} else if len(n.Children) == 1 {
+			b.WriteByte('-')
+			writeTerm(b, n.Children[0], indent)
+		} else {
+			writeFunctor(b, n, indent)
+		}
 	case ",":
 		for i, c := range n.Children {
 			if i > 0 {
