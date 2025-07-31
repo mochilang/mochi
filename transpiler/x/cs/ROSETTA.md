@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 466/491
-Last updated: 2025-07-31 12:13 +0700
+Last updated: 2025-07-31 14:19 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -118,54 +118,54 @@ Last updated: 2025-07-31 12:13 +0700
 | 110 | binary-strings | ✓ | 14.942ms | 1.9MB |
 | 111 | bioinformatics-base-count | ✓ | 8.273ms | 2.5MB |
 | 112 | bioinformatics-global-alignment | ✓ |  |  |
-| 113 | bioinformatics-sequence-mutation |   |  |  |
-| 114 | biorhythms | ✓ | 8.766ms | 2.5MB |
-| 115 | bitcoin-address-validation | ✓ | 1.798ms | 69.0KB |
-| 116 | bitmap-b-zier-curves-cubic | ✓ | 10.31ms | 5.0MB |
-| 117 | bitmap-b-zier-curves-quadratic | ✓ | 11.462ms | 5.0MB |
-| 118 | bitmap-bresenhams-line-algorithm | ✓ | 1.084ms | 16.0KB |
-| 119 | bitmap-flood-fill | ✓ | 6.117ms | 1.2MB |
-| 120 | bitmap-histogram | ✓ | 10.27ms | 2.3MB |
-| 121 | bitmap-midpoint-circle-algorithm | ✓ | 879µs | 108.9KB |
-| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 13.347ms | 20.0MB |
-| 123 | bitmap-read-a-ppm-file | ✓ | 968µs | 116.9KB |
-| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 8.777ms | 2.4MB |
-| 125 | bitmap-write-a-ppm-file | ✓ | 1.237ms | 32.1KB |
-| 126 | bitmap | ✓ | 13.719ms | 21.5MB |
-| 127 | bitwise-io-1 | ✓ | 2.838ms | 16.0KB |
-| 128 | bitwise-io-2 | ✓ | 9.923ms | 2.7MB |
-| 129 | bitwise-operations | ✓ | 985µs | 24.1KB |
-| 130 | blum-integer | ✓ | 8.276ms | 1.4MB |
-| 131 | boolean-values | ✓ | 1.892ms | 16.0KB |
-| 132 | box-the-compass | ✓ | 6.786ms | 1.2MB |
-| 133 | boyer-moore-string-search | ✓ | 6.415ms | 1.3MB |
-| 134 | brazilian-numbers | ✓ | 632.21ms | 24.1KB |
-| 135 | break-oo-privacy | ✓ | 873µs | 16.0KB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 19.56ms | 4.9MB |
+| 114 | biorhythms | ✓ | 4.39ms | 44.9KB |
+| 115 | bitcoin-address-validation | ✓ | 5.749ms | 69.0KB |
+| 116 | bitmap-b-zier-curves-cubic | ✓ | 16.374ms | 15.1MB |
+| 117 | bitmap-b-zier-curves-quadratic | ✓ | 15.333ms | 15.1MB |
+| 118 | bitmap-bresenhams-line-algorithm | ✓ | 3.178ms | 16.0KB |
+| 119 | bitmap-flood-fill | ✓ | 2.815ms | 16.0KB |
+| 120 | bitmap-histogram | ✓ | 17.267ms | 2.3MB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 2.978ms | 108.9KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 24.923ms | 12.8MB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 4.903ms | 124.9KB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 17.637ms | 2.3MB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 3.608ms | 32.1KB |
+| 126 | bitmap | ✓ | 39.828ms | 25.1MB |
+| 127 | bitwise-io-1 | ✓ | 3.372ms | 16.0KB |
+| 128 | bitwise-io-2 | ✓ | 20.109ms | 2.5MB |
+| 129 | bitwise-operations | ✓ | 3.005ms | 24.1KB |
+| 130 | blum-integer | ✓ | 14.678ms | 1.3MB |
+| 131 | boolean-values | ✓ | 4.578ms | 16.0KB |
+| 132 | box-the-compass | ✓ | 13.324ms | 1.1MB |
+| 133 | boyer-moore-string-search | ✓ | 19.415ms | 2.4MB |
+| 134 | brazilian-numbers | ✓ | 905.895ms | 24.1KB |
+| 135 | break-oo-privacy | ✓ | 2.566ms | 16.0KB |
 | 136 | brilliant-numbers | ✓ |  |  |
 | 137 | brownian-tree | ✓ | 24.331035s | 3.6MB |
 | 138 | bulls-and-cows-player | ✓ | 8.101ms | 12.7MB |
 | 139 | bulls-and-cows |   |  |  |
-| 140 | burrows-wheeler-transform | ✓ | 12.151ms | 19.4MB |
-| 141 | caesar-cipher-1 | ✓ | 6.093ms | 1.1MB |
-| 142 | caesar-cipher-2 | ✓ | 6.318ms | 1.1MB |
-| 143 | calculating-the-value-of-e | ✓ | 9.042ms | 1.7MB |
-| 144 | calendar---for-real-programmers-1 | ✓ | 1.008ms | 100.8KB |
-| 145 | calendar---for-real-programmers-2 | ✓ | 1.028ms | 100.8KB |
-| 146 | calendar | ✓ | 967µs | 100.8KB |
+| 140 | burrows-wheeler-transform | ✓ | 24.659ms | 18.2MB |
+| 141 | caesar-cipher-1 | ✓ | 3.097ms | 205.0KB |
+| 142 | caesar-cipher-2 | ✓ | 3.011ms | 205.0KB |
+| 143 | calculating-the-value-of-e | ✓ | 14.246ms | 1.1MB |
+| 144 | calendar---for-real-programmers-1 | ✓ | 2.943ms | 116.9KB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 2.796ms | 116.9KB |
+| 146 | calendar | ✓ | 2.838ms | 116.9KB |
 | 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function | ✓ | 1.125ms | 16.0KB |
+| 148 | call-a-foreign-language-function | ✓ | 2.397ms | 16.0KB |
 | 149 | call-a-function-1 | ✓ | 1µs |  |
-| 150 | call-a-function-10 | ✓ | 180µs |  |
-| 151 | call-a-function-11 | ✓ | 956µs | 16.0KB |
-| 152 | call-a-function-12 | ✓ | 6.522ms | 1.0MB |
-| 153 | call-a-function-2 | ✓ | 6.087ms | 1.6MB |
-| 154 | call-a-function-3 | ✓ | 38µs |  |
-| 155 | call-a-function-4 | ✓ | 131µs |  |
-| 156 | call-a-function-5 | ✓ | 1.137ms | 16.0KB |
-| 157 | call-a-function-6 | ✓ | 1.102ms | 16.0KB |
-| 158 | call-a-function-7 | ✓ | 14µs |  |
-| 159 | call-a-function-8 | ✓ | 7.019ms | 1.9MB |
-| 160 | call-a-function-9 | ✓ | 6.581ms | 1.7MB |
+| 150 | call-a-function-10 | ✓ | 373µs |  |
+| 151 | call-a-function-11 | ✓ | 3.213ms | 16.0KB |
+| 152 | call-a-function-12 | ✓ | 13.01ms | 1.0MB |
+| 153 | call-a-function-2 | ✓ | 15.538ms | 2.4MB |
+| 154 | call-a-function-3 | ✓ | 35µs |  |
+| 155 | call-a-function-4 | ✓ | 247µs |  |
+| 156 | call-a-function-5 | ✓ | 2.774ms | 16.0KB |
+| 157 | call-a-function-6 | ✓ | 2.684ms | 16.0KB |
+| 158 | call-a-function-7 | ✓ | 19µs |  |
+| 159 | call-a-function-8 | ✓ | 16.063ms | 1.9MB |
+| 160 | call-a-function-9 |   | 6.581ms | 1.7MB |
 | 161 | call-an-object-method-1 | ✓ | 11µs |  |
 | 162 | call-an-object-method-2 | ✓ | 1µs |  |
 | 163 | call-an-object-method-3 | ✓ | 7µs |  |

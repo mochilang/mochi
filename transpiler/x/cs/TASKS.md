@@ -1,3 +1,156 @@
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
+## Progress (2025-07-31 14:19 +0700)
+- cs transpiler: fix str() for arrays (progress 103/105)
+
 ## Progress (2025-07-31 12:13 +0700)
 - cs: benchmark binary search (progress 103/105)
 
@@ -2500,6 +2653,57 @@
 
 ## Progress (2025-07-22 03:14 +0000)
 - cs transpiler: 100/102 tests compiled
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

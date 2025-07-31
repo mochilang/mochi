@@ -1094,8 +1094,15 @@ func (f *FieldExpr) emit(w io.Writer) {
 		f.Target.emit(w)
 		fmt.Fprintf(w, "[\"%s\"]))", f.Name)
 	} else {
-		f.Target.emit(w)
-		fmt.Fprintf(w, ".%s", safeName(f.Name))
+		t := typeOfExpr(f.Target)
+		if t == "object" || t == "" {
+			fmt.Fprint(w, "((dynamic)(")
+			f.Target.emit(w)
+			fmt.Fprintf(w, ")).%s", safeName(f.Name))
+		} else {
+			f.Target.emit(w)
+			fmt.Fprintf(w, ".%s", safeName(f.Name))
+		}
 	}
 }
 

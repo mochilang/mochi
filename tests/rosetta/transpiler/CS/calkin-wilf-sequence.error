@@ -1,14 +1,6 @@
 dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(71,30): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(72,30): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(74,31): error CS1503: Argument 1: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(86,27): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(87,27): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(109,21): error CS0103: The name 'repeat' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(151,28): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(152,18): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(153,41): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(161,47): error CS0103: The name 'num' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/Program.cs(161,80): error CS0103: The name 'denom' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden363912631/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(105,33): error CS1503: Argument 1: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(140,21): error CS0103: The name 'repeat' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(186,80): error CS1061: 'long' does not contain a definition for 'PadLeft' and no accessible extension method 'PadLeft' accepting a first argument of type 'long' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
 
 The build failed. Fix the build errors and run again.
