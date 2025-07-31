@@ -75,6 +75,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeFunctionDefinition(b, n, indent)
 	case "val_definition":
 		writeValDefinition(b, n, indent)
+	case "var_definition":
+		writeVarDefinition(b, n, indent)
 	case "return_expression":
 		b.WriteString(ind)
 		b.WriteString("return ")
@@ -159,6 +161,22 @@ func writeValDefinition(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) > idx {
 		b.WriteString(" = ")
 		writeExpr(b, n.Children[idx], indent)
+	}
+	b.WriteByte('\n')
+}
+
+func writeVarDefinition(b *bytes.Buffer, n *Node, indent int) {
+	ind := strings.Repeat("  ", indent)
+	b.WriteString(ind)
+	b.WriteString("var ")
+	if len(n.Children) == 0 {
+		b.WriteByte('\n')
+		return
+	}
+	b.WriteString(n.Children[0].Text)
+	if len(n.Children) > 1 {
+		b.WriteString(" = ")
+		writeExpr(b, n.Children[1], indent)
 	}
 	b.WriteByte('\n')
 }
@@ -260,7 +278,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
 	case "identifier", "integer_literal", "string", "type_identifier":
 		b.WriteString(n.Text)
-	case "generic_type":
+	case "generic_type", "generic_function":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		}
