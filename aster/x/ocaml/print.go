@@ -141,6 +141,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(']')
+	case "tuple_expression":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+		b.WriteByte(')')
 	case "parenthesized_expression":
 		b.WriteByte('(')
 		for i, c := range n.Children {
@@ -159,6 +168,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "fun_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("fun ")
+			for i, c := range n.Children[:len(n.Children)-1] {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, c, indent)
+			}
+			b.WriteString(" -> ")
+			writeExpr(b, n.Children[len(n.Children)-1], indent)
 		}
 	case "infix_expression":
 		if len(n.Children) == 3 {
@@ -201,6 +222,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
+	case "try_expression":
+		if len(n.Children) >= 2 {
+			b.WriteString("try ")
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString(" with ")
+			for i, c := range n.Children[1:] {
+				if i > 0 {
+					b.WriteString(" | ")
+				}
+				writeMatchCase(b, c, indent)
+			}
+		}
 	case "if_expression":
 		if len(n.Children) >= 2 {
 			b.WriteString(strings.Repeat("  ", indent))
@@ -227,5 +260,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(n.Text)
 	default:
 		b.WriteString(n.Kind)
+	}
+}
+
+func writeMatchCase(b *bytes.Buffer, n *Node, indent int) {
+	if len(n.Children) >= 2 {
+		writeExpr(b, n.Children[0], indent)
+		b.WriteString(" -> ")
+		writeExpr(b, n.Children[1], indent)
 	}
 }

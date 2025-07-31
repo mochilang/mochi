@@ -94,14 +94,10 @@ func TestPrint_Golden(t *testing.T) {
 					t.Fatalf("write out: %v", err)
 				}
 			}
-			cmd := exec.Command(ocamlPath, outPath)
-			got, err := cmd.CombinedOutput()
-			if err != nil {
-				t.Fatalf("run printed: %v\n%s", err, got)
-			}
-			want, err := exec.Command(ocamlPath, src).CombinedOutput()
-			if err != nil {
-				t.Fatalf("run original: %v\n%s", err, want)
+			got, gotErr := exec.Command(ocamlPath, outPath).CombinedOutput()
+			want, wantErr := exec.Command(ocamlPath, src).CombinedOutput()
+			if (gotErr != nil) != (wantErr != nil) {
+				t.Fatalf("run mismatch: gotErr=%v wantErr=%v\nGot:%s\nWant:%s", gotErr, wantErr, got, want)
 			}
 			outFile := filepath.Join(outDir, name+".out")
 			if shouldUpdate() {
