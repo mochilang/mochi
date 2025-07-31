@@ -11,18 +11,23 @@ import (
 // simplified Program. Positional information is omitted unless opts specifies
 // otherwise.
 func Inspect(src string, opts ...Option) (*Program, error) {
-	var withPos bool
-	if len(opts) > 0 {
-		withPos = opts[0].WithPositions
-	}
-	prog, err := parser.ParseString(src)
-	if err != nil {
-		return nil, err
-	}
-	root := ast.FromProgram(prog)
-	n := convert(root, withPos)
-	if n == nil {
-		n = &Node{}
-	}
-	return &Program{File: &ProgramNode{Node: *n}}, nil
+        var withPos, withSrc bool
+        if len(opts) > 0 {
+                withPos = opts[0].WithPositions
+                withSrc = opts[0].WithSource
+        }
+        prog, err := parser.ParseString(src)
+        if err != nil {
+                return nil, err
+        }
+        root := ast.FromProgram(prog)
+        n := convert(root, withPos)
+        if n == nil {
+                n = &Node{}
+        }
+        p := &Program{File: &ProgramNode{Node: *n}}
+        if withSrc {
+                p.Source = src
+        }
+        return p, nil
 }

@@ -10,19 +10,29 @@ import (
 
 // Print returns Mochi source code for the given Program.
 func Print(p *Program) (string, error) {
-	if p == nil || p.File == nil {
-		return "", fmt.Errorf("nil program")
-	}
-	n := toAST(&p.File.Node)
-	var buf bytes.Buffer
-	if err := mast.Fprint(&buf, n); err != nil {
-		return "", err
-	}
-	src := buf.String()
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src += "\n"
-	}
-	return src, nil
+        if p == nil {
+                return "", fmt.Errorf("nil program")
+        }
+        if p.File == nil {
+                out := p.Source
+                if out == "" {
+                        return "", fmt.Errorf("nil program")
+                }
+                if len(out) > 0 && out[len(out)-1] != '\n' {
+                        out += "\n"
+                }
+                return out, nil
+        }
+        n := toAST(&p.File.Node)
+        var buf bytes.Buffer
+        if err := mast.Fprint(&buf, n); err != nil {
+                return "", err
+        }
+        src := buf.String()
+        if len(src) > 0 && src[len(src)-1] != '\n' {
+                src += "\n"
+        }
+        return src, nil
 }
 
 func toAST(n *Node) *mast.Node {

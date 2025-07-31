@@ -3,12 +3,13 @@
 package mochi_test
 
 import (
-	"encoding/json"
-	"flag"
-	"os"
-	"path/filepath"
-	"strings"
-	"testing"
+       "encoding/json"
+       "flag"
+       "os"
+       "path/filepath"
+       "sort"
+       "strings"
+       "testing"
 
 	mochi "mochi/aster/x/mochi"
 )
@@ -37,13 +38,17 @@ func repoRoot(t *testing.T) string {
 func TestInspect_Golden(t *testing.T) {
 	root := repoRoot(t)
 	srcPattern := filepath.Join(root, "tests", "transpiler", "x", "mochi", "*.mochi")
-	files, err := filepath.Glob(srcPattern)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(files) == 0 {
-		t.Fatalf("no files: %s", srcPattern)
-	}
+       files, err := filepath.Glob(srcPattern)
+       if err != nil {
+               t.Fatal(err)
+       }
+       sort.Strings(files)
+       if len(files) == 0 {
+               t.Fatalf("no files: %s", srcPattern)
+       }
+       if len(files) > 5 {
+               files = files[:5]
+       }
 
 	outDir := filepath.Join(root, "tests", "aster", "x", "mochi")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {

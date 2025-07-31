@@ -86,16 +86,21 @@
                         "kind": "range",
                         "children": [
                           {
-                            "kind": "binary",
-                            "text": "+",
+                            "kind": "group",
                             "children": [
                               {
-                                "kind": "selector",
-                                "text": "i"
-                              },
-                              {
-                                "kind": "int",
-                                "text": "1"
+                                "kind": "binary",
+                                "text": "+",
+                                "children": [
+                                  {
+                                    "kind": "selector",
+                                    "text": "i"
+                                  },
+                                  {
+                                    "kind": "int",
+                                    "text": "1"
+                                  }
+                                ]
                               }
                             ]
                           },
@@ -112,44 +117,54 @@
                             "kind": "if",
                             "children": [
                               {
-                                "kind": "binary",
-                                "text": "==",
+                                "kind": "group",
                                 "children": [
                                   {
                                     "kind": "binary",
-                                    "text": "+",
+                                    "text": "==",
                                     "children": [
                                       {
-                                        "kind": "index",
+                                        "kind": "group",
                                         "children": [
                                           {
-                                            "kind": "selector",
-                                            "text": "nums"
-                                          },
-                                          {
-                                            "kind": "selector",
-                                            "text": "i"
+                                            "kind": "binary",
+                                            "text": "+",
+                                            "children": [
+                                              {
+                                                "kind": "index",
+                                                "children": [
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "nums"
+                                                  },
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "i"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "index",
+                                                "children": [
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "nums"
+                                                  },
+                                                  {
+                                                    "kind": "selector",
+                                                    "text": "j"
+                                                  }
+                                                ]
+                                              }
+                                            ]
                                           }
                                         ]
                                       },
                                       {
-                                        "kind": "index",
-                                        "children": [
-                                          {
-                                            "kind": "selector",
-                                            "text": "nums"
-                                          },
-                                          {
-                                            "kind": "selector",
-                                            "text": "j"
-                                          }
-                                        ]
+                                        "kind": "selector",
+                                        "text": "target"
                                       }
                                     ]
-                                  },
-                                  {
-                                    "kind": "selector",
-                                    "text": "target"
                                   }
                                 ]
                               },

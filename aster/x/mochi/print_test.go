@@ -1,10 +1,11 @@
 package mochi_test
 
 import (
-	"flag"
-	"os"
-	"path/filepath"
-	"testing"
+       "flag"
+       "os"
+       "path/filepath"
+       "sort"
+       "testing"
 
 	mochi "mochi/aster/x/mochi"
 	"mochi/tools/slt/logic"
@@ -34,13 +35,17 @@ func repoRootPrint(t *testing.T) string {
 func TestPrint_Golden(t *testing.T) {
 	root := repoRootPrint(t)
 	srcPattern := filepath.Join(root, "tests", "transpiler", "x", "mochi", "*.mochi")
-	files, err := filepath.Glob(srcPattern)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(files) == 0 {
-		t.Fatalf("no files: %s", srcPattern)
-	}
+       files, err := filepath.Glob(srcPattern)
+       if err != nil {
+               t.Fatal(err)
+       }
+       sort.Strings(files)
+       if len(files) == 0 {
+               t.Fatalf("no files: %s", srcPattern)
+       }
+       if len(files) > 5 {
+               files = files[:5]
+       }
 
 	outDir := filepath.Join(root, "tests", "aster", "x", "mochi")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {

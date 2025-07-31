@@ -8,10 +8,14 @@ import (
 
 // Option controls how AST nodes are generated.
 type Option struct {
-	// WithPositions populates the positional fields when true. Since the
-	// underlying AST currently lacks precise offsets these fields remain
-	// zero even when requested.
-	WithPositions bool
+        // WithPositions populates the positional fields when true. Since the
+        // underlying AST currently lacks precise offsets these fields remain
+        // zero even when requested.
+        WithPositions bool
+        // WithSource retains the original source code in the resulting Program
+        // when true. The Source field is not included in the marshalled JSON
+        // output.
+        WithSource bool
 }
 
 // Node represents a simplified Mochi AST node. Leaf nodes that carry a textual
@@ -60,7 +64,8 @@ type (
 
 // Program represents a parsed Mochi file. The root node is the program itself.
 type Program struct {
-	File *ProgramNode `json:"file"`
+        File   *ProgramNode `json:"file"`
+        Source string       `json:"-"`
 }
 
 // convert transforms a node from the generic ast package into our Node
@@ -78,13 +83,25 @@ func convert(n *mochiast.Node, withPos bool) *Node {
 		// The mochi/ast package does not currently retain precise
 		// position information so the fields remain zero.
 	}
-	for _, c := range n.Children {
-		if child := convert(c, withPos); child != nil {
-			node.Children = append(node.Children, child)
-		}
-	}
-	if len(node.Children) == 0 && node.Text == "" {
-		return nil
-	}
-	return node
+       for _, c := range n.Children {
+               if child := convert(c, withPos); child != nil {
+                       node.Children = append(node.Children, child)
+               }
+       }
+       if len(node.Children) == 0 && node.Text == "" {
+               if keepEmptyNode(node.Kind) {
+                       return node
+               }
+               return nil
+       }
+       return node
+}
+
+func keepEmptyNode(kind string) bool {
+       switch kind {
+       case "break", "continue":
+               return true
+       default:
+               return false
+       }
 }
