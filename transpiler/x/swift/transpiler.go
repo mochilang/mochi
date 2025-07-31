@@ -32,6 +32,7 @@ var usesKeys bool
 var usesMem bool
 var usesBigInt bool
 var usesPad bool
+var usesRepeat bool
 var usesRat bool
 var usesSHA256 bool
 var usesAppend bool
@@ -66,6 +67,7 @@ type Program struct {
 	UseMem        bool
 	UseBigInt     bool
 	UsePad        bool
+	UseRepeat     bool
 	UseRat        bool
 	UseSHA256     bool
 	UseAppend     bool
@@ -1178,6 +1180,16 @@ func (c *CallExpr) emit(w io.Writer) {
 			usesPad = true
 			return
 		}
+	case "repeat":
+		if len(c.Args) == 2 {
+			fmt.Fprint(w, "_repeat(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ")")
+			usesRepeat = true
+			return
+		}
 	case "num":
 		if len(c.Args) == 1 {
 			fmt.Fprint(w, "_rat_num(")
@@ -1599,6 +1611,12 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseRepeat {
+		buf.WriteString("func _repeat(_ s: String, _ n: Int) -> String {\n")
+		buf.WriteString("    if n <= 0 { return \"\" }\n")
+		buf.WriteString("    return String(repeating: s, count: n)\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseMem {
 		buf.WriteString("func _mem() -> Int {\n")
 		buf.WriteString("    if let status = try? String(contentsOfFile: \"/proc/self/status\") {\n")
@@ -1771,6 +1789,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesMem = false
 	usesBigInt = false
 	usesPad = false
+	usesRepeat = false
 	usesRat = false
 	usesSHA256 = false
 	usesAppend = false
@@ -1796,6 +1815,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseMem = usesMem
 	p.UseBigInt = usesBigInt
 	p.UsePad = usesPad
+	p.UseRepeat = usesRepeat
 	p.UseRat = usesRat
 	p.UseSHA256 = usesSHA256
 	p.UseAppend = usesAppend
@@ -2964,6 +2984,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			} else if types.IsStringType(rtyp) && types.IsAnyType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "String"}
 				ltyp = types.StringType{}
+			} else if types.IsBigIntType(ltyp) && types.IsIntType(rtyp) {
+				left = &CallExpr{Func: "Int", Args: []Expr{left}}
+				ltyp = types.IntType{}
+			} else if types.IsBigIntType(rtyp) && types.IsIntType(ltyp) {
+				right = &CallExpr{Func: "Int", Args: []Expr{right}}
+				rtyp = types.IntType{}
 			}
 		case "&&", "||":
 			if types.IsAnyType(ltyp) {
@@ -3328,6 +3354,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			expr = &BinaryExpr{Left: arg, Op: "in", Right: expr}
+			i++
+			continue
+		}
+		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "padStart" {
+			a1, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			a2, err := convertExpr(env, p.Ops[i+1].Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			usesPad = true
+			expr = &CallExpr{Func: "_padStart", Args: []Expr{&CallExpr{Func: "_p", Args: []Expr{expr}}, a1, a2}}
 			i++
 			continue
 		}
@@ -3933,6 +3973,18 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesPad = true
 			return &CallExpr{Func: "_padStart", Args: []Expr{a0, a1, a2}}, nil
+		}
+		if pr.Call.Func == "repeat" && len(pr.Call.Args) == 2 {
+			a0, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			a1, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			usesRepeat = true
+			return &CallExpr{Func: "_repeat", Args: []Expr{a0, a1}}, nil
 		}
 		if pr.Call.Func == "num" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
