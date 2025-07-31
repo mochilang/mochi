@@ -247,12 +247,15 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "\u003c",
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "\u003c",
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "text": "\u003c",
                                             "children": [
                                               {
                                                 "kind": "integer",
@@ -260,6 +263,7 @@
                                               },
                                               {
                                                 "kind": "binary_expression",
+                                                "text": "\u0026",
                                                 "children": [
                                                   {
                                                     "kind": "integer",
@@ -280,6 +284,7 @@
                                           },
                                           {
                                             "kind": "binary_expression",
+                                            "text": "\u0026",
                                             "children": [
                                               {
                                                 "kind": "integer",
@@ -394,9 +399,11 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "\u003e",
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "\u003c",
                                         "children": [
                                           {
                                             "kind": "integer",
@@ -404,6 +411,7 @@
                                           },
                                           {
                                             "kind": "binary_expression",
+                                            "text": "\u0026",
                                             "children": [
                                               {
                                                 "kind": "integer",
@@ -424,6 +432,7 @@
                                       },
                                       {
                                         "kind": "binary_expression",
+                                        "text": "\u0026",
                                         "children": [
                                           {
                                             "kind": "integer",
@@ -537,12 +546,15 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "\u003e",
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "\u003c",
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "text": "\u003c",
                                             "children": [
                                               {
                                                 "kind": "integer",
@@ -550,6 +562,7 @@
                                               },
                                               {
                                                 "kind": "binary_expression",
+                                                "text": "\u0026",
                                                 "children": [
                                                   {
                                                     "kind": "integer",
@@ -570,6 +583,7 @@
                                           },
                                           {
                                             "kind": "binary_expression",
+                                            "text": "\u0026",
                                             "children": [
                                               {
                                                 "kind": "integer",
@@ -590,6 +604,7 @@
                                       },
                                       {
                                         "kind": "binary_expression",
+                                        "text": "\u0026",
                                         "children": [
                                           {
                                             "kind": "integer",

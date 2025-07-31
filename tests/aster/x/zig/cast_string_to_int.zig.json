@@ -131,8 +131,57 @@
                                 "kind": "initializer_list",
                                 "children": [
                                   {
-                                    "kind": "float",
-                                    "text": "2.0"
+                                    "kind": "catch_expression",
+                                    "children": [
+                                      {
+                                        "kind": "call_expression",
+                                        "children": [
+                                          {
+                                            "kind": "field_expression",
+                                            "children": [
+                                              {
+                                                "kind": "field_expression",
+                                                "children": [
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "std"
+                                                  },
+                                                  {
+                                                    "kind": "identifier",
+                                                    "text": "fmt"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "kind": "identifier",
+                                                "text": "parseInt"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "builtin_type",
+                                            "text": "i64"
+                                          },
+                                          {
+                                            "kind": "string",
+                                            "children": [
+                                              {
+                                                "kind": "string_content",
+                                                "text": "1995"
+                                              }
+                                            ]
+                                          },
+                                          {
+                                            "kind": "integer",
+                                            "text": "10"
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "0"
+                                      }
+                                    ]
                                   }
                                 ]
                               }

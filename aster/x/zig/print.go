@@ -216,6 +216,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	switch n.Kind {
 	case "identifier", "builtin_type", "builtin_identifier", "integer", "escape_sequence", "string_content":
 		b.WriteString(n.Text)
+	case "float":
+		b.WriteString(n.Text)
 	case "string":
 		b.WriteByte('"')
 		for _, c := range n.Children {
@@ -384,6 +386,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 				writeExpr(b, &n.Children[i], indentLevel)
 			}
 		}
+	case "continue_expression":
+		b.WriteString("continue")
+		if len(n.Children) > 0 {
+			b.WriteByte(' ')
+			for i := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeExpr(b, &n.Children[i], indentLevel)
+			}
+		}
 	case "break_label":
 		b.WriteByte(':')
 		if len(n.Children) > 0 {
@@ -425,16 +438,8 @@ func writeBinaryExpr(b *bytes.Buffer, n *Node, indentLevel int) {
 	}
 	left := &n.Children[0]
 	right := &n.Children[1]
-	op := "+"
-	if right.Kind == "identifier" && right.Text == "n" {
-		op = "<"
-	} else if right.Kind == "identifier" && right.Text == "target" {
-		op = "=="
-	} else if left.Kind == "integer" && left.Text == "0" && right.Kind == "integer" && right.Text == "1" {
-		op = "-"
-	} else if right.Kind == "integer" && right.Text == "1" {
-		op = "+"
-	} else if left.Kind == "index_expression" && right.Kind == "index_expression" {
+	op := n.Text
+	if op == "" {
 		op = "+"
 	}
 	writeExpr(b, left, indentLevel)

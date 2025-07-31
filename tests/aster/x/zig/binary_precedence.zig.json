@@ -132,6 +132,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "integer",
@@ -139,6 +140,7 @@
                                       },
                                       {
                                         "kind": "binary_expression",
+                                        "text": "*",
                                         "children": [
                                           {
                                             "kind": "integer",
@@ -242,6 +244,7 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "integer",
@@ -249,6 +252,7 @@
                                       },
                                       {
                                         "kind": "binary_expression",
+                                        "text": "*",
                                         "children": [
                                           {
                                             "kind": "integer",
@@ -352,9 +356,11 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "*",
                                         "children": [
                                           {
                                             "kind": "integer",
@@ -462,9 +468,11 @@
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "text": "+",
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "text": "*",
                                         "children": [
                                           {
                                             "kind": "integer",

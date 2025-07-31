@@ -4,7 +4,7 @@ fn boom() bool {
     try std.io.getStdOut().writer().print("{s}\n", .{"boom"});
 }
 pub fn main() void {
-    try std.io.getStdOut().writer().print("{any}\n", .{1 + 2 + 2 + 3 + 3 + 4});
-    try std.io.getStdOut().writer().print("{any}\n", .{1 + 2 + 2 + 3 + boom()});
-    try std.io.getStdOut().writer().print("{any}\n", .{1 + 2 + 2 + 3 + 3 + 4 + boom()});
+    try std.io.getStdOut().writer().print("{any}\n", .{1 < 2 & 2 < 3 & 3 < 4});
+    try std.io.getStdOut().writer().print("{any}\n", .{1 < 2 & 2 > 3 & boom()});
+    try std.io.getStdOut().writer().print("{any}\n", .{1 < 2 & 2 < 3 & 3 > 4 & boom()});
 }

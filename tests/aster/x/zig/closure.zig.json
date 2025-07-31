@@ -43,6 +43,116 @@
         "children": [
           {
             "kind": "identifier",
+            "text": "makeAdder"
+          },
+          {
+            "kind": "parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "n"
+                  },
+                  {
+                    "kind": "builtin_type",
+                    "text": "i64"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "builtin_type",
+            "text": "i64"
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "return_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "fn_0"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
+            "text": "fn_0"
+          },
+          {
+            "kind": "parameters",
+            "children": [
+              {
+                "kind": "parameter",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "x"
+                  },
+                  {
+                    "kind": "builtin_type",
+                    "text": "i64"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "builtin_type",
+            "text": "i64"
+          },
+          {
+            "kind": "block",
+            "children": [
+              {
+                "kind": "expression_statement",
+                "children": [
+                  {
+                    "kind": "return_expression",
+                    "children": [
+                      {
+                        "kind": "binary_expression",
+                        "text": "+",
+                        "children": [
+                          {
+                            "kind": "identifier",
+                            "text": "x"
+                          },
+                          {
+                            "kind": "identifier",
+                            "text": "n"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "function_declaration",
+        "children": [
+          {
+            "kind": "identifier",
             "text": "main"
           },
           {
@@ -52,6 +162,28 @@
           {
             "kind": "block",
             "children": [
+              {
+                "kind": "variable_declaration",
+                "children": [
+                  {
+                    "kind": "identifier",
+                    "text": "add10"
+                  },
+                  {
+                    "kind": "call_expression",
+                    "children": [
+                      {
+                        "kind": "identifier",
+                        "text": "makeAdder"
+                      },
+                      {
+                        "kind": "integer",
+                        "text": "10"
+                      }
+                    ]
+                  }
+                ]
+              },
               {
                 "kind": "expression_statement",
                 "children": [
@@ -131,8 +263,17 @@
                                 "kind": "initializer_list",
                                 "children": [
                                   {
-                                    "kind": "float",
-                                    "text": "2.0"
+                                    "kind": "call_expression",
+                                    "children": [
+                                      {
+                                        "kind": "identifier",
+                                        "text": "add10"
+                                      },
+                                      {
+                                        "kind": "integer",
+                                        "text": "7"
+                                      }
+                                    ]
                                   }
                                 ]
                               }

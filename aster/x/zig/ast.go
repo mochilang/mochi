@@ -52,6 +52,7 @@ var valueKinds = map[string]struct{}{
 	"builtin_type":       {},
 	"string_content":     {},
 	"integer":            {},
+	"float":              {},
 	"escape_sequence":    {},
 	"format_sequence":    {},
 	"comment":            {},
@@ -75,8 +76,13 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) 
 			node.Text = n.Utf8Text(src)
 			return node, true
 		}
-		// skip pure syntax leaf
-		return Node{}, false
+		switch n.Kind() {
+		case "break_expression", "continue_expression":
+			return node, true
+		default:
+			// skip pure syntax leaf
+			return Node{}, false
+		}
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {
@@ -87,6 +93,11 @@ func convertNode(n *sitter.Node, src []byte, withPos bool) (node Node, ok bool) 
 		if c, ok := convertNode(child, src, withPos); ok {
 			node.Children = append(node.Children, c)
 		}
+	}
+
+	if node.Kind == "binary_expression" && n.ChildCount() >= 3 {
+		op := n.Child(1)
+		node.Text = op.Utf8Text(src)
 	}
 
 	if len(node.Children) == 0 && node.Text == "" {

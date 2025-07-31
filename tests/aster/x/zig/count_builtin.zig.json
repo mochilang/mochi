@@ -131,8 +131,8 @@
                                 "kind": "initializer_list",
                                 "children": [
                                   {
-                                    "kind": "float",
-                                    "text": "2.0"
+                                    "kind": "integer",
+                                    "text": "3"
                                   }
                                 ]
                               }
