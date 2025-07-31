@@ -1,13 +1,11 @@
 package rb
 
-// Program represents a parsed Ruby source file.
-//
-// The structure mirrors the Node type produced by this package's Ruby parser
-// which offers a typed representation of Ruby's AST compared to the generic
-// S-expression returned by ripper.
-// Program wraps the root Node returned by the parser.
+// Program represents a parsed Ruby source file. The AST is rooted at a
+// ProgramNode which embeds Node. This mirrors the structure returned by the
+// parser while providing a slightly richer type hierarchy for use by the
+// printer and tests.
 type Program struct {
-	Root *Node `json:"root"`
+	Root *ProgramNode `json:"root"`
 }
 
 // Inspect parses the given Ruby source code and returns a Program describing
@@ -17,5 +15,9 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Program{Root: node}, nil
+	if node == nil {
+		return &Program{Root: nil}, nil
+	}
+	root := &ProgramNode{Node: *node}
+	return &Program{Root: root}, nil
 }
