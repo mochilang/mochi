@@ -89,9 +89,17 @@ func convert(n *sitter.Node, src []byte) *Node {
 		}
 	}
 
-	if n.ChildCount() > n.NamedChildCount() && node.Kind == "binary_operator" {
-		if n.ChildCount() >= 3 {
-			op := n.Child(1)
+	if n.ChildCount() > n.NamedChildCount() {
+		switch node.Kind {
+		case "binary_operator":
+			if n.ChildCount() >= 3 {
+				op := n.Child(1)
+				if op != nil && !op.IsNamed() {
+					node.Text = strings.TrimSpace(op.Utf8Text(src))
+				}
+			}
+		case "unary_operator":
+			op := n.Child(0)
 			if op != nil && !op.IsNamed() {
 				node.Text = strings.TrimSpace(op.Utf8Text(src))
 			}

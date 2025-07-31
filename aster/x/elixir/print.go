@@ -63,12 +63,19 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "identifier", "alias", "atom", "integer":
 		b.WriteString(n.Text)
 	case "string":
+		if len(n.Children) == 0 {
+			if strings.HasPrefix(n.Text, "\"") && strings.HasSuffix(n.Text, "\"") {
+				b.WriteString(n.Text)
+			} else {
+				b.WriteByte('"')
+				b.WriteString(n.Text)
+				b.WriteByte('"')
+			}
+			return
+		}
 		b.WriteByte('"')
 		for _, c := range n.Children {
 			writeExpr(b, c, indent)
-		}
-		if n.Text != "" && len(n.Children) == 0 {
-			b.WriteString(n.Text)
 		}
 		b.WriteByte('"')
 	case "interpolation":
@@ -168,14 +175,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	case "arguments":
 		writeArguments(b, n, indent)
 	case "list":
-		b.WriteByte('[')
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString(", ")
+		if len(n.Children) == 0 && n.Text != "" {
+			b.WriteString(n.Text)
+		} else {
+			b.WriteByte('[')
+			for i, c := range n.Children {
+				if i > 0 {
+					b.WriteString(", ")
+				}
+				writeExpr(b, c, indent)
 			}
-			writeExpr(b, c, indent)
+			b.WriteByte(']')
 		}
-		b.WriteByte(']')
 	case "map":
 		b.WriteString("%{")
 		for i, c := range n.Children {
@@ -208,6 +219,15 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(op)
 			b.WriteByte(' ')
 			writeExpr(b, n.Children[1], indent)
+		}
+	case "unary_operator":
+		if len(n.Children) == 1 {
+			op := "-"
+			if strings.TrimSpace(n.Text) != "" {
+				op = strings.TrimSpace(n.Text)
+			}
+			b.WriteString(op)
+			writeExpr(b, n.Children[0], indent)
 		}
 	case "keyword":
 		b.WriteString(n.Text)
