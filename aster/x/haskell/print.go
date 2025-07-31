@@ -32,7 +32,7 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeNode(b, &n.Children[i], indent)
 		}
-	case "pragma", "comment", "variable", "module_id", "name", "operator", "integer", "string", "unit":
+	case "pragma", "comment", "variable", "module_id", "name", "operator", "integer", "string", "unit", "constructor":
 		b.WriteString(n.Text)
 	case "imports", "declarations":
 		for i := range n.Children {
