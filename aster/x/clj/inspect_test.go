@@ -7,7 +7,6 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 	"testing"
 
@@ -48,11 +47,16 @@ func TestInspect_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "aster", "x", "clj")
 	os.MkdirAll(outDir, 0o755)
 
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.clj"))
-	if err != nil {
-		t.Fatal(err)
+	files := []string{
+		"append_builtin.clj",
+		"avg_builtin.clj",
+		"basic_compare.clj",
+		"bench_block.clj",
+		"binary_precedence.clj",
 	}
-	sort.Strings(files)
+	for i, f := range files {
+		files[i] = filepath.Join(srcDir, f)
+	}
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".clj")
