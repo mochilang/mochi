@@ -117,6 +117,12 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 		child := n.NamedChild(0)
 		if child != nil {
 			name := strings.TrimSpace(string(src[n.StartByte():child.StartByte()]))
+			if name == "" {
+				all := string(src[n.StartByte():n.EndByte()])
+				if idx := strings.Index(all, "("); idx > 0 {
+					name = strings.TrimSpace(all[:idx])
+				}
+			}
 			node.Text = name
 		}
 	} else if n.Kind() == "unary_expression" && n.NamedChildCount() == 1 {

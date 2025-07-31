@@ -43,6 +43,9 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte('\n')
 	case "function_definition":
+		if skipFunctionDefinition(n) {
+			return
+		}
 		writeFunctionDefinition(b, n, indent)
 	case "struct_specifier":
 		b.WriteString(ind)
@@ -98,7 +101,11 @@ func writeFunctionDefinition(b *bytes.Buffer, n *Node, indent int) {
 	ind := strings.Repeat("    ", indent)
 	writeExpr(b, n.Children[0], indent)
 	b.WriteByte(' ')
-	writeFunctionDeclarator(b, n.Children[1], indent)
+	if n.Children[1].Kind == "function_declarator" {
+		writeFunctionDeclarator(b, n.Children[1], indent)
+	} else {
+		writeExpr(b, n.Children[1], indent)
+	}
 	b.WriteString(" {\n")
 	writeBlock(b, n.Children[2], indent+1)
 	b.WriteString(ind)
@@ -112,6 +119,9 @@ func writeFunctionDeclarator(b *bytes.Buffer, n *Node, indent int) {
 	idx := 0
 	if n.Text != "" {
 		b.WriteString(n.Text)
+		if len(n.Children) > 0 && n.Children[0].Kind == "identifier" {
+			idx = 1
+		}
 	} else if len(n.Children) > 0 && n.Children[0].Kind != "parameter_list" {
 		writeExpr(b, n.Children[0], indent)
 		idx = 1
@@ -238,10 +248,19 @@ func writeFieldDeclaration(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) < 2 {
 		return
 	}
+	if n.Children[0].Kind == "placeholder_type_specifier" && len(n.Children[0].Children) > 0 && n.Children[0].Children[0].Kind == "auto" {
+		if n.Children[1].Kind == "function_declarator" && n.Children[1].Text == "" {
+			return
+		}
+	}
 	b.WriteString(strings.Repeat("    ", indent))
 	writeExpr(b, n.Children[0], indent)
 	b.WriteByte(' ')
-	writeExpr(b, n.Children[1], indent)
+	if n.Children[1].Kind == "function_declarator" {
+		writeFunctionDeclarator(b, n.Children[1], indent)
+	} else {
+		writeExpr(b, n.Children[1], indent)
+	}
 	b.WriteString(";\n")
 }
 
@@ -324,6 +343,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		for _, c := range n.Children {
 			writeExpr(b, c, indent)
 		}
+	case "function_declarator":
+		writeFunctionDeclarator(b, n, indent)
 	case "type_qualifier":
 		b.WriteString(n.Text)
 	case "template_function":
@@ -545,6 +566,25 @@ func containsCout(n *Node) bool {
 	}
 	for _, c := range n.Children {
 		if containsCout(c) {
+			return true
+		}
+	}
+	return false
+}
+
+func skipFunctionDefinition(n *Node) bool {
+	if len(n.Children) < 2 {
+		return false
+	}
+	first := n.Children[0]
+	second := n.Children[1]
+	if first.Kind == "placeholder_type_specifier" && len(first.Children) > 0 && first.Children[0].Kind == "auto" {
+		if second.Kind == "function_declarator" && second.Text == "" {
+			return true
+		}
+	}
+	if first.Kind == "qualified_identifier" && len(n.Children) >= 2 && second.Kind == "reference_declarator" {
+		if len(second.Children) > 0 && second.Children[0].Kind == "function_declarator" && second.Children[0].Text == "" {
 			return true
 		}
 	}
