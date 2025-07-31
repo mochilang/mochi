@@ -19,12 +19,18 @@ type Program struct {
 // Inspect parses the given C source code using tree-sitter and returns
 // its Program structure without position information.
 func Inspect(src string) (*Program, error) {
-	return inspect(src, IncludePos)
+	return InspectWithOption(src, Option{Positions: IncludePos})
 }
 
 // InspectWithPositions parses the C source and keeps position fields in the AST.
 func InspectWithPositions(src string) (*Program, error) {
-	return inspect(src, true)
+	return InspectWithOption(src, Option{Positions: true})
+}
+
+// InspectWithOption behaves like Inspect but allows callers to specify whether
+// position information should be included in the resulting AST.
+func InspectWithOption(src string, opt Option) (*Program, error) {
+	return inspect(src, opt.Positions)
 }
 
 func inspect(src string, pos bool) (*Program, error) {
