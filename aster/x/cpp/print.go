@@ -42,6 +42,27 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(n.Children[0].Text)
 		}
 		b.WriteByte('\n')
+	case "preproc_ifdef":
+		b.WriteString(ind)
+		b.WriteString("#ifdef ")
+		if len(n.Children) > 0 {
+			b.WriteString(n.Children[0].Text)
+		}
+		b.WriteByte('\n')
+		idx := 1
+		for idx < len(n.Children) && n.Children[idx].Kind != "preproc_else" {
+			writeStmt(b, n.Children[idx], indent+1)
+			idx++
+		}
+		if idx < len(n.Children) && n.Children[idx].Kind == "preproc_else" {
+			b.WriteString(ind)
+			b.WriteString("#else\n")
+			for _, c := range n.Children[idx].Children {
+				writeStmt(b, c, indent+1)
+			}
+		}
+		b.WriteString(ind)
+		b.WriteString("#endif\n")
 	case "template_declaration":
 		b.WriteString(ind)
 		b.WriteString("template")
@@ -353,6 +374,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		for _, c := range n.Children {
 			writeExpr(b, c, indent)
 		}
+	case "pointer_declarator":
+		b.WriteByte('*')
+		for _, c := range n.Children {
+			writeExpr(b, c, indent)
+		}
 	case "function_declarator":
 		writeFunctionDeclarator(b, n, indent)
 	case "type_qualifier":
@@ -378,6 +404,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 		b.WriteByte(']')
+	case "pointer_expression":
+		b.WriteByte('*')
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
 	case "parenthesized_expression":
 		b.WriteByte('(')
 		if len(n.Children) > 0 {
