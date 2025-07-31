@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 class Program {
     static int[] data = new int[]{1, 2};
-    static bool flag = ((from x in data (x == 1) select x).ToArray().Any());
+    static bool flag = ((from x in data where (x == 1) select x).ToArray().Any());
     static void Main() {
         Console.WriteLine((flag ? "true" : "false"));
     }
