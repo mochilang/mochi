@@ -15,20 +15,22 @@ type Program struct {
 	Root *TranslationUnit `json:"root"`
 }
 
-// Inspect parses the given C++ source code using tree-sitter and
-// returns its Program structure.
-// Inspect parses the given C++ source code using tree-sitter and
-// returns its Program structure. Position information is omitted unless
-// opts.WithPositions is set to true.
+// Inspect parses the given C++ source code and returns a Program.
+// Position information is included when opt.WithPositions is true.
 func Inspect(src string, opts ...Options) (*Program, error) {
+	var opt Options
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+	return InspectWithOption(src, opt)
+}
+
+// InspectWithOption behaves like Inspect but takes an explicit Options value.
+func InspectWithOption(src string, opt Options) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(ts.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
-	var o Options
-	if len(opts) > 0 {
-		o = opts[0]
-	}
-	root := convert(tree.RootNode(), []byte(src), o)
+	root := convert(tree.RootNode(), []byte(src), opt)
 	if root == nil {
 		return &Program{}, nil
 	}
