@@ -3,12 +3,14 @@
 package erlang
 
 import (
-        "bytes"
-        "fmt"
-        "strings"
+	"bytes"
+	"fmt"
+	"strings"
 )
 
-// Print reconstructs Erlang source code from the Program AST.
+// Print reconstructs Erlang source code from the Program AST. The output is
+// generated solely from the structured nodes rather than reusing the original
+// text so that formatting is consistent.
 func Print(p *Program) (string, error) {
 	if p == nil || p.Root == nil {
 		return "", fmt.Errorf("nil program")
@@ -30,7 +32,7 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteString(n.Text)
 		return
 	}
-       switch n.Kind {
+	switch n.Kind {
 	case "source_file":
 		for i, c := range n.Children {
 			if i > 0 {
@@ -105,107 +107,108 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 0 {
 			writeNode(b, n.Children[0], indent)
 		}
-       case "list":
-               b.WriteByte('[')
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       writeNode(b, c, indent)
-               }
-               b.WriteByte(']')
-       case "tuple":
-               b.WriteByte('{')
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       writeNode(b, c, indent)
-               }
-               b.WriteByte('}')
-       case "comment":
-               writeIndent(b, indent)
-               b.WriteString(n.Text)
-               b.WriteByte('\n')
-       case "atom", "integer", "string", "var":
-               b.WriteString(n.Text)
-       case "shebang":
-               b.WriteString(n.Text)
-               b.WriteByte('\n')
-       case "paren_expr":
-               b.WriteByte('(')
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       writeNode(b, c, indent)
-               }
-               b.WriteByte(')')
-       case "binary_op_expr":
-               if len(n.Children) == 2 {
-                       writeNode(b, n.Children[0], indent)
-                       op := extractBinaryOp(n)
-                       if op != "" {
-                               b.WriteByte(' ')
-                               b.WriteString(op)
-                               b.WriteByte(' ')
-                       }
-                       writeNode(b, n.Children[1], indent)
-               }
-       case "unary_op_expr":
-               if len(n.Children) == 1 {
-                       op := strings.TrimSpace(strings.TrimSuffix(n.Text, n.Children[0].Text))
-                       b.WriteString(op)
-                       writeNode(b, n.Children[0], indent)
-               }
-       case "anonymous_fun":
-               b.WriteString("fun ")
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString("; ")
-                       }
-                       writeNode(b, c, indent)
-               }
-               b.WriteString(" end")
-       case "fun_clause":
-               if len(n.Children) == 3 {
-                       writeNode(b, n.Children[0], indent)
-                       writeNode(b, n.Children[1], indent)
-                       b.WriteString(" -> ")
-                       writeNode(b, n.Children[2], indent)
-               } else if len(n.Children) == 2 {
-                       writeNode(b, n.Children[0], indent)
-                       b.WriteString(" -> ")
-                       writeNode(b, n.Children[1], indent)
-               }
-       case "case_expr":
-               if len(n.Children) >= 2 {
-                       b.WriteString("case ")
-                       writeNode(b, n.Children[0], indent)
-                       b.WriteString(" of\n")
-                       for i, c := range n.Children[1:] {
-                               writeIndent(b, indent+1)
-                               writeNode(b, c, indent+1)
-                               if i < len(n.Children[1:])-1 {
-                                       b.WriteString(";\n")
-                               } else {
-                                       b.WriteByte('\n')
-                               }
-                       }
-                       writeIndent(b, indent)
-                       b.WriteString("end")
-               }
-       case "cr_clause":
-               if len(n.Children) >= 2 {
-                       writeNode(b, n.Children[0], indent)
-                       b.WriteString(" -> ")
-                       writeNode(b, n.Children[1], indent)
-               }
-       case "map_expr":
-               b.WriteString("#{")
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
+	case "list":
+		b.WriteByte('[')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteByte(']')
+	case "tuple":
+		b.WriteByte('{')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteByte('}')
+	case "comment":
+		writeIndent(b, indent)
+		b.WriteString(n.Text)
+		b.WriteByte('\n')
+	case "atom", "integer", "string", "var":
+		b.WriteString(n.Text)
+	case "shebang":
+		b.WriteString(n.Text)
+		b.WriteByte('\n')
+	case "paren_expr":
+		b.WriteByte('(')
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteByte(')')
+	case "binary_op_expr":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			op := extractBinaryOp(n)
+			if op != "" {
+				b.WriteByte(' ')
+				b.WriteString(op)
+				b.WriteByte(' ')
+			}
+			writeNode(b, n.Children[1], indent)
+		}
+	case "unary_op_expr":
+		if len(n.Children) == 1 {
+			op := strings.TrimSpace(strings.TrimSuffix(n.Text, n.Children[0].Text))
+			b.WriteString(op)
+			b.WriteByte(' ')
+			writeNode(b, n.Children[0], indent)
+		}
+	case "anonymous_fun":
+		b.WriteString("fun ")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString("; ")
+			}
+			writeNode(b, c, indent)
+		}
+		b.WriteString(" end")
+	case "fun_clause":
+		if len(n.Children) == 3 {
+			writeNode(b, n.Children[0], indent)
+			writeNode(b, n.Children[1], indent)
+			b.WriteString(" -> ")
+			writeNode(b, n.Children[2], indent)
+		} else if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" -> ")
+			writeNode(b, n.Children[1], indent)
+		}
+	case "case_expr":
+		if len(n.Children) >= 2 {
+			b.WriteString("case ")
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" of\n")
+			for i, c := range n.Children[1:] {
+				writeIndent(b, indent+1)
+				writeNode(b, c, indent+1)
+				if i < len(n.Children[1:])-1 {
+					b.WriteString(";\n")
+				} else {
+					b.WriteByte('\n')
+				}
+			}
+			writeIndent(b, indent)
+			b.WriteString("end")
+		}
+	case "cr_clause":
+		if len(n.Children) >= 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" -> ")
+			writeNode(b, n.Children[1], indent)
+		}
+	case "map_expr":
+		b.WriteString("#{")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
 			}
 			writeNode(b, c, indent)
 		}
@@ -231,25 +234,25 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 		b.WriteByte(']')
-       case "lc_exprs":
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       writeNode(b, c, indent)
-               }
-       case "lc_or_zc_expr":
-               for i, c := range n.Children {
-                       if i > 0 {
-                               b.WriteString(", ")
-                       }
-                       writeNode(b, c, indent)
-               }
-       case "generator":
-               if len(n.Children) == 2 {
-                       writeNode(b, n.Children[0], indent)
-                       b.WriteString(" <- ")
-                       writeNode(b, n.Children[1], indent)
+	case "lc_exprs":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+	case "lc_or_zc_expr":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, c, indent)
+		}
+	case "generator":
+		if len(n.Children) == 2 {
+			writeNode(b, n.Children[0], indent)
+			b.WriteString(" <- ")
+			writeNode(b, n.Children[1], indent)
 		}
 	case "match_expr":
 		if len(n.Children) == 2 {
@@ -272,23 +275,23 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeIndent(b *bytes.Buffer, indent int) {
-        for i := 0; i < indent; i++ {
-                b.WriteString("    ")
-        }
+	for i := 0; i < indent; i++ {
+		b.WriteString("    ")
+	}
 }
 
 func extractBinaryOp(n *Node) string {
-        if len(n.Children) < 2 {
-                return ""
-        }
-        t := strings.TrimSpace(n.Text)
-        left := strings.TrimSpace(n.Children[0].Text)
-        right := strings.TrimSpace(n.Children[1].Text)
-        if i := strings.Index(t, left); i >= 0 {
-                t = t[i+len(left):]
-        }
-        if j := strings.LastIndex(t, right); j >= 0 {
-                t = t[:j]
-        }
-        return strings.TrimSpace(t)
+	if len(n.Children) < 2 {
+		return ""
+	}
+	t := strings.TrimSpace(n.Text)
+	left := strings.TrimSpace(n.Children[0].Text)
+	right := strings.TrimSpace(n.Children[1].Text)
+	if i := strings.Index(t, left); i >= 0 {
+		t = t[i+len(left):]
+	}
+	if j := strings.LastIndex(t, right); j >= 0 {
+		t = t[:j]
+	}
+	return strings.TrimSpace(t)
 }
