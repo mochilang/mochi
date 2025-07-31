@@ -61,9 +61,9 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 	end := n.EndPosition()
 	node := &Node{Kind: n.Kind()}
 	if opt.Positions {
-		node.Start = int(n.StartByte())
+		node.Start = int(start.Row) + 1
 		node.StartCol = int(start.Column)
-		node.End = int(n.EndByte())
+		node.End = int(end.Row) + 1
 		node.EndCol = int(end.Column)
 	}
 
