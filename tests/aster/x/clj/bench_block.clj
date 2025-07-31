@@ -1,16 +1,6 @@
 (ns bench-block)
-
 (def n 1000)
 (def s (atom 0))
-
-(dotimes [i n]
-  (swap! s + i))
-
-(defn -main []
-  (println "{")
-  (println "  \"duration_us\": 571223,")
-  (println "  \"memory_bytes\": 0,")
-  (println "  \"name\": \"simple\"")
-  (println "}"))
-
+(dotimes [i n] (swap! s + i))
+(defn -main [] (println "{") (println "  \"duration_us\": 571223,") (println "  \"memory_bytes\": 0,") (println "  \"name\": \"simple\"") (println "}"))
 (-main)

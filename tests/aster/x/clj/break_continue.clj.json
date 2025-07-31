@@ -1,0 +1,333 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "numbers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "number",
+              "text": "1"
+            },
+            {
+              "kind": "number",
+              "text": "2"
+            },
+            {
+              "kind": "number",
+              "text": "3"
+            },
+            {
+              "kind": "number",
+              "text": "4"
+            },
+            {
+              "kind": "number",
+              "text": "5"
+            },
+            {
+              "kind": "number",
+              "text": "6"
+            },
+            {
+              "kind": "number",
+              "text": "7"
+            },
+            {
+              "kind": "number",
+              "text": "8"
+            },
+            {
+              "kind": "number",
+              "text": "9"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "loop"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "n_seq"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "numbers"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "when"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "seq"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "n_seq"
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "let"
+                    },
+                    {
+                      "kind": "vector",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "n"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "first"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "n_seq"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "cond"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "="
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "mod"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "n"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "number",
+                              "text": "0"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "recur"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "rest"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "n_seq"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "\u003e"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "n"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "7"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "recur"
+                            },
+                            {
+                              "kind": "nil",
+                              "text": "nil"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "keyword",
+                          "text": ":else"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "do"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "println"
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "odd number:"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "n"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "recur"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "rest"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "n_seq"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

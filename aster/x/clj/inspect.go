@@ -31,7 +31,7 @@ type Option struct {
 type rawNode struct {
 	Sym    string     `json:"sym,omitempty"`
 	Kw     string     `json:"kw,omitempty"`
-	Str    string     `json:"str,omitempty"`
+	Str    *string    `json:"str"`
 	Num    *float64   `json:"num,omitempty"`
 	Bool   *bool      `json:"bool,omitempty"`
 	Nil    bool       `json:"nil,omitempty"`
@@ -55,8 +55,8 @@ func toNode(r *rawNode) *Node {
 		return &Node{Kind: "symbol", Text: r.Sym}
 	case r.Kw != "":
 		return &Node{Kind: "keyword", Text: r.Kw}
-	case r.Str != "":
-		return &Node{Kind: "string", Text: r.Str}
+	case r.Str != nil:
+		return &Node{Kind: "string", Text: *r.Str}
 	case r.Num != nil:
 		return &Node{Kind: "number", Text: strconv.FormatFloat(*r.Num, 'f', -1, 64)}
 	case r.Bool != nil:
