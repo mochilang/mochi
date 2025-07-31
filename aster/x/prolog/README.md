@@ -1,40 +1,33 @@
-# Prolog AST Printer
+# Prolog AST Printer Progress
 
-This directory contains utilities for inspecting Prolog programs using SWI-Prolog and printing them back from the AST.
+Generated files for Prolog programs live under `tests/aster/x/prolog`.
 
-## Test Files
+Checked: 25/25
+_Last updated: 2025-07-31 20:46 GMT+7_
 
-1. append_builtin.pl
-2. arithmetic_ops.pl
-3. atom_length.pl
-4. avg_builtin.pl
-5. basic_compare.pl
-6. bool_ops.pl
-7. cross_join.pl
-8. dictionary_lookup.pl
-9. division_mod.pl
-10. factorial.pl
-11. factorial_tail.pl
-12. fib.pl
-13. fibonacci_tail.pl
-14. for_loop.pl
-15. gcd.pl
-16. gcd_iterative.pl
-17. list_length.pl
-18. member_check.pl
-19. nested_call.pl
-20. not_operator.pl
-21. print_hello.pl
-22. string_concat.pl
-23. substring_builtin.pl
-24. sum_list.pl
-25. two-sum.pl
-26. reverse_list.pl
-27. palindrome.pl
-28. prime_check.pl
-29. even_numbers.pl
-30. sum_pairs.pl
-
-Completed **30/30** examples.
-
-_Last updated: 2025-07-31 20:31 GMT+7_
+## Golden Test Checklist
+1. [x] append_builtin.pl
+2. [x] arithmetic_ops.pl
+3. [x] atom_length.pl
+4. [x] avg_builtin.pl
+5. [x] basic_compare.pl
+6. [x] bool_ops.pl
+7. [x] cross_join.pl
+8. [x] dictionary_lookup.pl
+9. [x] division_mod.pl
+10. [x] factorial.pl
+11. [x] factorial_tail.pl
+12. [x] fib.pl
+13. [x] fibonacci_tail.pl
+14. [x] for_loop.pl
+15. [x] gcd.pl
+16. [x] gcd_iterative.pl
+17. [x] list_length.pl
+18. [x] member_check.pl
+19. [x] nested_call.pl
+20. [x] not_operator.pl
+21. [x] print_hello.pl
+22. [x] string_concat.pl
+23. [x] substring_builtin.pl
+24. [x] sum_list.pl
+25. [x] two-sum.pl
