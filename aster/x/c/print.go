@@ -277,8 +277,8 @@ func writeDeclarator(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "field_identifier", "type_identifier", "number_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
-		b.WriteString(n.Text)
+       case "identifier", "field_identifier", "type_identifier", "number_literal", "char_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
+               b.WriteString(n.Text)
 	case "string_literal":
 		b.WriteByte('"')
 		for _, c := range n.Children {
