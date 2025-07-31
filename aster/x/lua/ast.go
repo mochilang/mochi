@@ -83,15 +83,44 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		node.EndCol = int(end.Column)
 	}
 
-	if n.NamedChildCount() == 0 {
-		if !isValueNode(n.Kind()) {
-			return nil
+	switch n.Kind() {
+	case "string":
+		node.Text = n.Utf8Text(src)
+	case "binary_expression":
+		left := n.ChildByFieldName("left")
+		right := n.ChildByFieldName("right")
+		if left != nil && right != nil {
+			op := strings.TrimSpace(string(src[left.EndByte():right.StartByte()]))
+			node.Text = op
+			if ln := convert(left, src, opt); ln != nil {
+				node.Children = append(node.Children, ln)
+			}
+			if rn := convert(right, src, opt); rn != nil {
+				node.Children = append(node.Children, rn)
+			}
+			return node
 		}
-		text := n.Utf8Text(src)
-		if strings.TrimSpace(text) == "" {
-			return nil
+	case "unary_expression":
+		operand := n.ChildByFieldName("operand")
+		if operand != nil {
+			op := strings.TrimSpace(string(src[n.StartByte():operand.StartByte()]))
+			node.Text = op
+			if on := convert(operand, src, opt); on != nil {
+				node.Children = append(node.Children, on)
+			}
+			return node
 		}
-		node.Text = text
+	default:
+		if n.NamedChildCount() == 0 {
+			if !isValueNode(n.Kind()) {
+				return nil
+			}
+			text := n.Utf8Text(src)
+			if strings.TrimSpace(text) == "" {
+				return nil
+			}
+			node.Text = text
+		}
 	}
 
 	for i := uint(0); i < n.NamedChildCount(); i++ {

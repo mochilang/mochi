@@ -24,7 +24,8 @@ func InspectWithOption(src string, opt Option) (*Program, error) {
 	parser := sitter.NewParser()
 	parser.SetLanguage(sitter.NewLanguage(tslua.Language()))
 	tree := parser.ParseCtx(context.Background(), []byte(src), nil)
-	return convertProgram(tree.RootNode(), []byte(src), opt), nil
+	prog := convertProgram(tree.RootNode(), []byte(src), opt)
+	return prog, nil
 }
 
 // InspectWithPositions is kept for backward compatibility. When called the

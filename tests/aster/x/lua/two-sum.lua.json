@@ -1,88 +1,181 @@
 {
   "root": {
     "kind": "chunk",
+    "start": 1,
+    "end": 29,
     "children": [
       {
         "kind": "function_declaration",
+        "start": 2,
+        "end": 22,
+        "endCol": 3,
         "children": [
           {
             "kind": "identifier",
-            "text": "twoSum"
+            "text": "twoSum",
+            "start": 2,
+            "startCol": 9,
+            "end": 2,
+            "endCol": 15
           },
           {
             "kind": "parameters",
+            "start": 2,
+            "startCol": 15,
+            "end": 2,
+            "endCol": 29,
             "children": [
               {
                 "kind": "identifier",
-                "text": "nums"
+                "text": "nums",
+                "start": 2,
+                "startCol": 16,
+                "end": 2,
+                "endCol": 20
               },
               {
                 "kind": "identifier",
-                "text": "target"
+                "text": "target",
+                "start": 2,
+                "startCol": 22,
+                "end": 2,
+                "endCol": 28
               }
             ]
           },
           {
             "kind": "block",
+            "start": 3,
+            "startCol": 2,
+            "end": 21,
+            "endCol": 27,
             "children": [
               {
                 "kind": "assignment_statement",
+                "start": 3,
+                "startCol": 2,
+                "end": 13,
+                "endCol": 12,
                 "children": [
                   {
                     "kind": "variable_list",
+                    "start": 3,
+                    "startCol": 2,
+                    "end": 3,
+                    "endCol": 3,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "n"
+                        "text": "n",
+                        "start": 3,
+                        "startCol": 2,
+                        "end": 3,
+                        "endCol": 3
                       }
                     ]
                   },
                   {
                     "kind": "expression_list",
+                    "start": 3,
+                    "startCol": 6,
+                    "end": 13,
+                    "endCol": 12,
                     "children": [
                       {
                         "kind": "function_call",
+                        "start": 3,
+                        "startCol": 6,
+                        "end": 13,
+                        "endCol": 12,
                         "children": [
                           {
                             "kind": "parenthesized_expression",
+                            "start": 3,
+                            "startCol": 6,
+                            "end": 13,
+                            "endCol": 6,
                             "children": [
                               {
                                 "kind": "function_definition",
+                                "start": 3,
+                                "startCol": 7,
+                                "end": 13,
+                                "endCol": 5,
                                 "children": [
                                   {
                                     "kind": "parameters",
+                                    "start": 3,
+                                    "startCol": 15,
+                                    "end": 3,
+                                    "endCol": 18,
                                     "children": [
                                       {
                                         "kind": "identifier",
-                                        "text": "v"
+                                        "text": "v",
+                                        "start": 3,
+                                        "startCol": 16,
+                                        "end": 3,
+                                        "endCol": 17
                                       }
                                     ]
                                   },
                                   {
                                     "kind": "block",
+                                    "start": 4,
+                                    "startCol": 2,
+                                    "end": 12,
+                                    "endCol": 7,
                                     "children": [
                                       {
                                         "kind": "if_statement",
+                                        "start": 4,
+                                        "startCol": 2,
+                                        "end": 12,
+                                        "endCol": 7,
                                         "children": [
                                           {
                                             "kind": "binary_expression",
+                                            "start": 4,
+                                            "startCol": 5,
+                                            "end": 4,
+                                            "endCol": 42,
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "start": 4,
+                                                "startCol": 5,
+                                                "end": 4,
+                                                "endCol": 23,
                                                 "children": [
                                                   {
                                                     "kind": "function_call",
+                                                    "start": 4,
+                                                    "startCol": 5,
+                                                    "end": 4,
+                                                    "endCol": 12,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "type"
+                                                        "text": "type",
+                                                        "start": 4,
+                                                        "startCol": 5,
+                                                        "end": 4,
+                                                        "endCol": 9
                                                       },
                                                       {
                                                         "kind": "arguments",
+                                                        "start": 4,
+                                                        "startCol": 9,
+                                                        "end": 4,
+                                                        "endCol": 12,
                                                         "children": [
                                                           {
                                                             "kind": "identifier",
-                                                            "text": "v"
+                                                            "text": "v",
+                                                            "start": 4,
+                                                            "startCol": 10,
+                                                            "end": 4,
+                                                            "endCol": 11
                                                           }
                                                         ]
                                                       }
@@ -92,17 +185,33 @@
                                               },
                                               {
                                                 "kind": "binary_expression",
+                                                "start": 4,
+                                                "startCol": 28,
+                                                "end": 4,
+                                                "endCol": 42,
                                                 "children": [
                                                   {
                                                     "kind": "dot_index_expression",
+                                                    "start": 4,
+                                                    "startCol": 28,
+                                                    "end": 4,
+                                                    "endCol": 35,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "v"
+                                                        "text": "v",
+                                                        "start": 4,
+                                                        "startCol": 28,
+                                                        "end": 4,
+                                                        "endCol": 29
                                                       },
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "items"
+                                                        "text": "items",
+                                                        "start": 4,
+                                                        "startCol": 30,
+                                                        "end": 4,
+                                                        "endCol": 35
                                                       }
                                                     ]
                                                   }
@@ -112,26 +221,54 @@
                                           },
                                           {
                                             "kind": "block",
+                                            "start": 5,
+                                            "startCol": 4,
+                                            "end": 5,
+                                            "endCol": 19,
                                             "children": [
                                               {
                                                 "kind": "return_statement",
+                                                "start": 5,
+                                                "startCol": 4,
+                                                "end": 5,
+                                                "endCol": 19,
                                                 "children": [
                                                   {
                                                     "kind": "expression_list",
+                                                    "start": 5,
+                                                    "startCol": 11,
+                                                    "end": 5,
+                                                    "endCol": 19,
                                                     "children": [
                                                       {
                                                         "kind": "unary_expression",
+                                                        "start": 5,
+                                                        "startCol": 11,
+                                                        "end": 5,
+                                                        "endCol": 19,
                                                         "children": [
                                                           {
                                                             "kind": "dot_index_expression",
+                                                            "start": 5,
+                                                            "startCol": 12,
+                                                            "end": 5,
+                                                            "endCol": 19,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "v"
+                                                                "text": "v",
+                                                                "start": 5,
+                                                                "startCol": 12,
+                                                                "end": 5,
+                                                                "endCol": 13
                                                               },
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "items"
+                                                                "text": "items",
+                                                                "start": 5,
+                                                                "startCol": 14,
+                                                                "end": 5,
+                                                                "endCol": 19
                                                               }
                                                             ]
                                                           }
@@ -145,26 +282,54 @@
                                           },
                                           {
                                             "kind": "elseif_statement",
+                                            "start": 6,
+                                            "startCol": 2,
+                                            "end": 9,
+                                            "endCol": 14,
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "start": 6,
+                                                "startCol": 9,
+                                                "end": 6,
+                                                "endCol": 45,
                                                 "children": [
                                                   {
                                                     "kind": "binary_expression",
+                                                    "start": 6,
+                                                    "startCol": 9,
+                                                    "end": 6,
+                                                    "endCol": 27,
                                                     "children": [
                                                       {
                                                         "kind": "function_call",
+                                                        "start": 6,
+                                                        "startCol": 9,
+                                                        "end": 6,
+                                                        "endCol": 16,
                                                         "children": [
                                                           {
                                                             "kind": "identifier",
-                                                            "text": "type"
+                                                            "text": "type",
+                                                            "start": 6,
+                                                            "startCol": 9,
+                                                            "end": 6,
+                                                            "endCol": 13
                                                           },
                                                           {
                                                             "kind": "arguments",
+                                                            "start": 6,
+                                                            "startCol": 13,
+                                                            "end": 6,
+                                                            "endCol": 16,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "v"
+                                                                "text": "v",
+                                                                "start": 6,
+                                                                "startCol": 14,
+                                                                "end": 6,
+                                                                "endCol": 15
                                                               }
                                                             ]
                                                           }
@@ -174,20 +339,40 @@
                                                   },
                                                   {
                                                     "kind": "parenthesized_expression",
+                                                    "start": 6,
+                                                    "startCol": 32,
+                                                    "end": 6,
+                                                    "endCol": 45,
                                                     "children": [
                                                       {
                                                         "kind": "binary_expression",
+                                                        "start": 6,
+                                                        "startCol": 33,
+                                                        "end": 6,
+                                                        "endCol": 44,
                                                         "children": [
                                                           {
                                                             "kind": "bracket_index_expression",
+                                                            "start": 6,
+                                                            "startCol": 33,
+                                                            "end": 6,
+                                                            "endCol": 37,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "v"
+                                                                "text": "v",
+                                                                "start": 6,
+                                                                "startCol": 33,
+                                                                "end": 6,
+                                                                "endCol": 34
                                                               },
                                                               {
                                                                 "kind": "number",
-                                                                "text": "1"
+                                                                "text": "1",
+                                                                "start": 6,
+                                                                "startCol": 35,
+                                                                "end": 6,
+                                                                "endCol": 36
                                                               }
                                                             ]
                                                           }
@@ -199,28 +384,56 @@
                                               },
                                               {
                                                 "kind": "block",
+                                                "start": 7,
+                                                "startCol": 6,
+                                                "end": 9,
+                                                "endCol": 14,
                                                 "children": [
                                                   {
                                                     "kind": "variable_declaration",
+                                                    "start": 7,
+                                                    "startCol": 6,
+                                                    "end": 7,
+                                                    "endCol": 17,
                                                     "children": [
                                                       {
                                                         "kind": "assignment_statement",
+                                                        "start": 7,
+                                                        "startCol": 12,
+                                                        "end": 7,
+                                                        "endCol": 17,
                                                         "children": [
                                                           {
                                                             "kind": "variable_list",
+                                                            "start": 7,
+                                                            "startCol": 12,
+                                                            "end": 7,
+                                                            "endCol": 13,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "c"
+                                                                "text": "c",
+                                                                "start": 7,
+                                                                "startCol": 12,
+                                                                "end": 7,
+                                                                "endCol": 13
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "expression_list",
+                                                            "start": 7,
+                                                            "startCol": 16,
+                                                            "end": 7,
+                                                            "endCol": 17,
                                                             "children": [
                                                               {
                                                                 "kind": "number",
-                                                                "text": "0"
+                                                                "text": "0",
+                                                                "start": 7,
+                                                                "startCol": 16,
+                                                                "end": 7,
+                                                                "endCol": 17
                                                               }
                                                             ]
                                                           }
@@ -230,35 +443,71 @@
                                                   },
                                                   {
                                                     "kind": "for_statement",
+                                                    "start": 8,
+                                                    "startCol": 6,
+                                                    "end": 8,
+                                                    "endCol": 40,
                                                     "children": [
                                                       {
                                                         "kind": "for_generic_clause",
+                                                        "start": 8,
+                                                        "startCol": 10,
+                                                        "end": 8,
+                                                        "endCol": 23,
                                                         "children": [
                                                           {
                                                             "kind": "variable_list",
+                                                            "start": 8,
+                                                            "startCol": 10,
+                                                            "end": 8,
+                                                            "endCol": 11,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "_"
+                                                                "text": "_",
+                                                                "start": 8,
+                                                                "startCol": 10,
+                                                                "end": 8,
+                                                                "endCol": 11
                                                               }
                                                             ]
                                                           },
                                                           {
                                                             "kind": "expression_list",
+                                                            "start": 8,
+                                                            "startCol": 15,
+                                                            "end": 8,
+                                                            "endCol": 23,
                                                             "children": [
                                                               {
                                                                 "kind": "function_call",
+                                                                "start": 8,
+                                                                "startCol": 15,
+                                                                "end": 8,
+                                                                "endCol": 23,
                                                                 "children": [
                                                                   {
                                                                     "kind": "identifier",
-                                                                    "text": "pairs"
+                                                                    "text": "pairs",
+                                                                    "start": 8,
+                                                                    "startCol": 15,
+                                                                    "end": 8,
+                                                                    "endCol": 20
                                                                   },
                                                                   {
                                                                     "kind": "arguments",
+                                                                    "start": 8,
+                                                                    "startCol": 20,
+                                                                    "end": 8,
+                                                                    "endCol": 23,
                                                                     "children": [
                                                                       {
                                                                         "kind": "identifier",
-                                                                        "text": "v"
+                                                                        "text": "v",
+                                                                        "start": 8,
+                                                                        "startCol": 21,
+                                                                        "end": 8,
+                                                                        "endCol": 22
                                                                       }
                                                                     ]
                                                                   }
@@ -270,32 +519,64 @@
                                                       },
                                                       {
                                                         "kind": "block",
+                                                        "start": 8,
+                                                        "startCol": 27,
+                                                        "end": 8,
+                                                        "endCol": 36,
                                                         "children": [
                                                           {
                                                             "kind": "assignment_statement",
+                                                            "start": 8,
+                                                            "startCol": 27,
+                                                            "end": 8,
+                                                            "endCol": 36,
                                                             "children": [
                                                               {
                                                                 "kind": "variable_list",
+                                                                "start": 8,
+                                                                "startCol": 27,
+                                                                "end": 8,
+                                                                "endCol": 28,
                                                                 "children": [
                                                                   {
                                                                     "kind": "identifier",
-                                                                    "text": "c"
+                                                                    "text": "c",
+                                                                    "start": 8,
+                                                                    "startCol": 27,
+                                                                    "end": 8,
+                                                                    "endCol": 28
                                                                   }
                                                                 ]
                                                               },
                                                               {
                                                                 "kind": "expression_list",
+                                                                "start": 8,
+                                                                "startCol": 31,
+                                                                "end": 8,
+                                                                "endCol": 36,
                                                                 "children": [
                                                                   {
                                                                     "kind": "binary_expression",
+                                                                    "start": 8,
+                                                                    "startCol": 31,
+                                                                    "end": 8,
+                                                                    "endCol": 36,
                                                                     "children": [
                                                                       {
                                                                         "kind": "identifier",
-                                                                        "text": "c"
+                                                                        "text": "c",
+                                                                        "start": 8,
+                                                                        "startCol": 31,
+                                                                        "end": 8,
+                                                                        "endCol": 32
                                                                       },
                                                                       {
                                                                         "kind": "number",
-                                                                        "text": "1"
+                                                                        "text": "1",
+                                                                        "start": 8,
+                                                                        "startCol": 35,
+                                                                        "end": 8,
+                                                                        "endCol": 36
                                                                       }
                                                                     ]
                                                                   }
@@ -309,13 +590,25 @@
                                                   },
                                                   {
                                                     "kind": "return_statement",
+                                                    "start": 9,
+                                                    "startCol": 6,
+                                                    "end": 9,
+                                                    "endCol": 14,
                                                     "children": [
                                                       {
                                                         "kind": "expression_list",
+                                                        "start": 9,
+                                                        "startCol": 13,
+                                                        "end": 9,
+                                                        "endCol": 14,
                                                         "children": [
                                                           {
                                                             "kind": "identifier",
-                                                            "text": "c"
+                                                            "text": "c",
+                                                            "start": 9,
+                                                            "startCol": 13,
+                                                            "end": 9,
+                                                            "endCol": 14
                                                           }
                                                         ]
                                                       }
@@ -327,22 +620,46 @@
                                           },
                                           {
                                             "kind": "else_statement",
+                                            "start": 10,
+                                            "startCol": 4,
+                                            "end": 11,
+                                            "endCol": 15,
                                             "children": [
                                               {
                                                 "kind": "block",
+                                                "start": 11,
+                                                "startCol": 6,
+                                                "end": 11,
+                                                "endCol": 15,
                                                 "children": [
                                                   {
                                                     "kind": "return_statement",
+                                                    "start": 11,
+                                                    "startCol": 6,
+                                                    "end": 11,
+                                                    "endCol": 15,
                                                     "children": [
                                                       {
                                                         "kind": "expression_list",
+                                                        "start": 11,
+                                                        "startCol": 13,
+                                                        "end": 11,
+                                                        "endCol": 15,
                                                         "children": [
                                                           {
                                                             "kind": "unary_expression",
+                                                            "start": 11,
+                                                            "startCol": 13,
+                                                            "end": 11,
+                                                            "endCol": 15,
                                                             "children": [
                                                               {
                                                                 "kind": "identifier",
-                                                                "text": "v"
+                                                                "text": "v",
+                                                                "start": 11,
+                                                                "startCol": 14,
+                                                                "end": 11,
+                                                                "endCol": 15
                                                               }
                                                             ]
                                                           }
@@ -364,10 +681,18 @@
                           },
                           {
                             "kind": "arguments",
+                            "start": 13,
+                            "startCol": 6,
+                            "end": 13,
+                            "endCol": 12,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "nums"
+                                "text": "nums",
+                                "start": 13,
+                                "startCol": 7,
+                                "end": 13,
+                                "endCol": 11
                               }
                             ]
                           }
@@ -379,28 +704,56 @@
               },
               {
                 "kind": "for_statement",
+                "start": 14,
+                "startCol": 2,
+                "end": 20,
+                "endCol": 5,
                 "children": [
                   {
                     "kind": "for_numeric_clause",
+                    "start": 14,
+                    "startCol": 6,
+                    "end": 14,
+                    "endCol": 18,
                     "children": [
                       {
                         "kind": "identifier",
-                        "text": "i"
+                        "text": "i",
+                        "start": 14,
+                        "startCol": 6,
+                        "end": 14,
+                        "endCol": 7
                       },
                       {
                         "kind": "number",
-                        "text": "0"
+                        "text": "0",
+                        "start": 14,
+                        "startCol": 10,
+                        "end": 14,
+                        "endCol": 11
                       },
                       {
                         "kind": "binary_expression",
+                        "start": 14,
+                        "startCol": 13,
+                        "end": 14,
+                        "endCol": 18,
                         "children": [
                           {
                             "kind": "identifier",
-                            "text": "n"
+                            "text": "n",
+                            "start": 14,
+                            "startCol": 13,
+                            "end": 14,
+                            "endCol": 14
                           },
                           {
                             "kind": "number",
-                            "text": "1"
+                            "text": "1",
+                            "start": 14,
+                            "startCol": 17,
+                            "end": 14,
+                            "endCol": 18
                           }
                         ]
                       }
@@ -408,30 +761,62 @@
                   },
                   {
                     "kind": "block",
+                    "start": 15,
+                    "startCol": 4,
+                    "end": 19,
+                    "endCol": 7,
                     "children": [
                       {
                         "kind": "for_statement",
+                        "start": 15,
+                        "startCol": 4,
+                        "end": 19,
+                        "endCol": 7,
                         "children": [
                           {
                             "kind": "for_numeric_clause",
+                            "start": 15,
+                            "startCol": 8,
+                            "end": 15,
+                            "endCol": 26,
                             "children": [
                               {
                                 "kind": "identifier",
-                                "text": "j"
+                                "text": "j",
+                                "start": 15,
+                                "startCol": 8,
+                                "end": 15,
+                                "endCol": 9
                               },
                               {
                                 "kind": "parenthesized_expression",
+                                "start": 15,
+                                "startCol": 12,
+                                "end": 15,
+                                "endCol": 19,
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "start": 15,
+                                    "startCol": 13,
+                                    "end": 15,
+                                    "endCol": 18,
                                     "children": [
                                       {
                                         "kind": "identifier",
-                                        "text": "i"
+                                        "text": "i",
+                                        "start": 15,
+                                        "startCol": 13,
+                                        "end": 15,
+                                        "endCol": 14
                                       },
                                       {
                                         "kind": "number",
-                                        "text": "1"
+                                        "text": "1",
+                                        "start": 15,
+                                        "startCol": 17,
+                                        "end": 15,
+                                        "endCol": 18
                                       }
                                     ]
                                   }
@@ -439,14 +824,26 @@
                               },
                               {
                                 "kind": "binary_expression",
+                                "start": 15,
+                                "startCol": 21,
+                                "end": 15,
+                                "endCol": 26,
                                 "children": [
                                   {
                                     "kind": "identifier",
-                                    "text": "n"
+                                    "text": "n",
+                                    "start": 15,
+                                    "startCol": 21,
+                                    "end": 15,
+                                    "endCol": 22
                                   },
                                   {
                                     "kind": "number",
-                                    "text": "1"
+                                    "text": "1",
+                                    "start": 15,
+                                    "startCol": 25,
+                                    "end": 15,
+                                    "endCol": 26
                                   }
                                 ]
                               }
@@ -454,39 +851,83 @@
                           },
                           {
                             "kind": "block",
+                            "start": 16,
+                            "startCol": 6,
+                            "end": 18,
+                            "endCol": 9,
                             "children": [
                               {
                                 "kind": "if_statement",
+                                "start": 16,
+                                "startCol": 6,
+                                "end": 18,
+                                "endCol": 9,
                                 "children": [
                                   {
                                     "kind": "parenthesized_expression",
+                                    "start": 16,
+                                    "startCol": 9,
+                                    "end": 16,
+                                    "endCol": 48,
                                     "children": [
                                       {
                                         "kind": "binary_expression",
+                                        "start": 16,
+                                        "startCol": 10,
+                                        "end": 16,
+                                        "endCol": 47,
                                         "children": [
                                           {
                                             "kind": "parenthesized_expression",
+                                            "start": 16,
+                                            "startCol": 10,
+                                            "end": 16,
+                                            "endCol": 37,
                                             "children": [
                                               {
                                                 "kind": "binary_expression",
+                                                "start": 16,
+                                                "startCol": 11,
+                                                "end": 16,
+                                                "endCol": 36,
                                                 "children": [
                                                   {
                                                     "kind": "bracket_index_expression",
+                                                    "start": 16,
+                                                    "startCol": 11,
+                                                    "end": 16,
+                                                    "endCol": 22,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "nums"
+                                                        "text": "nums",
+                                                        "start": 16,
+                                                        "startCol": 11,
+                                                        "end": 16,
+                                                        "endCol": 15
                                                       },
                                                       {
                                                         "kind": "binary_expression",
+                                                        "start": 16,
+                                                        "startCol": 16,
+                                                        "end": 16,
+                                                        "endCol": 21,
                                                         "children": [
                                                           {
                                                             "kind": "identifier",
-                                                            "text": "i"
+                                                            "text": "i",
+                                                            "start": 16,
+                                                            "startCol": 16,
+                                                            "end": 16,
+                                                            "endCol": 17
                                                           },
                                                           {
                                                             "kind": "number",
-                                                            "text": "1"
+                                                            "text": "1",
+                                                            "start": 16,
+                                                            "startCol": 20,
+                                                            "end": 16,
+                                                            "endCol": 21
                                                           }
                                                         ]
                                                       }
@@ -494,21 +935,41 @@
                                                   },
                                                   {
                                                     "kind": "bracket_index_expression",
+                                                    "start": 16,
+                                                    "startCol": 25,
+                                                    "end": 16,
+                                                    "endCol": 36,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "nums"
+                                                        "text": "nums",
+                                                        "start": 16,
+                                                        "startCol": 25,
+                                                        "end": 16,
+                                                        "endCol": 29
                                                       },
                                                       {
                                                         "kind": "binary_expression",
+                                                        "start": 16,
+                                                        "startCol": 30,
+                                                        "end": 16,
+                                                        "endCol": 35,
                                                         "children": [
                                                           {
                                                             "kind": "identifier",
-                                                            "text": "j"
+                                                            "text": "j",
+                                                            "start": 16,
+                                                            "startCol": 30,
+                                                            "end": 16,
+                                                            "endCol": 31
                                                           },
                                                           {
                                                             "kind": "number",
-                                                            "text": "1"
+                                                            "text": "1",
+                                                            "start": 16,
+                                                            "startCol": 34,
+                                                            "end": 16,
+                                                            "endCol": 35
                                                           }
                                                         ]
                                                       }
@@ -520,7 +981,11 @@
                                           },
                                           {
                                             "kind": "identifier",
-                                            "text": "target"
+                                            "text": "target",
+                                            "start": 16,
+                                            "startCol": 41,
+                                            "end": 16,
+                                            "endCol": 47
                                           }
                                         ]
                                       }
@@ -528,31 +993,63 @@
                                   },
                                   {
                                     "kind": "block",
+                                    "start": 17,
+                                    "startCol": 8,
+                                    "end": 17,
+                                    "endCol": 21,
                                     "children": [
                                       {
                                         "kind": "return_statement",
+                                        "start": 17,
+                                        "startCol": 8,
+                                        "end": 17,
+                                        "endCol": 21,
                                         "children": [
                                           {
                                             "kind": "expression_list",
+                                            "start": 17,
+                                            "startCol": 15,
+                                            "end": 17,
+                                            "endCol": 21,
                                             "children": [
                                               {
                                                 "kind": "table_constructor",
+                                                "start": 17,
+                                                "startCol": 15,
+                                                "end": 17,
+                                                "endCol": 21,
                                                 "children": [
                                                   {
                                                     "kind": "field",
+                                                    "start": 17,
+                                                    "startCol": 16,
+                                                    "end": 17,
+                                                    "endCol": 17,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "i"
+                                                        "text": "i",
+                                                        "start": 17,
+                                                        "startCol": 16,
+                                                        "end": 17,
+                                                        "endCol": 17
                                                       }
                                                     ]
                                                   },
                                                   {
                                                     "kind": "field",
+                                                    "start": 17,
+                                                    "startCol": 19,
+                                                    "end": 17,
+                                                    "endCol": 20,
                                                     "children": [
                                                       {
                                                         "kind": "identifier",
-                                                        "text": "j"
+                                                        "text": "j",
+                                                        "start": 17,
+                                                        "startCol": 19,
+                                                        "end": 17,
+                                                        "endCol": 20
                                                       }
                                                     ]
                                                   }
@@ -576,29 +1073,61 @@
               },
               {
                 "kind": "return_statement",
+                "start": 21,
+                "startCol": 2,
+                "end": 21,
+                "endCol": 27,
                 "children": [
                   {
                     "kind": "expression_list",
+                    "start": 21,
+                    "startCol": 9,
+                    "end": 21,
+                    "endCol": 27,
                     "children": [
                       {
                         "kind": "table_constructor",
+                        "start": 21,
+                        "startCol": 9,
+                        "end": 21,
+                        "endCol": 27,
                         "children": [
                           {
                             "kind": "field",
+                            "start": 21,
+                            "startCol": 10,
+                            "end": 21,
+                            "endCol": 17,
                             "children": [
                               {
                                 "kind": "parenthesized_expression",
+                                "start": 21,
+                                "startCol": 10,
+                                "end": 21,
+                                "endCol": 17,
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "start": 21,
+                                    "startCol": 11,
+                                    "end": 21,
+                                    "endCol": 16,
                                     "children": [
                                       {
                                         "kind": "number",
-                                        "text": "0"
+                                        "text": "0",
+                                        "start": 21,
+                                        "startCol": 11,
+                                        "end": 21,
+                                        "endCol": 12
                                       },
                                       {
                                         "kind": "number",
-                                        "text": "1"
+                                        "text": "1",
+                                        "start": 21,
+                                        "startCol": 15,
+                                        "end": 21,
+                                        "endCol": 16
                                       }
                                     ]
                                   }
@@ -608,20 +1137,40 @@
                           },
                           {
                             "kind": "field",
+                            "start": 21,
+                            "startCol": 19,
+                            "end": 21,
+                            "endCol": 26,
                             "children": [
                               {
                                 "kind": "parenthesized_expression",
+                                "start": 21,
+                                "startCol": 19,
+                                "end": 21,
+                                "endCol": 26,
                                 "children": [
                                   {
                                     "kind": "binary_expression",
+                                    "start": 21,
+                                    "startCol": 20,
+                                    "end": 21,
+                                    "endCol": 25,
                                     "children": [
                                       {
                                         "kind": "number",
-                                        "text": "0"
+                                        "text": "0",
+                                        "start": 21,
+                                        "startCol": 20,
+                                        "end": 21,
+                                        "endCol": 21
                                       },
                                       {
                                         "kind": "number",
-                                        "text": "1"
+                                        "text": "1",
+                                        "start": 21,
+                                        "startCol": 24,
+                                        "end": 21,
+                                        "endCol": 25
                                       }
                                     ]
                                   }
@@ -641,65 +1190,126 @@
       },
       {
         "kind": "assignment_statement",
+        "start": 24,
+        "end": 24,
+        "endCol": 34,
         "children": [
           {
             "kind": "variable_list",
+            "start": 24,
+            "end": 24,
+            "endCol": 6,
             "children": [
               {
                 "kind": "identifier",
-                "text": "result"
+                "text": "result",
+                "start": 24,
+                "end": 24,
+                "endCol": 6
               }
             ]
           },
           {
             "kind": "expression_list",
+            "start": 24,
+            "startCol": 9,
+            "end": 24,
+            "endCol": 34,
             "children": [
               {
                 "kind": "function_call",
+                "start": 24,
+                "startCol": 9,
+                "end": 24,
+                "endCol": 34,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "twoSum"
+                    "text": "twoSum",
+                    "start": 24,
+                    "startCol": 9,
+                    "end": 24,
+                    "endCol": 15
                   },
                   {
                     "kind": "arguments",
+                    "start": 24,
+                    "startCol": 15,
+                    "end": 24,
+                    "endCol": 34,
                     "children": [
                       {
                         "kind": "table_constructor",
+                        "start": 24,
+                        "startCol": 16,
+                        "end": 24,
+                        "endCol": 30,
                         "children": [
                           {
                             "kind": "field",
+                            "start": 24,
+                            "startCol": 17,
+                            "end": 24,
+                            "endCol": 18,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "2"
+                                "text": "2",
+                                "start": 24,
+                                "startCol": 17,
+                                "end": 24,
+                                "endCol": 18
                               }
                             ]
                           },
                           {
                             "kind": "field",
+                            "start": 24,
+                            "startCol": 20,
+                            "end": 24,
+                            "endCol": 21,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "7"
+                                "text": "7",
+                                "start": 24,
+                                "startCol": 20,
+                                "end": 24,
+                                "endCol": 21
                               }
                             ]
                           },
                           {
                             "kind": "field",
+                            "start": 24,
+                            "startCol": 23,
+                            "end": 24,
+                            "endCol": 25,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "11"
+                                "text": "11",
+                                "start": 24,
+                                "startCol": 23,
+                                "end": 24,
+                                "endCol": 25
                               }
                             ]
                           },
                           {
                             "kind": "field",
+                            "start": 24,
+                            "startCol": 27,
+                            "end": 24,
+                            "endCol": 29,
                             "children": [
                               {
                                 "kind": "number",
-                                "text": "15"
+                                "text": "15",
+                                "start": 24,
+                                "startCol": 27,
+                                "end": 24,
+                                "endCol": 29
                               }
                             ]
                           }
@@ -707,7 +1317,11 @@
                       },
                       {
                         "kind": "number",
-                        "text": "9"
+                        "text": "9",
+                        "start": 24,
+                        "startCol": 32,
+                        "end": 24,
+                        "endCol": 33
                       }
                     ]
                   }
@@ -719,31 +1333,61 @@
       },
       {
         "kind": "function_call",
+        "start": 26,
+        "end": 26,
+        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print"
+            "text": "print",
+            "start": 26,
+            "end": 26,
+            "endCol": 5
           },
           {
             "kind": "arguments",
+            "start": 26,
+            "startCol": 5,
+            "end": 26,
+            "endCol": 20,
             "children": [
               {
                 "kind": "bracket_index_expression",
+                "start": 26,
+                "startCol": 6,
+                "end": 26,
+                "endCol": 19,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "result"
+                    "text": "result",
+                    "start": 26,
+                    "startCol": 6,
+                    "end": 26,
+                    "endCol": 12
                   },
                   {
                     "kind": "binary_expression",
+                    "start": 26,
+                    "startCol": 13,
+                    "end": 26,
+                    "endCol": 18,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "0"
+                        "text": "0",
+                        "start": 26,
+                        "startCol": 13,
+                        "end": 26,
+                        "endCol": 14
                       },
                       {
                         "kind": "number",
-                        "text": "1"
+                        "text": "1",
+                        "start": 26,
+                        "startCol": 17,
+                        "end": 26,
+                        "endCol": 18
                       }
                     ]
                   }
@@ -755,31 +1399,61 @@
       },
       {
         "kind": "function_call",
+        "start": 28,
+        "end": 28,
+        "endCol": 20,
         "children": [
           {
             "kind": "identifier",
-            "text": "print"
+            "text": "print",
+            "start": 28,
+            "end": 28,
+            "endCol": 5
           },
           {
             "kind": "arguments",
+            "start": 28,
+            "startCol": 5,
+            "end": 28,
+            "endCol": 20,
             "children": [
               {
                 "kind": "bracket_index_expression",
+                "start": 28,
+                "startCol": 6,
+                "end": 28,
+                "endCol": 19,
                 "children": [
                   {
                     "kind": "identifier",
-                    "text": "result"
+                    "text": "result",
+                    "start": 28,
+                    "startCol": 6,
+                    "end": 28,
+                    "endCol": 12
                   },
                   {
                     "kind": "binary_expression",
+                    "start": 28,
+                    "startCol": 13,
+                    "end": 28,
+                    "endCol": 18,
                     "children": [
                       {
                         "kind": "number",
-                        "text": "1"
+                        "text": "1",
+                        "start": 28,
+                        "startCol": 13,
+                        "end": 28,
+                        "endCol": 14
                       },
                       {
                         "kind": "number",
-                        "text": "1"
+                        "text": "1",
+                        "start": 28,
+                        "startCol": 17,
+                        "end": 28,
+                        "endCol": 18
                       }
                     ]
                   }
@@ -790,5 +1464,6 @@
         ]
       }
     ]
-  }
+  },
+  "source": "-- Generated by Mochi v0.10.33 on 2025-07-21 16:57 GMT+7\nfunction twoSum(nums, target)\n  n = (function(v)\n  if type(v) == 'table' and v.items ~= nil then\n    return #v.items\n  elseif type(v) == 'table' and (v[1] == nil) then\n      local c = 0\n      for _ in pairs(v) do c = c + 1 end\n      return c\n    else\n      return #v\n    end\n  end)(nums)\n  for i = 0, n - 1 do\n    for j = (i + 1), n - 1 do\n      if ((nums[i + 1] + nums[j + 1]) == target) then\n        return {i, j}\n      end\n    end\n  end\n  return {(0 - 1), (0 - 1)}\nend\n\nresult = twoSum({2, 7, 11, 15}, 9)\n\nprint(result[0 + 1])\n\nprint(result[1 + 1])\n"
 }
