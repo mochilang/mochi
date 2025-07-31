@@ -25,6 +25,13 @@ func Inspect(src string, opts *Options) (*Program, error) {
 	return &Program{Root: (*ProgramNode)(root), Source: src}, nil
 }
 
+// InspectWithPositions behaves like Inspect but always includes location
+// information in the resulting AST.
+func InspectWithPositions(src string) (*Program, error) {
+	opt := Options{Positions: true}
+	return Inspect(src, &opt)
+}
+
 // MarshalJSON ensures stable output for Program.
 func (p *Program) MarshalJSON() ([]byte, error) {
 	type Alias Program
