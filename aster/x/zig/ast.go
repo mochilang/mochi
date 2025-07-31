@@ -47,14 +47,14 @@ type Options struct {
 // valueKinds lists tree-sitter node types that contain a textual value we want
 // to keep in the AST.
 var valueKinds = map[string]struct{}{
-	"IDENTIFIER":          {},
-	"BUILTINIDENTIFIER":   {},
-	"BuildinTypeExpr":     {},
-	"STRINGLITERALSINGLE": {},
-	"INTEGER":             {},
-	"EscapeSequence":      {},
-	"FormatSequence":      {},
-	"line_comment":        {},
+	"identifier":         {},
+	"builtin_identifier": {},
+	"builtin_type":       {},
+	"string_content":     {},
+	"integer":            {},
+	"escape_sequence":    {},
+	"format_sequence":    {},
+	"comment":            {},
 }
 
 // convertNode converts a tree-sitter node into a Node. It returns ok=false if
