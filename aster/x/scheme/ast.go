@@ -16,13 +16,13 @@ var IncludePos bool
 // Text field populated so the resulting JSON remains compact. Position fields
 // are optional and only populated when IncludePos is true.
 type Node struct {
-	Kind     string  `json:"kind"`
-	Text     string  `json:"text,omitempty"`
-	Start    int     `json:"start,omitempty"`
-	StartCol int     `json:"startCol,omitempty"`
-	End      int     `json:"end,omitempty"`
-	EndCol   int     `json:"endCol,omitempty"`
-	Children []*Node `json:"children,omitempty"`
+        Kind     string  `json:"kind"`
+        Text     string  `json:"text,omitempty"`
+        Start    int     `json:"start,omitempty"`
+        End      int     `json:"end,omitempty"`
+        StartCol int     `json:"startCol,omitempty"`
+        EndCol   int     `json:"endCol,omitempty"`
+        Children []*Node `json:"children,omitempty"`
 }
 
 // The following typed aliases mirror the subset of tree-sitter node kinds that
@@ -63,10 +63,10 @@ func convertNode(n *sitter.Node, src []byte) *Node {
 	if IncludePos {
 		sp := n.StartPosition()
 		ep := n.EndPosition()
-		node.Start = int(sp.Row) + 1
-		node.StartCol = int(sp.Column)
-		node.End = int(ep.Row) + 1
-		node.EndCol = int(ep.Column)
+        node.Start = int(sp.Row) + 1
+        node.End = int(ep.Row) + 1
+        node.StartCol = int(sp.Column)
+        node.EndCol = int(ep.Column)
 	}
 
 	if n.NamedChildCount() == 0 {
