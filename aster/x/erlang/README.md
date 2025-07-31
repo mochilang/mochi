@@ -2,7 +2,7 @@
 
 This directory contains utilities for inspecting Erlang source code using Tree-sitter and printing it back from the parsed AST. Golden tests verify that the printed source matches the original program output.
 
-Last updated: 2025-07-31 19:43 GMT+7
+Last updated: 2025-07-31 20:12 GMT+7
 
 ## Golden Test Checklist (103/103)
 1. [x] append_builtin.erl
