@@ -79,7 +79,34 @@ This directory holds utilities for inspecting OCaml source code and printing it 
 73. pure_global_fold.ml
 74. python_auto.ml
 75. python_math.ml
+76. query_sum_select.ml
+77. record_assign.ml
+78. right_join.ml
+79. save_jsonl_stdout.ml
+80. short_circuit.ml
+81. slice.ml
+82. sort_stable.ml
+83. str_builtin.ml
+84. string_compare.ml
+85. string_concat.ml
+86. string_contains.ml
+87. string_in_operator.ml
+88. string_index.ml
+89. string_prefix_slice.ml
+90. substring_builtin.ml
+91. sum_builtin.ml
+92. tail_recursion.ml
+93. test_block.ml
+94. tree_sum.ml
+95. two-sum.ml
+96. typed_let.ml
+97. typed_var.ml
+98. unary_neg.ml
+99. user_type_literal.ml
+100. values_builtin.ml
+101. var_assignment.ml
+102. while_loop.ml
 
-Checked: 75/75
+Checked: 102/102
 
-_Last updated: 2025-07-31 19:47 GMT+7_
+_Last updated: 2025-07-31 20:12 GMT+7_
