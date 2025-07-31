@@ -129,6 +129,13 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(":\n")
 			writeBlock(b, n.Children[2], indent+1)
 		}
+	case "assert_statement":
+		b.WriteString(ind)
+		b.WriteString("assert ")
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+		}
+		b.WriteByte('\n')
 	case "if_statement":
 		if len(n.Children) >= 2 {
 			b.WriteString(ind)
@@ -300,6 +307,29 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 		}
 		b.WriteByte(']')
+	case "generator_expression":
+		if len(n.Children) > 0 {
+			writeExpr(b, n.Children[0], indent)
+			for _, r := range n.Children[1:] {
+				b.WriteByte(' ')
+				switch r.Kind {
+				case "for_in_clause":
+					b.WriteString("for ")
+					if len(r.Children) >= 2 {
+						writeExpr(b, r.Children[0], indent)
+						b.WriteString(" in ")
+						writeExpr(b, r.Children[1], indent)
+					}
+				case "if_clause":
+					b.WriteString("if ")
+					if len(r.Children) > 0 {
+						writeExpr(b, r.Children[0], indent)
+					}
+				default:
+					writeExpr(b, r, indent)
+				}
+			}
+		}
 	case "for_in_clause":
 		// handled by list comprehension
 	case "type":
@@ -399,6 +429,13 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "lambda_parameters":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeExpr(b, c, indent)
+		}
+	case "pattern_list":
 		for i, c := range n.Children {
 			if i > 0 {
 				b.WriteString(", ")
