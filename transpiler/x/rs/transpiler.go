@@ -3090,9 +3090,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	varTypes = copyStringMap(varTypes)
 	if curEnv != nil {
 		for name, t := range curEnv.Types() {
-			if _, ok := varTypes[name]; !ok {
-				varTypes[name] = rustTypeFromType(t)
-			}
+			// Always prefer the type information from the checker to avoid
+			// stale inferences from previous functions.
+			varTypes[name] = rustTypeFromType(t)
 		}
 	}
 	mapVars = copyBoolMap(mapVars)
