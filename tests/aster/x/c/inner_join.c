@@ -15,20 +15,20 @@ struct Anon5 {
 };
 struct Anon6 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Anon7 {
-    char *customerName;
+    const char *customerName;
     int orderId;
     int total;
 };
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;

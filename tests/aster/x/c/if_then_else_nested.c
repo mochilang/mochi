@@ -3,7 +3,7 @@
 #include <string.h>
 int x = 8;
 int main(void) {
-    char *msg = (x > 10 ? "big" : (x > 5 ? "medium" : "small"));
+    const char *msg = (x > 10 ? "big" : (x > 5 ? "medium" : "small"));
     puts(msg);
     return 0;
 }

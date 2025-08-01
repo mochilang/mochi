@@ -137,7 +137,8 @@ func isValueNode(kind string) bool {
 	switch kind {
 	case "identifier", "field_identifier", "number_literal", "char_literal", "string_literal",
 		"system_lib_string", "primitive_type", "type_identifier",
-		"string_content", "escape_sequence", "comment":
+		"string_content", "escape_sequence", "comment",
+		"storage_class_specifier", "type_qualifier", "sized_type_specifier":
 		return true
 	default:
 		return false

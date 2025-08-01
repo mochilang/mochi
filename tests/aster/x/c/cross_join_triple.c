@@ -4,11 +4,11 @@
 typedef struct Anon1 Anon1;
 struct Anon1 {
     int b;
-    char *l;
+    const char *l;
     int n;
 };
 int nums[] = {1,2};
-char *letters[] = {"A","B"};
+const char *letters[] = {"A","B"};
 int bools[] = {1,0};
 Anon1 combos[] = {(Anon1){.b = 1,.l = "A",.n = 1},(Anon1){.b = 0,.l = "A",.n = 1},(Anon1){.b = 1,.l = "B",.n = 1},(Anon1){.b = 0,.l = "B",.n = 1},(Anon1){.b = 1,.l = "A",.n = 2},(Anon1){.b = 0,.l = "A",.n = 2},(Anon1){.b = 1,.l = "B",.n = 2},(Anon1){.b = 0,.l = "B",.n = 2}};
 int main(void) {

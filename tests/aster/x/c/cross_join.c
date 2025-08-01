@@ -10,15 +10,15 @@ struct Anon5 {
     int orderCustomerId;
     int orderId;
     int orderTotal;
-    char *pairedCustomerName;
+    const char *pairedCustomerName;
 };
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;

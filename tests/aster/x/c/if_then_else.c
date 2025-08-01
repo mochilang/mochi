@@ -3,7 +3,7 @@
 #include <string.h>
 int x = 12;
 int main(void) {
-    char *msg = (x > 10 ? "yes" : "no");
+    const char *msg = (x > 10 ? "yes" : "no");
     puts(msg);
     return 0;
 }

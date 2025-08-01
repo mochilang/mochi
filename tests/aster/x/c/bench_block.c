@@ -5,11 +5,11 @@
 #include <malloc.h>
 #include <time.h>
 #include <stdlib.h>
-int seeded_now = 0;
+static int seeded_now = 0;
 static long long now_seed = 0;
 static long long _now(void) {
     if ((!seeded_now)) {
-        char *s = getenv("MOCHI_NOW_SEED");
+        const char *s = getenv("MOCHI_NOW_SEED");
         if ((s && *s)) {
             now_seed = atoll(s);
             seeded_now = 1;
@@ -21,11 +21,11 @@ static long long _now(void) {
     }
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    return ;
+    return (long long)(ts.tv_sec * 1000000000LL + ts.tv_nsec);
 }
 static long long _mem(void) {
     struct mallinfo mi = mallinfo();
-    return ;
+    return (long long)mi.uordblks;
 }
 int main(void) {
     {

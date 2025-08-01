@@ -12,7 +12,7 @@ typedef struct Partsupp Partsupp;
 typedef struct Suppliers Suppliers;
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;
@@ -34,7 +34,7 @@ struct GroupedItem {
 };
 struct Nations {
     int id;
-    char *name;
+    const char *name;
 };
 struct Partsupp {
     int part;

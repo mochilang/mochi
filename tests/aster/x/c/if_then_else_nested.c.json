@@ -83,6 +83,10 @@
                 "kind": "declaration",
                 "children": [
                   {
+                    "kind": "type_qualifier",
+                    "text": "const"
+                  },
+                  {
                     "kind": "primitive_type",
                     "text": "char"
                   },

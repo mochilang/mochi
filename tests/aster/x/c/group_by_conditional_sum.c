@@ -5,16 +5,16 @@ typedef struct Anon3 Anon3;
 typedef struct Data2 Data2;
 typedef struct Items Items;
 struct Anon3 {
-    char *cat;
+    const char *cat;
     int share;
 };
 struct Data2 {
-    char *cat;
+    const char *cat;
     int val;
     int flag;
 };
 struct Items {
-    char *cat;
+    const char *cat;
     int val;
     int flag;
 };

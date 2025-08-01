@@ -63,35 +63,23 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString("};\n")
 		}
 	case "function_definition":
-		if len(n.Children) >= 3 {
+		if len(n.Children) >= 2 {
+			body := n.Children[len(n.Children)-1]
+			decl := n.Children[len(n.Children)-2]
+			specs := n.Children[:len(n.Children)-2]
 			b.WriteString(ind)
-			writeExpr(b, n.Children[0], indent)
-			b.WriteByte(' ')
-			writeFunctionDeclarator(b, n.Children[1])
-			b.WriteString(" {\n")
-			writeBlock(b, n.Children[2], indent+1)
-			b.WriteString(ind)
-			b.WriteString("}\n")
-		} else if n.Text != "" && len(n.Children) >= 1 {
-			idNode := n.Children[0]
-			prefix := strings.TrimSpace(n.Text)
-			prefix = strings.TrimSuffix(prefix, "{")
-			if idNode.Kind == "function_declarator" && len(idNode.Children) > 0 {
-				name := idNode.Children[0].Text
-				if idx := strings.Index(prefix, name); idx >= 0 {
-					prefix = strings.TrimSpace(prefix[:idx])
+			for i, s := range specs {
+				if i > 0 {
+					b.WriteByte(' ')
 				}
+				writeExpr(b, s, indent)
 			}
-			b.WriteString(ind)
-			if prefix != "" {
-				b.WriteString(prefix)
+			if len(specs) > 0 {
 				b.WriteByte(' ')
 			}
-			writeFunctionDeclarator(b, n.Children[0])
+			writeFunctionDeclarator(b, decl)
 			b.WriteString(" {\n")
-			if len(n.Children) > 1 {
-				writeBlock(b, n.Children[1], indent+1)
-			}
+			writeBlock(b, body, indent+1)
 			b.WriteString(ind)
 			b.WriteString("}\n")
 		}
@@ -214,11 +202,21 @@ func writeFieldDecl(b *bytes.Buffer, n *Node, indent int) {
 		return
 	}
 	b.WriteString(ind)
-	writeExpr(b, n.Children[0], indent)
-	if len(n.Children) > 1 {
-		b.WriteByte(' ')
-		writeDeclarator(b, n.Children[1])
+	if len(n.Children) == 1 {
+		writeExpr(b, n.Children[0], indent)
+		b.WriteString(";\n")
+		return
 	}
+	decl := n.Children[len(n.Children)-1]
+	specs := n.Children[:len(n.Children)-1]
+	for i, s := range specs {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, s, indent)
+	}
+	b.WriteByte(' ')
+	writeDeclarator(b, decl)
 	b.WriteString(";\n")
 }
 
@@ -248,11 +246,20 @@ func writeParameter(b *bytes.Buffer, n *Node) {
 	if len(n.Children) == 0 {
 		return
 	}
-	writeExpr(b, n.Children[0], 0)
-	if len(n.Children) > 1 {
-		b.WriteByte(' ')
-		writeExpr(b, n.Children[1], 0)
+	if len(n.Children) == 1 {
+		writeExpr(b, n.Children[0], 0)
+		return
 	}
+	decl := n.Children[len(n.Children)-1]
+	specs := n.Children[:len(n.Children)-1]
+	for i, s := range specs {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+		writeExpr(b, s, 0)
+	}
+	b.WriteByte(' ')
+	writeExpr(b, decl, 0)
 }
 
 func writeDeclaration(b *bytes.Buffer, n *Node) {
@@ -260,33 +267,23 @@ func writeDeclaration(b *bytes.Buffer, n *Node) {
 		b.WriteString(n.Kind)
 		return
 	}
-	if len(n.Children) == 1 && n.Text != "" && n.Children[0].Kind == "init_declarator" {
-		id := ""
-		if len(n.Children[0].Children) > 0 {
-			id = n.Children[0].Children[0].Text
-		}
-		prefix := strings.TrimSpace(n.Text)
-		prefix = strings.TrimSuffix(prefix, ";")
-		if id != "" {
-			if idx := strings.Index(prefix, id); idx >= 0 {
-				prefix = strings.TrimSpace(prefix[:idx])
-			}
-		}
-		if prefix != "" {
-			b.WriteString(prefix)
+
+	decl := n.Children[len(n.Children)-1]
+	specs := n.Children[:len(n.Children)-1]
+
+	for i, s := range specs {
+		if i > 0 {
 			b.WriteByte(' ')
 		}
-		writeInitDeclarator(b, n.Children[0])
-		return
+		writeExpr(b, s, 0)
 	}
-	writeExpr(b, n.Children[0], 0)
-	if len(n.Children) > 1 {
+	if len(specs) > 0 {
 		b.WriteByte(' ')
-		if n.Children[1].Kind == "init_declarator" {
-			writeInitDeclarator(b, n.Children[1])
-		} else {
-			writeDeclarator(b, n.Children[1])
-		}
+	}
+	if decl.Kind == "init_declarator" {
+		writeInitDeclarator(b, decl)
+	} else {
+		writeDeclarator(b, decl)
 	}
 }
 
@@ -326,7 +323,7 @@ func writeDeclarator(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "identifier", "field_identifier", "type_identifier", "number_literal", "char_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence":
+	case "identifier", "field_identifier", "type_identifier", "number_literal", "char_literal", "primitive_type", "system_lib_string", "string_content", "escape_sequence", "storage_class_specifier", "type_qualifier", "sized_type_specifier":
 		b.WriteString(n.Text)
 	case "string_literal":
 		b.WriteByte('"')

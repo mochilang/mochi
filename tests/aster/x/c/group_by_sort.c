@@ -5,15 +5,15 @@ typedef struct Anon3 Anon3;
 typedef struct Data2 Data2;
 typedef struct Items Items;
 struct Anon3 {
-    char *cat;
+    const char *cat;
     int total;
 };
 struct Data2 {
-    char *cat;
+    const char *cat;
     int val;
 };
 struct Items {
-    char *cat;
+    const char *cat;
     int val;
 };
 Items items[] = {(Items){.cat = "a",.val = 3},(Items){.cat = "a",.val = 1},(Items){.cat = "b",.val = 5},(Items){.cat = "b",.val = 2}};
