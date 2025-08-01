@@ -2,8 +2,8 @@
 
 Generated files for C programs live under `tests/aster/x/c`.
 
-Checked: 75/75
-_Last updated: 2025-08-01 08:34 GMT+7_
+Checked: 82/82
+_Last updated: 2025-08-01 08:46 GMT+7_
 
 ## Golden Test Checklist
 1. [x] append_builtin.c
@@ -81,3 +81,10 @@ _Last updated: 2025-08-01 08:34 GMT+7_
 73. [x] tail_recursion.c
 74. [x] test_block.c
 75. [x] two-sum.c
+76. [x] typed_let.c
+77. [x] typed_var.c
+78. [x] unary_neg.c
+79. [x] user_type_literal.c
+80. [x] values_builtin.c
+81. [x] var_assignment.c
+82. [x] while_loop.c
