@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-01 15:22 +0700
+Last updated: 2025-08-01 18:38 +0700
 
-## Program Checklist (65/491)
+## Program Checklist (66/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -60,12 +60,12 @@ Last updated: 2025-08-01 15:22 +0700
 | 51 | animation |   |  |  |
 | 52 | anonymous-recursion-1 | ✓ |  |  |
 | 53 | anonymous-recursion-2 | ✓ |  |  |
-| 54 | anonymous-recursion |   |  |  |
-| 55 | anti-primes |   |  |  |
-| 56 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 57 | apply-a-callback-to-an-array-1 | ✓ |  |  |
+| 54 | anonymous-recursion | ✓ | 970µs |  |
+| 55 | anti-primes |   | 85.781ms |  |
+| 56 | append-a-record-to-the-end-of-a-text-file |   | 237µs |  |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 210µs |  |
 | 58 | apply-a-callback-to-an-array-2 | ✓ | 425µs |  |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 503µs |  |
 | 60 | approximate-equality |   |  |  |
 | 61 | arbitrary-precision-integers-included- |   |  |  |
 | 62 | archimedean-spiral |   |  |  |
@@ -74,21 +74,21 @@ Last updated: 2025-08-01 15:22 +0700
 | 65 | arithmetic-derivative |   |  |  |
 | 66 | arithmetic-evaluation |   |  |  |
 | 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 55µs |  |
-| 68 | arithmetic-geometric-mean | ✓ | 82µs |  |
+| 68 | arithmetic-geometric-mean |   | 82µs |  |
 | 69 | arithmetic-integer-1 | ✓ | 129µs |  |
 | 70 | arithmetic-integer-2 | ✓ | 159µs |  |
 | 71 | arithmetic-numbers |   |  |  |
-| 72 | arithmetic-rational |   |  |  |
+| 72 | arithmetic-rational |   | 913µs |  |
 | 73 | array-concatenation |   |  |  |
-| 74 | array-length |   |  |  |
+| 74 | array-length |   | 274µs |  |
 | 75 | arrays |   |  |  |
 | 76 | ascending-primes |   |  |  |
-| 77 | ascii-art-diagram-converter | ✓ |  |  |
-| 78 | assertions | ✓ |  |  |
+| 77 | ascii-art-diagram-converter | ✓ | 207µs |  |
+| 78 | assertions | ✓ | 104µs |  |
 | 79 | associative-array-creation |   |  |  |
 | 80 | associative-array-iteration | ✓ | 177µs |  |
 | 81 | associative-array-merging |   |  |  |
-| 82 | atomic-updates |   |  |  |
+| 82 | atomic-updates |   | 1.097ms |  |
 | 83 | attractive-numbers |   |  |  |
 | 84 | average-loop-length |   |  |  |
 | 85 | averages-arithmetic-mean |   |  |  |
@@ -97,8 +97,8 @@ Last updated: 2025-08-01 15:22 +0700
 | 88 | averages-median-2 |   |  |  |
 | 89 | averages-median-3 |   |  |  |
 | 90 | averages-mode |   |  |  |
-| 91 | averages-pythagorean-means |   |  |  |
-| 92 | averages-root-mean-square |   |  |  |
+| 91 | averages-pythagorean-means |   | 323µs |  |
+| 92 | averages-root-mean-square |   | 146µs |  |
 | 93 | averages-simple-moving-average |   |  |  |
 | 94 | avl-tree |   |  |  |
 | 95 | b-zier-curves-intersections |   |  |  |

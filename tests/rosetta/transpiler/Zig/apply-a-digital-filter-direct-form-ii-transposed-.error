@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.zig:45:36: error: function parameter shadows declaration of 'a'
-/tmp/apply-a-digital-filter-direct-form-ii-transposed-.zig:8:1: note: declared here
