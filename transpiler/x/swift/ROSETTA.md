@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 300/491
-Last updated: 2025-07-31 08:02 +0700
+Completed: 304/491
+Last updated: 2025-08-01 18:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -178,7 +178,7 @@ Last updated: 2025-07-31 08:02 +0700
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 826µs | 3.1 MB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 385µs | 3.0 MB |
 | 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 684µs | 3.3 MB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 806µs | 3.3 MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 863µs | 3.2 MB |
 | 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 789µs | 3.4 MB |
 | 174 | case-sensitivity-of-identifiers | ✓ | 313µs | 3.2 MB |
 | 175 | casting-out-nines |   |  |  |
@@ -203,8 +203,8 @@ Last updated: 2025-07-31 08:02 +0700
 | 194 | checkpoint-synchronization-4 | ✓ | 291µs | 3.2 MB |
 | 195 | chernicks-carmichael-numbers | ✓ | 220.34ms | 3.1 MB |
 | 196 | cheryls-birthday | ✓ | 333µs | 3.3 MB |
-| 197 | chinese-remainder-theorem | ✓ | 251µs | 3.0 MB |
-| 198 | chinese-zodiac | ✓ | 343µs | 3.4 MB |
+| 197 | chinese-remainder-theorem | ✓ | 173µs | 3.3 MB |
+| 198 | chinese-zodiac | ✓ | 220µs | 3.2 MB |
 | 199 | cholesky-decomposition-1 | ✓ | 288µs | 3.1 MB |
 | 200 | cholesky-decomposition |   |  |  |
 | 201 | chowla-numbers |   |  |  |
@@ -463,10 +463,10 @@ Last updated: 2025-07-31 08:02 +0700
 | 454 | fork-2 |   |  |  |
 | 455 | fork |   |  |  |
 | 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 457 | formatted-numeric-output | ✓ | 463µs | 3.2 MB |
+| 458 | forward-difference | ✓ | 541µs | 3.1 MB |
+| 459 | four-bit-adder-1 | ✓ | 353µs | 2.8 MB |
+| 460 | four-is-magic | ✓ | 559µs | 3.2 MB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 462 | fractal-tree |   |  |  |
 | 463 | fractran |   |  |  |

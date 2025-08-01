@@ -1,5 +1,5 @@
-## Progress (2025-07-31 07:37 +0700)
-- swift: add repeat builtin and generate benchmarks
+## Progress (2025-08-01 18:23 +0700)
+- swift: transpile rosetta index 457
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
