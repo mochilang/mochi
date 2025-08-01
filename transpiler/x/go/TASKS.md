@@ -1,3 +1,67 @@
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:31 +0700)
+- transpiler: support var assignments from any
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:23 +0700)
+- ctrans: handle nested list structs
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 18:23 +0700)
+- ctrans: handle nested list structs
+- Regenerated golden files - 104/105 vm valid programs passing
+
 ## Progress (2025-08-01 17:57 +0700)
 - Update transpiler and add Go outputs
 - Regenerated golden files - 104/105 vm valid programs passing

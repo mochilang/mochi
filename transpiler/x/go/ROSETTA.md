@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 442/491
-Last updated: 2025-08-01 17:57 +0700
+Completed programs: 454/491
+Last updated: 2025-08-01 18:31 +0700
 
 Checklist:
 
@@ -478,18 +478,18 @@ Checklist:
 | 469 | fusc-sequence | ✓ | 560.0µs | 3.88KB |
 | 470 | gamma-function | ✓ | 216.0µs | 1.91KB |
 | 471 | general-fizzbuzz | ✓ | 259.0µs | 1.53KB |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
-| 483 | http |   |  |  |
+| 472 | generic-swap | ✓ | 424.0µs | 1000B |
+| 473 | get-system-command-output | ✓ | 212.0µs | 968B |
+| 474 | giuga-numbers | ✓ | 542.0µs | 3.41KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 216.0µs | 1000B |
+| 476 | goldbachs-comet | ✓ | 566.0µs | 9.34KB |
+| 477 | golden-ratio-convergence | ✓ | 441.0µs | 1.22KB |
+| 478 | graph-colouring | ✓ | 358.0µs | 968B |
+| 479 | gray-code | ✓ | 383.0µs | 4.07KB |
+| 480 | gui-component-interaction | ✓ | 437.0µs | 5.42KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 445.0µs | 2.60KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 170.0µs | 1.12KB |
+| 483 | http | ✓ | 87.0ms | 1.87MB |
 | 484 | image-noise |   |  |  |
 | 485 | loops-increment-loop-index-within-loop-body |   |  |  |
 | 486 | md5 |   |  |  |

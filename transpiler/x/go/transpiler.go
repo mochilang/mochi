@@ -34,6 +34,7 @@ type Program struct {
 	UseJSON      bool
 	UseTime      bool
 	UseInput     bool
+	UseFetch     bool
 	UseSubstr    bool
 	UseSlice     bool
 	UseSplit     bool
@@ -48,6 +49,7 @@ type Program struct {
 	UseRepeat    bool
 	UseMapConv   bool
 	BenchMain    bool
+	FetchStructs []string
 }
 
 var (
@@ -59,6 +61,7 @@ var (
 	usesJSON       bool
 	usesTime       bool
 	usesInput      bool
+	usesFetch      bool
 	usesSubstr     bool
 	usesSlice      bool
 	usesSplit      bool
@@ -72,6 +75,7 @@ var (
 	usesRuntime    bool
 	usesRepeat     bool
 	usesMapConv    bool
+	assignAnyVars  map[string]bool
 	topEnv         *types.Env
 	extraDecls     []Stmt
 	structCount    int
@@ -81,6 +85,8 @@ var (
 	fieldTypeGuess map[string]string
 	benchMain      bool
 	varNameMap     map[string]string
+	varDecls       map[string]*VarDecl
+	fetchFuncs     map[string]bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -1931,12 +1937,16 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesRuntime = false
 	usesRepeat = false
 	usesMapConv = false
+	usesFetch = false
+	assignAnyVars = map[string]bool{}
 	topEnv = env
 	extraDecls = nil
 	structCount = 0
 	mainFuncName = ""
 	fieldTypeGuess = map[string]string{}
 	varNameMap = map[string]string{}
+	varDecls = map[string]*VarDecl{}
+	fetchFuncs = map[string]bool{}
 	for name, st := range env.Structs() {
 		_ = name
 		for fn, ft := range st.Fields {
@@ -1969,6 +1979,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseJSON = usesJSON
 	gp.UseTime = usesTime
 	gp.UseInput = usesInput
+	gp.UseFetch = usesFetch
 	gp.UseSubstr = usesSubstr
 	gp.UseSlice = usesSlice
 	gp.UseSplit = usesSplit
@@ -1984,12 +1995,20 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
 	gp.BenchMain = benchMain
+	if len(fetchFuncs) > 0 {
+		for name := range fetchFuncs {
+			gp.FetchStructs = append(gp.FetchStructs, name)
+		}
+		sort.Strings(gp.FetchStructs)
+	}
 
 	// update variable declaration types based on final environment
 	initTypes := map[string]string{}
 	for _, st := range gp.Stmts {
 		if vd, ok := st.(*VarDecl); ok {
-			if t, err := env.GetVar(vd.Name); err == nil {
+			if assignAnyVars[vd.Name] {
+				vd.Type = "any"
+			} else if t, err := env.GetVar(vd.Name); err == nil {
 				if gt := toGoTypeFromType(t); gt != "" {
 					if vd.Type == "" || strings.Contains(vd.Type, "any") {
 						vd.Type = gt
@@ -2159,6 +2178,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			fetchType := ""
+			if ce, ok := e.(*CallExpr); ok && strings.HasPrefix(ce.Func, "_fetch_") {
+				fetchType = strings.TrimPrefix(ce.Func, "_fetch_")
+			}
 			if ml, ok := e.(*MapLit); ok {
 				if t, err := env.GetVar(st.Let.Name); err == nil {
 					updateMapLitTypes(ml, t)
@@ -2167,7 +2190,10 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			var valType types.Type
-			if typ == "" {
+			if fetchType != "" {
+				typ = fetchType
+				valType = types.StructType{Name: fetchType}
+			} else if typ == "" {
 				valType = types.TypeOfExpr(st.Let.Value, env)
 				if types.IsAnyType(valType) {
 					valType = types.TypeOfExprBasic(st.Let.Value, env)
@@ -2315,6 +2341,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
+			varDecls[st.Let.Name] = vd
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -2329,7 +2356,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			varNameMap[name] = "_init"
 			name = "_init"
 		}
-		return &VarDecl{Name: name, Type: typ, Global: env == topEnv}, nil
+		vd := &VarDecl{Name: name, Type: typ, Global: env == topEnv}
+		varDecls[st.Let.Name] = vd
+		return vd, nil
 	case st.Var != nil:
 		var typ string
 		var declaredType types.Type
@@ -2476,6 +2505,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				name = "_init"
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
+			varDecls[st.Var.Name] = vd
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
 				vd.Value = nil
@@ -2609,12 +2639,18 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			valType := types.TypeOfExpr(st.Assign.Value, env)
+			if types.IsAnyType(valType) {
+				assignAnyVars[st.Assign.Name] = true
+				if vd, ok := varDecls[st.Assign.Name]; ok {
+					vd.Type = "any"
+				}
+			}
 			if vt, err := env.GetVar(st.Assign.Name); err == nil {
-				valType := types.TypeOfExpr(st.Assign.Value, env)
 				if isBigIntType(vt) {
 					e = ensureBigIntExpr(e, valType)
 				}
-				if vtStr := toGoTypeFromType(vt); vtStr != "" && vtStr != "any" && types.IsAnyType(valType) {
+				if vtStr := toGoTypeFromType(vt); vtStr != "" && vtStr != "any" && types.IsAnyType(valType) && !assignAnyVars[st.Assign.Name] {
 					if !(vtStr == "string" && looksLikeStringExpr(e)) {
 						e = &AssertExpr{Expr: e, Type: vtStr}
 					}
@@ -5446,6 +5482,30 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		return compileExpr(p.Group, env, "")
 	case p.Match != nil:
 		return compileMatchExpr(p.Match, env)
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL, env, "")
+		if err != nil {
+			return nil, err
+		}
+		usesJSON = true
+		usesFetch = true
+		if base != "" {
+			if t, err := env.GetVar(base); err == nil {
+				if st, ok := t.(types.StructType); ok {
+					name := st.Name
+					fetchFuncs[name] = true
+					return &CallExpr{Func: "_fetch_" + name, Args: []Expr{urlExpr}}, nil
+				}
+			}
+		}
+		if p.Fetch.With != nil {
+			withExpr, err := compileExpr(p.Fetch.With, env, "")
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr, withExpr}}, nil
+		}
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -5885,6 +5945,9 @@ func Emit(prog *Program, bench bool) []byte {
 	if prog.UseRuntime {
 		buf.WriteString("    \"runtime\"\n")
 	}
+	if prog.UseFetch {
+		buf.WriteString("    \"net/http\"\n")
+	}
 	if prog.UseInput {
 		buf.WriteString("    \"bufio\"\n")
 		if !prog.UseTime {
@@ -5958,6 +6021,26 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    if n <= 0 { return \"\" }\n")
 		buf.WriteString("    return strings.Repeat(s, n)\n")
 		buf.WriteString("}\n\n")
+	}
+	if prog.UseFetch {
+		buf.WriteString("func _fetch(url string) any {\n")
+		buf.WriteString("    resp, err := http.Get(url)\n")
+		buf.WriteString("    if err != nil { return nil }\n")
+		buf.WriteString("    defer resp.Body.Close()\n")
+		buf.WriteString("    var b any\n")
+		buf.WriteString("    if err := json.NewDecoder(resp.Body).Decode(&b); err != nil { return nil }\n")
+		buf.WriteString("    return b\n")
+		buf.WriteString("}\n\n")
+		for _, name := range prog.FetchStructs {
+			buf.WriteString("func _fetch_" + name + "(url string) " + name + " {\n")
+			buf.WriteString("    var out " + name + "\n")
+			buf.WriteString("    resp, err := http.Get(url)\n")
+			buf.WriteString("    if err != nil { return out }\n")
+			buf.WriteString("    defer resp.Body.Close()\n")
+			buf.WriteString("    _ = json.NewDecoder(resp.Body).Decode(&out)\n")
+			buf.WriteString("    return out\n")
+			buf.WriteString("}\n\n")
+		}
 	}
 	if prog.UseLenAny {
 		buf.WriteString("func _len(v any) int {\n")
