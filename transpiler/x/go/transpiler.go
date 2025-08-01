@@ -2658,9 +2658,21 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			valType := types.TypeOfExpr(st.Assign.Value, env)
 			if types.IsAnyType(valType) {
-				assignAnyVars[st.Assign.Name] = true
-				if vd, ok := varDecls[st.Assign.Name]; ok {
-					vd.Type = "any"
+				if vt, err := env.GetVar(st.Assign.Name); err == nil {
+					if !types.IsAnyType(vt) {
+						// keep existing concrete type
+						valType = vt
+					} else {
+						assignAnyVars[st.Assign.Name] = true
+						if vd, ok := varDecls[st.Assign.Name]; ok {
+							vd.Type = "any"
+						}
+					}
+				} else {
+					assignAnyVars[st.Assign.Name] = true
+					if vd, ok := varDecls[st.Assign.Name]; ok {
+						vd.Type = "any"
+					}
 				}
 			}
 			if vt, err := env.GetVar(st.Assign.Name); err == nil {
@@ -4375,11 +4387,33 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 						}
 					}
-					// list concatenation with +
+					// list concatenation or string concat with list of strings
 					if ops[i].Op == "+" {
-						if lt, ok := typesList[i].(types.ListType); ok {
-							et := toGoTypeFromType(lt.Elem)
-							newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
+						if _, ok := typesList[i].(types.StringType); ok {
+							if lt, ok2 := typesList[i+1].(types.ListType); ok2 {
+								if _, ok3 := lt.Elem.(types.StringType); ok3 {
+									usesStrings = true
+									right = &CallExpr{Func: "strings.Join", Args: []Expr{right, &StringLit{Value: ""}}}
+									newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+								}
+							}
+						}
+						if newExpr == nil {
+							if _, ok := typesList[i+1].(types.StringType); ok {
+								if lt, ok2 := typesList[i].(types.ListType); ok2 {
+									if _, ok3 := lt.Elem.(types.StringType); ok3 {
+										usesStrings = true
+										left = &CallExpr{Func: "strings.Join", Args: []Expr{left, &StringLit{Value: ""}}}
+										newExpr = &BinaryExpr{Left: left, Op: "+", Right: right}
+									}
+								}
+							}
+						}
+						if newExpr == nil {
+							if lt, ok := typesList[i].(types.ListType); ok {
+								et := toGoTypeFromType(lt.Elem)
+								newExpr = &UnionAllExpr{Left: left, Right: right, ElemType: et}
+							}
 						}
 						if newExpr == nil {
 							if _, ok := typesList[i].(types.StringType); ok || isStringType(typesList[i+1]) {
@@ -4457,13 +4491,39 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
-				switch newExpr.(type) {
+				switch ne := newExpr.(type) {
 				case *BigBinaryExpr:
 					typesList[i] = types.BigIntType{}
 				case *BigRatBinaryExpr:
 					typesList[i] = types.BigRatType{}
 				case *BigCmpExpr, *BigRatCmpExpr:
 					typesList[i] = types.BoolType{}
+				case *BinaryExpr:
+					if ne.Op == "+" {
+						liStr := isStringType(typesList[i])
+						riStr := isStringType(typesList[i+1])
+						if !liStr {
+							if lt, ok := typesList[i].(types.ListType); ok {
+								if _, ok2 := lt.Elem.(types.StringType); ok2 {
+									liStr = true
+								}
+							}
+						}
+						if !riStr {
+							if lt, ok := typesList[i+1].(types.ListType); ok {
+								if _, ok2 := lt.Elem.(types.StringType); ok2 {
+									riStr = true
+								}
+							}
+						}
+						if liStr || riStr {
+							typesList[i] = types.StringType{}
+						} else {
+							typesList[i] = typesList[i+1]
+						}
+					} else {
+						typesList[i] = typesList[i+1]
+					}
 				default:
 					typesList[i] = typesList[i+1]
 				}
@@ -4855,7 +4915,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &IntCastExpr{Expr: expr}
+						expr = &AssertExpr{Expr: expr, Type: "int"}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true

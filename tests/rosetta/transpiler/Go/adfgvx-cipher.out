@@ -1,0 +1,18 @@
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+A | X E Q F I 9 
+D | V 2 5 J S A 
+F | O 0 4 Y K R 
+G | T U 8 3 H W 
+V | P L B G 6 D 
+X | C Z N 7 1 M 
+
+The key is DA7CWHTOV
+
+Plaintext : ATTACKAT1200AM
+
+Encrypted : DADX XFD GVF ADD GXF AGD DAD XXX XVX
+
+Decrypted : ATTACKAT1200AM
