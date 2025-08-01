@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-01 19:20 +0700
+Last updated: 2025-08-01 20:46 +0700
 
-## Program Checklist (68/491)
+## Program Checklist (69/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -263,7 +263,7 @@ Last updated: 2025-08-01 19:20 +0700
 | 254 | create-an-html-table |   |  |  |
 | 255 | create-an-object-at-a-given-address |   |  |  |
 | 256 | csv-data-manipulation |   |  |  |
-| 257 | csv-to-html-translation-1 |   |  |  |
+| 257 | csv-to-html-translation-1 | ✓ |  |  |
 | 258 | csv-to-html-translation-2 |   |  |  |
 | 259 | csv-to-html-translation-3 | ✓ |  |  |
 | 260 | csv-to-html-translation-4 | ✓ |  |  |
