@@ -1,3 +1,5 @@
+import java.math.BigInteger
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -24,58 +26,36 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-var n: MutableList<Int> = mutableListOf(3, 5, 7)
-var a: MutableList<Int> = mutableListOf(2, 3, 2)
-var res: Int = crt(a, n)
-fun egcd(a: Int, b: Int): MutableList<Int> {
-    if (a == 0) {
-        return mutableListOf(b, 0, 1)
-    }
-    var res: MutableList<Int> = egcd(Math.floorMod(b, a), a)
-    var g: Int = res[0]!!
-    var x1: Int = res[1]!!
-    var y1: Int = res[2]!!
-    return mutableListOf(g, y1 - ((b / a) * x1), x1)
-}
-
-fun modInv(a: Int, m: Int): Int {
-    var r: MutableList<Int> = egcd(a, m)
-    if (r[0]!! != 1) {
-        return 0
-    }
-    var x: Int = r[1]!!
-    if (x < 0) {
-        return x + m
-    }
-    return x
-}
-
-fun crt(a: MutableList<Int>, n: MutableList<Int>): Int {
-    var prod: Int = 1
-    var i: Int = 0
-    while (i < n.size) {
-        prod = prod * n[i]!!
-        i = i + 1
-    }
-    var x: Int = 0
-    i = 0
-    while (i < n.size) {
-        var ni: Int = n[i]!!
-        var ai: Int = a[i]!!
-        var p: Int = prod / ni
-        var inv: Int = modInv(Math.floorMod(p, ni), ni)
-        x = x + ((ai * inv) * p)
-        i = i + 1
-    }
-    return Math.floorMod(x, prod)
-}
-
+var n: Int = 15
+var t: MutableList<Int> = mutableListOf<Int>()
 fun main() {
     run {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(res.toString() + " <nil>")
+        for (_ in 0 until n + 2) {
+            t = run { val _tmp = t.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
+        }
+        (t[1]) = 1
+        for (i in 1 until n + 1) {
+            var j: Int = i
+            while (j > 1) {
+                (t[j]) = t[j]!! + t[j - 1]!!
+                j = j - 1
+            }
+            (t[(i + 1).toInt()]) = t[i]!!
+            j = i + 1
+            while (j > 1) {
+                (t[j]) = t[j]!! + t[j - 1]!!
+                j = j - 1
+            }
+            var cat: BigInteger = (t[i + 1]!! - t[i]!!).toBigInteger()
+            if (i < 10) {
+                println(((" " + i.toString()) + " : ") + cat.toString())
+            } else {
+                println((i.toString() + " : ") + cat.toString())
+            }
+        }
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

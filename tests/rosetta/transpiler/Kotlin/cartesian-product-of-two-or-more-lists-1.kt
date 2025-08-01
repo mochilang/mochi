@@ -24,50 +24,45 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-var n: MutableList<Int> = mutableListOf(3, 5, 7)
-var a: MutableList<Int> = mutableListOf(2, 3, 2)
-var res: Int = crt(a, n)
-fun egcd(a: Int, b: Int): MutableList<Int> {
-    if (a == 0) {
-        return mutableListOf(b, 0, 1)
+fun cart2(a: MutableList<Int>, b: MutableList<Int>): MutableList<MutableList<Int>> {
+    var p: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
+    for (x in a) {
+        for (y in b) {
+            p = run { val _tmp = p.toMutableList(); _tmp.add(mutableListOf(x, y)); _tmp } as MutableList<MutableList<Int>>
+        }
     }
-    var res: MutableList<Int> = egcd(Math.floorMod(b, a), a)
-    var g: Int = res[0]!!
-    var x1: Int = res[1]!!
-    var y1: Int = res[2]!!
-    return mutableListOf(g, y1 - ((b / a) * x1), x1)
+    return p
 }
 
-fun modInv(a: Int, m: Int): Int {
-    var r: MutableList<Int> = egcd(a, m)
-    if (r[0]!! != 1) {
-        return 0
-    }
-    var x: Int = r[1]!!
-    if (x < 0) {
-        return x + m
-    }
-    return x
-}
-
-fun crt(a: MutableList<Int>, n: MutableList<Int>): Int {
-    var prod: Int = 1
+fun llStr(lst: MutableList<MutableList<Int>>): String {
+    var s: String = "["
     var i: Int = 0
-    while (i < n.size) {
-        prod = prod * n[i]!!
+    while (i < lst.size) {
+        var row: MutableList<Int> = lst[i]!!
+        s = s + "["
+        var j: Int = 0
+        while (j < row.size) {
+            s = s + (row[j]!!).toString()
+            if (j < (row.size - 1)) {
+                s = s + " "
+            }
+            j = j + 1
+        }
+        s = s + "]"
+        if (i < (lst.size - 1)) {
+            s = s + " "
+        }
         i = i + 1
     }
-    var x: Int = 0
-    i = 0
-    while (i < n.size) {
-        var ni: Int = n[i]!!
-        var ai: Int = a[i]!!
-        var p: Int = prod / ni
-        var inv: Int = modInv(Math.floorMod(p, ni), ni)
-        x = x + ((ai * inv) * p)
-        i = i + 1
-    }
-    return Math.floorMod(x, prod)
+    s = s + "]"
+    return s
+}
+
+fun user_main(): Unit {
+    println(llStr(cart2(mutableListOf(1, 2), mutableListOf(3, 4))))
+    println(llStr(cart2(mutableListOf(3, 4), mutableListOf(1, 2))))
+    println(llStr(cart2(mutableListOf(1, 2), mutableListOf<Int>())))
+    println(llStr(cart2(mutableListOf<Int>(), mutableListOf(1, 2))))
 }
 
 fun main() {
@@ -75,7 +70,7 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(res.toString() + " <nil>")
+        user_main()
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

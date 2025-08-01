@@ -24,50 +24,27 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-var n: MutableList<Int> = mutableListOf(3, 5, 7)
-var a: MutableList<Int> = mutableListOf(2, 3, 2)
-var res: Int = crt(a, n)
-fun egcd(a: Int, b: Int): MutableList<Int> {
-    if (a == 0) {
-        return mutableListOf(b, 0, 1)
-    }
-    var res: MutableList<Int> = egcd(Math.floorMod(b, a), a)
-    var g: Int = res[0]!!
-    var x1: Int = res[1]!!
-    var y1: Int = res[2]!!
-    return mutableListOf(g, y1 - ((b / a) * x1), x1)
+var n: MutableList<Int> = mutableListOf(1, 2, 3, 4, 5)
+fun add(a: Int, b: Int): Int {
+    return a + b
 }
 
-fun modInv(a: Int, m: Int): Int {
-    var r: MutableList<Int> = egcd(a, m)
-    if (r[0]!! != 1) {
-        return 0
-    }
-    var x: Int = r[1]!!
-    if (x < 0) {
-        return x + m
-    }
-    return x
+fun sub(a: Int, b: Int): Int {
+    return a - b
 }
 
-fun crt(a: MutableList<Int>, n: MutableList<Int>): Int {
-    var prod: Int = 1
-    var i: Int = 0
-    while (i < n.size) {
-        prod = prod * n[i]!!
+fun mul(a: Int, b: Int): Int {
+    return a * b
+}
+
+fun fold(f: (Int, Int) -> Int, xs: MutableList<Int>): Int {
+    var r: Int = xs[0]!!
+    var i: Int = 1
+    while (i < xs.size) {
+        r = (f(r, xs[i]!!)).toInt()
         i = i + 1
     }
-    var x: Int = 0
-    i = 0
-    while (i < n.size) {
-        var ni: Int = n[i]!!
-        var ai: Int = a[i]!!
-        var p: Int = prod / ni
-        var inv: Int = modInv(Math.floorMod(p, ni), ni)
-        x = x + ((ai * inv) * p)
-        i = i + 1
-    }
-    return Math.floorMod(x, prod)
+    return r
 }
 
 fun main() {
@@ -75,7 +52,9 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(res.toString() + " <nil>")
+        println(fold({ a: Int, b: Int -> add(a, b) } as (Int, Int) -> Int, n))
+        println(fold({ a: Int, b: Int -> sub(a, b) } as (Int, Int) -> Int, n))
+        println(fold({ a: Int, b: Int -> mul(a, b) } as (Int, Int) -> Int, n))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

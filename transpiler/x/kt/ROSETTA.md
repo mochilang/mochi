@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-01 18:48 +0700
+Last updated: 2025-08-01 19:32 +0700
 
-Completed tasks: **190/491**
+Completed tasks: **222/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -158,57 +158,57 @@ Completed tasks: **190/491**
 | 147 | calkin-wilf-sequence |  |  |  |
 | 148 | call-a-foreign-language-function |  |  |  |
 | 149 | call-a-function-1 |  |  |  |
-| 150 | call-a-function-10 |  |  |  |
-| 151 | call-a-function-11 |  |  |  |
-| 152 | call-a-function-12 |  |  |  |
+| 150 | call-a-function-10 | ✓ | 22.80ms | 124.9 KB |
+| 151 | call-a-function-11 | ✓ | 21.31ms | 123.5 KB |
+| 152 | call-a-function-12 | ✓ | 11.05ms | 131.5 KB |
 | 153 | call-a-function-2 |  |  |  |
-| 154 | call-a-function-3 |  |  |  |
+| 154 | call-a-function-3 | ✓ | 22.90ms | 124.1 KB |
 | 155 | call-a-function-4 |  |  |  |
 | 156 | call-a-function-5 |  |  |  |
 | 157 | call-a-function-6 |  |  |  |
-| 158 | call-a-function-7 |  |  |  |
-| 159 | call-a-function-8 |  |  |  |
+| 158 | call-a-function-7 | ✓ | 7.18ms | 134.6 KB |
+| 159 | call-a-function-8 | ✓ | 14.49ms | 129.0 KB |
 | 160 | call-a-function-9 |  |  |  |
 | 161 | call-an-object-method-1 |  |  |  |
 | 162 | call-an-object-method-2 |  |  |  |
 | 163 | call-an-object-method-3 |  |  |  |
 | 164 | call-an-object-method |  |  |  |
-| 165 | camel-case-and-snake-case |  |  |  |
-| 166 | canny-edge-detector |  |  |  |
-| 167 | canonicalize-cidr |  |  |  |
-| 168 | cantor-set |  |  |  |
-| 169 | carmichael-3-strong-pseudoprimes |  |  |  |
-| 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
+| 165 | camel-case-and-snake-case | ✓ | 30.51ms | 84.9 KB |
+| 166 | canny-edge-detector | ✓ | 35.47ms | 114.0 KB |
+| 167 | canonicalize-cidr | ✓ | 22.76ms | 128.5 KB |
+| 168 | cantor-set | ✓ | 16.47ms | 122.5 KB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 26.90ms | 120.8 KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 22.52ms | 123.5 KB |
 | 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 |  |  |  |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 30.89ms | 123.0 KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 27.35ms | 114.3 KB |
 | 174 | case-sensitivity-of-identifiers |  |  |  |
 | 175 | casting-out-nines |  |  |  |
-| 176 | catalan-numbers-1 |  |  |  |
-| 177 | catalan-numbers-2 |  |  |  |
+| 176 | catalan-numbers-1 | ✓ | 8.57ms | 134.2 KB |
+| 177 | catalan-numbers-2 | ✓ | 14.84ms | 121.4 KB |
 | 178 | catalan-numbers-pascals-triangle |  |  |  |
-| 179 | catamorphism |  |  |  |
+| 179 | catamorphism | ✓ | 12.46ms | 131.6 KB |
 | 180 | catmull-clark-subdivision-surface |  |  |  |
-| 181 | chaocipher |  |  |  |
-| 182 | chaos-game |  |  |  |
-| 183 | character-codes-1 |  |  |  |
-| 184 | character-codes-2 |  |  |  |
-| 185 | character-codes-3 |  |  |  |
-| 186 | character-codes-4 |  |  |  |
-| 187 | character-codes-5 |  |  |  |
-| 188 | chat-server |  |  |  |
-| 189 | check-machin-like-formulas |  |  |  |
+| 181 | chaocipher | ✓ | 23.96ms | 125.4 KB |
+| 182 | chaos-game | ✓ | 49.18ms | 106.8 KB |
+| 183 | character-codes-1 | ✓ | 12.70ms | 130.5 KB |
+| 184 | character-codes-2 | ✓ | 13.83ms | 130.5 KB |
+| 185 | character-codes-3 | ✓ | 9.33ms | 133.9 KB |
+| 186 | character-codes-4 | ✓ | 9.09ms | 134.0 KB |
+| 187 | character-codes-5 | ✓ | 8.64ms | 134.0 KB |
+| 188 | chat-server | ✓ | 27.82ms | 119.8 KB |
+| 189 | check-machin-like-formulas | ✓ | 44.07ms | 83.2 KB |
 | 190 | check-that-file-exists |  |  |  |
-| 191 | checkpoint-synchronization-1 |  |  |  |
+| 191 | checkpoint-synchronization-1 | ✓ | 9.65ms | 133.7 KB |
 | 192 | checkpoint-synchronization-2 |  |  |  |
-| 193 | checkpoint-synchronization-3 |  |  |  |
-| 194 | checkpoint-synchronization-4 |  |  |  |
-| 195 | chernicks-carmichael-numbers |  |  |  |
-| 196 | cheryls-birthday |  |  |  |
-| 197 | chinese-remainder-theorem | ✓ | 8.12ms | 134.1 KB |
-| 198 | chinese-zodiac | ✓ | 10.60ms | 124.1 KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 10.32ms | 133.5 KB |
+| 194 | checkpoint-synchronization-4 | ✓ | 10.93ms | 133.6 KB |
+| 195 | chernicks-carmichael-numbers | ✓ | 430.30ms | 838.4 KB |
+| 196 | cheryls-birthday | ✓ | 11.40ms | 131.6 KB |
+| 197 | chinese-remainder-theorem | ✓ | 8.23ms | 134.1 KB |
+| 198 | chinese-zodiac | ✓ | 12.17ms | 124.1 KB |
 | 199 | cholesky-decomposition-1 |  |  |  |
-| 200 | cholesky-decomposition |  |  |  |
+| 200 | cholesky-decomposition | ✓ | 26.00ms | 113.2 KB |
 | 201 | chowla-numbers |  |  |  |
 | 202 | church-numerals-1 |  |  |  |
 | 203 | church-numerals-2 |  |  |  |

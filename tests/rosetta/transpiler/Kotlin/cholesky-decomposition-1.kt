@@ -41,8 +41,8 @@ fun makeSym(order: Int, elements: MutableList<Double>): MutableMap<String, Any?>
 }
 
 fun unpackSym(m: MutableMap<String, Any?>): MutableList<MutableList<Double>> {
-    val n: Any? = (m)["order"] as Any?
-    val ele: Any? = (m)["ele"] as Any?
+    var n: Any? = (m)["order"] as Any?
+    var ele: Any? = (m)["ele"] as Any?
     var mat: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>()
     var idx: Int = 0
     var r: Int = 0
@@ -50,7 +50,7 @@ fun unpackSym(m: MutableMap<String, Any?>): MutableList<MutableList<Double>> {
         var row: MutableList<Double> = mutableListOf<Double>()
         var c: Int = 0
         while (c <= r) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((ele[idx]).toDouble()); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((ele as MutableList<Any?>)[idx]) as Double); _tmp } as MutableList<Double>
             idx = idx + 1
             c = c + 1
         }
@@ -65,7 +65,7 @@ fun unpackSym(m: MutableMap<String, Any?>): MutableList<MutableList<Double>> {
     while ((r).toInt() < (n as Number).toDouble()) {
         var c: BigInteger = (r + 1).toBigInteger()
         while (c.compareTo(n.toBigInteger()) < 0) {
-            mat[r][(c).toInt()] = mat[(c).toInt()][r]
+            ((mat[r]!!)[(c).toInt()]) = ((mat[(c).toInt()]!!) as MutableList<Double>)[r]!!
             c = c.add(1.toBigInteger())
         }
         r = r + 1
@@ -78,9 +78,9 @@ fun printMat(m: MutableList<MutableList<Double>>): Unit {
     while (i < m.size) {
         var line: String = ""
         var j: Int = 0
-        while (j < (m[i]).size) {
-            line = line + (m[i][j]).toString()
-            if (j < ((m[i]).size - 1)) {
+        while (j < (m[i]!!).size) {
+            line = line + (((m[i]!!) as MutableList<Double>)[j]!!).toString()
+            if (j < ((m[i]!!).size - 1)) {
                 line = line + " "
             }
             j = j + 1
@@ -95,8 +95,8 @@ fun printSym(m: MutableMap<String, Any?>): Unit {
 }
 
 fun printLower(m: MutableMap<String, Any?>): Unit {
-    val n: Any? = (m)["order"] as Any?
-    val ele: Any? = (m)["ele"] as Any?
+    var n: Any? = (m)["order"] as Any?
+    var ele: Any? = (m)["ele"] as Any?
     var mat: MutableList<MutableList<Double>> = mutableListOf<MutableList<Double>>()
     var idx: Int = 0
     var r: Int = 0
@@ -104,7 +104,7 @@ fun printLower(m: MutableMap<String, Any?>): Unit {
         var row: MutableList<Double> = mutableListOf<Double>()
         var c: Int = 0
         while (c <= r) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add((ele[idx]).toDouble()); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add(((ele as MutableList<Any?>)[idx]) as Double); _tmp } as MutableList<Double>
             idx = idx + 1
             c = c + 1
         }
@@ -119,11 +119,11 @@ fun printLower(m: MutableMap<String, Any?>): Unit {
 }
 
 fun choleskyLower(a: MutableMap<String, Any?>): MutableMap<String, Any?> {
-    val n: Any? = (a)["order"] as Any?
-    val ae: Any? = (a)["ele"] as Any?
+    var n: Any? = (a)["order"] as Any?
+    var ae: Any? = (a)["ele"] as Any?
     var le: MutableList<Double> = mutableListOf<Double>()
     var idx: Int = 0
-    while (idx < ae.size) {
+    while (idx < ae.toString().length) {
         le = run { val _tmp = le.toMutableList(); _tmp.add(0.0); _tmp } as MutableList<Double>
         idx = idx + 1
     }
@@ -132,24 +132,24 @@ fun choleskyLower(a: MutableMap<String, Any?>): MutableMap<String, Any?> {
     var dr: Int = 0
     var dc: Int = 0
     var i: Int = 0
-    while (i < ae.size) {
-        val e = ae[i]
+    while (i < ae.toString().length) {
+        var e = (ae as MutableList<Any?>)[i]
         if (i < dr) {
-            var d: Double = ((e as Number).toDouble() - le[i]) / le[dc]
-            le[i] = d
+            var d: Double = ((e as Number).toDouble() - le[i]!!) / le[dc]!!
+            (le[i]) = d
             var ci: Int = col
             var cx: Int = dc
             var j: BigInteger = (i + 1).toBigInteger()
             while (j.compareTo(dr.toBigInteger()) <= 0) {
                 cx = cx + ci
                 ci = ci + 1
-                le[(j).toInt()] = le[(j).toInt()] + (d * le[cx])
+                (le[(j).toInt()]) = le[(j).toInt()]!! + (d * le[cx]!!)
                 j = j.add(1.toBigInteger())
             }
             col = col + 1
             dc = dc + col
         } else {
-            le[i] = sqrtApprox((e as Number).toDouble() - le[i])
+            (le[i]) = sqrtApprox((e as Number).toDouble() - le[i]!!)
             row = row + 1
             dr = dr + row
             col = 1
@@ -164,7 +164,7 @@ fun demo(a: MutableMap<String, Any?>): Unit {
     println("A:")
     printSym(a)
     println("L:")
-    val l: MutableMap<String, Any?> = choleskyLower(a)
+    var l: MutableMap<String, Any?> = choleskyLower(a)
     printLower(l)
 }
 
