@@ -1,0 +1,73 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": "writeln",
+          "children": [
+            {
+              "kind": "atom",
+              "text": "example54"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
