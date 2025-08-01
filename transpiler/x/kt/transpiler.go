@@ -1216,9 +1216,17 @@ type LetStmt struct {
 func (s *LetStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	// use 'var' to match Mochi semantics where let bindings may be reassigned
+	typ := s.Type
+	if typ == "Int" {
+		if lit, ok := s.Value.(*IntLit); ok {
+			if lit.Value > 2147483647 || lit.Value < -2147483648 {
+				typ = "Long"
+			}
+		}
+	}
 	io.WriteString(w, "var "+safeName(s.Name))
-	if s.Type != "" {
-		io.WriteString(w, ": "+s.Type)
+	if typ != "" {
+		io.WriteString(w, ": "+typ)
 	}
 	io.WriteString(w, " = ")
 	if s.Type == "BigInteger" {
@@ -1255,9 +1263,17 @@ type VarStmt struct {
 
 func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
+	typ := s.Type
+	if typ == "Int" {
+		if lit, ok := s.Value.(*IntLit); ok {
+			if lit.Value > 2147483647 || lit.Value < -2147483648 {
+				typ = "Long"
+			}
+		}
+	}
 	io.WriteString(w, "var "+safeName(s.Name))
-	if s.Type != "" {
-		io.WriteString(w, ": "+s.Type)
+	if typ != "" {
+		io.WriteString(w, ": "+typ)
 	}
 	io.WriteString(w, " = ")
 	if s.Type == "BigInteger" {

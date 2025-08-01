@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-01 15:22 +0700
+Last updated: 2025-08-01 18:19 +0700
 
-Completed tasks: **143/491**
+Completed tasks: **182/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -433,56 +433,56 @@ Completed tasks: **143/491**
 | 422 | find-common-directory-path |  |  |  |
 | 423 | find-duplicate-files |  |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |  |  |  |
-| 425 | find-limit-of-recursion |  |  |  |
+| 425 | find-limit-of-recursion | ✓ | 23.30ms | 134.2 KB |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |  |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |  |  |  |
-| 428 | find-the-intersection-of-two-lines |  |  |  |
-| 429 | find-the-last-sunday-of-each-month |  |  |  |
-| 430 | find-the-missing-permutation |  |  |  |
-| 431 | first-class-environments |  |  |  |
-| 432 | first-class-functions-use-numbers-analogously |  |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 13.26ms | 120.5 KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 12.25ms | 120.6 KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 43.15ms | 85.9 KB |
+| 430 | find-the-missing-permutation | ✓ | 10.95ms | 133.5 KB |
+| 431 | first-class-environments | ✓ | 23.19ms | 124.3 KB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 24.81ms | 111.4 KB |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |  |  |  |
-| 434 | five-weekends |  |  |  |
-| 435 | fivenum-1 |  |  |  |
-| 436 | fivenum-2 |  |  |  |
-| 437 | fivenum-3 |  |  |  |
-| 438 | fixed-length-records-1 |  |  |  |
-| 439 | fixed-length-records-2 |  |  |  |
-| 440 | fizzbuzz-1 |  |  |  |
-| 441 | fizzbuzz-2 |  |  |  |
-| 442 | fizzbuzz |  |  |  |
-| 443 | flatten-a-list-1 |  |  |  |
-| 444 | flatten-a-list-2 |  |  |  |
-| 445 | flipping-bits-game |  |  |  |
-| 446 | flow-control-structures-1 |  |  |  |
-| 447 | flow-control-structures-2 |  |  |  |
-| 448 | flow-control-structures-3 |  |  |  |
-| 449 | flow-control-structures-4 |  |  |  |
-| 450 | floyd-warshall-algorithm | ✓ | 26.86ms | 111.4 KB |
-| 451 | floyd-warshall-algorithm2 | ✓ | 28.59ms | 113.9 KB |
-| 452 | floyds-triangle |  |  |  |
-| 453 | forest-fire |  |  |  |
-| 454 | fork-2 |  |  |  |
-| 455 | fork |  |  |  |
+| 434 | five-weekends | ✓ | 54.70ms | 112.6 KB |
+| 435 | fivenum-1 | ✓ | 9.30ms | 124.2 KB |
+| 436 | fivenum-2 | ✓ | 14.02ms | 113.5 KB |
+| 437 | fivenum-3 | ✓ | 13.62ms | 113.8 KB |
+| 438 | fixed-length-records-1 | ✓ | 11.57ms | 125.1 KB |
+| 439 | fixed-length-records-2 | ✓ | 9.26ms | 134.4 KB |
+| 440 | fizzbuzz-1 | ✓ | 13.00ms | 134.1 KB |
+| 441 | fizzbuzz-2 | ✓ | 23.39ms | 126.8 KB |
+| 442 | fizzbuzz | ✓ | 13.89ms | 134.1 KB |
+| 443 | flatten-a-list-1 | ✓ | 8.89ms | 134.2 KB |
+| 444 | flatten-a-list-2 | ✓ | 8.58ms | 134.2 KB |
+| 445 | flipping-bits-game | ✓ | 33.55ms | 111.0 KB |
+| 446 | flow-control-structures-1 | ✓ | 8.96ms | 134.3 KB |
+| 447 | flow-control-structures-2 | ✓ | 9.28ms | 134.2 KB |
+| 448 | flow-control-structures-3 | ✓ | 7.69ms | 134.3 KB |
+| 449 | flow-control-structures-4 | ✓ | 7.53ms | 134.2 KB |
+| 450 | floyd-warshall-algorithm | ✓ | 30.26ms | 111.5 KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 26.71ms | 113.9 KB |
+| 452 | floyds-triangle | ✓ | 16.73ms | 121.6 KB |
+| 453 | forest-fire | ✓ | 24.64ms | 153.3 KB |
+| 454 | fork-2 | ✓ | 9.48ms | 134.0 KB |
+| 455 | fork | ✓ | 8.89ms | 134.0 KB |
 | 456 | formal-power-series |  |  |  |
-| 457 | formatted-numeric-output |  |  |  |
-| 458 | forward-difference |  |  |  |
-| 459 | four-bit-adder-1 |  |  |  |
+| 457 | formatted-numeric-output | ✓ | 10.52ms | 131.4 KB |
+| 458 | forward-difference | ✓ | 9.11ms | 133.9 KB |
+| 459 | four-bit-adder-1 | ✓ | 8.99ms | 134.1 KB |
 | 460 | four-is-magic |  |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |  |  |  |
-| 462 | fractal-tree |  |  |  |
+| 462 | fractal-tree | ✓ | 47.06ms | 114.7 KB |
 | 463 | fractran |  |  |  |
-| 464 | french-republican-calendar |  |  |  |
-| 465 | ftp |  |  |  |
+| 464 | french-republican-calendar | ✓ | 9.79ms | 133.6 KB |
+| 465 | ftp | ✓ | 12.18ms | 131.7 KB |
 | 466 | function-frequency |  |  |  |
-| 467 | function-prototype |  |  |  |
+| 467 | function-prototype | ✓ | 10.40ms | 134.7 KB |
 | 468 | functional-coverage-tree |  |  |  |
-| 469 | fusc-sequence |  |  |  |
-| 470 | gamma-function |  |  |  |
-| 471 | general-fizzbuzz |  |  |  |
+| 469 | fusc-sequence | ✓ | 25.75ms | 114.5 KB |
+| 470 | gamma-function | ✓ | 8.91ms | 124.1 KB |
+| 471 | general-fizzbuzz | ✓ | 9.68ms | 134.0 KB |
 | 472 | generic-swap |  |  |  |
-| 473 | get-system-command-output |  |  |  |
-| 474 | giuga-numbers |  |  |  |
+| 473 | get-system-command-output | ✓ | 8.49ms | 134.2 KB |
+| 474 | giuga-numbers | ✓ | 23.80ms | 123.7 KB |
 | 475 | globally-replace-text-in-several-files |  |  |  |
 | 476 | goldbachs-comet |  |  |  |
 | 477 | golden-ratio-convergence |  |  |  |
