@@ -37,6 +37,7 @@ var usesRat bool
 var usesSHA256 bool
 var usesAppend bool
 var usesLen bool
+var usesSplit bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 
@@ -72,6 +73,7 @@ type Program struct {
 	UseSHA256     bool
 	UseAppend     bool
 	UseLen        bool
+	UseSplit      bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -1019,16 +1021,16 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
-    t := c.Type
-    force := false
-    if strings.HasSuffix(t, "!") {
-        force = true
-        t = strings.TrimSuffix(t, "!")
-    }
-    if t == "Any" || t == "Any?" {
-        c.Expr.emit(w)
-        return
-    }
+	t := c.Type
+	force := false
+	if strings.HasSuffix(t, "!") {
+		force = true
+		t = strings.TrimSuffix(t, "!")
+	}
+	if t == "Any" || t == "Any?" {
+		c.Expr.emit(w)
+		return
+	}
 	switch t {
 	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
 		if t == "Int" {
@@ -1262,6 +1264,16 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 			fmt.Fprint(w, ")")
 			usesRat = true
+			return
+		}
+	case "split":
+		if len(c.Args) == 2 {
+			fmt.Fprint(w, "_split(")
+			c.Args[0].emit(w)
+			fmt.Fprint(w, ", ")
+			c.Args[1].emit(w)
+			fmt.Fprint(w, ")")
+			usesSplit = true
 			return
 		}
 	case "append":
@@ -1720,6 +1732,12 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if let m = v as? [AnyHashable: Any] { return m.count }\n")
 		buf.WriteString("    return 0\n}\n")
 	}
+	if p.UseSplit {
+		buf.WriteString("func _split(_ s: String, _ sep: String) -> [String] {\n")
+		buf.WriteString("    let d = sep.isEmpty ? \" \" : sep\n")
+		buf.WriteString("    return s.components(separatedBy: d)\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -1856,6 +1874,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesSHA256 = false
 	usesAppend = false
 	usesLen = false
+	usesSplit = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -1882,6 +1901,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseSHA256 = usesSHA256
 	p.UseAppend = usesAppend
 	p.UseLen = usesLen
+	p.UseSplit = usesSplit
 	return p, nil
 }
 
@@ -2712,14 +2732,22 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 		return &BlockStmt{}, nil
 	}
 	var fields []StructField
-	var methods []Stmt
+	fieldTypes := map[string]types.Type{}
 	for _, m := range td.Members {
 		if m.Field != nil {
 			t := types.ResolveTypeRef(m.Field.Type, env)
 			fields = append(fields, StructField{Name: m.Field.Name, Type: swiftTypeOf(t)})
-		} else if m.Method != nil {
+			fieldTypes[m.Field.Name] = t
+		}
+	}
+	var methods []Stmt
+	for _, m := range td.Members {
+		if m.Method != nil {
 			child := types.NewEnv(env)
 			child.SetVar("self", types.StructType{Name: td.Name}, true)
+			for name, ft := range fieldTypes {
+				child.SetVar(name, ft, true)
+			}
 			fn := *m.Method
 			fn.Params = append([]*parser.Param{{Name: "self", Type: &parser.TypeRef{Simple: &td.Name}}}, fn.Params...)
 			fn.Name = fmt.Sprintf("%s_%s", td.Name, fn.Name)
@@ -3024,6 +3052,17 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			inMap := false
 			if types.IsMapType(rtyp) {
 				inMap = true
+			} else {
+				switch rv := right.(type) {
+				case *NameExpr:
+					if t, err := env.GetVar(rv.Name); err == nil {
+						if _, ok := t.(types.MapType); ok {
+							inMap = true
+						}
+					}
+				case *MapLit:
+					inMap = true
+				}
 			}
 			exprStack = append(exprStack, &BinaryExpr{Left: left, Op: op, Right: right, InMap: inMap})
 			typeStack = append(typeStack, types.BoolType{})
@@ -3440,20 +3479,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if types.IsStringType(baseType) {
 					isStr = true
 				}
-                               if m, ok := baseType.(types.MapType); ok {
-                                        baseType = types.OptionType{Elem: m.Value}
-                                        force = true
-                                } else if l, ok := baseType.(types.ListType); ok {
-                                        baseType = l.Elem
-                                        if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
-                                                if _, ok2 := baseType.(types.ListType); ok2 {
-                                                        skipUpdate = true
-                                                }
-                                        }
-                                } else if _, ok := baseType.(types.StructType); ok {
-                                        baseType = types.OptionType{Elem: types.AnyType{}}
-                                        force = true
-                                }
+				if m, ok := baseType.(types.MapType); ok {
+					baseType = types.OptionType{Elem: m.Value}
+					force = true
+				} else if l, ok := baseType.(types.ListType); ok {
+					baseType = l.Elem
+					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+						if _, ok2 := baseType.(types.ListType); ok2 {
+							skipUpdate = true
+						}
+					}
+				} else if _, ok := baseType.(types.StructType); ok {
+					baseType = types.OptionType{Elem: types.AnyType{}}
+					force = true
+				}
 			}
 			if env != nil && types.IsAnyType(baseType) {
 				if name := rootNameExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}}); name != "" {
@@ -4169,6 +4208,18 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesRat = true
 			return &CallExpr{Func: "_rat_denom", Args: []Expr{arg}}, nil
+		}
+		if pr.Call.Func == "split" && len(pr.Call.Args) == 2 {
+			a0, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			a1, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			usesSplit = true
+			return &CallExpr{Func: "_split", Args: []Expr{a0, a1}}, nil
 		}
 		if pr.Call.Func == "sha256" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])

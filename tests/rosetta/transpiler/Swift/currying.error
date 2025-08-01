@@ -1,0 +1,79 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:50:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+48 |     print(_p(("3 + 5 = " + _p(Int(fn2((Foo(value: 3) as! Foo), 5))))))
+49 | }
+50 | _ = main()
+   | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+51 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:21:22: warning: forced cast of 'Int' to same type has no effect
+19 |     while (i < Int(_int(exp))) {
+20 |         result = Double((result * base))
+21 |         i = ((i + 1) as! Int)
+   |                      `- warning: forced cast of 'Int' to same type has no effect
+22 |     }
+23 |     return result
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:26:53: warning: forced cast of 'Double' to same type has no effect
+24 | }
+25 | func PowN(_ b: Double) -> (Double) -> Double {
+26 |     return { (e: Double) -> Double in Double(pow((b as! Double), (e as! Double))) }
+   |                                                     `- warning: forced cast of 'Double' to same type has no effect
+27 | }
+28 | func PowE(_ e: Double) -> (Double) -> Double {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:26:69: warning: forced cast of 'Double' to same type has no effect
+24 | }
+25 | func PowN(_ b: Double) -> (Double) -> Double {
+26 |     return { (e: Double) -> Double in Double(pow((b as! Double), (e as! Double))) }
+   |                                                                     `- warning: forced cast of 'Double' to same type has no effect
+27 | }
+28 | func PowE(_ e: Double) -> (Double) -> Double {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:29:53: warning: forced cast of 'Double' to same type has no effect
+27 | }
+28 | func PowE(_ e: Double) -> (Double) -> Double {
+29 |     return { (b: Double) -> Double in Double(pow((b as! Double), (e as! Double))) }
+   |                                                     `- warning: forced cast of 'Double' to same type has no effect
+30 | }
+31 | struct Foo {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:29:69: warning: forced cast of 'Double' to same type has no effect
+27 | }
+28 | func PowE(_ e: Double) -> (Double) -> Double {
+29 |     return { (b: Double) -> Double in Double(pow((b as! Double), (e as! Double))) }
+   |                                                                     `- warning: forced cast of 'Double' to same type has no effect
+30 | }
+31 | struct Foo {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:35:13: error: cannot find 'value' in scope
+33 | }
+34 | func Foo_Method(_ self: Foo, _ b: Int) -> Int {
+35 |     return (value + b)
+   |             `- error: cannot find 'value' in scope
+36 | }
+37 | func main() {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:47:42: warning: forced cast of 'Foo' to same type has no effect
+45 |     print(_p(("2 + 2 = " + _p(Foo_Method(a, 2)))))
+46 |     print(_p(("2 + 3 = " + _p(Int(fn1(3))))))
+47 |     print(_p(("2 + 4 = " + _p(Int(fn2((a as! Foo), 4))))))
+   |                                          `- warning: forced cast of 'Foo' to same type has no effect
+48 |     print(_p(("3 + 5 = " + _p(Int(fn2((Foo(value: 3) as! Foo), 5))))))
+49 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:48:54: warning: forced cast of 'Foo' to same type has no effect
+46 |     print(_p(("2 + 3 = " + _p(Int(fn1(3))))))
+47 |     print(_p(("2 + 4 = " + _p(Int(fn2((a as! Foo), 4))))))
+48 |     print(_p(("3 + 5 = " + _p(Int(fn2((Foo(value: 3) as! Foo), 5))))))
+   |                                                      `- warning: forced cast of 'Foo' to same type has no effect
+49 | }
+50 | _ = main()
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden610048680/001/main.swift:42:9: warning: variable 'a' was never mutated; consider changing to 'let' constant
+40 |     print(_p(("2^8 = " + _p(Double(pow2(8.0))))))
+41 |     print(_p(("4³ = " + _p(Double(cube(4.0))))))
+42 |     var a: Foo = Foo(value: 2)
+   |         `- warning: variable 'a' was never mutated; consider changing to 'let' constant
+43 |     let fn1 = { (b: Int) -> Int in Foo_Method(a, b) }
+44 |     let fn2 = { (f: Foo, b: Int) -> Int in Foo_Method(f, b) }
