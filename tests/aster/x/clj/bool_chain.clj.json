@@ -69,6 +69,9 @@
           "text": "boom"
         },
         {
+          "kind": "vector"
+        },
+        {
           "kind": "list",
           "children": [
             {
@@ -97,6 +100,9 @@
         {
           "kind": "symbol",
           "text": "-main"
+        },
+        {
+          "kind": "vector"
         },
         {
           "kind": "list",

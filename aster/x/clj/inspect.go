@@ -38,6 +38,7 @@ type rawNode struct {
 	List   []*rawNode `json:"list,omitempty"`
 	Vector []*rawNode `json:"vector,omitempty"`
 	Map    []rawEntry `json:"map,omitempty"`
+	Set    []*rawNode `json:"set,omitempty"`
 }
 
 type rawEntry struct {
@@ -66,7 +67,7 @@ func toNode(r *rawNode) *Node {
 		return &Node{Kind: "boolean", Text: "false"}
 	case r.Nil:
 		return &Node{Kind: "nil", Text: "nil"}
-	case len(r.List) > 0:
+	case r.List != nil:
 		n := &Node{Kind: "list"}
 		for _, c := range r.List {
 			if cn := toNode(c); cn != nil {
@@ -74,7 +75,7 @@ func toNode(r *rawNode) *Node {
 			}
 		}
 		return n
-	case len(r.Vector) > 0:
+	case r.Vector != nil:
 		n := &Node{Kind: "vector"}
 		for _, c := range r.Vector {
 			if cn := toNode(c); cn != nil {
@@ -82,12 +83,20 @@ func toNode(r *rawNode) *Node {
 			}
 		}
 		return n
-	case len(r.Map) > 0:
+	case r.Map != nil:
 		n := &Node{Kind: "map"}
 		for _, e := range r.Map {
 			en := &Node{Kind: "entry"}
 			en.Children = []*Node{toNode(e.Key), toNode(e.Val)}
 			n.Children = append(n.Children, en)
+		}
+		return n
+	case r.Set != nil:
+		n := &Node{Kind: "set"}
+		for _, c := range r.Set {
+			if cn := toNode(c); cn != nil {
+				n.Children = append(n.Children, cn)
+			}
 		}
 		return n
 	}
@@ -101,6 +110,7 @@ const bbScript = `(require '[cheshire.core :as json])
     (list? x) {:list (mapv node->json x)}
     (vector? x) {:vector (mapv node->json x)}
     (map? x) {:map (mapv (fn [[k v]] {:key (node->json k) :val (node->json v)}) x)}
+    (set? x) {:set (mapv node->json x)}
     (symbol? x) {:sym (str x)}
     (keyword? x) {:kw (str x)}
     (string? x) {:str x}
