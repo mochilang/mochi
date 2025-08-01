@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-01 17:51 GMT+7
+Last updated: 2025-08-01 18:26 GMT+7
 
-## Rosetta Checklist (299/491)
+## Rosetta Checklist (311/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -430,18 +430,18 @@ Last updated: 2025-08-01 17:51 GMT+7
 | 422 | find-common-directory-path |   |  |  |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | first-class-environments |   |  |  |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
-| 435 | fivenum-1 |   |  |  |
-| 436 | fivenum-2 |   |  |  |
+| 425 | find-limit-of-recursion | ✓ | 35.0ms | 552B |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 48.0ms | 94.14KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 45.0ms | 87.87KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 39.0ms | 45.30KB |
+| 430 | find-the-missing-permutation | ✓ | 31.0ms | 39.32KB |
+| 431 | first-class-environments | ✓ | 41.0ms | 54.92KB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 29.0ms | 43.04KB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ |  |  |
+| 434 | five-weekends | ✓ | 93.0ms | 115.09KB |
+| 435 | fivenum-1 | ✓ | 19.0ms | 944B |
+| 436 | fivenum-2 | ✓ | 34.0ms | 47.39KB |
 | 437 | fivenum-3 |   |  |  |
 | 438 | fixed-length-records-1 |   |  |  |
 | 439 | fixed-length-records-2 |   |  |  |
