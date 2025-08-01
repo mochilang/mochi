@@ -54,8 +54,8 @@ func TestInspectGolden(t *testing.T) {
 	}
 	sort.Strings(files)
 
-	if len(files) > 50 {
-		files = files[:50]
+	if len(files) > 75 {
+		files = files[:75]
 	}
 
 	for _, path := range files {

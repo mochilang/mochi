@@ -221,13 +221,23 @@ func writeFieldDecl(b *bytes.Buffer, n *Node, indent int) {
 }
 
 func writeFunctionDeclarator(b *bytes.Buffer, n *Node) {
-	switch len(n.Children) {
-	case 1:
-		writeExpr(b, n.Children[0], 0)
-		b.WriteString("()")
-	case 2:
-		writeExpr(b, n.Children[0], 0)
-		writeParameterList(b, n.Children[1])
+	switch n.Kind {
+	case "pointer_declarator":
+		b.WriteByte('*')
+		if len(n.Children) > 0 {
+			writeFunctionDeclarator(b, n.Children[0])
+		}
+	case "function_declarator":
+		switch len(n.Children) {
+		case 1:
+			writeExpr(b, n.Children[0], 0)
+			b.WriteString("()")
+		case 2:
+			writeExpr(b, n.Children[0], 0)
+			writeParameterList(b, n.Children[1])
+		}
+	default:
+		writeExpr(b, n, 0)
 	}
 }
 
