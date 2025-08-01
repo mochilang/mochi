@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/four-is-the-number-of-letters-in-the-....go:249:34: cannot convert n (variable of interface type any) to type int: need type assertion

@@ -4325,7 +4325,18 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 						}
 					}
 					if newExpr == nil {
-						if ops[i].Op == "%" {
+						if ops[i].Op == "/" {
+							if l0, ok := left.(*FloatLit); ok {
+								if r0, ok2 := right.(*FloatLit); ok2 {
+									if l0.Value == 0 && r0.Value == 0 {
+										if imports != nil {
+											imports["math"] = "math"
+										}
+										newExpr = &CallExpr{Func: "math.NaN"}
+									}
+								}
+							}
+						} else if ops[i].Op == "%" {
 							if _, ok := typesList[i].(types.FloatType); ok ||
 								(isFloatType(typesList[i]) && !isIntType(typesList[i])) ||
 								isFloatType(typesList[i+1]) {
@@ -4483,7 +4494,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 	} else {
 		t = types.TypeOfPrimaryBasic(pf.Target, env)
 	}
-	// if tail has one element and first op is CallOp => method call
+	// if tail has one element and first op is CallOp => method call or
+	// calling a function-valued field
 	if len(tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		method := tail[0]
 		args := make([]Expr, len(pf.Ops[0].Call.Args))
@@ -4494,6 +4506,19 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 			}
 			args[i] = ex
 		}
+
+		// check if the selector refers to a function field of a struct
+		if recvType, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+			if st, ok := recvType.(types.StructType); ok {
+				if ft, ok2 := st.Fields[method]; ok2 {
+					if _, ok3 := ft.(types.FuncType); ok3 {
+						recv := &FieldExpr{X: expr, Name: method}
+						return &CallExpr{FuncExpr: recv, Args: args}, nil
+					}
+				}
+			}
+		}
+
 		if _, ok := imports[pf.Target.Selector.Root]; ok {
 			full := pf.Target.Selector.Root + "." + toGoFieldName(method)
 			if full == "net.LookupHost" && len(args) == 1 {
@@ -4859,17 +4884,17 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 				}
 			case types.StructType:
-				expr = &FieldExpr{X: expr, Name: op.Field.Name}
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(op.Field.Name)}
 				if ft, ok := tt.Fields[op.Field.Name]; ok {
 					t = ft
 				} else {
 					t = types.AnyType{}
 				}
 			case types.OptionType:
-				expr = &FieldExpr{X: expr, Name: op.Field.Name}
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(op.Field.Name)}
 				t = tt.Elem
 			default:
-				expr = &FieldExpr{X: expr, Name: op.Field.Name}
+				expr = &FieldExpr{X: expr, Name: toGoFieldName(op.Field.Name)}
 				t = types.AnyType{}
 			}
 		}
@@ -4927,7 +4952,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				return &BigIntToIntExpr{Value: args[0]}, nil
 			}
 			if types.IsAnyType(argType) {
-				args[0] = &AssertExpr{Expr: args[0], Type: "int"}
+				return &AssertExpr{Expr: args[0], Type: "int"}, nil
 			}
 			return &CallExpr{Func: "int", Args: []Expr{args[0]}}, nil
 		case "float":
