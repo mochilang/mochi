@@ -869,6 +869,9 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		}
 		if strings.HasPrefix(t, "[]") {
+			if t == "[]const u8" {
+				return t
+			}
 			return t[2:]
 		}
 		if strings.HasPrefix(t, "[") {
@@ -1334,11 +1337,19 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if v.Type != "" {
-		fmt.Fprintf(w, ": %s", v.Type)
+		typ := v.Type
+		if kw == "const" && strings.HasPrefix(typ, "const ") {
+			typ = strings.TrimPrefix(typ, "const ")
+		}
+		fmt.Fprintf(w, ": %s", typ)
 	} else {
 		exprType := zigTypeFromExpr(v.Value)
 		if t, ok := varTypes[v.Name]; ok && t != "" {
-			fmt.Fprintf(w, ": %s", t)
+			typ := t
+			if kw == "const" && strings.HasPrefix(typ, "const ") {
+				typ = strings.TrimPrefix(typ, "const ")
+			}
+			fmt.Fprintf(w, ": %s", typ)
 		} else if exprType != "" {
 			fmt.Fprintf(w, ": %s", exprType)
 		} else if v.Mutable {
@@ -1711,6 +1722,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ".get(")
 		i.Index.emit(w)
 		io.WriteString(w, ").?")
+		return
+	}
+	t := zigTypeFromExpr(i.Target)
+	if t == "[]const u8" {
+		i.Target.emit(w)
+		io.WriteString(w, "[@as(usize, @intCast(")
+		i.Index.emit(w)
+		io.WriteString(w, "))..@as(usize, @intCast(")
+		i.Index.emit(w)
+		io.WriteString(w, ")) + 1]")
 	} else {
 		i.Target.emit(w)
 		io.WriteString(w, "[@as(usize, @intCast(")
@@ -1831,7 +1852,12 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, tmp)
 			io.WriteString(w, "| {\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+			typ := zigTypeFromExpr(f.Iterable)
+			if typ == "[]const u8" {
+				fmt.Fprintf(w, "const %s: []const u8 = &[_]u8{%s};\n", f.Name, tmp)
+			} else {
+				fmt.Fprintf(w, "const %s = %s;\n", f.Name, tmp)
+			}
 		} else {
 			io.WriteString(w, "_|")
 			io.WriteString(w, " {\n")
@@ -1936,7 +1962,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
-			io.WriteString(w, "@intCast(")
+			io.WriteString(w, "@as(i64, @intCast(")
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
@@ -1961,7 +1987,7 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".len")
 			}
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		} else {
 			io.WriteString(w, "0")
 		}
