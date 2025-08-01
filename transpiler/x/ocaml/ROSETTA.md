@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 169/491
+Completed programs: 176/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -430,13 +430,13 @@ Completed programs: 169/491
 | 422 | find-common-directory-path |   |  |  |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | first-class-environments |   |  |  |
+| 425 | find-limit-of-recursion | ✓ | 1.0ms | 8.22KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 633.0ms | 242.42MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 135.0µs | 2.72KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 150.0µs | 1.77KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 104.0µs | 1.62KB |
+| 430 | find-the-missing-permutation | ✓ | 94.0µs | 16.90KB |
+| 431 | first-class-environments | ✓ | 1.0ms | 229.70KB |
 | 432 | first-class-functions-use-numbers-analogously |   |  |  |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
 | 434 | five-weekends |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 169/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 15:22 +0700
+Last updated 2025-08-01 18:13 +0700
