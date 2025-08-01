@@ -634,6 +634,15 @@ func (a *AssignStmt) emit(w io.Writer) {
 	io.WriteString(w, ";\n")
 }
 
+// MultiStmt groups multiple statements to be emitted sequentially.
+type MultiStmt struct{ Stmts []Stmt }
+
+func (m *MultiStmt) emit(w io.Writer) {
+	for _, s := range m.Stmts {
+		s.emit(w)
+	}
+}
+
 // ExprStmt represents a stand-alone expression.
 type ExprStmt struct{ Expr Expr }
 
@@ -3555,6 +3564,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		local := len(vars) > 0 && env != rootEnv
 		return &FunStmt{Name: st.Fun.Name, Params: params, Body: body, Ret: ret, RetTyp: typeString(retTyp), Local: local, EndsWithReturn: endsWithReturn}, nil
 	case st.Type != nil:
+		var methodStmts []Stmt
 		if len(st.Type.Members) > 0 {
 			fields := map[string]string{}
 			for _, m := range st.Type.Members {
@@ -3567,6 +3577,19 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 						ft = "int"
 					}
 					fields[m.Field.Name] = ft
+				} else if m.Method != nil {
+					method := *m.Method
+					method.Name = st.Type.Name + "_" + m.Method.Name
+					selfParam := &parser.Param{Name: "self", Type: &parser.TypeRef{Simple: &st.Type.Name}}
+					method.Params = append([]*parser.Param{selfParam}, method.Params...)
+					s := &parser.Statement{Fun: &method}
+					compiled, err := transpileStmt(s, env, vars, mutated)
+					if err != nil {
+						return nil, err
+					}
+					if compiled != nil {
+						methodStmts = append(methodStmts, compiled)
+					}
 				}
 			}
 			structFields[st.Type.Name] = fields
@@ -3586,6 +3609,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 				}
 				structFields[v.Name] = fields
 			}
+		}
+		if len(methodStmts) > 0 {
+			return &MultiStmt{Stmts: methodStmts}, nil
 		}
 		return nil, nil
 	case st.Test != nil:
@@ -4025,6 +4051,25 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 			i += 2
 			continue
 		case op.Field != nil:
+			// generic method call obj.Field(args)
+			if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				if _, ok := env.GetFunc(op.Field.Name); ok {
+					call := p.Ops[i+1].Call
+					args := make([]Expr, len(call.Args)+1)
+					args[0] = expr
+					for j, a := range call.Args {
+						ex, _, err := convertExpr(a, env, vars)
+						if err != nil {
+							return nil, "", err
+						}
+						args[j+1] = ex
+					}
+					expr = &FuncCall{Name: sanitizeIdent(op.Field.Name), Args: args, Ret: ""}
+					typ = ""
+					i += 2
+					continue
+				}
+			}
 			if name, ok := expr.(*Name); ok {
 				if nameTyp := vars[name.Ident].typ; nameTyp == "python_math" {
 					field := op.Field.Name
@@ -4771,10 +4816,12 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
+					var exprCode string
 					if mutated[p.Name] {
+						exprCode = fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
+						exprCode = fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
 						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					}
 				}
@@ -4794,10 +4841,12 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			if p.Type != nil {
 				typ := typeRefString(p.Type)
 				if typ == "int" || typ == "float" {
-					exprCode := fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
+					var exprCode string
 					if mutated[p.Name] {
+						exprCode = fmt.Sprintf("(Obj.magic !%s : %s)", sanitizeIdent(p.Name), typ)
 						casts = append(casts, &AssignStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					} else {
+						exprCode = fmt.Sprintf("(Obj.magic %s : %s)", sanitizeIdent(p.Name), typ)
 						casts = append(casts, &LetStmt{Name: p.Name, Expr: &RawExpr{Code: exprCode}})
 					}
 				}

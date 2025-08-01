@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 214/491
+Completed programs: 215/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -155,17 +155,17 @@ Completed programs: 214/491
 | 147 | calkin-wilf-sequence | error |  |  |
 | 148 | call-a-foreign-language-function | ✓ |  |  |
 | 149 | call-a-function-1 | ✓ | 2.0µs | 208B |
-| 150 | call-a-function-10 | ✓ |  |  |
-| 151 | call-a-function-11 | ✓ | 116.0µs | 440B |
-| 152 | call-a-function-12 | error |  |  |
-| 153 | call-a-function-2 | ✓ |  |  |
-| 154 | call-a-function-3 | ✓ |  |  |
-| 155 | call-a-function-4 | ✓ |  |  |
-| 156 | call-a-function-5 | ✓ |  |  |
-| 157 | call-a-function-6 | ✓ |  |  |
+| 150 | call-a-function-10 | ✓ | 4.0µs | 448B |
+| 151 | call-a-function-11 | ✓ | 90.0µs | 440B |
+| 152 | call-a-function-12 | ✓ | 148.0µs | 392B |
+| 153 | call-a-function-2 | ✓ | 4.0µs | 256B |
+| 154 | call-a-function-3 | ✓ | 3.0µs | 208B |
+| 155 | call-a-function-4 | ✓ | 3.0µs | 232B |
+| 156 | call-a-function-5 | ✓ | 96.0µs | 296B |
+| 157 | call-a-function-6 | ✓ | 117.0µs | 464B |
 | 158 | call-a-function-7 | ✓ | 2.0µs | 208B |
-| 159 | call-a-function-8 | ✓ | 10.0µs | 1.82KB |
-| 160 | call-a-function-9 | ✓ | 3.0µs | 520B |
+| 159 | call-a-function-8 | ✓ | 30.0µs | 1.10KB |
+| 160 | call-a-function-9 | ✓ | 5.0µs | 520B |
 | 161 | call-an-object-method-1 | error |  |  |
 | 162 | call-an-object-method-2 | error |  |  |
 | 163 | call-an-object-method-3 | error |  |  |
@@ -497,4 +497,4 @@ Completed programs: 214/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 18:57 +0700
+Last updated 2025-08-01 19:58 +0700
