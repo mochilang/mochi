@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 209/491
+Completed programs: 214/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -380,81 +380,81 @@ Completed programs: 209/491
 | 372 | exceptions |   |  |  |
 | 373 | executable-library |   |  |  |
 | 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 45.0µs | 3.98KB |
-| 400 | faulhabers-formula | ✓ | 2.0ms | 210.90KB |
-| 401 | faulhabers-triangle | ✓ | 5.0ms | 669.38KB |
-| 402 | feigenbaum-constant-calculation | ✓ | 15.0ms | 12.51MB |
-| 403 | fermat-numbers | ✓ | 429.0µs | 4.57KB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 316.0µs | 25.06KB |
+| 375 | execute-a-system-command | ✓ | 488.0µs | 10.90KB |
+| 376 | execute-brain- | ✓ | 1.0ms | 244.05KB |
+| 377 | execute-computer-zero-1 | ✓ | 3.0ms | 441.38KB |
+| 378 | execute-computer-zero | ✓ | 423.0µs | 67.36KB |
+| 379 | execute-hq9+ | ✓ | 402.0µs | 22.66KB |
+| 380 | execute-snusp | ✓ | 21.0µs | 208B |
+| 381 | exponentiation-operator-2 | ✓ | 234.0µs | 11.77KB |
+| 382 | exponentiation-operator | ✓ | 252.0µs | 11.12KB |
+| 383 | exponentiation-order | ✓ | 136.0µs | 344B |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
+| 385 | extend-your-language | error |  |  |
+| 386 | extensible-prime-generator | ✓ |  |  |
+| 387 | extreme-floating-point-values | error |  |  |
+| 388 | faces-from-a-mesh-2 | error |  |  |
+| 389 | faces-from-a-mesh | error |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | error |  |  |
+| 391 | factorial-primes | ✓ | 2.0ms | 1.78KB |
+| 392 | factorial | ✓ | 1.0ms | 330.30KB |
+| 393 | factorions | ✓ | 3.99s | 843.26MB |
+| 394 | factors-of-a-mersenne-number | ✓ |  |  |
+| 395 | factors-of-an-integer | ✓ | 13.75s | 13.27KB |
+| 396 | fairshare-between-two-and-more | ✓ |  |  |
+| 397 | farey-sequence | ✓ | 1.0ms | 126.62KB |
+| 398 | fast-fourier-transform | ✓ | 378.0µs | 50.01KB |
+| 399 | fasta-format | error | 45.0µs | 3.98KB |
+| 400 | faulhabers-formula | ✓ | 1.0ms | 210.90KB |
+| 401 | faulhabers-triangle | ✓ | 3.0ms | 669.38KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 10.0ms | 12.51MB |
+| 403 | fermat-numbers | ✓ | 328.0µs | 4.57KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 177.0µs | 25.06KB |
 | 405 | fibonacci-sequence-1 | ✓ | 1.0µs | 208B |
-| 406 | fibonacci-sequence-2 | ✓ | 4.0µs | 208B |
+| 406 | fibonacci-sequence-2 | ✓ | 2.0µs | 208B |
 | 407 | fibonacci-sequence-3 | error |  |  |
-| 408 | fibonacci-sequence-4 | ✓ | 124.0µs | 1.68KB |
+| 408 | fibonacci-sequence-4 | ✓ | 101.0µs | 1.68KB |
 | 409 | fibonacci-sequence-5 | error |  |  |
-| 410 | fibonacci-word-fractal | ✓ | 620.0µs | 119.05KB |
-| 411 | fibonacci-word | ✓ | 24.92s | 5.10GB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 298.0µs | 10.09KB |
-| 413 | file-input-output-1 | ✓ | 32.0µs | 312B |
-| 414 | file-input-output-2 | ✓ | 37.0µs | 312B |
+| 410 | fibonacci-word-fractal | ✓ | 419.0µs | 119.05KB |
+| 411 | fibonacci-word | ✓ |  |  |
+| 412 | file-extension-is-in-extensions-list | ✓ | 213.0µs | 10.09KB |
+| 413 | file-input-output-1 | ✓ | 11.0µs | 312B |
+| 414 | file-input-output-2 | ✓ | 19.0µs | 312B |
 | 415 | file-input-output-3 | error |  |  |
-| 416 | file-modification-time | ✓ | 118.0µs | 408B |
-| 417 | file-size-distribution | ✓ | 196.0µs | 8.52KB |
-| 418 | file-size | ✓ | 128.0µs | 328B |
-| 419 | filter | ✓ | 488.0µs | 41.16KB |
+| 416 | file-modification-time | ✓ | 76.0µs | 408B |
+| 417 | file-size-distribution | ✓ | 117.0µs | 8.52KB |
+| 418 | file-size | ✓ | 70.0µs | 328B |
+| 419 | filter | ✓ | 301.0µs | 41.23KB |
 | 420 | find-chess960-starting-position-identifier-2 | error |  |  |
 | 421 | find-chess960-starting-position-identifier | error |  |  |
-| 422 | find-common-directory-path | ✓ | 218.0µs | 22.24KB |
-| 423 | find-duplicate-files | ✓ | 45.0µs | 920B |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 30.0ms | 1.25KB |
-| 425 | find-limit-of-recursion | ✓ | 2.0ms | 8.22KB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 893.0ms | 242.42MB |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 202.0µs | 2.72KB |
-| 428 | find-the-intersection-of-two-lines | ✓ | 152.0µs | 1.77KB |
-| 429 | find-the-last-sunday-of-each-month | ✓ | 143.0µs | 1.62KB |
-| 430 | find-the-missing-permutation | ✓ | 128.0µs | 16.90KB |
+| 422 | find-common-directory-path | ✓ | 139.0µs | 22.24KB |
+| 423 | find-duplicate-files | ✓ | 24.0µs | 920B |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 22.0ms | 1.25KB |
+| 425 | find-limit-of-recursion | ✓ | 1.0ms | 8.22KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 663.0ms | 242.42MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 143.0µs | 2.72KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 133.0µs | 1.77KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 119.0µs | 1.62KB |
+| 430 | find-the-missing-permutation | ✓ | 94.0µs | 16.90KB |
 | 431 | first-class-environments | ✓ | 1.0ms | 229.70KB |
 | 432 | first-class-functions-use-numbers-analogously | error |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 590.0µs | 5.78KB |
-| 434 | five-weekends | ✓ | 1.0ms | 56.04KB |
-| 435 | fivenum-1 | ✓ | 1.0ms | 147.70KB |
-| 436 | fivenum-2 | ✓ | 954.0µs | 111.42KB |
-| 437 | fivenum-3 | ✓ | 1.0ms | 150.85KB |
-| 438 | fixed-length-records-1 | ✓ | 112.0µs | 16.41KB |
-| 439 | fixed-length-records-2 | ✓ | 26.0µs | 344B |
-| 440 | fizzbuzz-1 | ✓ | 192.0µs | 1.03KB |
-| 441 | fizzbuzz-2 | error |  |  |
-| 442 | fizzbuzz | ✓ | 168.0µs | 1.03KB |
-| 443 | flatten-a-list-1 | ✓ | 127.0µs | 1.87KB |
-| 444 | flatten-a-list-2 | ✓ | 24.0µs | 208B |
-| 445 | flipping-bits-game | error |  |  |
-| 446 | flow-control-structures-1 | ✓ | 24.0µs | 208B |
-| 447 | flow-control-structures-2 | ✓ | 23.0µs | 208B |
-| 448 | flow-control-structures-3 | ✓ | 12.0µs | 208B |
-| 449 | flow-control-structures-4 | ✓ | 22.0µs | 208B |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
+| 434 | five-weekends |   |  |  |
+| 435 | fivenum-1 |   |  |  |
+| 436 | fivenum-2 |   |  |  |
+| 437 | fivenum-3 |   |  |  |
+| 438 | fixed-length-records-1 |   |  |  |
+| 439 | fixed-length-records-2 |   |  |  |
+| 440 | fizzbuzz-1 |   |  |  |
+| 441 | fizzbuzz-2 |   |  |  |
+| 442 | fizzbuzz |   |  |  |
+| 443 | flatten-a-list-1 |   |  |  |
+| 444 | flatten-a-list-2 |   |  |  |
+| 445 | flipping-bits-game |   |  |  |
+| 446 | flow-control-structures-1 |   |  |  |
+| 447 | flow-control-structures-2 |   |  |  |
+| 448 | flow-control-structures-3 | ✓ | 17.0µs | 208B |
+| 449 | flow-control-structures-4 | ✓ | 8.0µs | 208B |
 | 450 | floyd-warshall-algorithm | ✓ | 400.0µs | 29.65KB |
 | 451 | floyd-warshall-algorithm2 | ✓ | 330.0µs | 30.73KB |
 | 452 | floyds-triangle | ✓ | 284.0µs | 10.99KB |
@@ -497,4 +497,4 @@ Completed programs: 209/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 11:40 UTC
+Last updated 2025-08-01 18:57 +0700

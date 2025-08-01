@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fibonacci-sequence-3.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Fibonacci-sequence-3" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fibonacci-sequence-3.ml", line 53, characters 28-30:
+53 |   __ret := (Obj.magic ((fun ->
+                                 ^^
+Error: Syntax error
