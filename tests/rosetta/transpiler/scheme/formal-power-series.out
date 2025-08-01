@@ -1,0 +1,7 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+sin:  0.00000   1.00000   0.00000  -0.16667   0.00000   0.00833 
+cos:  1.00000   0.00000  -0.50000   0.00000   0.04167   0.00000
