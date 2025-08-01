@@ -1,0 +1,26 @@
+run: exit status 255
+Create two fields at runtime: 
+
+  Field #1:
+
+       Enter name  : 
+       Enter value : 
+
+
+  Field #2:
+
+       Enter name  : 
+       Enter value : 
+
+
+Which field do you want to inspect ? 
+Unhandled exception:
+NoSuchMethodError: Class '_Map<String, String>' has no instance method 'contains'.
+Receiver: _Map len:1
+Tried calling: contains("")
+#0      Object.noSuchMethod (dart:core-patch/object_patch.dart:38:5)
+#1      _main (file:///workspace/mochi/tests/rosetta/transpiler/Dart/add-a-variable-to-a-class-instance-at-runtime.dart:61:26)
+#2      _start (file:///workspace/mochi/tests/rosetta/transpiler/Dart/add-a-variable-to-a-class-instance-at-runtime.dart:78:3)
+#3      main (file:///workspace/mochi/tests/rosetta/transpiler/Dart/add-a-variable-to-a-class-instance-at-runtime.dart:88:16)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

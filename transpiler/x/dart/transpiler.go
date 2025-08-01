@@ -2034,8 +2034,18 @@ func (c *ContainsExpr) emit(w io.Writer) error {
 		return err
 	}
 	method := ".contains("
-	if strings.HasPrefix(inferType(c.Target), "Map<") {
+	t := inferType(c.Target)
+	if strings.HasPrefix(t, "Map<") {
 		method = ".containsKey("
+	} else if sel, ok := c.Target.(*SelectorExpr); ok {
+		if fields, ok := structFields[inferType(sel.Receiver)]; ok {
+			for _, f := range fields {
+				if f.Name == sel.Field && strings.HasPrefix(f.Type, "Map<") {
+					method = ".containsKey("
+					break
+				}
+			}
+		}
 	}
 	if _, err := io.WriteString(w, method); err != nil {
 		return err
