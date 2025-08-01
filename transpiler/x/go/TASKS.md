@@ -1,3 +1,159 @@
+## Progress (2025-08-01 21:31 +0700)
+- go: regenerate rosetta output for index 34
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:30 +0700)
+- go: regenerate rosetta output for index 33
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:30 +0700)
+- go: regenerate rosetta output for index 32
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:29 +0700)
+- go: regenerate rosetta output for index 31
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:29 +0700)
+- go: regenerate rosetta output for index 30
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:29 +0700)
+- go: regenerate rosetta output for index 29
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:28 +0700)
+- go: regenerate rosetta output for index 28
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:28 +0700)
+- go: regenerate rosetta output for index 27
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:27 +0700)
+- go: fix func type inference and assertion
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:21 +0700)
+- go: regenerate rosetta output for index 24
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:21 +0700)
+- go: regenerate rosetta output for index 24
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:21 +0700)
+- go: regenerate rosetta output for index 24
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:21 +0700)
+- go: regenerate rosetta output for index 24
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:21 +0700)
+- go: regenerate rosetta output for index 23
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:20 +0700)
+- go: handle union match assertion
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:17 +0700)
+- go: regenerate rosetta output for index 21
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:17 +0700)
+- go: regenerate rosetta output for index 21
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:17 +0700)
+- go: regenerate rosetta output for index 21
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:17 +0700)
+- go: regenerate rosetta output for index 20
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:16 +0700)
+- go: regenerate rosetta output for index 19
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:16 +0700)
+- go: regenerate rosetta output for index 18
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:16 +0700)
+- go: regenerate rosetta output for index 17
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:15 +0700)
+- go: regenerate rosetta output for index 16
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:15 +0700)
+- go: regenerate rosetta output for index 15
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:15 +0700)
+- go: regenerate rosetta output for index 14
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:15 +0700)
+- go: regenerate rosetta output for index 13
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:14 +0700)
+- go: regenerate rosetta output for index 12
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:14 +0700)
+- go: regenerate rosetta output for index 11
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:14 +0700)
+- go: regenerate rosetta output for index 10
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:14 +0700)
+- go: regenerate rosetta output for index 9
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:13 +0700)
+- go: regenerate rosetta output for index 8
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:13 +0700)
+- go: regenerate rosetta output for index 7
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:13 +0700)
+- go: regenerate rosetta output for index 6
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:13 +0700)
+- go: regenerate rosetta output for index 5
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:12 +0700)
+- go: regenerate rosetta output for index 4
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:12 +0700)
+- go: regenerate rosetta output for index 3
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:12 +0700)
+- go: regenerate rosetta output for index 2
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 21:12 +0700)
+- go: regenerate rosetta output for index 1
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-01 20:51 +0700)
+- clj: isolate local vars by function
+- Regenerated golden files - 104/105 vm valid programs passing
+
 ## Progress (2025-08-01 18:43 +0700)
 - transpiler/go: add fetch support and update rosetta outputs
 - Regenerated golden files - 104/105 vm valid programs passing

@@ -1904,6 +1904,23 @@ func (a *AssertExpr) emit(w io.Writer) {
 		fmt.Fprintf(w, ".(%s)", a.Type)
 		return
 	}
+	if ce, ok := a.Expr.(*CallExpr); ok && ce.FuncExpr != nil {
+		if fl, ok2 := ce.FuncExpr.(*FuncLit); ok2 && fl.Return == a.Type {
+			a.Expr.emit(w)
+			return
+		}
+	}
+	if ue, ok := a.Expr.(*UnionMatchExpr); ok && ue.Type == a.Type {
+		a.Expr.emit(w)
+		return
+	}
+	if strings.HasPrefix(a.Type, "func(") {
+		switch a.Expr.(type) {
+		case *VarRef, *FuncLit, *CallExpr:
+			a.Expr.emit(w)
+			return
+		}
+	}
 	if a.Type == "[]any" {
 		switch a.Expr.(type) {
 		case *CallExpr, *VarRef, *IndexExpr, *SliceExpr:
@@ -4033,6 +4050,13 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	hasRetVal := false
+	for _, st := range fn.Body {
+		if st.Return != nil && st.Return.Value != nil {
+			hasRetVal = true
+			break
+		}
+	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
@@ -4049,6 +4073,12 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
 		ret = toGoTypeFromType(types.ResolveTypeRef(fn.Return, env))
+	}
+	if ret == "" && hasRetVal {
+		ret = "any"
+	}
+	if strings.HasPrefix(ret, "func(") && !strings.Contains(ret, ") ") && hasRetVal {
+		ret += " any"
 	}
 	if ret == "" {
 		if t, err := child.GetVar(fn.Name); err == nil {
@@ -4124,6 +4154,13 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 			stmts = []Stmt{&ReturnStmt{Value: ex}}
 		}
 	}
+	hasRetVal := false
+	for _, st := range stmts {
+		if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
+			hasRetVal = true
+			break
+		}
+	}
 	params := make([]ParamDecl, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toGoType(p.Type, env)
@@ -4140,6 +4177,9 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
 		ret = toGoTypeFromType(types.ResolveTypeRef(fn.Return, env))
+	}
+	if ret == "" && hasRetVal {
+		ret = "any"
 	}
 	currentRetType = prevRet
 	return &FuncLit{Params: params, Return: ret, Body: stmts}, nil
