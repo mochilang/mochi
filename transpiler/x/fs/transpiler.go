@@ -49,6 +49,7 @@ type Program struct {
 	UsePadStart    bool
 	UseSHA256      bool
 	UseParseIntStr bool
+	UseDictAdd     bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -68,6 +69,7 @@ var (
 	usesPadStart   bool
 	usesSHA256     bool
 	benchMain      bool
+	usesDictAdd    bool
 	currentReturn  string
 	methodDefs     []Stmt
 	definedFuncs   map[string]bool
@@ -134,6 +136,16 @@ const helperSHA256 = `let _sha256 (bs:int array) : int array =
 const helperParseIntStr = `let parseIntStr (s:string) (b:int) : int =
     System.Convert.ToInt32(s, b)
 `
+
+const helperDictAdd = `let _dictAdd (d:System.Collections.Generic.IDictionary<string, obj>) (k:string) (v:obj) =
+    d.[k] <- v
+    d`
+
+const helperDictCreate = `let _dictCreate (pairs:(string * obj) list) =
+    let d = System.Collections.Generic.Dictionary<string, obj>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    d`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -204,7 +216,7 @@ func fsType(t types.Type) string {
 	case types.ListType:
 		return fsType(tt.Elem) + " array"
 	case types.MapType:
-		return fmt.Sprintf("Map<%s, %s>", fsType(tt.Key), fsType(tt.Value))
+		return fmt.Sprintf("System.Collections.Generic.IDictionary<%s, %s>", fsType(tt.Key), fsType(tt.Value))
 	case types.OptionType:
 		return fsType(tt.Elem) + " option"
 	case types.VoidType:
@@ -254,7 +266,7 @@ func fsTypeFromString(s string) string {
 			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
 		}
 		if strings.HasPrefix(s, "Map<") {
-			return s
+			return strings.Replace(s, "Map<", "System.Collections.Generic.IDictionary<", 1)
 		}
 		if s == "obj" {
 			return "obj"
@@ -417,8 +429,8 @@ func simpleListType(l *ListLit) string {
 }
 
 func mapValueType(s string) string {
-	if strings.HasPrefix(s, "Map<") && strings.HasSuffix(s, ">") {
-		parts := strings.TrimSuffix(strings.TrimPrefix(s, "Map<"), ">")
+	if strings.HasPrefix(s, "System.Collections.Generic.IDictionary<") && strings.HasSuffix(s, ">") {
+		parts := strings.TrimSuffix(strings.TrimPrefix(s, "System.Collections.Generic.IDictionary<"), ">")
 		idx := strings.LastIndex(parts, ",")
 		if idx >= 0 {
 			return strings.TrimSpace(parts[idx+1:])
@@ -440,7 +452,7 @@ func elemTypeOf(e Expr) string {
 			if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 				return strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
 			}
-			if strings.HasPrefix(t, "Map<") {
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 				return mapValueType(t)
 			}
 			return t
@@ -456,7 +468,7 @@ func elemTypeOf(e Expr) string {
 	if strings.HasPrefix(t, "list<") && strings.HasSuffix(t, ">") {
 		return strings.TrimSuffix(strings.TrimPrefix(t, "list<"), ">")
 	}
-	if strings.HasPrefix(t, "Map<") {
+	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 		return mapValueType(t)
 	}
 	if t == "string" {
@@ -827,7 +839,9 @@ type MapLit struct {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	io.WriteString(w, "Map.ofList [")
+	usesDictAdd = true
+	neededOpens["System.Collections.Generic"] = true
+	io.WriteString(w, "_dictCreate [")
 	same := true
 	if len(m.Types) == 0 {
 		m.Types = make([]string, len(m.Items))
@@ -1260,7 +1274,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 	if idx, ok := s.Target.(*IndexExpr); ok {
 		if id, ok2 := idx.Target.(*IdentExpr); ok2 {
 			t := inferType(idx.Target)
-			if strings.Contains(t, "array") || t == "" {
+			if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 				writeIndent(w)
 				name := fsIdent(id.Name)
 				io.WriteString(w, name)
@@ -1495,10 +1509,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "in" {
 		rtyp := inferType(b.Right)
 		if rtyp != "map" {
-			if strings.HasPrefix(rtyp, "Map<") {
+			if strings.HasPrefix(rtyp, "System.Collections.Generic.IDictionary<") {
 				rtyp = "map"
 			} else if id, ok := b.Right.(*IdentExpr); ok {
-				if t, ok2 := varTypes[id.Name]; ok2 && strings.HasPrefix(t, "Map<") {
+				if t, ok2 := varTypes[id.Name]; ok2 && strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 					rtyp = "map"
 				}
 			}
@@ -1814,7 +1828,7 @@ func isMapType(t string) bool {
 	if strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") {
 		return false
 	}
-	return t == "map" || strings.HasPrefix(t, "Map<")
+	return t == "map" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<")
 }
 
 func isIndexExpr(e Expr) bool {
@@ -1872,6 +1886,8 @@ func inferType(e Expr) string {
 	case *ListLit:
 		return "array"
 	case *MapLit:
+		usesDictAdd = true
+		neededOpens["System.Collections.Generic"] = true
 		if len(v.Types) > 0 {
 			valT := v.Types[0]
 			same := valT != "obj"
@@ -1882,7 +1898,7 @@ func inferType(e Expr) string {
 				}
 			}
 			if same {
-				return fmt.Sprintf("Map<string, %s>", valT)
+				return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s>", valT)
 			}
 		}
 		return "map"
@@ -1905,7 +1921,7 @@ func inferType(e Expr) string {
 			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
 				return t
 			}
-			if strings.HasPrefix(t, "Map<") {
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 				return "map"
 			}
 			return t
@@ -1914,7 +1930,7 @@ func inferType(e Expr) string {
 			if strings.HasSuffix(t, " list") || strings.HasSuffix(t, " array") || strings.HasPrefix(t, "list<") {
 				return t
 			}
-			if strings.HasPrefix(t, "Map<") {
+			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 				return "map"
 			}
 			return t
@@ -1981,7 +1997,7 @@ func inferType(e Expr) string {
 		if t == "string" {
 			return "string"
 		}
-		if strings.HasPrefix(t, "Map<") {
+		if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 			return mapValueType(t)
 		}
 		return ""
@@ -2121,7 +2137,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "])")
 		return
 	}
-	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "Map<") {
+	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
 		if needsParen(i.Index) {
@@ -2134,7 +2150,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "]")
 		return
 	}
-	if strings.HasPrefix(t, "Map<") {
+	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
 		if needsParen(i.Index) {
@@ -2183,7 +2199,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 			return
 		}
-		io.WriteString(w, " :?> Map<string, ")
+		io.WriteString(w, " :?> System.Collections.Generic.IDictionary<string, ")
 		if valT != "obj" {
 			io.WriteString(w, valT)
 		} else {
@@ -2232,7 +2248,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if strings.HasPrefix(t, "Map<") || t == "map" || t == "obj" || t == "" {
+	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") || t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := f.Target.(*IdentExpr); ok {
 			if vt := id.Type; vt != "" {
@@ -2249,7 +2265,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		if t == "obj" || t == "" {
 			io.WriteString(w, "((")
 			f.Target.emit(w)
-			io.WriteString(w, " :?> Map<string, obj>).[")
+			io.WriteString(w, " :?> System.Collections.Generic.IDictionary<string, obj>).[")
 		} else {
 			if needsParen(f.Target) {
 				io.WriteString(w, "(")
@@ -2701,6 +2717,12 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperParseIntStr)
 		buf.WriteString("\n")
 	}
+	if prog.UseDictAdd {
+		buf.WriteString(helperDictAdd)
+		buf.WriteString("\n")
+		buf.WriteString(helperDictCreate)
+		buf.WriteString("\n")
+	}
 	for _, st := range prog.Structs {
 		if len(st.Fields) == 0 {
 			fmt.Fprintf(&buf, "type %s() = class end\n", fsIdent(st.Name))
@@ -2793,6 +2815,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSubstring = false
 	usesPadStart = false
 	usesSHA256 = false
+	usesDictAdd = false
 	currentReturn = ""
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2817,33 +2840,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(opens, p.Stmts...)
 	}
-	// Move all function definitions ahead of other statements
-	// while preserving any leading non-function statements so
-	// variable declarations remain before their usage.
-	if len(p.Stmts) > 1 {
-		var pre, funs, post []Stmt
-		seenFun := false
-		for _, st := range p.Stmts {
-			switch s := st.(type) {
-			case *FunDef:
-				funs = append(funs, st)
-				seenFun = true
-			case *LetStmt:
-				pre = append(pre, st)
-			case *ExprStmt:
-				if !seenFun {
-					pre = append(pre, st)
-				} else if exprUsesFunc(s.Expr) {
-					post = append(post, st)
-				} else {
-					pre = append(pre, st)
-				}
-			default:
-				pre = append(pre, st)
-			}
-		}
-		p.Stmts = append(pre, append(funs, post...)...)
-	}
+	// Preserve the original statement order. Functions are placed according
+	// to their appearance in the source so that both functions and
+	// top-level values are defined before use.
 	for name, lsts := range letPtrs {
 		if mutatedVars[name] {
 			for _, ls := range lsts {
@@ -2872,6 +2871,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UsePadStart = usesPadStart
 	p.UseSHA256 = usesSHA256
 	p.UseParseIntStr = useParseIntStr
+	p.UseDictAdd = usesDictAdd
 	return p, nil
 }
 
@@ -3089,7 +3089,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			declared = "int"
 		}
 		fsDecl := fsTypeFromString(declared)
-		if strings.HasPrefix(fsDecl, "Map<") {
+		if strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
 			switch v := e.(type) {
 			case *StructLit:
 				items := make([][2]Expr, len(v.Fields))
@@ -3123,7 +3123,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
-		if ml, ok := e.(*MapLit); ok && len(ml.Items) == 1 && strings.HasPrefix(fsDecl, "Map<") {
+		if ml, ok := e.(*MapLit); ok && len(ml.Items) == 1 && strings.HasPrefix(fsDecl, "System.Collections.Generic.IDictionary<") {
 			vtyp := mapValueType(fsDecl)
 			if call, ok2 := ml.Items[0][1].(*CallExpr); ok2 && call.Func == "box" && len(call.Args) == 1 {
 				ml.Items[0][1] = call.Args[0]
@@ -3198,7 +3198,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			declared = "int"
 		}
 		fsDecl := fsTypeFromString(declared)
-		if strings.Contains(fsDecl, "Map<") {
+		if strings.Contains(fsDecl, "System.Collections.Generic.IDictionary<") {
 			switch v := e.(type) {
 			case *StructLit:
 				items := make([][2]Expr, len(v.Fields))
@@ -3280,15 +3280,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if t := varTypes[st.Assign.Name]; strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "array" {
 				// array or list assignment
 				// handled by IndexAssignStmt below
-			} else if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
+			} else if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 				if len(st.Assign.Index) == 1 {
-					mapVal := mapValueType(t)
-					v := val
-					if mapVal == "obj" && inferType(val) != "obj" {
-						v = &CallExpr{Func: "box", Args: []Expr{val}}
+					idx, err := convertExpr(st.Assign.Index[0].Start)
+					if err != nil {
+						return nil, err
 					}
-					upd := &CallExpr{Func: "Map.add", Args: []Expr{target.(*IndexExpr).Index, v, &IdentExpr{Name: st.Assign.Name, Type: t}}}
-					return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
+					return &IndexAssignStmt{Target: &IndexExpr{Target: &IdentExpr{Name: st.Assign.Name, Type: t}, Index: idx}, Value: val}, nil
 				}
 			}
 			if t := varTypes[st.Assign.Name]; t == "list" || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
@@ -3304,7 +3302,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				upd := buildListUpdate(list, indices, val)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
-			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") && len(st.Assign.Index) > 1 {
+			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") && len(st.Assign.Index) > 1 {
 				indices := make([]Expr, len(st.Assign.Index))
 				for i, ix := range st.Assign.Index {
 					idx, err := convertExpr(ix.Start)
@@ -4262,13 +4260,15 @@ func buildMapUpdate(m Expr, keys []Expr, val Expr) Expr {
 		if mapVal == "obj" && inferType(val) != "obj" {
 			v = &CallExpr{Func: "box", Args: []Expr{val}}
 		}
-		return &CallExpr{Func: "Map.add", Args: []Expr{key, v, m}}
+		usesDictAdd = true
+		return &CallExpr{Func: "_dictAdd", Args: []Expr{m, key, v}}
 	}
 	inner := buildMapUpdate(&IndexExpr{Target: m, Index: key}, keys[1:], val)
 	if mapValueType(inferType(m)) == "obj" {
 		inner = &CallExpr{Func: "box", Args: []Expr{inner}}
 	}
-	return &CallExpr{Func: "Map.add", Args: []Expr{key, inner, m}}
+	usesDictAdd = true
+	return &CallExpr{Func: "_dictAdd", Args: []Expr{m, key, inner}}
 }
 
 func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {

@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (342/491)
+## Rosetta Golden Test Checklist (343/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -472,7 +472,7 @@ This file is auto-generated from rosetta tests.
 | 465 | ftp |   |  |  |
 | 466 | function-frequency | ✓ | 404µs | 70.8 KB |
 | 467 | function-prototype | ✓ | 21µs | 15.5 KB |
-| 468 | functional-coverage-tree |   |  |  |
+| 468 | functional-coverage-tree | ✓ | 335µs | 34.5 KB |
 | 469 | fusc-sequence |   |  |  |
 | 470 | gamma-function |   |  |  |
 | 471 | general-fizzbuzz |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-08-01 23:54 +0700
+Last updated: 2025-08-02 00:55 +0700

@@ -1,3 +1,7 @@
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 23:54 +0700)
 - fs transpiler: fix array-of-map assignment
 - Generated F# for 103/105 programs (103 passing)
