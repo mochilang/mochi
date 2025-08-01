@@ -1,0 +1,13 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/avl-tree.kt:75:37: error: expecting a '>'
+    if ((node)["Data"] as Int < data) {
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/avl-tree.kt:136:37: error: expecting a '>'
+    if ((node)["Data"] as Int < data) {
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/avl-tree.kt:75:33: error: unresolved reference: data
+    if ((node)["Data"] as Int < data) {
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/avl-tree.kt:136:33: error: unresolved reference: data
+    if ((node)["Data"] as Int < data) {
+                                ^
