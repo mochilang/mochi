@@ -1,5 +1,5 @@
-## Progress (2025-08-02 01:00 +0700)
-- swift transpiler: add split builtin and update rosetta outputs
+## Progress (2025-08-02 01:20 +0700)
+- swift transpiler: fix struct field access and rosetta case
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
