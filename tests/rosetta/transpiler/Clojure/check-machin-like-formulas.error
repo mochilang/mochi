@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (ArithmeticException) at main/tans (check-machin-like-formulas.clj:29).
+Divide by zero
+
+Full report at:
+/tmp/clojure-4730735761644412518.edn

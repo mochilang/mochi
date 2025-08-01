@@ -1,0 +1,8 @@
+run error: exit status 1
+
+Test case base = 10, begin = 1, end = 100:
+Execution error (ClassCastException) at main/intToBase (casting-out-nines.clj:23).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-580538240452239312.edn

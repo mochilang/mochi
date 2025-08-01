@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/cheryls-birthday.clj:18:71).
+Unable to resolve symbol: monthUnique_x in this context
+
+Full report at:
+/tmp/clojure-14286945399131383597.edn

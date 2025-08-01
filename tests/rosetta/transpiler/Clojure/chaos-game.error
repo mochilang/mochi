@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/chaos-game.clj:32:19).
+Unable to resolve symbol: height in this context
+
+Full report at:
+/tmp/clojure-15549417217110742418.edn

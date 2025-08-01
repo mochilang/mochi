@@ -1,3 +1,411 @@
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 22:20 +0700)
+- transpiler/c: handle rosetta image-noise
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-01 17:59 +0700)
 - dart: transpile floyd-warshall
 - Regenerated golden files - 102/105 vm valid programs passing
