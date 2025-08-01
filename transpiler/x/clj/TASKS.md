@@ -1,3 +1,159 @@
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-01 17:59 +0700)
+- dart: transpile floyd-warshall
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-07-31 01:05 +0700)
 - kt transpiler: handle Any substrings
 - Regenerated golden files - 102/105 vm valid programs passing
