@@ -2795,24 +2795,28 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	// while preserving any leading non-function statements so
 	// variable declarations remain before their usage.
 	if len(p.Stmts) > 1 {
-		var prefix, funs, others []Stmt
-		seenFun := false
+		var pre, funs, post []Stmt
 		for _, st := range p.Stmts {
-			switch st.(type) {
+			switch s := st.(type) {
 			case *FunDef:
 				funs = append(funs, st)
-				seenFun = true
 			case *LetStmt:
-				prefix = append(prefix, st)
-			default:
-				if !seenFun {
-					prefix = append(prefix, st)
+				if exprUsesFunc(s.Expr) {
+					post = append(post, st)
 				} else {
-					others = append(others, st)
+					pre = append(pre, st)
 				}
+			case *ExprStmt:
+				if exprUsesFunc(s.Expr) {
+					post = append(post, st)
+				} else {
+					pre = append(pre, st)
+				}
+			default:
+				pre = append(pre, st)
 			}
 		}
-		p.Stmts = append(prefix, append(funs, others...)...)
+		p.Stmts = append(pre, append(funs, post...)...)
 	}
 	for name, lsts := range letPtrs {
 		if mutatedVars[name] {
@@ -2866,6 +2870,83 @@ func optimizeBody(body []Stmt) []Stmt {
 		}
 	}
 	return body
+}
+
+func exprUsesFunc(e Expr) bool {
+	switch ex := e.(type) {
+	case *CallExpr:
+		if definedFuncs[ex.Func] {
+			return true
+		}
+		for _, a := range ex.Args {
+			if exprUsesFunc(a) {
+				return true
+			}
+		}
+	case *BinaryExpr:
+		if exprUsesFunc(ex.Left) || exprUsesFunc(ex.Right) {
+			return true
+		}
+	case *UnaryExpr:
+		if exprUsesFunc(ex.Expr) {
+			return true
+		}
+	case *IfExpr:
+		if exprUsesFunc(ex.Cond) || exprUsesFunc(ex.Then) || exprUsesFunc(ex.Else) {
+			return true
+		}
+	case *IndexExpr:
+		if exprUsesFunc(ex.Target) || exprUsesFunc(ex.Index) {
+			return true
+		}
+	case *SliceExpr:
+		if exprUsesFunc(ex.Target) {
+			return true
+		}
+		if ex.Start != nil && exprUsesFunc(ex.Start) {
+			return true
+		}
+		if ex.End != nil && exprUsesFunc(ex.End) {
+			return true
+		}
+	case *AppendExpr:
+		if exprUsesFunc(ex.List) || exprUsesFunc(ex.Elem) {
+			return true
+		}
+	case *MatchExpr:
+		if exprUsesFunc(ex.Target) {
+			return true
+		}
+		for _, br := range ex.Cases {
+			if exprUsesFunc(br.Pattern) || exprUsesFunc(br.Result) {
+				return true
+			}
+		}
+	case *ListLit:
+		for _, el := range ex.Elems {
+			if exprUsesFunc(el) {
+				return true
+			}
+		}
+	case *MapLit:
+		for _, kv := range ex.Items {
+			if exprUsesFunc(kv[0]) || exprUsesFunc(kv[1]) {
+				return true
+			}
+		}
+	case *LambdaExpr:
+		if exprUsesFunc(ex.Expr) {
+			return true
+		}
+		for _, st := range ex.Body {
+			if ls, ok := st.(*ReturnStmt); ok {
+				if ls.Expr != nil && exprUsesFunc(ls.Expr) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func literalString(e *parser.Expr) (string, bool) {

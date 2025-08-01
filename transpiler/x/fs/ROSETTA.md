@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (336/491)
+## Rosetta Golden Test Checklist (340/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -465,10 +465,10 @@ This file is auto-generated from rosetta tests.
 | 458 | forward-difference | ✓ |  |  |
 | 459 | four-bit-adder-1 | ✓ |  |  |
 | 460 | four-is-magic | ✓ |  |  |
-| 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
+| 462 | fractal-tree | ✓ | 332µs | 86.1 KB |
+| 463 | fractran | ✓ |  | 101.7 KB |
+| 464 | french-republican-calendar | ✓ | 245µs | 41.5 KB |
 | 465 | ftp |   |  |  |
 | 466 | function-frequency |   |  |  |
 | 467 | function-prototype |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-08-01 18:27 +0700
+Last updated: 2025-08-01 12:52 +0000

@@ -1,3 +1,15 @@
+## Progress (2025-08-01 12:52 +0000)
+- fs rosetta: fix ordering and add french republican calendar
+- Generated F# for 103/105 programs (103 passing)
+
+## Progress (2025-08-01 12:46 +0000)
+- fs rosetta: add fractal-tree
+- Generated F# for 103/105 programs (103 passing)
+
+## Progress (2025-08-01 19:34 +0700)
+- fs transpiler: fix boxing parentheses
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 18:27 +0700)
 - support more int division
 - Generated F# for 103/105 programs (103 passing)
