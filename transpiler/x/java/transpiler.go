@@ -58,12 +58,16 @@ var scopeStack []map[string]*VarStmt
 var closureStack []bool
 var structDecls map[string]*TypeDeclStmt
 var disableStructList bool
+var varAliases map[string]string
+var aliasStack []map[string]string
+var aliasCounts map[string]int
 
 func pushScope(closure bool) map[string]*VarStmt {
 	saved := varDecls
 	scopeStack = append(scopeStack, varDecls)
 	closureStack = append(closureStack, closure)
 	varDecls = map[string]*VarStmt{}
+	aliasStack = append(aliasStack, map[string]string{})
 	return saved
 }
 
@@ -71,6 +75,10 @@ func popScope(saved map[string]*VarStmt) {
 	varDecls = saved
 	scopeStack = scopeStack[:len(scopeStack)-1]
 	closureStack = closureStack[:len(closureStack)-1]
+	for name := range aliasStack[len(aliasStack)-1] {
+		delete(varAliases, name)
+	}
+	aliasStack = aliasStack[:len(aliasStack)-1]
 }
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -92,6 +100,39 @@ func copyBoolMap(src map[string]bool) map[string]bool {
 		dst[k] = v
 	}
 	return dst
+}
+
+func declareAlias(name string) string {
+	alias := name
+	if aliasCounts == nil {
+		aliasCounts = map[string]int{}
+	}
+	if varAliases == nil {
+		varAliases = map[string]string{}
+	}
+	if count, ok := aliasCounts[name]; ok {
+		aliasCounts[name] = count + 1
+		alias = fmt.Sprintf("%s_%d", name, count+1)
+	} else {
+		aliasCounts[name] = 0
+	}
+	varAliases[name] = alias
+	if len(aliasStack) > 0 {
+		aliasStack[len(aliasStack)-1][name] = alias
+	}
+	return alias
+}
+
+func resolveAlias(name string) string {
+	for i := len(aliasStack) - 1; i >= 0; i-- {
+		if a, ok := aliasStack[i][name]; ok {
+			return a
+		}
+	}
+	if a, ok := varAliases[name]; ok {
+		return a
+	}
+	return name
 }
 
 func currentEnv() *types.Env {
@@ -156,19 +197,6 @@ func javaType(t string) string {
 		if t == "" {
 			return ""
 		}
-		if strings.HasSuffix(t, "[]") {
-			elem := strings.TrimSuffix(t, "[]")
-			return javaType(elem) + "[]"
-		}
-		if strings.HasPrefix(t, "string") {
-			return "String" + t[len("string"):]
-		}
-		if strings.HasPrefix(t, "boolean") && t != "boolean" {
-			return "boolean" + t[len("boolean"):]
-		}
-		if strings.HasPrefix(t, "bool") {
-			return "boolean" + t[len("bool"):]
-		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
@@ -208,6 +236,19 @@ func javaType(t string) string {
 					return fmt.Sprintf("Fn3<%s,%s,%s,%s>", pt1, pt2, pt3, rt)
 				}
 			}
+		}
+		if strings.HasSuffix(t, "[]") {
+			elem := strings.TrimSuffix(t, "[]")
+			return javaType(elem) + "[]"
+		}
+		if strings.HasPrefix(t, "string") {
+			return "String" + t[len("string"):]
+		}
+		if strings.HasPrefix(t, "boolean") && t != "boolean" {
+			return "boolean" + t[len("boolean"):]
+		}
+		if strings.HasPrefix(t, "bool") {
+			return "boolean" + t[len("bool"):]
 		}
 		return t
 	}
@@ -1383,16 +1424,19 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		if idx := strings.Index(raw, "<"); idx >= 0 {
 			raw = raw[:idx]
 		}
+		dims := strings.Count(raw, "[]")
+		base := strings.TrimSuffix(raw, strings.Repeat("[]", dims))
 		fmt.Fprintf(w, "%s[] %s", jt, sanitize(s.Name))
 		if s.Expr != nil {
-			fmt.Fprint(w, " = new "+raw+"[1];\n")
+			fmt.Fprintf(w, " = new %s[1]%s;\n", base, strings.Repeat("[]", dims))
 			fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
 			emitCastExpr(w, s.Expr, typ)
 			fmt.Fprint(w, ";\n")
 		} else {
-			fmt.Fprint(w, " = new "+raw+"[]{")
+			fmt.Fprintf(w, " = new %s[1]%s;\n", base, strings.Repeat("[]", dims))
+			fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
 			fmt.Fprint(w, defaultValue(jt))
-			fmt.Fprint(w, "};\n")
+			fmt.Fprint(w, ";\n")
 		}
 		return
 	}
@@ -3311,6 +3355,9 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	refVars = map[string]bool{}
 	scopeStack = []map[string]*VarStmt{varDecls}
 	closureStack = []bool{false}
+	varAliases = map[string]string{}
+	aliasCounts = map[string]int{}
+	aliasStack = []map[string]string{{}}
 	disableStructList = false
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
@@ -3555,19 +3602,20 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					t = fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), ret)
 				}
 			}
-			vs := &VarStmt{Name: s.Let.Name, Type: t, Expr: e}
-			varDecls[s.Let.Name] = vs
-			scopeStack[len(scopeStack)-1][s.Let.Name] = vs
+			alias := declareAlias(s.Let.Name)
+			vs := &VarStmt{Name: alias, Type: t, Expr: e}
+			varDecls[alias] = vs
+			scopeStack[len(scopeStack)-1][alias] = vs
 			if t != "" {
 				if strings.HasPrefix(t, "fn(") {
-					varTypes[s.Let.Name] = javaType(t)
+					varTypes[alias] = javaType(t)
 				} else {
-					varTypes[s.Let.Name] = t
+					varTypes[alias] = t
 				}
 			}
 			if ml, ok := e.(*MapLit); ok {
 				if len(ml.Fields) > 0 {
-					mapVarFields[s.Let.Name] = ml.Fields
+					mapVarFields[alias] = ml.Fields
 				}
 				if ml.ValueType == "" {
 					if vt := mapValueType(t); vt != "" {
@@ -3597,12 +3645,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
-					mapVarFields[s.Let.Name] = f
+					mapVarFields[alias] = f
 				}
 			} else if cast, ok := e.(*CastExpr); ok {
 				if v, ok2 := cast.Value.(*VarExpr); ok2 {
 					if f, ok3 := mapVarFields[v.Name]; ok3 {
-						mapVarFields[s.Let.Name] = f
+						mapVarFields[alias] = f
 					}
 				}
 			}
@@ -3620,7 +3668,7 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
-			return &LetStmt{Name: s.Let.Name, Type: t, Expr: e}, nil
+			return &LetStmt{Name: alias, Type: t, Expr: e}, nil
 		}
 		t := typeRefString(s.Let.Type)
 		if t == "" && topEnv != nil {
@@ -3629,12 +3677,14 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		if t != "" {
-			varTypes[s.Let.Name] = t
-			vs := &VarStmt{Name: s.Let.Name, Type: t}
-			varDecls[s.Let.Name] = vs
-			scopeStack[len(scopeStack)-1][s.Let.Name] = vs
+			alias := declareAlias(s.Let.Name)
+			varTypes[alias] = t
+			vs := &VarStmt{Name: alias, Type: t}
+			varDecls[alias] = vs
+			scopeStack[len(scopeStack)-1][alias] = vs
 		}
-		return &LetStmt{Name: s.Let.Name, Type: t}, nil
+		alias := declareAlias(s.Let.Name)
+		return &LetStmt{Name: alias, Type: t}, nil
 	case s.Var != nil:
 		if s.Var.Value != nil {
 			t := typeRefString(s.Var.Type)
@@ -3675,12 +3725,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if t == "" {
 				t = inferType(e)
 			}
+			alias := declareAlias(s.Var.Name)
 			if t != "" {
-				varTypes[s.Var.Name] = t
+				varTypes[alias] = t
 			}
 			if ml, ok := e.(*MapLit); ok {
 				if len(ml.Fields) > 0 {
-					mapVarFields[s.Var.Name] = ml.Fields
+					mapVarFields[alias] = ml.Fields
 				}
 				if ml.ValueType == "" {
 					if vt := mapValueType(t); vt != "" {
@@ -3694,12 +3745,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
-					mapVarFields[s.Var.Name] = f
+					mapVarFields[alias] = f
 				}
 			} else if cast, ok := e.(*CastExpr); ok {
 				if v, ok2 := cast.Value.(*VarExpr); ok2 {
 					if f, ok3 := mapVarFields[v.Name]; ok3 {
-						mapVarFields[s.Var.Name] = f
+						mapVarFields[alias] = f
 					}
 				}
 				if t == "" {
@@ -3713,9 +3764,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					l.ElemType = strings.TrimSuffix(t, "[]")
 				}
 			}
-			vs := &VarStmt{Name: s.Var.Name, Type: t, Expr: e}
-			varDecls[s.Var.Name] = vs
-			scopeStack[len(scopeStack)-1][s.Var.Name] = vs
+			vs := &VarStmt{Name: alias, Type: t, Expr: e}
+			varDecls[alias] = vs
+			scopeStack[len(scopeStack)-1][alias] = vs
 			return vs, nil
 		}
 		t := typeRefString(s.Var.Type)
@@ -3724,12 +3775,13 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				t = toJavaTypeFromType(v)
 			}
 		}
+		alias := declareAlias(s.Var.Name)
 		if t != "" {
-			varTypes[s.Var.Name] = t
+			varTypes[alias] = t
 		}
-		vs := &VarStmt{Name: s.Var.Name, Type: t}
-		varDecls[s.Var.Name] = vs
-		scopeStack[len(scopeStack)-1][s.Var.Name] = vs
+		vs := &VarStmt{Name: alias, Type: t}
+		varDecls[alias] = vs
+		scopeStack[len(scopeStack)-1][alias] = vs
 		return vs, nil
 	case s.Type != nil:
 		if len(s.Type.Variants) > 0 {
@@ -3816,7 +3868,8 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		}
 		provisional := fmt.Sprintf("fn(%s):%s", strings.Join(ptypes, ","), provisionalRet)
 		varTypes[s.Fun.Name] = provisional
-		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, false)
+		closureFun := len(scopeStack) > 1
+		expr, err := compileFunExpr(&parser.FunExpr{Params: s.Fun.Params, Return: s.Fun.Return, BlockBody: s.Fun.Body}, closureFun)
 		if err != nil {
 			return nil, err
 		}
@@ -3833,22 +3886,24 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		varTypes[s.Fun.Name] = funType
 		return &VarStmt{Name: s.Fun.Name, Type: funType, Expr: expr}, nil
 	case s.Assign != nil:
+		alias := resolveAlias(s.Assign.Name)
 		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
 			e, err := compileExpr(s.Assign.Value)
 			if err != nil {
 				return nil, err
 			}
 			var vdecl *VarStmt
-			if vs, ok := varDecls[s.Assign.Name]; ok {
+			alias := resolveAlias(s.Assign.Name)
+			if vs, ok := varDecls[alias]; ok {
 				vdecl = vs
 			} else if len(scopeStack) > 0 {
 				for i := len(scopeStack) - 1; i >= 0; i-- {
-					if vs, ok2 := scopeStack[i][s.Assign.Name]; ok2 {
+					if vs, ok2 := scopeStack[i][alias]; ok2 {
 						vdecl = vs
 						if i < len(scopeStack)-1 && closureStack[len(closureStack)-1] {
-							refVars[s.Assign.Name] = true
+							refVars[alias] = true
 						} else if closureStack[i] {
-							refVars[s.Assign.Name] = true
+							refVars[alias] = true
 						}
 						break
 					}
@@ -3857,9 +3912,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			if ap, ok := e.(*AppendExpr); ok {
 				vt := inferType(ap.Value)
 				if vt != "" {
-					if cur, ok := varTypes[s.Assign.Name]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
+					if cur, ok := varTypes[alias]; ok && (cur == "int[]" || cur == "Object[]") && vt == "boolean" {
 						newT := "boolean[]"
-						varTypes[s.Assign.Name] = newT
+						varTypes[alias] = newT
 						if vdecl != nil {
 							vdecl.Type = newT
 							if ll, ok3 := vdecl.Expr.(*ListLit); ok3 {
@@ -3870,8 +3925,8 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t := inferType(e); t != "" {
-				if cur, ok := varTypes[s.Assign.Name]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur && !(cur == "Object[]" && strings.Contains(t, "Map"))) {
-					varTypes[s.Assign.Name] = t
+				if cur, ok := varTypes[alias]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur && !(cur == "Object[]" && strings.Contains(t, "Map"))) {
+					varTypes[alias] = t
 					if vdecl != nil {
 						vdecl.Type = t
 						if ll, ok2 := vdecl.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
@@ -3881,9 +3936,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			t := ""
-			if vt, ok := varTypes[s.Assign.Name]; ok {
+			if vt, ok := varTypes[alias]; ok {
 				t = vt
-			} else if vs, ok := varDecls[s.Assign.Name]; ok {
+			} else if vs, ok := varDecls[alias]; ok {
 				t = vs.Type
 			}
 			if ml, ok := e.(*MapLit); ok {
@@ -3898,22 +3953,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					}
 				}
 				if len(ml.Fields) > 0 {
-					mapVarFields[s.Assign.Name] = ml.Fields
+					mapVarFields[alias] = ml.Fields
 				}
 			} else if l, ok := e.(*ListLit); ok && strings.HasSuffix(t, "[]") && l.ElemType == "" {
 				l.ElemType = strings.TrimSuffix(t, "[]")
 			} else if ce, ok := e.(*CallExpr); ok {
 				if f, ok2 := funcMapFields[ce.Func]; ok2 {
-					mapVarFields[s.Assign.Name] = f
+					mapVarFields[alias] = f
 				}
 			} else if cast, ok := e.(*CastExpr); ok {
 				if v, ok2 := cast.Value.(*VarExpr); ok2 {
 					if f, ok3 := mapVarFields[v.Name]; ok3 {
-						mapVarFields[s.Assign.Name] = f
+						mapVarFields[alias] = f
 					}
 				}
 			}
-			return &AssignStmt{Name: s.Assign.Name, Expr: e, Type: t}, nil
+			return &AssignStmt{Name: alias, Expr: e, Type: t}, nil
 		}
 		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
 			indices := make([]Expr, len(s.Assign.Index))
@@ -3932,9 +3987,10 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			if t := inferType(val); t != "" {
-				if cur, ok := varTypes[s.Assign.Name]; ok && (cur == "int[]" || cur == "Object[]") && t == "boolean" {
-					varTypes[s.Assign.Name] = "boolean[]"
-					if vs, ok2 := varDecls[s.Assign.Name]; ok2 {
+				alias := resolveAlias(s.Assign.Name)
+				if cur, ok := varTypes[alias]; ok && (cur == "int[]" || cur == "Object[]") && t == "boolean" {
+					varTypes[alias] = "boolean[]"
+					if vs, ok2 := varDecls[alias]; ok2 {
 						vs.Type = "boolean[]"
 						if ll, ok3 := vs.Expr.(*ListLit); ok3 {
 							ll.ElemType = "boolean"
@@ -3943,18 +3999,18 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			baseType := ""
-			if t, ok := varTypes[s.Assign.Name]; ok {
+			if t, ok := varTypes[alias]; ok {
 				baseType = t
 			}
-			base := Expr(&VarExpr{Name: s.Assign.Name, Type: baseType})
+			base := Expr(&VarExpr{Name: alias, Type: baseType})
 			return &IndexAssignStmt{Target: base, Indices: indices, Expr: val}, nil
 		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
 			baseType := ""
-			if t, ok := varTypes[s.Assign.Name]; ok {
+			if t, ok := varTypes[alias]; ok {
 				baseType = t
 			}
-			base := Expr(&VarExpr{Name: s.Assign.Name, Type: baseType})
+			base := Expr(&VarExpr{Name: alias, Type: baseType})
 			for i := 0; i < len(s.Assign.Field)-1; i++ {
 				base = &IndexExpr{Target: base, Index: &StringLit{Value: s.Assign.Field[i].Name}}
 			}
@@ -4677,22 +4733,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			needNow = true
 			return &CallExpr{Func: "_now", Args: nil}, nil
 		}
-		if t, ok := varTypes[name]; ok {
+		aliasName := resolveAlias(name)
+		if t, ok := varTypes[aliasName]; ok {
 			if strings.HasPrefix(t, "fn") {
 				method := "apply"
 				if strings.HasSuffix(t, ":void") {
 					method = "accept"
 				}
-				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: method, Args: args}, nil
+				return &MethodCallExpr{Target: &VarExpr{Name: aliasName}, Name: method, Args: args}, nil
 			}
 			if strings.HasPrefix(t, "java.util.function.Supplier") {
-				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "get", Args: args}, nil
+				return &MethodCallExpr{Target: &VarExpr{Name: aliasName}, Name: "get", Args: args}, nil
 			}
 			if strings.HasPrefix(t, "java.util.function.BiConsumer") || strings.HasPrefix(t, "java.util.function.Consumer") {
-				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "accept", Args: args}, nil
+				return &MethodCallExpr{Target: &VarExpr{Name: aliasName}, Name: "accept", Args: args}, nil
 			}
 			if strings.HasPrefix(t, "java.util.function.Function") || strings.HasPrefix(t, "java.util.function.BiFunction") {
-				return &MethodCallExpr{Target: &VarExpr{Name: name}, Name: "apply", Args: args}, nil
+				return &MethodCallExpr{Target: &VarExpr{Name: aliasName}, Name: "apply", Args: args}, nil
 			}
 		}
 		if name == "print" {
@@ -4849,14 +4906,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return &IntLit{Value: 42}, nil
 			}
 		}
+		alias := resolveAlias(p.Selector.Root)
 		typ := ""
-		if t, ok := varTypes[p.Selector.Root]; ok {
+		if t, ok := varTypes[alias]; ok {
 			typ = t
 		}
 		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
 			return &NullLit{}, nil
 		}
-		expr := Expr(&VarExpr{Name: p.Selector.Root, Type: typ})
+		expr := Expr(&VarExpr{Name: alias, Type: typ})
 		for _, name := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: name}
 		}
@@ -5079,13 +5137,16 @@ func compileIfExpr(ie *parser.IfExpr) (Expr, error) {
 }
 
 func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
-	params := make([]Param, len(fn.Params))
-	for i, p := range fn.Params {
-		params[i] = Param{Name: p.Name, Type: typeRefString(p.Type)}
-	}
 	saved := varTypes
 	varTypes = copyMap(varTypes)
 	savedDecls := pushScope(closure)
+	savedRet := currentFuncReturn
+	currentFuncReturn = typeRefString(fn.Return)
+	params := make([]Param, len(fn.Params))
+	for i, p := range fn.Params {
+		alias := declareAlias(p.Name)
+		params[i] = Param{Name: alias, Type: typeRefString(p.Type)}
+	}
 	for _, p := range params {
 		if p.Type != "" {
 			varTypes[p.Name] = p.Type
@@ -5116,8 +5177,22 @@ func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 		ret = inferReturnType(body)
 	}
 	lam := &LambdaExpr{Params: params, Body: body, Return: ret}
+	if closure {
+		outer := map[string]bool{}
+		for i := 0; i < len(aliasStack)-1; i++ {
+			for _, a := range aliasStack[i] {
+				outer[a] = true
+			}
+		}
+		for name := range outer {
+			if exprUsesVar(lam, name) {
+				refVars[name] = true
+			}
+		}
+	}
 	varTypes = saved
 	popScope(savedDecls)
+	currentFuncReturn = savedRet
 	return lam, nil
 }
 
@@ -6345,10 +6420,11 @@ func constStringExpr(e Expr) (string, bool) {
 func mapFieldsForExpr(e Expr) map[string]string {
 	switch ex := e.(type) {
 	case *VarExpr:
-		if f, ok := mapVarFields[ex.Name]; ok {
+		name := resolveAlias(ex.Name)
+		if f, ok := mapVarFields[name]; ok {
 			return f
 		}
-		if t, ok := varTypes[ex.Name]; ok {
+		if t, ok := varTypes[name]; ok {
 			base := strings.TrimSuffix(t, "[]")
 			if fields, ok2 := structDefs[base]; ok2 {
 				return fields
