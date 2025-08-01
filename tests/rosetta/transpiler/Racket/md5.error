@@ -1,5 +1,0 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Racket/md5.rkt:66:13: testpkg_MD5Hex: unbound identifier
-  in: testpkg_MD5Hex
-  location...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/md5.rkt:66:13
