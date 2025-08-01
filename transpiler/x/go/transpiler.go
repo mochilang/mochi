@@ -1869,15 +1869,23 @@ func (a *AssertExpr) emit(w io.Writer) {
 		return
 	}
 	if a.Type == "float64" {
-		if ce, ok := a.Expr.(*CallExpr); ok {
-			if ce.Func == "_toFloat" || ce.Func == "float64" {
+		switch ex := a.Expr.(type) {
+		case *IndexExpr, *VarRef, *FieldExpr:
+			a.Expr.emit(w)
+			io.WriteString(w, ".(float64)")
+		case *CallExpr:
+			if ex.Func == "_toFloat" || ex.Func == "float64" {
 				a.Expr.emit(w)
-				return
+			} else {
+				io.WriteString(w, "float64(")
+				a.Expr.emit(w)
+				io.WriteString(w, ")")
 			}
+		default:
+			io.WriteString(w, "float64(")
+			a.Expr.emit(w)
+			io.WriteString(w, ")")
 		}
-		io.WriteString(w, "float64(")
-		a.Expr.emit(w)
-		io.WriteString(w, ")")
 		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
@@ -4008,6 +4016,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		return nil, err
 	}
 	fixListLits(val, env)
+	if currentRetType == "map[string]any" {
+		if ml, ok := val.(*MapLit); ok {
+			ml.ValueType = "any"
+		}
+	}
 	ret := currentRetType
 	if ret != "" {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
