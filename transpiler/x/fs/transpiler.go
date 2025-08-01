@@ -1811,6 +1811,9 @@ func mapMethod(name string) string {
 }
 
 func isMapType(t string) bool {
+	if strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") {
+		return false
+	}
 	return t == "map" || strings.HasPrefix(t, "Map<")
 }
 
@@ -2541,6 +2544,8 @@ func (c *CastExpr) emit(w io.Writer) {
 	case "float":
 		if t == "obj" {
 			io.WriteString(w, "unbox<float> ")
+		} else if idx, ok := c.Expr.(*IndexExpr); ok && isMapType(valueType(idx.Target)) {
+			io.WriteString(w, "unbox<float> ")
 		} else {
 			io.WriteString(w, "float ")
 		}
@@ -2553,6 +2558,8 @@ func (c *CastExpr) emit(w io.Writer) {
 		}
 	case "int":
 		if t == "obj" {
+			io.WriteString(w, "unbox<int> ")
+		} else if idx, ok := c.Expr.(*IndexExpr); ok && isMapType(valueType(idx.Target)) {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")
@@ -2817,7 +2824,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		for _, st := range p.Stmts {
 			switch s := st.(type) {
 			case *FunDef:
-				funs = append(funs, st)
+				if s.Name == "main" {
+					post = append(post, st)
+				} else {
+					funs = append(funs, st)
+				}
 			case *LetStmt:
 				if exprUsesFunc(s.Expr) {
 					post = append(post, st)
@@ -2830,6 +2841,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				} else {
 					pre = append(pre, st)
 				}
+			case *ForStmt:
+				post = append(post, st)
 			default:
 				pre = append(pre, st)
 			}
@@ -3125,7 +3138,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
 		mut := mutatedVars[st.Let.Name]
-		if typ == "array" || typ == "map" {
+		if strings.HasPrefix(typ, "Map<") || typ == "array" || typ == "map" {
 			typ = ""
 		}
 		ls := &LetStmt{Name: st.Let.Name, Expr: e, Type: typ, Mutable: mut}
@@ -3226,7 +3239,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Var.Name] = declared
 		typ := fsDecl
-		if typ == "array" || typ == "map" {
+		if strings.HasPrefix(typ, "Map<") || typ == "array" || typ == "map" {
 			typ = ""
 		}
 		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil

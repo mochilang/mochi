@@ -1,3 +1,7 @@
+## Progress (2025-08-02 00:26 +0700)
+- fix kotlin transpiler varref and binary cast
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 22:40 +0700)
 - WIP: attempt to fix ftp transpilation
 - Generated F# for 103/105 programs (103 passing)
