@@ -1,0 +1,948 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:53:54
+   |
+53 |         static mut g_small: Vec<String> = Vec::new();;
+   |                                                      ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:54:53
+   |
+54 |         static mut g_tens: Vec<String> = Vec::new();;
+   |                                                     ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:55:57
+   |
+55 |         static mut g_smallOrd: Vec<String> = Vec::new();;
+   |                                                         ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:56:56
+   |
+56 |         static mut g_tensOrd: Vec<String> = Vec::new();;
+   |                                                        ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:91:2
+   |
+91 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:118:2
+    |
+118 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:135:2
+    |
+135 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:147:2
+    |
+147 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:148:54
+    |
+148 |         static mut g_words: Vec<String> = Vec::new();;
+    |                                                      ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:149:35
+    |
+149 |         static mut g_idx: i64 = 0;;
+    |                                   ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:171:2
+    |
+171 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:183:2
+    |
+183 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:190:2
+    |
+190 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:215:2
+    |
+215 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:58:8
+   |
+58 |     if (n < 20) {
+   |        ^      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+58 -     if (n < 20) {
+58 +     if n < 20 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:61:8
+   |
+61 |     if (n < 100) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+61 -     if (n < 100) {
+61 +     if n < 100 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:63:26
+   |
+63 |         let mut m: i64 = (n % 10);
+   |                          ^      ^
+   |
+help: remove these parentheses
+   |
+63 -         let mut m: i64 = (n % 10);
+63 +         let mut m: i64 = n % 10;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:64:12
+   |
+64 |         if (m != 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+64 -         if (m != 0) {
+64 +         if m != 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:69:8
+   |
+69 |     if (n < 1000) {
+   |        ^        ^
+   |
+help: remove these parentheses
+   |
+69 -     if (n < 1000) {
+69 +     if n < 1000 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:70:51
+   |
+70 |         let mut res: String = format!("{}{}", say((n / 100)), " hundred").clone();
+   |                                                   ^       ^
+   |
+help: remove these parentheses
+   |
+70 -         let mut res: String = format!("{}{}", say((n / 100)), " hundred").clone();
+70 +         let mut res: String = format!("{}{}", say(n / 100), " hundred").clone();
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:71:26
+   |
+71 |         let mut m: i64 = (n % 100);
+   |                          ^       ^
+   |
+help: remove these parentheses
+   |
+71 -         let mut m: i64 = (n % 100);
+71 +         let mut m: i64 = n % 100;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:72:12
+   |
+72 |         if (m != 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+72 -         if (m != 0) {
+72 +         if m != 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:77:8
+   |
+77 |     if (n < 1000000) {
+   |        ^           ^
+   |
+help: remove these parentheses
+   |
+77 -     if (n < 1000000) {
+77 +     if n < 1000000 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:78:51
+   |
+78 |         let mut res: String = format!("{}{}", say((n / 1000)), " thousand").clone();
+   |                                                   ^        ^
+   |
+help: remove these parentheses
+   |
+78 -         let mut res: String = format!("{}{}", say((n / 1000)), " thousand").clone();
+78 +         let mut res: String = format!("{}{}", say(n / 1000), " thousand").clone();
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:79:26
+   |
+79 |         let mut m: i64 = (n % 1000);
+   |                          ^        ^
+   |
+help: remove these parentheses
+   |
+79 -         let mut m: i64 = (n % 1000);
+79 +         let mut m: i64 = n % 1000;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:80:12
+   |
+80 |         if (m != 0) {
+   |            ^      ^
+   |
+help: remove these parentheses
+   |
+80 -         if (m != 0) {
+80 +         if m != 0 {
+   |
+
+warning: unnecessary parentheses around function argument
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:85:47
+   |
+85 |     let mut res: String = format!("{}{}", say((n / 1000000)), " million").clone();
+   |                                               ^           ^
+   |
+help: remove these parentheses
+   |
+85 -     let mut res: String = format!("{}{}", say((n / 1000000)), " million").clone();
+85 +     let mut res: String = format!("{}{}", say(n / 1000000), " million").clone();
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:86:22
+   |
+86 |     let mut m: i64 = (n % 1000000);
+   |                      ^           ^
+   |
+help: remove these parentheses
+   |
+86 -     let mut m: i64 = (n % 1000000);
+86 +     let mut m: i64 = n % 1000000;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:87:8
+   |
+87 |     if (m != 0) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+87 -     if (m != 0) {
+87 +     if m != 0 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:93:8
+   |
+93 |     if (n < 20) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+93 -     if (n < 20) {
+93 +     if n < 20 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:96:8
+   |
+96 |     if (n < 100) {
+   |        ^       ^
+   |
+help: remove these parentheses
+   |
+96 -     if (n < 100) {
+96 +     if n < 100 {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:97:12
+   |
+97 |         if ((n % 10) == 0) {
+   |            ^             ^
+   |
+help: remove these parentheses
+   |
+97 -         if ((n % 10) == 0) {
+97 +         if (n % 10) == 0 {
+   |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:100:52
+    |
+100 |         return format!("{}{}", format!("{}{}", say((n - (n % 10))), "-"), g_smallOrd.clone()[(n % 10) as usize].clone())
+    |                                                    ^            ^
+    |
+help: remove these parentheses
+    |
+100 -         return format!("{}{}", format!("{}{}", say((n - (n % 10))), "-"), g_smallOrd.clone()[(n % 10) as usize].clone())
+100 +         return format!("{}{}", format!("{}{}", say(n - (n % 10)), "-"), g_smallOrd.clone()[(n % 10) as usize].clone())
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:102:8
+    |
+102 |     if (n < 1000) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+102 -     if (n < 1000) {
+102 +     if n < 1000 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:103:12
+    |
+103 |         if ((n % 100) == 0) {
+    |            ^              ^
+    |
+help: remove these parentheses
+    |
+103 -         if ((n % 100) == 0) {
+103 +         if (n % 100) == 0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:104:40
+    |
+104 |             return format!("{}{}", say((n / 100)), " hundredth")
+    |                                        ^       ^
+    |
+help: remove these parentheses
+    |
+104 -             return format!("{}{}", say((n / 100)), " hundredth")
+104 +             return format!("{}{}", say(n / 100), " hundredth")
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:106:52
+    |
+106 |         return format!("{}{}", format!("{}{}", say((n / 100)), " hundred "), sayOrdinal((n % 100)))
+    |                                                    ^       ^
+    |
+help: remove these parentheses
+    |
+106 -         return format!("{}{}", format!("{}{}", say((n / 100)), " hundred "), sayOrdinal((n % 100)))
+106 +         return format!("{}{}", format!("{}{}", say(n / 100), " hundred "), sayOrdinal((n % 100)))
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:106:89
+    |
+106 |         return format!("{}{}", format!("{}{}", say((n / 100)), " hundred "), sayOrdinal((n % 100)))
+    |                                                                                         ^       ^
+    |
+help: remove these parentheses
+    |
+106 -         return format!("{}{}", format!("{}{}", say((n / 100)), " hundred "), sayOrdinal((n % 100)))
+106 +         return format!("{}{}", format!("{}{}", say((n / 100)), " hundred "), sayOrdinal(n % 100))
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:108:8
+    |
+108 |     if (n < 1000000) {
+    |        ^           ^
+    |
+help: remove these parentheses
+    |
+108 -     if (n < 1000000) {
+108 +     if n < 1000000 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:109:12
+    |
+109 |         if ((n % 1000) == 0) {
+    |            ^               ^
+    |
+help: remove these parentheses
+    |
+109 -         if ((n % 1000) == 0) {
+109 +         if (n % 1000) == 0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:110:40
+    |
+110 |             return format!("{}{}", say((n / 1000)), " thousandth")
+    |                                        ^        ^
+    |
+help: remove these parentheses
+    |
+110 -             return format!("{}{}", say((n / 1000)), " thousandth")
+110 +             return format!("{}{}", say(n / 1000), " thousandth")
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:112:52
+    |
+112 |         return format!("{}{}", format!("{}{}", say((n / 1000)), " thousand "), sayOrdinal((n % 1000)))
+    |                                                    ^        ^
+    |
+help: remove these parentheses
+    |
+112 -         return format!("{}{}", format!("{}{}", say((n / 1000)), " thousand "), sayOrdinal((n % 1000)))
+112 +         return format!("{}{}", format!("{}{}", say(n / 1000), " thousand "), sayOrdinal((n % 1000)))
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:112:91
+    |
+112 |         return format!("{}{}", format!("{}{}", say((n / 1000)), " thousand "), sayOrdinal((n % 1000)))
+    |                                                                                           ^        ^
+    |
+help: remove these parentheses
+    |
+112 -         return format!("{}{}", format!("{}{}", say((n / 1000)), " thousand "), sayOrdinal((n % 1000)))
+112 +         return format!("{}{}", format!("{}{}", say((n / 1000)), " thousand "), sayOrdinal(n % 1000))
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:114:8
+    |
+114 |     if ((n % 1000000) == 0) {
+    |        ^                  ^
+    |
+help: remove these parentheses
+    |
+114 -     if ((n % 1000000) == 0) {
+114 +     if (n % 1000000) == 0 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:115:36
+    |
+115 |         return format!("{}{}", say((n / 1000000)), " millionth")
+    |                                    ^           ^
+    |
+help: remove these parentheses
+    |
+115 -         return format!("{}{}", say((n / 1000000)), " millionth")
+115 +         return format!("{}{}", say(n / 1000000), " millionth")
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:117:48
+    |
+117 |     return format!("{}{}", format!("{}{}", say((n / 1000000)), " million "), sayOrdinal((n % 1000000))).clone()
+    |                                                ^           ^
+    |
+help: remove these parentheses
+    |
+117 -     return format!("{}{}", format!("{}{}", say((n / 1000000)), " million "), sayOrdinal((n % 1000000))).clone()
+117 +     return format!("{}{}", format!("{}{}", say(n / 1000000), " million "), sayOrdinal((n % 1000000))).clone()
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:117:89
+    |
+117 |     return format!("{}{}", format!("{}{}", say((n / 1000000)), " million "), sayOrdinal((n % 1000000))).clone()
+    |                                                                                         ^           ^
+    |
+help: remove these parentheses
+    |
+117 -     return format!("{}{}", format!("{}{}", say((n / 1000000)), " million "), sayOrdinal((n % 1000000))).clone()
+117 +     return format!("{}{}", format!("{}{}", say((n / 1000000)), " million "), sayOrdinal(n % 1000000)).clone()
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:123:11
+    |
+123 |     while (i < (s.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+123 -     while (i < (s.len() as i64)) {
+123 +     while i < (s.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:124:12
+    |
+124 | ...if ((((sep.len() as i64) > 0) && ((i + (sep.len() as i64)) <= (s.len() as i64))) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep)) {
+    |       ^                                                                                                                                                                                                         ^
+    |
+help: remove these parentheses
+    |
+124 -         if ((((sep.len() as i64) > 0) && ((i + (sep.len() as i64)) <= (s.len() as i64))) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep)) {
+124 +         if (((sep.len() as i64) > 0) && ((i + (sep.len() as i64)) <= (s.len() as i64))) && ({ let tmp = &s; tmp.chars().skip(i as usize).take(((i + (sep.len() as i64)) - i) as usize).collect::<String>() } == sep) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:127:17
+    |
+127 |             i = (i + (sep.len() as i64));
+    |                 ^                      ^
+    |
+help: remove these parentheses
+    |
+127 -             i = (i + (sep.len() as i64));
+127 +             i = i + (sep.len() as i64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:130:17
+    |
+130 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+130 -             i = (i + 1);
+130 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:139:11
+    |
+139 |     while (i < (s.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+139 -     while (i < (s.len() as i64)) {
+139 +     while i < (s.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:141:12
+    |
+141 |         if (((ch.as_str() >= "A") && (ch.as_str() <= "Z")) || ((ch.as_str() >= "a") && (ch.as_str() <= "z"))) {
+    |            ^                                                                                                ^
+    |
+help: remove these parentheses
+    |
+141 -         if (((ch.as_str() >= "A") && (ch.as_str() <= "Z")) || ((ch.as_str() >= "a") && (ch.as_str() <= "z"))) {
+141 +         if ((ch.as_str() >= "A") && (ch.as_str() <= "Z")) || ((ch.as_str() >= "a") && (ch.as_str() <= "z")) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:142:19
+    |
+142 |             cnt = (cnt + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+142 -             cnt = (cnt + 1);
+142 +             cnt = cnt + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:144:13
+    |
+144 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+144 -         i = (i + 1);
+144 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:151:11
+    |
+151 |     while ((g_words.clone().len() as i64) < w) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+151 -     while ((g_words.clone().len() as i64) < w) {
+151 +     while (g_words.clone().len() as i64) < w {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:152:17
+    |
+152 |         g_idx = (g_idx + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+152 -         g_idx = (g_idx + 1);
+152 +         g_idx = g_idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:156:15
+    |
+156 |         while (j < (parts.len() as i64)) {
+    |               ^                        ^
+    |
+help: remove these parentheses
+    |
+156 -         while (j < (parts.len() as i64)) {
+156 +         while j < (parts.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:158:17
+    |
+158 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+158 -             j = (j + 1);
+158 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:162:44
+    |
+162 |         parts = format!("{}{}", sayOrdinal((g_idx + 1)), ",").split(" ").map(|x| x.to_string()).collect::<Vec<String>>();
+    |                                            ^         ^
+    |
+help: remove these parentheses
+    |
+162 -         parts = format!("{}{}", sayOrdinal((g_idx + 1)), ",").split(" ").map(|x| x.to_string()).collect::<Vec<String>>();
+162 +         parts = format!("{}{}", sayOrdinal(g_idx + 1), ",").split(" ").map(|x| x.to_string()).collect::<Vec<String>>();
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:164:15
+    |
+164 |         while (j < (parts.len() as i64)) {
+    |               ^                        ^
+    |
+help: remove these parentheses
+    |
+164 -         while (j < (parts.len() as i64)) {
+164 +         while j < (parts.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:166:17
+    |
+166 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+166 -             j = (j + 1);
+166 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:175:11
+    |
+175 |     while (i < (g_words.clone().len() as i64)) {
+    |           ^                                  ^
+    |
+help: remove these parentheses
+    |
+175 -     while (i < (g_words.clone().len() as i64)) {
+175 +     while i < (g_words.clone().len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:176:15
+    |
+176 |         tot = (tot + (g_words.clone()[i as usize].clone().len() as i64));
+    |               ^                                                        ^
+    |
+help: remove these parentheses
+    |
+176 -         tot = (tot + (g_words.clone()[i as usize].clone().len() as i64));
+176 +         tot = tot + (g_words.clone()[i as usize].clone().len() as i64);
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:177:12
+    |
+177 |         if (i < ((g_words.clone().len() as i64) - 1)) {
+    |            ^                                        ^
+    |
+help: remove these parentheses
+    |
+177 -         if (i < ((g_words.clone().len() as i64) - 1)) {
+177 +         if i < ((g_words.clone().len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:178:19
+    |
+178 |             tot = (tot + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+178 -             tot = (tot + 1);
+178 +             tot = tot + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:180:13
+    |
+180 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+180 -         i = (i + 1);
+180 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:186:11
+    |
+186 |     while ((s.len() as i64) < width) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+186 -     while ((s.len() as i64) < width) {
+186 +     while (s.len() as i64) < width {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:195:11
+    |
+195 |     while (i <= 201) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+195 -     while (i <= 201) {
+195 +     while i <= 201 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:196:12
+    |
+196 |         if ((i % 25) == 1) {
+    |            ^             ^
+    |
+help: remove these parentheses
+    |
+196 -         if ((i % 25) == 1) {
+196 +         if (i % 25) == 1 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:197:16
+    |
+197 |             if (i != 1) {
+    |                ^      ^
+    |
+help: remove these parentheses
+    |
+197 -             if (i != 1) {
+197 +             if i != 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:205:13
+    |
+205 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+205 -         i = (i + 1);
+205 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:219:32
+    |
+219 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+219 -         let duration_us: i64 = ((_end - _start) / 1000);
+219 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:220:33
+    |
+220 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+220 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+220 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:169:25
+    |
+169 |     let mut word: i64 = g_words.clone()[(w - 1) as usize];
+    |                   ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+    |                   |
+    |                   expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:170:36
+    |
+170 |     return vec![word, countLetters(&word)]
+    |                       ------------ ^^^^^ expected `&str`, found `&i64`
+    |                       |
+    |                       arguments to this function are incorrect
+    |
+    = note: expected reference `&str`
+               found reference `&i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:136:19
+    |
+136 |         unsafe fn countLetters(s: &str) -> i64 {
+    |                   ^^^^^^^^^^^^ -------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:57:23
+   |
+57 |         unsafe fn say(mut n: i64) -> String {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:63:13
+   |
+63 |         let mut m: i64 = (n % 10);
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:71:13
+   |
+71 |         let mut m: i64 = (n % 100);
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:79:13
+   |
+79 |         let mut m: i64 = (n % 1000);
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:86:9
+   |
+86 |     let mut m: i64 = (n % 1000000);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:92:30
+   |
+92 |         unsafe fn sayOrdinal(mut n: i64) -> String {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:140:13
+    |
+140 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:184:23
+    |
+184 |         unsafe fn pad(mut n: i64, mut width: i64) -> String {
+    |                       ----^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:184:35
+    |
+184 |         unsafe fn pad(mut n: i64, mut width: i64) -> String {
+    |                                   ----^^^^^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:202:13
+    |
+202 |         let mut r: Vec<i64> = wordLen(i);
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:203:13
+    |
+203 |         let mut n: i64 = r[1 as usize];
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:210:13
+    |
+210 |         let mut r: Vec<i64> = wordLen(n);
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:211:13
+    |
+211 |         let mut w: i64 = r[0 as usize];
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/four-is-the-number-of-letters-in-the-....rs:212:13
+    |
+212 |         let mut l: i64 = r[1 as usize];
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+error: aborting due to 2 previous errors; 88 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

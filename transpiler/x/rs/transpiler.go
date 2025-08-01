@@ -3088,6 +3088,13 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	prevStringVars := stringVars
 	prevRet := currentFuncRet
 	varTypes = copyStringMap(varTypes)
+	if curEnv != nil {
+		for name, t := range curEnv.Types() {
+			if _, ok := varTypes[name]; !ok {
+				varTypes[name] = rustTypeFromType(t)
+			}
+		}
+	}
 	mapVars = copyBoolMap(mapVars)
 	stringVars = copyBoolMap(stringVars)
 	defer func() {
@@ -4733,7 +4740,9 @@ func rustType(t string) string {
 	case "float":
 		return "f64"
 	case "any":
-		return "f64"
+		// Use String for dynamic values to better support functions
+		// returning mixed types like [string, int].
+		return "String"
 	case "bool":
 		return "bool"
 	case "string":
