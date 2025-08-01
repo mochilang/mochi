@@ -105,6 +105,10 @@ func isConstExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *StringLit, *NumberLit, *BoolLit, *NullLit:
 		return true
+	case *StringCastExpr:
+		return isConstExpr(v.Expr)
+	case *IntCastExpr:
+		return isConstExpr(v.Expr)
 	case *ListLit:
 		for _, el := range v.Elems {
 			if !isConstExpr(el) {
@@ -776,14 +780,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, "]")
 		} else {
 			io.WriteString(w, "[")
-			switch inferType(i.Index) {
-			case "String":
-				i.Index.emit(w)
-				io.WriteString(w, ".as_str()")
-			case "&str":
-				i.Index.emit(w)
-			default:
-				i.Index.emit(w)
+			i.Index.emit(w)
+			if inferType(i.Index) != "usize" {
+				io.WriteString(w, " as usize")
 			}
 			io.WriteString(w, "]")
 		}
@@ -991,9 +990,17 @@ func (a *AppendExpr) emit(w io.Writer) {
 	a.List.emit(w)
 	io.WriteString(w, ".clone(); _v.push(")
 	lt := inferType(a.List)
-	if lt == "Vec<String>" {
-		a.Elem.emit(w)
+	if lit, ok := a.Elem.(*StringLit); ok {
+		lit.emit(w)
 		io.WriteString(w, ".to_string()")
+	} else if lt == "Vec<String>" {
+		a.Elem.emit(w)
+		et := inferType(a.Elem)
+		if et != "String" {
+			io.WriteString(w, ".to_string()")
+		} else if _, ok := a.Elem.(*NameRef); ok {
+			io.WriteString(w, ".clone()")
+		}
 	} else {
 		if _, ok := a.Elem.(*NameRef); ok {
 			et := inferType(a.Elem)
@@ -2391,6 +2398,20 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		if typ == "" && curEnv != nil {
 			if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
 				typ = rustTypeFromType(t)
+			}
+		}
+		if typ == "" {
+			if idx, ok := e.(*IndexExpr); ok {
+				ct := inferType(idx.Target)
+				if strings.HasPrefix(ct, "&") {
+					ct = ct[1:]
+				}
+				if strings.HasPrefix(ct, "Vec<") {
+					typ = strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")
+					if typ == "" {
+						typ = "String"
+					}
+				}
 			}
 		}
 		if typ != "" {
