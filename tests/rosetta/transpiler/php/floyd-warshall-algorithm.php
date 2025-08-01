@@ -116,13 +116,13 @@ $pathStr = function($p) use (&$pathStr, $INF, $n, $dist, $next, $i, $row, $nrow,
 };
   return $s;
 };
-  echo rtrim('pair\tdist\tpath'), PHP_EOL;
+  echo rtrim('pair	dist	path'), PHP_EOL;
   $a = 0;
   while ($a < $n) {
   $b = 0;
   while ($b < $n) {
   if ($a != $b) {
-  echo rtrim(_str($a + 1) . ' -> ' . _str($b + 1) . '\t' . _str($dist[$a][$b]) . '\t' . $pathStr($path($a + 1, $b + 1))), PHP_EOL;
+  echo rtrim(_str($a + 1) . ' -> ' . _str($b + 1) . '	' . _str($dist[$a][$b]) . '	' . $pathStr($path($a + 1, $b + 1))), PHP_EOL;
 }
   $b = $b + 1;
 };

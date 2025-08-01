@@ -47,7 +47,7 @@ cleaning                        |    1   | 0.409167 |
 If the coverage of the Cinema node were increased from 0.75 to 1
 the top level coverage would increase by 0.000000 to 0.409167
 {
-  "duration_us": 446,
+  "duration_us": 583,
   "memory_bytes": 19144,
   "name": "main"
 }

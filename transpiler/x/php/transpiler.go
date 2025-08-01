@@ -1834,8 +1834,7 @@ func (s *StringLit) emit(w io.Writer) {
 	// Escape backslashes and single quotes.
 	esc := strings.ReplaceAll(s.Value, "\\", "\\\\")
 	esc = strings.ReplaceAll(esc, "'", "\\'")
-	// Preserve actual newlines in strings so Rosetta outputs match.
-	esc = strings.ReplaceAll(esc, "\t", "\\t")
+	// Preserve actual tabs and newlines in strings so Rosetta outputs match.
 	io.WriteString(w, "'"+esc+"'")
 }
 

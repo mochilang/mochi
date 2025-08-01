@@ -9,7 +9,7 @@ The fusc numbers whose length > any previous fusc number length are:
  10,946 (index    699,051)
 103,682 (index 19,573,419)
 {
-  "duration_us": 205,
+  "duration_us": 355,
   "memory_bytes": 96,
   "name": "main"
 }

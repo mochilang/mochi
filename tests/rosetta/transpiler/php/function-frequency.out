@@ -9,7 +9,7 @@ token.NewFileSet 1
 parser.ParseFile 1
 fs.File 1
 {
-  "duration_us": 311,
+  "duration_us": 423,
   "memory_bytes": 96,
   "name": "main"
 }
