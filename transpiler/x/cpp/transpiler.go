@@ -2722,7 +2722,9 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "return")
 	if r.Value != nil {
 		if l, ok := r.Value.(*ListLit); ok && len(l.Elems) == 0 && r.Type != "" {
-			io.WriteString(w, " {};")
+			io.WriteString(w, " ")
+			io.WriteString(w, r.Type)
+			io.WriteString(w, "{};")
 			io.WriteString(w, "\n")
 			return
 		}
@@ -4359,11 +4361,27 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	}
 	currentVarDecls = map[string]*LetStmt{}
 	for _, p := range fn.Params {
-		if p.Type != nil && p.Type.Simple != nil {
-			localTypes[p.Name] = cppType(*p.Type.Simple)
+		if p.Type != nil {
+			if p.Type.Simple != nil {
+				localTypes[p.Name] = cppType(*p.Type.Simple)
+			} else if p.Type.Generic != nil {
+				localTypes[p.Name] = cppType(typeRefString(&parser.TypeRef{Generic: p.Type.Generic}))
+			}
 		}
 	}
-	defer func() { localTypes = prevLocals; currentVarDecls = prevDecls }()
+	ret := "void"
+	if fn.Return != nil {
+		if fn.Return.Simple != nil {
+			ret = cppType(*fn.Return.Simple)
+		} else if fn.Return.Generic != nil {
+			ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
+		} else {
+			ret = "auto"
+		}
+	}
+	prevRet := currentReturnType
+	currentReturnType = ret
+	defer func() { localTypes = prevLocals; currentVarDecls = prevDecls; currentReturnType = prevRet }()
 	var body []Stmt
 	for _, st := range fn.Body {
 		s, err := convertStmt(st)
@@ -4376,24 +4394,18 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	var params []Param
 	for _, p := range fn.Params {
 		typ := ""
-		if p.Type != nil && p.Type.Simple != nil {
-			typ = cppType(*p.Type.Simple)
+		if p.Type != nil {
+			if p.Type.Simple != nil {
+				typ = cppType(*p.Type.Simple)
+			} else if p.Type.Generic != nil {
+				typ = cppType(typeRefString(&parser.TypeRef{Generic: p.Type.Generic}))
+			}
 		}
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
 	inFunction = prev
 	paramNames = nil
 	mutatedParams = nil
-	ret := "void"
-	if fn.Return != nil {
-		if fn.Return.Simple != nil {
-			ret = cppType(*fn.Return.Simple)
-		} else if fn.Return.Generic != nil {
-			ret = cppType(typeRefString(&parser.TypeRef{Generic: fn.Return.Generic}))
-		} else {
-			ret = "auto"
-		}
-	}
 	return &BlockLambda{Params: params, Body: body, ReturnType: ret}, nil
 }
 
