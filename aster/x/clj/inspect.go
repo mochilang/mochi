@@ -16,6 +16,12 @@ type Program struct {
 	Forms []*Form `json:"forms"`
 }
 
+// MarshalJSON implements json.Marshaler for Program to ensure stable output.
+func (p *Program) MarshalJSON() ([]byte, error) {
+	type Alias Program
+	return json.Marshal(&struct{ *Alias }{Alias: (*Alias)(p)})
+}
+
 // Option controls how Inspect behaves.
 // Currently no options are honored but the structure mirrors other
 // language packages and allows future extensions.

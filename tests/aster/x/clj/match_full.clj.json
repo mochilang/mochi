@@ -1,0 +1,551 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "keyword",
+              "text": ":refer-clojure"
+            },
+            {
+              "kind": "keyword",
+              "text": ":exclude"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "classify"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "x"
+        },
+        {
+          "kind": "number",
+          "text": "2"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "label"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "cond"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "x"
+                },
+                {
+                  "kind": "number",
+                  "text": "1"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "one"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "x"
+                },
+                {
+                  "kind": "number",
+                  "text": "2"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "two"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "x"
+                },
+                {
+                  "kind": "number",
+                  "text": "3"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "three"
+            },
+            {
+              "kind": "boolean",
+              "text": "true"
+            },
+            {
+              "kind": "string",
+              "text": "unknown"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "day"
+        },
+        {
+          "kind": "string",
+          "text": "sun"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "mood"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "cond"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "day"
+                },
+                {
+                  "kind": "string",
+                  "text": "mon"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "tired"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "day"
+                },
+                {
+                  "kind": "string",
+                  "text": "fri"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "excited"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "day"
+                },
+                {
+                  "kind": "string",
+                  "text": "sun"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "relaxed"
+            },
+            {
+              "kind": "boolean",
+              "text": "true"
+            },
+            {
+              "kind": "string",
+              "text": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "ok"
+        },
+        {
+          "kind": "boolean",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "status"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "cond"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "ok"
+                },
+                {
+                  "kind": "boolean",
+                  "text": "true"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "confirmed"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "ok"
+                },
+                {
+                  "kind": "boolean",
+                  "text": "false"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "denied"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "classify"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "n"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "cond"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "n"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "zero"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "n"
+                },
+                {
+                  "kind": "number",
+                  "text": "1"
+                }
+              ]
+            },
+            {
+              "kind": "string",
+              "text": "one"
+            },
+            {
+              "kind": "boolean",
+              "text": "true"
+            },
+            {
+              "kind": "string",
+              "text": "many"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "symbol",
+              "text": "label"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "symbol",
+              "text": "mood"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "symbol",
+              "text": "status"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "classify"
+                },
+                {
+                  "kind": "number",
+                  "text": "0"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "classify"
+                },
+                {
+                  "kind": "number",
+                  "text": "5"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}
