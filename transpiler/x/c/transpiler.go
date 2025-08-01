@@ -91,6 +91,8 @@ var (
 	needGMP                 bool
 	needStrBigInt           bool
 	needListAppendBigRat    bool
+	needFetch               bool
+	fetchStructs            map[string]bool
 
 	currentFuncName   string
 	currentFuncReturn string
@@ -2056,7 +2058,7 @@ func (p *Program) Emit() []byte {
 	if needSHA256 {
 		buf.WriteString("#include <unistd.h>\n")
 	}
-	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || needSHA256 {
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || needSHA256 || needFetch {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
 	if needMem {
@@ -2629,6 +2631,81 @@ func (p *Program) Emit() []byte {
 		}
 		fmt.Fprintf(&buf, "};\n\n")
 	}
+	if needFetch {
+		buf.WriteString("static char* _fetch_raw(const char *url) {\n")
+		buf.WriteString("    char cmd[512];\n")
+		buf.WriteString("    snprintf(cmd, sizeof(cmd), \"curl -s %s\", url);\n")
+		buf.WriteString("    FILE *p = popen(cmd, \"r\");\n")
+		buf.WriteString("    if (!p) return strdup(\"\");\n")
+		buf.WriteString("    char *data = NULL; size_t cap = 0;\n")
+		buf.WriteString("    char tmp[256]; size_t n;\n")
+		buf.WriteString("    while ((n = fread(tmp,1,sizeof(tmp),p)) > 0) {\n")
+		buf.WriteString("        data = realloc(data, cap + n + 1);\n")
+		buf.WriteString("        memcpy(data + cap, tmp, n);\n")
+		buf.WriteString("        cap += n;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    if (data) data[cap] = 0; else { data = malloc(1); data[0] = 0; }\n")
+		buf.WriteString("    pclose(p);\n")
+		buf.WriteString("    return data;\n")
+		buf.WriteString("}\n\n")
+
+		buf.WriteString("static int _json_int(const char *data, const char *key) {\n")
+		buf.WriteString("    const char *p = strstr(data, key);\n")
+		buf.WriteString("    if (!p) return 0;\n")
+		buf.WriteString("    p = strchr(p, ':'); if (!p) return 0; p++;\n")
+		buf.WriteString("    while (*p == ' ' || *p == '\"') p++;\n")
+		buf.WriteString("    return atoi(p);\n")
+		buf.WriteString("}\n\n")
+
+		buf.WriteString("static char* _json_string(const char *data, const char *key) {\n")
+		buf.WriteString("    const char *p = strstr(data, key);\n")
+		buf.WriteString("    if (!p) return strdup(\"\");\n")
+		buf.WriteString("    p = strchr(p, ':'); if (!p) return strdup(\"\"); p++;\n")
+		buf.WriteString("    while (*p == ' ' || *p == '\"') p++;\n")
+		buf.WriteString("    const char *start = p;\n")
+		buf.WriteString("    while (*p && *p != '\"') p++;\n")
+		buf.WriteString("    size_t len = p - start;\n")
+		buf.WriteString("    char *out = malloc(len + 1);\n")
+		buf.WriteString("    memcpy(out, start, len);\n")
+		buf.WriteString("    out[len] = 0;\n")
+		buf.WriteString("    return out;\n")
+		buf.WriteString("}\n\n")
+
+		buf.WriteString("static int _json_bool(const char *data, const char *key) {\n")
+		buf.WriteString("    const char *p = strstr(data, key);\n")
+		buf.WriteString("    if (!p) return 0;\n")
+		buf.WriteString("    p = strchr(p, ':'); if (!p) return 0; p++;\n")
+		buf.WriteString("    while (*p == ' ' || *p == '\"') p++;\n")
+		buf.WriteString("    return strncmp(p, \"true\", 4) == 0 || strncmp(p, \"1\", 1) == 0;\n")
+		buf.WriteString("}\n\n")
+
+		keys := make([]string, 0, len(fetchStructs))
+		for k := range fetchStructs {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			st := structTypes[name]
+			fmt.Fprintf(&buf, "static %s _fetch_%s(const char *url) {\n", name, name)
+			fmt.Fprintf(&buf, "    %s out; memset(&out,0,sizeof(out));\n", name)
+			buf.WriteString("    char *data = _fetch_raw(url);\n")
+			for _, f := range st.Order {
+				switch st.Fields[f].(type) {
+				case types.IntType:
+					fmt.Fprintf(&buf, "    out.%s = _json_int(data, \"%s\");\n", f, f)
+				case types.BoolType:
+					fmt.Fprintf(&buf, "    out.%s = _json_bool(data, \"%s\");\n", f, f)
+				case types.StringType:
+					fmt.Fprintf(&buf, "    out.%s = _json_string(data, \"%s\");\n", f, f)
+				case types.FloatType:
+					fmt.Fprintf(&buf, "    out.%s = atof(strchr(strstr(data, \"%s\"), ':')+1);\n", f, f)
+				}
+			}
+			buf.WriteString("    free(data);\n")
+			buf.WriteString("    return out;\n")
+			buf.WriteString("}\n\n")
+		}
+	}
 	for _, g := range p.Globals {
 		g.emit(&buf, 0)
 	}
@@ -2809,6 +2886,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendDoubleNew = false
 	needListAppendStrNew = false
 	needListAppendIntNew = false
+	needFetch = false
+	fetchStructs = make(map[string]bool)
 	needSHA256 = false
 	needNow = false
 	needMem = false
@@ -5264,6 +5343,22 @@ func convertUnary(u *parser.Unary) Expr {
 			return res
 		}
 		return nil
+	}
+	if fexpr := u.Value.Target.Fetch; fexpr != nil && len(u.Ops) == 0 {
+		url := convertExpr(fexpr.URL)
+		if url == nil {
+			return nil
+		}
+		needFetch = true
+		if currentVarType != nil {
+			if st, ok := currentVarType.(types.StructType); ok {
+				fetchStructs[st.Name] = true
+				funcReturnTypes["_fetch_"+st.Name] = st.Name
+				return &CallExpr{Func: "_fetch_" + st.Name, Args: []Expr{url}}
+			}
+		}
+		funcReturnTypes["_fetch_raw"] = "const char*"
+		return &CallExpr{Func: "_fetch_raw", Args: []Expr{url}}
 	}
 	if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 && len(u.Ops) == 0 {
 		return &VarRef{Name: sel.Root}

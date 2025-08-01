@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (117/491) - Last updated 2025-08-01 17:57 +0700:
+Checklist of programs that currently transpile and run (129/491) - Last updated 2025-08-01 18:59 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -481,18 +481,18 @@ Checklist of programs that currently transpile and run (117/491) - Last updated 
 | 474 | giuga-numbers |  |  |  |
 | 475 | globally-replace-text-in-several-files |  |  |  |
 | 476 | goldbachs-comet |  |  |  |
-| 477 | golden-ratio-convergence |  |  |  |
-| 478 | graph-colouring |  |  |  |
-| 479 | gray-code |  |  |  |
-| 480 | gui-component-interaction |  |  |  |
-| 481 | gui-enabling-disabling-of-controls |  |  |  |
-| 482 | gui-maximum-window-dimensions |  |  |  |
-| 483 | http |  |  |  |
+| 477 | golden-ratio-convergence | ✓ | 312us | 4.9 KB |
+| 478 | graph-colouring | ✓ | 139us | 4.7 KB |
+| 479 | gray-code | ✓ | 400us | 28.6 KB |
+| 480 | gui-component-interaction | ✓ | 332us | 9.0 KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 264us | 12.5 KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 353us | 5.0 KB |
+| 483 | http | ✓ | 92.60ms | 5.3 KB |
 | 484 | image-noise |  |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |  |  |  |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 2.78s | 34.4 KB |
 | 486 | md5 |  |  |  |
-| 487 | nim-game |  |  |  |
-| 488 | plasma-effect |  |  |  |
+| 487 | nim-game | ✓ | 366us | 9.8 KB |
+| 488 | plasma-effect | ✓ | 4.65ms | 4.7 KB |
 | 489 | sorting-algorithms-bubble-sort |  |  |  |
-| 490 | window-management |  |  |  |
-| 491 | zumkeller-numbers |  |  |  |
+| 490 | window-management | ✓ | 267us | 12.1 KB |
+| 491 | zumkeller-numbers | ✓ | 1.12s | 24.2 MB |

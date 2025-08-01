@@ -1,0 +1,19 @@
+compile failed: exit status 1: /tmp/ctranspile3124179287/image-noise.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3124179287/image-noise.mochi.c:88:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   88 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3124179287/image-noise.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3124179287/image-noise.mochi.c: In function ‘nextRand’:
+/tmp/ctranspile3124179287/image-noise.mochi.c:101:5: error: ‘seed’ undeclared (first use in this function); did you mean ‘seed48’?
+  101 |     seed = ((seed * 1664525LL) + 1013904223LL) % 2147483647LL;
+      |     ^~~~
+      |     seed48
+/tmp/ctranspile3124179287/image-noise.mochi.c:101:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile3124179287/image-noise.mochi.c: In function ‘randBit’:
+/tmp/ctranspile3124179287/image-noise.mochi.c:107:12: error: invalid operands to binary % (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘long long int’)
+  107 |     if ((r % 2LL) == 0LL) {
+      |            ^
+

@@ -1,0 +1,54 @@
+compile failed: exit status 1: /tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:73:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   73 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c: At top level:
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:79:1: warning: data definition has no type or storage class
+   79 | list = list_append_int(list, &list_len, 31LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:79:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:79:1: error: conflicting types for ‘list’; have ‘int’
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:77:6: note: previous definition of ‘list’ with type ‘int *’
+   77 | int *list = NULL;
+      |      ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:80:1: warning: data definition has no type or storage class
+   80 | list = list_append_int(list, &list_len, 41LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:80:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:81:1: warning: data definition has no type or storage class
+   81 | list = list_append_int(list, &list_len, 59LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:81:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:82:1: warning: data definition has no type or storage class
+   82 | list = list_append_int(list, &list_len, 26LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:82:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:83:1: warning: data definition has no type or storage class
+   83 | list = list_append_int(list, &list_len, 53LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:83:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:84:1: warning: data definition has no type or storage class
+   84 | list = list_append_int(list, &list_len, 58LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:84:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:85:1: warning: data definition has no type or storage class
+   85 | list = list_append_int(list, &list_len, 97LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:85:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:86:1: warning: data definition has no type or storage class
+   86 | list = list_append_int(list, &list_len, 93LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:86:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:87:1: warning: data definition has no type or storage class
+   87 | list = list_append_int(list, &list_len, 23LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:87:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:88:1: warning: data definition has no type or storage class
+   88 | list = list_append_int(list, &list_len, 84LL);
+      | ^~~~
+/tmp/ctranspile3276070546/sorting-algorithms-bubble-sort.mochi.c:88:1: warning: type defaults to ‘int’ in declaration of ‘list’ [-Wimplicit-int]
+

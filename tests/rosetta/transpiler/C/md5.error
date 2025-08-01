@@ -1,0 +1,29 @@
+compile failed: exit status 1: /tmp/ctranspile2502837024/md5.mochi.c: In function ‘_mem’:
+/tmp/ctranspile2502837024/md5.mochi.c:40:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   40 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile2502837024/md5.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile2502837024/md5.mochi.c: In function ‘main’:
+/tmp/ctranspile2502837024/md5.mochi.c:56:27: error: ‘testpkg’ undeclared (first use in this function)
+   56 |                 int sum = testpkg.MD5Hex;
+      |                           ^~~~~~~
+/tmp/ctranspile2502837024/md5.mochi.c:56:27: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile2502837024/md5.mochi.c:57:25: warning: comparison between pointer and integer
+   57 |                 if (sum != pair[(int)(0LL)]) {
+      |                         ^~
+/tmp/ctranspile2502837024/md5.mochi.c:59:33: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘const char *’ [-Wformat=]
+   59 |                     printf("%s %d\n", "  for string,", pair[(int)(1LL)]);
+      |                                ~^                      ~~~~~~~~~~~~~~~~
+      |                                 |                          |
+      |                                 int                        const char *
+      |                                %s
+/tmp/ctranspile2502837024/md5.mochi.c:60:33: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘const char *’ [-Wformat=]
+   60 |                     printf("%s %d\n", "  expected:  ", pair[(int)(0LL)]);
+      |                                ~^                      ~~~~~~~~~~~~~~~~
+      |                                 |                          |
+      |                                 int                        const char *
+      |                                %s
+
