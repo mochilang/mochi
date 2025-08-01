@@ -603,11 +603,19 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		}
 	}
 
-	if dynamicCast == "" && isMap && (baseType == "" || baseType == "Any" || baseType == "Any?") {
-		if idxType == "Int" {
-			dynamicCast = " as MutableMap<Int, Any?>"
-		} else {
-			dynamicCast = " as MutableMap<String, Any?>"
+	if dynamicCast == "" {
+		if isMap && (baseType == "" || baseType == "Any" || baseType == "Any?") {
+			if idxType == "Int" {
+				dynamicCast = " as MutableMap<Int, Any?>"
+			} else {
+				dynamicCast = " as MutableMap<String, Any?>"
+			}
+		} else if isList && (baseType == "" || baseType == "Any" || baseType == "Any?") {
+			castType := "Any?"
+			if ix.Type != "" && ix.Type != "Any" && ix.Type != "Any?" {
+				castType = ix.Type
+			}
+			dynamicCast = " as MutableList<" + castType + ">"
 		}
 	}
 
@@ -796,7 +804,11 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, ".toInt()")
 		}
 	case "float", "Double", "Double?":
-		io.WriteString(w, ".toDouble()")
+		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+			io.WriteString(w, " as Double")
+		} else {
+			io.WriteString(w, ".toDouble()")
+		}
 	case "Int?":
 		if t := guessType(c.Value); t == "Any" || t == "Any?" {
 			io.WriteString(w, " as Int?")

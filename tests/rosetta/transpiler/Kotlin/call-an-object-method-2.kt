@@ -24,50 +24,30 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-var n: MutableList<Int> = mutableListOf(3, 5, 7)
-var a: MutableList<Int> = mutableListOf(2, 3, 2)
-var res: Int = crt(a, n)
-fun egcd(a: Int, b: Int): MutableList<Int> {
-    if (a == 0) {
-        return mutableListOf(b, 0, 1)
+data class Box(var Contents: String, var secret: Int)
+var funcs: MutableList<() -> Any> = newFactory()
+var New: () -> Any = funcs[0] as () -> Any
+var Count: () -> Any = funcs[1] as () -> Any
+fun newFactory(): MutableList<() -> Any> {
+    var sn: Int = 0
+    fun New(): Box {
+        sn = sn + 1
+        var b: Box = Box(secret = sn)
+        if (sn == 1) {
+            b.Contents = "rabbit"
+        } else {
+            if (sn == 2) {
+                b.Contents = "rock"
+            }
+        }
+        return b
     }
-    var res: MutableList<Int> = egcd(Math.floorMod(b, a), a)
-    var g: Int = res[0]!!
-    var x1: Int = res[1]!!
-    var y1: Int = res[2]!!
-    return mutableListOf(g, y1 - ((b / a) * x1), x1)
-}
 
-fun modInv(a: Int, m: Int): Int {
-    var r: MutableList<Int> = egcd(a, m)
-    if (r[0]!! != 1) {
-        return 0
+    fun Count(): Int {
+        return sn
     }
-    var x: Int = r[1]!!
-    if (x < 0) {
-        return x + m
-    }
-    return x
-}
 
-fun crt(a: MutableList<Int>, n: MutableList<Int>): Int {
-    var prod: Int = 1
-    var i: Int = 0
-    while (i < n.size) {
-        prod = prod * n[i]!!
-        i = i + 1
-    }
-    var x: Int = 0
-    i = 0
-    while (i < n.size) {
-        var ni: Int = n[i]!!
-        var ai: Int = a[i]!!
-        var p: Int = prod / ni
-        var inv: Int = modInv(Math.floorMod(p, ni), ni)
-        x = x + ((ai * inv) * p)
-        i = i + 1
-    }
-    return Math.floorMod(x, prod)
+    return mutableListOf<() -> Any>(::New as () -> Any, ::Count as () -> Any)
 }
 
 fun main() {
@@ -75,7 +55,6 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        println(res.toString() + " <nil>")
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
