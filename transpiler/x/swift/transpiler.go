@@ -1019,12 +1019,16 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	t := c.Type
-	force := false
-	if strings.HasSuffix(t, "!") {
-		force = true
-		t = strings.TrimSuffix(t, "!")
-	}
+    t := c.Type
+    force := false
+    if strings.HasSuffix(t, "!") {
+        force = true
+        t = strings.TrimSuffix(t, "!")
+    }
+    if t == "Any" || t == "Any?" {
+        c.Expr.emit(w)
+        return
+    }
 	switch t {
 	case "Int", "Int64", "Double", "String", "Bool", "BigInt":
 		if t == "Int" {
@@ -3436,19 +3440,20 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if types.IsStringType(baseType) {
 					isStr = true
 				}
-				if m, ok := baseType.(types.MapType); ok {
-					baseType = types.OptionType{Elem: m.Value}
-					force = true
-				} else if l, ok := baseType.(types.ListType); ok {
-					baseType = l.Elem
-					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
-						if _, ok2 := baseType.(types.ListType); ok2 {
-							skipUpdate = true
-						}
-					}
-				} else if _, ok := baseType.(types.StructType); ok {
-					baseType = types.AnyType{}
-				}
+                               if m, ok := baseType.(types.MapType); ok {
+                                        baseType = types.OptionType{Elem: m.Value}
+                                        force = true
+                                } else if l, ok := baseType.(types.ListType); ok {
+                                        baseType = l.Elem
+                                        if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+                                                if _, ok2 := baseType.(types.ListType); ok2 {
+                                                        skipUpdate = true
+                                                }
+                                        }
+                                } else if _, ok := baseType.(types.StructType); ok {
+                                        baseType = types.OptionType{Elem: types.AnyType{}}
+                                        force = true
+                                }
 			}
 			if env != nil && types.IsAnyType(baseType) {
 				if name := rootNameExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target}}}}); name != "" {
