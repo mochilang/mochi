@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 403/491
+Compiled and ran: 414/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -481,17 +481,17 @@ Compiled and ran: 403/491
 | 472 | generic-swap | ✓ | 14.772ms | 10.9 MB |
 | 473 | get-system-command-output | ✓ | 18.994ms | 10.3 MB |
 | 474 | giuga-numbers | ✓ | 8.834ms | 3.6 MB |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
-| 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 475 | globally-replace-text-in-several-files | ✓ | 8.587ms | 3.1 MB |
+| 476 | goldbachs-comet | ✓ | 25.588ms | 8.5 MB |
+| 477 | golden-ratio-convergence | ✓ | 17.909ms | 10.3 MB |
+| 478 | graph-colouring | ✓ | 13.328ms | 9.9 MB |
+| 479 | gray-code | ✓ | 9.865ms | 3.5 MB |
+| 480 | gui-component-interaction | ✓ | 27.311ms | 7.1 MB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 8.501ms | 3.0 MB |
+| 482 | gui-maximum-window-dimensions | ✓ | 11.771ms | 2.3 MB |
+| 483 | http | ✓ | 151.1ms | 2.8 MB |
+| 484 | image-noise | ✓ | 115.648ms | 4.5 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 66.448ms | 1.4 MB |
 | 486 | md5 |   |  |  |
 | 487 | nim-game |   |  |  |
 | 488 | plasma-effect |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 403/491
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-08-01 18:13 +0700_
+_Last updated: 2025-08-01 18:33 +0700_

@@ -40,6 +40,46 @@ List<int> _sha256(List<int> bs) {
 }
 `
 
+const helperMD5 = `
+String _md5hex(String s) {
+  final tmp = File('${Directory.systemTemp.path}/md5_${DateTime.now().microsecondsSinceEpoch}.txt');
+  tmp.writeAsStringSync(s);
+  final result = Process.runSync('md5sum', [tmp.path]);
+  tmp.deleteSync();
+  if (result.stdout is String) {
+    return (result.stdout as String).split(' ')[0];
+  }
+  return '';
+}
+`
+
+const helperFetch = `
+dynamic _fetch(String url) {
+  if (url.startsWith('file://')) {
+    final path = url.substring(7);
+    final text = File(path).readAsStringSync();
+    try {
+      return jsonDecode(text);
+    } catch (_) {
+      return text;
+    }
+  }
+  final result = Process.runSync('curl', ['-s', url]);
+  if (result.exitCode != 0) {
+    throw Exception('curl failed');
+  }
+  var text = '';
+  if (result.stdout is String) {
+    text = result.stdout as String;
+  }
+  try {
+    return jsonDecode(text);
+  } catch (_) {
+    return text;
+  }
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -65,6 +105,8 @@ var (
 	useLookupHost    bool
 	useBigRat        bool
 	useSHA256        bool
+	useMD5           bool
+	useFetch         bool
 	useEnv           bool
 	useSubstrClamp   bool
 	useRepeat        bool
@@ -1179,31 +1221,15 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		return err
 	}
 	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "dynamic" || rt == "dynamic") {
+		// For dynamic values assume the underlying types implement the
+		// comparison operators directly and emit a normal comparison.
 		if err := b.Left.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ".toString().compareTo("); err != nil {
+		if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
 			return err
 		}
-		if err := b.Right.emit(w); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, ".toString())"); err != nil {
-			return err
-		}
-		var cmp string
-		switch b.Op {
-		case "<":
-			cmp = " < 0"
-		case "<=":
-			cmp = " <= 0"
-		case ">":
-			cmp = " > 0"
-		case ">=":
-			cmp = " >= 0"
-		}
-		_, err := io.WriteString(w, cmp)
-		return err
+		return b.Right.emit(w)
 	}
 	lp := precedence(b.Left)
 	bp := precedence(b)
@@ -1224,7 +1250,10 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	op := b.Op
 	if b.Op == "/" {
-		if (lt == "int" && rt == "int") || lt == "BigInt" || rt == "BigInt" {
+		if (lt == "int" && rt == "int") || lt == "BigInt" || rt == "BigInt" ||
+			(lt == "dynamic" && rt != "num") || (rt == "dynamic" && lt != "num") {
+			// Use integer division when operands are integers or dynamic values
+			// that are likely integers.
 			op = "~/"
 		}
 	}
@@ -1874,7 +1903,7 @@ func (i *IndexExpr) emit(w io.Writer) error {
 	}
 	if i.Index != nil {
 		idxType := inferType(i.Index)
-		if idxType == "BigInt" {
+		if idxType == "BigInt" || idxType == "num" || idxType == "dynamic" {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -3850,17 +3879,17 @@ func Emit(w io.Writer, p *Program) error {
 			added[path] = true
 		}
 	}
-	if usesJSON && !added["dart:convert"] {
+	if (usesJSON || useFetch) && !added["dart:convert"] {
 		if _, err := io.WriteString(w, "import 'dart:convert';\n"); err != nil {
 			return err
 		}
 	}
-	if (useNow || useInput || useSHA256 || useEnv) && !added["dart:io"] {
+	if (useNow || useInput || useSHA256 || useEnv || useFetch || useMD5) && !added["dart:io"] {
 		if _, err := io.WriteString(w, "import 'dart:io';\n"); err != nil {
 			return err
 		}
 	}
-	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv {
+	if len(p.Imports) > 0 || usesJSON || useNow || useInput || useSHA256 || useEnv || useFetch || useMD5 {
 		if _, err := io.WriteString(w, "\n"); err != nil {
 			return err
 		}
@@ -3912,6 +3941,16 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if useFetch {
+		if _, err := io.WriteString(w, helperFetch+"\n"); err != nil {
+			return err
+		}
+	}
+	if useMD5 {
+		if _, err := io.WriteString(w, helperMD5+"\n"); err != nil {
+			return err
+		}
+	}
 	for _, name := range structOrder {
 		fields := structFields[name]
 		if _, err := fmt.Fprintf(w, "class %s {\n", name); err != nil {
@@ -3949,7 +3988,28 @@ func Emit(w io.Writer, p *Program) error {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, "});\n}\n\n"); err != nil {
+		if _, err := io.WriteString(w, "});\n"); err != nil {
+			return err
+		}
+		if useFetch {
+			if _, err := fmt.Fprintf(w, "  factory %s.fromJson(Map<String, dynamic> m) => %s(", name, name); err != nil {
+				return err
+			}
+			for i, f := range fields {
+				if i > 0 {
+					if _, err := io.WriteString(w, ", "); err != nil {
+						return err
+					}
+				}
+				if _, err := fmt.Fprintf(w, "%s: m['%s']", f.Name, f.Name); err != nil {
+					return err
+				}
+			}
+			if _, err := io.WriteString(w, ");\n"); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "}\n\n"); err != nil {
 			return err
 		}
 	}
@@ -4084,6 +4144,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useLookupHost = false
 	useBigRat = false
 	useSHA256 = false
+	useMD5 = false
+	useFetch = false
 	useEnv = false
 	useSubstrClamp = false
 	useRepeat = false
@@ -4465,7 +4527,7 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if typ == "" && e != nil {
-			if st.Var.Type == nil {
+			if st.Let.Type == nil {
 				// leave type empty so that VarStmt decides based on runtime use
 				typ = ""
 			} else {
@@ -4475,8 +4537,16 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 						if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
 							typ = rt
 						}
+						if n.Name == "_fetch" && typ != "" {
+							e = &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: typ}, Field: "fromJson"}, Args: []Expr{ce}}
+						}
 					}
 				}
+			}
+		}
+		if ce, ok := e.(*CallExpr); ok {
+			if n, ok2 := ce.Func.(*Name); ok2 && n.Name == "_fetch" && typ != "" {
+				e = &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: typ}, Field: "fromJson"}, Args: []Expr{ce}}
 			}
 		}
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
@@ -4515,8 +4585,16 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 						if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
 							typ = rt
 						}
+						if n.Name == "_fetch" && typ != "" {
+							e = &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: typ}, Field: "fromJson"}, Args: []Expr{ce}}
+						}
 					}
 				}
+			}
+		}
+		if ce, ok := e.(*CallExpr); ok {
+			if n, ok2 := ce.Func.(*Name); ok2 && n.Name == "_fetch" && typ != "" {
+				e = &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: typ}, Field: "fromJson"}, Args: []Expr{ce}}
 			}
 		}
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
@@ -4854,6 +4932,18 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 							if len(call.Call.Args) == 0 {
 								expr = &StringLit{Value: testpkg.FifteenPuzzleExample()}
 								i++
+								continue
+							}
+						case "MD5Hex":
+							if len(call.Call.Args) == 1 {
+								arg, err := convertExpr(call.Call.Args[0])
+								if err != nil {
+									return nil, err
+								}
+								useMD5 = true
+								expr = &CallExpr{Func: &Name{Name: "_md5hex"}, Args: []Expr{arg}}
+								i++
+								replaced = true
 								continue
 							}
 						}
@@ -5424,6 +5514,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return expr, nil
 		}
 		return nil, err
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		useFetch = true
+		return &CallExpr{Func: &Name{Name: "_fetch"}, Args: []Expr{urlExpr}}, nil
 	case p.Struct != nil:
 		return convertStructLiteral(p.Struct)
 	case p.If != nil:
