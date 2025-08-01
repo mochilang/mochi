@@ -33,6 +33,7 @@ type (
 	List    Node
 	Vector  Node
 	Map     Node
+	Set     Node
 	Entry   Node
 	Symbol  Node
 	Keyword Node

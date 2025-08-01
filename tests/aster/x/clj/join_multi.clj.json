@@ -1,0 +1,639 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Items"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "orderId"
+            },
+            {
+              "kind": "symbol",
+              "text": "sku"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "customerId"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Customers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "customers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Alice"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Bob"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "101"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "items"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":orderId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":sku"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "a"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":orderId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "101"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":sku"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "b"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "result"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "o"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "orders"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "c"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "customers"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "i"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "items"
+                },
+                {
+                  "kind": "keyword",
+                  "text": ":when"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "and"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "="
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":customerId"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "o"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":id"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "c"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "="
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":id"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "o"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":orderId"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "i"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":name"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "c"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":sku"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":sku"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "i"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "string",
+              "text": "--- Multi Join ---"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "doseq"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "r"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "result"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "println"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "r"
+                    }
+                  ]
+                },
+                {
+                  "kind": "string",
+                  "text": "bought item"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":sku"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "r"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

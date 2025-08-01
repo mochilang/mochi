@@ -1,0 +1,1051 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Partsupp"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "part"
+            },
+            {
+              "kind": "symbol",
+              "text": "supplier"
+            },
+            {
+              "kind": "symbol",
+              "text": "cost"
+            },
+            {
+              "kind": "symbol",
+              "text": "qty"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Suppliers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "nation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Nations"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "nations"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "A"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "B"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "suppliers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":nation"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":nation"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "partsupp"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":part"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":supplier"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":cost"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "10"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":qty"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":part"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":supplier"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":cost"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "20"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":qty"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":part"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "200"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":supplier"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":cost"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "5"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":qty"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "3"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "filtered"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "ps"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "partsupp"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "s"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "suppliers"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "n"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "nations"
+                },
+                {
+                  "kind": "keyword",
+                  "text": ":when"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "and"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "="
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":id"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":supplier"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ps"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "="
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":id"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "n"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":nation"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "s"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "="
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":name"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "n"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "string",
+                          "text": "A"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":part"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":part"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "ps"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":value"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "*"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":cost"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ps"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":qty"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "ps"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "grouped"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "g"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "for"
+                    },
+                    {
+                      "kind": "vector",
+                      "children": [
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "k"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "rows"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "group-by"
+                            },
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "for"
+                                },
+                                {
+                                  "kind": "vector",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "x"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "filtered"
+                                    },
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":let"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "k"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":part"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "x"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "map",
+                                  "children": [
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":key"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "k"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":item"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "keyword",
+                          "text": ":let"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            },
+                            {
+                              "kind": "map",
+                              "children": [
+                                {
+                                  "kind": "entry",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":key"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "k"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "entry",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":items"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "map"
+                                        },
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":item"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "rows"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "g"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":part"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":key"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "g"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":total"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "reduce"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "+"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "0"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "for"
+                            },
+                            {
+                              "kind": "vector",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "r"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":items"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "g"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "keyword",
+                                  "text": ":value"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "r"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "symbol",
+              "text": "grouped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

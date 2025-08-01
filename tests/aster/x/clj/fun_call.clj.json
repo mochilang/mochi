@@ -112,6 +112,9 @@
           "text": "-main"
         },
         {
+          "kind": "vector"
+        },
+        {
           "kind": "list",
           "children": [
             {

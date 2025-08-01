@@ -1,0 +1,1813 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Lineitem"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "l_orderkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "l_returnflag"
+            },
+            {
+              "kind": "symbol",
+              "text": "l_extendedprice"
+            },
+            {
+              "kind": "symbol",
+              "text": "l_discount"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "o_orderkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "o_custkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "o_orderdate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Customer"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "c_custkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_name"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_acctbal"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_nationkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_address"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_phone"
+            },
+            {
+              "kind": "symbol",
+              "text": "c_comment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Nation"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "n_nationkey"
+            },
+            {
+              "kind": "symbol",
+              "text": "n_name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "nation"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":n_nationkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":n_name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "BRAZIL"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "customer"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_custkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Alice"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_acctbal"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_nationkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_address"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "123 St"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_phone"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "123-456"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_comment"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Loyal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_orderkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1000"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_custkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_orderdate"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "1993-10-15"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_orderkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2000"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_custkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":o_orderdate"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "1994-01-02"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "lineitem"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_orderkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1000"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_returnflag"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "R"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_extendedprice"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1000"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_discount"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "0.1"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_orderkey"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2000"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_returnflag"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "N"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_extendedprice"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "500"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":l_discount"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "0"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "start_date"
+        },
+        {
+          "kind": "string",
+          "text": "1993-10-01"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "end_date"
+        },
+        {
+          "kind": "string",
+          "text": "1994-01-01"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "result"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "g"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "sort-by"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "fn"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "-"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "reduce"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "+"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "0"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "for"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":items"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "g"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "*"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":l_extendedprice"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "keyword",
+                                                  "text": ":l"
+                                                },
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "x"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "-"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "keyword",
+                                                  "text": ":l_discount"
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":l"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "x"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "for"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "vector",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "k"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "rows"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "group-by"
+                                },
+                                {
+                                  "kind": "keyword",
+                                  "text": ":key"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "for"
+                                    },
+                                    {
+                                      "kind": "vector",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "c"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "customer"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "o"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "orders"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "l"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "lineitem"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "n"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "nation"
+                                        },
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":when"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "and"
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "="
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":o_custkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "o"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_custkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "c"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "="
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":l_orderkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "l"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":o_orderkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "o"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "="
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":n_nationkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "n"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_nationkey"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "c"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "="
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "and"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "neg?"
+                                                        },
+                                                        {
+                                                          "kind": "list",
+                                                          "children": [
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "compare"
+                                                            },
+                                                            {
+                                                              "kind": "list",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "symbol",
+                                                                  "text": "and"
+                                                                },
+                                                                {
+                                                                  "kind": "list",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "symbol",
+                                                                      "text": "\u003e="
+                                                                    },
+                                                                    {
+                                                                      "kind": "list",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "symbol",
+                                                                          "text": "compare"
+                                                                        },
+                                                                        {
+                                                                          "kind": "list",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "keyword",
+                                                                              "text": ":o_orderdate"
+                                                                            },
+                                                                            {
+                                                                              "kind": "symbol",
+                                                                              "text": "o"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": "symbol",
+                                                                          "text": "start_date"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": "number",
+                                                                      "text": "0"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": "list",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "keyword",
+                                                                      "text": ":o_orderdate"
+                                                                    },
+                                                                    {
+                                                                      "kind": "symbol",
+                                                                      "text": "o"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": "symbol",
+                                                              "text": "end_date"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":l_returnflag"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "l"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "string",
+                                                  "text": "R"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":let"
+                                        },
+                                        {
+                                          "kind": "vector",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "k"
+                                            },
+                                            {
+                                              "kind": "map",
+                                              "children": [
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_custkey"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_custkey"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_name"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_name"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_acctbal"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_acctbal"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_address"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_address"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_phone"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_phone"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c_comment"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":c_comment"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "c"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":n_name"
+                                                    },
+                                                    {
+                                                      "kind": "list",
+                                                      "children": [
+                                                        {
+                                                          "kind": "keyword",
+                                                          "text": ":n_name"
+                                                        },
+                                                        {
+                                                          "kind": "symbol",
+                                                          "text": "n"
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "map",
+                                      "children": [
+                                        {
+                                          "kind": "entry",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":key"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "k"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "entry",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":item"
+                                            },
+                                            {
+                                              "kind": "map",
+                                              "children": [
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":c"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "c"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":o"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "o"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":l"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "l"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "entry",
+                                                  "children": [
+                                                    {
+                                                      "kind": "keyword",
+                                                      "text": ":n"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "n"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "keyword",
+                              "text": ":let"
+                            },
+                            {
+                              "kind": "vector",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "g"
+                                },
+                                {
+                                  "kind": "map",
+                                  "children": [
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":key"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "k"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "entry",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":items"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "map"
+                                            },
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":item"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "rows"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "g"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_custkey"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_custkey"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_name"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_name"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":revenue"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "reduce"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "+"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "0"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "for"
+                            },
+                            {
+                              "kind": "vector",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":items"
+                                    },
+                                    {
+                                      "kind": "symbol",
+                                      "text": "g"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "*"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "keyword",
+                                      "text": ":l_extendedprice"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":l"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "-"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "1"
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":l_discount"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "keyword",
+                                              "text": ":l"
+                                            },
+                                            {
+                                              "kind": "symbol",
+                                              "text": "x"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_acctbal"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_acctbal"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":n_name"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":n_name"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_address"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_address"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_phone"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_phone"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":c_comment"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":c_comment"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":key"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "g"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "symbol",
+              "text": "result"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}
