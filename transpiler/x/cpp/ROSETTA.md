@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (230/491) - Last updated 2025-08-01 18:27 +0700:
+Checklist of programs that currently transpile and run (234/491) - Last updated 2025-08-01 18:56 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -208,10 +208,10 @@ Checklist of programs that currently transpile and run (230/491) - Last updated 
 | 201 | chowla-numbers | ✓ | 174.0µs | 13.23MB |
 | 202 | church-numerals-1 | ✓ | 677.0µs | 13.62MB |
 | 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points |   |  |  |
-| 205 | circular-primes |   |  |  |
-| 206 | cistercian-numerals |   |  |  |
-| 207 | comma-quibbling |   |  |  |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 347.0µs | 14.15MB |
+| 205 | circular-primes | ✓ | 814.0µs | 13.68MB |
+| 206 | cistercian-numerals | ✓ | 12.0ms | 14.62MB |
+| 207 | comma-quibbling | ✓ | 172.0µs | 12.96MB |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 210 | compound-data-type |   |  |  |
