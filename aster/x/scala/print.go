@@ -230,8 +230,11 @@ func writeObjectDefinition(b *bytes.Buffer, n *Node, indent int) {
 	idx := 1
 	if idx < len(n.Children) && n.Children[idx].Kind == "extends_clause" {
 		b.WriteString(" extends ")
-		if len(n.Children[idx].Children) > 0 {
-			writeExpr(b, n.Children[idx].Children[0], indent)
+		for i, ex := range n.Children[idx].Children {
+			if i > 0 {
+				b.WriteString(" with ")
+			}
+			writeExpr(b, ex, indent)
 		}
 		idx++
 	}
@@ -253,6 +256,17 @@ func writeTraitDefinition(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString(ind)
 	b.WriteString("trait ")
 	b.WriteString(n.Children[0].Text)
+	idx := 1
+	if idx < len(n.Children) && n.Children[idx].Kind == "extends_clause" {
+		b.WriteString(" extends ")
+		for i, ex := range n.Children[idx].Children {
+			if i > 0 {
+				b.WriteString(" with ")
+			}
+			writeExpr(b, ex, indent)
+		}
+		idx++
+	}
 	b.WriteByte('\n')
 }
 
