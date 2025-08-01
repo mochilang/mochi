@@ -1,0 +1,173 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "M"
+                },
+                {
+                  "kind": "{}",
+                  "children": [
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "a"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "1"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ":",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "b"
+                            },
+                            {
+                              "kind": "number",
+                              "text": "2"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "K"
+                    },
+                    {
+                      "kind": "atom",
+                      "text": "a"
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "a"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "=",
+                          "children": [
+                            {
+                              "kind": "var",
+                              "text": "K1"
+                            },
+                            {
+                              "kind": "atom",
+                              "text": "b"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "writeln",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "b"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

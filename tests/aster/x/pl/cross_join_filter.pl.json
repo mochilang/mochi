@@ -1,0 +1,148 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Nums"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "3"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Letters"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "A"
+                        },
+                        {
+                          "kind": "atom",
+                          "text": "B"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "=",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "Pairs"
+                        },
+                        {
+                          "kind": "list"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "writeln",
+                      "children": [
+                        {
+                          "kind": "atom",
+                          "text": "--- Even pairs ---"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+ERROR: /workspace/mochi/tests/aster/x/pl/exists_builtin.pl:2: Initialization goal raised exception:
+ERROR: main/0: Unknown procedure: exists/2
