@@ -1,0 +1,51 @@
+signal: illegal instruction
+main/main.swift:62: Fatal error: Unexpectedly found nil while unwrapping an Optional value
+
+*** Signal 4: Backtracing from 0x7f2c5e1608f5... done ***
+
+*** Program crashed: Illegal instruction at 0x00007f2c5e1608f5 ***
+
+Thread 0 "main" crashed:
+
+0      0x00007f2c5e1608f5 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
+1 [ra] 0x00007f2c5e1606e5 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
+2 [ra] 0x00007f2c5e16055c closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
+3 [ra] 0x00007f2c5e2d6505 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
+4 [ra] 0x0000559319a3314b main + 3498 in main
+5 [ra] 0x00007f2c5cc0a1ca <unknown> in libc.so.6
+6 [ra] 0x00007f2c5cc0a28b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000003  3
+rdx 0x0000000000000001  1
+rcx 0x0000000000000007  7
+rbx 0x000055961be4d511  94103201436945
+rsi 0x0000000000000006  6
+rdi 0x0000559342d119b0  70 00 00 00 00 00 00 00 50 00 00 00 00 00 00 00  p·······P·······
+rbp 0x00007fffe6ada300  40 a3 ad e6 ff 7f 00 00 e5 06 16 5e 2c 7f 00 00  @£­æÿ···å··^,···
+rsp 0x00007fffe6ada2f0  39 00 00 00 00 00 00 00 3e 00 00 00 00 00 00 00  9·······>·······
+ r8 0x0000559342cf1010  05 00 07 00 04 00 07 00 07 00 06 00 02 00 01 00  ················
+ r9 0x0000000000000007  7
+r10 0x0000559342d119c0  11 d5 e4 1b 96 55 00 00 29 ac c4 b8 d9 68 da 77  ·Õä··U··)¬Ä¸ÙhÚw
+r11 0x77da68d9b8c4ac29  8636330519753436201
+r12 0x0000000000000001  1
+r13 0x0000559342d04f00  b0 7e d0 42 93 55 00 00 e0 82 d0 42 93 55 00 00  °~ÐB·U··à·ÐB·U··
+r14 0x0000000000000001  1
+r15 0x000000000000000b  11
+rip 0x00007f2c5e1608f5  0f 0b 48 83 ec 08 48 8d 05 be f8 45 00 48 8d 3d  ··H·ì·H··¾øE·H·=
+
+rflags 0x0000000000010206  PF
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (17 omitted):
+
+0x0000559319a30000–0x0000559319a33dc0 48ff9fcdece45e67ba6241c2d9d30d0835c35d30 main            /tmp/TestSwiftTranspiler_Rosetta_Golden2480878753/001/main
+0x00007f2c5cbe0000–0x00007f2c5cd8fcb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f2c5dffa000–0x00007f2c5e5892d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.08s
+

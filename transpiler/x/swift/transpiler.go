@@ -2648,8 +2648,19 @@ func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
 func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 	if td.Alias != nil {
 		// simple type alias
-		ali := toSwiftType(td.Alias)
+		ali := ""
 		if td.Alias.Fun != nil {
+			// check for self-referential alias like Church numerals
+			selfRef := false
+			for _, p := range td.Alias.Fun.Params {
+				if p.Simple != nil && *p.Simple == td.Name {
+					selfRef = true
+					break
+				}
+			}
+			if !selfRef && td.Alias.Fun.Return != nil && td.Alias.Fun.Return.Simple != nil && *td.Alias.Fun.Return.Simple == td.Name {
+				selfRef = true
+			}
 			params := make([]string, len(td.Alias.Fun.Params))
 			for i, p := range td.Alias.Fun.Params {
 				esc := isFuncTypeRef(p)
@@ -2658,17 +2669,23 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 						esc = isFuncType(ali)
 					}
 				}
+				typ := toSwiftTypeSelf(p, td.Name, env)
+				if selfRef && p.Simple != nil && *p.Simple == td.Name {
+					esc = false
+				}
 				if esc {
-					params[i] = "@escaping " + toSwiftType(p)
+					params[i] = "@escaping " + typ
 				} else {
-					params[i] = toSwiftType(p)
+					params[i] = typ
 				}
 			}
 			ret := "Any"
 			if td.Alias.Fun.Return != nil {
-				ret = toSwiftType(td.Alias.Fun.Return)
+				ret = toSwiftTypeSelf(td.Alias.Fun.Return, td.Name, env)
 			}
 			ali = "(" + strings.Join(params, ", ") + ") -> " + ret
+		} else {
+			ali = toSwiftType(td.Alias)
 		}
 		return &RawStmt{Code: fmt.Sprintf("typealias %s = %s\n", td.Name, ali)}, nil
 	}
@@ -4363,6 +4380,13 @@ func isNullLiteral(e *parser.Expr) bool {
 
 func isFuncTypeRef(t *parser.TypeRef) bool {
 	return t != nil && t.Fun != nil
+}
+
+func toSwiftTypeSelf(t *parser.TypeRef, self string, env *types.Env) string {
+	if t != nil && t.Simple != nil && *t.Simple == self {
+		return "(@escaping (Any?) -> Any?) -> (Any?) -> Any?"
+	}
+	return toSwiftType(t)
 }
 
 func isFuncType(t types.Type) bool {

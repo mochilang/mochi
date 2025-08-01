@@ -1,0 +1,24 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden4146221692/001/main.swift:11:13: error: 'nil' requires a contextual type
+ 9 | func example5(_ b1: Bool, _ b2: Bool) {
+10 |     if b1 {
+11 |         _ = nil
+   |             `- error: 'nil' requires a contextual type
+12 |     } else if b2 {
+13 |         _ = nil
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4146221692/001/main.swift:13:13: error: 'nil' requires a contextual type
+11 |         _ = nil
+12 |     } else if b2 {
+13 |         _ = nil
+   |             `- error: 'nil' requires a contextual type
+14 |     } else {
+15 |         _ = nil
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden4146221692/001/main.swift:15:13: error: 'nil' requires a contextual type
+13 |         _ = nil
+14 |     } else {
+15 |         _ = nil
+   |             `- error: 'nil' requires a contextual type
+16 |     }
+17 |     

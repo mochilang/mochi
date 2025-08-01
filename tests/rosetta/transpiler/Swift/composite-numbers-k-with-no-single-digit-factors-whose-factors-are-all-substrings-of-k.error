@@ -1,0 +1,54 @@
+signal: illegal instruction
+Swift/Character.swift:177: Fatal error: Can't form a Character from a String containing more than one extended grapheme cluster
+
+*** Signal 4: Backtracing from 0x7f63cede48f5... done ***
+
+*** Program crashed: Illegal instruction at 0x00007f63cede48f5 ***
+
+Thread 0 "main" crashed:
+
+0              0x00007f63cede48f5 closure #1 in closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 309 in libswiftCore.so
+1 [ra]         0x00007f63cede46e5 closure #1 in closure #1 in _assertionFailure(_:_:file:line:flags:) + 324 in libswiftCore.so
+2 [ra]         0x00007f63cede455c closure #1 in _assertionFailure(_:_:file:line:flags:) + 379 in libswiftCore.so
+3 [ra]         0x00007f63cef5a505 _assertionFailure(_:_:file:line:flags:) + 276 in libswiftCore.so
+4 [ra]         0x00007f63cef5a6ee _fatalErrorMessage(_:_:file:line:flags:) + 45 in libswiftCore.so
+5 [ra] [thunk] 0x00007f63cef61b95 Character.init(_:) + 276 in libswiftCore.so
+6 [ra]         0x00005567ff7d5f42 main() + 1329 in main
+7 [ra]         0x00005567ff7d8359 main + 8 in main
+8 [ra]         0x00007f63cd88e1ca <unknown> in libc.so.6
+9 [ra]         0x00007f63cd88e28b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000000000005  5
+rdx 0x0000000000000001  1
+rcx 0x0000000000000001  1
+rbx 0x0000000556826b08  22926224136
+rsi 0x0000000000000000  0
+rdi 0x0000556826b08050  30 39 33 cf 63 7f 00 00 71 00 00 00 00 00 00 00  093Ïc···q·······
+rbp 0x00007ffde65b5170  b0 51 5b e6 fd 7f 00 00 e5 46 de ce 63 7f 00 00  °Q[æý···åFÞÎc···
+rsp 0x00007ffde65b5160  57 00 00 00 00 00 00 00 b1 00 00 00 00 00 00 00  W·······±·······
+ r8 0x0000556826af5010  01 00 01 00 03 00 02 00 01 00 01 00 00 00 01 00  ················
+ r9 0x0000000000000007  7
+r10 0x0000556826b08060  08 6b 82 56 05 00 00 00 64 4d 88 43 b0 91 cc db  ·k·V····dM·C°·ÌÛ
+r11 0xdbcc91b043884d64  15838194175788469604
+r12 0x0000000000000001  1
+r13 0x00007ffde65b57a8  e0 7e b0 26 68 55 00 00 01 00 00 00 00 00 00 00  à~°&hU··········
+r14 0x0000000000000001  1
+r15 0x000000000000000b  11
+rip 0x00007f63cede48f5  0f 0b 48 83 ec 08 48 8d 05 be f8 45 00 48 8d 3d  ··H·ì·H··¾øE·H·=
+
+rflags 0x0000000000010206  PF
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (17 omitted):
+
+0x00005567ff7d4000–0x00005567ff7d8c18 5ebfe8893205c7344886cdfca3db0ebed21c6cde main            /tmp/TestSwiftTranspiler_Rosetta_Golden3792596161/001/main
+0x00007f63cd864000–0x00007f63cda13cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f63cec7e000–0x00007f63cf20d2d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.08s
+

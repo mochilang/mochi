@@ -1,0 +1,239 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:89:34: warning: forced cast of '[Int]' to same type has no effect
+ 87 |     return table
+ 88 | }
+ 89 | var table: [Int] = (crc32Table() as! [Int])
+    |                                  `- warning: forced cast of '[Int]' to same type has no effect
+ 90 | func crc32(_ s: String) -> Int {
+ 91 |     var crc: Int = 4294967295
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:107:1: warning: using '_' to ignore the result of a Void-returning function is redundant
+105 |     print(_p(hex))
+106 | }
+107 | _ = main()
+    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
+108 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:23:32: warning: forced cast of 'Int' to same type has no effect
+ 21 |         let bbit = (y % 2)
+ 22 |         if (abit != bbit) {
+ 23 |             res = ((res + bit) as! Int)
+    |                                `- warning: forced cast of 'Int' to same type has no effect
+ 24 |         }
+ 25 |         x = ((x / 2) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:25:22: warning: forced cast of 'Int' to same type has no effect
+ 23 |             res = ((res + bit) as! Int)
+ 24 |         }
+ 25 |         x = ((x / 2) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 26 |         y = ((y / 2) as! Int)
+ 27 |         bit = ((bit * 2) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:26:22: warning: forced cast of 'Int' to same type has no effect
+ 24 |         }
+ 25 |         x = ((x / 2) as! Int)
+ 26 |         y = ((y / 2) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 27 |         bit = ((bit * 2) as! Int)
+ 28 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:27:26: warning: forced cast of 'Int' to same type has no effect
+ 25 |         x = ((x / 2) as! Int)
+ 26 |         y = ((y / 2) as! Int)
+ 27 |         bit = ((bit * 2) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 28 |     }
+ 29 |     return res
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:35:22: warning: forced cast of 'Int' to same type has no effect
+ 33 |     var i: Int = 0
+ 34 |     while (i < n) {
+ 35 |         v = ((v / 2) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 36 |         i = ((i + 1) as! Int)
+ 37 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:36:22: warning: forced cast of 'Int' to same type has no effect
+ 34 |     while (i < n) {
+ 35 |         v = ((v / 2) as! Int)
+ 36 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 37 |     }
+ 38 |     return v
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:43:51: warning: forced cast of 'String' to same type has no effect
+ 41 |     let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ 42 |     let lower = "abcdefghijklmnopqrstuvwxyz"
+ 43 |     var idx: Int = Int((String(describing: (upper as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (upper as! String)) ) ?? -1))
+    |                                                   `- warning: forced cast of 'String' to same type has no effect
+ 44 |     if (idx >= 0) {
+ 45 |         return (65 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:43:112: warning: forced cast of 'String' to same type has no effect
+ 41 |     let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ 42 |     let lower = "abcdefghijklmnopqrstuvwxyz"
+ 43 |     var idx: Int = Int((String(describing: (upper as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (upper as! String)) ) ?? -1))
+    |                                                                                                                `- warning: forced cast of 'String' to same type has no effect
+ 44 |     if (idx >= 0) {
+ 45 |         return (65 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:43:170: warning: forced cast of 'String' to same type has no effect
+ 41 |     let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ 42 |     let lower = "abcdefghijklmnopqrstuvwxyz"
+ 43 |     var idx: Int = Int((String(describing: (upper as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (upper as! String)) ) ?? -1))
+    |                                                                                                                                                                          `- warning: forced cast of 'String' to same type has no effect
+ 44 |     if (idx >= 0) {
+ 45 |         return (65 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:47:42: warning: forced cast of 'String' to same type has no effect
+ 45 |         return (65 + idx)
+ 46 |     }
+ 47 |     idx = Int((String(describing: (lower as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (lower as! String)) ) ?? -1))
+    |                                          `- warning: forced cast of 'String' to same type has no effect
+ 48 |     if (idx >= 0) {
+ 49 |         return (97 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:47:103: warning: forced cast of 'String' to same type has no effect
+ 45 |         return (65 + idx)
+ 46 |     }
+ 47 |     idx = Int((String(describing: (lower as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (lower as! String)) ) ?? -1))
+    |                                                                                                       `- warning: forced cast of 'String' to same type has no effect
+ 48 |     if (idx >= 0) {
+ 49 |         return (97 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:47:161: warning: forced cast of 'String' to same type has no effect
+ 45 |         return (65 + idx)
+ 46 |     }
+ 47 |     idx = Int((String(describing: (lower as! String)).firstIndex(of: Character(String(describing: (ch as! String))))?.utf16Offset(in: String(describing: (lower as! String)) ) ?? -1))
+    |                                                                                                                                                                 `- warning: forced cast of 'String' to same type has no effect
+ 48 |     if (idx >= 0) {
+ 49 |         return (97 + idx)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:65:59: warning: forced cast of 'String' to same type has no effect
+ 63 |     while (v > 0) {
+ 64 |         let d = (v % 16)
+ 65 |         out = ((String(Array(digits)[d..<(d + 1)]) + out) as! String)
+    |                                                           `- warning: forced cast of 'String' to same type has no effect
+ 66 |         v = ((v / 16) as! Int)
+ 67 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:66:23: warning: forced cast of 'Int' to same type has no effect
+ 64 |         let d = (v % 16)
+ 65 |         out = ((String(Array(digits)[d..<(d + 1)]) + out) as! String)
+ 66 |         v = ((v / 16) as! Int)
+    |                       `- warning: forced cast of 'Int' to same type has no effect
+ 67 |     }
+ 68 |     return out
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:78:49: warning: forced cast of 'Int' to same type has no effect
+ 76 |         while (j < 8) {
+ 77 |             if ((word % 2) == 1) {
+ 78 |                 word = Int(xor(Int(rshift((word as! Int), 1)), 3988292384))
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+ 79 |             } else {
+ 80 |                 word = Int(rshift((word as! Int), 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:80:41: warning: forced cast of 'Int' to same type has no effect
+ 78 |                 word = Int(xor(Int(rshift((word as! Int), 1)), 3988292384))
+ 79 |             } else {
+ 80 |                 word = Int(rshift((word as! Int), 1))
+    |                                         `- warning: forced cast of 'Int' to same type has no effect
+ 81 |             }
+ 82 |             j = ((j + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:82:26: warning: forced cast of 'Int' to same type has no effect
+ 80 |                 word = Int(rshift((word as! Int), 1))
+ 81 |             }
+ 82 |             j = ((j + 1) as! Int)
+    |                          `- warning: forced cast of 'Int' to same type has no effect
+ 83 |         }
+ 84 |         table = (_append(table, word) as! [Int])
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:85:22: warning: forced cast of 'Int' to same type has no effect
+ 83 |         }
+ 84 |         table = (_append(table, word) as! [Int])
+ 85 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 86 |     }
+ 87 |     return table
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:94:56: warning: forced cast of 'String' to same type has no effect
+ 92 |     var i: Int = 0
+ 93 |     while (i < Int(((s).count))) {
+ 94 |         let c = Int(ord((String(Array(s)[i..<(i + 1)]) as! String)))
+    |                                                        `- warning: forced cast of 'String' to same type has no effect
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:95:40: warning: forced cast of 'Int' to same type has no effect
+ 93 |     while (i < Int(((s).count))) {
+ 94 |         let c = Int(ord((String(Array(s)[i..<(i + 1)]) as! String)))
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+    |                                        `- warning: forced cast of 'Int' to same type has no effect
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+ 97 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:95:53: warning: forced cast of 'Int' to same type has no effect
+ 93 |     while (i < Int(((s).count))) {
+ 94 |         let c = Int(ord((String(Array(s)[i..<(i + 1)]) as! String)))
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+    |                                                     `- warning: forced cast of 'Int' to same type has no effect
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+ 97 |         i = ((i + 1) as! Int)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:96:35: warning: forced cast of 'Int' to same type has no effect
+ 94 |         let c = Int(ord((String(Array(s)[i..<(i + 1)]) as! String)))
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+    |                                   `- warning: forced cast of 'Int' to same type has no effect
+ 97 |         i = ((i + 1) as! Int)
+ 98 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:96:61: warning: forced cast of 'Int' to same type has no effect
+ 94 |         let c = Int(ord((String(Array(s)[i..<(i + 1)]) as! String)))
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+    |                                                             `- warning: forced cast of 'Int' to same type has no effect
+ 97 |         i = ((i + 1) as! Int)
+ 98 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:97:22: warning: forced cast of 'Int' to same type has no effect
+ 95 |         let idx = Int(xor(((crc % 256) as! Int), (c as! Int)))
+ 96 |         crc = Int(xor((table[idx] as! Int), Int(rshift((crc as! Int), 8))))
+ 97 |         i = ((i + 1) as! Int)
+    |                      `- warning: forced cast of 'Int' to same type has no effect
+ 98 |     }
+ 99 |     return (4294967295 - crc)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:103:31: warning: forced cast of 'String' to same type has no effect
+101 | func main() {
+102 |     let s = "The quick brown fox jumps over the lazy dog"
+103 |     let result = Int(crc32((s as! String)))
+    |                               `- warning: forced cast of 'String' to same type has no effect
+104 |     let hex = String(describing: ((String(describing: toHex((result as! Int))) as! Any?).lowercased()))
+105 |     print(_p(hex))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:104:69: warning: forced cast of 'Int' to same type has no effect
+102 |     let s = "The quick brown fox jumps over the lazy dog"
+103 |     let result = Int(crc32((s as! String)))
+104 |     let hex = String(describing: ((String(describing: toHex((result as! Int))) as! Any?).lowercased()))
+    |                                                                     `- warning: forced cast of 'Int' to same type has no effect
+105 |     print(_p(hex))
+106 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:104:80: warning: forced cast from 'String' to 'Any?' always succeeds; did you mean to use 'as'?
+102 |     let s = "The quick brown fox jumps over the lazy dog"
+103 |     let result = Int(crc32((s as! String)))
+104 |     let hex = String(describing: ((String(describing: toHex((result as! Int))) as! Any?).lowercased()))
+    |                                                                                `- warning: forced cast from 'String' to 'Any?' always succeeds; did you mean to use 'as'?
+105 |     print(_p(hex))
+106 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden3168580434/001/main.swift:104:90: error: value of type 'Any?' has no member 'lowercased'
+102 |     let s = "The quick brown fox jumps over the lazy dog"
+103 |     let result = Int(crc32((s as! String)))
+104 |     let hex = String(describing: ((String(describing: toHex((result as! Int))) as! Any?).lowercased()))
+    |                                                                                          `- error: value of type 'Any?' has no member 'lowercased'
+105 |     print(_p(hex))
+106 | }

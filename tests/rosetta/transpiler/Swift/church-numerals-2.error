@@ -1,0 +1,632 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:15:20: warning: forced cast of 'Any?' to same type has no effect
+13 | func compose(_ f: @escaping (Any?) -> Any?, _ g: @escaping (Any?) -> Any?) -> (Any?) -> Any? {
+14 |     return { (x: Any?) -> Any? in
+15 |     return f((g((x as! Any?)) as! Any?))
+   |                    `- warning: forced cast of 'Any?' to same type has no effect
+16 | }
+17 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:15:31: warning: forced cast of 'Any?' to same type has no effect
+13 | func compose(_ f: @escaping (Any?) -> Any?, _ g: @escaping (Any?) -> Any?) -> (Any?) -> Any? {
+14 |     return { (x: Any?) -> Any? in
+15 |     return f((g((x as! Any?)) as! Any?))
+   |                               `- warning: forced cast of 'Any?' to same type has no effect
+16 | }
+17 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:20:12: error: converting non-escaping value to 'Any' may allow it to escape
+18 | func zero() -> Church {
+19 |     return ({ (f: @escaping Church) -> Church in
+20 |     return id
+   |            `- error: converting non-escaping value to 'Any' may allow it to escape
+21 | } as! (Any?) -> Any?)
+22 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:19:40: error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+17 | }
+18 | func zero() -> Church {
+19 |     return ({ (f: @escaping Church) -> Church in
+   |                                        `- error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+20 |     return id
+21 | } as! (Any?) -> Any?)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:21:3: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+19 |     return ({ (f: @escaping Church) -> Church in
+20 |     return id
+21 | } as! (Any?) -> Any?)
+   |   `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+22 | }
+23 | func one() -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:21:3: error: converting non-escaping value to 'Any' may allow it to escape
+19 |     return ({ (f: @escaping Church) -> Church in
+20 |     return id
+21 | } as! (Any?) -> Any?)
+   |   `- error: converting non-escaping value to 'Any' may allow it to escape
+22 | }
+23 | func one() -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:21:3: warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+19 |     return ({ (f: @escaping Church) -> Church in
+20 |     return id
+21 | } as! (Any?) -> Any?)
+   |   `- warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+22 | }
+23 | func one() -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:24:12: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+22 | }
+23 | func one() -> Church {
+24 |     return id
+   |            `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+25 | }
+26 | func succ(_ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:24:12: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+22 | }
+23 | func one() -> Church {
+24 |     return id
+   |            `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+25 | }
+26 | func succ(_ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:28:12: error: converting non-escaping value to 'Any' may allow it to escape
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |            `- error: converting non-escaping value to 'Any' may allow it to escape
+29 | } as! (Any?) -> Any?)
+30 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:27:40: error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+25 | }
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+   |                                        `- error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+29 | } as! (Any?) -> Any?)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:28:23: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                       `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+29 | } as! (Any?) -> Any?)
+30 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:28:50: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                  `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+29 | } as! (Any?) -> Any?)
+30 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:28:50: warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                  `- warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+29 | } as! (Any?) -> Any?)
+30 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:28:61: warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+26 | func succ(_ n: @escaping Church) -> Church {
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                             `- warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+29 | } as! (Any?) -> Any?)
+30 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:29:3: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+29 | } as! (Any?) -> Any?)
+   |   `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+30 | }
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:29:3: error: converting non-escaping value to 'Any' may allow it to escape
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+29 | } as! (Any?) -> Any?)
+   |   `- error: converting non-escaping value to 'Any' may allow it to escape
+30 | }
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:29:3: warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+27 |     return ({ (f: @escaping Church) -> Church in
+28 |     return compose((f as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+29 | } as! (Any?) -> Any?)
+   |   `- warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+30 | }
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:12: error: converting non-escaping value to 'Any' may allow it to escape
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |            `- error: converting non-escaping value to 'Any' may allow it to escape
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:32:40: error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+30 | }
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+   |                                        `- error: declared closure result 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') is incompatible with return type '(Any?) -> Any?'
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+34 | } as! (Any?) -> Any?)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:26: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                          `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:26: warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                          `- warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:37: warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                     `- warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:64: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                                `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:64: warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                                `- warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:33:75: warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+31 | func plus(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+   |                                                                           `- warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+34 | } as! (Any?) -> Any?)
+35 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:34:3: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+34 | } as! (Any?) -> Any?)
+   |   `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:34:3: error: converting non-escaping value to 'Any' may allow it to escape
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+34 | } as! (Any?) -> Any?)
+   |   `- error: converting non-escaping value to 'Any' may allow it to escape
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:34:3: warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+32 |     return ({ (f: @escaping Church) -> Church in
+33 |     return compose((m((f as! Any?)) as! (Any?) -> Any?), (n((f as! Any?)) as! (Any?) -> Any?))
+34 | } as! (Any?) -> Any?)
+   |   `- warning: cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:37:12: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+37 |     return compose((m as! (Any?) -> Any?), (n as! (Any?) -> Any?))
+   |            `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:37:12: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+37 |     return compose((m as! (Any?) -> Any?), (n as! (Any?) -> Any?))
+   |            `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:37:23: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+37 |     return compose((m as! (Any?) -> Any?), (n as! (Any?) -> Any?))
+   |                       `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:37:47: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+35 | }
+36 | func mult(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+37 |     return compose((m as! (Any?) -> Any?), (n as! (Any?) -> Any?))
+   |                                               `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:40:18: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+40 |     return (n((m as! Any?)) as! (Any?) -> Any?)
+   |                  `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+41 | }
+42 | func toInt(_ x: @escaping Church) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:40:18: warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+40 |     return (n((m as! Any?)) as! (Any?) -> Any?)
+   |                  `- warning: forced cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+41 | }
+42 | func toInt(_ x: @escaping Church) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:40:29: warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+40 |     return (n((m as! Any?)) as! (Any?) -> Any?)
+   |                             `- warning: cast from '(@escaping (Any?) -> Any?) -> (Any?) -> Any?' to unrelated type '(Any?) -> Any?' always fails
+41 | }
+42 | func toInt(_ x: @escaping Church) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:40:29: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+40 |     return (n((m as! Any?)) as! (Any?) -> Any?)
+   |                             `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+41 | }
+42 | func toInt(_ x: @escaping Church) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:40:29: error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+38 | }
+39 | func exp(_ m: @escaping Church, _ n: @escaping Church) -> Church {
+40 |     return (n((m as! Any?)) as! (Any?) -> Any?)
+   |                             `- error: cannot convert return expression of type '(Any?) -> Any?' to return type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+41 | }
+42 | func toInt(_ x: @escaping Church) -> Int {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:45:34: warning: forced cast of 'Int' to same type has no effect
+43 |     var counter: Int = 0
+44 |     func fCounter(_ f: @escaping Church) -> Church {
+45 |         counter = ((counter + 1) as! Int)
+   |                                  `- warning: forced cast of 'Int' to same type has no effect
+46 |         return f
+47 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:48:21: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+46 |         return f
+47 |     }
+48 |     _ = x((fCounter as! Any?))(id)
+   |                     `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+49 |     return counter
+50 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:48:21: warning: forced cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+46 |         return f
+47 |     }
+48 |     _ = x((fCounter as! Any?))(id)
+   |                     `- warning: forced cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+49 |     return counter
+50 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:54:24: warning: forced cast of 'String' to same type has no effect
+52 |     var s: String = ""
+53 |     func fCounter(_ f: @escaping Church) -> Church {
+54 |         s = ((s + "|") as! String)
+   |                        `- warning: forced cast of 'String' to same type has no effect
+55 |         return f
+56 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:57:21: error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+55 |         return f
+56 |     }
+57 |     _ = x((fCounter as! Any?))(id)
+   |                     `- error: cannot convert value of type 'Any?' to expected argument type '(@escaping (Any?) -> Any?) -> (Any?) -> Any?'
+58 |     return s
+59 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:57:21: warning: forced cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+55 |         return f
+56 |     }
+57 |     _ = x((fCounter as! Any?))(id)
+   |                     `- warning: forced cast from '(@escaping Church) -> Church' (aka '(@escaping ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> ((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to 'Any?' always succeeds; did you mean to use 'as'?
+58 |     return s
+59 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:61:48: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+59 | }
+60 | func main() {
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+   |                                                `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:61:48: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+59 | }
+60 | func main() {
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+   |                                                `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:61:48: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+59 | }
+60 | func main() {
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+   |                                                `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:63:45: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+   |                                             `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:63:45: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+   |                                             `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:63:45: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+61 |     print(_p(("zero = " + _p(Int(toInt((zero() as! (Any?) -> Any?)))))))
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+   |                                             `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:55: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                                       `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:55: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                                       `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:34: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                  `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:34: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                  `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:34: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                  `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:64:55: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+62 |     let onev = one()
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+   |                                                       `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:65:44: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+   |                                            `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:65:44: error: converting non-escaping value to 'Any' may allow it to escape
+63 |     print(_p(("one = " + _p(Int(toInt((onev as! (Any?) -> Any?)))))))
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+   |                                            `- error: converting non-escaping value to 'Any' may allow it to escape
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:66:28: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                            `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:66:54: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                                                      `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:66:28: error: converting non-escaping value to 'Any' may allow it to escape
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                            `- error: converting non-escaping value to 'Any' may allow it to escape
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:66:54: error: converting non-escaping value to 'Any' may allow it to escape
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                                                      `- error: converting non-escaping value to 'Any' may allow it to escape
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:66:28: warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+64 |     let two = succ((succ((zero() as! (Any?) -> Any?)) as! (Any?) -> Any?))
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                            `- warning: cast from 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>') to unrelated type '(Any?) -> Any?' always fails
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:67:48: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+   |                                                `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:67:48: error: converting non-escaping value to 'Any' may allow it to escape
+65 |     print(_p(("two = " + _p(Int(toInt((two as! (Any?) -> Any?)))))))
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+   |                                                `- error: converting non-escaping value to 'Any' may allow it to escape
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:68:26: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                          `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:68:52: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                                                    `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:68:26: error: converting non-escaping value to 'Any' may allow it to escape
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                          `- error: converting non-escaping value to 'Any' may allow it to escape
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:68:52: error: converting non-escaping value to 'Any' may allow it to escape
+66 |     let three = plus((onev as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+   |                                                    `- error: converting non-escaping value to 'Any' may allow it to escape
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:69:46: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+   |                                              `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:69:46: error: converting non-escaping value to 'Any' may allow it to escape
+67 |     print(_p(("three = " + _p(Int(toInt((three as! (Any?) -> Any?)))))))
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+   |                                              `- error: converting non-escaping value to 'Any' may allow it to escape
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:70:26: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+   |                          `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:70:54: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+   |                                                      `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:70:26: error: converting non-escaping value to 'Any' may allow it to escape
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+   |                          `- error: converting non-escaping value to 'Any' may allow it to escape
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:70:54: error: converting non-escaping value to 'Any' may allow it to escape
+68 |     let four = mult((two as! (Any?) -> Any?), (two as! (Any?) -> Any?))
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+   |                                                      `- error: converting non-escaping value to 'Any' may allow it to escape
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:71:48: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+   |                                                `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+73 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:71:48: error: converting non-escaping value to 'Any' may allow it to escape
+69 |     print(_p(("four = " + _p(Int(toInt((four as! (Any?) -> Any?)))))))
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+   |                                                `- error: converting non-escaping value to 'Any' may allow it to escape
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+73 | }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:72:65: error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+   |                                                                 `- error: cannot convert value of type '(Any?) -> Any?' to expected argument type 'Church' (aka '((@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>) -> (@escaping (Optional<Any>) -> Optional<Any>) -> (Optional<Any>) -> Optional<Any>')
+73 | }
+74 | 
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden272764178/001/main.swift:72:65: error: converting non-escaping value to 'Any' may allow it to escape
+70 |     let eight = exp((two as! (Any?) -> Any?), (three as! (Any?) -> Any?))
+71 |     print(_p(("eight = " + _p(Int(toInt((eight as! (Any?) -> Any?)))))))
+72 |     print(_p(("toStr(four) = " + String(describing: toStr((four as! (Any?) -> Any?))))))
+   |                                                                 `- error: converting non-escaping value to 'Any' may allow it to escape
+73 | }
+74 | 
