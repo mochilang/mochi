@@ -22,27 +22,33 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  bool validComb(int a, int b, int c, int d, int e, int f, int g) {
-  final int square1 = a + b;
-  final int square2 = b + c + d;
-  final int square3 = d + e + f;
-  final int square4 = f + g;
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+bool validComb(int a, int b, int c, int d, int e, int f, int g) {
+  int square1 = a + b;
+  int square2 = b + c + d;
+  int square3 = d + e + f;
+  int square4 = f + g;
   return square1 == square2 && square2 == square3 && square3 == square4;
 }
-  bool isUnique(int a, int b, int c, int d, int e, int f, int g) {
-  List<int> nums = [a, b, c, d, e, f, g];
-  int i = 0;
+
+bool isUnique(int a, int b, int c, int d, int e, int f, int g) {
+  dynamic nums = [a, b, c, d, e, f, g];
+  dynamic i = 0;
   while (i < nums.length) {
-    int j = i + 1;
+    dynamic j = i + 1;
     while (j < nums.length) {
-    if (nums[i] == nums[j]) {
+    if (nums[(i).toInt()] == nums[(j).toInt()]) {
     return false;
   }
     j = j + 1;
@@ -51,17 +57,18 @@ void main() {
   }
   return true;
 }
-  Map<String, dynamic> getCombs(int low, int high, bool unique) {
-  List<dynamic> valid = [];
-  int count = 0;
+
+Map<String, dynamic> getCombs(int low, int high, bool unique) {
+  dynamic valid = [];
+  dynamic count = 0;
   for (int b = low; b < high + 1; b++) {
     for (int c = low; c < high + 1; c++) {
     for (int d = low; d < high + 1; d++) {
-    final num s = b + c + d;
+    int s = b + c + d;
     for (int e = low; e < high + 1; e++) {
     for (int f = low; f < high + 1; f++) {
-    final num a = s - b;
-    final num g = s - f;
+    int a = s - b;
+    int g = s - f;
     if (a < low || a > high) {
     continue;
   }
@@ -85,13 +92,21 @@ void main() {
   }
   return {"count": count, "list": valid};
 }
-  final Map<String, dynamic> r1 = getCombs(1, 7, true);
+
+Map<String, dynamic> r1 = getCombs(1, 7, true);
+Map<String, dynamic> r2 = getCombs(3, 9, true);
+Map<String, dynamic> r3 = getCombs(0, 9, false);
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   print((r1["count"]!).toString() + " unique solutions in 1 to 7");
   print(r1["list"]!);
-  final Map<String, dynamic> r2 = getCombs(3, 9, true);
   print((r2["count"]!).toString() + " unique solutions in 3 to 9");
   print(r2["list"]!);
-  final Map<String, dynamic> r3 = getCombs(0, 9, false);
   print((r3["count"]!).toString() + " non-unique solutions in 0 to 9");
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

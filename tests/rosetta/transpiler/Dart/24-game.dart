@@ -22,60 +22,66 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  int randDigit() {
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+int randDigit() {
   return _now() % 9 + 1;
 }
-  void main() {
-  List<dynamic> digits = [];
+
+void _main() {
+  dynamic digits = [];
   for (int i = 0; i < 4; i++) {
     digits = [...digits, randDigit()];
   }
-  String numstr = "";
+  dynamic numstr = "";
   for (int i = 0; i < 4; i++) {
     numstr = numstr + (digits[i]).toString();
   }
   print("Your numbers: " + numstr + "\n");
   print("Enter RPN: ");
-  String expr = stdin.readLineSync() ?? '';
+  dynamic expr = stdin.readLineSync() ?? '';
   if (expr.length != 7) {
     print("invalid. expression length must be 7. (4 numbers, 3 operators, no spaces)");
     return;
   }
-  List<dynamic> stack = [];
-  int i = 0;
-  bool valid = true;
+  dynamic stack = [];
+  dynamic i = 0;
+  dynamic valid = true;
   while (i < expr.length) {
-    final String ch = expr.substring(i, i + 1);
+    String ch = _substr(expr, i, i + 1);
     if (ch.compareTo("0") >= 0 && ch.compareTo("9") <= 0) {
     if (digits.length == 0) {
     print("too many numbers.");
     return;
   };
-    int j = 0;
-    while (digits[j] != ((ch).codeUnitAt(0)) - int.parse("0")) {
+    dynamic j = 0;
+    while (digits[(j).toInt()] != ((ch).codeUnitAt(0)) - int.parse("0")) {
     j = j + 1;
     if (j == digits.length) {
     print("wrong numbers.");
     return;
   }
   };
-    digits = digits.sublist(0, j) + digits.sublist(j + 1, digits.length);
-    stack = [...stack, ((ch).codeUnitAt(0)) - int.parse("0") as num];
+    digits = _substr(digits, 0, j) + _substr(digits, j + 1, digits.length);
+    stack = [...stack, (((ch).codeUnitAt(0)) - int.parse("0")).toDouble()];
   } else {
     if (stack.length < 2) {
     print("invalid expression syntax.");
     valid = false;
     break;
   };
-    var b = stack[stack.length - 1];
-    var a = stack[stack.length - 2];
+    dynamic b = stack[stack.length - 1];
+    dynamic a = stack[stack.length - 2];
     if (ch == "+") {
     stack[stack.length - 2] = a + b;
   } else {
@@ -86,7 +92,7 @@ void main() {
     stack[stack.length - 2] = a * b;
   } else {
     if (ch == "/") {
-    stack[stack.length - 2] = a / b;
+    stack[stack.length - 2] = a ~/ b;
   } else {
     print(ch + " invalid.");
     valid = false;
@@ -95,7 +101,7 @@ void main() {
   };
   };
   };
-    stack = stack.sublist(0, stack.length - 1);
+    stack = _substr(stack, 0, stack.length - 1);
   }
     i = i + 1;
   }
@@ -107,12 +113,22 @@ void main() {
   };
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

@@ -22,24 +22,29 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  int parseIntStr(String str) {
-  int i = 0;
-  bool neg = false;
-  if (str.length > 0 && str.substring(0, 1) == "-") {
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+int parseIntStr(String str) {
+  dynamic i = 0;
+  dynamic neg = false;
+  if (str.length > 0 && _substr(str, 0, 1) == "-") {
     neg = true;
     i = 1;
   }
-  int n = 0;
-  final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
+  dynamic n = 0;
+  Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[str.substring(i, i + 1)]!;
+    n = n * 10 + (digits[_substr(str, i, i + 1)] ?? 0);
     i = i + 1;
   }
   if (neg) {
@@ -47,9 +52,10 @@ void main() {
   }
   return n;
 }
-  void main() {
-  int total = 0;
-  bool computer = _now() % 2 == 0;
+
+void _main() {
+  dynamic total = 0;
+  dynamic computer = _now() % 2 == 0;
   print("Enter q to quit at any time\n");
   if (computer) {
     print("The computer will choose first");
@@ -57,14 +63,14 @@ void main() {
     print("You will choose first");
   }
   print("\n\nRunning total is now 0\n\n");
-  int round = 1;
-  bool done = false;
+  dynamic round = 1;
+  dynamic done = false;
   while (!done) {
     print("ROUND " + (round).toString() + ":\n\n");
-    int i = 0;
+    dynamic i = 0;
     while (i < 2 && !done) {
     if (computer) {
-    int choice = 0;
+    dynamic choice = 0;
     if (total < 18) {
     choice = _now() % 3 + 1;
   } else {
@@ -80,26 +86,26 @@ void main() {
   } else {
     while (true) {
     print("Your choice 1 to 3 : ");
-    final String line = stdin.readLineSync() ?? '';
+    String line = stdin.readLineSync() ?? '';
     if (line == "q" || line == "Q") {
     print("OK, quitting the game");
     done = true;
     break;
   }
-    var num = int.parse(line);
-    if (num.toString().compareTo(1.toString()) < 0 || num.toString().compareTo(3.toString()) > 0) {
-    if (total + num > 21) {
+    dynamic _num = int.parse(line);
+    if (_num < 1 || _num > 3) {
+    if (total + _num > 21) {
     print("Too big, try again");
   } else {
     print("Out of range, try again");
   };
     continue;
   }
-    if (total + num > 21) {
+    if (total + _num > 21) {
     print("Too big, try again");
     continue;
   }
-    total = total + num;
+    total = total + _num;
     print("Running total is now " + (total).toString());
     break;
   };
@@ -115,12 +121,22 @@ void main() {
     round = round + 1;
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

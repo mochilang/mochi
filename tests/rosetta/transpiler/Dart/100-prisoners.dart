@@ -22,45 +22,51 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> shuffle(List<int> xs) {
-  List<int> arr = xs;
-  int i = 99;
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+List<int> shuffle(List<int> xs) {
+  dynamic arr = xs;
+  dynamic i = 99;
   while (i > 0) {
-    final int j = _now() % (i + 1);
-    final int tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
+    num j = _now() % (i + 1);
+    dynamic tmp = arr[(i).toInt()];
+    arr[(i).toInt()] = arr[(j).toInt()];
+    arr[(j).toInt()] = tmp;
     i = i - 1;
   }
-  return arr;
+  return (arr as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
 }
-  void doTrials(int trials, int np, String strategy) {
-  int pardoned = 0;
-  int t = 0;
+
+void doTrials(int trials, int np, String strategy) {
+  dynamic pardoned = 0;
+  dynamic t = 0;
   while (t < trials) {
-    List<int> drawers = [];
-    int i = 0;
+    List<int> drawers = <int>[];
+    dynamic i = 0;
     while (i < 100) {
     drawers = [...drawers, i];
     i = i + 1;
   }
     drawers = shuffle(drawers);
-    int p = 0;
-    bool success = true;
+    dynamic p = 0;
+    dynamic success = true;
     while (p < np) {
-    bool found = false;
+    dynamic found = false;
     if (strategy == "optimal") {
-    int prev = p;
-    int d = 0;
+    dynamic prev = p;
+    dynamic d = 0;
     while (d < 50) {
-    final int _this = drawers[prev];
+    int _this = drawers[(prev).toInt()];
     if (_this == p) {
     found = true;
     break;
@@ -69,20 +75,20 @@ void main() {
     d = d + 1;
   };
   } else {
-    List<bool> opened = [];
-    int k = 0;
+    List<bool> opened = <bool>[];
+    dynamic k = 0;
     while (k < 100) {
     opened = [...opened, false];
     k = k + 1;
   };
-    int d = 0;
+    dynamic d = 0;
     while (d < 50) {
-    int n = _now() % 100;
-    while (opened[n]) {
+    dynamic n = _now() % 100;
+    while (opened[(n).toInt()]) {
     n = _now() % 100;
   }
-    opened[n] = true;
-    if (drawers[n] == p) {
+    opened[(n).toInt()] = true;
+    if (drawers[(n).toInt()] == p) {
     found = true;
     break;
   }
@@ -100,24 +106,35 @@ void main() {
   }
     t = t + 1;
   }
-  final num rf = ((pardoned).toDouble()) / ((trials).toDouble()) * 100.0;
+  num rf = (pardoned as num) / ((trials).toDouble()) * 100.0;
   print("  strategy = " + strategy + "  pardoned = " + (pardoned).toString() + " relative frequency = " + (rf).toString() + "%");
 }
-  void main() {
-  final int trials = 1000;
-  for (var np in [10, 100]) {
+
+void _main() {
+  int trials = 1000;
+  for (int np in [10, 100]) {
     print("Results from " + (trials).toString() + " trials with " + (np).toString() + " prisoners:\n");
-    for (var strat in ["random", "optimal"]) {
+    for (String strat in ["random", "optimal"]) {
     doTrials(trials, np, strat);
   }
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

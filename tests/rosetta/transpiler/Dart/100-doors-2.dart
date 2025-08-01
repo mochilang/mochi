@@ -2,13 +2,49 @@
 import 'dart:convert';
 import 'dart:io';
 
+int _nowSeed = 0;
+bool _nowSeeded = false;
+void _initNow() {
+  var s = Platform.environment['MOCHI_NOW_SEED'];
+  if (s != null && s.isNotEmpty) {
+    var v = int.tryParse(s);
+    if (v != null) {
+      _nowSeed = v;
+      _nowSeeded = true;
+    }
+  }
+}
+int _now() {
+  if (_nowSeeded) {
+    _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647;
+    return _nowSeed;
+  }
+  return DateTime.now().microsecondsSinceEpoch;
+}
+
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 int door = 1;
 int incrementer = 0;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   for (int current = 1; current < 101; current++) {
-    String line = "Door " + (current).toString() + " ";
+    dynamic line = "Door " + (current).toString() + " ";
     if (current == door) {
     line = line + "Open";
     incrementer = incrementer + 1;
@@ -20,5 +56,9 @@ void main() {
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": _benchMem1 - _benchMem0, "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+}
+  _benchSw.stop();
+  var _benchMem1 = ProcessInfo.currentRss;
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }

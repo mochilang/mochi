@@ -22,38 +22,45 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class MoveResult {
   int idx;
   bool ok;
   MoveResult({required this.idx, required this.ok});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
-  final List<int> solved = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
-  int empty = 15;
-  int moves = 0;
-  bool quit = false;
-  int randMove() {
+List<int> board = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+List<int> solved = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0];
+int empty = 15;
+int moves = 0;
+bool quit = false;
+int randMove() {
   return _now() % 4;
 }
-  bool isSolved() {
-  int i = 0;
+
+bool isSolved() {
+  dynamic i = 0;
   while (i < 16) {
-    if (board[i] != solved[i]) {
+    if (board[(i).toInt()] != solved[(i).toInt()]) {
     return false;
   }
     i = i + 1;
   }
   return true;
 }
-  MoveResult isValidMove(int m) {
+
+MoveResult isValidMove(int m) {
   if (m == 0) {
     return MoveResult(idx: empty - 4, ok: empty ~/ 4 > 0);
   }
@@ -68,37 +75,40 @@ void main() {
   }
   return MoveResult(idx: 0, ok: false);
 }
-  bool doMove(int m) {
-  final MoveResult r = isValidMove(m);
+
+bool doMove(int m) {
+  MoveResult r = isValidMove(m);
   if (!r.ok) {
     return false;
   }
-  final int i = empty;
-  final int j = r.idx;
-  final int tmp = board[i];
+  int i = empty;
+  int j = r.idx;
+  int tmp = board[i];
   board[i] = board[j];
   board[j] = tmp;
   empty = j;
   moves = moves + 1;
   return true;
 }
-  void shuffle(int n) {
-  int i = 0;
+
+void shuffle(int n) {
+  dynamic i = 0;
   while (i < n || isSolved()) {
     if (doMove(randMove())) {
     i = i + 1;
   }
   }
 }
-  void printBoard() {
-  String line = "";
-  int i = 0;
+
+void printBoard() {
+  dynamic line = "";
+  dynamic i = 0;
   while (i < 16) {
-    final int val = board[i];
+    int val = board[(i).toInt()];
     if (val == 0) {
     line = line + "  .";
   } else {
-    final String s = (val).toString();
+    String s = (val).toString();
     if (val < 10) {
     line = line + "  " + s;
   } else {
@@ -112,15 +122,16 @@ void main() {
     i = i + 1;
   }
 }
-  void playOneMove() {
+
+void playOneMove() {
   while (true) {
     print("Enter move #" + (moves + 1).toString() + " (U, D, L, R, or Q): ");
-    final String s = stdin.readLineSync() ?? '';
+    String s = stdin.readLineSync() ?? '';
     if (s == "") {
     continue;
   }
-    final String c = s.substring(0, 1);
-    int m = 0;
+    String c = _substr(s, 0, 1);
+    dynamic m = 0;
     if (c == "U" || c == "u") {
     m = 0;
   } else {
@@ -152,7 +163,8 @@ void main() {
     return;
   }
 }
-  void play() {
+
+void play() {
   print("Starting board:");
   while (!quit && isSolved() == false) {
     print("");
@@ -163,16 +175,27 @@ void main() {
     print("You solved the puzzle in " + (moves).toString() + " moves.");
   }
 }
-  void main() {
+
+void _main() {
   shuffle(50);
   play();
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

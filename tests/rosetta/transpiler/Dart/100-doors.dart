@@ -22,6 +22,19 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+List<dynamic> doors = <dynamic>[];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -29,27 +42,26 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  List<dynamic> doors = [];
   for (int i = 0; i < 100; i++) {
     doors = [...doors, false];
   }
   for (int pass = 1; pass < 101; pass++) {
-    num idx = pass - 1;
+    dynamic idx = pass - 1;
     while (idx < 100) {
-    doors[idx] = !doors[idx];
+    doors[(idx).toInt()] = !doors[(idx).toInt()];
     idx = idx + pass;
   }
   }
   for (int row = 0; row < 10; row++) {
-    String line = "";
+    dynamic line = "";
     for (int col = 0; col < 10; col++) {
-    final num idx = row * 10 + col;
-    if (doors[idx]) {
+    dynamic idx = row * 10 + col;
+    if (doors[(idx).toInt()]) {
     line = line + "1";
   } else {
     line = line + "0";
   }
-    if (col.toString().compareTo(9.toString()) < 0) {
+    if (col < 9) {
     line = line + " ";
   }
   }

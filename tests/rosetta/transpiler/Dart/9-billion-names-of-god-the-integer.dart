@@ -22,64 +22,72 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> bigTrim(List<int> a) {
-  int n = a.length;
-  while (n > 1 && a[n - 1] == 0) {
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+List<int> bigTrim(List<int> a) {
+  dynamic n = a.length;
+  while (n > 1 && a[(n - 1).toInt()] == 0) {
     a = a.sublist(0, n - 1);
     n = n - 1;
   }
   return a;
 }
-  List<int> bigFromInt(int x) {
+
+List<int> bigFromInt(int x) {
   if (x == 0) {
     return [0];
   }
-  List<int> digits = [];
-  int n = x;
+  List<int> digits = <int>[];
+  dynamic n = x;
   while (n > 0) {
-    digits = [...digits, n % 10];
+    digits = ([...digits, n % 10] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     n = n ~/ 10;
   }
   return digits;
 }
-  List<int> bigAdd(List<int> a, List<int> b) {
-  List<int> res = [];
-  int carry = 0;
-  int i = 0;
+
+List<int> bigAdd(List<int> a, List<int> b) {
+  List<int> res = <int>[];
+  dynamic carry = 0;
+  dynamic i = 0;
   while (i < a.length || i < b.length || carry > 0) {
-    int av = 0;
+    dynamic av = 0;
     if (i < a.length) {
-    av = a[i];
+    av = a[(i).toInt()];
   }
-    int bv = 0;
+    dynamic bv = 0;
     if (i < b.length) {
-    bv = b[i];
+    bv = b[(i).toInt()];
   }
-    int s = av + bv + carry;
-    res = [...res, s % 10];
+    dynamic s = av + bv + carry;
+    res = ([...res, s % 10] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     carry = s ~/ 10;
     i = i + 1;
   }
   return bigTrim(res);
 }
-  List<int> bigSub(List<int> a, List<int> b) {
-  List<int> res = [];
-  int borrow = 0;
-  int i = 0;
+
+List<int> bigSub(List<int> a, List<int> b) {
+  List<int> res = <int>[];
+  dynamic borrow = 0;
+  dynamic i = 0;
   while (i < a.length) {
-    int av = a[i];
-    int bv = 0;
+    dynamic av = a[(i).toInt()];
+    dynamic bv = 0;
     if (i < b.length) {
-    bv = b[i];
+    bv = b[(i).toInt()];
   }
-    int diff = av - bv - borrow;
+    dynamic diff = av - bv - borrow;
     if (diff < 0) {
     diff = diff + 10;
     borrow = 1;
@@ -91,57 +99,69 @@ void main() {
   }
   return bigTrim(res);
 }
-  String bigToString(List<int> a) {
-  String s = "";
-  int i = a.length - 1;
+
+String bigToString(List<int> a) {
+  dynamic s = "";
+  dynamic i = a.length - 1;
   while (i >= 0) {
-    s = s + (a[i]).toString();
+    s = s + (a[(i).toInt()]).toString();
     i = i - 1;
   }
   return s;
 }
-  int minInt(int a, int b) {
+
+int minInt(int a, int b) {
   if (a < b) {
     return a;
   } else {
     return b;
   }
 }
-  List<List<int>> cumu(int n) {
+
+List<List<int>> cumu(int n) {
   List<List<List<int>>> cache = [[bigFromInt(1)]];
-  int y = 1;
+  dynamic y = 1;
   while (y <= n) {
     List<List<int>> row = [bigFromInt(0)];
-    int x = 1;
+    dynamic x = 1;
     while (x <= y) {
-    final List<int> val = cache[y - x]![minInt(x, y - x)];
-    row = [...row, bigAdd(row[row.length - 1], val)];
+    List<int> val = cache[(y - x).toInt()][minInt(x, (y - x).toInt())];
+    row = ([...row, bigAdd(row[row.length - 1], val)] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
     x = x + 1;
   }
-    cache = [...cache, row];
+    cache = ([...cache, row] as List).map((e) => (e as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList()).toList();
     y = y + 1;
   }
   return cache[n];
 }
-  List<String> row(int n) {
-  final List<List<int>> e = cumu(n);
-  List<String> out = [];
-  int i = 0;
+
+List<String> row(int n) {
+  List<List<int>> e = cumu(n);
+  List<String> out = <String>[];
+  dynamic i = 0;
   while (i < n) {
-    final List<int> diff = bigSub(e[i + 1], e[i]);
+    List<int> diff = bigSub(e[(i + 1).toInt()], e[(i).toInt()]);
     out = [...out, bigToString(diff)];
     i = i + 1;
   }
   return out;
 }
+
+int x = 1;
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   print("rows:");
-  int x = 1;
   while (x < 11) {
-    final List<String> r = row(x);
-    String line = "";
-    int i = 0;
+    dynamic r = row(x);
+    dynamic line = "";
+    dynamic i = 0;
     while (i < r.length) {
-    line = line + " " + r[i] + " ";
+    line = line + " " + r[(i).toInt()] + " ";
     i = i + 1;
   }
     print(line);
@@ -149,9 +169,9 @@ void main() {
   }
   print("");
   print("sums:");
-  for (var num in [23, 123, 1234]) {
-    final List<List<int>> r = cumu(num);
-    print((num).toString() + " " + bigToString(r[r.length - 1]));
+  for (int _num in [23, 123, 1234]) {
+    dynamic r = cumu(_num);
+    print((_num).toString() + " " + bigToString(r[r.length - 1]));
   }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
