@@ -2118,6 +2118,10 @@ func (u *UnaryMinus) emit(w io.Writer) {
 		io.WriteString(w, "(Q.neg (")
 		u.Expr.emit(w)
 		io.WriteString(w, "))")
+	} else if u.Typ == "bigint" {
+		io.WriteString(w, "(Z.neg (")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
 	} else {
 		io.WriteString(w, "-(")
 		u.Expr.emit(w)
@@ -2132,6 +2136,10 @@ func (u *UnaryMinus) emitPrint(w io.Writer) {
 		io.WriteString(w, "))")
 	} else if u.Typ == "bigrat" {
 		io.WriteString(w, "Q.to_string (Q.neg (")
+		u.Expr.emit(w)
+		io.WriteString(w, "))")
+	} else if u.Typ == "bigint" {
+		io.WriteString(w, "Z.to_string (Z.neg (")
 		u.Expr.emit(w)
 		io.WriteString(w, "))")
 	} else {
@@ -2196,9 +2204,9 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "))")
 	case "big_to_rat":
 		usesBigRat = true
-		io.WriteString(w, "(Q.of_bigint ")
+		io.WriteString(w, "(Q.of_bigint (")
 		c.Expr.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, "))")
 	case "big_to_int":
 		usesBigInt = true
 		io.WriteString(w, "Z.to_int ")
@@ -3187,6 +3195,8 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_float"}
 		} else if info.typ == "string" && valTyp != "string" {
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_string"}
+		} else if info.typ == "bigint" && valTyp == "int" {
+			valExpr = &CastExpr{Expr: valExpr, Type: "int_to_big"}
 		} else if info.typ == "bigrat" && valTyp == "bigint" {
 			valExpr = &CastExpr{Expr: valExpr, Type: "big_to_rat"}
 		}
@@ -3714,6 +3724,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, vars map[string]VarInfo
 		exprStack = exprStack[:len(exprStack)-1]
 		ltyp := typeStack[len(typeStack)-1]
 		typeStack = typeStack[:len(typeStack)-1]
+		if ltyp == "bigint" && rtyp == "int" {
+			right = &CastExpr{Expr: right, Type: "int_to_big"}
+			rtyp = "bigint"
+		} else if ltyp == "int" && rtyp == "bigint" {
+			left = &CastExpr{Expr: left, Type: "int_to_big"}
+			ltyp = "bigint"
+		}
 
 		resTyp := ltyp
 		switch info.op {
@@ -3834,7 +3851,7 @@ func convertUnary(u *parser.Unary, env *types.Env, vars map[string]VarInfo) (Exp
 			if err != nil {
 				return nil, "", err
 			}
-			if typ != "int" && typ != "float" && typ != "bigrat" {
+			if typ != "int" && typ != "float" && typ != "bigrat" && typ != "bigint" {
 				return nil, "", fmt.Errorf("unary - only for numeric")
 			}
 			return &UnaryMinus{Expr: expr, Typ: typ}, typ, nil
@@ -4330,6 +4347,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
 			} else if typ == "int" && target == "bigrat" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_rat"}
+			} else if typ == "bigint" && target == "bigrat" {
+				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
 			} else if target == "int" && typ != "int" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
 			} else if target == "float" && typ != "float" && typ != "int" {
@@ -5056,6 +5075,48 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("indexOf expects string")
 		}
 		return &IndexOfBuiltin{Str: strArg, Sub: subArg}, "int", nil
+	}
+	if c.Func == "slice" && len(c.Args) == 3 {
+		listArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if !strings.HasPrefix(typ, "list") && typ != "string" {
+			return nil, "", fmt.Errorf("slice expects list or string")
+		}
+		startArg, styp, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if styp != "int" {
+			return nil, "", fmt.Errorf("slice start expects int")
+		}
+		endArg, etyp, err := convertExpr(c.Args[2], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if etyp != "int" {
+			return nil, "", fmt.Errorf("slice end expects int")
+		}
+		return &SliceExpr{Col: listArg, Start: startArg, End: endArg, Typ: typ}, typ, nil
+	}
+	if c.Func == "padStart" && len(c.Args) == 3 {
+		strArg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		lenArg, typ2, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		padArg, typ3, err := convertExpr(c.Args[2], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" || typ2 != "int" || typ3 != "string" {
+			return nil, "", fmt.Errorf("padStart expects string,int,string")
+		}
+		return &PadStartBuiltin{Str: strArg, Len: lenArg, Pad: padArg}, "string", nil
 	}
 	if c.Func == "append" && len(c.Args) == 2 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
