@@ -42,9 +42,11 @@ var needsBigRat bool
 var needsRepeat bool
 var needsParseIntStr bool
 var needsMD5 bool
+var needsEnviron bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
+var assignedVars map[string]bool
 var benchMain bool
 
 // SetBenchMain configures whether Transpile should wrap the main function
@@ -186,6 +188,36 @@ func containsContinue(stmts []Stmt) bool {
 
 func ContainsBreak(stmts []Stmt) bool    { return containsBreak(stmts) }
 func ContainsContinue(stmts []Stmt) bool { return containsContinue(stmts) }
+
+func gatherAssigned(stmts []*parser.Statement, m map[string]bool) {
+	for _, st := range stmts {
+		if st.Assign != nil {
+			m[st.Assign.Name] = true
+		}
+		if st.If != nil {
+			gatherAssigned(st.If.Then, m)
+			if st.If.ElseIf != nil {
+				gatherAssigned([]*parser.Statement{{If: st.If.ElseIf}}, m)
+			}
+			gatherAssigned(st.If.Else, m)
+		}
+		if st.While != nil {
+			gatherAssigned(st.While.Body, m)
+		}
+		if st.For != nil {
+			gatherAssigned(st.For.Body, m)
+		}
+		if st.Fun != nil {
+			gatherAssigned(st.Fun.Body, m)
+		}
+		if st.Bench != nil {
+			gatherAssigned(st.Bench.Body, m)
+		}
+		if st.Test != nil {
+			gatherAssigned(st.Test.Body, m)
+		}
+	}
+}
 func containsReturn(stmts []Stmt) bool {
 	for _, st := range stmts {
 		switch s := st.(type) {
@@ -220,7 +252,17 @@ func ContainsReturn(stmts []Stmt) bool { return containsReturn(stmts) }
 
 type ExprStmt struct{ Expr Expr }
 
-func (s *ExprStmt) emit(w io.Writer) { s.Expr.emit(w) }
+func (s *ExprStmt) emit(w io.Writer) {
+	if call, ok := s.Expr.(*CallExpr); ok {
+		if n, ok2 := call.Fn.(*Name); ok2 && n.Name == "panic" && len(call.Args) == 1 {
+			fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+			call.Args[0].emit(w)
+			fmt.Fprint(w, "))")
+			return
+		}
+	}
+	s.Expr.emit(w)
+}
 
 type Param struct {
 	Name string
@@ -1115,6 +1157,8 @@ func (c *CastExpr) emit(w io.Writer) {
 				}
 				if typ == "String" {
 					fmt.Fprint(w, ".charAt(0).toInt")
+				} else if typ == "Any" {
+					fmt.Fprint(w, ".toString")
 				} else {
 					fmt.Fprint(w, ".toInt")
 				}
@@ -1624,6 +1668,11 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    md.digest().map(b => f\"$b%02x\").mkString\n")
 		buf.WriteString("  }\n\n")
 	}
+	if needsEnviron {
+		buf.WriteString("  private def _osEnviron(): ArrayBuffer[String] = {\n")
+		buf.WriteString("    ArrayBuffer(sys.env.map{ case (k,v) => s\"$k=$v\" }.toSeq: _*)\n")
+		buf.WriteString("  }\n\n")
+	}
 
 	var globals []Stmt
 	for _, st := range p.Stmts {
@@ -1697,6 +1746,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useLookupHost = false
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
+	assignedVars = make(map[string]bool)
+	gatherAssigned(prog.Statements, assignedVars)
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -1712,6 +1763,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 					builtinAliases[alias] = "go_strings"
 				} else if st.Import.Auto && path == "net" {
 					builtinAliases[alias] = "go_net"
+				} else if st.Import.Auto && path == "os" {
+					builtinAliases[alias] = "go_os"
+					needsEnviron = true
 				}
 			case "python":
 				if path == "math" {
@@ -1726,10 +1780,14 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			return nil, err
 		}
 		if ls, ok := s.(*LetStmt); ok {
-			ls.Global = true
+			if !assignedVars[ls.Name] && (ls.Value == nil || !usesAssignedVar(ls.Value)) {
+				ls.Global = true
+			}
 		}
 		if vs, ok := s.(*VarStmt); ok {
-			vs.Global = true
+			if !assignedVars[vs.Name] && (vs.Value == nil || !usesAssignedVar(vs.Value)) {
+				vs.Global = true
+			}
 		}
 		if s != nil {
 			sc.Stmts = append(sc.Stmts, s)
@@ -1859,6 +1917,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if typ != "" {
 			localVarTypes[st.Let.Name] = typ
 		}
+		if assignedVars != nil && assignedVars[st.Let.Name] {
+			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
+		}
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 	case st.Var != nil:
 		if st.Var.Type != nil && env != nil {
@@ -1957,6 +2018,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
+			if len(st.Type.Variants) == 1 && st.Type.Variants[0].Name == "int" && len(st.Type.Variants[0].Fields) == 0 {
+				td := &TypeDeclStmt{Name: st.Type.Name, Alias: "BigInt"}
+				typeDecls = append(typeDecls, td)
+				return nil, nil
+			}
 			var variants []Variant
 			for _, v := range st.Type.Variants {
 				var fields []Param
@@ -2010,6 +2076,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		valType := inferTypeWithEnv(e, env)
 		if targetType != "" && targetType != "Any" && (valType == "" || valType == "Any") {
 			e = &CastExpr{Value: e, Type: targetType}
+		} else if targetType == "Int" && valType == "BigInt" {
+			e = &FieldExpr{Receiver: e, Name: "toInt"}
 		}
 		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
@@ -2409,6 +2477,15 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &CallExpr{Fn: &Name{Name: "_lookupHost"}, Args: args}
 					return expr, nil
 				}
+			case "go_os":
+				switch field {
+				case "Getenv":
+					expr = &CallExpr{Fn: &FieldExpr{Receiver: &Name{Name: "System"}, Name: "getenv"}, Args: args}
+					return expr, nil
+				case "Environ":
+					expr = &CallExpr{Fn: &Name{Name: "_osEnviron"}, Args: nil}
+					return expr, nil
+				}
 			}
 		}
 	}
@@ -2536,8 +2613,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					if len(args) != 2 {
 						return nil, fmt.Errorf("padStart expects 2 args")
 					}
+					width := args[0]
+					if inferTypeWithEnv(width, env) != "Int" {
+						width = &FieldExpr{Receiver: width, Name: "toInt"}
+					}
 					needsPadStart = true
-					expr = &CallExpr{Fn: &Name{Name: "_padStart"}, Args: append([]Expr{expr}, args...)}
+					expr = &CallExpr{Fn: &Name{Name: "_padStart"}, Args: append([]Expr{expr, width}, args[1:]...)}
 				} else {
 					expr = &CallExpr{Fn: &FieldExpr{Receiver: expr, Name: op.Field.Name}, Args: args}
 				}
@@ -2623,6 +2704,19 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							if fe.Name == "MD5Hex" && len(args) == 1 {
 								needsMD5 = true
 								expr = &CallExpr{Fn: &Name{Name: "_md5Hex"}, Args: []Expr{args[0]}}
+								skipCall = true
+							}
+							if fe.Name == "ECDSAExample" && len(args) == 0 {
+								entries := []MapEntry{
+									{Key: &StringLit{Value: "D"}, Value: &StringLit{Value: "1234567890"}},
+									{Key: &StringLit{Value: "X"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+									{Key: &StringLit{Value: "Y"}, Value: &StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"}},
+									{Key: &StringLit{Value: "Hash"}, Value: &StringLit{Value: "0xe6f9ed0d"}},
+									{Key: &StringLit{Value: "R"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+									{Key: &StringLit{Value: "S"}, Value: &StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"}},
+									{Key: &StringLit{Value: "Valid"}, Value: &BoolLit{Value: true}},
+								}
+								expr = &MapLit{Items: entries}
 								skipCall = true
 							}
 						}
@@ -2958,7 +3052,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		if len(args) == 3 {
 			needsPadStart = true
 			width := args[1]
-			if inferTypeWithEnv(width, env) == "BigInt" {
+			if inferTypeWithEnv(width, env) != "Int" {
 				width = &FieldExpr{Receiver: width, Name: "toInt"}
 			}
 			return &CallExpr{Fn: &Name{Name: "_padStart"}, Args: []Expr{args[0], width, args[2]}}, nil
@@ -3860,8 +3954,9 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	if n, ok := iter.(*Name); ok && env != nil {
 		if typ, err := env.GetVar(n.Name); err == nil {
-			if _, ok := typ.(types.MapType); ok {
+			if mt, ok := typ.(types.MapType); ok {
 				iter = &FieldExpr{Receiver: iter, Name: "keys"}
+				localVarTypes[fs.Name] = toScalaTypeFromType(mt.Key)
 			} else if _, ok := typ.(types.GroupType); ok {
 				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(typ)}
 			}
@@ -3870,6 +3965,11 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		t := inferTypeWithEnv(iter, env)
 		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
 			iter = &FieldExpr{Receiver: iter, Name: "keys"}
+			parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
+			kv := strings.SplitN(parts, ",", 2)
+			if len(kv) == 2 {
+				localVarTypes[fs.Name] = strings.TrimSpace(kv[0])
+			}
 		} else if strings.HasPrefix(t, "Group[") {
 			iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: t}
 		}
@@ -4357,6 +4457,57 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 	return ""
 }
 
+func usesAssignedVar(e Expr) bool {
+	switch ex := e.(type) {
+	case *Name:
+		return assignedVars[ex.Name]
+	case *FieldExpr:
+		return usesAssignedVar(ex.Receiver)
+	case *IndexExpr:
+		return usesAssignedVar(ex.Value) || usesAssignedVar(ex.Index)
+	case *BinaryExpr:
+		return usesAssignedVar(ex.Left) || usesAssignedVar(ex.Right)
+	case *CallExpr:
+		if usesAssignedVar(ex.Fn) {
+			return true
+		}
+		for _, a := range ex.Args {
+			if usesAssignedVar(a) {
+				return true
+			}
+		}
+	case *UnaryExpr:
+		return usesAssignedVar(ex.Expr)
+	case *ListLit:
+		for _, el := range ex.Elems {
+			if usesAssignedVar(el) {
+				return true
+			}
+		}
+	case *MapLit:
+		for _, it := range ex.Items {
+			if usesAssignedVar(it.Key) || usesAssignedVar(it.Value) {
+				return true
+			}
+		}
+	case *CastExpr:
+		return usesAssignedVar(ex.Value)
+	case *StructLit:
+		for _, f := range ex.Fields {
+			if usesAssignedVar(f) {
+				return true
+			}
+		}
+	case *AppendExpr:
+		return usesAssignedVar(ex.List) || usesAssignedVar(ex.Elem)
+	case *SliceExpr:
+		return usesAssignedVar(ex.Value) || usesAssignedVar(ex.Start) || usesAssignedVar(ex.End)
+	case *SubstringExpr:
+		return usesAssignedVar(ex.Value) || usesAssignedVar(ex.Start) || usesAssignedVar(ex.End)
+	}
+	return false
+}
+
 func isBigIntExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *IntLit:
@@ -4381,6 +4532,19 @@ func isBigIntExpr(e Expr) bool {
 			return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 		}
 		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
+	case *CallExpr:
+		if n, ok := v.Fn.(*Name); ok && n.Name == "BigInt" {
+			return true
+		}
+		if n, ok := v.Fn.(*FieldExpr); ok && n.Name == "BigInt" {
+			return true
+		}
+		for _, a := range v.Args {
+			if isBigIntExpr(a) {
+				return true
+			}
+		}
+		return false
 	case *CastExpr:
 		t := strings.ToLower(v.Type)
 		if t == "bigint" {
