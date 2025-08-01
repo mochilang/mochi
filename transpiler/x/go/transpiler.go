@@ -1858,14 +1858,20 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 	}
 	if a.Type == "int" {
-		if _, ok := a.Expr.(*IndexExpr); ok {
-			a.Expr.emit(w)
-			io.WriteString(w, ".(int)")
-		} else {
-			io.WriteString(w, "int(")
-			a.Expr.emit(w)
-			io.WriteString(w, ")")
+		a.Expr.emit(w)
+		io.WriteString(w, ".(int)")
+		return
+	}
+	if a.Type == "float64" {
+		if ce, ok := a.Expr.(*CallExpr); ok {
+			if ce.Func == "_toFloat" || ce.Func == "float64" {
+				a.Expr.emit(w)
+				return
+			}
 		}
+		io.WriteString(w, "float64(")
+		a.Expr.emit(w)
+		io.WriteString(w, ")")
 		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
@@ -3701,6 +3707,11 @@ func isIntType(t types.Type) bool {
 }
 
 func boolExprFor(e Expr, t types.Type) Expr {
+	if be, ok := e.(*BinaryExpr); ok {
+		if be.Op == "&&" || be.Op == "||" {
+			return e
+		}
+	}
 	if ix, ok := e.(*IndexExpr); ok {
 		if vr, ok2 := ix.X.(*VarRef); ok2 {
 			if topEnv != nil {
@@ -4144,6 +4155,10 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 				right := operands[i+1]
 				var newExpr Expr
 				switch opName {
+				case "&&", "||":
+					left = boolExprFor(left, types.BoolType{})
+					right = boolExprFor(right, types.BoolType{})
+					newExpr = &BinaryExpr{Left: left, Op: opName, Right: right}
 				case "in":
 					ctype := typesList[i+1]
 					var kind, et string
@@ -4768,7 +4783,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 					}
 					t = types.BigIntType{}
 				} else if name == "float" {
-					expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
+					if _, ok := t.(types.AnyType); ok {
+						expr = &AssertExpr{Expr: expr, Type: "float64"}
+					} else {
+						expr = &CallExpr{Func: "float64", Args: []Expr{expr}}
+					}
 				} else if name == "string" {
 					expr = &AssertExpr{Expr: expr, Type: "string"}
 					t = types.StringType{}
@@ -4956,6 +4975,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			}
 			return &CallExpr{Func: "int", Args: []Expr{args[0]}}, nil
 		case "float":
+			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				return &AssertExpr{Expr: args[0], Type: "float64"}, nil
+			}
 			return &CallExpr{Func: "float64", Args: []Expr{args[0]}}, nil
 		case "abs":
 			if imports != nil {
