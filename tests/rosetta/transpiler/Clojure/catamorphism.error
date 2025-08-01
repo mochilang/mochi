@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/catamorphism.clj:27:106).
+Unable to resolve symbol: f in this context
+
+Full report at:
+/tmp/clojure-18402271980571091348.edn

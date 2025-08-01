@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (UnsupportedOperationException) at main/bigMulSmall (chernicks-carmichael-numbers.clj:30).
+count not supported on this type: BigInt
+
+Full report at:
+/tmp/clojure-496988523200804848.edn

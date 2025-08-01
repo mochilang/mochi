@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/checkpoint-synchronization-4.clj:20:48).
+Unable to resolve symbol: main_mech in this context
+
+Full report at:
+/tmp/clojure-8364873679972593397.edn

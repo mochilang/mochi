@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/carmichael-3-strong-pseudoprimes.clj:27:61).
+Unable to resolve symbol: carmichael_h3 in this context
+
+Full report at:
+/tmp/clojure-6513421957787120737.edn

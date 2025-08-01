@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 151/491
-Last updated: 2025-08-01 19:36 +0700
+Completed: 170/491
+Last updated: 2025-08-01 22:51 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -154,23 +154,23 @@ Last updated: 2025-08-01 19:36 +0700
 | 147 | calkin-wilf-sequence |   |  |  |
 | 148 | call-a-foreign-language-function |   |  |  |
 | 149 | call-a-function-1 |   |  |  |
-| 150 | call-a-function-10 |   |  |  |
-| 151 | call-a-function-11 |   |  |  |
+| 150 | call-a-function-10 | ✓ | 28.062ms | 18.4 MB |
+| 151 | call-a-function-11 | ✓ | 27.687ms | 18.7 MB |
 | 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 |   |  |  |
-| 154 | call-a-function-3 |   |  |  |
-| 155 | call-a-function-4 |   |  |  |
-| 156 | call-a-function-5 |   |  |  |
-| 157 | call-a-function-6 |   |  |  |
-| 158 | call-a-function-7 |   |  |  |
+| 153 | call-a-function-2 | ✓ | 28.669ms | 18.7 MB |
+| 154 | call-a-function-3 | ✓ | 32.014ms | 18.7 MB |
+| 155 | call-a-function-4 | ✓ | 29.436ms | 18.6 MB |
+| 156 | call-a-function-5 | ✓ | 32.216ms | 18.7 MB |
+| 157 | call-a-function-6 | ✓ | 30.45ms | 18.7 MB |
+| 158 | call-a-function-7 | ✓ | 28.845ms | 18.8 MB |
 | 159 | call-a-function-8 |   |  |  |
-| 160 | call-a-function-9 |   |  |  |
+| 160 | call-a-function-9 | ✓ | 38.208ms | 19.3 MB |
 | 161 | call-an-object-method-1 |   |  |  |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
 | 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector |   |  |  |
+| 166 | canny-edge-detector | ✓ | 55.517ms | 23.6 MB |
 | 167 | canonicalize-cidr |   |  |  |
 | 168 | cantor-set |   |  |  |
 | 169 | carmichael-3-strong-pseudoprimes |   |  |  |
@@ -187,23 +187,23 @@ Last updated: 2025-08-01 19:36 +0700
 | 180 | catmull-clark-subdivision-surface |   |  |  |
 | 181 | chaocipher |   |  |  |
 | 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 |   |  |  |
-| 184 | character-codes-2 |   |  |  |
-| 185 | character-codes-3 |   |  |  |
-| 186 | character-codes-4 |   |  |  |
-| 187 | character-codes-5 |   |  |  |
+| 183 | character-codes-1 | ✓ | 35.983ms | 18.4 MB |
+| 184 | character-codes-2 | ✓ | 29.171ms | 18.7 MB |
+| 185 | character-codes-3 | ✓ | 28.017ms | 18.8 MB |
+| 186 | character-codes-4 | ✓ | 29.304ms | 18.7 MB |
+| 187 | character-codes-5 | ✓ | 31.38ms | 18.7 MB |
 | 188 | chat-server |   |  |  |
 | 189 | check-machin-like-formulas |   |  |  |
 | 190 | check-that-file-exists |   |  |  |
 | 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 |   |  |  |
-| 193 | checkpoint-synchronization-3 |   |  |  |
+| 192 | checkpoint-synchronization-2 | ✓ | 36.776ms | 20.4 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 36.056ms | 21.1 MB |
 | 194 | checkpoint-synchronization-4 |   |  |  |
 | 195 | chernicks-carmichael-numbers |   |  |  |
 | 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem |   |  |  |
+| 197 | chinese-remainder-theorem | ✓ | 30.456ms | 20.4 MB |
 | 198 | chinese-zodiac |   |  |  |
-| 199 | cholesky-decomposition-1 |   |  |  |
+| 199 | cholesky-decomposition-1 | ✓ | 40.822ms | 24.4 MB |
 | 200 | cholesky-decomposition | ✓ | 53.224ms | 21.3 MB |
 | 201 | chowla-numbers |   |  |  |
 | 202 | church-numerals-1 |   |  |  |

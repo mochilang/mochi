@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (NullPointerException) at main/-main (call-an-object-method-1.clj:20).
+Cannot invoke "clojure.lang.IFn.invoke(Object)"
+
+Full report at:
+/tmp/clojure-15210315670236580572.edn

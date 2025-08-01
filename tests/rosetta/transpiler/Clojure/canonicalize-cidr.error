@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/canonicalize-cidr.clj:39:324).
+Unable to resolve symbol: canonicalize_p in this context
+
+Full report at:
+/tmp/clojure-6679335046921932844.edn

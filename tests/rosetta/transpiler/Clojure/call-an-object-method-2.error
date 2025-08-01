@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/call-an-object-method-2.clj:21:15).
+Unable to resolve symbol: Count_sn in this context
+
+Full report at:
+/tmp/clojure-14718270269488132444.edn

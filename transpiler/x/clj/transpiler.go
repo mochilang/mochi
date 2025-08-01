@@ -1286,6 +1286,15 @@ func isStringNode(n Node) bool {
 						}
 					}
 				}
+				if transpileEnv != nil {
+					if typ, err := transpileEnv.GetVar(string(sym)); err == nil {
+						if ft, ok := typ.(types.FuncType); ok {
+							if _, ok := ft.Return.(types.StringType); ok {
+								return true
+							}
+						}
+					}
+				}
 			}
 		}
 	case Symbol:

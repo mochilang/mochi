@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/catalan-numbers-2.clj:21:41).
+Unable to resolve symbol: main_i in this context
+
+Full report at:
+/tmp/clojure-13513482627929238837.edn
