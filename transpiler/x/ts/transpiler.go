@@ -3217,6 +3217,18 @@ func isVarIntExpr(e Expr) bool {
 	return false
 }
 
+func isBigIntExpr(e Expr) bool {
+	switch v := e.(type) {
+	case *CallExpr:
+		return v.Func == "BigInt"
+	case *NumberLit:
+		return strings.HasSuffix(v.Value, "n")
+	case *IntDivExpr:
+		return v.Big
+	}
+	return false
+}
+
 func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if b == nil {
 		return nil, fmt.Errorf("nil binary")
@@ -3263,6 +3275,16 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 
 	apply := func(i int) {
+		if isBigIntExpr(operands[i]) || isBigIntExpr(operands[i+1]) {
+			if !isBigIntExpr(operands[i]) {
+				operands[i] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i]}}
+			}
+			if !isBigIntExpr(operands[i+1]) {
+				operands[i+1] = &CallExpr{Func: "BigInt", Args: []Expr{operands[i+1]}}
+			}
+			typesArr[i] = types.BigIntType{}
+			typesArr[i+1] = types.BigIntType{}
+		}
 		switch ops[i] {
 		case "+":
 			leftList := isListType(typesArr[i])
