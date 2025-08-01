@@ -298,6 +298,12 @@ func header() []byte {
         (loop (string-append pad out))
         out)))`
 	prelude += `
+(define (_substring s start end)
+  (let* ((len (string-length s))
+         (s0 (max 0 (min len start)))
+         (e0 (max s0 (min len end))))
+    (substring s s0 e0)))`
+	prelude += `
 (define (_repeat s n)
   (let loop ((i 0) (out ""))
     (if (< i n)
@@ -312,8 +318,8 @@ func header() []byte {
     (set! e (max 0 (min len e)))
     (when (< e s) (set! e s))
     (if (string? seq)
-        (substring seq s e)
-        (take (drop seq s) (- e s))))`
+        (_substring seq s e)
+        (take (drop seq s) (- e s)))))`
 	prelude += `
 (define (_parseIntStr s base)
   (let* ((b (if (number? base) base 10))
@@ -334,10 +340,11 @@ func header() []byte {
       (string-split str del))
      (else
         (let loop ((r str) (acc '()))
-          (let ((idx (string-contains r del)))
-            (if idx
-                (loop (substring r (+ idx (string-length del)))
-                      (cons (substring r 0 idx) acc))
+          (let ((cur (string-contains r del)))
+            (if cur
+                (let ((idx (string-cursor->index r cur)))
+                  (loop (_substring r (+ idx (string-length del)) (string-length r))
+                        (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))`
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
@@ -2672,7 +2679,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			if len(args) != 3 {
 				return nil, fmt.Errorf("%s expects 3 args", sym)
 			}
-			return &List{Elems: []Node{Symbol("substring"), args[0], args[1], args[2]}}, nil
+			return &List{Elems: []Node{Symbol("_substring"), args[0], args[1], args[2]}}, nil
 		case "exists":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists expects 1 arg")
@@ -2778,7 +2785,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 		if orig != nil {
 			switch types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv).(type) {
 			case types.StringType:
-				return &List{Elems: []Node{Symbol("substring"), target, start, end}}, nil
+				return &List{Elems: []Node{Symbol("_substring"), target, start, end}}, nil
 			case types.ListType:
 				// if slicing a list by one element, treat as index access
 				if isAddOne(end, start) {
@@ -2790,7 +2797,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 		return &List{Elems: []Node{
 			Symbol("if"),
 			&List{Elems: []Node{Symbol("string?"), target}},
-			&List{Elems: []Node{Symbol("substring"), target, start, end}},
+			&List{Elems: []Node{Symbol("_substring"), target, start, end}},
 			&List{Elems: []Node{Symbol("take"), &List{Elems: []Node{Symbol("drop"), target, start}}, lenNode}},
 		}}, nil
 	}
@@ -2805,7 +2812,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 		switch types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: orig}}}}, currentEnv).(type) {
 		case types.StringType:
 			one := &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}
-			return &List{Elems: []Node{Symbol("substring"), target, in, one}}, nil
+			return &List{Elems: []Node{Symbol("_substring"), target, in, one}}, nil
 		case types.ListType:
 			return &List{Elems: []Node{Symbol("list-ref"), target, in}}, nil
 		case types.MapType:
@@ -2815,7 +2822,7 @@ func convertIndex(target Node, orig *parser.Primary, idx *parser.IndexOp) (Node,
 	}
 	return &List{Elems: []Node{
 		Symbol("cond"),
-		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("substring"), target, in, &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}}}}},
+		&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), target}}, &List{Elems: []Node{Symbol("_substring"), target, in, &List{Elems: []Node{Symbol("+"), in, IntLit(1)}}}}}},
 		&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), target}}, &List{Elems: []Node{Symbol("hash-table-ref"), target, in}}}},
 		&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("list-ref"), target, in}}}},
 	}}, nil

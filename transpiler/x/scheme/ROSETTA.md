@@ -214,7 +214,7 @@ Last updated: 2025-08-01 11:07 UTC
 | 205 | circular-primes | ✓ | 571.223ms | 12.7 MB |
 | 206 | cistercian-numerals |   |  |  |
 | 207 | comma-quibbling | ✓ | 571.223ms | 12.3 MB |
-| 208 | compiler-virtual-machine-interpreter |   |  |  |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 571.223ms | 14.8 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 210 | compound-data-type |   |  |  |
 | 211 | concurrent-computing-1 |   |  |  |
