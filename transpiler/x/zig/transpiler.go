@@ -31,6 +31,7 @@ var varDecls map[string]*VarDecl
 var groupCounter int
 var groupItemTypes map[string]string
 var typeAliases map[string]string
+var varUses map[string]int
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
@@ -1141,6 +1142,7 @@ func compileLoadExpr(l *parser.LoadExpr) (Expr, error) {
 // Emit returns the Zig source code for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
+	varUses = collectVarUses(p)
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n\n")
 	for _, st := range p.Structs {
@@ -1359,7 +1361,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	} else {
 		v.Value.emit(w)
 	}
-	io.WriteString(w, ";\n")
+	io.WriteString(w, ";")
+	if varUses[v.Name] == 0 && !v.Mutable {
+		io.WriteString(w, " _ = ")
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ";")
+	}
+	io.WriteString(w, "\n")
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
@@ -1928,6 +1936,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
+			io.WriteString(w, "@intCast(")
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
@@ -1952,6 +1961,7 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".len")
 			}
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -2077,6 +2087,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	funcCounter = 0
 	varTypes = map[string]string{}
 	varDecls = map[string]*VarDecl{}
+	varUses = map[string]int{}
 	groupCounter = 0
 	groupItemTypes = map[string]string{}
 	typeAliases = map[string]string{}
@@ -3938,4 +3949,118 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 		structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
 	}
 	return nil
+}
+
+func collectVarUses(p *Program) map[string]int {
+	uses := map[string]int{}
+	var walkExpr func(e Expr)
+	walkExpr = func(e Expr) {
+		switch t := e.(type) {
+		case *VarRef:
+			uses[t.Name]++
+		case *BinaryExpr:
+			walkExpr(t.Left)
+			walkExpr(t.Right)
+		case *CallExpr:
+			for _, a := range t.Args {
+				walkExpr(a)
+			}
+			if _, ok := varDecls[t.Func]; ok {
+				uses[t.Func]++
+			}
+		case *IfExpr:
+			walkExpr(t.Cond)
+			if t.Then != nil {
+				walkExpr(t.Then)
+			}
+			if t.Else != nil {
+				walkExpr(t.Else)
+			}
+		case *IndexExpr:
+			walkExpr(t.Target)
+			walkExpr(t.Index)
+		case *FieldExpr:
+			walkExpr(t.Target)
+		case *ListLit:
+			for _, e2 := range t.Elems {
+				walkExpr(e2)
+			}
+		case *MapLit:
+			for _, e2 := range t.Entries {
+				walkExpr(e2.Key)
+				walkExpr(e2.Value)
+			}
+		case *AppendExpr:
+			walkExpr(t.List)
+			walkExpr(t.Value)
+		case *NotExpr:
+			walkExpr(t.Expr)
+		case *SliceExpr:
+			walkExpr(t.Target)
+			walkExpr(t.Start)
+			walkExpr(t.End)
+		}
+	}
+	var walkStmt func(s Stmt)
+	walkStmt = func(s Stmt) {
+		switch t := s.(type) {
+		case *VarDecl:
+			if t.Value != nil {
+				walkExpr(t.Value)
+			}
+		case *AssignStmt:
+			walkExpr(t.Value)
+		case *IndexAssignStmt:
+			walkExpr(t.Target)
+			walkExpr(t.Value)
+		case *FieldAssignStmt:
+			walkExpr(t.Target)
+			walkExpr(t.Value)
+		case *ExprStmt:
+			walkExpr(t.Expr)
+		case *ReturnStmt:
+			if t.Value != nil {
+				walkExpr(t.Value)
+			}
+		case *IfStmt:
+			walkExpr(t.Cond)
+			for _, st := range t.Then {
+				walkStmt(st)
+			}
+			for _, st := range t.Else {
+				walkStmt(st)
+			}
+		case *WhileStmt:
+			walkExpr(t.Cond)
+			for _, st := range t.Body {
+				walkStmt(st)
+			}
+		case *ForStmt:
+			if t.Iterable != nil {
+				walkExpr(t.Iterable)
+			}
+			if t.Start != nil {
+				walkExpr(t.Start)
+			}
+			if t.End != nil {
+				walkExpr(t.End)
+			}
+			for _, st := range t.Body {
+				walkStmt(st)
+			}
+		case *BenchStmt:
+			for _, st := range t.Body {
+				walkStmt(st)
+			}
+		}
+	}
+	for _, g := range p.Globals {
+		walkStmt(g)
+	}
+	for _, f := range p.Functions {
+		for _, st := range f.Body {
+			walkStmt(st)
+		}
+	}
+	return uses
 }
