@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/formal-power-series.clj:51:91).
+Unable to resolve symbol: indexOf in this context
+
+Full report at:
+/tmp/clojure-8783565363258653836.edn

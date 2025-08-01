@@ -614,10 +614,13 @@ var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var stringListVars map[string]bool
 var renameVars map[string]string
+var declVars map[string]bool
 var reservedNames = map[string]bool{
 	"count": true,
 	"in":    true,
 	"rest":  true,
+	"next":  true,
+	"first": true,
 }
 
 // builtin replacements for some heavy numeric helpers
@@ -644,6 +647,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	nestedFunArgs = make(map[string][]string)
 	stringVars = nil
 	renameVars = nil
+	declVars = make(map[string]bool)
 	pr := &Program{}
 	currentProgram = pr
 	defer func() {
@@ -654,6 +658,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		funParamsStack = nil
 		stringVars = nil
 		renameVars = nil
+		declVars = nil
 	}()
 
 	// emit (ns main)
@@ -733,6 +738,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}
 		pr.Forms = append(pr.Forms, decl)
 	}
+	varDeclIndex := len(pr.Forms)
 
 	// treat the -main body like a function for variable tracking
 	funDepth++
@@ -790,6 +796,24 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}
 	pr.Forms = append(pr.Forms, &Defn{Name: "-main", Params: nil, Body: mainBody})
 
+	// insert variable declarations before nested function definitions
+	if len(declVars) > 0 {
+		decl := &List{Elems: []Node{Symbol("declare")}}
+		names := make([]string, 0, len(declVars))
+		for n := range declVars {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			decl.Elems = append(decl.Elems, Symbol(n))
+		}
+		if varDeclIndex <= len(pr.Forms) {
+			pr.Forms = append(pr.Forms[:varDeclIndex], append([]Node{decl}, pr.Forms[varDeclIndex:]...)...)
+		} else {
+			pr.Forms = append(pr.Forms, decl)
+		}
+	}
+
 	// invoke main
 	pr.Forms = append(pr.Forms, &List{Elems: []Node{Symbol("-main")}})
 	return pr, nil
@@ -842,6 +866,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			stringListVars[s.Let.Name] = true
 		}
 		name := renameVar(s.Let.Name)
+		if funDepth > 0 {
+			if declVars != nil {
+				declVars[name] = true
+			}
+		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Var != nil:
 		var v Node
@@ -876,6 +905,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			stringListVars[s.Var.Name] = true
 		}
 		name := renameVar(s.Var.Name)
+		if funDepth > 0 {
+			if declVars != nil {
+				declVars[name] = true
+			}
+		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
 		v, err := transpileExpr(s.Assign.Value)

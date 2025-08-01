@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 99/491
-Last updated: 2025-07-31 01:10 +0700
+Completed: 123/491
+Last updated: 2025-08-01 18:11 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -454,39 +454,39 @@ Last updated: 2025-07-31 01:10 +0700
 | 447 | flow-control-structures-2 |   |  |  |
 | 448 | flow-control-structures-3 |   |  |  |
 | 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ |  |  |
 | 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle |   |  |  |
+| 452 | floyds-triangle | ✓ |  |  |
 | 453 | forest-fire |   |  |  |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
+| 454 | fork-2 | ✓ |  |  |
+| 455 | fork | ✓ |  |  |
 | 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
+| 457 | formatted-numeric-output | ✓ |  |  |
+| 458 | forward-difference | ✓ |  |  |
+| 459 | four-bit-adder-1 | ✓ |  |  |
 | 460 | four-is-magic |   |  |  |
-| 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
+| 462 | fractal-tree | ✓ |  |  |
+| 463 | fractran | ✓ |  |  |
+| 464 | french-republican-calendar | ✓ |  |  |
 | 465 | ftp |   |  |  |
 | 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
+| 467 | function-prototype | ✓ |  |  |
+| 468 | functional-coverage-tree | ✓ |  |  |
 | 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
+| 470 | gamma-function | ✓ |  |  |
+| 471 | general-fizzbuzz | ✓ |  |  |
+| 472 | generic-swap | ✓ |  |  |
+| 473 | get-system-command-output | ✓ |  |  |
+| 474 | giuga-numbers | ✓ |  |  |
+| 475 | globally-replace-text-in-several-files | ✓ |  |  |
+| 476 | goldbachs-comet | ✓ |  |  |
+| 477 | golden-ratio-convergence | ✓ |  |  |
+| 478 | graph-colouring | ✓ |  |  |
 | 479 | gray-code |   |  |  |
 | 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
+| 481 | gui-enabling-disabling-of-controls | ✓ |  |  |
+| 482 | gui-maximum-window-dimensions | ✓ |  |  |
 | 483 | http |   |  |  |
 | 484 | image-noise |   |  |  |
 | 485 | loops-increment-loop-index-within-loop-body |   |  |  |
