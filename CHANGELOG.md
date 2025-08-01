@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.53] – 2025-08-01T14:33:11+07:00
+
+### Added
+
+* `mochix` print command for AST output
+* AST printers implemented across more languages including F#, Haskell, Swift and Prolog
+* Kome compiler example with dedicated tests
+* Extensive golden tests across languages
+
+### Changed
+
+* Build runs without the `slow` tag
+* Swift printer supports `do` statements and interpolation
+* Enhanced record, operator and pointer handling across printers
+
+### Fixed
+
+* Minor build issues and printer bugs
+
 ## [0.10.51] – 2025-07-31T09:04:29+07:00
 
 ### Added
