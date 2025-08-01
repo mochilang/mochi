@@ -482,6 +482,8 @@ func writeValueArguments(b *bytes.Buffer, n *Node) {
 			writeExpr(b, arg.Children[1], 0)
 		} else if len(arg.Children) > 0 {
 			writeExpr(b, arg.Children[0], 0)
+		} else if arg.Text != "" {
+			b.WriteString(arg.Text)
 		}
 	}
 	b.WriteByte(')')
