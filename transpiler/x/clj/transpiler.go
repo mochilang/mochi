@@ -2184,8 +2184,12 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		}
 	}
 	if len(elems) == 0 {
-		elems = append(elems, Symbol(c.Func))
-		if extra, ok := nestedFunArgs[c.Func]; ok {
+		name := c.Func
+		if v, ok := lookupVar(name); ok {
+			name = v
+		}
+		elems = append(elems, Symbol(name))
+		if extra, ok := nestedFunArgs[name]; ok {
 			for _, v := range extra {
 				elems = append(elems, Symbol(v))
 			}
