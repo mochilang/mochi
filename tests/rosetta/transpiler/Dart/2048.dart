@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Board {
   List<List<int>> cells;
   Board({required this.cells});
@@ -46,37 +58,31 @@ class MoveResult {
   MoveResult({required this.board, required this.score, required this.moved});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  final int SIZE = 4;
-  Board newBoard() {
-  List<List<int>> b = [];
-  int y = 0;
+int SIZE = 4;
+Board newBoard() {
+  List<List<int>> b = <List<int>>[];
+  dynamic y = 0;
   while (y < SIZE) {
-    List<int> row = [];
-    int x = 0;
+    List<int> row = <int>[];
+    dynamic x = 0;
     while (x < SIZE) {
     row = [...row, 0];
     x = x + 1;
   }
-    b = [...b, row];
+    b = ([...b, row] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
     y = y + 1;
   }
   return Board(cells: b);
 }
-  SpawnResult spawnTile(Board b) {
-  List<List<int>> grid = b.cells;
-  List<List<int>> empty = [];
-  int y = 0;
+
+SpawnResult spawnTile(Board b) {
+  dynamic grid = b.cells;
+  List<List<int>> empty = <List<int>>[];
+  dynamic y = 0;
   while (y < SIZE) {
-    int x = 0;
+    dynamic x = 0;
     while (x < SIZE) {
-    if (grid[y]![x] == 0) {
+    if (grid[(y).toInt()][(x).toInt()] == 0) {
     empty = [...empty, [x, y]];
   }
     x = x + 1;
@@ -86,35 +92,37 @@ void main() {
   if (empty.length == 0) {
     return SpawnResult(board: b, full: true);
   }
-  int idx = _now() % empty.length;
-  final List<int> cell = empty[idx];
-  int val = 4;
+  dynamic idx = _now() % empty.length;
+  List<int> cell = empty[(idx).toInt()];
+  dynamic val = 4;
   if (_now() % 10 < 9) {
     val = 2;
   }
   grid[cell[1]]![cell[0]] = val;
   return SpawnResult(board: Board(cells: grid), full: empty.length == 1);
 }
-  String pad(int n) {
-  String s = (n).toString();
-  int pad = 4 - s.length;
-  int i = 0;
-  String out = "";
+
+String pad(int n) {
+  dynamic s = (n).toString();
+  dynamic pad = 4 - s.length;
+  dynamic i = 0;
+  dynamic out = "";
   while (i < pad) {
     out = out + " ";
     i = i + 1;
   }
   return out + s;
 }
-  void draw(Board b, int score) {
+
+void draw(Board b, int score) {
   print("Score: " + (score).toString());
-  int y = 0;
+  dynamic y = 0;
   while (y < SIZE) {
     print("+----+----+----+----+");
-    String line = "|";
-    int x = 0;
+    dynamic line = "|";
+    dynamic x = 0;
     while (x < SIZE) {
-    int v = b.cells[y]![x];
+    dynamic v = b.cells[(y).toInt()][(x).toInt()];
     if (v == 0) {
     line = line + "    |";
   } else {
@@ -128,35 +136,37 @@ void main() {
   print("+----+----+----+----+");
   print("W=Up S=Down A=Left D=Right Q=Quit");
 }
-  List<int> reverseRow(List<int> r) {
-  List<int> out = [];
-  int i = r.length - 1;
+
+List<int> reverseRow(List<int> r) {
+  List<int> out = <int>[];
+  dynamic i = r.length - 1;
   while (i >= 0) {
-    out = [...out, r[i]];
+    out = [...out, r[(i).toInt()]];
     i = i - 1;
   }
   return out;
 }
-  SlideResult slideLeft(List<int> row) {
-  List<int> xs = [];
-  int i = 0;
+
+SlideResult slideLeft(List<int> row) {
+  List<int> xs = <int>[];
+  dynamic i = 0;
   while (i < row.length) {
-    if (row[i] != 0) {
-    xs = [...xs, row[i]];
+    if (row[(i).toInt()] != 0) {
+    xs = [...xs, row[(i).toInt()]];
   }
     i = i + 1;
   }
-  List<int> res = [];
-  int gain = 0;
+  List<int> res = <int>[];
+  dynamic gain = 0;
   i = 0;
   while (i < xs.length) {
-    if (i + 1 < xs.length && xs[i] == xs[i + 1]) {
-    final int v = xs[i] * 2;
+    if (i + 1 < xs.length && xs[(i).toInt()] == xs[(i + 1).toInt()]) {
+    int v = xs[(i).toInt()] * 2;
     gain = gain + v;
     res = [...res, v];
     i = i + 2;
   } else {
-    res = [...res, xs[i]];
+    res = [...res, xs[(i).toInt()]];
     i = i + 1;
   }
   }
@@ -165,123 +175,130 @@ void main() {
   }
   return SlideResult(row: res, gain: gain);
 }
-  MoveResult moveLeft(Board b, int score) {
-  List<List<int>> grid = b.cells;
-  bool moved = false;
-  int y = 0;
+
+MoveResult moveLeft(Board b, int score) {
+  dynamic grid = b.cells;
+  dynamic moved = false;
+  dynamic y = 0;
   while (y < SIZE) {
-    final SlideResult r = slideLeft(grid[y]);
-    final List<int> _new = r.row;
+    SlideResult r = slideLeft(grid[(y).toInt()]);
+    List<int> _new = r.row;
     score = score + r.gain;
-    int x = 0;
+    dynamic x = 0;
     while (x < SIZE) {
-    if (grid[y]![x] != _new[x]) {
+    if (grid[(y).toInt()][(x).toInt()] != _new[(x).toInt()]) {
     moved = true;
   }
-    grid[y]![x] = _new[x];
+    grid[(y).toInt()]![(x).toInt()] = _new[(x).toInt()];
     x = x + 1;
   }
     y = y + 1;
   }
   return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
-  MoveResult moveRight(Board b, int score) {
-  List<List<int>> grid = b.cells;
-  bool moved = false;
-  int y = 0;
+
+MoveResult moveRight(Board b, int score) {
+  dynamic grid = b.cells;
+  dynamic moved = false;
+  dynamic y = 0;
   while (y < SIZE) {
-    List<int> rev = reverseRow(grid[y]);
-    final SlideResult r = slideLeft(rev);
+    dynamic rev = reverseRow(grid[(y).toInt()]);
+    SlideResult r = slideLeft(rev);
     rev = r.row;
     score = score + r.gain;
     rev = reverseRow(rev);
-    int x = 0;
+    dynamic x = 0;
     while (x < SIZE) {
-    if (grid[y]![x] != rev[x]) {
+    if (grid[(y).toInt()][(x).toInt()] != rev[(x).toInt()]) {
     moved = true;
   }
-    grid[y]![x] = rev[x];
+    grid[(y).toInt()]![(x).toInt()] = rev[(x).toInt()];
     x = x + 1;
   }
     y = y + 1;
   }
   return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
-  List<int> getCol(Board b, int x) {
-  List<int> col = [];
-  int y = 0;
+
+List<int> getCol(Board b, int x) {
+  List<int> col = <int>[];
+  dynamic y = 0;
   while (y < SIZE) {
-    col = [...col, b.cells[y]![x]];
+    col = [...col, b.cells[(y).toInt()][x]];
     y = y + 1;
   }
   return col;
 }
-  void setCol(Board b, int x, List<int> col) {
-  List<List<int>> rows = b.cells;
-  int y = 0;
+
+void setCol(Board b, int x, List<int> col) {
+  dynamic rows = b.cells;
+  dynamic y = 0;
   while (y < SIZE) {
-    List<int> row = rows[y];
-    row[x] = col[y];
-    rows[y] = row;
+    dynamic row = rows[(y).toInt()];
+    row[x] = col[(y).toInt()];
+    rows[(y).toInt()] = row;
     y = y + 1;
   }
-  b.cells = rows;
+  b.cells = (rows as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
 }
-  MoveResult moveUp(Board b, int score) {
-  List<List<int>> grid = b.cells;
-  bool moved = false;
-  int x = 0;
+
+MoveResult moveUp(Board b, int score) {
+  dynamic grid = b.cells;
+  dynamic moved = false;
+  dynamic x = 0;
   while (x < SIZE) {
-    List<int> col = getCol(b, x);
-    final SlideResult r = slideLeft(col);
-    final List<int> _new = r.row;
+    dynamic col = getCol(b, x);
+    SlideResult r = slideLeft(col);
+    List<int> _new = r.row;
     score = score + r.gain;
-    int y = 0;
+    dynamic y = 0;
     while (y < SIZE) {
-    if (grid[y]![x] != _new[y]) {
+    if (grid[(y).toInt()][(x).toInt()] != _new[(y).toInt()]) {
     moved = true;
   }
-    grid[y]![x] = _new[y];
+    grid[(y).toInt()]![(x).toInt()] = _new[(y).toInt()];
     y = y + 1;
   }
     x = x + 1;
   }
   return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
-  MoveResult moveDown(Board b, int score) {
-  List<List<int>> grid = b.cells;
-  bool moved = false;
-  int x = 0;
+
+MoveResult moveDown(Board b, int score) {
+  dynamic grid = b.cells;
+  dynamic moved = false;
+  dynamic x = 0;
   while (x < SIZE) {
-    List<int> col = reverseRow(getCol(b, x));
-    final SlideResult r = slideLeft(col);
+    dynamic col = reverseRow(getCol(b, x));
+    SlideResult r = slideLeft(col);
     col = r.row;
     score = score + r.gain;
     col = reverseRow(col);
-    int y = 0;
+    dynamic y = 0;
     while (y < SIZE) {
-    if (grid[y]![x] != col[y]) {
+    if (grid[(y).toInt()][(x).toInt()] != col[(y).toInt()]) {
     moved = true;
   }
-    grid[y]![x] = col[y];
+    grid[(y).toInt()]![(x).toInt()] = col[(y).toInt()];
     y = y + 1;
   }
     x = x + 1;
   }
   return MoveResult(board: Board(cells: grid), score: score, moved: moved);
 }
-  bool hasMoves(Board b) {
-  int y = 0;
+
+bool hasMoves(Board b) {
+  dynamic y = 0;
   while (y < SIZE) {
-    int x = 0;
+    dynamic x = 0;
     while (x < SIZE) {
-    if (b.cells[y]![x] == 0) {
+    if (b.cells[(y).toInt()][(x).toInt()] == 0) {
     return true;
   }
-    if (x + 1 < SIZE && b.cells[y]![x] == b.cells[y]![x + 1]) {
+    if (x + 1 < SIZE && b.cells[(y).toInt()][(x).toInt()] == b.cells[(y).toInt()][(x + 1).toInt()]) {
     return true;
   }
-    if (y + 1 < SIZE && b.cells[y]![x] == b.cells[y + 1]![x]) {
+    if (y + 1 < SIZE && b.cells[(y).toInt()][(x).toInt()] == b.cells[(y + 1).toInt()][(x).toInt()]) {
     return true;
   }
     x = x + 1;
@@ -290,12 +307,13 @@ void main() {
   }
   return false;
 }
-  bool has2048(Board b) {
-  int y = 0;
+
+bool has2048(Board b) {
+  dynamic y = 0;
   while (y < SIZE) {
-    int x = 0;
+    dynamic x = 0;
     while (x < SIZE) {
-    if (b.cells[y]![x] >= 2048) {
+    if (b.cells[(y).toInt()][(x).toInt()] >= 2048) {
     return true;
   }
     x = x + 1;
@@ -304,39 +322,47 @@ void main() {
   }
   return false;
 }
-  Board board = newBoard();
-  SpawnResult r = spawnTile(board);
+
+Board board = newBoard();
+SpawnResult r = spawnTile(board);
+bool full = r.full;
+int score = 0;
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   board = r.board;
-  bool full = r.full;
   r = spawnTile(board);
   board = r.board;
   full = r.full;
-  int score = 0;
   draw(board, score);
   while (true) {
     print("Move: ");
-    final String cmd = stdin.readLineSync() ?? '';
-    bool moved = false;
+    dynamic cmd = stdin.readLineSync() ?? '';
+    dynamic moved = false;
     if (cmd == "a" || cmd == "A") {
-    final MoveResult m = moveLeft(board, score);
+    dynamic m = moveLeft(board, score);
     board = m.board;
     score = m.score;
     moved = m.moved;
   }
     if (cmd == "d" || cmd == "D") {
-    final MoveResult m = moveRight(board, score);
+    dynamic m = moveRight(board, score);
     board = m.board;
     score = m.score;
     moved = m.moved;
   }
     if (cmd == "w" || cmd == "W") {
-    final MoveResult m = moveUp(board, score);
+    dynamic m = moveUp(board, score);
     board = m.board;
     score = m.score;
     moved = m.moved;
   }
     if (cmd == "s" || cmd == "S") {
-    final MoveResult m = moveDown(board, score);
+    dynamic m = moveDown(board, score);
     board = m.board;
     score = m.score;
     moved = m.moved;
@@ -345,7 +371,7 @@ void main() {
     break;
   }
     if (moved) {
-    final SpawnResult r2 = spawnTile(board);
+    dynamic r2 = spawnTile(board);
     board = r2.board;
     full = r2.full;
     if (full && !hasMoves(board)) {

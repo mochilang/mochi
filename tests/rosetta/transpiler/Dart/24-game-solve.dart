@@ -22,41 +22,54 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Rational {
   int num;
   int denom;
   Rational({required this.num, required this.denom});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  final int OP_ADD = 1;
-  final int OP_SUB = 2;
-  final int OP_MUL = 3;
-  final int OP_DIV = 4;
-  Rational binEval(int op, dynamic l, dynamic r) {
-  final Rational lv = exprEval(l);
-  final Rational rv = exprEval(r);
-  if (op == OP_ADD) {
-    return Rational(num: lv.num * rv.denom + lv.denom * rv.num, denom: lv.denom * rv.denom);
-  }
-  if (op == OP_SUB) {
-    return Rational(num: lv.num * rv.denom - lv.denom * rv.num, denom: lv.denom * rv.denom);
-  }
-  if (op == OP_MUL) {
-    return Rational(num: lv.num * rv.num, denom: lv.denom * rv.denom);
-  }
-  return Rational(num: lv.num * rv.denom, denom: lv.denom * rv.num);
+class Node {
+  Rational val;
+  String txt;
+  Node({required this.val, required this.txt});
 }
-  String binString(int op, dynamic l, dynamic r) {
-  final String ls = exprString(l);
-  final String rs = exprString(r);
-  String opstr = "";
+
+int OP_ADD = 1;
+int OP_SUB = 2;
+int OP_MUL = 3;
+int OP_DIV = 4;
+Node makeNode(int n) {
+  return Node(val: Rational(num: n, denom: 1), txt: (n).toString());
+}
+
+Node combine(int op, Node l, Node r) {
+  Rational res;
+  if (op == OP_ADD) {
+    res = Rational(num: l.val.num * r.val.denom + l.val.denom * r.val.num, denom: l.val.denom * r.val.denom);
+  } else {
+    if (op == OP_SUB) {
+    res = Rational(num: l.val.num * r.val.denom - l.val.denom * r.val.num, denom: l.val.denom * r.val.denom);
+  } else {
+    if (op == OP_MUL) {
+    res = Rational(num: l.val.num * r.val.num, denom: l.val.denom * r.val.denom);
+  } else {
+    res = Rational(num: l.val.num * r.val.denom, denom: l.val.denom * r.val.num);
+  };
+  };
+  }
+  dynamic opstr = "";
   if (op == OP_ADD) {
     opstr = " + ";
   } else {
@@ -70,55 +83,55 @@ void main() {
   };
   };
   }
-  return "(" + ls + opstr + rs + ")";
+  return Node(val: res, txt: "(" + l.txt + opstr + r.txt + ")");
 }
-  dynamic newNum(int n) {
-  return {"__name": "Num", "value": Rational(num: n, denom: 1)};
+
+Rational exprEval(Node x) {
+  return x.val;
 }
-  Rational exprEval(dynamic x) {
-  return x["__name"] == "Num" ? x["value"] : x["__name"] == "Bin" ? binEval(x["op"], x["left"], x["right"]) : "";
+
+String exprString(Node x) {
+  return x.txt;
 }
-  String exprString(dynamic x) {
-  return x["__name"] == "Num" ? (v.num).toString() : x["__name"] == "Bin" ? binString(x["op"], x["left"], x["right"]) : "";
-}
-  final int n_cards = 4;
-  final int goal = 24;
-  final int digit_range = 9;
-  bool solve(List<dynamic> xs) {
+
+int n_cards = 4;
+int goal = 24;
+int digit_range = 9;
+bool solve(List<Node> xs) {
   if (xs.length == 1) {
-    final Rational f = exprEval(xs[0]);
+    Rational f = exprEval(xs[0]);
     if (f.denom != 0 && f.num == f.denom * goal) {
     print(exprString(xs[0]));
     return true;
   };
     return false;
   }
-  int i = 0;
+  dynamic i = 0;
   while (i < xs.length) {
-    int j = i + 1;
+    dynamic j = i + 1;
     while (j < xs.length) {
-    List<dynamic> rest = [];
-    int k = 0;
+    List<Node> rest = <Node>[];
+    dynamic k = 0;
     while (k < xs.length) {
     if (k != i && k != j) {
-    rest = [...rest, xs[k]];
+    rest = [...rest, xs[(k).toInt()]];
   }
     k = k + 1;
   }
-    final a = xs[i];
-    final b = xs[j];
-    Map<String, dynamic> node = {"__name": "Bin", "op": OP_ADD, "left": a, "right": b};
-    for (var op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV]) {
-    node = {"__name": "Bin", "op": op, "left": a, "right": b};
+    Node a = xs[(i).toInt()];
+    Node b = xs[(j).toInt()];
+    Node node;
+    for (int op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV]) {
+    node = combine(op, a, b);
     if (solve([...rest, node])) {
     return true;
   }
   }
-    node = {"__name": "Bin", "op": OP_SUB, "left": b, "right": a};
+    node = combine(OP_SUB, b, a);
     if (solve([...rest, node])) {
     return true;
   }
-    node = {"__name": "Bin", "op": OP_DIV, "left": b, "right": a};
+    node = combine(OP_DIV, b, a);
     if (solve([...rest, node])) {
     return true;
   }
@@ -128,14 +141,15 @@ void main() {
   }
   return false;
 }
-  void main() {
-  int iter = 0;
+
+void _main() {
+  dynamic iter = 0;
   while (iter < 10) {
-    List<dynamic> cards = [];
-    int i = 0;
+    List<Node> cards = <Node>[];
+    dynamic i = 0;
     while (i < n_cards) {
-    final int n = _now() % (digit_range - 1) + 1;
-    cards = [...cards, newNum(n)];
+    int n = _now() % (digit_range - 1) + 1;
+    cards = [...cards, makeNode(n)];
     print(" " + (n).toString());
     i = i + 1;
   }
@@ -146,12 +160,22 @@ void main() {
     iter = iter + 1;
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

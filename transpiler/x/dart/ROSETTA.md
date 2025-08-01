@@ -7,20 +7,20 @@ Compiled and ran: 420/491
 ## Checklist
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 10.076ms | 1.4 MB |
-| 2 | 100-doors-3 | ✓ | 7.194ms | 12.0 MB |
-| 3 | 100-doors | ✓ |  |  |
-| 4 | 100-prisoners | ✓ | 276.736ms | 5.0 MB |
-| 5 | 15-puzzle-game | ✓ | 23.29ms | 192.0 KB |
-| 6 | 15-puzzle-solver | ✓ | 5.473ms | 10.6 MB |
-| 7 | 2048 | ✓ | 30.218ms | 676.0 KB |
-| 8 | 21-game | ✓ | 13.411ms | 1.5 MB |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ | 14.135ms | 1.9 MB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ |  |  |
+| 1 | 100-doors-2 | ✓ | 12.133ms | 9.7 MB |
+| 2 | 100-doors-3 | ✓ | 7.953ms | 3.0 MB |
+| 3 | 100-doors | ✓ | 20.847ms | 9.7 MB |
+| 4 | 100-prisoners | ✓ | 347.077ms | 6.1 MB |
+| 5 | 15-puzzle-game | ✓ | 26.01ms | 6.0 MB |
+| 6 | 15-puzzle-solver | ✓ | 7.917ms | 3.1 MB |
+| 7 | 2048 | ✓ | 30.597ms | 7.7 MB |
+| 8 | 21-game | ✓ | 20.86ms | 7.5 MB |
+| 9 | 24-game-solve | ✓ | 67.961ms | 4.4 MB |
+| 10 | 24-game | ✓ | 32.679ms | 7.0 MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 43.883ms | 14.4 MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 2.671112s | 319.5 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 22.502ms | 3.2 MB |
-| 14 | 99-bottles-of-beer | ✓ | 6.245ms | 760.0 KB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 48.009ms | 15.8 MB |
+| 14 | 99-bottles-of-beer | ✓ | 8.928ms | 3.2 MB |
 | 15 | a+b | ✓ | 14.005ms | 11.3 MB |
 | 16 | abbreviations-automatic | ✓ | 19.029ms | 1.9 MB |
 | 17 | abbreviations-easy | ✓ | 9.104ms | 2.0 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-01 18:46 +0700_
+_Last updated: 2025-08-01 19:03 +0700_

@@ -22,19 +22,24 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<String> fields(String s) {
-  List<String> words = [];
-  String cur = "";
-  int i = 0;
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+List<String> fields(String s) {
+  List<String> words = <String>[];
+  dynamic cur = "";
+  dynamic i = 0;
   while (i < s.length) {
-    final String ch = s.substring(i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == " " || ch == "\n" || ch == "	") {
     if (cur.length > 0) {
     words = [...words, cur];
@@ -50,21 +55,23 @@ void main() {
   }
   return words;
 }
-  String join(List<String> xs, String sep) {
-  String res = "";
-  int i = 0;
+
+String join(List<String> xs, String sep) {
+  dynamic res = "";
+  dynamic i = 0;
   while (i < xs.length) {
     if (i > 0) {
     res = res + sep;
   }
-    res = res + xs[i];
+    res = res + xs[(i).toInt()];
     i = i + 1;
   }
   return res;
 }
-  String numberName(int n) {
-  final List<String> small = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
-  final List<String> tens = ["ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+String numberName(int n) {
+  List<String> small = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+  List<String> tens = ["ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
   if (n < 0) {
     return "";
   }
@@ -72,77 +79,91 @@ void main() {
     return small[n];
   }
   if (n < 100) {
-    String t = tens[n ~/ 10 as int];
-    int s = n % 10;
+    dynamic t = tens[n ~/ 10 as int];
+    dynamic s = n % 10;
     if (s > 0) {
-    t = t + " " + small[s];
+    t = t + " " + small[(s).toInt()];
   };
     return t;
   }
   return "";
 }
-  String pluralizeFirst(String s, int n) {
+
+String pluralizeFirst(String s, int n) {
   if (n == 1) {
     return s;
   }
-  final List<String> w = fields(s);
+  List<String> w = fields(s);
   if (w.length > 0) {
     w[0] = w[0] + "s";
   }
   return join(w, " ");
 }
-  int randInt(int seed, int n) {
-  final int next = (seed * 1664525 + 1013904223) % 2147483647;
+
+int randInt(int seed, int n) {
+  int next = (seed * 1664525 + 1013904223) % 2147483647;
   return next % n;
 }
-  String slur(String p, int d) {
+
+String slur(String p, int d) {
   if (p.length <= 2) {
     return p;
   }
-  List<String> a = [];
-  int i = 1;
+  List<String> a = <String>[];
+  dynamic i = 1;
   while (i < p.length - 1) {
-    a = [...a, p.substring(i, i + 1)];
+    a = [...a, _substr(p, i, i + 1)];
     i = i + 1;
   }
-  int idx = a.length - 1;
-  int seed = d;
+  dynamic idx = a.length - 1;
+  dynamic seed = d;
   while (idx >= 1) {
     seed = (seed * 1664525 + 1013904223) % 2147483647;
     if (seed % 100 >= d) {
-    final int j = seed % (idx + 1);
-    final String tmp = a[idx];
-    a[idx] = a[j];
-    a[j] = tmp;
+    num j = seed % (idx + 1);
+    String tmp = a[(idx).toInt()];
+    a[(idx).toInt()] = a[(j).toInt()];
+    a[(j).toInt()] = tmp;
   }
     idx = idx - 1;
   }
-  String s = p.substring(0, 1);
-  int k = 0;
+  dynamic s = _substr(p, 0, 1);
+  dynamic k = 0;
   while (k < a.length) {
-    s = s + a[k];
+    s = s + a[(k).toInt()];
     k = k + 1;
   }
-  s = s + p.substring(p.length - 1, p.length);
-  final List<String> w = fields(s);
+  s = s + _substr(p, p.length - 1, p.length);
+  List<String> w = fields(s);
   return join(w, " ");
 }
-  void main() {
-  int i = 99;
+
+void _main() {
+  dynamic i = 99;
   while (i > 0) {
     print(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer on the wall", i));
     print(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer", i));
     print(slur("take one", i) + " " + slur("down", i) + " " + slur("pass it around", i));
-    print(slur(numberName(i - 1), i) + " " + pluralizeFirst(slur("bottle of", i), i - 1) + " " + slur("beer on the wall", i));
+    print(slur(numberName((i - 1).toInt()), i) + " " + pluralizeFirst(slur("bottle of", i), (i - 1).toInt()) + " " + slur("beer on the wall", i));
     i = i - 1;
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

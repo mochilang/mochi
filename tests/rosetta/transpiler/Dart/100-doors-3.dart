@@ -22,6 +22,19 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+String result = "";
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -29,10 +42,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  String result = "";
   for (int i = 1; i < 101; i++) {
-    int j = 1;
-    while (j * j.toString().compareTo(i.toString()) < 0) {
+    dynamic j = 1;
+    while (j * j < i) {
     j = j + 1;
   }
     if (j * j == i) {
