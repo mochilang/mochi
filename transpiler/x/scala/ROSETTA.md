@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (354/491)
-_Last updated: 2025-08-01 22:02 +0700_
+## Golden Test Checklist (381/491)
+_Last updated: 2025-08-02 00:33 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -336,34 +336,34 @@ _Last updated: 2025-08-01 22:02 +0700_
 | 327 | dynamic-variable-names | ✓ | 19µs | 8.7 MB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 11µs | 8.7 MB |
 | 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
-| 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
+| 330 | ecdsa-example | ✓ | 3µs | 8.7 MB |
+| 331 | echo-server | ✓ | 3µs | 8.7 MB |
+| 332 | eertree | ✓ | 11µs | 8.7 MB |
+| 333 | egyptian-division | ✓ | 4µs | 8.7 MB |
+| 334 | ekg-sequence-convergence | ✓ | 33µs | 8.7 MB |
+| 335 | element-wise-operations | ✓ | 16µs | 8.7 MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 29µs | 8.7 MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 29µs | 8.7 MB |
+| 338 | elementary-cellular-automaton | ✓ | 13µs | 8.7 MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 7µs | 8.7 MB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 3µs | 8.7 MB |
+| 341 | emirp-primes | ✓ | 2.81ms | 8.8 MB |
+| 342 | empty-directory | ✓ | 3µs | 8.8 MB |
+| 343 | empty-program | ✓ |  | 8.7 MB |
+| 344 | empty-string-1 | ✓ | 5µs | 8.7 MB |
+| 345 | empty-string-2 | ✓ | 4µs | 8.7 MB |
+| 346 | enforced-immutability | ✓ | 2µs | 8.7 MB |
+| 347 | entropy-1 | ✓ | 9µs | 8.7 MB |
+| 348 | entropy-2 | ✓ | 9µs | 8.7 MB |
+| 349 | entropy-narcissist | ✓ | 23µs | 8.7 MB |
+| 350 | enumerations-1 | ✓ |  | 8.7 MB |
+| 351 | enumerations-2 | ✓ |  | 8.7 MB |
+| 352 | enumerations-3 | ✓ |  | 8.7 MB |
+| 353 | enumerations-4 | ✓ |  | 8.7 MB |
+| 354 | environment-variables-1 | ✓ | 2µs | 8.7 MB |
+| 355 | environment-variables-2 | ✓ | 12µs | 8.7 MB |
+| 356 | equal-prime-and-composite-sums | ✓ |  | 8.8 MB |
+| 357 | equilibrium-index | error |  |  |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |
