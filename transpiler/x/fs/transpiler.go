@@ -807,14 +807,9 @@ func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "[|")
 	for i, e := range l.Elems {
 		if !same && types[i] != "obj" {
-			io.WriteString(w, "box ")
-			if needsParen(e) {
-				io.WriteString(w, "(")
-				e.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				e.emit(w)
-			}
+			io.WriteString(w, "box (")
+			e.emit(w)
+			io.WriteString(w, ")")
 		} else {
 			e.emit(w)
 		}
@@ -2577,8 +2572,9 @@ func (c *CastExpr) emit(w io.Writer) {
 		if ll, ok := c.Expr.(*ListLit); ok && c.Type == "obj array" {
 			io.WriteString(w, "[|")
 			for i, e := range ll.Elems {
-				io.WriteString(w, "box ")
+				io.WriteString(w, "box (")
 				e.emit(w)
+				io.WriteString(w, ")")
 				if i < len(ll.Elems)-1 {
 					io.WriteString(w, "; ")
 				}
