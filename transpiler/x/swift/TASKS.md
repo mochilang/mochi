@@ -1,5 +1,5 @@
-## Progress (2025-08-01 23:57 +0700)
-- swift transpiler: cast optionals and any to Int
+## Progress (2025-08-02 01:00 +0700)
+- swift transpiler: add split builtin and update rosetta outputs
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
