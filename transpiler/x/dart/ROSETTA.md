@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 417/491
+Compiled and ran: 420/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -44,10 +44,10 @@ Compiled and ran: 417/491
 | 35 | address-of-a-variable | ✓ | 5.84ms | 10.7 MB |
 | 36 | adfgvx-cipher | ✓ | 9.665ms | 1.6 MB |
 | 37 | aks-test-for-primes | ✓ | 5.546ms | 496.0 KB |
-| 38 | algebraic-data-types |   |  |  |
+| 38 | algebraic-data-types | ✓ | 13.511ms | 3.4 MB |
 | 39 | align-columns | ✓ | 7.95ms | 232.0 KB |
 | 40 | aliquot-sequence-classifications | ✓ | 40.353ms | 1012.0 KB |
-| 41 | almkvist-giullera-formula-for-pi |   |  |  |
+| 41 | almkvist-giullera-formula-for-pi | ✓ |  |  |
 | 42 | almost-prime | ✓ | 7.954ms | 108.0 KB |
 | 43 | amb | ✓ | 5.844ms | 2.6 MB |
 | 44 | amicable-pairs | ✓ | 1.287573s | 11.4 MB |
@@ -85,7 +85,7 @@ Compiled and ran: 417/491
 | 76 | ascending-primes | ✓ |  |  |
 | 77 | ascii-art-diagram-converter | ✓ |  |  |
 | 78 | assertions | ✓ |  |  |
-| 79 | associative-array-creation |   |  |  |
+| 79 | associative-array-creation | ✓ |  |  |
 | 80 | associative-array-iteration | ✓ |  |  |
 | 81 | associative-array-merging | ✓ |  |  |
 | 82 | atomic-updates | ✓ |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 417/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 00:38 +0700_
+_Last updated: 2025-08-02 00:50 +0700_
