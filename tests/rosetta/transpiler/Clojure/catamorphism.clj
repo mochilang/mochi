@@ -24,7 +24,7 @@
   (try (throw (ex-info "return" {:v (* mul_a mul_b)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn fold [fold_f fold_xs]
-  (try (do (def fold_r (nth fold_xs 0)) (def fold_i 1) (while (< fold_i (count fold_xs)) (do (def fold_r (f fold_r (nth fold_xs fold_i))) (def fold_i (+ fold_i 1)))) (throw (ex-info "return" {:v fold_r}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (def fold_r (nth fold_xs 0)) (def fold_i 1) (while (< fold_i (count fold_xs)) (do (def fold_r (fold_f fold_r (nth fold_xs fold_i))) (def fold_i (+ fold_i 1)))) (throw (ex-info "return" {:v fold_r}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (def main_n [1 2 3 4 5])
 
