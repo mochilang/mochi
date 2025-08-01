@@ -29,5 +29,30 @@ This directory contains utilities for generating and printing simplified Swift A
 - [x] 23. fun_three_args.swift
 - [x] 24. go_auto.swift
 - [x] 25. group_by.swift
+- [x] 26. group_by_conditional_sum.swift
+- [x] 27. group_by_having.swift
+- [x] 28. group_by_join.swift
+- [x] 29. group_by_left_join.swift
+- [x] 30. group_by_multi_join.swift
+- [x] 31. group_by_multi_join_sort.swift
+- [x] 32. group_by_multi_sort.swift
+- [x] 33. group_by_sort.swift
+- [x] 34. group_items_iteration.swift
+- [x] 35. if_else.swift
+- [x] 36. if_then_else.swift
+- [x] 37. if_then_else_nested.swift
+- [x] 38. in_operator.swift
+- [x] 39. in_operator_extended.swift
+- [x] 40. inner_join.swift
+- [x] 41. join_multi.swift
+- [x] 42. json_builtin.swift
+- [x] 43. left_join.swift
+- [x] 44. left_join_multi.swift
+- [x] 45. len_builtin.swift
+- [x] 46. len_map.swift
+- [x] 47. len_string.swift
+- [x] 48. let_and_print.swift
+- [x] 49. list_assign.swift
+- [x] 50. list_index.swift
 
-Completed 25/102 at 2025-08-01 09:21 GMT+7
+Completed 50/102 at 2025-08-01 10:22 GMT+7
