@@ -96,6 +96,13 @@ func convert(n *sitter.Node, src []byte, opts Options) *Node {
 			opBytes := src[left.EndByte():right.StartByte()]
 			node.Text = strings.TrimSpace(string(opBytes))
 		}
+	} else if n.Kind() == "assignment_expression" && n.NamedChildCount() >= 2 {
+		left := n.NamedChild(0)
+		right := n.NamedChild(1)
+		if left != nil && right != nil {
+			opBytes := src[left.EndByte():right.StartByte()]
+			node.Text = strings.TrimSpace(string(opBytes))
+		}
 	} else if n.Kind() == "update_expression" && n.NamedChildCount() == 1 {
 		child := n.NamedChild(0)
 		if child != nil {
