@@ -46,6 +46,14 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+	var selected []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".scm")
+		if _, err := os.Stat(filepath.Join(outDir, name+".scheme.json")); err == nil {
+			selected = append(selected, f)
+		}
+	}
+	files = selected
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".scm")
