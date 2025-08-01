@@ -344,6 +344,11 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, c, indent)
 		}
 	default:
-		// unsupported nodes are ignored
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeExpr(b, c, indent)
+		}
 	}
 }

@@ -29,7 +29,12 @@ This directory contains utilities for generating and printing simplified F# ASTs
 23. fun_three_args.fs
 24. go_auto.fs
 25. group_by.fs
+26. group_by_conditional_sum.fs
+27. group_by_having.fs
+28. group_by_join.fs
+29. group_by_left_join.fs
+30. group_by_multi_join.fs
 
-Checked: 25/25
+Checked: 30/30
 
-_Last updated: 2025-08-01 11:02 GMT+7_
+_Last updated: 2025-08-01 12:29 GMT+7_
