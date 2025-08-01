@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 450/491
-Last updated: 2025-08-01 23:18 +0700
+Completed programs: 461/491
+Last updated: 2025-08-02 00:55 +0700
 
 Checklist:
 
@@ -43,104 +43,104 @@ Checklist:
 | 34 | additive-primes | ✓ | 430.0µs | 4.64KB |
 | 35 | address-of-a-variable | ✓ | 225.0µs | 1016B |
 | 36 | adfgvx-cipher | ✓ | 754.0µs | 32.95KB |
-| 37 | aks-test-for-primes |   | 85.0µs | 3.35KB |
+| 37 | aks-test-for-primes | ✓ | 85.0µs | 3.35KB |
 | 38 | algebraic-data-types |   |  |  |
-| 39 | align-columns |   | 6.0ms | 1.22MB |
-| 40 | aliquot-sequence-classifications |   | 46.0ms | 21.24KB |
+| 39 | align-columns | ✓ | 6.0ms | 1.22MB |
+| 40 | aliquot-sequence-classifications | ✓ | 46.0ms | 21.24KB |
 | 41 | almkvist-giullera-formula-for-pi |   |  |  |
-| 42 | almost-prime | ✓ | 445.0µs | 3.23KB |
-| 43 | amb | ✓ | 357.0µs | 1.15KB |
-| 44 | amicable-pairs | ✓ | 296.0ms | 646.82KB |
-| 45 | anagrams-deranged-anagrams | ✓ | 735.0µs | 3.55KB |
-| 46 | anagrams | ✓ | 587.0µs | 18.59KB |
-| 47 | angle-difference-between-two-bearings-1 | ✓ | 622.0µs | 1.51KB |
-| 48 | angle-difference-between-two-bearings-2 | ✓ | 568.0µs | 1.88KB |
-| 49 | angles-geometric-normalization-and-conversion | ✓ | 315.0µs | 9.27KB |
-| 50 | animate-a-pendulum |   | 444.0µs | 1.09KB |
-| 51 | animation | ✓ | 279.0µs | 9.05KB |
-| 52 | anonymous-recursion-1 | ✓ | 415.0µs | 1.31KB |
-| 53 | anonymous-recursion-2 | ✓ | 293.0µs | 1.37KB |
-| 54 | anonymous-recursion | ✓ | 190.0µs | 1.37KB |
-| 55 | anti-primes | ✓ | 43.0ms | 2.25KB |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 311.0µs | 1000B |
-| 57 | apply-a-callback-to-an-array-1 | ✓ | 299.0µs | 1016B |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 412.0µs | 1.14KB |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 626.0µs | 2.58KB |
-| 60 | approximate-equality | ✓ | 408.0µs | 1.82KB |
-| 61 | arbitrary-precision-integers-included- |   | 67.0ms | 2.16MB |
+| 42 | almost-prime | ✓ | 572.0µs | 3.17KB |
+| 43 | amb | ✓ | 476.0µs | 1.15KB |
+| 44 | amicable-pairs | ✓ | 987.0ms | 646.82KB |
+| 45 | anagrams-deranged-anagrams | ✓ | 537.0µs | 3.55KB |
+| 46 | anagrams | ✓ | 466.0µs | 18.59KB |
+| 47 | angle-difference-between-two-bearings-1 | ✓ | 477.0µs | 1.49KB |
+| 48 | angle-difference-between-two-bearings-2 | ✓ | 437.0µs | 1.88KB |
+| 49 | angles-geometric-normalization-and-conversion | ✓ | 463.0µs | 9.27KB |
+| 50 | animate-a-pendulum | ✓ | 444.0µs | 1.09KB |
+| 51 | animation | ✓ | 401.0µs | 9.05KB |
+| 52 | anonymous-recursion-1 | ✓ | 356.0µs | 1.31KB |
+| 53 | anonymous-recursion-2 | ✓ | 502.0µs | 1.37KB |
+| 54 | anonymous-recursion | ✓ | 383.0µs | 1.37KB |
+| 55 | anti-primes | ✓ | 148.0ms | 2.25KB |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 301.0µs | 1000B |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 484.0µs | 1016B |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 488.0µs | 1.14KB |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 847.0µs | 2.58KB |
+| 60 | approximate-equality | ✓ | 500.0µs | 1.82KB |
+| 61 | arbitrary-precision-integers-included- | ✓ | 67.0ms | 2.16MB |
 | 62 | archimedean-spiral | ✓ | 1.0ms | 9.96KB |
-| 63 | arena-storage-pool | ✓ | 380.0µs | 2.41KB |
-| 64 | arithmetic-complex | ✓ | 298.0µs | 1.65KB |
-| 65 | arithmetic-derivative |   | 953.0µs | 34.26KB |
-| 66 | arithmetic-evaluation | ✓ | 256.0µs | 1016B |
-| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 310.0µs | 1000B |
-| 68 | arithmetic-geometric-mean | ✓ | 249.0µs | 1000B |
-| 69 | arithmetic-integer-1 |   | 422.0µs | 1.09KB |
-| 70 | arithmetic-integer-2 |   | 326.0µs | 1.43KB |
-| 71 | arithmetic-numbers |   | 370.0ms | 30.57MB |
-| 72 | arithmetic-rational | ✓ | 252.0µs | 1.76KB |
-| 73 | array-concatenation | ✓ | 626.0µs | 1.97KB |
-| 74 | array-length | ✓ | 411.0µs | 1.23KB |
-| 75 | arrays |   | 93.0µs | 2.91KB |
-| 76 | ascending-primes | ✓ | 1.0ms | 137.06KB |
-| 77 | ascii-art-diagram-converter | ✓ | 283.0µs | 1.09KB |
-| 78 | assertions | ✓ | 332.0µs | 968B |
-| 79 | associative-array-creation | ✓ | 223.0µs | 1.00KB |
-| 80 | associative-array-iteration | ✓ | 276.0µs | 1.38KB |
-| 81 | associative-array-merging | ✓ | 484.0µs | 2.09KB |
-| 82 | atomic-updates |   | 128.0µs | 2.50KB |
-| 83 | attractive-numbers | ✓ | 364.0µs | 5.21KB |
-| 84 | average-loop-length | ✓ | 31.0ms | 947.68KB |
-| 85 | averages-arithmetic-mean |   | 98.0µs | 2.41KB |
-| 86 | averages-mean-time-of-day |   | 56.0µs | 984B |
-| 87 | averages-median-1 | ✓ | 798.0µs | 984B |
-| 88 | averages-median-2 | ✓ | 2.0ms | 984B |
-| 89 | averages-median-3 | ✓ | 427.0µs | 984B |
+| 63 | arena-storage-pool | ✓ | 708.0µs | 2.41KB |
+| 64 | arithmetic-complex | ✓ | 372.0µs | 1.65KB |
+| 65 | arithmetic-derivative | ✓ | 953.0µs | 34.26KB |
+| 66 | arithmetic-evaluation | ✓ | 543.0µs | 1016B |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 526.0µs | 1000B |
+| 68 | arithmetic-geometric-mean | ✓ | 369.0µs | 1000B |
+| 69 | arithmetic-integer-1 | ✓ | 422.0µs | 1.09KB |
+| 70 | arithmetic-integer-2 | ✓ | 326.0µs | 1.43KB |
+| 71 | arithmetic-numbers | ✓ | 370.0ms | 30.57MB |
+| 72 | arithmetic-rational | ✓ | 597.0µs | 1.76KB |
+| 73 | array-concatenation | ✓ | 753.0µs | 1.97KB |
+| 74 | array-length | ✓ | 53.0µs | 1.23KB |
+| 75 | arrays | ✓ | 93.0µs | 2.91KB |
+| 76 | ascending-primes | ✓ | 316.0µs | 137.06KB |
+| 77 | ascii-art-diagram-converter | ✓ | 73.0µs | 1.09KB |
+| 78 | assertions | ✓ | 42.0µs | 968B |
+| 79 | associative-array-creation | ✓ | 184.0µs | 1.00KB |
+| 80 | associative-array-iteration | ✓ | 106.0µs | 1.38KB |
+| 81 | associative-array-merging | ✓ | 98.0µs | 2.09KB |
+| 82 | atomic-updates | ✓ | 128.0µs | 2.50KB |
+| 83 | attractive-numbers | ✓ | 82.0µs | 5.21KB |
+| 84 | average-loop-length | ✓ | 17.0ms | 935.52KB |
+| 85 | averages-arithmetic-mean | ✓ | 830.0µs | 4.05KB |
+| 86 | averages-mean-time-of-day | ✓ | 262.0µs | 984B |
+| 87 | averages-median-1 | ✓ | 254.0µs | 984B |
+| 88 | averages-median-2 | ✓ | 438.0µs | 984B |
+| 89 | averages-median-3 | ✓ | 241.0µs | 984B |
 | 90 | averages-mode | ✓ | 1.0ms | 1.65KB |
-| 91 | averages-pythagorean-means | ✓ | 1.0ms | 1.26KB |
-| 92 | averages-root-mean-square | ✓ | 476.0µs | 1000B |
-| 93 | averages-simple-moving-average | ✓ | 550.0µs | 2.33KB |
-| 94 | avl-tree | ✓ | 1.0ms | 13.68KB |
-| 95 | b-zier-curves-intersections | ✓ | 600.0µs | 539.52KB |
-| 96 | babbage-problem | ✓ | 108.0µs | 1.09KB |
-| 97 | babylonian-spiral | ✓ | 162.0µs | 55.46KB |
-| 98 | balanced-brackets | ✓ | 104.0µs | 5.59KB |
-| 99 | balanced-ternary | ✓ | 72.0µs | 3.30KB |
-| 100 | barnsley-fern | ✓ | 822.0µs | 531.45KB |
-| 101 | base64-decode-data | ✓ | 933.0µs | 705.30KB |
-| 102 | bell-numbers | ✓ | 407.0µs | 188.01KB |
-| 103 | benfords-law | ✓ | 566.0µs | 26.77KB |
-| 104 | bernoulli-numbers | ✓ | 43.0ms | 1.84MB |
-| 105 | best-shuffle | ✓ | 681.0µs | 5.30KB |
+| 91 | averages-pythagorean-means | ✓ | 299.0µs | 1.26KB |
+| 92 | averages-root-mean-square | ✓ | 290.0µs | 1000B |
+| 93 | averages-simple-moving-average | ✓ | 485.0µs | 2.33KB |
+| 94 | avl-tree | ✓ | 495.0µs | 13.68KB |
+| 95 | b-zier-curves-intersections | ✓ | 3.0ms | 539.52KB |
+| 96 | babbage-problem | ✓ | 295.0µs | 1.09KB |
+| 97 | babylonian-spiral | ✓ | 1.0ms | 55.46KB |
+| 98 | balanced-brackets | ✓ | 445.0µs | 5.59KB |
+| 99 | balanced-ternary | ✓ | 614.0µs | 3.30KB |
+| 100 | barnsley-fern | ✓ | 3.0ms | 531.45KB |
+| 101 | base64-decode-data | ✓ | 1.0ms | 134.41KB |
+| 102 | bell-numbers | ✓ | 2.0ms | 188.01KB |
+| 103 | benfords-law | ✓ | 994.0µs | 26.77KB |
+| 104 | bernoulli-numbers | ✓ | 63.0ms | 2.31MB |
+| 105 | best-shuffle |   | 681.0µs | 5.30KB |
 | 106 | bifid-cipher | ✓ | 1.0ms | 74.71KB |
-| 107 | bin-given-limits | ✓ | 655.0µs | 2.43KB |
-| 108 | binary-digits | ✓ | 219.0µs | 1.29KB |
-| 109 | binary-search | ✓ | 480.0µs | 1.02KB |
-| 110 | binary-strings | ✓ | 589.0µs | 2.15KB |
-| 111 | bioinformatics-base-count | ✓ | 4.0ms | 1022.66KB |
-| 112 | bioinformatics-global-alignment | ✓ | 1.73s | 2.82MB |
-| 113 | bioinformatics-sequence-mutation | ✓ | 17.0ms | 3.39MB |
-| 114 | biorhythms | ✓ | 807.0µs | 10.95KB |
-| 115 | bitcoin-address-validation | ✓ | 2.0ms | 442.70KB |
-| 116 | bitmap-b-zier-curves-cubic | ✓ | 25.0ms | 4.24MB |
-| 117 | bitmap-b-zier-curves-quadratic | ✓ | 24.0ms | 4.26MB |
-| 118 | bitmap-bresenhams-line-algorithm | ✓ | 255.0µs | 1.29KB |
-| 119 | bitmap-flood-fill | ✓ | 630.0µs | 1.60KB |
-| 120 | bitmap-histogram | ✓ | 684.0µs | 1.52KB |
-| 121 | bitmap-midpoint-circle-algorithm | ✓ | 812.0µs | 28.26KB |
-| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 23.0ms | 4.26MB |
-| 123 | bitmap-read-a-ppm-file | ✓ | 1.0ms | 205.88KB |
-| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 801.0µs | 13.43KB |
-| 125 | bitmap-write-a-ppm-file | ✓ | 754.0µs | 4.52KB |
-| 126 | bitmap | ✓ | 23.0ms | 2.86MB |
-| 127 | bitwise-io-1 | ✓ | 209.0µs | 1.12KB |
+| 107 | bin-given-limits | ✓ | 463.0µs | 2.43KB |
+| 108 | binary-digits | ✓ | 478.0µs | 1.29KB |
+| 109 | binary-search | ✓ | 197.0µs | 1.02KB |
+| 110 | binary-strings | ✓ | 486.0µs | 2.15KB |
+| 111 | bioinformatics-base-count | ✓ | 3.0ms | 1022.66KB |
+| 112 | bioinformatics-global-alignment | ✓ | 1.29s | 3.18MB |
+| 113 | bioinformatics-sequence-mutation |   | 17.0ms | 3.39MB |
+| 114 | biorhythms | ✓ | 318.0µs | 2.93KB |
+| 115 | bitcoin-address-validation | ✓ | 509.0µs | 12.62KB |
+| 116 | bitmap-b-zier-curves-cubic | ✓ | 17.0ms | 4.26MB |
+| 117 | bitmap-b-zier-curves-quadratic | ✓ | 18.0ms | 4.19MB |
+| 118 | bitmap-bresenhams-line-algorithm | ✓ | 225.0µs | 1.29KB |
+| 119 | bitmap-flood-fill | ✓ | 503.0µs | 1.60KB |
+| 120 | bitmap-histogram | ✓ | 332.0µs | 1.52KB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 738.0µs | 28.27KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 17.0ms | 4.24MB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 1.0ms | 183.16KB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 661.0µs | 6.75KB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 362.0µs | 4.52KB |
+| 126 | bitmap | ✓ | 17.0ms | 2.86MB |
+| 127 | bitwise-io-1 | ✓ | 407.0µs | 1.12KB |
 | 128 | bitwise-io-2 |   |  |  |
 | 129 | bitwise-operations |   |  |  |
-| 130 | blum-integer | ✓ | 578.0µs | 4.83KB |
+| 130 | blum-integer | ✓ | 449.0µs | 4.83KB |
 | 131 | boolean-values |   |  |  |
-| 132 | box-the-compass | ✓ | 697.0µs | 8.58KB |
-| 133 | boyer-moore-string-search | ✓ | 1.0ms | 57.34KB |
-| 134 | brazilian-numbers | ✓ | 13.71s | 2.68KB |
+| 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
+| 133 | boyer-moore-string-search | ✓ | 763.0µs | 57.34KB |
+| 134 | brazilian-numbers | ✓ | 4.07s | 2.68KB |
 | 135 | break-oo-privacy | ✓ |  |  |
 | 136 | brilliant-numbers |   |  |  |
 | 137 | brownian-tree | ✓ | 7.07s | 2.36MB |

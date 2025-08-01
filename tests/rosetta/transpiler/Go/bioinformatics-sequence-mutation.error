@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/rosetta/transpiler/Go/bioinformatics-sequence-mutation.go:223:9: cannot use res[0] (variable of interface type any) as int value in assignment: need type assertion
+../../../tests/rosetta/transpiler/Go/bioinformatics-sequence-mutation.go:274:10: cannot use res[0] (variable of interface type any) as int value in assignment: need type assertion
