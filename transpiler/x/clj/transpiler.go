@@ -414,7 +414,13 @@ func renameVar(name string) string {
 			return newName
 		}
 	}
-	return name
+	prefix := currentFun
+	if prefix == "" {
+		prefix = "f"
+	}
+	newName := prefix + "_" + name
+	renameVars[name] = newName
+	return newName
 }
 
 func validCljIdent(name string) bool {
@@ -614,6 +620,7 @@ var nestedFunArgs map[string][]string
 var stringVars map[string]bool
 var stringListVars map[string]bool
 var renameVars map[string]string
+var currentFun string
 var declVars map[string]bool
 var reservedNames = map[string]bool{
 	"count": true,
@@ -742,11 +749,14 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 
 	// treat the -main body like a function for variable tracking
 	funDepth++
+	prevFun := currentFun
+	currentFun = "main"
 	stringVars = make(map[string]bool)
 	stringListVars = make(map[string]bool)
 	renameVars = make(map[string]string)
 	defer func() {
 		funDepth--
+		currentFun = prevFun
 		stringVars = nil
 		stringListVars = nil
 		renameVars = nil
@@ -1006,8 +1016,11 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 
 func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	funDepth++
+	prevFun := currentFun
+	currentFun = f.Name
 	defer func() {
 		funDepth--
+		currentFun = prevFun
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		stringVars = nil
 		stringListVars = nil

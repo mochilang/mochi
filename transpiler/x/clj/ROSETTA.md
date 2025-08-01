@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 149/491
-Last updated: 2025-08-01 18:40 +0700
+Completed: 151/491
+Last updated: 2025-08-01 19:36 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -204,7 +204,7 @@ Last updated: 2025-08-01 18:40 +0700
 | 197 | chinese-remainder-theorem |   |  |  |
 | 198 | chinese-zodiac |   |  |  |
 | 199 | cholesky-decomposition-1 |   |  |  |
-| 200 | cholesky-decomposition |   |  |  |
+| 200 | cholesky-decomposition | ✓ | 53.224ms | 21.3 MB |
 | 201 | chowla-numbers |   |  |  |
 | 202 | church-numerals-1 |   |  |  |
 | 203 | church-numerals-2 |   |  |  |
@@ -404,7 +404,7 @@ Last updated: 2025-08-01 18:40 +0700
 | 397 | farey-sequence |   |  |  |
 | 398 | fast-fourier-transform |   |  |  |
 | 399 | fasta-format | ✓ |  |  |
-| 400 | faulhabers-formula |   |  |  |
+| 400 | faulhabers-formula | ✓ |  |  |
 | 401 | faulhabers-triangle |   |  |  |
 | 402 | feigenbaum-constant-calculation |   |  |  |
 | 403 | fermat-numbers |   |  |  |
