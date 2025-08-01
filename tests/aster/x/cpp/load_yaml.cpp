@@ -18,11 +18,11 @@ struct AdultsItem {
     auto operator<=>(const AdultsItem) const;
 };
 std::ostream &operator<<(std::ostream &os, const Person &v) {
-    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'age': " << v.age << ", " << "'email': " << "'" << v.email << "'" + '}';
+    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'age': " << v.age << ", " << "'email': " << "'" << v.email << "'" << '}';
     return os;
 }
 std::ostream &operator<<(std::ostream &os, const AdultsItem &v) {
-    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'email': " << "'" << v.email << "'" + '}';
+    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'email': " << "'" << v.email << "'" << '}';
     return os;
 }
 auto people = std::vector{Person{.name = std::string("Alice"), .age = 30, .email = std::string("alice@example.com")}, Person{.name = std::string("Bob"), .age = 15, .email = std::string("bob@example.com")}, Person{.name = std::string("Charlie"), .age = 20, .email = std::string("charlie@example.com")}};

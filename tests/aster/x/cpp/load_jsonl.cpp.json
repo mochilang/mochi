@@ -150,6 +150,7 @@
                   },
                   {
                     "kind": "function_declarator",
+                    "text": "operator\u003c=\u003e",
                     "children": [
                       {
                         "kind": "parameter_list",
@@ -249,6 +250,7 @@
                   },
                   {
                     "kind": "function_declarator",
+                    "text": "operator\u003c=\u003e",
                     "children": [
                       {
                         "kind": "parameter_list",
@@ -302,6 +304,7 @@
             "children": [
               {
                 "kind": "function_declarator",
+                "text": "operator\u003c\u003c",
                 "children": [
                   {
                     "kind": "parameter_list",
@@ -632,6 +635,7 @@
             "children": [
               {
                 "kind": "function_declarator",
+                "text": "operator\u003c\u003c",
                 "children": [
                   {
                     "kind": "parameter_list",
@@ -1604,6 +1608,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "main",
             "children": [
               {
                 "kind": "identifier",

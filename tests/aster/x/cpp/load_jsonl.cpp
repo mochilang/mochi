@@ -10,19 +10,19 @@ struct Person {
     std::string name;
     int age;
     std::string email;
-    auto function_declarator;
+    auto operator<=>(const Person) const;
 };
 struct AdultsItem {
     std::string name;
     std::string email;
-    auto function_declarator;
+    auto operator<=>(const AdultsItem) const;
 };
-std::ostream &() function_declarator {
-    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'age': " << v.age << ", " << "'email': " << "'" << v.email << "'" + '}';
+std::ostream &operator<<(std::ostream &os, const Person &v) {
+    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'age': " << v.age << ", " << "'email': " << "'" << v.email << "'" << '}';
     return os;
 }
-std::ostream &() function_declarator {
-    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'email': " << "'" << v.email << "'" + '}';
+std::ostream &operator<<(std::ostream &os, const AdultsItem &v) {
+    os << '{' << "'name': " << "'" << v.name << "'" << ", " << "'email': " << "'" << v.email << "'" << '}';
     return os;
 }
 auto people = std::vector{Person{.name = std::string("Alice"), .age = 30, .email = std::string("alice@example.com")}, Person{.name = std::string("Bob"), .age = 15, .email = std::string("bob@example.com")}, Person{.name = std::string("Charlie"), .age = 20, .email = std::string("charlie@example.com")}};
