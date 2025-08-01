@@ -4,10 +4,10 @@
 typedef struct Pair Pair;
 struct Pair {
     int n;
-    char *l;
+    const char *l;
 };
 int nums[] = {1,2,3};
-char *letters[] = {"A","B"};
+const char *letters[] = {"A","B"};
 int main(void) {
     Pair pairs[] = {(Pair){.n = 2,.l = "A"},(Pair){.n = 2,.l = "B"}};
     puts("--- Even pairs ---");

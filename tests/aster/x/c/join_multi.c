@@ -10,11 +10,11 @@ typedef struct Orders Orders;
 typedef struct ResultItem ResultItem;
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;
@@ -22,19 +22,19 @@ struct Data4 {
 };
 struct Data6 {
     int orderId;
-    char *sku;
+    const char *sku;
 };
 struct Items {
     int orderId;
-    char *sku;
+    const char *sku;
 };
 struct Orders {
     int id;
     int customerId;
 };
 struct ResultItem {
-    char *name;
-    char *sku;
+    const char *name;
+    const char *sku;
 };
 Customers customers[] = {(Customers){.id = 1,.name = "Alice"},(Customers){.id = 2,.name = "Bob"}};
 Orders orders[] = {(Orders){.id = 100,.customerId = 1},(Orders){.id = 101,.customerId = 2}};

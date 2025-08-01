@@ -10,7 +10,7 @@ typedef struct Orders Orders;
 typedef struct Stat Stat;
 struct Anon5 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Anon6 {
     int customerId;
@@ -18,11 +18,11 @@ struct Anon6 {
 };
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;
@@ -33,14 +33,14 @@ struct Orders {
     int customerId;
 };
 struct Stat {
-    char *name;
+    const char *name;
     int count;
 };
 Customers customers[] = {(Customers){.id = 1,.name = "Alice"},(Customers){.id = 2,.name = "Bob"},(Customers){.id = 3,.name = "Charlie"}};
 Orders orders[] = {(Orders){.id = 100,.customerId = 1},(Orders){.id = 101,.customerId = 1},(Orders){.id = 102,.customerId = 2}};
 int main(void) {
     struct Stat {
-        char *name;
+        const char *name;
         int count;
     };
     Stat stats[3];

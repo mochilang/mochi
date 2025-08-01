@@ -7,18 +7,18 @@ typedef struct Data2 Data2;
 typedef struct People People;
 struct Anon3 {
     double avg_age;
-    char *city;
+    const char *city;
     int count;
 };
 struct Data2 {
-    char *name;
+    const char *name;
     int age;
-    char *city;
+    const char *city;
 };
 struct People {
-    char *name;
+    const char *name;
     int age;
-    char *city;
+    const char *city;
 };
 People people[] = {(People){.name = "Alice",.age = 30,.city = "Paris"},(People){.name = "Bob",.age = 15,.city = "Hanoi"},(People){.name = "Charlie",.age = 65,.city = "Paris"},(People){.name = "Diana",.age = 45,.city = "Hanoi"},(People){.name = "Eve",.age = 70,.city = "Paris"},(People){.name = "Frank",.age = 22,.city = "Hanoi"}};
 Anon3 stats[] = {(Anon3){.avg_age = 55,.city = "Paris",.count = 3},(Anon3){.avg_age = 27.333333333333332,.city = "Hanoi",.count = 3}};

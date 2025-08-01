@@ -5,15 +5,15 @@ typedef struct Anon3 Anon3;
 typedef struct Data2 Data2;
 typedef struct Products Products;
 struct Anon3 {
-    char *name;
+    const char *name;
     int price;
 };
 struct Data2 {
-    char *name;
+    const char *name;
     int price;
 };
 struct Products {
-    char *name;
+    const char *name;
     int price;
 };
 Products products[] = {(Products){.name = "Laptop",.price = 1500},(Products){.name = "Smartphone",.price = 900},(Products){.name = "Tablet",.price = 600},(Products){.name = "Monitor",.price = 300},(Products){.name = "Keyboard",.price = 100},(Products){.name = "Mouse",.price = 50},(Products){.name = "Headphones",.price = 200}};

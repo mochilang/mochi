@@ -5,16 +5,16 @@ typedef struct Anon3 Anon3;
 typedef struct Data2 Data2;
 typedef struct People People;
 struct Anon3 {
-    char *city;
+    const char *city;
     int num;
 };
 struct Data2 {
-    char *name;
-    char *city;
+    const char *name;
+    const char *city;
 };
 struct People {
-    char *name;
-    char *city;
+    const char *name;
+    const char *city;
 };
 People people[] = {(People){.name = "Alice",.city = "Paris"},(People){.name = "Bob",.city = "Hanoi"},(People){.name = "Charlie",.city = "Paris"},(People){.name = "Diana",.city = "Hanoi"},(People){.name = "Eve",.city = "Paris"},(People){.name = "Frank",.city = "Hanoi"},(People){.name = "George",.city = "Paris"}};
 Anon3 big[] = {(Anon3){.city = "Paris",.num = 4},(Anon3){.city = "Hanoi",.num = 3}};

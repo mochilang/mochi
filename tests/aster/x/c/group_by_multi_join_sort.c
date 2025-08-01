@@ -17,102 +17,102 @@ typedef struct Orders Orders;
 typedef struct ResultItem ResultItem;
 struct Anon10 {
     int o_custkey;
-    char *o_orderdate;
+    const char *o_orderdate;
     int o_orderkey;
 };
 struct Anon11 {
     int l_discount;
     double l_extendedprice;
     int l_orderkey;
-    char *l_returnflag;
+    const char *l_returnflag;
 };
 struct Anon12 {
-    char *n_name;
+    const char *n_name;
     int n_nationkey;
 };
 struct Anon9 {
     double c_acctbal;
-    char *c_address;
-    char *c_comment;
+    const char *c_address;
+    const char *c_comment;
     int c_custkey;
-    char *c_name;
+    const char *c_name;
     int c_nationkey;
-    char *c_phone;
+    const char *c_phone;
 };
 struct Customer {
     int c_custkey;
-    char *c_name;
+    const char *c_name;
     double c_acctbal;
     int c_nationkey;
-    char *c_address;
-    char *c_phone;
-    char *c_comment;
+    const char *c_address;
+    const char *c_phone;
+    const char *c_comment;
 };
 struct Data2 {
     int n_nationkey;
-    char *n_name;
+    const char *n_name;
 };
 struct Data4 {
     int c_custkey;
-    char *c_name;
+    const char *c_name;
     double c_acctbal;
     int c_nationkey;
-    char *c_address;
-    char *c_phone;
-    char *c_comment;
+    const char *c_address;
+    const char *c_phone;
+    const char *c_comment;
 };
 struct Data6 {
     int o_orderkey;
     int o_custkey;
-    char *o_orderdate;
+    const char *o_orderdate;
 };
 struct Data8 {
     int l_orderkey;
-    char *l_returnflag;
+    const char *l_returnflag;
     double l_extendedprice;
     double l_discount;
 };
 struct Lineitem {
     int l_orderkey;
-    char *l_returnflag;
+    const char *l_returnflag;
     double l_extendedprice;
     double l_discount;
 };
 struct Nation {
     int n_nationkey;
-    char *n_name;
+    const char *n_name;
 };
 struct Orders {
     int o_orderkey;
     int o_custkey;
-    char *o_orderdate;
+    const char *o_orderdate;
 };
 struct ResultItem {
     int c_custkey;
-    char *c_name;
+    const char *c_name;
     double revenue;
     double c_acctbal;
-    char *n_name;
-    char *c_address;
-    char *c_phone;
-    char *c_comment;
+    const char *n_name;
+    const char *c_address;
+    const char *c_phone;
+    const char *c_comment;
 };
 Nation nation[] = {(Nation){.n_nationkey = 1,.n_name = "BRAZIL"}};
 Customer customer[] = {(Customer){.c_custkey = 1,.c_name = "Alice",.c_acctbal = 100,.c_nationkey = 1,.c_address = "123 St",.c_phone = "123-456",.c_comment = "Loyal"}};
 Orders orders[] = {(Orders){.o_orderkey = 1000,.o_custkey = 1,.o_orderdate = "1993-10-15"},(Orders){.o_orderkey = 2000,.o_custkey = 1,.o_orderdate = "1994-01-02"}};
 Lineitem lineitem[] = {(Lineitem){.l_orderkey = 1000,.l_returnflag = "R",.l_extendedprice = 1000,.l_discount = 0.1},(Lineitem){.l_orderkey = 2000,.l_returnflag = "N",.l_extendedprice = 500,.l_discount = 0}};
-char *start_date = "1993-10-01";
-char *end_date = "1994-01-01";
+const char *start_date = "1993-10-01";
+const char *end_date = "1994-01-01";
 int main(void) {
     struct ResultItem {
         int c_custkey;
-        char *c_name;
+        const char *c_name;
         double revenue;
         double c_acctbal;
-        char *n_name;
-        char *c_address;
-        char *c_phone;
-        char *c_comment;
+        const char *n_name;
+        const char *c_address;
+        const char *c_phone;
+        const char *c_comment;
     };
     ResultItem result[4];
     size_t result_len = 0;

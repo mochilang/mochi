@@ -28,6 +28,10 @@
         "kind": "function_definition",
         "children": [
           {
+            "kind": "storage_class_specifier",
+            "text": "static"
+          },
+          {
             "kind": "primitive_type",
             "text": "int"
           },
@@ -44,6 +48,10 @@
                   {
                     "kind": "parameter_declaration",
                     "children": [
+                      {
+                        "kind": "type_qualifier",
+                        "text": "const"
+                      },
                       {
                         "kind": "primitive_type",
                         "text": "int"
@@ -247,6 +255,10 @@
         "kind": "declaration",
         "children": [
           {
+            "kind": "type_qualifier",
+            "text": "const"
+          },
+          {
             "kind": "primitive_type",
             "text": "char"
           },
@@ -350,6 +362,10 @@
       {
         "kind": "declaration",
         "children": [
+          {
+            "kind": "type_qualifier",
+            "text": "const"
+          },
           {
             "kind": "primitive_type",
             "text": "char"

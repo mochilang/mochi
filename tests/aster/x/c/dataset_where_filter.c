@@ -6,26 +6,26 @@ typedef struct Anon3 Anon3;
 typedef struct Data2 Data2;
 typedef struct People People;
 struct Adult {
-    char *name;
+    const char *name;
     int age;
     int is_senior;
 };
 struct Anon3 {
     int age;
-    char *name;
+    const char *name;
 };
 struct Data2 {
-    char *name;
+    const char *name;
     int age;
 };
 struct People {
-    char *name;
+    const char *name;
     int age;
 };
 People people[] = {(People){.name = "Alice",.age = 30},(People){.name = "Bob",.age = 15},(People){.name = "Charlie",.age = 65},(People){.name = "Diana",.age = 45}};
 int main(void) {
     struct Adult {
-        char *name;
+        const char *name;
         int age;
         int is_senior;
     };

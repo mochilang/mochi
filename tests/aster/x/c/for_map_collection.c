@@ -3,10 +3,10 @@
 #include <string.h>
 int main(void) {
     {
-        char *k_arr[] = {"a","b"};
+        const char *k_arr[] = {"a","b"};
         size_t k_len = sizeof((k_arr)) / sizeof((k_arr[0]));
         for (size_t i = 0; i < k_len; i++) {
-            char *k = k_arr[i];
+            const char *k = k_arr[i];
             puts(k);
         }
     }

@@ -12,8 +12,8 @@ typedef struct Data6 Data6;
 typedef struct Items Items;
 typedef struct Orders Orders;
 struct Anon10 {
-    char *item;
-    char *name;
+    const char *item;
+    const char *name;
     int orderId;
 };
 struct Anon7 {
@@ -22,19 +22,19 @@ struct Anon7 {
 };
 struct Anon8 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Anon9 {
     int orderId;
-    char *sku;
+    const char *sku;
 };
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;
@@ -42,11 +42,11 @@ struct Data4 {
 };
 struct Data6 {
     int orderId;
-    char *sku;
+    const char *sku;
 };
 struct Items {
     int orderId;
-    char *sku;
+    const char *sku;
 };
 struct Orders {
     int id;

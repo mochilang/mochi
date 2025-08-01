@@ -8,15 +8,15 @@ typedef struct Data4 Data4;
 typedef struct Orders Orders;
 struct Anon5 {
     int count;
-    char *name;
+    const char *name;
 };
 struct Customers {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data2 {
     int id;
-    char *name;
+    const char *name;
 };
 struct Data4 {
     int id;
