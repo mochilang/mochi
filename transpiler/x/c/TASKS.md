@@ -1,5 +1,5 @@
-## Progress (2025-08-01 22:20 +0700)
-- Commit e0c87c5ce1: transpiler/c: handle rosetta image-noise
+## Progress (2025-08-01 23:10 +0700)
+- Commit bff1ae58c6: kt: support map index assignment and add prog 81
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
