@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 431/491
-Last updated: 2025-08-01 15:22 +0700
+Completed programs: 442/491
+Last updated: 2025-08-01 17:57 +0700
 
 Checklist:
 
@@ -467,17 +467,17 @@ Checklist:
 | 458 | forward-difference | ✓ | 641.0µs | 1.24KB |
 | 459 | four-bit-adder-1 | ✓ | 391.0µs | 984B |
 | 460 | four-is-magic | ✓ | 753.0µs | 10.80KB |
-| 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
-| 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ | 3.48s | 245.85MB |
+| 462 | fractal-tree | ✓ | 3.0ms | 459.84KB |
+| 463 | fractran | ✓ | 2.92s | 3.09MB |
+| 464 | french-republican-calendar | ✓ | 576.0µs | 1.62KB |
+| 465 | ftp | ✓ | 267.0µs | 2.08KB |
+| 466 | function-frequency | ✓ | 21.0ms | 761.31KB |
+| 467 | function-prototype | ✓ | 25.0µs | 0B |
+| 468 | functional-coverage-tree | ✓ | 560.0µs | 28.27KB |
+| 469 | fusc-sequence | ✓ | 560.0µs | 3.88KB |
+| 470 | gamma-function | ✓ | 216.0µs | 1.91KB |
+| 471 | general-fizzbuzz | ✓ | 259.0µs | 1.53KB |
 | 472 | generic-swap |   |  |  |
 | 473 | get-system-command-output |   |  |  |
 | 474 | giuga-numbers |   |  |  |
