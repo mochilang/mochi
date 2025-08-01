@@ -47,9 +47,9 @@ func TestPrint_Golden(t *testing.T) {
 		}
 	}
 	files = selected
-	if len(files) > 10 {
-		files = files[:10]
-	}
+       if len(files) > 15 {
+               files = files[:15]
+       }
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".fs")

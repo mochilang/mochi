@@ -25,21 +25,78 @@ func Print(p *Program) (string, error) {
 }
 
 func writeNode(b *bytes.Buffer, n *Node, indent int) {
-	switch n.Kind {
-	case "file", "ERROR":
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteByte('\n')
-			}
-			writeNode(b, c, indent)
-		}
-	case "line_comment":
-		b.WriteString(n.Text)
-		b.WriteByte('\n')
-	case "value_declaration":
-		if len(n.Children) > 0 {
-			writeNode(b, n.Children[0], indent)
-		}
+        switch n.Kind {
+        case "file", "ERROR":
+                for i, c := range n.Children {
+                        if i > 0 {
+                                b.WriteByte('\n')
+                        }
+                        writeNode(b, c, indent)
+                }
+       case "sequential_expression":
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteByte('\n')
+                       }
+                       writeNode(b, c, indent)
+               }
+       case "type_definition":
+               if len(n.Children) > 0 {
+                       writeNode(b, n.Children[0], indent)
+               }
+               b.WriteByte('\n')
+       case "record_type_defn":
+               if len(n.Children) >= 2 {
+                       b.WriteString("type ")
+                       writeNode(b, n.Children[0], indent)
+                       b.WriteString(" = {")
+                       if len(n.Children) > 1 {
+                               b.WriteByte('\n')
+                               writeNode(b, n.Children[1], indent+1)
+                               b.WriteByte('\n')
+                               b.WriteString(strings.Repeat("    ", indent))
+                       }
+                       b.WriteByte('}')
+               }
+               b.WriteByte('\n')
+       case "record_fields":
+               for i, f := range n.Children {
+                       if i > 0 {
+                               b.WriteByte('\n')
+                       }
+                       b.WriteString(strings.Repeat("    ", indent))
+                       writeNode(b, f, indent)
+               }
+       case "record_field":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(": ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "type_name":
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+       case "field_initializers":
+               for i, f := range n.Children {
+                       if i > 0 {
+                               b.WriteString("; ")
+                       }
+                       writeNode(b, f, indent)
+               }
+       case "field_initializer":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(" = ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+        case "line_comment":
+                b.WriteString(n.Text)
+                b.WriteByte('\n')
+        case "value_declaration":
+                if len(n.Children) > 0 {
+                        writeNode(b, n.Children[0], indent)
+                }
 	case "function_or_value_defn":
 		b.WriteString(strings.Repeat("    ", indent))
 		b.WriteString("let ")
@@ -95,14 +152,18 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
-	case "identifier_pattern", "value_declaration_left":
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteByte(' ')
-			}
-			writeExpr(b, c, indent)
-		}
-	case "const":
+       case "identifier_pattern", "value_declaration_left":
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteByte(' ')
+                       }
+                       writeExpr(b, c, indent)
+               }
+       case "type_name", "simple_type":
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+       case "const":
 		if len(n.Children) > 0 {
 			writeExpr(b, n.Children[0], indent)
 		} else {
@@ -121,16 +182,31 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			}
 			writeExpr(b, c, indent)
 		}
-	case "list_expression":
-		b.WriteByte('[')
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteString("; ")
-			}
-			writeExpr(b, c, indent)
-		}
-		b.WriteByte(']')
-	case "index_expression":
+       case "list_expression":
+               b.WriteByte('[')
+               for i, c := range n.Children {
+                       if i > 0 {
+                               b.WriteString("; ")
+                       }
+                       writeExpr(b, c, indent)
+               }
+               b.WriteByte(']')
+       case "brace_expression":
+               b.WriteByte('{')
+               if len(n.Children) > 0 {
+                       if len(n.Children[0].Children) > 0 {
+                               b.WriteByte(' ')
+                               for i, f := range n.Children[0].Children {
+                                       if i > 0 {
+                                               b.WriteString("; ")
+                                       }
+                                       writeNode(b, f, indent)
+                               }
+                               b.WriteByte(' ')
+                       }
+               }
+               b.WriteByte('}')
+       case "index_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			b.WriteString(".[")
@@ -193,22 +269,44 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		if len(n.Children) > 1 {
 			writeExpr(b, n.Children[1], indent)
 		}
-	case "mutate_expression":
-		if len(n.Children) == 2 {
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" <- ")
-			writeExpr(b, n.Children[1], indent)
-		}
-	case "for_expression":
-		if len(n.Children) >= 3 {
-			b.WriteString("for ")
-			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" in ")
-			writeExpr(b, n.Children[1], indent)
-			b.WriteString(" do")
-			b.WriteByte('\n')
-			writeNode(b, n.Children[2], indent+1)
-		}
+       case "mutate_expression":
+               if len(n.Children) == 2 {
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(" <- ")
+                       writeExpr(b, n.Children[1], indent)
+               }
+       case "yield_expression":
+               b.WriteString("yield ")
+               if len(n.Children) > 0 {
+                       writeExpr(b, n.Children[0], indent)
+               }
+       case "if_expression":
+               if len(n.Children) >= 2 {
+                       b.WriteString("if ")
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(" then ")
+                       writeExpr(b, n.Children[1], indent)
+                       if len(n.Children) > 2 {
+                               b.WriteString(" else ")
+                               writeExpr(b, n.Children[2], indent)
+                       }
+               }
+       case "for_expression":
+               if len(n.Children) >= 3 {
+                       b.WriteString("for ")
+                       writeExpr(b, n.Children[0], indent)
+                       b.WriteString(" in ")
+                       writeExpr(b, n.Children[1], indent)
+                       b.WriteString(" do")
+                       body := n.Children[2]
+                       if body.Kind == "yield_expression" {
+                               b.WriteByte(' ')
+                               writeExpr(b, body, indent)
+                       } else {
+                               b.WriteByte('\n')
+                               writeNode(b, body, indent+1)
+                       }
+               }
 	case "postfix_type":
 		for i, c := range n.Children {
 			if i > 0 {
