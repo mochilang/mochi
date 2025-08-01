@@ -583,6 +583,8 @@ func isPureExpr(e Expr) bool {
 			return false
 		}
 		return true
+	case *LambdaBlock:
+		return isPureFunc(ex.Body)
 	case *CaseExpr:
 		if !isPureExpr(ex.Target) {
 			return false
@@ -1488,6 +1490,13 @@ type LambdaExpr struct {
 	Params []string
 	Body   Expr
 }
+
+// LambdaBlock represents a function literal with a statement block body.
+type LambdaBlock struct {
+	Params  []string
+	Body    []Stmt
+	Mutated map[string]bool
+}
 type IfExpr struct {
 	Cond Expr
 	Then Expr
@@ -2196,6 +2205,46 @@ func (l *LambdaExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, " -> ")
 	l.Body.emit(w)
+}
+
+func (l *LambdaBlock) emit(w io.Writer) {
+	io.WriteString(w, "\\")
+	for i, p := range l.Params {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, " -> ")
+	prevMut := mutated
+	mutated = map[string]bool{}
+	for k, v := range mutatedGlobal {
+		mutated[k] = v
+	}
+	for k, v := range l.Mutated {
+		mutated[k] = v
+	}
+	if len(l.Body) == 1 {
+		if r, ok := l.Body[0].(*ReturnStmt); ok && isPureExpr(r.Expr) {
+			r.Expr.emit(w)
+			mutated = prevMut
+			return
+		}
+	}
+	if isPureFunc(l.Body) {
+		expr := blockToExpr(l.Body)
+		expr.emit(w)
+		mutated = prevMut
+		return
+	}
+	io.WriteString(w, "do\n")
+	pushIndent()
+	for _, st := range l.Body {
+		st.emit(w)
+		io.WriteString(w, "\n")
+	}
+	popIndent()
+	mutated = prevMut
 }
 func (i *IfExpr) emit(w io.Writer) {
 	io.WriteString(w, "if ")
@@ -4021,6 +4070,52 @@ func convertFunStmt(f *parser.FunStmt) (*Func, error) {
 	return &Func{Name: safeName(f.Name), Params: params, Body: stmts, Mutated: localMut}, nil
 }
 
+func convertLocalFunStmt(f *parser.FunStmt) (Expr, error) {
+	prevMutated := mutated
+	prevLocals := locals
+	prevVarTypes := varTypes
+	mutated = map[string]bool{}
+	locals = map[string]bool{}
+	varTypes = copyVarTypes(varTypes)
+	for _, p := range f.Params {
+		locals[safeName(p.Name)] = true
+		if p.Type != nil && p.Type.Simple != nil {
+			switch *p.Type.Simple {
+			case "int":
+				varTypes[safeName(p.Name)] = "int"
+			case "float":
+				varTypes[safeName(p.Name)] = "float"
+			case "bool":
+				varTypes[safeName(p.Name)] = "bool"
+			case "string":
+				varTypes[safeName(p.Name)] = "string"
+			}
+		}
+	}
+
+	stmts, err := convertStmtList(f.Body)
+	if err != nil {
+		mutated = prevMutated
+		locals = prevLocals
+		varTypes = prevVarTypes
+		return nil, err
+	}
+	localMut := mutated
+	mutated = prevMutated
+	for name := range localMut {
+		if globals[name] {
+			mutatedGlobal[name] = true
+		}
+	}
+	locals = prevLocals
+
+	var params []string
+	for _, p := range f.Params {
+		params = append(params, safeName(p.Name))
+	}
+	return &LambdaBlock{Params: params, Body: stmts, Mutated: localMut}, nil
+}
+
 func convertForStmt(f *parser.ForStmt) (Stmt, error) {
 	src, err := convertExpr(f.Source)
 	if err != nil {
@@ -4305,7 +4400,11 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 				fn := &LambdaExpr{Params: params, Body: bodyExpr}
 				out = append(out, &LetStmt{Name: safeName(st.Fun.Name), Expr: fn})
 			} else {
-				return nil, fmt.Errorf("unsupported statement in block")
+				fn, err := convertLocalFunStmt(st.Fun)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &LetStmt{Name: safeName(st.Fun.Name), Expr: fn})
 			}
 		default:
 			return nil, fmt.Errorf("unsupported statement in block")
