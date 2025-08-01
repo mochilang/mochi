@@ -1,7 +1,10 @@
-## Progress (2025-07-28 08:10 +0700)
+## Progress (2025-08-01 18:13 +0700)
+- ocaml transpiler: handle function return types (e2a013af12)
+
+- VM valid programs compiled: 102/105
+
 - ocaml transpiler: start bigrat support (0a65091be7)
 
-- VM valid programs compiled: 102/104
 
 - ocaml transpiler: start bigrat support (0a65091be7)
 

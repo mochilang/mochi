@@ -3,256 +3,256 @@
 This directory holds OCaml source code generated from the Mochi programs in `tests/rosetta/x/Mochi`. Each file has the expected runtime output in a matching `.out` file. Compilation or runtime failures are stored in a corresponding `.error` file.
 
 ## Program checklist
-- [x] 100-doors-2
-- [x] 100-doors-3
-- [x] 100-doors
-- [ ] 100-prisoners
-- [ ] 15-puzzle-game
-- [ ] 15-puzzle-solver
-- [ ] 2048
-- [ ] 21-game
-- [ ] 24-game-solve
-- [ ] 24-game
-- [ ] 4-rings-or-4-squares-puzzle
-- [ ] 9-billion-names-of-god-the-integer
-- [ ] 99-bottles-of-beer-2
-- [ ] 99-bottles-of-beer
-- [ ] a+b
-- [ ] abbreviations-automatic
-- [ ] abbreviations-easy
-- [ ] abbreviations-simple
-- [ ] abc-problem
-- [ ] abelian-sandpile-model-identity
-- [ ] abelian-sandpile-model
-- [ ] abstract-type
-- [ ] abundant-deficient-and-perfect-number-classifications
-- [ ] abundant-odd-numbers
-- [ ] accumulator-factory
-- [ ] achilles-numbers
-- [ ] ackermann-function-2
-- [ ] ackermann-function-3
-- [ ] ackermann-function
-- [ ] active-directory-connect
-- [ ] active-directory-search-for-a-user
-- [ ] active-object
-- [ ] add-a-variable-to-a-class-instance-at-runtime
-- [ ] additive-primes
-- [ ] address-of-a-variable
-- [ ] adfgvx-cipher
-- [ ] aks-test-for-primes
-- [ ] algebraic-data-types
-- [ ] align-columns
-- [ ] aliquot-sequence-classifications
-- [ ] almkvist-giullera-formula-for-pi
-- [ ] almost-prime
-- [ ] amb
-- [ ] amicable-pairs
-- [ ] anagrams-deranged-anagrams
-- [ ] anagrams
-- [ ] angle-difference-between-two-bearings-1
-- [ ] angle-difference-between-two-bearings-2
-- [ ] angles-geometric-normalization-and-conversion
-- [ ] animate-a-pendulum
-- [ ] animation
-- [ ] anonymous-recursion-1
-- [ ] anonymous-recursion-2
-- [ ] anonymous-recursion
-- [ ] anti-primes
-- [ ] append-a-record-to-the-end-of-a-text-file
-- [ ] apply-a-callback-to-an-array-1
-- [ ] apply-a-callback-to-an-array-2
-- [ ] apply-a-digital-filter-direct-form-ii-transposed-
-- [ ] approximate-equality
-- [ ] arbitrary-precision-integers-included-
-- [ ] archimedean-spiral
-- [ ] arena-storage-pool
-- [ ] arithmetic-complex
-- [ ] arithmetic-derivative
-- [ ] arithmetic-evaluation
-- [ ] arithmetic-geometric-mean-calculate-pi
-- [ ] arithmetic-geometric-mean
-- [ ] arithmetic-integer-1
-- [ ] arithmetic-integer-2
-- [ ] arithmetic-numbers
-- [ ] arithmetic-rational
-- [ ] array-concatenation
-- [ ] array-length
-- [ ] arrays
-- [ ] ascending-primes
-- [ ] ascii-art-diagram-converter
-- [ ] assertions
-- [ ] associative-array-creation
-- [ ] associative-array-iteration
-- [ ] associative-array-merging
-- [ ] atomic-updates
-- [ ] attractive-numbers
-- [ ] average-loop-length
-- [ ] averages-arithmetic-mean
-- [ ] averages-mean-time-of-day
-- [ ] averages-median-1
-- [ ] averages-median-2
-- [ ] averages-median-3
-- [ ] averages-mode
-- [ ] averages-pythagorean-means
-- [ ] averages-root-mean-square
-- [ ] averages-simple-moving-average
-- [ ] avl-tree
-- [ ] b-zier-curves-intersections
-- [ ] babbage-problem
-- [ ] babylonian-spiral
-- [ ] balanced-brackets
-- [ ] balanced-ternary
-- [ ] barnsley-fern
-- [ ] base64-decode-data
-- [ ] bell-numbers
-- [ ] benfords-law
-- [ ] bernoulli-numbers
-- [ ] best-shuffle
-- [ ] bifid-cipher
-- [ ] bin-given-limits
-- [ ] binary-digits
-- [ ] binary-search
-- [ ] binary-strings
-- [ ] bioinformatics-base-count
-- [ ] bioinformatics-global-alignment
-- [ ] bioinformatics-sequence-mutation
-- [ ] biorhythms
-- [ ] bitcoin-address-validation
-- [ ] bitmap-b-zier-curves-cubic
-- [ ] bitmap-b-zier-curves-quadratic
-- [ ] bitmap-bresenhams-line-algorithm
-- [ ] bitmap-flood-fill
-- [ ] bitmap-histogram
-- [ ] bitmap-midpoint-circle-algorithm
-- [ ] bitmap-ppm-conversion-through-a-pipe
-- [ ] bitmap-read-a-ppm-file
-- [ ] bitmap-read-an-image-through-a-pipe
-- [ ] bitmap-write-a-ppm-file
-- [ ] bitmap
-- [ ] bitwise-io-1
-- [ ] bitwise-io-2
-- [ ] bitwise-operations
-- [ ] blum-integer
-- [ ] boolean-values
-- [ ] box-the-compass
-- [ ] boyer-moore-string-search
-- [ ] brazilian-numbers
-- [ ] break-oo-privacy
-- [ ] brilliant-numbers
-- [ ] brownian-tree
-- [ ] bulls-and-cows-player
-- [ ] bulls-and-cows
-- [ ] burrows-wheeler-transform
-- [ ] caesar-cipher-1
-- [ ] caesar-cipher-2
-- [ ] calculating-the-value-of-e
-- [ ] calendar---for-real-programmers-1
-- [ ] calendar---for-real-programmers-2
-- [ ] calendar
-- [ ] calkin-wilf-sequence
-- [ ] call-a-foreign-language-function
-- [ ] call-a-function-1
-- [ ] call-a-function-10
-- [ ] call-a-function-11
-- [ ] call-a-function-12
-- [ ] call-a-function-2
-- [ ] call-a-function-3
-- [ ] call-a-function-4
-- [ ] call-a-function-5
-- [ ] call-a-function-6
-- [ ] call-a-function-7
-- [ ] call-a-function-8
-- [ ] call-a-function-9
-- [ ] call-an-object-method-1
-- [ ] call-an-object-method-2
-- [ ] call-an-object-method-3
-- [ ] call-an-object-method
-- [ ] camel-case-and-snake-case
-- [ ] canny-edge-detector
-- [ ] canonicalize-cidr
-- [ ] cantor-set
-- [ ] carmichael-3-strong-pseudoprimes
-- [ ] cartesian-product-of-two-or-more-lists-1
-- [ ] cartesian-product-of-two-or-more-lists-2
-- [ ] cartesian-product-of-two-or-more-lists-3
-- [ ] cartesian-product-of-two-or-more-lists-4
-- [ ] case-sensitivity-of-identifiers
-- [ ] casting-out-nines
-- [ ] catalan-numbers-1
-- [ ] catalan-numbers-2
-- [ ] catalan-numbers-pascals-triangle
-- [ ] catamorphism
-- [ ] catmull-clark-subdivision-surface
-- [ ] chaocipher
-- [ ] chaos-game
-- [ ] character-codes-1
-- [ ] character-codes-2
-- [ ] character-codes-3
-- [ ] character-codes-4
-- [ ] character-codes-5
-- [ ] chat-server
-- [ ] check-machin-like-formulas
-- [ ] check-that-file-exists
-- [ ] checkpoint-synchronization-1
-- [ ] checkpoint-synchronization-2
-- [ ] checkpoint-synchronization-3
-- [ ] checkpoint-synchronization-4
-- [ ] chernicks-carmichael-numbers
-- [ ] cheryls-birthday
-- [ ] chinese-remainder-theorem
-- [ ] chinese-zodiac
-- [ ] cholesky-decomposition-1
-- [ ] cholesky-decomposition
-- [ ] chowla-numbers
-- [ ] church-numerals-1
-- [ ] church-numerals-2
-- [ ] circles-of-given-radius-through-two-points
-- [ ] circular-primes
-- [ ] cistercian-numerals
-- [ ] compiler-virtual-machine-interpreter
-- [ ] composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
-- [ ] compound-data-type
-- [ ] concurrent-computing-1
-- [ ] concurrent-computing-2
-- [ ] concurrent-computing-3
-- [ ] conditional-structures-1
-- [ ] conditional-structures-10
-- [ ] conditional-structures-2
-- [ ] conditional-structures-3
-- [ ] conditional-structures-4
-- [ ] conditional-structures-5
-- [ ] conditional-structures-6
-- [ ] conditional-structures-7
-- [ ] conditional-structures-8
-- [ ] conditional-structures-9
-- [ ] consecutive-primes-with-ascending-or-descending-differences
-- [ ] constrained-genericity-1
-- [ ] constrained-genericity-2
-- [ ] constrained-genericity-3
-- [ ] constrained-genericity-4
-- [ ] constrained-random-points-on-a-circle-1
-- [ ] constrained-random-points-on-a-circle-2
-- [ ] continued-fraction
-- [ ] convert-decimal-number-to-rational
-- [ ] convert-seconds-to-compound-duration
-- [ ] convex-hull
-- [ ] conways-game-of-life
-- [ ] copy-a-string-1
-- [ ] copy-a-string-2
-- [ ] copy-stdin-to-stdout-1
-- [ ] copy-stdin-to-stdout-2
-- [ ] count-in-factors
-- [ ] count-in-octal-1
-- [ ] count-in-octal-2
-- [ ] count-in-octal-3
-- [ ] count-in-octal-4
-- [ ] crc-32-1
-- [ ] crc-32-2
-- [ ] csv-data-manipulation
-- [ ] csv-to-html-translation-1
-- [ ] csv-to-html-translation-2
-- [ ] csv-to-html-translation-3
-- [ ] csv-to-html-translation-4
-- [ ] csv-to-html-translation-5
-- [ ] cusip
-- [ ] md5
+- [x] 1 100-doors-2
+- [x] 2 100-doors-3
+- [x] 3 100-doors
+- [ ] 4 100-prisoners
+- [ ] 5 15-puzzle-game
+- [ ] 6 15-puzzle-solver
+- [ ] 7 2048
+- [ ] 8 21-game
+- [ ] 9 24-game-solve
+- [ ] 10 24-game
+- [ ] 11 4-rings-or-4-squares-puzzle
+- [ ] 12 9-billion-names-of-god-the-integer
+- [ ] 13 99-bottles-of-beer-2
+- [ ] 14 99-bottles-of-beer
+- [ ] 15 a+b
+- [ ] 16 abbreviations-automatic
+- [ ] 17 abbreviations-easy
+- [ ] 18 abbreviations-simple
+- [ ] 19 abc-problem
+- [ ] 20 abelian-sandpile-model-identity
+- [ ] 21 abelian-sandpile-model
+- [ ] 22 abstract-type
+- [ ] 23 abundant-deficient-and-perfect-number-classifications
+- [ ] 24 abundant-odd-numbers
+- [ ] 25 accumulator-factory
+- [ ] 26 achilles-numbers
+- [ ] 27 ackermann-function-2
+- [ ] 28 ackermann-function-3
+- [ ] 29 ackermann-function
+- [ ] 30 active-directory-connect
+- [ ] 31 active-directory-search-for-a-user
+- [ ] 32 active-object
+- [ ] 33 add-a-variable-to-a-class-instance-at-runtime
+- [ ] 34 additive-primes
+- [ ] 35 address-of-a-variable
+- [ ] 36 adfgvx-cipher
+- [ ] 37 aks-test-for-primes
+- [ ] 38 algebraic-data-types
+- [ ] 39 align-columns
+- [ ] 40 aliquot-sequence-classifications
+- [ ] 41 almkvist-giullera-formula-for-pi
+- [ ] 42 almost-prime
+- [ ] 43 amb
+- [ ] 44 amicable-pairs
+- [ ] 45 anagrams-deranged-anagrams
+- [ ] 46 anagrams
+- [ ] 47 angle-difference-between-two-bearings-1
+- [ ] 48 angle-difference-between-two-bearings-2
+- [ ] 49 angles-geometric-normalization-and-conversion
+- [ ] 50 animate-a-pendulum
+- [ ] 51 animation
+- [ ] 52 anonymous-recursion-1
+- [ ] 53 anonymous-recursion-2
+- [ ] 54 anonymous-recursion
+- [ ] 55 anti-primes
+- [ ] 56 append-a-record-to-the-end-of-a-text-file
+- [ ] 57 apply-a-callback-to-an-array-1
+- [ ] 58 apply-a-callback-to-an-array-2
+- [ ] 59 apply-a-digital-filter-direct-form-ii-transposed-
+- [ ] 60 approximate-equality
+- [ ] 61 arbitrary-precision-integers-included-
+- [ ] 62 archimedean-spiral
+- [ ] 63 arena-storage-pool
+- [ ] 64 arithmetic-complex
+- [ ] 65 arithmetic-derivative
+- [ ] 66 arithmetic-evaluation
+- [ ] 67 arithmetic-geometric-mean-calculate-pi
+- [ ] 68 arithmetic-geometric-mean
+- [ ] 69 arithmetic-integer-1
+- [ ] 70 arithmetic-integer-2
+- [ ] 71 arithmetic-numbers
+- [ ] 72 arithmetic-rational
+- [ ] 73 array-concatenation
+- [ ] 74 array-length
+- [ ] 75 arrays
+- [ ] 76 ascending-primes
+- [ ] 77 ascii-art-diagram-converter
+- [ ] 78 assertions
+- [ ] 79 associative-array-creation
+- [ ] 80 associative-array-iteration
+- [ ] 81 associative-array-merging
+- [ ] 82 atomic-updates
+- [ ] 83 attractive-numbers
+- [ ] 84 average-loop-length
+- [ ] 85 averages-arithmetic-mean
+- [ ] 86 averages-mean-time-of-day
+- [ ] 87 averages-median-1
+- [ ] 88 averages-median-2
+- [ ] 89 averages-median-3
+- [ ] 90 averages-mode
+- [ ] 91 averages-pythagorean-means
+- [ ] 92 averages-root-mean-square
+- [ ] 93 averages-simple-moving-average
+- [ ] 94 avl-tree
+- [ ] 95 b-zier-curves-intersections
+- [ ] 96 babbage-problem
+- [ ] 97 babylonian-spiral
+- [ ] 98 balanced-brackets
+- [ ] 99 balanced-ternary
+- [ ] 100 barnsley-fern
+- [ ] 101 base64-decode-data
+- [ ] 102 bell-numbers
+- [ ] 103 benfords-law
+- [ ] 104 bernoulli-numbers
+- [ ] 105 best-shuffle
+- [ ] 106 bifid-cipher
+- [ ] 107 bin-given-limits
+- [ ] 108 binary-digits
+- [ ] 109 binary-search
+- [ ] 110 binary-strings
+- [ ] 111 bioinformatics-base-count
+- [ ] 112 bioinformatics-global-alignment
+- [ ] 113 bioinformatics-sequence-mutation
+- [ ] 114 biorhythms
+- [ ] 115 bitcoin-address-validation
+- [ ] 116 bitmap-b-zier-curves-cubic
+- [ ] 117 bitmap-b-zier-curves-quadratic
+- [ ] 118 bitmap-bresenhams-line-algorithm
+- [ ] 119 bitmap-flood-fill
+- [ ] 120 bitmap-histogram
+- [ ] 121 bitmap-midpoint-circle-algorithm
+- [ ] 122 bitmap-ppm-conversion-through-a-pipe
+- [ ] 123 bitmap-read-a-ppm-file
+- [ ] 124 bitmap-read-an-image-through-a-pipe
+- [ ] 125 bitmap-write-a-ppm-file
+- [ ] 126 bitmap
+- [ ] 127 bitwise-io-1
+- [ ] 128 bitwise-io-2
+- [ ] 129 bitwise-operations
+- [ ] 130 blum-integer
+- [ ] 131 boolean-values
+- [ ] 132 box-the-compass
+- [ ] 133 boyer-moore-string-search
+- [ ] 134 brazilian-numbers
+- [ ] 135 break-oo-privacy
+- [ ] 136 brilliant-numbers
+- [ ] 137 brownian-tree
+- [ ] 138 bulls-and-cows-player
+- [ ] 139 bulls-and-cows
+- [ ] 140 burrows-wheeler-transform
+- [ ] 141 caesar-cipher-1
+- [ ] 142 caesar-cipher-2
+- [ ] 143 calculating-the-value-of-e
+- [ ] 144 calendar---for-real-programmers-1
+- [ ] 145 calendar---for-real-programmers-2
+- [ ] 146 calendar
+- [ ] 147 calkin-wilf-sequence
+- [ ] 148 call-a-foreign-language-function
+- [ ] 149 call-a-function-1
+- [ ] 150 call-a-function-10
+- [ ] 151 call-a-function-11
+- [ ] 152 call-a-function-12
+- [ ] 153 call-a-function-2
+- [ ] 154 call-a-function-3
+- [ ] 155 call-a-function-4
+- [ ] 156 call-a-function-5
+- [ ] 157 call-a-function-6
+- [ ] 158 call-a-function-7
+- [ ] 159 call-a-function-8
+- [ ] 160 call-a-function-9
+- [ ] 161 call-an-object-method-1
+- [ ] 162 call-an-object-method-2
+- [ ] 163 call-an-object-method-3
+- [ ] 164 call-an-object-method
+- [ ] 165 camel-case-and-snake-case
+- [ ] 166 canny-edge-detector
+- [ ] 167 canonicalize-cidr
+- [ ] 168 cantor-set
+- [ ] 169 carmichael-3-strong-pseudoprimes
+- [ ] 170 cartesian-product-of-two-or-more-lists-1
+- [ ] 171 cartesian-product-of-two-or-more-lists-2
+- [ ] 172 cartesian-product-of-two-or-more-lists-3
+- [ ] 173 cartesian-product-of-two-or-more-lists-4
+- [ ] 174 case-sensitivity-of-identifiers
+- [ ] 175 casting-out-nines
+- [ ] 176 catalan-numbers-1
+- [ ] 177 catalan-numbers-2
+- [ ] 178 catalan-numbers-pascals-triangle
+- [ ] 179 catamorphism
+- [ ] 180 catmull-clark-subdivision-surface
+- [ ] 181 chaocipher
+- [ ] 182 chaos-game
+- [ ] 183 character-codes-1
+- [ ] 184 character-codes-2
+- [ ] 185 character-codes-3
+- [ ] 186 character-codes-4
+- [ ] 187 character-codes-5
+- [ ] 188 chat-server
+- [ ] 189 check-machin-like-formulas
+- [ ] 190 check-that-file-exists
+- [ ] 191 checkpoint-synchronization-1
+- [ ] 192 checkpoint-synchronization-2
+- [ ] 193 checkpoint-synchronization-3
+- [ ] 194 checkpoint-synchronization-4
+- [ ] 195 chernicks-carmichael-numbers
+- [ ] 196 cheryls-birthday
+- [ ] 197 chinese-remainder-theorem
+- [ ] 198 chinese-zodiac
+- [ ] 199 cholesky-decomposition-1
+- [ ] 200 cholesky-decomposition
+- [ ] 201 chowla-numbers
+- [ ] 202 church-numerals-1
+- [ ] 203 church-numerals-2
+- [ ] 204 circles-of-given-radius-through-two-points
+- [ ] 205 circular-primes
+- [ ] 206 cistercian-numerals
+- [ ] 208 compiler-virtual-machine-interpreter
+- [ ] 209 composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k
+- [ ] 210 compound-data-type
+- [ ] 211 concurrent-computing-1
+- [ ] 212 concurrent-computing-2
+- [ ] 213 concurrent-computing-3
+- [ ] 214 conditional-structures-1
+- [ ] 215 conditional-structures-10
+- [ ] 216 conditional-structures-2
+- [ ] 217 conditional-structures-3
+- [ ] 218 conditional-structures-4
+- [ ] 219 conditional-structures-5
+- [ ] 220 conditional-structures-6
+- [ ] 221 conditional-structures-7
+- [ ] 222 conditional-structures-8
+- [ ] 223 conditional-structures-9
+- [ ] 224 consecutive-primes-with-ascending-or-descending-differences
+- [ ] 225 constrained-genericity-1
+- [ ] 226 constrained-genericity-2
+- [ ] 227 constrained-genericity-3
+- [ ] 228 constrained-genericity-4
+- [ ] 229 constrained-random-points-on-a-circle-1
+- [ ] 230 constrained-random-points-on-a-circle-2
+- [ ] 231 continued-fraction
+- [ ] 232 convert-decimal-number-to-rational
+- [ ] 233 convert-seconds-to-compound-duration
+- [ ] 234 convex-hull
+- [ ] 235 conways-game-of-life
+- [ ] 236 copy-a-string-1
+- [ ] 237 copy-a-string-2
+- [ ] 238 copy-stdin-to-stdout-1
+- [ ] 239 copy-stdin-to-stdout-2
+- [ ] 240 count-in-factors
+- [ ] 241 count-in-octal-1
+- [ ] 242 count-in-octal-2
+- [ ] 243 count-in-octal-3
+- [ ] 244 count-in-octal-4
+- [ ] 249 crc-32-1
+- [ ] 250 crc-32-2
+- [ ] 256 csv-data-manipulation
+- [ ] 257 csv-to-html-translation-1
+- [ ] 258 csv-to-html-translation-2
+- [ ] 259 csv-to-html-translation-3
+- [ ] 260 csv-to-html-translation-4
+- [ ] 261 csv-to-html-translation-5
+- [ ] 268 cusip
+- [ ] 486 md5
