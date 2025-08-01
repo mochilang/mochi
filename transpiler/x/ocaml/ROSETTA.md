@@ -455,13 +455,13 @@ Completed programs: 169/491
 | 447 | flow-control-structures-2 |   |  |  |
 | 448 | flow-control-structures-3 | ✓ | 17.0µs | 208B |
 | 449 | flow-control-structures-4 | ✓ | 8.0µs | 208B |
-| 450 | floyd-warshall-algorithm | ✓ | 232.0µs | 29.65KB |
-| 451 | floyd-warshall-algorithm2 | ✓ | 299.0µs | 30.73KB |
-| 452 | floyds-triangle | ✓ | 179.0µs | 10.99KB |
-| 453 | forest-fire | ✓ | 5.0ms | 653.19KB |
-| 454 | fork-2 | ✓ | 90.0µs | 312B |
-| 455 | fork | ✓ | 117.0µs | 312B |
-| 456 | formal-power-series |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 400.0µs | 29.65KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 330.0µs | 30.73KB |
+| 452 | floyds-triangle | ✓ | 284.0µs | 10.99KB |
+| 453 | forest-fire | ✓ | 6.0ms | 629.40KB |
+| 454 | fork-2 | ✓ | 146.0µs | 312B |
+| 455 | fork | ✓ | 136.0µs | 312B |
+| 456 | formal-power-series | error |  |  |
 | 457 | formatted-numeric-output |   |  |  |
 | 458 | forward-difference |   |  |  |
 | 459 | four-bit-adder-1 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 169/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-07-30 17:20 UTC
+Last updated 2025-08-01 15:22 +0700
