@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-01 18:26 GMT+7
+Last updated: 2025-08-01 19:02 GMT+7
 
-## Rosetta Checklist (311/491)
+## Rosetta Checklist (323/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -405,40 +405,40 @@ Last updated: 2025-08-01 18:26 GMT+7
 | 397 | farey-sequence |   |  |  |
 | 398 | fast-fourier-transform |   |  |  |
 | 399 | fasta-format | ✓ | 69.0ms | 94.59KB |
-| 400 | faulhabers-formula | ✓ |  |  |
-| 401 | faulhabers-triangle | ✓ |  |  |
-| 402 | feigenbaum-constant-calculation | ✓ |  |  |
-| 403 | fermat-numbers | ✓ |  |  |
-| 404 | fibonacci-n-step-number-sequences | ✓ |  |  |
-| 405 | fibonacci-sequence-1 | ✓ |  |  |
-| 406 | fibonacci-sequence-2 | ✓ |  |  |
-| 407 | fibonacci-sequence-3 | ✓ | 28.0ms | 0B |
-| 408 | fibonacci-sequence-4 | ✓ |  |  |
-| 409 | fibonacci-sequence-5 |   |  |  |
-| 410 | fibonacci-word-fractal |   |  |  |
-| 411 | fibonacci-word |   |  |  |
-| 412 | file-extension-is-in-extensions-list |   |  |  |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
-| 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time |   |  |  |
-| 417 | file-size-distribution |   |  |  |
-| 418 | file-size |   |  |  |
-| 419 | filter |   |  |  |
-| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 421 | find-chess960-starting-position-identifier |   |  |  |
-| 422 | find-common-directory-path |   |  |  |
+| 400 | faulhabers-formula | ✓ | 59.0ms | 104.95KB |
+| 401 | faulhabers-triangle | ✓ | 62.0ms | 63.96KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 34.0ms | 90.30KB |
+| 403 | fermat-numbers | ✓ | 44.0ms | 104.59KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 30.0ms | 55.80KB |
+| 405 | fibonacci-sequence-1 | ✓ | 14.0ms | 0B |
+| 406 | fibonacci-sequence-2 | ✓ | 15.0ms | 0B |
+| 407 | fibonacci-sequence-3 | ✓ | 16.0ms | 0B |
+| 408 | fibonacci-sequence-4 | ✓ | 27.0ms | 46.04KB |
+| 409 | fibonacci-sequence-5 | ✓ | 15.0ms | 2.60KB |
+| 410 | fibonacci-word-fractal | ✓ | 20.0ms | 32.72KB |
+| 411 | fibonacci-word | ✓ | 2.93s | 108.74KB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 37.0ms | 90.41KB |
+| 413 | file-input-output-1 | ✓ | 16.0ms | 1008B |
+| 414 | file-input-output-2 | ✓ | 14.0ms | 1008B |
+| 415 | file-input-output-3 | ✓ | 26.0ms | 33.31KB |
+| 416 | file-modification-time | ✓ | 23.0ms | 37.96KB |
+| 417 | file-size-distribution | ✓ | 40.0ms | 113.43KB |
+| 418 | file-size | ✓ | 29.0ms | 69.33KB |
+| 419 | filter | ✓ | 37.0ms | 95.00KB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 37.0ms | 89.59KB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 35.0ms | 89.77KB |
+| 422 | find-common-directory-path | ✓ | 46.0ms | 95.39KB |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
 | 425 | find-limit-of-recursion | ✓ | 35.0ms | 552B |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 48.0ms | 94.14KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 45.0ms | 87.87KB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 39.0ms | 45.30KB |
 | 430 | find-the-missing-permutation | ✓ | 31.0ms | 39.32KB |
 | 431 | first-class-environments | ✓ | 41.0ms | 54.92KB |
 | 432 | first-class-functions-use-numbers-analogously | ✓ | 29.0ms | 43.04KB |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ |  |  |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
 | 434 | five-weekends | ✓ | 93.0ms | 115.09KB |
 | 435 | fivenum-1 | ✓ | 19.0ms | 944B |
 | 436 | fivenum-2 | ✓ | 34.0ms | 47.39KB |

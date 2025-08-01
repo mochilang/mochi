@@ -17,8 +17,8 @@ public class Main {
     }
 
     static String fmt8(double x) {
-        double y = floorf(x * 100000000.0 + 0.5) / 100000000.0;
-        String s = String.valueOf(y);
+        double y_1 = floorf(x * 100000000.0 + 0.5) / 100000000.0;
+        String s = String.valueOf(y_1);
         int dot = ((Number)(s.indexOf("."))).intValue();
         if (dot == 0 - 1) {
             s = s + ".00000000";
@@ -33,11 +33,11 @@ public class Main {
     }
 
     static String pad2(int x) {
-        String s = String.valueOf(x);
-        if (_runeLen(s) < 2) {
-            s = " " + s;
+        String s_1 = String.valueOf(x);
+        if (_runeLen(s_1) < 2) {
+            s_1 = " " + s_1;
         }
-        return s;
+        return s_1;
     }
 
     static void main() {
@@ -47,29 +47,29 @@ public class Main {
         double a2 = 0.0;
         double d1 = 3.2;
         System.out.println(" i       d");
-        int i = 2;
-        while (i <= maxIt) {
+        int i_1 = 2;
+        while (i_1 <= maxIt) {
             double a = a1 + (a1 - a2) / d1;
             int j = 1;
             while (j <= maxItJ) {
                 double x = 0.0;
-                double y = 0.0;
+                double y_2 = 0.0;
                 int k = 1;
-                int limit = pow_int(2, i);
+                int limit = pow_int(2, i_1);
                 while (k <= limit) {
-                    y = 1.0 - 2.0 * y * x;
+                    y_2 = 1.0 - 2.0 * y_2 * x;
                     x = a - x * x;
                     k = k + 1;
                 }
-                a = a - x / y;
+                a = a - x / y_2;
                 j = j + 1;
             }
             double d = (a1 - a2) / (a - a1);
-            System.out.println(String.valueOf(pad2(i)) + "    " + String.valueOf(fmt8(d)));
+            System.out.println(String.valueOf(pad2(i_1)) + "    " + String.valueOf(fmt8(d)));
             d1 = d;
             a2 = a1;
             a1 = a;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
     }
 
@@ -87,7 +87,41 @@ public class Main {
         return r;
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

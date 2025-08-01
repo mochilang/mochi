@@ -1,31 +1,17 @@
 public class Main {
-    static java.util.function.Supplier<Integer> fibNumber() {
-        int[] a = new int[1];
-        a[0] = 0;
-        int[] b = new int[1];
-        b[0] = 1;
-        return () -> {
-        int tmp = a[0] + b[0];
-        a[0] = b[0];
-        b[0] = tmp;
-        return a[0];
-};
-    }
+    static java.util.Map<String,String> fs;
 
-    static int fibSequence(int n) {
-        java.util.function.Supplier<Integer> f = fibNumber();
-        int r = 0;
-        int i = 0;
-        while (i < n) {
-            r = ((Number)(f.get())).intValue();
-            i = i + 1;
-        }
-        return r;
+    static void main() {
+        String data = ((String) (fs.get("input.txt")));
+fs.put("output.txt", data);
+        System.out.println(((Object) (fs.get("output.txt"))));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            fs = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("input.txt", "example")))));
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

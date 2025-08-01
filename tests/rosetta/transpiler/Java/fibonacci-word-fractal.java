@@ -1,31 +1,27 @@
 public class Main {
-    static java.util.function.Supplier<Integer> fibNumber() {
-        int[] a = new int[1];
-        a[0] = 0;
-        int[] b = new int[1];
-        b[0] = 1;
-        return () -> {
-        int tmp = a[0] + b[0];
-        a[0] = b[0];
-        b[0] = tmp;
-        return a[0];
-};
-    }
 
-    static int fibSequence(int n) {
-        java.util.function.Supplier<Integer> f = fibNumber();
-        int r = 0;
-        int i = 0;
+    static String fibonacciWord(int n) {
+        String a = "1";
+        String b = "0";
+        int i = 1;
         while (i < n) {
-            r = ((Number)(f.get())).intValue();
+            String tmp = b;
+            b = b + a;
+            a = tmp;
             i = i + 1;
         }
-        return r;
+        return a;
+    }
+
+    static void main() {
+        String wf = String.valueOf(fibonacciWord(23));
+        System.out.println(String.valueOf(_runeLen(wf)));
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -57,5 +53,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

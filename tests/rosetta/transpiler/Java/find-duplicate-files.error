@@ -1,0 +1,9 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenfind-duplicate-files2597144335/001/Main.java:9: error: incompatible types: inference variable T has incompatible bounds
+                dups = appendObj(dups, new Object[]{((String)(seen).get(content)), path});
+                                ^
+    upper bounds: String[],Object
+    lower bounds: Object[],String[]
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+1 error
