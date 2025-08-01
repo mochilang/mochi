@@ -1269,6 +1269,8 @@ func precedence(e Expr) int {
 		}
 	case *CastExpr:
 		return 8
+	case *CondExpr:
+		return 9
 	}
 	return 0
 }
@@ -3088,6 +3090,10 @@ type LenExpr struct{ X Expr }
 
 func (l *LenExpr) emit(w io.Writer) error {
 	if err := l.X.emit(w); err != nil {
+		return err
+	}
+	if inferType(l.X) == "dynamic" {
+		_, err := io.WriteString(w, ".toString().length")
 		return err
 	}
 	_, err := io.WriteString(w, ".length")

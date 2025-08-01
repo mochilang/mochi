@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/factorions.dart:59:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = sum + facts[d];
+                      ^

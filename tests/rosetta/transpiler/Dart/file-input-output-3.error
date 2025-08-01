@@ -1,0 +1,5 @@
+run: exit status 254
+../../../tests/rosetta/transpiler/Dart/file-input-output-3.dart:40:25: Error: The type 'String' used in the 'for' loop must implement 'Iterable<dynamic>'.
+ - 'Iterable' is from 'dart:core'.
+  for (var ch in fs[inp]!) {
+                        ^

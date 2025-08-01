@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 355/491
+Compiled and ran: 401/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -378,56 +378,56 @@ Compiled and ran: 355/491
 | 369 | events |   |  |  |
 | 370 | evolutionary-algorithm |   |  |  |
 | 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
+| 372 | exceptions | ✓ | 19.575ms | 9.5 MB |
+| 373 | executable-library | ✓ | 2.543514s | 5.9 MB |
+| 374 | execute-a-markov-algorithm | ✓ | 23.119ms | 7.0 MB |
 | 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
+| 376 | execute-brain- | ✓ | 25.432ms | 10.6 MB |
+| 377 | execute-computer-zero-1 | ✓ | 19.551ms | 5.5 MB |
+| 378 | execute-computer-zero | ✓ | 18.618ms | 9.8 MB |
+| 379 | execute-hq9+ | ✓ | 37.773ms | 6.7 MB |
+| 380 | execute-snusp | ✓ | 10.699ms | 2.5 MB |
+| 381 | exponentiation-operator-2 | ✓ | 30.399ms | 10.1 MB |
+| 382 | exponentiation-operator | ✓ | 13.514ms | 3.5 MB |
+| 383 | exponentiation-order | ✓ | 25.749ms | 10.5 MB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 20.018ms | 9.3 MB |
+| 385 | extend-your-language | ✓ | 18.45ms | 9.6 MB |
+| 386 | extensible-prime-generator | ✓ | 220.156ms | 6.8 MB |
+| 387 | extreme-floating-point-values | ✓ | 14.183ms | 4.0 MB |
+| 388 | faces-from-a-mesh-2 | ✓ | 15.258ms | 4.2 MB |
+| 389 | faces-from-a-mesh | ✓ | 14.885ms | 4.4 MB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 57.167ms | 11.8 MB |
+| 391 | factorial-primes | ✓ | 33.438ms | 10.3 MB |
+| 392 | factorial | ✓ | 25.038ms | 9.0 MB |
 | 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
+| 394 | factors-of-a-mersenne-number | ✓ | 2m27.836241s | 4.9 MB |
+| 395 | factors-of-an-integer | ✓ | 2.186305s | 1.3 MB |
 | 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
-| 401 | faulhabers-triangle |   |  |  |
-| 402 | feigenbaum-constant-calculation |   |  |  |
-| 403 | fermat-numbers |   |  |  |
-| 404 | fibonacci-n-step-number-sequences |   |  |  |
-| 405 | fibonacci-sequence-1 |   |  |  |
-| 406 | fibonacci-sequence-2 |   |  |  |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-sequence-5 |   |  |  |
-| 410 | fibonacci-word-fractal |   |  |  |
-| 411 | fibonacci-word |   |  |  |
-| 412 | file-extension-is-in-extensions-list |   |  |  |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
+| 397 | farey-sequence | ✓ | 14.419ms | 3.9 MB |
+| 398 | fast-fourier-transform | ✓ | 29.169ms | 2.7 MB |
+| 399 | fasta-format | ✓ | 29.255ms | 9.9 MB |
+| 400 | faulhabers-formula | ✓ | 81.331ms | 8.2 MB |
+| 401 | faulhabers-triangle | ✓ | 88.348ms | 5.3 MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 32.651ms | 6.0 MB |
+| 403 | fermat-numbers | ✓ | 39.443ms | 9.5 MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 14.015ms | 3.6 MB |
+| 405 | fibonacci-sequence-1 | ✓ | 10.652ms | 2.6 MB |
+| 406 | fibonacci-sequence-2 | ✓ | 13.042ms | 1.5 MB |
+| 407 | fibonacci-sequence-3 | ✓ | 13.503ms | 836.0 KB |
+| 408 | fibonacci-sequence-4 | ✓ | 19.822ms | 10.1 MB |
+| 409 | fibonacci-sequence-5 | ✓ | 15.814ms | 1.7 MB |
+| 410 | fibonacci-word-fractal | ✓ | 15.305ms | 2.7 MB |
+| 411 | fibonacci-word | ✓ | 4.574657s | 16.1 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 26.083ms | 10.2 MB |
+| 413 | file-input-output-1 | ✓ | 18.397ms | 9.9 MB |
+| 414 | file-input-output-2 | ✓ | 21.554ms | 10.8 MB |
 | 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time |   |  |  |
-| 417 | file-size-distribution |   |  |  |
-| 418 | file-size |   |  |  |
-| 419 | filter |   |  |  |
-| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 421 | find-chess960-starting-position-identifier |   |  |  |
+| 416 | file-modification-time | ✓ | 27.796ms | 10.7 MB |
+| 417 | file-size-distribution | ✓ | 25.048ms | 10.3 MB |
+| 418 | file-size | ✓ | 9.838ms | 2.5 MB |
+| 419 | filter | ✓ | 19.65ms | 2.5 MB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 28.379ms | 10.0 MB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 14.558ms | 3.9 MB |
 | 422 | find-common-directory-path |   |  |  |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 355/491
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-08-01 15:22 +0700_
+_Last updated: 2025-08-01 18:01 +0700_

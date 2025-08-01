@@ -109,4 +109,4 @@ Generated Dart code for programs in `tests/vm/valid`. Each program has a `.dart`
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
 
-_Last updated: 2025-08-01 15:22 +0700_
+_Last updated: 2025-08-01 18:01 +0700_
