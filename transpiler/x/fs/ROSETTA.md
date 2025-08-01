@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (329/491)
+## Rosetta Golden Test Checklist (336/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -458,13 +458,13 @@ This file is auto-generated from rosetta tests.
 | 451 | floyd-warshall-algorithm2 | ✓ | 275µs | 51.1 KB |
 | 452 | floyds-triangle | ✓ | 257µs | 56.3 KB |
 | 453 | forest-fire | ✓ | 291µs | 71.5 KB |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
-| 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 454 | fork-2 | ✓ | 377µs | 57.1 KB |
+| 455 | fork | ✓ |  |  |
+| 456 | formal-power-series | ✓ |  |  |
+| 457 | formatted-numeric-output | ✓ |  |  |
+| 458 | forward-difference | ✓ |  |  |
+| 459 | four-bit-adder-1 | ✓ |  |  |
+| 460 | four-is-magic | ✓ |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 462 | fractal-tree |   |  |  |
 | 463 | fractran |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-08-01 15:22 +0700
+Last updated: 2025-08-01 18:27 +0700

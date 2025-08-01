@@ -1,3 +1,7 @@
+## Progress (2025-08-01 18:27 +0700)
+- support more int division
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 15:22 +0700)
 - docs: add v0.10.53 release notes
 - Generated F# for 103/105 programs (103 passing)
