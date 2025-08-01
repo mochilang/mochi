@@ -1,8 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/cartesian-product-of-two-or-more-lists-3.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "Cartesian-product-of-two-or-more-lists-3" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/cartesian-product-of-two-or-more-lists-3.ml", line 106, characters 18-22:
-106 |   if (List.length (!a) = 0) then (
-                        ^^^^
-Error: This expression has type Obj.t but an expression was expected of type
-         'a list

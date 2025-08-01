@@ -1,8 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/canonicalize-cidr.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "Canonicalize-cidr" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/canonicalize-cidr.ml", line 177, characters 7-16:
-177 |   (try List.iter (fun p ->
-             ^^^^^^^^^
-Error: This function has type ('a -> unit) -> 'a list -> unit
-       It is applied to too many arguments; maybe you forgot a `;'.
