@@ -608,7 +608,13 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		io.WriteString(w, ", ")
-		it.Value.emit(w)
+		if inferType(it.Value) == "String" {
+			io.WriteString(w, "String::from(")
+			it.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			it.Value.emit(w)
+		}
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "])")
@@ -2459,7 +2465,6 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
-				vd.Expr = nil
 			}
 		} else {
 			if len(localVarStack) > 0 {
@@ -3157,7 +3162,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if mut {
+				sigType = "&mut " + typ
+			} else {
 				sigType = "&" + typ
 			}
 		}
@@ -3786,10 +3793,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					args[i] = &FloatCastExpr{Expr: args[i]}
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
+				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && pts[i] != "i64" && pts[i] != "bool" && pts[i] != "f64" && pts[i] != "String" && !strings.HasPrefix(pts[i], "Vec<") && !strings.HasPrefix(pts[i], "HashMap<") {
+					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
 					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
-				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
-					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+				} else if fe, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
+					args[i] = &MethodCallExpr{Receiver: fe, Name: "clone"}
 				}
 			}
 		} else {
@@ -5276,8 +5285,14 @@ func Emit(prog *Program) []byte {
 			for i := 0; i < indent; i++ {
 				buf.WriteString("    ")
 			}
-			buf.WriteString(g.Name)
-			buf.WriteString(" = ")
+			if strings.HasPrefix(g.Type, "HashMap") {
+				buf.WriteString("*")
+				buf.WriteString(g.Name)
+				buf.WriteString(".lock().unwrap() = ")
+			} else {
+				buf.WriteString(g.Name)
+				buf.WriteString(" = ")
+			}
 			var b bytes.Buffer
 			g.Expr.emit(&b)
 			buf.Write(b.Bytes())

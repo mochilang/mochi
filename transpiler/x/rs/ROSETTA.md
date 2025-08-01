@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-01 12:09 UTC
+Last updated: 2025-08-01 14:41 UTC
 
-## Rosetta Golden Test Checklist (181/491)
+## Rosetta Golden Test Checklist (184/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -468,10 +468,10 @@ Last updated: 2025-08-01 12:09 UTC
 | 459 | four-bit-adder-1 | ✓ | 45µs |  |
 | 460 | four-is-magic | ✓ | 171µs |  |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree | ✓ | 48.654ms | 1.5 MB |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
+| 462 | fractal-tree | ✓ | 45.233ms | 1.5 MB |
+| 463 | fractran | ✓ | 561.302ms |  |
+| 464 | french-republican-calendar | ✓ | 33µs |  |
+| 465 | ftp | ✓ | 48µs |  |
 | 466 | function-frequency |   |  |  |
 | 467 | function-prototype |   |  |  |
 | 468 | functional-coverage-tree |   |  |  |
