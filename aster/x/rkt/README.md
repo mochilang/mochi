@@ -4,8 +4,8 @@ This directory holds golden files for inspecting and printing Racket programs us
 
 ## Progress
 
-Completed 100/103 files
-Generated: 2025-07-31 21:13 GMT+7
+Completed 103/103 files
+Generated: 2025-07-31 23:15 GMT+7
 
 ## Checklist
 
@@ -110,3 +110,7 @@ Generated: 2025-07-31 21:13 GMT+7
 98. [x] update_stmt
 99. [x] user_type_literal
 100. [x] values_builtin
+
+101. [x] two-sum
+102. [x] var_assignment
+103. [x] while_loop
