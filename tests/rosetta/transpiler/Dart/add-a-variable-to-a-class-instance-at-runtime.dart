@@ -22,28 +22,33 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class SomeStruct {
   Map<String, String> runtimeFields;
   SomeStruct({required this.runtimeFields});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  void main() {
+void _main() {
   SomeStruct ss = SomeStruct(runtimeFields: {});
   print("Create two fields at runtime: \n");
   int i = 1;
   while (i <= 2) {
     print("  Field #" + (i).toString() + ":\n");
     print("       Enter name  : ");
-    final String name = stdin.readLineSync() ?? '';
+    String name = stdin.readLineSync() ?? '';
     print("       Enter value : ");
-    final String value = stdin.readLineSync() ?? '';
+    String value = stdin.readLineSync() ?? '';
     Map<String, String> fields = ss.runtimeFields;
     fields[name] = value;
     ss.runtimeFields = fields;
@@ -52,9 +57,9 @@ void main() {
   }
   while (true) {
     print("Which field do you want to inspect ? ");
-    final String name = stdin.readLineSync() ?? '';
+    String name = stdin.readLineSync() ?? '';
     if (ss.runtimeFields.containsKey(name)) {
-    final String value = ss.runtimeFields[name]!;
+    String value = ss.runtimeFields[name]!!;
     print("Its value is '" + value + "'");
     return;
   } else {
@@ -62,12 +67,22 @@ void main() {
   }
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
