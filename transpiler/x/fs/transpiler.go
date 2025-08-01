@@ -1811,7 +1811,15 @@ func mapMethod(name string) string {
 }
 
 func isMapType(t string) bool {
+	if strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") {
+		return false
+	}
 	return t == "map" || strings.HasPrefix(t, "Map<")
+}
+
+func isIndexExpr(e Expr) bool {
+	_, ok := e.(*IndexExpr)
+	return ok
 }
 
 func precedence(op string) int {
@@ -2539,7 +2547,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	t := inferType(c.Expr)
 	switch c.Type {
 	case "float":
-		if t == "obj" {
+		if t == "obj" || isIndexExpr(c.Expr) {
 			io.WriteString(w, "unbox<float> ")
 		} else {
 			io.WriteString(w, "float ")
@@ -2552,7 +2560,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Expr.emit(w)
 		}
 	case "int":
-		if t == "obj" {
+		if t == "obj" || isIndexExpr(c.Expr) {
 			io.WriteString(w, "unbox<int> ")
 		} else {
 			io.WriteString(w, "int ")
@@ -2814,18 +2822,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	// variable declarations remain before their usage.
 	if len(p.Stmts) > 1 {
 		var pre, funs, post []Stmt
+		seenFun := false
 		for _, st := range p.Stmts {
 			switch s := st.(type) {
 			case *FunDef:
 				funs = append(funs, st)
+				seenFun = true
 			case *LetStmt:
-				if exprUsesFunc(s.Expr) {
-					post = append(post, st)
-				} else {
-					pre = append(pre, st)
-				}
+				pre = append(pre, st)
 			case *ExprStmt:
-				if exprUsesFunc(s.Expr) {
+				if !seenFun {
+					pre = append(pre, st)
+				} else if exprUsesFunc(s.Expr) {
 					post = append(post, st)
 				} else {
 					pre = append(pre, st)
