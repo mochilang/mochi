@@ -625,26 +625,39 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
-			fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
-			writeIndent(w, indent)
-			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
-			for _, e := range lst.Elems {
-				writeIndent(w, indent)
-				switch base {
-				case "int":
-					needListAppendInt = true
-					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
-				case "double":
-					needListAppendDouble = true
-					fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", d.Name, d.Name, d.Name)
-				case "const char*":
-					needListAppendStr = true
-					fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
-				default:
-					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+			if indent == 0 {
+				fmt.Fprintf(w, "%s %s[%d] = {", base, d.Name, len(lst.Elems))
+				for i, e := range lst.Elems {
+					if i > 0 {
+						io.WriteString(w, ", ")
+					}
+					e.emitExpr(w)
 				}
-				e.emitExpr(w)
-				io.WriteString(w, ");\n")
+				io.WriteString(w, "};\n")
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
+			} else {
+				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+				for _, e := range lst.Elems {
+					writeIndent(w, indent)
+					switch base {
+					case "int":
+						needListAppendInt = true
+						fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					case "double":
+						needListAppendDouble = true
+						fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					case "const char*":
+						needListAppendStr = true
+						fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					default:
+						fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+					}
+					e.emitExpr(w)
+					io.WriteString(w, ");\n")
+				}
 			}
 			return
 		}
