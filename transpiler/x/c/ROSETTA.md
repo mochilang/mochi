@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (132/491) - Last updated 2025-08-01 23:10 +0700:
+Checklist of programs that currently transpile and run (134/491) - Last updated 2025-08-02 00:40 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -154,18 +154,18 @@ Checklist of programs that currently transpile and run (132/491) - Last updated 
 | 147 | calkin-wilf-sequence |  |  |  |
 | 148 | call-a-foreign-language-function |  |  |  |
 | 149 | call-a-function-1 | ✓ | 20us | 0 B |
-| 150 | call-a-function-10 | ✓ | 80us | 688 B |
-| 151 | call-a-function-11 | ✓ | 249us | 4.8 KB |
-| 152 | call-a-function-12 | ✓ | 601us | 4.8 KB |
-| 153 | call-a-function-2 | ✓ | 16us | 0 B |
-| 154 | call-a-function-3 | ✓ | 12us | 0 B |
-| 155 | call-a-function-4 | ✓ | 18us | 0 B |
-| 156 | call-a-function-5 | ✓ | 168us | 4.7 KB |
-| 157 | call-a-function-6 | ✓ | 715us | 4.9 KB |
-| 158 | call-a-function-7 | ✓ | 12us | 0 B |
-| 159 | call-a-function-8 |  |  |  |
-| 160 | call-a-function-9 | ✓ | 60us | 688 B |
-| 161 | call-an-object-method-1 |  |  |  |
+| 150 | call-a-function-10 | ✓ | 43us | 688 B |
+| 151 | call-a-function-11 | ✓ | 248us | 4.9 KB |
+| 152 | call-a-function-12 | ✓ | 240us | 4.8 KB |
+| 153 | call-a-function-2 | ✓ | 20us | 0 B |
+| 154 | call-a-function-3 | ✓ | 68us | 688 B |
+| 155 | call-a-function-4 | ✓ | 16us | 0 B |
+| 156 | call-a-function-5 | ✓ | 714us | 4.7 KB |
+| 157 | call-a-function-6 | ✓ | 274us | 4.9 KB |
+| 158 | call-a-function-7 | ✓ | 21us | 0 B |
+| 159 | call-a-function-8 | ✓ | 69us | 2.2 KB |
+| 160 | call-a-function-9 | ✓ | 59us | 688 B |
+| 161 | call-an-object-method-1 | ✓ | 20us | 0 B |
 | 162 | call-an-object-method-2 | ✓ | 43us | 0 B |
 | 163 | call-an-object-method-3 | ✓ | 23us | 0 B |
 | 164 | call-an-object-method | ✓ | 35us | 0 B |

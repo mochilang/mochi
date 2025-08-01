@@ -35,6 +35,7 @@ var (
 	extraFuncs              []*Function
 	structCounter           int
 	tempCounter             int
+	anonFuncCounter         int
 	anonStructs             map[string]string
 	currentVarName          string
 	currentVarType          types.Type
@@ -2700,20 +2701,29 @@ func (p *Program) Emit() []byte {
 				if t == "" {
 					t = "int"
 				}
-				ptr2 := 0
-				for strings.HasSuffix(t, "[]") {
-					t = strings.TrimSuffix(t, "[]")
-					ptr2++
+				if strings.Contains(t, "(*)") {
+					parts := strings.Split(t, "(*)")
+					buf.WriteString(parts[0])
+					buf.WriteString("(*")
+					buf.WriteString(p.Name)
+					buf.WriteString(")")
+					buf.WriteString(parts[1])
+				} else {
+					ptr2 := 0
+					for strings.HasSuffix(t, "[]") {
+						t = strings.TrimSuffix(t, "[]")
+						ptr2++
+					}
+					if t == "" {
+						t = "int"
+					}
+					buf.WriteString(t)
+					for j := 0; j < ptr2; j++ {
+						buf.WriteString(" *")
+					}
+					buf.WriteString(" ")
+					buf.WriteString(p.Name)
 				}
-				if t == "" {
-					t = "int"
-				}
-				buf.WriteString(t)
-				for j := 0; j < ptr2; j++ {
-					buf.WriteString(" *")
-				}
-				buf.WriteString(" ")
-				buf.WriteString(p.Name)
 			}
 			buf.WriteString(");")
 		}
@@ -2757,21 +2767,30 @@ func (p *Program) Emit() []byte {
 				if p.Type == "" {
 					p.Type = "int"
 				}
-				ptr := 0
 				t := p.Type
-				for strings.HasSuffix(t, "[]") {
-					t = strings.TrimSuffix(t, "[]")
-					ptr++
+				if strings.Contains(t, "(*)") {
+					parts := strings.Split(t, "(*)")
+					buf.WriteString(parts[0])
+					buf.WriteString("(*")
+					buf.WriteString(p.Name)
+					buf.WriteString(")")
+					buf.WriteString(parts[1])
+				} else {
+					ptr := 0
+					for strings.HasSuffix(t, "[]") {
+						t = strings.TrimSuffix(t, "[]")
+						ptr++
+					}
+					if t == "" {
+						t = "int"
+					}
+					buf.WriteString(t)
+					for j := 0; j < ptr; j++ {
+						buf.WriteString(" *")
+					}
+					buf.WriteString(" ")
+					buf.WriteString(p.Name)
 				}
-				if t == "" {
-					t = "int"
-				}
-				buf.WriteString(t)
-				for j := 0; j < ptr; j++ {
-					buf.WriteString(" *")
-				}
-				buf.WriteString(" ")
-				buf.WriteString(p.Name)
 			}
 			buf.WriteString(")")
 		}
@@ -2812,6 +2831,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	extraFuncs = nil
 	structCounter = 0
 	tempCounter = 0
+	anonFuncCounter = 0
 	needMath = false
 	needContainsInt = false
 	needContainsStr = false
@@ -3097,6 +3117,15 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			currentVarType = types.ResolveTypeRef(s.Let.Type, env)
 		} else {
 			currentVarType = nil
+		}
+		if fn := detectFunExpr(s.Let.Value); fn != nil {
+			fun, err := compileFunction(env, s.Let.Name, fn)
+			if err != nil {
+				return nil, err
+			}
+			extraFuncs = append(extraFuncs, fun)
+			funcReturnTypes[s.Let.Name] = fun.Return
+			return nil, nil
 		}
 		if q := queryExpr(s.Let.Value); q != nil {
 			if s.Let.Name == "filtered" && matchFilteredQuery(q) {
@@ -4611,6 +4640,17 @@ func convertUnary(u *parser.Unary) Expr {
 	}
 	if g := u.Value.Target.Group; g != nil {
 		return convertExpr(g)
+	}
+	if fn := u.Value.Target.FunExpr; fn != nil && len(u.Ops) == 0 {
+		name := fmt.Sprintf("__anon%d", anonFuncCounter)
+		anonFuncCounter++
+		f, err := compileFunction(currentEnv, name, fn)
+		if err != nil {
+			return nil
+		}
+		extraFuncs = append(extraFuncs, f)
+		funcReturnTypes[name] = f.Return
+		return &VarRef{Name: name}
 	}
 	if ml := u.Value.Target.Map; ml != nil && len(u.Ops) == 0 && len(u.Value.Ops) == 0 {
 		var items []MapItem
@@ -6179,6 +6219,13 @@ func cTypeFromMochiType(t types.Type) string {
 			}
 		}
 		return "int"
+	case types.FuncType:
+		var params []string
+		for _, p := range tt.Params {
+			params = append(params, cTypeFromMochiType(p))
+		}
+		ret := cTypeFromMochiType(tt.Return)
+		return fmt.Sprintf("%s(*)(%s)", ret, strings.Join(params, ", "))
 	default:
 		return "int"
 	}
