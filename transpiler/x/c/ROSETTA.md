@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (145/491) - Last updated 2025-08-01 18:47 +0700:
+Checklist of programs that currently transpile and run (125/491) - Last updated 2025-08-01 19:38 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -432,61 +432,61 @@ Checklist of programs that currently transpile and run (145/491) - Last updated 
 | 425 | find-limit-of-recursion |  |  |  |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |  |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 485us | 5.1 KB |
-| 428 | find-the-intersection-of-two-lines | ✓ | 493us | 4.8 KB |
-| 429 | find-the-last-sunday-of-each-month | ✓ | 476us | 12.0 KB |
+| 428 | find-the-intersection-of-two-lines |  |  |  |
+| 429 | find-the-last-sunday-of-each-month |  |  |  |
 | 430 | find-the-missing-permutation | ✓ | 223us | 7.8 KB |
-| 431 | first-class-environments | ✓ | 667us | 43.9 KB |
+| 431 | first-class-environments |  |  |  |
 | 432 | first-class-functions-use-numbers-analogously |  |  |  |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |  |  |  |
-| 434 | five-weekends | ✓ | 511us | 34.7 KB |
+| 434 | five-weekends |  |  |  |
 | 435 | fivenum-1 |  |  |  |
 | 436 | fivenum-2 |  |  |  |
 | 437 | fivenum-3 |  |  |  |
-| 438 | fixed-length-records-1 | ✓ | 320us | 27.8 KB |
+| 438 | fixed-length-records-1 |  |  |  |
 | 439 | fixed-length-records-2 |  |  |  |
-| 440 | fizzbuzz-1 | ✓ | 397us | 6.3 KB |
+| 440 | fizzbuzz-1 |  |  |  |
 | 441 | fizzbuzz-2 |  |  |  |
-| 442 | fizzbuzz | ✓ | 347us | 6.3 KB |
+| 442 | fizzbuzz |  |  |  |
 | 443 | flatten-a-list-1 |  |  |  |
-| 444 | flatten-a-list-2 | ✓ | 210us | 4.7 KB |
+| 444 | flatten-a-list-2 |  |  |  |
 | 445 | flipping-bits-game |  |  |  |
-| 446 | flow-control-structures-1 | ✓ | 215us | 4.7 KB |
-| 447 | flow-control-structures-2 | ✓ | 381us | 4.7 KB |
-| 448 | flow-control-structures-3 | ✓ | 225us | 4.7 KB |
-| 449 | flow-control-structures-4 | ✓ | 335us | 4.7 KB |
+| 446 | flow-control-structures-1 |  |  |  |
+| 447 | flow-control-structures-2 |  |  |  |
+| 448 | flow-control-structures-3 |  |  |  |
+| 449 | flow-control-structures-4 |  |  |  |
 | 450 | floyd-warshall-algorithm |  |  |  |
-| 451 | floyd-warshall-algorithm2 | ✓ | 358us | 12.1 KB |
-| 452 | floyds-triangle | ✓ | 608us | 21.0 KB |
-| 453 | forest-fire | ✓ | 955us | 110.3 KB |
-| 454 | fork-2 | ✓ | 325us | 4.8 KB |
-| 455 | fork | ✓ | 354us | 4.8 KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 323us | 12.1 KB |
+| 452 | floyds-triangle |  |  |  |
+| 453 | forest-fire |  |  |  |
+| 454 | fork-2 |  |  |  |
+| 455 | fork |  |  |  |
 | 456 | formal-power-series |  |  |  |
-| 457 | formatted-numeric-output | ✓ | 352us | 4.9 KB |
+| 457 | formatted-numeric-output |  |  |  |
 | 458 | forward-difference |  |  |  |
-| 459 | four-bit-adder-1 | ✓ | 361us | 5.1 KB |
+| 459 | four-bit-adder-1 |  |  |  |
 | 460 | four-is-magic |  |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |  |  |  |
-| 462 | fractal-tree | ✓ | 1.80ms | 346.2 KB |
+| 462 | fractal-tree |  |  |  |
 | 463 | fractran |  |  |  |
 | 464 | french-republican-calendar |  |  |  |
 | 465 | ftp |  |  |  |
 | 466 | function-frequency |  |  |  |
-| 467 | function-prototype | ✓ | 29us | 0 B |
+| 467 | function-prototype |  |  |  |
 | 468 | functional-coverage-tree |  |  |  |
-| 469 | fusc-sequence | ✓ | 520us | 10.5 KB |
+| 469 | fusc-sequence |  |  |  |
 | 470 | gamma-function |  |  |  |
 | 471 | general-fizzbuzz |  |  |  |
-| 472 | generic-swap | ✓ | 385us | 4.9 KB |
-| 473 | get-system-command-output | ✓ | 257us | 4.7 KB |
-| 474 | giuga-numbers | ✓ | 435us | 4.8 KB |
-| 475 | globally-replace-text-in-several-files | ✓ | 261us | 4.7 KB |
-| 476 | goldbachs-comet | ✓ | 480us | 23.2 KB |
-| 477 | golden-ratio-convergence |  |  |  |
-| 478 | graph-colouring |  |  |  |
-| 479 | gray-code |  |  |  |
-| 480 | gui-component-interaction |  |  |  |
-| 481 | gui-enabling-disabling-of-controls |  |  |  |
-| 482 | gui-maximum-window-dimensions |  |  |  |
+| 472 | generic-swap |  |  |  |
+| 473 | get-system-command-output |  |  |  |
+| 474 | giuga-numbers |  |  |  |
+| 475 | globally-replace-text-in-several-files |  |  |  |
+| 476 | goldbachs-comet |  |  |  |
+| 477 | golden-ratio-convergence | ✓ | 1.18ms | 4.9 KB |
+| 478 | graph-colouring | ✓ | 372us | 4.7 KB |
+| 479 | gray-code | ✓ | 947us | 28.6 KB |
+| 480 | gui-component-interaction | ✓ | 690us | 9.0 KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 704us | 12.5 KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 698us | 5.0 KB |
 | 483 | http |  |  |  |
 | 484 | image-noise |  |  |  |
 | 485 | loops-increment-loop-index-within-loop-body |  |  |  |
