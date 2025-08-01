@@ -3986,7 +3986,10 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 			exprType = "any"
 		}
 		if exprType != ret && ret != "any" {
-			if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
+			if exprType == "*big.Int" && (ret == "int" || ret == "int64") {
+				usesBigInt = true
+				val = &BigIntToIntExpr{Value: val}
+			} else if ae, ok := val.(*AssertExpr); !(ok && ae.Type == ret) {
 				val = &AssertExpr{Expr: val, Type: ret}
 			}
 		}
@@ -4274,15 +4277,25 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 							if !(ops[i].Op == "==" || ops[i].Op == "!=") || (!lNull && !rNull) {
 								if _, ok := typesList[i].(types.AnyType); ok {
-									if !lNull && !isIntType(typesList[i+1]) {
-										left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
-										usesFloatConv = true
+									if !lNull {
+										if _, ok := typesList[i+1].(types.StringType); ok {
+											usesPrint = true
+											left = &CallExpr{Func: "fmt.Sprint", Args: []Expr{left}}
+										} else if !isIntType(typesList[i+1]) {
+											left = &CallExpr{Func: "_toFloat", Args: []Expr{left}}
+											usesFloatConv = true
+										}
 									}
 								}
 								if _, ok := typesList[i+1].(types.AnyType); ok {
-									if !rNull && !isIntType(typesList[i]) {
-										right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
-										usesFloatConv = true
+									if !rNull {
+										if _, ok := typesList[i].(types.StringType); ok {
+											usesPrint = true
+											right = &CallExpr{Func: "fmt.Sprint", Args: []Expr{right}}
+										} else if !isIntType(typesList[i]) {
+											right = &CallExpr{Func: "_toFloat", Args: []Expr{right}}
+											usesFloatConv = true
+										}
 									}
 								}
 							}
@@ -4404,7 +4417,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 				}
 				operands[i] = newExpr
 				operands = append(operands[:i+1], operands[i+2:]...)
-				typesList[i] = typesList[i+1]
+				switch newExpr.(type) {
+				case *BigBinaryExpr:
+					typesList[i] = types.BigIntType{}
+				case *BigRatBinaryExpr:
+					typesList[i] = types.BigRatType{}
+				case *BigCmpExpr, *BigRatCmpExpr:
+					typesList[i] = types.BoolType{}
+				default:
+					typesList[i] = typesList[i+1]
+				}
 				typesList = append(typesList[:i+1], typesList[i+2:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
@@ -4793,11 +4815,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						if pf.Target != nil && pf.Target.Group != nil {
-							expr = &IntCastExpr{Expr: expr}
-						} else {
-							expr = &AssertExpr{Expr: expr, Type: "int"}
-						}
+						expr = &IntCastExpr{Expr: expr}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true
