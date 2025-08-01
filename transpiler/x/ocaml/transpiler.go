@@ -476,13 +476,19 @@ func ocamlType(t string) string {
 	case "bigint":
 		usesBigInt = true
 		return "Z.t"
-	case "bigrat":
-		usesBigRat = true
-		return "Q.t"
-	default:
-		if _, ok := structFields[t]; ok {
-			return "(string * Obj.t) list"
-		}
+        case "bigrat":
+                usesBigRat = true
+                return "Q.t"
+       case "func":
+               return "Obj.t -> Obj.t"
+        default:
+               if strings.HasPrefix(t, "func-") {
+                       ret := ocamlType(strings.TrimPrefix(t, "func-"))
+                       return "Obj.t -> " + ret
+               }
+               if _, ok := structFields[t]; ok {
+                       return "(string * Obj.t) list"
+               }
 		if strings.HasPrefix(t, "map-") {
 			inner := strings.TrimPrefix(t, "map-")
 			return "(string * " + ocamlType(inner) + ") list"
@@ -531,8 +537,12 @@ func typeString(t types.Type) string {
 			return "map"
 		}
 		return "map-" + val
-	case types.FuncType:
-		return "func"
+       case types.FuncType:
+               ret := typeString(tt.Return)
+               if ret != "" {
+                       return "func-" + ret
+               }
+               return "func"
 	case types.StructType:
 		fields := make([]string, len(tt.Order))
 		for i, name := range tt.Order {
@@ -3082,9 +3092,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			} else if typ == "bigrat" && valTyp == "bigint" {
 				expr = &CastExpr{Expr: expr, Type: "big_to_rat"}
 			}
-		} else if typ == "" {
-			return nil, fmt.Errorf("let without value not supported")
-		}
+               } else if typ == "" {
+                       return nil, fmt.Errorf("let without value not supported: %s", st.Let.Name)
+               }
 		vinfo := VarInfo{typ: typ}
 		if strings.HasPrefix(typ, "func-") {
 			vinfo.ret = strings.TrimPrefix(typ, "func-")
