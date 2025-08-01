@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (116/491) - Last updated 2025-07-31 19:58 +0700:
+Checklist of programs that currently transpile and run (117/491) - Last updated 2025-08-01 17:57 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -455,7 +455,7 @@ Checklist of programs that currently transpile and run (116/491) - Last updated 
 | 448 | flow-control-structures-3 |  |  |  |
 | 449 | flow-control-structures-4 |  |  |  |
 | 450 | floyd-warshall-algorithm |  |  |  |
-| 451 | floyd-warshall-algorithm2 |  |  |  |
+| 451 | floyd-warshall-algorithm2 | ✓ | 323us | 12.1 KB |
 | 452 | floyds-triangle |  |  |  |
 | 453 | forest-fire |  |  |  |
 | 454 | fork-2 |  |  |  |

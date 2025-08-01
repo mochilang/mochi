@@ -1,5 +1,5 @@
-## Progress (2025-07-31 18:33 +0700)
-- Commit 7bb3f3842f: transpiler/c: add rosetta output for call-a-function-9
+## Progress (2025-08-01 17:57 +0700)
+- Commit 04920f43d8: Update transpiler and add Go outputs
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

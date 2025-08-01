@@ -625,22 +625,26 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
-			if len(lst.Elems) > 0 {
-				io.WriteString(w, base)
-				fmt.Fprintf(w, " %s[%d] = {", d.Name, len(lst.Elems))
-				for i, e := range lst.Elems {
-					if i > 0 {
-						io.WriteString(w, ", ")
-					}
-					e.emitExpr(w)
+			fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+			for _, e := range lst.Elems {
+				writeIndent(w, indent)
+				switch base {
+				case "int":
+					needListAppendInt = true
+					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
+				case "double":
+					needListAppendDouble = true
+					fmt.Fprintf(w, "%s = list_append_double(%s, &%s_len, ", d.Name, d.Name, d.Name)
+				case "const char*":
+					needListAppendStr = true
+					fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
+				default:
+					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
 				}
-				io.WriteString(w, "};\n")
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
-			} else {
-				fmt.Fprintf(w, "%s *%s = NULL;\n", base, d.Name)
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
+				e.emitExpr(w)
+				io.WriteString(w, ");\n")
 			}
 			return
 		}
@@ -2608,9 +2612,17 @@ func (p *Program) Emit() []byte {
 				}
 			}
 			if strings.HasSuffix(typ, "[]") {
-				base := strings.TrimSuffix(typ, "[]")
-				fmt.Fprintf(&buf, "    %s *%s;\n", base, field)
-				fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+				if strings.HasSuffix(typ, "[][]") {
+					base := strings.TrimSuffix(typ, "[][]")
+					fmt.Fprintf(&buf, "    %s **%s;\n", base, field)
+					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+					fmt.Fprintf(&buf, "    size_t *%s_lens;\n", field)
+					fmt.Fprintf(&buf, "    size_t %s_lens_len;\n", field)
+				} else {
+					base := strings.TrimSuffix(typ, "[]")
+					fmt.Fprintf(&buf, "    %s *%s;\n", base, field)
+					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+				}
 			} else {
 				fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
 			}
@@ -2865,6 +2877,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "char" { // avoid conflict with C keyword
 				funcAliases[name] = "user_char"
 				name = "user_char"
+			}
+			if name == "div" { // avoid conflict with stdlib
+				funcAliases[name] = "user_div"
+				name = "user_div"
 			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
