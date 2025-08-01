@@ -48,6 +48,8 @@ var useAscii bool
 var useMem bool
 var usePrint bool
 var aliasStack []map[string]string
+var namesStack [][]string
+var nameCounts map[string]int
 var localMutablesStack []map[string]bool
 var globalNames map[string]bool
 var variantTags map[string]int
@@ -63,6 +65,34 @@ func GetFuncReturns() map[string]string { return funcReturns }
 // a benchmark block when emitting code. When enabled, the program will print
 // a JSON object with duration and memory statistics on completion.
 func SetBenchMain(v bool) { benchMain = v }
+
+func pushAliasScope() {
+	aliasStack = append(aliasStack, map[string]string{})
+	namesStack = append(namesStack, []string{})
+}
+
+func popAliasScope() {
+	if len(aliasStack) == 0 {
+		return
+	}
+	names := namesStack[len(namesStack)-1]
+	for _, n := range names {
+		if c := nameCounts[n]; c > 0 {
+			nameCounts[n] = c - 1
+		}
+	}
+	aliasStack = aliasStack[:len(aliasStack)-1]
+	namesStack = namesStack[:len(namesStack)-1]
+}
+
+func uniqueName(name string) string {
+	cnt := nameCounts[name]
+	nameCounts[name] = cnt + 1
+	if cnt == 0 {
+		return zigIdent(name)
+	}
+	return fmt.Sprintf("%s_%d", zigIdent(name), cnt)
+}
 
 func toSnakeCase(s string) string {
 	var buf strings.Builder
@@ -313,6 +343,109 @@ func isConstExpr(e Expr) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func collectVarsStmt(s Stmt, m map[string]bool) {
+	switch st := s.(type) {
+	case *VarDecl:
+		collectVarsExpr(st.Value, m)
+	case *AssignStmt:
+		collectVarsExpr(st.Value, m)
+	case *IndexAssignStmt:
+		collectVarsExpr(st.Target, m)
+		collectVarsExpr(st.Value, m)
+	case *FieldAssignStmt:
+		collectVarsExpr(st.Target, m)
+		collectVarsExpr(st.Value, m)
+	case *IfStmt:
+		collectVarsExpr(st.Cond, m)
+		for _, b := range st.Then {
+			collectVarsStmt(b, m)
+		}
+		for _, b := range st.Else {
+			collectVarsStmt(b, m)
+		}
+	case *WhileStmt:
+		collectVarsExpr(st.Cond, m)
+		for _, b := range st.Body {
+			collectVarsStmt(b, m)
+		}
+	case *ForStmt:
+		collectVarsExpr(st.Start, m)
+		collectVarsExpr(st.End, m)
+		collectVarsExpr(st.Iterable, m)
+		for _, b := range st.Body {
+			collectVarsStmt(b, m)
+		}
+	case *ExprStmt:
+		collectVarsExpr(st.Expr, m)
+	case *PrintStmt:
+		for _, e := range st.Values {
+			collectVarsExpr(e, m)
+		}
+	case *BenchStmt:
+		for _, b := range st.Body {
+			collectVarsStmt(b, m)
+		}
+	}
+}
+
+func collectVarsExpr(e Expr, m map[string]bool) {
+	if e == nil {
+		return
+	}
+	switch ex := e.(type) {
+	case *VarRef:
+		m[ex.Name] = true
+	case *BinaryExpr:
+		collectVarsExpr(ex.Left, m)
+		collectVarsExpr(ex.Right, m)
+	case *CallExpr:
+		for _, a := range ex.Args {
+			collectVarsExpr(a, m)
+		}
+	case *IndexExpr:
+		collectVarsExpr(ex.Target, m)
+		collectVarsExpr(ex.Index, m)
+	case *SliceExpr:
+		collectVarsExpr(ex.Target, m)
+		collectVarsExpr(ex.Start, m)
+		collectVarsExpr(ex.End, m)
+	case *NotExpr:
+		collectVarsExpr(ex.Expr, m)
+	case *ListLit:
+		for _, e2 := range ex.Elems {
+			collectVarsExpr(e2, m)
+		}
+	case *MapLit:
+		for _, me := range ex.Entries {
+			collectVarsExpr(me.Key, m)
+			collectVarsExpr(me.Value, m)
+		}
+	case *AppendExpr:
+		collectVarsExpr(ex.List, m)
+		collectVarsExpr(ex.Value, m)
+	case *FieldExpr:
+		collectVarsExpr(ex.Target, m)
+	case *IfExpr:
+		collectVarsExpr(ex.Cond, m)
+		collectVarsExpr(ex.Then, m)
+		collectVarsExpr(ex.Else, m)
+	case *QueryComp:
+		for _, src := range ex.Sources {
+			collectVarsExpr(src, m)
+		}
+		collectVarsExpr(ex.Elem, m)
+		collectVarsExpr(ex.Filter, m)
+		collectVarsExpr(ex.Sort, m)
+		collectVarsExpr(ex.Skip, m)
+		collectVarsExpr(ex.Take, m)
+	case *GroupByExpr:
+		collectVarsExpr(ex.Source, m)
+		collectVarsExpr(ex.Key, m)
+		collectVarsExpr(ex.SelectExpr, m)
+		collectVarsExpr(ex.Sort, m)
 	}
 }
 
@@ -1784,19 +1917,16 @@ func (c *CallExpr) emit(w io.Writer) {
 						v.emit(w)
 						io.WriteString(w, ".items.len")
 					} else {
-						io.WriteString(w, "std.mem.len(")
 						v.emit(w)
-						io.WriteString(w, ")")
+						io.WriteString(w, ".len")
 					}
 				} else {
-					io.WriteString(w, "std.mem.len(")
 					v.emit(w)
-					io.WriteString(w, ")")
+					io.WriteString(w, ".len")
 				}
 			} else {
-				io.WriteString(w, "std.mem.len(")
 				c.Args[0].emit(w)
-				io.WriteString(w, ")")
+				io.WriteString(w, ".len")
 			}
 		} else {
 			io.WriteString(w, "0")
@@ -1939,6 +2069,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useMem = false
 	usePrint = false
 	aliasStack = nil
+	namesStack = nil
+	nameCounts = map[string]int{}
+	pushAliasScope()
 	globalNames = map[string]bool{}
 	for _, st := range prog.Statements {
 		if st.Let != nil {
@@ -2018,7 +2151,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	for _, sd := range structDefs {
 		structs = append(structs, sd)
 	}
-	return &Program{Structs: structs, Globals: globals, Functions: funcs}, nil
+	progAST := &Program{Structs: structs, Globals: globals, Functions: funcs}
+	popAliasScope()
+	return progAST, nil
 }
 
 func collectMutables(sts []*parser.Statement, m map[string]bool) {
@@ -2347,8 +2482,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		names := make([]string, len(p.FunExpr.Params))
 		params := make([]Param, len(p.FunExpr.Params))
 		aliases := map[string]string{}
-		aliasStack = append(aliasStack, aliases)
-		defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
+		pushAliasScope()
+		aliasStack[len(aliasStack)-1] = aliases
+		defer popAliasScope()
 		for i, par := range p.FunExpr.Params {
 			typ := toZigType(par.Type)
 			name := par.Name
@@ -2532,7 +2668,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if lst, ok2 := constLists[v.Name]; ok2 {
 						elems := make([]Expr, 0, len(lst.Elems)+1)
 						for i := range lst.Elems {
-							elems = append(elems, &IndexExpr{Target: &VarRef{Name: v.Name}, Index: &IntLit{Value: i}})
+							elems = append(elems, &IndexExpr{Target: &VarRef{Name: resolveAlias(v.Name)}, Index: &IntLit{Value: i}})
 						}
 						elems = append(elems, args[1])
 						return &ListLit{Elems: elems}, nil
@@ -2548,7 +2684,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if extra, ok := nestedFunArgs[name]; ok {
 			pre := make([]Expr, len(extra))
 			for i, n := range extra {
-				pre[i] = &VarRef{Name: n}
+				pre[i] = &VarRef{Name: resolveAlias(n)}
 			}
 			args = append(pre, args...)
 		}
@@ -2655,7 +2791,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		var expr Expr = &VarRef{Name: p.Selector.Root}
+		name := resolveAlias(p.Selector.Root)
+		var expr Expr = &VarRef{Name: name}
 		for _, f := range p.Selector.Tail {
 			expr = &FieldExpr{Target: expr, Name: f}
 		}
@@ -2754,6 +2891,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		return nil, err
 	}
 	var thenStmts []Stmt
+	pushAliasScope()
 	for _, s := range is.Then {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -2761,6 +2899,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		}
 		thenStmts = append(thenStmts, st)
 	}
+	popAliasScope()
 	var elseStmts []Stmt
 	if is.ElseIf != nil {
 		st, err := compileIfStmt(is.ElseIf, prog)
@@ -2769,6 +2908,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 		}
 		elseStmts = []Stmt{st}
 	} else if len(is.Else) > 0 {
+		pushAliasScope()
 		for _, s := range is.Else {
 			st, err := compileStmt(s, prog)
 			if err != nil {
@@ -2776,6 +2916,7 @@ func compileIfStmt(is *parser.IfStmt, prog *parser.Program) (Stmt, error) {
 			}
 			elseStmts = append(elseStmts, st)
 		}
+		popAliasScope()
 	}
 	return &IfStmt{Cond: cond, Then: thenStmts, Else: elseStmts}, nil
 }
@@ -2786,6 +2927,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 		return nil, err
 	}
 	body := make([]Stmt, 0, len(ws.Body))
+	pushAliasScope()
 	for _, s := range ws.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -2793,6 +2935,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 		}
 		body = append(body, st)
 	}
+	popAliasScope()
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
@@ -2815,6 +2958,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		}
 	}
 	body := make([]Stmt, 0, len(fs.Body))
+	pushAliasScope()
 	for _, s := range fs.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -2822,11 +2966,13 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		}
 		body = append(body, st)
 	}
+	popAliasScope()
 	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
 }
 
 func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error) {
 	body := make([]Stmt, 0, len(bs.Body))
+	pushAliasScope()
 	for _, s := range bs.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
@@ -2834,6 +2980,7 @@ func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error)
 		}
 		body = append(body, st)
 	}
+	popAliasScope()
 	useNow = true
 	useMem = true
 	return &BenchStmt{Name: bs.Name, Body: body}, nil
@@ -3141,9 +3288,9 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	collectMutables(fn.Body, mutables)
 	localMutablesStack = append(localMutablesStack, mutables)
 	defer func() { localMutablesStack = localMutablesStack[:len(localMutablesStack)-1] }()
-	aliases := map[string]string{}
-	aliasStack = append(aliasStack, aliases)
-	defer func() { aliasStack = aliasStack[:len(aliasStack)-1] }()
+	pushAliasScope()
+	aliases := aliasStack[len(aliasStack)-1]
+	defer popAliasScope()
 	for i, p := range fn.Params {
 		typ := toZigType(p.Type)
 		name := p.Name
@@ -3179,6 +3326,10 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			body = append(body, s)
 		}
 	}
+	used := map[string]bool{}
+	for _, st := range body {
+		collectVarsStmt(st, used)
+	}
 	name := fn.Name
 	if funDepth == 1 && fn.Name == "main" {
 		mainFuncName = "mochi_main"
@@ -3187,9 +3338,15 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	funcReturns[name] = ret
 	if funDepth > 1 {
+		capturedMap := map[string]bool{}
 		captured := []string{}
-		for i := 0; i < len(funParamsStack)-1; i++ {
-			captured = append(captured, funParamsStack[i]...)
+		for i := 0; i < len(aliasStack)-1; i++ {
+			for _, alias := range aliasStack[i] {
+				if used[alias] && !capturedMap[alias] {
+					capturedMap[alias] = true
+					captured = append(captured, alias)
+				}
+			}
 		}
 		newParams := make([]Param, 0, len(captured)+len(f.Params))
 		for _, n := range captured {
@@ -3252,8 +3409,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		vd := &VarDecl{Name: s.Let.Name, Value: expr}
-		varDecls[s.Let.Name] = vd
+		name := s.Let.Name
+		alias := uniqueName(name)
+		aliasStack[len(aliasStack)-1][name] = alias
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		vd := &VarDecl{Name: alias, Value: expr}
+		varDecls[name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
@@ -3297,8 +3458,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			m := localMutablesStack[len(localMutablesStack)-1]
 			mutable = m[s.Var.Name]
 		}
-		vd := &VarDecl{Name: s.Var.Name, Value: expr, Mutable: mutable}
-		varDecls[s.Var.Name] = vd
+		name := s.Var.Name
+		alias := uniqueName(name)
+		aliasStack[len(aliasStack)-1][name] = alias
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
+		varDecls[name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
@@ -3338,9 +3503,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				mapVars[s.Assign.Name] = true
 			}
 		}
-		return &AssignStmt{Name: s.Assign.Name, Value: expr}, nil
+		alias := resolveAlias(s.Assign.Name)
+		return &AssignStmt{Name: alias, Value: expr}, nil
 	case s.Assign != nil && len(s.Assign.Field) > 0:
-		var target Expr = &VarRef{Name: s.Assign.Name}
+		alias := resolveAlias(s.Assign.Name)
+		var target Expr = &VarRef{Name: alias}
 		for _, f := range s.Assign.Field[:len(s.Assign.Field)-1] {
 			target = &FieldExpr{Target: target, Name: f.Name}
 		}
@@ -3351,7 +3518,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		return &FieldAssignStmt{Target: target, Name: fieldName, Value: val}, nil
 	case s.Assign != nil && len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0:
-		target := Expr(&VarRef{Name: s.Assign.Name, Map: mapVars[s.Assign.Name]})
+		alias := resolveAlias(s.Assign.Name)
+		target := Expr(&VarRef{Name: alias, Map: mapVars[s.Assign.Name]})
 		imap := mapVars[s.Assign.Name]
 		for _, idx := range s.Assign.Index {
 			ix, err := compileExpr(idx.Start)

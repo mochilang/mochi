@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-07-28 01:16 +0700
+Last updated: 2025-08-01 15:22 +0700
 
-## Program Checklist (64/467)
+## Program Checklist (65/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -21,317 +21,317 @@ Last updated: 2025-07-28 01:16 +0700
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ |  |  |
 | 14 | 99-bottles-of-beer | ✓ |  |  |
-| 15 | DNS-query |   |  |  |
-| 16 | Duffinian-numbers |   |  |  |
-| 17 | a+b |   |  |  |
-| 18 | abbreviations-automatic |   |  |  |
-| 19 | abbreviations-easy | ✓ |  |  |
-| 20 | abbreviations-simple | ✓ |  |  |
-| 21 | abc-problem | ✓ |  |  |
-| 22 | abelian-sandpile-model-identity | ✓ |  |  |
-| 23 | abelian-sandpile-model | ✓ |  |  |
-| 24 | abstract-type | ✓ |  |  |
-| 25 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
-| 26 | abundant-odd-numbers | ✓ |  |  |
-| 27 | accumulator-factory | ✓ |  |  |
-| 28 | achilles-numbers | ✓ |  |  |
-| 29 | ackermann-function-2 | ✓ |  |  |
-| 30 | ackermann-function-3 | ✓ |  |  |
-| 31 | ackermann-function | ✓ |  |  |
-| 32 | active-directory-connect | ✓ |  |  |
-| 33 | active-directory-search-for-a-user | ✓ |  |  |
-| 34 | active-object | ✓ |  |  |
-| 35 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 36 | additive-primes | ✓ |  |  |
-| 37 | address-of-a-variable | ✓ |  |  |
-| 38 | adfgvx-cipher | ✓ |  |  |
-| 39 | aks-test-for-primes | ✓ |  |  |
-| 40 | algebraic-data-types | ✓ |  |  |
-| 41 | align-columns | ✓ |  |  |
-| 42 | aliquot-sequence-classifications | ✓ |  |  |
-| 43 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 44 | almost-prime | ✓ |  |  |
-| 45 | amb | ✓ |  |  |
-| 46 | amicable-pairs | ✓ |  |  |
-| 47 | anagrams-deranged-anagrams | ✓ |  |  |
-| 48 | anagrams | ✓ |  |  |
-| 49 | angle-difference-between-two-bearings-1 | ✓ |  |  |
-| 50 | angle-difference-between-two-bearings-2 | ✓ |  |  |
-| 51 | angles-geometric-normalization-and-conversion | ✓ |  |  |
-| 52 | animate-a-pendulum |   |  |  |
-| 53 | animation |   |  |  |
-| 54 | anonymous-recursion-1 | ✓ |  |  |
-| 55 | anonymous-recursion-2 | ✓ |  |  |
-| 56 | anonymous-recursion |   |  |  |
-| 57 | anti-primes |   |  |  |
-| 58 | append-a-record-to-the-end-of-a-text-file |   |  |  |
-| 59 | apply-a-callback-to-an-array-1 | ✓ |  |  |
-| 60 | apply-a-callback-to-an-array-2 | ✓ | 425µs |  |
-| 61 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
-| 62 | approximate-equality |   |  |  |
-| 63 | arbitrary-precision-integers-included- |   |  |  |
-| 64 | archimedean-spiral |   |  |  |
-| 65 | arena-storage-pool |   |  |  |
-| 66 | arithmetic-complex | ✓ | 313µs |  |
-| 67 | arithmetic-derivative |   |  |  |
-| 68 | arithmetic-evaluation |   |  |  |
-| 69 | arithmetic-geometric-mean-calculate-pi | ✓ | 55µs |  |
-| 70 | arithmetic-geometric-mean | ✓ | 82µs |  |
-| 71 | arithmetic-integer-1 | ✓ | 129µs |  |
-| 72 | arithmetic-integer-2 | ✓ | 159µs |  |
-| 73 | arithmetic-numbers |   |  |  |
-| 74 | arithmetic-rational |   |  |  |
-| 75 | array-concatenation |   |  |  |
-| 76 | array-length |   |  |  |
-| 77 | arrays |   |  |  |
-| 78 | ascending-primes |   |  |  |
-| 79 | ascii-art-diagram-converter | ✓ |  |  |
-| 80 | assertions | ✓ |  |  |
-| 81 | associative-array-creation |   |  |  |
-| 82 | associative-array-iteration | ✓ | 177µs |  |
-| 83 | associative-array-merging |   |  |  |
-| 84 | atomic-updates |   |  |  |
-| 85 | attractive-numbers |   |  |  |
-| 86 | average-loop-length |   |  |  |
-| 87 | averages-arithmetic-mean |   |  |  |
-| 88 | averages-mean-time-of-day |   |  |  |
-| 89 | averages-median-1 |   |  |  |
-| 90 | averages-median-2 |   |  |  |
-| 91 | averages-median-3 |   |  |  |
-| 92 | averages-mode |   |  |  |
-| 93 | averages-pythagorean-means |   |  |  |
-| 94 | averages-root-mean-square |   |  |  |
-| 95 | averages-simple-moving-average |   |  |  |
-| 96 | avl-tree |   |  |  |
-| 97 | b-zier-curves-intersections |   |  |  |
-| 98 | babbage-problem |   |  |  |
-| 99 | babylonian-spiral |   |  |  |
-| 100 | balanced-brackets |   |  |  |
-| 101 | balanced-ternary |   |  |  |
-| 102 | barnsley-fern |   |  |  |
-| 103 | base64-decode-data |   |  |  |
-| 104 | bell-numbers |   |  |  |
-| 105 | benfords-law |   |  |  |
-| 106 | bernoulli-numbers |   |  |  |
-| 107 | best-shuffle |   |  |  |
-| 108 | bifid-cipher |   |  |  |
-| 109 | bin-given-limits |   |  |  |
-| 110 | binary-digits |   |  |  |
-| 111 | binary-search |   |  |  |
-| 112 | binary-strings |   |  |  |
-| 113 | bioinformatics-base-count |   |  |  |
-| 114 | bioinformatics-global-alignment |   |  |  |
-| 115 | bioinformatics-sequence-mutation |   |  |  |
-| 116 | biorhythms |   |  |  |
-| 117 | bitcoin-address-validation |   |  |  |
-| 118 | bitmap-b-zier-curves-cubic |   |  |  |
-| 119 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 120 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 121 | bitmap-flood-fill |   |  |  |
-| 122 | bitmap-histogram |   |  |  |
-| 123 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 124 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 125 | bitmap-read-a-ppm-file |   |  |  |
-| 126 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 127 | bitmap-write-a-ppm-file |   |  |  |
-| 128 | bitmap |   |  |  |
-| 129 | bitwise-io-1 |   |  |  |
-| 130 | bitwise-io-2 |   |  |  |
-| 131 | bitwise-operations |   |  |  |
-| 132 | blum-integer |   |  |  |
-| 133 | boolean-values |   |  |  |
-| 134 | box-the-compass |   |  |  |
-| 135 | boyer-moore-string-search |   |  |  |
-| 136 | brazilian-numbers |   |  |  |
-| 137 | break-oo-privacy |   |  |  |
-| 138 | brilliant-numbers |   |  |  |
-| 139 | brownian-tree |   |  |  |
-| 140 | bulls-and-cows-player |   |  |  |
-| 141 | bulls-and-cows |   |  |  |
-| 142 | burrows-wheeler-transform |   |  |  |
-| 143 | caesar-cipher-1 |   |  |  |
-| 144 | caesar-cipher-2 |   |  |  |
-| 145 | calculating-the-value-of-e |   |  |  |
-| 146 | calendar---for-real-programmers-1 |   |  |  |
-| 147 | calendar---for-real-programmers-2 |   |  |  |
-| 148 | calendar |   |  |  |
-| 149 | calkin-wilf-sequence |   |  |  |
-| 150 | call-a-foreign-language-function |   |  |  |
-| 151 | call-a-function-1 |   |  |  |
-| 152 | call-a-function-10 |   |  |  |
-| 153 | call-a-function-11 |   |  |  |
-| 154 | call-a-function-12 |   |  |  |
-| 155 | call-a-function-2 |   |  |  |
-| 156 | call-a-function-3 |   |  |  |
-| 157 | call-a-function-4 |   |  |  |
-| 158 | call-a-function-5 |   |  |  |
-| 159 | call-a-function-6 |   |  |  |
-| 160 | call-a-function-7 |   |  |  |
-| 161 | call-a-function-8 |   |  |  |
-| 162 | call-a-function-9 |   |  |  |
-| 163 | call-an-object-method-1 |   |  |  |
-| 164 | call-an-object-method-2 |   |  |  |
-| 165 | call-an-object-method-3 |   |  |  |
-| 166 | call-an-object-method |   |  |  |
-| 167 | camel-case-and-snake-case |   |  |  |
-| 168 | canny-edge-detector |   |  |  |
-| 169 | canonicalize-cidr |   |  |  |
-| 170 | cantor-set |   |  |  |
-| 171 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 174 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 175 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 176 | case-sensitivity-of-identifiers |   |  |  |
-| 177 | casting-out-nines |   |  |  |
-| 178 | catalan-numbers-1 |   |  |  |
-| 179 | catalan-numbers-2 |   |  |  |
-| 180 | catalan-numbers-pascals-triangle |   |  |  |
-| 181 | catamorphism |   |  |  |
-| 182 | catmull-clark-subdivision-surface |   |  |  |
-| 183 | chaocipher |   |  |  |
-| 184 | chaos-game |   |  |  |
-| 185 | character-codes-1 | ✓ |  |  |
-| 186 | character-codes-2 | ✓ |  |  |
-| 187 | character-codes-3 |   |  |  |
-| 188 | character-codes-4 |   |  |  |
-| 189 | character-codes-5 |   |  |  |
-| 190 | chat-server |   |  |  |
-| 191 | check-machin-like-formulas |   |  |  |
-| 192 | check-that-file-exists |   |  |  |
-| 193 | checkpoint-synchronization-1 |   |  |  |
-| 194 | checkpoint-synchronization-2 |   |  |  |
-| 195 | checkpoint-synchronization-3 |   |  |  |
-| 196 | checkpoint-synchronization-4 |   |  |  |
-| 197 | chernicks-carmichael-numbers |   |  |  |
-| 198 | cheryls-birthday |   |  |  |
-| 199 | chinese-remainder-theorem |   |  |  |
-| 200 | chinese-zodiac |   |  |  |
-| 201 | cholesky-decomposition-1 |   |  |  |
-| 202 | cholesky-decomposition |   |  |  |
-| 203 | chowla-numbers | ✓ |  |  |
-| 204 | church-numerals-1 |   |  |  |
-| 205 | church-numerals-2 |   |  |  |
-| 206 | circles-of-given-radius-through-two-points |   |  |  |
-| 207 | circular-primes |   |  |  |
-| 208 | cistercian-numerals |   |  |  |
-| 209 | comma-quibbling |   |  |  |
-| 210 | compiler-virtual-machine-interpreter |   |  |  |
-| 211 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 212 | compound-data-type |   |  |  |
-| 213 | concurrent-computing-1 |   |  |  |
-| 214 | concurrent-computing-2 |   |  |  |
-| 215 | concurrent-computing-3 |   |  |  |
-| 216 | conditional-structures-1 |   |  |  |
-| 217 | conditional-structures-10 |   |  |  |
-| 218 | conditional-structures-2 |   |  |  |
-| 219 | conditional-structures-3 |   |  |  |
-| 220 | conditional-structures-4 |   |  |  |
-| 221 | conditional-structures-5 |   |  |  |
-| 222 | conditional-structures-6 |   |  |  |
-| 223 | conditional-structures-7 |   |  |  |
-| 224 | conditional-structures-8 |   |  |  |
-| 225 | conditional-structures-9 |   |  |  |
-| 226 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 227 | constrained-genericity-1 |   |  |  |
-| 228 | constrained-genericity-2 |   |  |  |
-| 229 | constrained-genericity-3 |   |  |  |
-| 230 | constrained-genericity-4 |   |  |  |
-| 231 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 232 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 233 | continued-fraction |   |  |  |
-| 234 | convert-decimal-number-to-rational |   |  |  |
-| 235 | convert-seconds-to-compound-duration |   |  |  |
-| 236 | convex-hull |   |  |  |
-| 237 | conways-game-of-life |   |  |  |
-| 238 | copy-a-string-1 |   |  |  |
-| 239 | copy-a-string-2 |   |  |  |
-| 240 | copy-stdin-to-stdout-1 |   |  |  |
-| 241 | copy-stdin-to-stdout-2 |   |  |  |
-| 242 | count-in-factors |   |  |  |
-| 243 | count-in-octal-1 |   |  |  |
-| 244 | count-in-octal-2 |   |  |  |
-| 245 | count-in-octal-3 |   |  |  |
-| 246 | count-in-octal-4 |   |  |  |
-| 247 | count-occurrences-of-a-substring |   |  |  |
-| 248 | count-the-coins-1 |   |  |  |
-| 249 | count-the-coins-2 |   |  |  |
-| 250 | cramers-rule |   |  |  |
-| 251 | crc-32-1 |   |  |  |
-| 252 | crc-32-2 |   |  |  |
-| 253 | create-a-file-on-magnetic-tape |   |  |  |
-| 254 | create-a-file |   |  |  |
-| 255 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 256 | create-an-html-table |   |  |  |
-| 257 | create-an-object-at-a-given-address |   |  |  |
-| 258 | csv-data-manipulation |   |  |  |
-| 259 | csv-to-html-translation-1 |   |  |  |
-| 260 | csv-to-html-translation-2 |   |  |  |
-| 261 | csv-to-html-translation-3 | ✓ |  |  |
-| 262 | csv-to-html-translation-4 | ✓ |  |  |
-| 263 | csv-to-html-translation-5 |   |  |  |
-| 264 | cuban-primes |   |  |  |
-| 265 | cullen-and-woodall-numbers |   |  |  |
-| 266 | cumulative-standard-deviation |   |  |  |
-| 267 | currency |   |  |  |
-| 268 | currying |   |  |  |
-| 269 | curzon-numbers |   |  |  |
-| 270 | cusip |   |  |  |
-| 271 | cyclops-numbers |   |  |  |
-| 272 | damm-algorithm |   |  |  |
-| 273 | date-format |   |  |  |
-| 274 | date-manipulation |   |  |  |
-| 275 | day-of-the-week |   |  |  |
-| 276 | de-bruijn-sequences |   |  |  |
-| 277 | deal-cards-for-freecell |   |  |  |
-| 278 | death-star |   |  |  |
-| 279 | deceptive-numbers |   |  |  |
-| 280 | deconvolution-1d-2 |   |  |  |
-| 281 | deconvolution-1d-3 |   |  |  |
-| 282 | deconvolution-1d |   |  |  |
-| 283 | deepcopy-1 |   |  |  |
-| 284 | define-a-primitive-data-type |   |  |  |
-| 285 | delegates |   |  |  |
-| 286 | demings-funnel |   |  |  |
-| 287 | department-numbers |   |  |  |
-| 288 | descending-primes |   |  |  |
-| 289 | detect-division-by-zero |   |  |  |
-| 290 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 291 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 292 | determine-if-a-string-is-collapsible |   |  |  |
-| 293 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 294 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 295 | determine-if-a-string-is-squeezable |   |  |  |
-| 296 | determine-if-only-one-instance-is-running |   |  |  |
-| 297 | determine-if-two-triangles-overlap |   |  |  |
-| 298 | determine-sentence-type |   |  |  |
-| 299 | dice-game-probabilities-1 |   |  |  |
-| 300 | dice-game-probabilities-2 |   |  |  |
-| 301 | digital-root-multiplicative-digital-root |   |  |  |
-| 302 | dijkstras-algorithm |   |  |  |
-| 303 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 304 | dining-philosophers-1 |   |  |  |
-| 305 | dining-philosophers-2 |   |  |  |
-| 306 | disarium-numbers |   |  |  |
-| 307 | discordian-date |   |  |  |
-| 308 | display-a-linear-combination |   |  |  |
-| 309 | display-an-outline-as-a-nested-table |   |  |  |
-| 310 | distance-and-bearing |   |  |  |
-| 311 | distributed-programming |   |  |  |
-| 312 | diversity-prediction-theorem |   |  |  |
-| 313 | documentation |   |  |  |
-| 314 | doomsday-rule |   |  |  |
-| 315 | dot-product |   |  |  |
-| 316 | doubly-linked-list-definition-1 |   |  |  |
-| 317 | doubly-linked-list-definition-2 |   |  |  |
-| 318 | doubly-linked-list-element-definition |   |  |  |
-| 319 | doubly-linked-list-traversal |   |  |  |
-| 320 | dragon-curve |   |  |  |
-| 321 | draw-a-clock |   |  |  |
-| 322 | draw-a-cuboid |   |  |  |
-| 323 | draw-a-pixel-1 |   |  |  |
-| 324 | draw-a-rotating-cube |   |  |  |
-| 325 | draw-a-sphere |   |  |  |
+| 15 | a+b |   |  |  |
+| 16 | abbreviations-automatic |   |  |  |
+| 17 | abbreviations-easy | ✓ |  |  |
+| 18 | abbreviations-simple | ✓ |  |  |
+| 19 | abc-problem | ✓ |  |  |
+| 20 | abelian-sandpile-model-identity | ✓ |  |  |
+| 21 | abelian-sandpile-model | ✓ |  |  |
+| 22 | abstract-type | ✓ |  |  |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
+| 24 | abundant-odd-numbers | ✓ |  |  |
+| 25 | accumulator-factory | ✓ |  |  |
+| 26 | achilles-numbers | ✓ |  |  |
+| 27 | ackermann-function-2 | ✓ |  |  |
+| 28 | ackermann-function-3 | ✓ |  |  |
+| 29 | ackermann-function | ✓ |  |  |
+| 30 | active-directory-connect | ✓ |  |  |
+| 31 | active-directory-search-for-a-user | ✓ |  |  |
+| 32 | active-object | ✓ |  |  |
+| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 34 | additive-primes | ✓ |  |  |
+| 35 | address-of-a-variable | ✓ |  |  |
+| 36 | adfgvx-cipher | ✓ |  |  |
+| 37 | aks-test-for-primes | ✓ |  |  |
+| 38 | algebraic-data-types | ✓ |  |  |
+| 39 | align-columns | ✓ |  |  |
+| 40 | aliquot-sequence-classifications | ✓ |  |  |
+| 41 | almkvist-giullera-formula-for-pi | ✓ |  |  |
+| 42 | almost-prime | ✓ |  |  |
+| 43 | amb | ✓ |  |  |
+| 44 | amicable-pairs | ✓ |  |  |
+| 45 | anagrams-deranged-anagrams | ✓ |  |  |
+| 46 | anagrams | ✓ |  |  |
+| 47 | angle-difference-between-two-bearings-1 | ✓ |  |  |
+| 48 | angle-difference-between-two-bearings-2 | ✓ |  |  |
+| 49 | angles-geometric-normalization-and-conversion | ✓ |  |  |
+| 50 | animate-a-pendulum |   |  |  |
+| 51 | animation |   |  |  |
+| 52 | anonymous-recursion-1 | ✓ |  |  |
+| 53 | anonymous-recursion-2 | ✓ |  |  |
+| 54 | anonymous-recursion |   |  |  |
+| 55 | anti-primes |   |  |  |
+| 56 | append-a-record-to-the-end-of-a-text-file |   |  |  |
+| 57 | apply-a-callback-to-an-array-1 | ✓ |  |  |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 425µs |  |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- |   |  |  |
+| 60 | approximate-equality |   |  |  |
+| 61 | arbitrary-precision-integers-included- |   |  |  |
+| 62 | archimedean-spiral |   |  |  |
+| 63 | arena-storage-pool |   |  |  |
+| 64 | arithmetic-complex | ✓ | 313µs |  |
+| 65 | arithmetic-derivative |   |  |  |
+| 66 | arithmetic-evaluation |   |  |  |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 55µs |  |
+| 68 | arithmetic-geometric-mean | ✓ | 82µs |  |
+| 69 | arithmetic-integer-1 | ✓ | 129µs |  |
+| 70 | arithmetic-integer-2 | ✓ | 159µs |  |
+| 71 | arithmetic-numbers |   |  |  |
+| 72 | arithmetic-rational |   |  |  |
+| 73 | array-concatenation |   |  |  |
+| 74 | array-length |   |  |  |
+| 75 | arrays |   |  |  |
+| 76 | ascending-primes |   |  |  |
+| 77 | ascii-art-diagram-converter | ✓ |  |  |
+| 78 | assertions | ✓ |  |  |
+| 79 | associative-array-creation |   |  |  |
+| 80 | associative-array-iteration | ✓ | 177µs |  |
+| 81 | associative-array-merging |   |  |  |
+| 82 | atomic-updates |   |  |  |
+| 83 | attractive-numbers |   |  |  |
+| 84 | average-loop-length |   |  |  |
+| 85 | averages-arithmetic-mean |   |  |  |
+| 86 | averages-mean-time-of-day |   |  |  |
+| 87 | averages-median-1 |   |  |  |
+| 88 | averages-median-2 |   |  |  |
+| 89 | averages-median-3 |   |  |  |
+| 90 | averages-mode |   |  |  |
+| 91 | averages-pythagorean-means |   |  |  |
+| 92 | averages-root-mean-square |   |  |  |
+| 93 | averages-simple-moving-average |   |  |  |
+| 94 | avl-tree |   |  |  |
+| 95 | b-zier-curves-intersections |   |  |  |
+| 96 | babbage-problem |   |  |  |
+| 97 | babylonian-spiral |   |  |  |
+| 98 | balanced-brackets |   |  |  |
+| 99 | balanced-ternary |   |  |  |
+| 100 | barnsley-fern |   |  |  |
+| 101 | base64-decode-data |   |  |  |
+| 102 | bell-numbers |   |  |  |
+| 103 | benfords-law |   |  |  |
+| 104 | bernoulli-numbers |   |  |  |
+| 105 | best-shuffle |   |  |  |
+| 106 | bifid-cipher |   |  |  |
+| 107 | bin-given-limits |   |  |  |
+| 108 | binary-digits |   |  |  |
+| 109 | binary-search |   |  |  |
+| 110 | binary-strings |   |  |  |
+| 111 | bioinformatics-base-count |   |  |  |
+| 112 | bioinformatics-global-alignment |   |  |  |
+| 113 | bioinformatics-sequence-mutation |   |  |  |
+| 114 | biorhythms |   |  |  |
+| 115 | bitcoin-address-validation |   |  |  |
+| 116 | bitmap-b-zier-curves-cubic |   |  |  |
+| 117 | bitmap-b-zier-curves-quadratic |   |  |  |
+| 118 | bitmap-bresenhams-line-algorithm |   |  |  |
+| 119 | bitmap-flood-fill |   |  |  |
+| 120 | bitmap-histogram |   |  |  |
+| 121 | bitmap-midpoint-circle-algorithm |   |  |  |
+| 122 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
+| 123 | bitmap-read-a-ppm-file |   |  |  |
+| 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
+| 125 | bitmap-write-a-ppm-file |   |  |  |
+| 126 | bitmap |   |  |  |
+| 127 | bitwise-io-1 |   |  |  |
+| 128 | bitwise-io-2 |   |  |  |
+| 129 | bitwise-operations |   |  |  |
+| 130 | blum-integer |   |  |  |
+| 131 | boolean-values |   |  |  |
+| 132 | box-the-compass |   |  |  |
+| 133 | boyer-moore-string-search |   |  |  |
+| 134 | brazilian-numbers |   |  |  |
+| 135 | break-oo-privacy |   |  |  |
+| 136 | brilliant-numbers |   |  |  |
+| 137 | brownian-tree |   |  |  |
+| 138 | bulls-and-cows-player |   |  |  |
+| 139 | bulls-and-cows |   |  |  |
+| 140 | burrows-wheeler-transform |   |  |  |
+| 141 | caesar-cipher-1 |   |  |  |
+| 142 | caesar-cipher-2 |   |  |  |
+| 143 | calculating-the-value-of-e |   |  |  |
+| 144 | calendar---for-real-programmers-1 |   |  |  |
+| 145 | calendar---for-real-programmers-2 |   |  |  |
+| 146 | calendar |   |  |  |
+| 147 | calkin-wilf-sequence |   |  |  |
+| 148 | call-a-foreign-language-function |   |  |  |
+| 149 | call-a-function-1 |   |  |  |
+| 150 | call-a-function-10 |   |  |  |
+| 151 | call-a-function-11 |   |  |  |
+| 152 | call-a-function-12 |   |  |  |
+| 153 | call-a-function-2 |   |  |  |
+| 154 | call-a-function-3 |   |  |  |
+| 155 | call-a-function-4 |   |  |  |
+| 156 | call-a-function-5 |   |  |  |
+| 157 | call-a-function-6 |   |  |  |
+| 158 | call-a-function-7 |   |  |  |
+| 159 | call-a-function-8 |   |  |  |
+| 160 | call-a-function-9 |   |  |  |
+| 161 | call-an-object-method-1 |   |  |  |
+| 162 | call-an-object-method-2 |   |  |  |
+| 163 | call-an-object-method-3 |   |  |  |
+| 164 | call-an-object-method |   |  |  |
+| 165 | camel-case-and-snake-case |   |  |  |
+| 166 | canny-edge-detector |   |  |  |
+| 167 | canonicalize-cidr |   |  |  |
+| 168 | cantor-set |   |  |  |
+| 169 | carmichael-3-strong-pseudoprimes |   |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
+| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
+| 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
+| 174 | case-sensitivity-of-identifiers |   |  |  |
+| 175 | casting-out-nines |   |  |  |
+| 176 | catalan-numbers-1 |   |  |  |
+| 177 | catalan-numbers-2 |   |  |  |
+| 178 | catalan-numbers-pascals-triangle |   |  |  |
+| 179 | catamorphism |   |  |  |
+| 180 | catmull-clark-subdivision-surface |   |  |  |
+| 181 | chaocipher |   |  |  |
+| 182 | chaos-game |   |  |  |
+| 183 | character-codes-1 | ✓ |  |  |
+| 184 | character-codes-2 | ✓ |  |  |
+| 185 | character-codes-3 |   |  |  |
+| 186 | character-codes-4 |   |  |  |
+| 187 | character-codes-5 |   |  |  |
+| 188 | chat-server |   |  |  |
+| 189 | check-machin-like-formulas |   |  |  |
+| 190 | check-that-file-exists |   |  |  |
+| 191 | checkpoint-synchronization-1 |   |  |  |
+| 192 | checkpoint-synchronization-2 |   |  |  |
+| 193 | checkpoint-synchronization-3 |   |  |  |
+| 194 | checkpoint-synchronization-4 |   |  |  |
+| 195 | chernicks-carmichael-numbers |   |  |  |
+| 196 | cheryls-birthday |   |  |  |
+| 197 | chinese-remainder-theorem |   |  |  |
+| 198 | chinese-zodiac |   |  |  |
+| 199 | cholesky-decomposition-1 |   |  |  |
+| 200 | cholesky-decomposition |   |  |  |
+| 201 | chowla-numbers | ✓ |  |  |
+| 202 | church-numerals-1 |   |  |  |
+| 203 | church-numerals-2 |   |  |  |
+| 204 | circles-of-given-radius-through-two-points |   |  |  |
+| 205 | circular-primes |   |  |  |
+| 206 | cistercian-numerals |   |  |  |
+| 207 | comma-quibbling |   |  |  |
+| 208 | compiler-virtual-machine-interpreter |   |  |  |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
+| 210 | compound-data-type |   |  |  |
+| 211 | concurrent-computing-1 |   |  |  |
+| 212 | concurrent-computing-2 |   |  |  |
+| 213 | concurrent-computing-3 |   |  |  |
+| 214 | conditional-structures-1 |   |  |  |
+| 215 | conditional-structures-10 |   |  |  |
+| 216 | conditional-structures-2 |   |  |  |
+| 217 | conditional-structures-3 |   |  |  |
+| 218 | conditional-structures-4 |   |  |  |
+| 219 | conditional-structures-5 |   |  |  |
+| 220 | conditional-structures-6 |   |  |  |
+| 221 | conditional-structures-7 |   |  |  |
+| 222 | conditional-structures-8 |   |  |  |
+| 223 | conditional-structures-9 |   |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
+| 225 | constrained-genericity-1 |   |  |  |
+| 226 | constrained-genericity-2 |   |  |  |
+| 227 | constrained-genericity-3 |   |  |  |
+| 228 | constrained-genericity-4 |   |  |  |
+| 229 | constrained-random-points-on-a-circle-1 |   |  |  |
+| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
+| 231 | continued-fraction |   |  |  |
+| 232 | convert-decimal-number-to-rational |   |  |  |
+| 233 | convert-seconds-to-compound-duration |   |  |  |
+| 234 | convex-hull |   |  |  |
+| 235 | conways-game-of-life |   |  |  |
+| 236 | copy-a-string-1 |   |  |  |
+| 237 | copy-a-string-2 |   |  |  |
+| 238 | copy-stdin-to-stdout-1 |   |  |  |
+| 239 | copy-stdin-to-stdout-2 |   |  |  |
+| 240 | count-in-factors |   |  |  |
+| 241 | count-in-octal-1 |   |  |  |
+| 242 | count-in-octal-2 |   |  |  |
+| 243 | count-in-octal-3 |   |  |  |
+| 244 | count-in-octal-4 |   |  |  |
+| 245 | count-occurrences-of-a-substring |   |  |  |
+| 246 | count-the-coins-1 |   |  |  |
+| 247 | count-the-coins-2 |   |  |  |
+| 248 | cramers-rule |   |  |  |
+| 249 | crc-32-1 |   |  |  |
+| 250 | crc-32-2 |   |  |  |
+| 251 | create-a-file-on-magnetic-tape |   |  |  |
+| 252 | create-a-file |   |  |  |
+| 253 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
+| 254 | create-an-html-table |   |  |  |
+| 255 | create-an-object-at-a-given-address |   |  |  |
+| 256 | csv-data-manipulation |   |  |  |
+| 257 | csv-to-html-translation-1 |   |  |  |
+| 258 | csv-to-html-translation-2 |   |  |  |
+| 259 | csv-to-html-translation-3 | ✓ |  |  |
+| 260 | csv-to-html-translation-4 | ✓ |  |  |
+| 261 | csv-to-html-translation-5 |   |  |  |
+| 262 | cuban-primes |   |  |  |
+| 263 | cullen-and-woodall-numbers |   |  |  |
+| 264 | cumulative-standard-deviation |   |  |  |
+| 265 | currency |   |  |  |
+| 266 | currying |   |  |  |
+| 267 | curzon-numbers |   |  |  |
+| 268 | cusip |   |  |  |
+| 269 | cyclops-numbers |   |  |  |
+| 270 | damm-algorithm |   |  |  |
+| 271 | date-format |   |  |  |
+| 272 | date-manipulation |   |  |  |
+| 273 | day-of-the-week |   |  |  |
+| 274 | de-bruijn-sequences |   |  |  |
+| 275 | deal-cards-for-freecell |   |  |  |
+| 276 | death-star |   |  |  |
+| 277 | deceptive-numbers |   |  |  |
+| 278 | deconvolution-1d-2 |   |  |  |
+| 279 | deconvolution-1d-3 |   |  |  |
+| 280 | deconvolution-1d |   |  |  |
+| 281 | deepcopy-1 |   |  |  |
+| 282 | define-a-primitive-data-type |   |  |  |
+| 283 | delegates |   |  |  |
+| 284 | demings-funnel |   |  |  |
+| 285 | department-numbers |   |  |  |
+| 286 | descending-primes |   |  |  |
+| 287 | detect-division-by-zero |   |  |  |
+| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
+| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
+| 290 | determine-if-a-string-is-collapsible |   |  |  |
+| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
+| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
+| 293 | determine-if-a-string-is-squeezable |   |  |  |
+| 294 | determine-if-only-one-instance-is-running |   |  |  |
+| 295 | determine-if-two-triangles-overlap |   |  |  |
+| 296 | determine-sentence-type |   |  |  |
+| 297 | dice-game-probabilities-1 |   |  |  |
+| 298 | dice-game-probabilities-2 |   |  |  |
+| 299 | digital-root-multiplicative-digital-root |   |  |  |
+| 300 | dijkstras-algorithm |   |  |  |
+| 301 | dinesmans-multiple-dwelling-problem |   |  |  |
+| 302 | dining-philosophers-1 |   |  |  |
+| 303 | dining-philosophers-2 |   |  |  |
+| 304 | disarium-numbers |   |  |  |
+| 305 | discordian-date |   |  |  |
+| 306 | display-a-linear-combination |   |  |  |
+| 307 | display-an-outline-as-a-nested-table |   |  |  |
+| 308 | distance-and-bearing |   |  |  |
+| 309 | distributed-programming |   |  |  |
+| 310 | diversity-prediction-theorem |   |  |  |
+| 311 | dns-query |   |  |  |
+| 312 | documentation |   |  |  |
+| 313 | doomsday-rule |   |  |  |
+| 314 | dot-product |   |  |  |
+| 315 | doubly-linked-list-definition-1 |   |  |  |
+| 316 | doubly-linked-list-definition-2 |   |  |  |
+| 317 | doubly-linked-list-element-definition |   |  |  |
+| 318 | doubly-linked-list-traversal |   |  |  |
+| 319 | dragon-curve |   |  |  |
+| 320 | draw-a-clock |   |  |  |
+| 321 | draw-a-cuboid |   |  |  |
+| 322 | draw-a-pixel-1 |   |  |  |
+| 323 | draw-a-rotating-cube |   |  |  |
+| 324 | draw-a-sphere |   |  |  |
+| 325 | duffinian-numbers |   |  |  |
 | 326 | dutch-national-flag-problem |   |  |  |
 | 327 | dynamic-variable-names |   |  |  |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
@@ -426,10 +426,10 @@ Last updated: 2025-07-28 01:16 +0700
 | 417 | file-size-distribution |   |  |  |
 | 418 | file-size |   |  |  |
 | 419 | filter |   |  |  |
-| 420 | find-chess960-starting-position-identifier |   |  |  |
-| 421 | find-common-directory-path |   |  |  |
-| 422 | find-duplicate-files |   |  |  |
-| 423 | find-if-a-point-is-within-a-triangle |   |  |  |
+| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
+| 421 | find-chess960-starting-position-identifier |   |  |  |
+| 422 | find-common-directory-path |   |  |  |
+| 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
 | 425 | find-limit-of-recursion |   |  |  |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
@@ -437,40 +437,64 @@ Last updated: 2025-07-28 01:16 +0700
 | 428 | find-the-intersection-of-two-lines |   |  |  |
 | 429 | find-the-last-sunday-of-each-month |   |  |  |
 | 430 | find-the-missing-permutation |   |  |  |
-| 431 | fivenum-1 |   |  |  |
-| 432 | fivenum-2 |   |  |  |
-| 433 | fixed-length-records-1 |   |  |  |
-| 434 | fixed-length-records-2 |   |  |  |
-| 435 | fizzbuzz-1 |   |  |  |
-| 436 | fizzbuzz-2 |   |  |  |
-| 437 | flatten-a-list-1 |   |  |  |
-| 438 | flatten-a-list-2 |   |  |  |
-| 439 | flipping-bits-game |   |  |  |
-| 440 | flow-control-structures-1 |   |  |  |
-| 441 | flow-control-structures-2 |   |  |  |
-| 442 | flow-control-structures-3 |   |  |  |
-| 443 | flow-control-structures-4 |   |  |  |
-| 444 | floyd-warshall-algorithm |   |  |  |
-| 445 | floyds-triangle |   |  |  |
-| 446 | forest-fire |   |  |  |
-| 447 | fork |   |  |  |
-| 448 | ftp |   |  |  |
-| 449 | gamma-function |   |  |  |
-| 450 | general-fizzbuzz |   |  |  |
-| 451 | generic-swap |   |  |  |
-| 452 | get-system-command-output |   |  |  |
-| 453 | giuga-numbers |   |  |  |
-| 454 | globally-replace-text-in-several-files |   |  |  |
-| 455 | goldbachs-comet |   |  |  |
-| 456 | golden-ratio-convergence |   |  |  |
-| 457 | graph-colouring |   |  |  |
-| 458 | gray-code |   |  |  |
-| 459 | http |   |  |  |
-| 460 | image-noise |   |  |  |
-| 461 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 462 | md5 |   |  |  |
-| 463 | nim-game |   |  |  |
-| 464 | plasma-effect |   |  |  |
-| 465 | sorting-algorithms-bubble-sort |   |  |  |
-| 466 | window-management |   |  |  |
-| 467 | zumkeller-numbers |   |  |  |
+| 431 | first-class-environments |   |  |  |
+| 432 | first-class-functions-use-numbers-analogously |   |  |  |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
+| 434 | five-weekends |   |  |  |
+| 435 | fivenum-1 |   |  |  |
+| 436 | fivenum-2 |   |  |  |
+| 437 | fivenum-3 |   |  |  |
+| 438 | fixed-length-records-1 |   |  |  |
+| 439 | fixed-length-records-2 |   |  |  |
+| 440 | fizzbuzz-1 |   |  |  |
+| 441 | fizzbuzz-2 |   |  |  |
+| 442 | fizzbuzz |   |  |  |
+| 443 | flatten-a-list-1 |   |  |  |
+| 444 | flatten-a-list-2 |   |  |  |
+| 445 | flipping-bits-game |   |  |  |
+| 446 | flow-control-structures-1 |   |  |  |
+| 447 | flow-control-structures-2 |   |  |  |
+| 448 | flow-control-structures-3 |   |  |  |
+| 449 | flow-control-structures-4 |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 4.568ms |  |
+| 451 | floyd-warshall-algorithm2 |   |  |  |
+| 452 | floyds-triangle |   |  |  |
+| 453 | forest-fire |   |  |  |
+| 454 | fork-2 |   |  |  |
+| 455 | fork |   |  |  |
+| 456 | formal-power-series |   |  |  |
+| 457 | formatted-numeric-output |   |  |  |
+| 458 | forward-difference |   |  |  |
+| 459 | four-bit-adder-1 |   |  |  |
+| 460 | four-is-magic |   |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
+| 462 | fractal-tree |   |  |  |
+| 463 | fractran |   |  |  |
+| 464 | french-republican-calendar |   |  |  |
+| 465 | ftp |   |  |  |
+| 466 | function-frequency |   |  |  |
+| 467 | function-prototype |   |  |  |
+| 468 | functional-coverage-tree |   |  |  |
+| 469 | fusc-sequence |   |  |  |
+| 470 | gamma-function |   |  |  |
+| 471 | general-fizzbuzz |   |  |  |
+| 472 | generic-swap |   |  |  |
+| 473 | get-system-command-output |   |  |  |
+| 474 | giuga-numbers |   |  |  |
+| 475 | globally-replace-text-in-several-files |   |  |  |
+| 476 | goldbachs-comet |   |  |  |
+| 477 | golden-ratio-convergence |   |  |  |
+| 478 | graph-colouring |   |  |  |
+| 479 | gray-code |   |  |  |
+| 480 | gui-component-interaction |   |  |  |
+| 481 | gui-enabling-disabling-of-controls |   |  |  |
+| 482 | gui-maximum-window-dimensions |   |  |  |
+| 483 | http |   |  |  |
+| 484 | image-noise |   |  |  |
+| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 486 | md5 |   |  |  |
+| 487 | nim-game |   |  |  |
+| 488 | plasma-effect |   |  |  |
+| 489 | sorting-algorithms-bubble-sort |   |  |  |
+| 490 | window-management |   |  |  |
+| 491 | zumkeller-numbers |   |  |  |
