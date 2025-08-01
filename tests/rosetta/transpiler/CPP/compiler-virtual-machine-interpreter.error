@@ -1,0 +1,81 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:23:181: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:24:209: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:24:295: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:25:189: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:26:183: warning: multi-character character constant [-Wmultichar]
+   26 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:27:215: warning: multi-character character constant [-Wmultichar]
+   27 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:27:251: warning: multi-character character constant [-Wmultichar]
+   27 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp: In function ‘void runVM(const std::map<std::__cxx11::basic_string<char>, std::any>&)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:195:17: error: no match for ‘operator[]’ (operand types are ‘std::vector<long int>’ and ‘std::any’)
+  195 |             data[arg] = stack[(stack.size() - int64_t(1))];
+      |                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:1126:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](size_type) [with _Tp = long int; _Alloc = std::allocator<long int>; reference = long int&; size_type = long unsigned int]’
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1126:28: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<long int>::size_type’ {aka ‘long unsigned int’}
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1145:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](size_type) const [with _Tp = long int; _Alloc = std::allocator<long int>; const_reference = const long int&; size_type = long unsigned int]’
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1145:28: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<long int>::size_type’ {aka ‘long unsigned int’}
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:196:21: error: ‘slice’ was not declared in this scope
+  196 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:201:67: error: no match for ‘operator[]’ (operand types are ‘std::vector<long int>’ and ‘std::any’)
+  201 |             stack = ([&]{ auto __tmp = stack; __tmp.push_back(data[arg]); return __tmp; }());
+      |                                                                   ^
+/usr/include/c++/13/bits/stl_vector.h:1126:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::reference std::vector<_Tp, _Alloc>::operator[](size_type) [with _Tp = long int; _Alloc = std::allocator<long int>; reference = long int&; size_type = long unsigned int]’
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1126:28: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<long int>::size_type’ {aka ‘long unsigned int’}
+ 1126 |       operator[](size_type __n) _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1145:7: note: candidate: ‘constexpr std::vector<_Tp, _Alloc>::const_reference std::vector<_Tp, _Alloc>::operator[](size_type) const [with _Tp = long int; _Alloc = std::allocator<long int>; const_reference = const long int&; size_type = long unsigned int]’
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1145:28: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::vector<long int>::size_type’ {aka ‘long unsigned int’}
+ 1145 |       operator[](size_type __n) const _GLIBCXX_NOEXCEPT
+      |                  ~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp: In function ‘void runVM(const std::map<std::__cxx11::basic_string<char>, std::any>&)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:207:21: error: ‘slice’ was not declared in this scope
+  207 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:217:21: error: ‘slice’ was not declared in this scope
+  217 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:223:21: error: ‘slice’ was not declared in this scope
+  223 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:225:52: error: no match for ‘operator[]’ (operand types are ‘std::any’ and ‘std::any’)
+  225 |                 pc = std::any_cast<int64_t>(addrMap[arg]);
+      |                                                    ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:232:48: error: no match for ‘operator[]’ (operand types are ‘std::any’ and ‘std::any’)
+  232 |             pc = std::any_cast<int64_t>(addrMap[arg]);
+      |                                                ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:237:21: error: ‘slice’ was not declared in this scope
+  237 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/compiler-virtual-machine-interpreter.cpp:250:21: error: ‘slice’ was not declared in this scope
+  250 |             stack = slice(stack, int64_t(0), (stack.size() - int64_t(1)));
+      |                     ^~~~~

@@ -736,6 +736,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) return std::any_cast<double>(v);")
 		fmt.Fprintln(w, "    return 0;")
 		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static std::string any_to_string(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v);")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int)) return std::to_string(std::any_cast<int>(v));")
+		fmt.Fprintln(w, "    if(v.type() == typeid(int64_t)) return std::to_string(std::any_cast<int64_t>(v));")
+		fmt.Fprintln(w, "    if(v.type() == typeid(double)) { std::ostringstream ss; ss << std::any_cast<double>(v); return ss.str(); }")
+		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v) ? \"true\" : \"false\";")
+		fmt.Fprintln(w, "    return std::string();")
+		fmt.Fprintln(w, "}")
 	}
 
 	fmt.Fprintln(w, "template <typename T>")
@@ -1280,6 +1288,17 @@ func (u *UnaryExpr) emit(w io.Writer) {
 
 func (s *SelectorExpr) emit(w io.Writer) {
 	t := exprType(s.Target)
+	if t == "std::any" {
+		if name := structNameByField(s.Field); name != "" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+			}
+			fmt.Fprintf(w, "std::any_cast<%s>(", name)
+			s.Target.emit(w)
+			fmt.Fprintf(w, ").%s", s.Field)
+			return
+		}
+	}
 	if strings.HasPrefix(t, "std::map<") {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
 		if len(parts) == 2 {
@@ -1667,6 +1686,10 @@ func (c *CastExpr) emit(w io.Writer) {
 			ml.KeyType, ml.ValueType = oldKT, oldVT
 			return
 		}
+	}
+	if ll, ok := c.Value.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(c.Type, "std::vector<") {
+		io.WriteString(w, c.Type+"{}")
+		return
 	}
 	if c.Type == "int" && valType == "std::string" {
 		io.WriteString(w, "std::stoi(")
@@ -2436,6 +2459,48 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Left.emit(w)
 				io.WriteString(w, ".has_value())")
 			}
+			return
+		}
+	}
+	if b.Op == "==" || b.Op == "!=" {
+		if lt == "std::any" && rt == "std::string" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+				currentProgram.addInclude("<string>")
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "(")
+			io.WriteString(w, "any_to_string(")
+			b.Left.emit(w)
+			io.WriteString(w, ") "+b.Op+" ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if lt == "std::string" && rt == "std::any" {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+				currentProgram.addInclude("<string>")
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " "+b.Op+" any_to_string(")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
+			return
+		}
+		if strings.Contains(lt, "any") && strings.Contains(rt, "any") {
+			if currentProgram != nil {
+				currentProgram.addInclude("<any>")
+				currentProgram.addInclude("<sstream>")
+			}
+			io.WriteString(w, "(")
+			io.WriteString(w, "any_to_string(")
+			b.Left.emit(w)
+			io.WriteString(w, ") "+b.Op+" any_to_string(")
+			b.Right.emit(w)
+			io.WriteString(w, "))")
 			return
 		}
 	}
@@ -5992,10 +6057,7 @@ func cppType(t string) string {
 			paramsPart = body[:end]
 			retPart = strings.TrimSpace(body[end+1:])
 		}
-		ret := "std::any"
-		if currentProgram != nil {
-			currentProgram.addInclude("<any>")
-		}
+		ret := "void"
 		if strings.HasPrefix(retPart, ":") {
 			retPart = strings.TrimSpace(retPart[1:])
 			if retPart != "" {
@@ -6672,6 +6734,19 @@ func structFieldType(stName, field string) string {
 					if f.Name == field {
 						return f.Type
 					}
+				}
+			}
+		}
+	}
+	return ""
+}
+
+func structNameByField(field string) string {
+	if currentProgram != nil {
+		for _, st := range currentProgram.Structs {
+			for _, f := range st.Fields {
+				if f.Name == field {
+					return st.Name
 				}
 			}
 		}
