@@ -1,9 +1,7 @@
-zig build: exit status 1
-/tmp/average-loop-length.zig:58:9: error: local variable is never mutated
-/tmp/average-loop-length.zig:58:9: note: consider using 'const'
-/tmp/average-loop-length.zig:56:9: error: local variable is never mutated
-/tmp/average-loop-length.zig:56:9: note: consider using 'const'
-/tmp/average-loop-length.zig:116:9: error: local variable is never mutated
-/tmp/average-loop-length.zig:116:9: note: consider using 'const'
-/tmp/average-loop-length.zig:137:13: error: local variable is never mutated
-/tmp/average-loop-length.zig:137:13: note: consider using 'const'
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:71:20: error: expected type 'f64', found 'i64'
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:34:31: error: incompatible types: 'usize' and 'i64'
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:34:26: note: type 'usize' here
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:34:33: note: type 'i64' here
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:13:35: error: expected integer type, found 'f64'
+/workspace/mochi/tests/rosetta/transpiler/Zig/average-loop-length.zig:18:17: error: expected type 'f64', found 'usize'
