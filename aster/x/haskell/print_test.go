@@ -31,8 +31,8 @@ func TestPrint_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 50 {
-		files = files[:50]
+	if len(files) > 75 {
+		files = files[:75]
 	}
 	// When not updating, only run tests for which golden files exist
 	var selected []string

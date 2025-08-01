@@ -53,31 +53,31 @@ Generated files for Haskell programs live under `tests/aster/x/haskell`.
 48. [x] list_assign.hs
 49. [x] list_index.hs
 50. [x] list_nested_assign.hs
-51. [ ] list_set_ops.hs
-52. [ ] load_jsonl.hs
-53. [ ] load_yaml.hs
-54. [ ] map_assign.hs
-55. [ ] map_in_operator.hs
-56. [ ] map_index.hs
-57. [ ] map_int_key.hs
-58. [ ] map_literal_dynamic.hs
-59. [ ] map_membership.hs
-60. [ ] map_nested_assign.hs
-61. [ ] match_expr.hs
-62. [ ] match_full.hs
-63. [ ] math_ops.hs
-64. [ ] membership.hs
-65. [ ] min_max_builtin.hs
-66. [ ] nested_function.hs
-67. [ ] order_by_map.hs
-68. [ ] outer_join.hs
-69. [ ] partial_application.hs
-70. [ ] print_hello.hs
-71. [ ] pure_fold.hs
-72. [ ] pure_global_fold.hs
-73. [ ] python_auto.hs
-74. [ ] query_sum_select.hs
-75. [ ] record_assign.hs
+51. [x] list_set_ops.hs
+52. [x] load_jsonl.hs
+53. [x] load_yaml.hs
+54. [x] map_assign.hs
+55. [x] map_in_operator.hs
+56. [x] map_index.hs
+57. [x] map_int_key.hs
+58. [x] map_literal_dynamic.hs
+59. [x] map_membership.hs
+60. [x] map_nested_assign.hs
+61. [x] match_expr.hs
+62. [x] match_full.hs
+63. [x] math_ops.hs
+64. [x] membership.hs
+65. [x] min_max_builtin.hs
+66. [x] nested_function.hs
+67. [x] order_by_map.hs
+68. [x] outer_join.hs
+69. [x] partial_application.hs
+70. [x] print_hello.hs
+71. [x] pure_fold.hs
+72. [x] pure_global_fold.hs
+73. [x] python_auto.hs
+74. [x] query_sum_select.hs
+75. [x] record_assign.hs
 76. [ ] right_join.hs
 77. [ ] short_circuit.hs
 78. [ ] slice.hs
@@ -100,4 +100,4 @@ Generated files for Haskell programs live under `tests/aster/x/haskell`.
 95. [ ] var_assignment.hs
 96. [ ] while_loop.hs
 
-Completed 50/96 at 2025-07-31 21:00 GMT+7
+Completed 75/96 at 2025-08-01 11:44 GMT+7
