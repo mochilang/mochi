@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/circles-of-given-radius-through-two-points.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Circles-of-given-radius-through-two-points" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/circles-of-given-radius-through-two-points.ml", line 124, characters 17-76:
+124 |   if ((caseStr = "Points form a diameter and describe only a single circle.") || (caseStr = "Coincident points with r==0.0 describe a degenerate circle.")) then (
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type string but an expression was expected of type
+         Obj.t

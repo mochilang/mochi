@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/compiler-virtual-machine-interpreter.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Compiler-virtual-machine-interpreter" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/compiler-virtual-machine-interpreter.ml", line 191, characters 32-38:
+191 |   (try while (!pc < List.length (code)) do
+                                      ^^^^^^
+Error: This expression has type int but an expression was expected of type
+         'a list

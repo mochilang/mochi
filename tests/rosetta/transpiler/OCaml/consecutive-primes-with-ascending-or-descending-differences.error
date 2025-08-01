@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/consecutive-primes-with-ascending-or-descending-differences.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Consecutive-primes-with-ascending-or-descending-differences" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/consecutive-primes-with-ascending-or-descending-differences.ml", line 96, characters 33-39:
+96 |   (try while (!i < List.length (!primes)) do
+                                      ^^^^^^
+Error: Unbound value primes
