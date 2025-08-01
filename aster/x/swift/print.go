@@ -377,27 +377,17 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(')')
 		}
 	case "lambda_literal":
-		b.WriteByte('{')
+		b.WriteString("{\n")
 		for _, c := range n.Children {
 			if c.Kind == "statements" {
-				for i, s := range c.Children {
-					if i > 0 {
-						b.WriteByte(' ')
-					}
-					start := b.Len()
-					writeStmt(b, s, 0)
-					if b.Len() > start && b.Bytes()[b.Len()-1] == '\n' {
-						b.Truncate(b.Len() - 1)
-					}
+				for _, s := range c.Children {
+					writeStmt(b, s, indent+1)
 				}
 			} else {
-				start := b.Len()
-				writeStmt(b, c, 0)
-				if b.Len() > start && b.Bytes()[b.Len()-1] == '\n' {
-					b.Truncate(b.Len() - 1)
-				}
+				writeStmt(b, c, indent+1)
 			}
 		}
+		b.WriteString(indentStr(indent))
 		b.WriteByte('}')
 	case "postfix_expression":
 		if len(n.Children) == 2 && n.Children[1].Kind == "bang" {
@@ -415,7 +405,8 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "call_expression":
-		if len(n.Children) == 2 {
+		switch len(n.Children) {
+		case 2:
 			callee := n.Children[0]
 			argsNode := n.Children[1]
 			// detect indexing vs function call
@@ -428,6 +419,10 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 				writeExpr(b, callee, indent)
 				writeCallSuffix(b, argsNode)
 			}
+		case 1:
+			// zero argument call; treat single child as callee
+			writeExpr(b, n.Children[0], indent)
+			b.WriteString("()")
 		}
 	case "call_suffix":
 		writeCallSuffix(b, n)
