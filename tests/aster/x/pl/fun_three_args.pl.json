@@ -1,0 +1,174 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "sum3",
+          "children": [
+            {
+              "kind": "var",
+              "text": "A"
+            },
+            {
+              "kind": "var",
+              "text": "B"
+            },
+            {
+              "kind": "var",
+              "text": "C"
+            },
+            {
+              "kind": "var",
+              "text": "R"
+            }
+          ]
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "is",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Return1"
+                },
+                {
+                  "kind": "+",
+                  "children": [
+                    {
+                      "kind": "+",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "A"
+                        },
+                        {
+                          "kind": "var",
+                          "text": "B"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "var",
+                      "text": "C"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "R"
+                },
+                {
+                  "kind": "var",
+                  "text": "Return1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "sum3",
+              "children": [
+                {
+                  "kind": "number",
+                  "text": "1"
+                },
+                {
+                  "kind": "number",
+                  "text": "2"
+                },
+                {
+                  "kind": "number",
+                  "text": "3"
+                },
+                {
+                  "kind": "var",
+                  "text": "R0"
+                }
+              ]
+            },
+            {
+              "kind": "writeln",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "R0"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

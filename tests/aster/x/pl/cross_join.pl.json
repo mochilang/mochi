@@ -1,0 +1,1948 @@
+{
+  "kind": "program",
+  "children": [
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "style_check",
+              "children": [
+                {
+                  "kind": "-",
+                  "children": [
+                    {
+                      "kind": "atom",
+                      "text": "singleton"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": ":-",
+          "children": [
+            {
+              "kind": "initialization",
+              "children": [
+                {
+                  "kind": "atom",
+                  "text": "main"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "bool",
+          "text": "true"
+        }
+      ]
+    },
+    {
+      "kind": "clause",
+      "children": [
+        {
+          "kind": "main"
+        },
+        {
+          "kind": ",",
+          "children": [
+            {
+              "kind": "=",
+              "children": [
+                {
+                  "kind": "var",
+                  "text": "Customers"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "id"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "1"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Alice"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "id"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "2"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Bob"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "{}",
+                      "children": [
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "id"
+                                },
+                                {
+                                  "kind": "number",
+                                  "text": "3"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ":",
+                              "children": [
+                                {
+                                  "kind": "atom",
+                                  "text": "name"
+                                },
+                                {
+                                  "kind": "atom",
+                                  "text": "Charlie"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": ",",
+              "children": [
+                {
+                  "kind": "=",
+                  "children": [
+                    {
+                      "kind": "var",
+                      "text": "Orders"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "id"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "100"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "customerId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "total"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "250"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "id"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "101"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "customerId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "2"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "total"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "125"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "{}",
+                          "children": [
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": ":",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "id"
+                                    },
+                                    {
+                                      "kind": "number",
+                                      "text": "102"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "customerId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "1"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "total"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "300"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": ",",
+                  "children": [
+                    {
+                      "kind": "=",
+                      "children": [
+                        {
+                          "kind": "var",
+                          "text": "Result"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "100"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Alice"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "250"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "100"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Bob"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "250"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "100"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Charlie"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "250"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "101"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "2"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Alice"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "125"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "101"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "2"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Bob"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "125"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "101"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "2"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Charlie"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "125"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "102"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Alice"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "300"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "102"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Bob"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "300"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "{}",
+                              "children": [
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": ":",
+                                      "children": [
+                                        {
+                                          "kind": "atom",
+                                          "text": "orderId"
+                                        },
+                                        {
+                                          "kind": "number",
+                                          "text": "102"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderCustomerId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "1"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "pairedCustomerName"
+                                                },
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "Charlie"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderTotal"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "300"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": ",",
+                      "children": [
+                        {
+                          "kind": "writeln",
+                          "children": [
+                            {
+                              "kind": "atom",
+                              "text": "--- Cross Join: All order-customer pairs ---"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": ",",
+                          "children": [
+                            {
+                              "kind": "=",
+                              "children": [
+                                {
+                                  "kind": "var",
+                                  "text": "Entry"
+                                },
+                                {
+                                  "kind": "{}",
+                                  "children": [
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": ":",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "orderId"
+                                            },
+                                            {
+                                              "kind": "number",
+                                              "text": "100"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": ":",
+                                              "children": [
+                                                {
+                                                  "kind": "atom",
+                                                  "text": "orderCustomerId"
+                                                },
+                                                {
+                                                  "kind": "number",
+                                                  "text": "1"
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ",",
+                                              "children": [
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "pairedCustomerName"
+                                                    },
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "Alice"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "orderTotal"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "250"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": ",",
+                              "children": [
+                                {
+                                  "kind": "writeln",
+                                  "children": [
+                                    {
+                                      "kind": "atom",
+                                      "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Alice"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": ",",
+                                  "children": [
+                                    {
+                                      "kind": "=",
+                                      "children": [
+                                        {
+                                          "kind": "var",
+                                          "text": "Entry1"
+                                        },
+                                        {
+                                          "kind": "{}",
+                                          "children": [
+                                            {
+                                              "kind": ",",
+                                              "children": [
+                                                {
+                                                  "kind": ":",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "orderId"
+                                                    },
+                                                    {
+                                                      "kind": "number",
+                                                      "text": "100"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ",",
+                                                  "children": [
+                                                    {
+                                                      "kind": ":",
+                                                      "children": [
+                                                        {
+                                                          "kind": "atom",
+                                                          "text": "orderCustomerId"
+                                                        },
+                                                        {
+                                                          "kind": "number",
+                                                          "text": "1"
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": ",",
+                                                      "children": [
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "pairedCustomerName"
+                                                            },
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "Bob"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "orderTotal"
+                                                            },
+                                                            {
+                                                              "kind": "number",
+                                                              "text": "250"
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": ",",
+                                      "children": [
+                                        {
+                                          "kind": "writeln",
+                                          "children": [
+                                            {
+                                              "kind": "atom",
+                                              "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Bob"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": ",",
+                                          "children": [
+                                            {
+                                              "kind": "=",
+                                              "children": [
+                                                {
+                                                  "kind": "var",
+                                                  "text": "Entry2"
+                                                },
+                                                {
+                                                  "kind": "{}",
+                                                  "children": [
+                                                    {
+                                                      "kind": ",",
+                                                      "children": [
+                                                        {
+                                                          "kind": ":",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "orderId"
+                                                            },
+                                                            {
+                                                              "kind": "number",
+                                                              "text": "100"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ",",
+                                                          "children": [
+                                                            {
+                                                              "kind": ":",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "atom",
+                                                                  "text": "orderCustomerId"
+                                                                },
+                                                                {
+                                                                  "kind": "number",
+                                                                  "text": "1"
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": ",",
+                                                              "children": [
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "pairedCustomerName"
+                                                                    },
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "Charlie"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "orderTotal"
+                                                                    },
+                                                                    {
+                                                                      "kind": "number",
+                                                                      "text": "250"
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": ",",
+                                              "children": [
+                                                {
+                                                  "kind": "writeln",
+                                                  "children": [
+                                                    {
+                                                      "kind": "atom",
+                                                      "text": "Order 100 (customerId: 1 , total: $ 250 ) paired with Charlie"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": ",",
+                                                  "children": [
+                                                    {
+                                                      "kind": "=",
+                                                      "children": [
+                                                        {
+                                                          "kind": "var",
+                                                          "text": "Entry3"
+                                                        },
+                                                        {
+                                                          "kind": "{}",
+                                                          "children": [
+                                                            {
+                                                              "kind": ",",
+                                                              "children": [
+                                                                {
+                                                                  "kind": ":",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "orderId"
+                                                                    },
+                                                                    {
+                                                                      "kind": "number",
+                                                                      "text": "101"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ",",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": ":",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "atom",
+                                                                          "text": "orderCustomerId"
+                                                                        },
+                                                                        {
+                                                                          "kind": "number",
+                                                                          "text": "2"
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": ",",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "pairedCustomerName"
+                                                                            },
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "Alice"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "orderTotal"
+                                                                            },
+                                                                            {
+                                                                              "kind": "number",
+                                                                              "text": "125"
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    {
+                                                      "kind": ",",
+                                                      "children": [
+                                                        {
+                                                          "kind": "writeln",
+                                                          "children": [
+                                                            {
+                                                              "kind": "atom",
+                                                              "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Alice"
+                                                            }
+                                                          ]
+                                                        },
+                                                        {
+                                                          "kind": ",",
+                                                          "children": [
+                                                            {
+                                                              "kind": "=",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "var",
+                                                                  "text": "Entry4"
+                                                                },
+                                                                {
+                                                                  "kind": "{}",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": ",",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": ":",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "orderId"
+                                                                            },
+                                                                            {
+                                                                              "kind": "number",
+                                                                              "text": "101"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ",",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": ":",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "atom",
+                                                                                  "text": "orderCustomerId"
+                                                                                },
+                                                                                {
+                                                                                  "kind": "number",
+                                                                                  "text": "2"
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "kind": ",",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "pairedCustomerName"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "Bob"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "orderTotal"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "number",
+                                                                                      "text": "125"
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            },
+                                                            {
+                                                              "kind": ",",
+                                                              "children": [
+                                                                {
+                                                                  "kind": "writeln",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "atom",
+                                                                      "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Bob"
+                                                                    }
+                                                                  ]
+                                                                },
+                                                                {
+                                                                  "kind": ",",
+                                                                  "children": [
+                                                                    {
+                                                                      "kind": "=",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "var",
+                                                                          "text": "Entry5"
+                                                                        },
+                                                                        {
+                                                                          "kind": "{}",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": ",",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": ":",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "orderId"
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": "number",
+                                                                                      "text": "101"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ",",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": ":",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "atom",
+                                                                                          "text": "orderCustomerId"
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": "number",
+                                                                                          "text": "2"
+                                                                                        }
+                                                                                      ]
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": ",",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "pairedCustomerName"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "Charlie"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "orderTotal"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "number",
+                                                                                              "text": "125"
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    },
+                                                                    {
+                                                                      "kind": ",",
+                                                                      "children": [
+                                                                        {
+                                                                          "kind": "writeln",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "atom",
+                                                                              "text": "Order 101 (customerId: 2 , total: $ 125 ) paired with Charlie"
+                                                                            }
+                                                                          ]
+                                                                        },
+                                                                        {
+                                                                          "kind": ",",
+                                                                          "children": [
+                                                                            {
+                                                                              "kind": "=",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "var",
+                                                                                  "text": "Entry6"
+                                                                                },
+                                                                                {
+                                                                                  "kind": "{}",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": ",",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": ":",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "orderId"
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "number",
+                                                                                              "text": "102"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": ",",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": ":",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": "atom",
+                                                                                                  "text": "orderCustomerId"
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": "number",
+                                                                                                  "text": "1"
+                                                                                                }
+                                                                                              ]
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": ",",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "pairedCustomerName"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "Alice"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "orderTotal"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "number",
+                                                                                                      "text": "300"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            },
+                                                                            {
+                                                                              "kind": ",",
+                                                                              "children": [
+                                                                                {
+                                                                                  "kind": "writeln",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "atom",
+                                                                                      "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Alice"
+                                                                                    }
+                                                                                  ]
+                                                                                },
+                                                                                {
+                                                                                  "kind": ",",
+                                                                                  "children": [
+                                                                                    {
+                                                                                      "kind": "=",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "var",
+                                                                                          "text": "Entry7"
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": "{}",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": ",",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": ":",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": "atom",
+                                                                                                      "text": "orderId"
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": "number",
+                                                                                                      "text": "102"
+                                                                                                    }
+                                                                                                  ]
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": ",",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": ":",
+                                                                                                      "children": [
+                                                                                                        {
+                                                                                                          "kind": "atom",
+                                                                                                          "text": "orderCustomerId"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "kind": "number",
+                                                                                                          "text": "1"
+                                                                                                        }
+                                                                                                      ]
+                                                                                                    },
+                                                                                                    {
+                                                                                                      "kind": ",",
+                                                                                                      "children": [
+                                                                                                        {
+                                                                                                          "kind": ":",
+                                                                                                          "children": [
+                                                                                                            {
+                                                                                                              "kind": "atom",
+                                                                                                              "text": "pairedCustomerName"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "kind": "atom",
+                                                                                                              "text": "Bob"
+                                                                                                            }
+                                                                                                          ]
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "kind": ":",
+                                                                                                          "children": [
+                                                                                                            {
+                                                                                                              "kind": "atom",
+                                                                                                              "text": "orderTotal"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "kind": "number",
+                                                                                                              "text": "300"
+                                                                                                            }
+                                                                                                          ]
+                                                                                                        }
+                                                                                                      ]
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    },
+                                                                                    {
+                                                                                      "kind": ",",
+                                                                                      "children": [
+                                                                                        {
+                                                                                          "kind": "writeln",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "atom",
+                                                                                              "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Bob"
+                                                                                            }
+                                                                                          ]
+                                                                                        },
+                                                                                        {
+                                                                                          "kind": ",",
+                                                                                          "children": [
+                                                                                            {
+                                                                                              "kind": "=",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": "var",
+                                                                                                  "text": "Entry8"
+                                                                                                },
+                                                                                                {
+                                                                                                  "kind": "{}",
+                                                                                                  "children": [
+                                                                                                    {
+                                                                                                      "kind": ",",
+                                                                                                      "children": [
+                                                                                                        {
+                                                                                                          "kind": ":",
+                                                                                                          "children": [
+                                                                                                            {
+                                                                                                              "kind": "atom",
+                                                                                                              "text": "orderId"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "kind": "number",
+                                                                                                              "text": "102"
+                                                                                                            }
+                                                                                                          ]
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "kind": ",",
+                                                                                                          "children": [
+                                                                                                            {
+                                                                                                              "kind": ":",
+                                                                                                              "children": [
+                                                                                                                {
+                                                                                                                  "kind": "atom",
+                                                                                                                  "text": "orderCustomerId"
+                                                                                                                },
+                                                                                                                {
+                                                                                                                  "kind": "number",
+                                                                                                                  "text": "1"
+                                                                                                                }
+                                                                                                              ]
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "kind": ",",
+                                                                                                              "children": [
+                                                                                                                {
+                                                                                                                  "kind": ":",
+                                                                                                                  "children": [
+                                                                                                                    {
+                                                                                                                      "kind": "atom",
+                                                                                                                      "text": "pairedCustomerName"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                      "kind": "atom",
+                                                                                                                      "text": "Charlie"
+                                                                                                                    }
+                                                                                                                  ]
+                                                                                                                },
+                                                                                                                {
+                                                                                                                  "kind": ":",
+                                                                                                                  "children": [
+                                                                                                                    {
+                                                                                                                      "kind": "atom",
+                                                                                                                      "text": "orderTotal"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                      "kind": "number",
+                                                                                                                      "text": "300"
+                                                                                                                    }
+                                                                                                                  ]
+                                                                                                                }
+                                                                                                              ]
+                                                                                                            }
+                                                                                                          ]
+                                                                                                        }
+                                                                                                      ]
+                                                                                                    }
+                                                                                                  ]
+                                                                                                }
+                                                                                              ]
+                                                                                            },
+                                                                                            {
+                                                                                              "kind": "writeln",
+                                                                                              "children": [
+                                                                                                {
+                                                                                                  "kind": "atom",
+                                                                                                  "text": "Order 102 (customerId: 1 , total: $ 300 ) paired with Charlie"
+                                                                                                }
+                                                                                              ]
+                                                                                            }
+                                                                                          ]
+                                                                                        }
+                                                                                      ]
+                                                                                    }
+                                                                                  ]
+                                                                                }
+                                                                              ]
+                                                                            }
+                                                                          ]
+                                                                        }
+                                                                      ]
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
