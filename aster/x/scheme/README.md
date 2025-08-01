@@ -2,9 +2,9 @@
 
 Generated files for Scheme programs live under `tests/aster/x/scheme`.
 
-Last updated: 2025-07-31 20:46 GMT+7
+Last updated: 2025-08-01 09:25 GMT+7
 
-## Golden Test Checklist (51/87)
+## Golden Test Checklist (75/87)
 - [x] append_builtin.scm
 - [x] avg_builtin.scm
 - [x] basic_compare.scm
@@ -56,3 +56,27 @@ Last updated: 2025-07-31 20:46 GMT+7
 - [x] list_set_ops.scm
 - [x] map_assign.scm
 - [x] map_in_operator.scm
+- [x] map_int_key.scm
+- [x] map_literal_dynamic.scm
+- [x] map_membership.scm
+- [x] map_nested_assign.scm
+- [x] match_expr.scm
+- [x] match_full.scm
+- [x] math_ops.scm
+- [x] membership.scm
+- [x] min_max_builtin.scm
+- [x] nested_function.scm
+- [x] order_by_map.scm
+- [x] outer_join.scm
+- [x] partial_application.scm
+- [x] print_hello.scm
+- [x] pure_fold.scm
+- [x] pure_global_fold.scm
+- [x] query_sum_select.scm
+- [x] right_join.scm
+- [x] short_circuit.scm
+- [x] slice.scm
+- [x] sort_stable.scm
+- [x] str_builtin.scm
+- [x] string_compare.scm
+- [x] string_concat.scm
