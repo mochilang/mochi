@@ -453,6 +453,11 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
 			io.WriteString(w, "&")
 		}
+		if vr, ok := a.(*VarRef); ok && paramType != "" {
+			if at, ok2 := varTypes[vr.Name]; ok2 && at != paramType {
+				fmt.Fprintf(w, "(%s)", paramType)
+			}
+		}
 		a.emitExpr(w)
 		emitExtraArgs(w, paramType, a)
 	}
@@ -1063,7 +1068,11 @@ func (i *IntLit) emitExpr(w io.Writer) {
 type FloatLit struct{ Value float64 }
 
 func (f *FloatLit) emitExpr(w io.Writer) {
-	fmt.Fprintf(w, "%g", f.Value)
+	if math.Trunc(f.Value) == f.Value {
+		fmt.Fprintf(w, "%.1f", f.Value)
+	} else {
+		fmt.Fprintf(w, "%g", f.Value)
+	}
 }
 
 // NullLit represents a null literal, emitted as NULL.
@@ -6162,11 +6171,11 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 		return "int[]"
 	}
-	if _, ok := evalInt(e); ok {
-		return "int"
-	}
 	if _, ok := evalFloat(e); ok {
 		return "double"
+	}
+	if _, ok := evalInt(e); ok {
+		return "int"
 	}
 	return ""
 }
