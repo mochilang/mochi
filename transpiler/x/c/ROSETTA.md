@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (127/491) - Last updated 2025-08-01 22:20 +0700:
+Checklist of programs that currently transpile and run (132/491) - Last updated 2025-08-01 23:10 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -491,8 +491,8 @@ Checklist of programs that currently transpile and run (127/491) - Last updated 
 | 484 | image-noise | ✓ | 309.55ms | 75.0 MB |
 | 485 | loops-increment-loop-index-within-loop-body |  |  |  |
 | 486 | md5 | ✓ | 60.63ms | 2.0 KB |
-| 487 | nim-game |  |  |  |
-| 488 | plasma-effect |  |  |  |
-| 489 | sorting-algorithms-bubble-sort |  |  |  |
-| 490 | window-management |  |  |  |
-| 491 | zumkeller-numbers |  |  |  |
+| 487 | nim-game | ✓ | 721us | 9.8 KB |
+| 488 | plasma-effect | ✓ | 5.17ms | 4.7 KB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 484us | 5.4 KB |
+| 490 | window-management | ✓ | 353us | 12.1 KB |
+| 491 | zumkeller-numbers | ✓ | 1.58s | 24.2 MB |
