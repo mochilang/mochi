@@ -2,9 +2,9 @@
 
 Generated files for Scheme programs live under `tests/aster/x/scheme`.
 
-Last updated: 2025-08-01 09:25 GMT+7
+Last updated: 2025-08-01 10:22 GMT+7
 
-## Golden Test Checklist (75/87)
+## Golden Test Checklist (87/87)
 - [x] append_builtin.scm
 - [x] avg_builtin.scm
 - [x] basic_compare.scm
@@ -80,3 +80,15 @@ Last updated: 2025-08-01 09:25 GMT+7
 - [x] str_builtin.scm
 - [x] string_compare.scm
 - [x] string_concat.scm
+- [x] string_contains.scm
+- [x] string_in_operator.scm
+- [x] string_index.scm
+- [x] string_prefix_slice.scm
+- [x] substring_builtin.scm
+- [x] sum_builtin.scm
+- [x] tail_recursion.scm
+- [x] typed_let.scm
+- [x] typed_var.scm
+- [x] unary_neg.scm
+- [x] var_assignment.scm
+- [x] while_loop.scm
