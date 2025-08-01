@@ -3437,6 +3437,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else if vd.Type == "" {
 			varTypes[s.Let.Name] = zigTypeFromExpr(expr)
 		}
+		// also record the alias name for later lookups
+		varTypes[alias] = varTypes[s.Let.Name]
 		if funDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: s.Let.Name, Value: expr})
@@ -3486,6 +3488,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else if vd.Type == "" {
 			varTypes[s.Var.Name] = zigTypeFromExpr(expr)
 		}
+		// record alias name as well so later lookups succeed
+		varTypes[alias] = varTypes[s.Var.Name]
 		if funDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: s.Var.Name, Value: expr})
