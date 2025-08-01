@@ -1,303 +1,47 @@
-exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:139:1: warning: using '_' to ignore the result of a Void-returning function is redundant
-137 |     print(_p(("           Total: " + String(describing: padLeft(String(describing: dcString((total as! Int))), 22)))))
-138 | }
-139 | _ = main()
-    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
-140 | 
+signal: illegal instruction
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:15:31: error: missing argument label 'where:' in call
- 13 |     while (i < Int(((s).count))) {
- 14 |         let ch = String(Array(s)[i..<(i + 1)])
- 15 |         if (!(digits.contains(ch))) {
-    |                               `- error: missing argument label 'where:' in call
- 16 |             return 0
- 17 |         }
+*** Signal 4: Backtracing from 0x564198f4bb74... done ***
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:15:31: error: cannot convert value of type 'String' to expected argument type '(Dictionary<String, Int>.Element) throws -> Bool' (aka '((key: String, value: Int)) throws -> Bool')
- 13 |     while (i < Int(((s).count))) {
- 14 |         let ch = String(Array(s)[i..<(i + 1)])
- 15 |         if (!(digits.contains(ch))) {
-    |                               `- error: cannot convert value of type 'String' to expected argument type '(Dictionary<String, Int>.Element) throws -> Bool' (aka '((key: String, value: Int)) throws -> Bool')
- 16 |             return 0
- 17 |         }
+*** Program crashed: Illegal instruction at 0x0000564198f4bb74 ***
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:18:39: warning: forced cast of 'Int' to same type has no effect
- 16 |             return 0
- 17 |         }
- 18 |         n = (((n * 10) + (digits[ch]! as! Int)) as! Int)
-    |                                       `- warning: forced cast of 'Int' to same type has no effect
- 19 |         i = ((i + 1) as! Int)
- 20 |     }
+Thread 0 "main" crashed:
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:18:49: warning: forced cast of 'Int' to same type has no effect
- 16 |             return 0
- 17 |         }
- 18 |         n = (((n * 10) + (digits[ch]! as! Int)) as! Int)
-    |                                                 `- warning: forced cast of 'Int' to same type has no effect
- 19 |         i = ((i + 1) as! Int)
- 20 |     }
+0      0x0000564198f4bb74 tax(_:_:) + 180 in main
+1 [ra] 0x0000564198f498b9 main() + 488 in main
+2 [ra] 0x0000564198f4bfe9 main + 8 in main
+3 [ra] 0x00007f5d3ebe21ca <unknown> in libc.so.6
+4 [ra] 0x00007f5d3ebe228b <unknown> in libc.so.6
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:19:22: warning: forced cast of 'Int' to same type has no effect
- 17 |         }
- 18 |         n = (((n * 10) + (digits[ch]! as! Int)) as! Int)
- 19 |         i = ((i + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 20 |     }
- 21 |     return n
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:28:67: warning: forced cast of 'String' to same type has no effect
- 26 |     if ((Int(((s).count)) > 0) && (String(Array(s)[0..<1]) == "-")) {
- 27 |         neg = true
- 28 |         s = String(describing: String(Array(String(describing: (s as! String)))[1..<Int(((s).count))]))
-    |                                                                   `- warning: forced cast of 'String' to same type has no effect
- 29 |     }
- 30 |     var dollars: Int = 0
+Registers:
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:39:26: warning: forced cast of 'Int' to same type has no effect
- 37 |         if (ch == ".") {
- 38 |             seenDot = true
- 39 |             i = ((i + 1) as! Int)
-    |                          `- warning: forced cast of 'Int' to same type has no effect
- 40 |             continue
- 41 |         }
+rax 0x00007ffd8423e601  00 00 00 00 00 00 00 3c 02 dc 09 58 f8 87 1e fd  ·······<·Ü·Xø··ý
+rdx 0x00007ffd8423eb28  7f 05 24 84 fd 7f 00 00 00 00 00 00 00 00 00 00  ··$·ý···········
+rcx 0x00000000000000ff  255
+rbx 0x0000000000000008  8
+rsi 0x3c511f157672ad4c  4346289292431240524
+rdi 0x00000000000002fd  765
+rbp 0x00007ffd8423e640  f0 e9 23 84 fd 7f 00 00 b9 98 f4 98 41 56 00 00  ðé#·ý···¹·ô·AV··
+rsp 0x00007ffd8423e600  04 00 00 00 00 00 00 00 3c 02 dc 09 58 f8 87 1e  ········<·Ü·Xø··
+ r8 0x0000ffffffffffff  281474976710655
+ r9 0x0000000000000007  7
+r10 0x00005641d0ca46b0  a4 0c 1d 64 05 00 00 00 88 dc 1a ad a0 15 e6 be  ¤··d·····Ü·­ ·æ¾
+r11 0xbee615a0ad1adc88  13755705891692928136
+r12 0x0000000000000001  1
+r13 0x0000000000000000  0
+r14 0x0000564198f4dca0  03 00 00 00 00 00 00 00 e8 df f4 98 41 56 00 00  ········èßô·AV··
+r15 0x00007f5d40720000  e0 12 72 40 5d 7f 00 00 15 00 00 00 00 00 00 00  à·r@]···········
+rip 0x0000564198f4bb74  0f 0b 0f 0b 0f 1f 84 00 00 00 00 00 55 48 89 e5  ············UH·å
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:42:40: warning: forced cast of 'String' to same type has no effect
- 40 |             continue
- 41 |         }
- 42 |         let d = Int(parseIntDigits((ch as! String)))
-    |                                        `- warning: forced cast of 'String' to same type has no effect
- 43 |         if seenDot {
- 44 |             if (centDigits < 2) {
+rflags 0x0000000000010202  
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:45:45: warning: forced cast of 'Int' to same type has no effect
- 43 |         if seenDot {
- 44 |             if (centDigits < 2) {
- 45 |                 cents = (((cents * 10) + d) as! Int)
-    |                                             `- warning: forced cast of 'Int' to same type has no effect
- 46 |                 centDigits = ((centDigits + 1) as! Int)
- 47 |             }
+cs 0x0033  fs 0x0000  gs 0x0000
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:46:48: warning: forced cast of 'Int' to same type has no effect
- 44 |             if (centDigits < 2) {
- 45 |                 cents = (((cents * 10) + d) as! Int)
- 46 |                 centDigits = ((centDigits + 1) as! Int)
-    |                                                `- warning: forced cast of 'Int' to same type has no effect
- 47 |             }
- 48 |         } else {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:49:45: warning: forced cast of 'Int' to same type has no effect
- 47 |             }
- 48 |         } else {
- 49 |             dollars = (((dollars * 10) + d) as! Int)
-    |                                             `- warning: forced cast of 'Int' to same type has no effect
- 50 |         }
- 51 |         i = ((i + 1) as! Int)
+Images (18 omitted):
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:51:22: warning: forced cast of 'Int' to same type has no effect
- 49 |             dollars = (((dollars * 10) + d) as! Int)
- 50 |         }
- 51 |         i = ((i + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 52 |     }
- 53 |     if (centDigits == 1) {
+0x0000564198f48000–0x0000564198f4cc48 c6f2f99c3e1aec2b6884fafb8417c5824b3acf26 main      /tmp/TestSwiftTranspiler_Rosetta_Golden902682704/001/main
+0x00007f5d3ebb8000–0x00007f5d3ed67cb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6 /usr/lib/x86_64-linux-gnu/libc.so.6
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:54:31: warning: forced cast of 'Int' to same type has no effect
- 52 |     }
- 53 |     if (centDigits == 1) {
- 54 |         cents = ((cents * 10) as! Int)
-    |                               `- warning: forced cast of 'Int' to same type has no effect
- 55 |     }
- 56 |     var val: Int = ((dollars * 100) + cents)
+Backtrace took 0.01s
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:58:21: warning: forced cast of 'Int' to same type has no effect
- 56 |     var val: Int = ((dollars * 100) + cents)
- 57 |     if neg {
- 58 |         val = (-val as! Int)
-    |                     `- warning: forced cast of 'Int' to same type has no effect
- 59 |     }
- 60 |     return val
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:67:67: warning: forced cast of 'String' to same type has no effect
- 65 |     if ((Int(((s).count)) > 0) && (String(Array(s)[0..<1]) == "-")) {
- 66 |         neg = true
- 67 |         s = String(describing: String(Array(String(describing: (s as! String)))[1..<Int(((s).count))]))
-    |                                                                   `- warning: forced cast of 'String' to same type has no effect
- 68 |     }
- 69 |     var whole: Int = 0
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:78:26: warning: forced cast of 'Int' to same type has no effect
- 76 |         if (ch == ".") {
- 77 |             seenDot = true
- 78 |             i = ((i + 1) as! Int)
-    |                          `- warning: forced cast of 'Int' to same type has no effect
- 79 |             continue
- 80 |         }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:81:40: warning: forced cast of 'String' to same type has no effect
- 79 |             continue
- 80 |         }
- 81 |         let d = Int(parseIntDigits((ch as! String)))
-    |                                        `- warning: forced cast of 'String' to same type has no effect
- 82 |         if seenDot {
- 83 |             if (digits < 4) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:84:43: warning: forced cast of 'Int' to same type has no effect
- 82 |         if seenDot {
- 83 |             if (digits < 4) {
- 84 |                 frac = (((frac * 10) + d) as! Int)
-    |                                           `- warning: forced cast of 'Int' to same type has no effect
- 85 |                 digits = ((digits + 1) as! Int)
- 86 |             }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:85:40: warning: forced cast of 'Int' to same type has no effect
- 83 |             if (digits < 4) {
- 84 |                 frac = (((frac * 10) + d) as! Int)
- 85 |                 digits = ((digits + 1) as! Int)
-    |                                        `- warning: forced cast of 'Int' to same type has no effect
- 86 |             }
- 87 |         } else {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:88:41: warning: forced cast of 'Int' to same type has no effect
- 86 |             }
- 87 |         } else {
- 88 |             whole = (((whole * 10) + d) as! Int)
-    |                                         `- warning: forced cast of 'Int' to same type has no effect
- 89 |         }
- 90 |         i = ((i + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:90:22: warning: forced cast of 'Int' to same type has no effect
- 88 |             whole = (((whole * 10) + d) as! Int)
- 89 |         }
- 90 |         i = ((i + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 91 |     }
- 92 |     while (digits < 4) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:93:29: warning: forced cast of 'Int' to same type has no effect
- 91 |     }
- 92 |     while (digits < 4) {
- 93 |         frac = ((frac * 10) as! Int)
-    |                             `- warning: forced cast of 'Int' to same type has no effect
- 94 |         digits = ((digits + 1) as! Int)
- 95 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:94:32: warning: forced cast of 'Int' to same type has no effect
- 92 |     while (digits < 4) {
- 93 |         frac = ((frac * 10) as! Int)
- 94 |         digits = ((digits + 1) as! Int)
-    |                                `- warning: forced cast of 'Int' to same type has no effect
- 95 |     }
- 96 |     var val: Int = ((whole * 10000) + frac)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:98:21: warning: forced cast of 'Int' to same type has no effect
- 96 |     var val: Int = ((whole * 10000) + frac)
- 97 |     if neg {
- 98 |         val = (-val as! Int)
-    |                     `- warning: forced cast of 'Int' to same type has no effect
- 99 |     }
-100 |     return val
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:106:17: warning: forced cast of 'Int' to same type has no effect
-104 |     var n: Int = dc
-105 |     if (n < 0) {
-106 |         n = (-n as! Int)
-    |                 `- warning: forced cast of 'Int' to same type has no effect
-107 |     }
-108 |     var c: Int = (n % 100)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:111:30: warning: forced cast of 'String' to same type has no effect
-109 |     var cstr: String = _p(c)
-110 |     if (Int(((cstr).count)) == 1) {
-111 |         cstr = (("0" + cstr) as! String)
-    |                              `- warning: forced cast of 'String' to same type has no effect
-112 |     }
-113 |     return ((_p(d) + ".") + cstr)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:103:9: warning: variable 'd' was never mutated; consider changing to 'let' constant
-101 | }
-102 | func dcString(_ dc: Int) -> String {
-103 |     var d: Int = (dc / 100)
-    |         `- warning: variable 'd' was never mutated; consider changing to 'let' constant
-104 |     var n: Int = dc
-105 |     if (n < 0) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:108:9: warning: variable 'c' was never mutated; consider changing to 'let' constant
-106 |         n = (-n as! Int)
-107 |     }
-108 |     var c: Int = (n % 100)
-    |         `- warning: variable 'c' was never mutated; consider changing to 'let' constant
-109 |     var cstr: String = _p(c)
-110 |     if (Int(((cstr).count)) == 1) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:119:52: warning: forced cast of 'Int' to same type has no effect
-117 | }
-118 | func tax(_ total: Int, _ rate: Int) -> Int {
-119 |     return ((Int(((total * rate) + 5000)) / 10000) as! Int)
-    |                                                    `- warning: forced cast of 'Int' to same type has no effect
-120 | }
-121 | func padLeft(_ s: String, _ n: Int) -> String {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:124:28: warning: forced cast of 'String' to same type has no effect
-122 |     var out: String = s
-123 |     while (Int(((out).count)) < n) {
-124 |         out = ((" " + out) as! String)
-    |                            `- warning: forced cast of 'String' to same type has no effect
-125 |     }
-126 |     return out
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:132:42: warning: forced cast of 'Int' to same type has no effect
-130 |     let mp = Int(parseDC("2.86"))
-131 |     let rate = Int(parseRate("0.0765"))
-132 |     let totalBeforeTax = (Int(extend((hp as! Int), 4000000000000000)) + Int(extend((mp as! Int), 2)))
-    |                                          `- warning: forced cast of 'Int' to same type has no effect
-133 |     let t = Int(tax((totalBeforeTax as! Int), (rate as! Int)))
-134 |     let total = (totalBeforeTax + t)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:132:88: warning: forced cast of 'Int' to same type has no effect
-130 |     let mp = Int(parseDC("2.86"))
-131 |     let rate = Int(parseRate("0.0765"))
-132 |     let totalBeforeTax = (Int(extend((hp as! Int), 4000000000000000)) + Int(extend((mp as! Int), 2)))
-    |                                                                                        `- warning: forced cast of 'Int' to same type has no effect
-133 |     let t = Int(tax((totalBeforeTax as! Int), (rate as! Int)))
-134 |     let total = (totalBeforeTax + t)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:133:37: warning: forced cast of 'Int' to same type has no effect
-131 |     let rate = Int(parseRate("0.0765"))
-132 |     let totalBeforeTax = (Int(extend((hp as! Int), 4000000000000000)) + Int(extend((mp as! Int), 2)))
-133 |     let t = Int(tax((totalBeforeTax as! Int), (rate as! Int)))
-    |                                     `- warning: forced cast of 'Int' to same type has no effect
-134 |     let total = (totalBeforeTax + t)
-135 |     print(_p(("Total before tax: " + String(describing: padLeft(String(describing: dcString((totalBeforeTax as! Int))), 22)))))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:133:53: warning: forced cast of 'Int' to same type has no effect
-131 |     let rate = Int(parseRate("0.0765"))
-132 |     let totalBeforeTax = (Int(extend((hp as! Int), 4000000000000000)) + Int(extend((mp as! Int), 2)))
-133 |     let t = Int(tax((totalBeforeTax as! Int), (rate as! Int)))
-    |                                                     `- warning: forced cast of 'Int' to same type has no effect
-134 |     let total = (totalBeforeTax + t)
-135 |     print(_p(("Total before tax: " + String(describing: padLeft(String(describing: dcString((totalBeforeTax as! Int))), 22)))))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:135:109: warning: forced cast of 'Int' to same type has no effect
-133 |     let t = Int(tax((totalBeforeTax as! Int), (rate as! Int)))
-134 |     let total = (totalBeforeTax + t)
-135 |     print(_p(("Total before tax: " + String(describing: padLeft(String(describing: dcString((totalBeforeTax as! Int))), 22)))))
-    |                                                                                                             `- warning: forced cast of 'Int' to same type has no effect
-136 |     print(_p(("             Tax: " + String(describing: padLeft(String(describing: dcString((t as! Int))), 22)))))
-137 |     print(_p(("           Total: " + String(describing: padLeft(String(describing: dcString((total as! Int))), 22)))))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:136:96: warning: forced cast of 'Int' to same type has no effect
-134 |     let total = (totalBeforeTax + t)
-135 |     print(_p(("Total before tax: " + String(describing: padLeft(String(describing: dcString((totalBeforeTax as! Int))), 22)))))
-136 |     print(_p(("             Tax: " + String(describing: padLeft(String(describing: dcString((t as! Int))), 22)))))
-    |                                                                                                `- warning: forced cast of 'Int' to same type has no effect
-137 |     print(_p(("           Total: " + String(describing: padLeft(String(describing: dcString((total as! Int))), 22)))))
-138 | }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden3772412082/001/main.swift:137:100: warning: forced cast of 'Int' to same type has no effect
-135 |     print(_p(("Total before tax: " + String(describing: padLeft(String(describing: dcString((totalBeforeTax as! Int))), 22)))))
-136 |     print(_p(("             Tax: " + String(describing: padLeft(String(describing: dcString((t as! Int))), 22)))))
-137 |     print(_p(("           Total: " + String(describing: padLeft(String(describing: dcString((total as! Int))), 22)))))
-    |                                                                                                    `- warning: forced cast of 'Int' to same type has no effect
-138 | }
-139 | _ = main()

@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 341/491
-Last updated: 2025-08-02 00:29 +0700
+Completed: 342/491
+Last updated: 2025-08-02 01:00 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -272,7 +272,7 @@ Last updated: 2025-08-02 00:29 +0700
 | 263 | cullen-and-woodall-numbers | ✓ |  |  |
 | 264 | cumulative-standard-deviation | ✓ |  |  |
 | 265 | currency |   |  |  |
-| 266 | currying |   |  |  |
+| 266 | currying | ✓ |  |  |
 | 267 | curzon-numbers |   |  |  |
 | 268 | cusip |   |  |  |
 | 269 | cyclops-numbers |   |  |  |

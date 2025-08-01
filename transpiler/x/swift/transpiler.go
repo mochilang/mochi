@@ -1563,7 +1563,14 @@ func header() string {
 import Foundation
 
 func _p(_ v: Any?) -> String {
-    if let val = v { return String(describing: val) }
+    if let val = v {
+        if let d = val as? Double {
+            if d.rounded(.towardZero) == d {
+                return String(Int64(d))
+            }
+        }
+        return String(describing: val)
+    }
     return "<nil>"
 }
 
@@ -3050,13 +3057,13 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 
 		if op == "in" && env != nil {
 			inMap := false
-			if types.IsMapType(rtyp) {
+			if types.IsMapType(rtyp) || types.IsStructType(rtyp) {
 				inMap = true
 			} else {
 				switch rv := right.(type) {
 				case *NameExpr:
 					if t, err := env.GetVar(rv.Name); err == nil {
-						if _, ok := t.(types.MapType); ok {
+						if types.IsMapType(t) || types.IsStructType(t) {
 							inMap = true
 						}
 					}
@@ -4348,6 +4355,15 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	case pr.Selector != nil && len(pr.Selector.Tail) == 0:
+		if env != nil {
+			if selfT, err := env.GetVar("self"); err == nil {
+				if st, ok := selfT.(types.StructType); ok {
+					if _, ok2 := st.Fields[pr.Selector.Root]; ok2 {
+						return &FieldExpr{Target: &NameExpr{Name: "self"}, Name: pr.Selector.Root}, nil
+					}
+				}
+			}
+		}
 		return &NameExpr{Name: pr.Selector.Root}, nil
 	}
 	return nil, fmt.Errorf("unsupported primary")
