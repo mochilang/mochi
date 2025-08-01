@@ -2223,7 +2223,7 @@ func updateReadme() {
 	total := len(files)
 	compiled := 0
 	var lines []string
-	for _, f := range files {
+	for i, f := range files {
 		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
 		mark := "[ ]"
 		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
@@ -2233,7 +2233,7 @@ func updateReadme() {
 			compiled++
 			mark = "[x]"
 		}
-		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
+		lines = append(lines, fmt.Sprintf("%d. %s %s.mochi", i+1, mark, name))
 	}
 	var buf bytes.Buffer
 	buf.WriteString("# Mochi OCaml Transpiler\n\n")

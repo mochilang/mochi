@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 237/491
+Completed programs: 238/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -239,7 +239,7 @@ Completed programs: 237/491
 | 231 | continued-fraction | error |  |  |
 | 232 | convert-decimal-number-to-rational | ✓ | 60.0µs | 1.28KB |
 | 233 | convert-seconds-to-compound-duration | ✓ | 77.0µs | 768B |
-| 234 | convex-hull |   |  |  |
+| 234 | convex-hull | ✓ | 131.0µs | 1.71KB |
 | 235 | conways-game-of-life |   |  |  |
 | 236 | copy-a-string-1 |   |  |  |
 | 237 | copy-a-string-2 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 237/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 22:42 +0700
+Last updated 2025-08-01 23:55 +0700
