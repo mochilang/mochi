@@ -54,5 +54,29 @@ This directory contains utilities for generating and printing simplified Swift A
 - [x] 48. let_and_print.swift
 - [x] 49. list_assign.swift
 - [x] 50. list_index.swift
-
-Completed 50/102 at 2025-08-01 10:22 GMT+7
+- [x] 51. list_nested_assign.swift
+- [x] 52. list_set_ops.swift
+- [x] 53. load_jsonl.swift
+- [x] 54. load_yaml.swift
+- [x] 55. map_assign.swift
+- [x] 56. map_in_operator.swift
+- [x] 57. map_index.swift
+- [x] 58. map_int_key.swift
+- [x] 59. map_literal_dynamic.swift
+- [x] 60. map_membership.swift
+- [x] 61. map_nested_assign.swift
+- [x] 62. match_expr.swift
+- [x] 63. match_full.swift
+- [x] 64. math_ops.swift
+- [x] 65. membership.swift
+- [x] 66. min_max_builtin.swift
+- [x] 67. nested_function.swift
+- [x] 68. order_by_map.swift
+- [x] 69. outer_join.swift
+- [x] 70. partial_application.swift
+- [x] 71. print_hello.swift
+- [x] 72. pure_fold.swift
+- [x] 73. pure_global_fold.swift
+- [x] 74. python_auto.swift
+- [x] 75. python_math.swift
+Completed 75/102 at 2025-08-01 10:46 GMT+7
