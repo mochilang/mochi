@@ -123,14 +123,14 @@ $__start = _now();
   $g[1][0] = 4;
   $g[1][2] = 3;
   $res = floydWarshall($g);
-  echo rtrim('pair\tdist\tpath'), PHP_EOL;
+  echo rtrim('pair	dist	path'), PHP_EOL;
   $i = 0;
   while ($i < $n) {
   $j = 0;
   while ($j < $n) {
   if ($i != $j) {
   $p = path($i, $j, $res['next']);
-  echo rtrim(_str($i + 1) . ' -> ' . _str($j + 1) . '\t' . _str($res['dist'][$i][$j]) . '\t' . pathStr($p)), PHP_EOL;
+  echo rtrim(_str($i + 1) . ' -> ' . _str($j + 1) . '	' . _str($res['dist'][$i][$j]) . '	' . pathStr($p)), PHP_EOL;
 }
   $j = $j + 1;
 };

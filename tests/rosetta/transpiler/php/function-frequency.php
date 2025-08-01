@@ -81,8 +81,9 @@ $__start = _now();
   $k = $j;
   while ($k < strlen($src)) {
   $cc = substr($src, $k, $k + 1 - $k);
-  if ($cc == ' ' || $cc == '\t' || $cc == '
-' || $cc == '') {
+  if ($cc == ' ' || $cc == '	' || $cc == '
+  while ($p >= 0 && (substr($src, $p, $p + 1 - $p) == ' ' || substr($src, $p, $p + 1 - $p) == '	')) {
+') {
   $k = $k + 1;
 } else {
   break;

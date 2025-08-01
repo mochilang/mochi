@@ -3,7 +3,7 @@ Child's PID: 2
 PID: 2
 Done.
 {
-  "duration_us": 44,
+  "duration_us": 49,
   "memory_bytes": 128,
   "name": "main"
 }

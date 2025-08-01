@@ -32,7 +32,7 @@ decimal  binary   gray    decoded
   11110   10001   11110  30
   11111   10000   11111  31
 {
-  "duration_us": 624,
+  "duration_us": 731,
   "memory_bytes": 96,
   "name": "main"
 }
