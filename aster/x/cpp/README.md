@@ -2,8 +2,8 @@
 
 Golden files for the C++ inspector and printer live in this directory.
 
-Completed programs: 71/103
-Date: 2025-08-01 09:06 GMT+7
+Completed programs: 63/103
+Date: 2025-08-01 09:51 GMT+7
 
 ## Checklist
 - [ ] append_builtin
@@ -71,33 +71,33 @@ Date: 2025-08-01 09:06 GMT+7
 - [ ] match_full
 - [x] math_ops
 - [ ] membership
-- [ ] min_max_builtin
+- [x] min_max_builtin
 - [ ] mix_go_python
 - [ ] nested_function
 - [ ] order_by_map
 - [ ] outer_join
 - [ ] partial_application
-- [ ] print_hello
-- [ ] pure_fold
+- [x] print_hello
+- [x] pure_fold
 - [ ] pure_global_fold
-- [ ] python_auto
-- [x] python_math
+- [x] python_auto
+- [ ] python_math
 - [ ] query_sum_select
 - [x] record_assign
-- [x] right_join
-- [x] save_jsonl_stdout
+- [ ] right_join
+- [ ] save_jsonl_stdout
 - [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [x] str_builtin
+- [ ] str_builtin
 - [x] string_compare
 - [x] string_concat
 - [x] string_contains
-- [x] string_in_operator
+- [ ] string_in_operator
 - [x] string_index
-- [x] string_prefix_slice
+- [ ] string_prefix_slice
 - [x] substring_builtin
-- [x] sum_builtin
+- [ ] sum_builtin
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
