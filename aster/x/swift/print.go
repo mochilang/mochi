@@ -57,6 +57,8 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeIfStmt(b, n, indent)
 	case "while_statement":
 		writeWhileStmt(b, n, indent)
+	case "do_statement":
+		writeDoStmt(b, n, indent)
 	case "assignment":
 		b.WriteString(indentStr(indent))
 		if len(n.Children) == 2 {
@@ -211,6 +213,22 @@ func writeWhileStmt(b *bytes.Buffer, n *Node, indent int) {
 	b.WriteString("}\n")
 }
 
+func writeDoStmt(b *bytes.Buffer, n *Node, indent int) {
+	b.WriteString(indentStr(indent))
+	b.WriteString("do {\n")
+	for _, c := range n.Children {
+		if c.Kind == "statements" {
+			for _, s := range c.Children {
+				writeStmt(b, s, indent+1)
+			}
+		} else {
+			writeStmt(b, c, indent+1)
+		}
+	}
+	b.WriteString(indentStr(indent))
+	b.WriteString("}\n")
+}
+
 func writeIfStmt(b *bytes.Buffer, n *Node, indent int) {
 	if len(n.Children) < 2 {
 		return
@@ -251,7 +269,7 @@ func writeType(b *bytes.Buffer, n *Node) {
 
 func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	switch n.Kind {
-	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "bang", "boolean_literal":
+	case "simple_identifier", "type_identifier", "identifier", "integer_literal", "float_literal", "bang", "boolean_literal":
 		if n.Text != "" {
 			b.WriteString(n.Text)
 		} else {
@@ -261,8 +279,19 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "line_string_literal":
 		b.WriteByte('"')
-		if len(n.Children) > 0 {
-			b.WriteString(n.Children[0].Text)
+		for _, c := range n.Children {
+			switch c.Kind {
+			case "line_str_text":
+				b.WriteString(c.Text)
+			case "interpolated_expression":
+				b.WriteString("\\(")
+				for _, x := range c.Children {
+					writeExpr(b, x, indent)
+				}
+				b.WriteByte(')')
+			default:
+				writeExpr(b, c, indent)
+			}
 		}
 		b.WriteByte('"')
 	case "array_literal":
