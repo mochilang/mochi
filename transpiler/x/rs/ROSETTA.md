@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-01 15:56 UTC
+Last updated: 2025-08-01 17:33 UTC
 
 ## Rosetta Golden Test Checklist (186/491)
 | Index | Name | Status | Duration | Memory |
@@ -472,7 +472,7 @@ Last updated: 2025-08-01 15:56 UTC
 | 463 | fractran | ✓ | 631.324ms |  |
 | 464 | french-republican-calendar | ✓ | 60µs |  |
 | 465 | ftp | ✓ | 55µs |  |
-| 466 | function-frequency | ✓ | 913µs |  |
+| 466 | function-frequency | ✓ | 931µs |  |
 | 467 | function-prototype | ✓ |  |  |
 | 468 | functional-coverage-tree |   |  |  |
 | 469 | fusc-sequence |   |  |  |

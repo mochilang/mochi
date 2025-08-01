@@ -3982,8 +3982,17 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					for i, n := range st.Order {
 						rt := rustTypeFromType(st.Fields[n])
 						if rt == "i64" && valTypes[i] != "" && valTypes[i] != "i64" {
-							rt = valTypes[i]
-							st.Fields[n] = typeFromString(rt)
+							if valTypes[i] == "&str" {
+								rt = "String"
+								st.Fields[n] = types.StringType{}
+							} else {
+								rt = valTypes[i]
+								st.Fields[n] = typeFromString(rt)
+							}
+						} else if rt == "String" && valTypes[i] == "&str" {
+							// prefer owned strings for struct fields
+							rt = "String"
+							st.Fields[n] = types.StringType{}
 						}
 						fields[i] = Param{Name: n, Type: rt}
 					}
@@ -4982,6 +4991,8 @@ func zeroValue(typ string) string {
 	switch {
 	case typ == "String":
 		return "String::new()"
+	case typ == "&str":
+		return "\"\""
 	case typ == "bool":
 		return "false"
 	case typ == "i64":
