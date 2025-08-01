@@ -45,38 +45,42 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec toOct n =
+  let __ret = ref "" in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
+  let n = (Obj.magic n : int) in
+  if (n = 0) then (
+  __ret := (Obj.magic ("0") : string); raise Return
+  );
+  let digits = "01234567" in
+  let out = ref ("") in
+  let v = ref (n) in
+  (try while (!v > 0) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
+  let d = (!v mod 8) in
+  out := (String.sub (digits) d ((d + 1) - d) ^ !out);
+  v := (!v / 8);
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  __ret := (Obj.magic (!out) : string); raise Return
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  (try for i = 0 to (16 - 1) do
     try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
+  print_endline (toOct (Obj.repr (i)));
     with Continue -> ()
   done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

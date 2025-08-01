@@ -45,38 +45,41 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
+let rec countOccurrences s sub =
   let __ret = ref 0 in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
+  if (String.length (sub) = 0) then (
+  __ret := (Obj.magic ((String.length (s) + 1)) : int); raise Return
+  );
+  let cnt = ref (0) in
   let i = ref (0) in
-  (try while (!i <= amount) do
+  let step = ref (String.length (sub)) in
+  (try while ((!i + !step) <= String.length (s)) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
+  if (String.sub (s) !i ((!i + !step) - !i) = sub) then (
+  cnt := (!cnt + 1);
+  i := (!i + !step);
+  ) else (
   i := (!i + 1);
+  );
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  __ret := (Obj.magic (!cnt) : int); raise Return
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  print_endline ((string_of_int (countOccurrences ("the three truths") ("th"))));
+  print_endline ((string_of_int (countOccurrences ("ababababab") ("abab"))));
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

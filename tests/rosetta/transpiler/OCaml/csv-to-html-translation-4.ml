@@ -40,43 +40,19 @@ let _now () =
 let _mem () =
   int_of_float (Gc.allocated_bytes ())
 
-exception Break
-exception Continue
-
 exception Return
-
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
-  (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
-    try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
-  with Return -> !__ret)
-
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  print_endline ("<table>");
+  print_endline ("    <tr><td>Character</td><td>Speech</td></tr>");
+  print_endline ("    <tr><td>The multitude</td><td>The messiah! Show us the messiah!</td></tr>");
+  print_endline ("    <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>");
+  print_endline ("    <tr><td>The multitude</td><td>Who are you?</td></tr>");
+  print_endline ("    <tr><td>Brians mother</td><td>I&#39;m his mother; that&#39;s who!</td></tr>");
+  print_endline ("    <tr><td>The multitude</td><td>Behold his mother! Behold his mother!</td></tr>");
+  print_endline ("</table>");
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

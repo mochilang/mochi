@@ -21,6 +21,8 @@ let rec __show v =
 
 let nil = Obj.repr 0
 
+open Str
+
 
 let _now_seed = ref 0
 let _now_seeded = ref false
@@ -40,43 +42,36 @@ let _now () =
 let _mem () =
   int_of_float (Gc.allocated_bytes ())
 
+
+let _split s sep =
+  let c = if String.length sep = 0 then ' ' else sep.[0] in
+  String.split_on_char c s
+
 exception Break
 exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
-  (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
-    try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
-  with Return -> !__ret)
-
-
+let rows = ref (([] : string list list))
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  let c = ((((("Character,Speech\n" ^ "The multitude,The messiah! Show us the messiah!\n") ^ "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n") ^ "The multitude,Who are you?\n") ^ "Brians mother,I'm his mother; that's who!\n") ^ "The multitude,Behold his mother! Behold his mother!") in
+  (try List.iter (fun line ->
+    try
+  rows := (List.append (!rows) [(Obj.magic (_split (line) (",")) : string list)]);
+    with Continue -> ()) (_split (c) ("\n")) with Break -> ());
+  print_endline ("<table>");
+  (try List.iter (fun row ->
+    try
+  let cells = ref ("") in
+  (try List.iter (fun cell ->
+    try
+  cells := (((!cells ^ "<td>") ^ cell) ^ "</td>");
+    with Continue -> ()) (row) with Break -> ());
+  print_endline ((("    <tr>" ^ !cells) ^ "</tr>"));
+    with Continue -> ()) (!rows) with Break -> ());
+  print_endline ("</table>");
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

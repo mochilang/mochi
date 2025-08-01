@@ -45,38 +45,72 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec listStr xs =
+  let __ret = ref "" in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
+  let s = ref ("[") in
   let i = ref (0) in
-  (try while (!i <= amount) do
+  (try while (!i < List.length (xs)) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
+  s := (!s ^ (string_of_int (List.nth (xs) (!i))));
+  if (!i < (List.length (xs) - 1)) then (
+  s := (!s ^ " ");
+  );
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  s := (!s ^ "]");
+  __ret := (Obj.magic (!s) : string); raise Return
+  with Return -> !__ret)
+
+and pointerDemo () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  print_endline ("Pointer:");
+  let i = ref (0) in
+  print_endline ("Before:");
+  print_endline (((("\t<address>: " ^ (string_of_int (!i))) ^ ", ") ^ (string_of_int (!i))));
+  i := 3;
+  print_endline ("After:");
+  print_endline (((("\t<address>: " ^ (string_of_int (!i))) ^ ", ") ^ (string_of_int (!i))));
+    !__ret
+  with Return -> !__ret)
+
+and sliceDemo () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  print_endline ("Slice:");
+  let a = ref ([]) in
+  (try for _ = 0 to (10 - 1) do
     try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
+  a := (List.append (!a) [(Obj.magic (0) : int)]);
     with Continue -> ()
   done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  let s = ref (!a) in
+  print_endline ("Before:");
+  print_endline (("\ts: " ^ listStr (!s)));
+  print_endline (("\ta: " ^ listStr (!a)));
+  let data = ref ([65; 32; 115; 116; 114; 105; 110; 103; 46]) in
+  let idx = ref (0) in
+  (try while (!idx < List.length (!data)) do
+    try
+  s := (List.mapi (fun __i __x -> if __i = !idx then List.nth (!data) (!idx) else __x) (!s));
+  idx := (!idx + 1);
+    with Continue -> ()
+  done with Break -> ());
+  print_endline ("After:");
+  print_endline (("\ts: " ^ listStr (!s)));
+  print_endline (("\ta: " ^ listStr (!a)));
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (pointerDemo ());
+  print_endline ("");
+  ignore (sliceDemo ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

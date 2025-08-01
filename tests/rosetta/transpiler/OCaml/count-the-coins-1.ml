@@ -45,7 +45,7 @@ exception Continue
 
 exception Return
 
-let amount = 1000
+let amount = 10
 let rec countChange amount =
   let __ret = ref 0 in
   (try
@@ -59,8 +59,11 @@ let rec countChange amount =
     with Continue -> ()
   done with Break -> ());
   ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  let coins = ref ([1; 5; 10; 25]) in
+  let idx = ref (0) in
+  (try while (!idx < List.length (!coins)) do
     try
+  let coin = List.nth (!coins) (!idx) in
   let j = ref (coin) in
   (try while (!j <= amount) do
     try
@@ -68,7 +71,9 @@ let rec countChange amount =
   j := (!j + 1);
     with Continue -> ()
   done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
+  idx := (!idx + 1);
+    with Continue -> ()
+  done with Break -> ());
   __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
   with Return -> !__ret)
 

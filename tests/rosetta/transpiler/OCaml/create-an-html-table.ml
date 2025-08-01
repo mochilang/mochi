@@ -45,38 +45,32 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec main () =
+  let __ret = ref (Obj.magic 0) in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
+  let rows = ref (([] : int list list)) in
+  (try for i = 0 to (4 - 1) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
+  rows := (List.append (!rows) [(Obj.magic ([(i * 3); ((i * 3) + 1); ((i * 3) + 2)]) : int list)]);
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  print_endline ("<table>");
+  print_endline ("    <tr><th></th><th>X</th><th>Y</th><th>Z</th></tr>");
+  let idx = ref (0) in
+  (try List.iter (fun row ->
     try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  print_endline ((((((((("    <tr><td>" ^ (string_of_int (!idx))) ^ "</td><td>") ^ (string_of_int (List.nth (row) (0)))) ^ "</td><td>") ^ (string_of_int (List.nth (row) (1)))) ^ "</td><td>") ^ (string_of_int (List.nth (row) (2)))) ^ "</td></tr>"));
+  idx := (!idx + 1);
+    with Continue -> ()) (!rows) with Break -> ());
+  print_endline ("</table>");
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in
