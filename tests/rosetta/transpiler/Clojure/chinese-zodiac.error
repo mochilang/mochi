@@ -1,6 +1,1 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/chinese-zodiac.clj:31:53).
-Unable to resolve symbol: animal in this context
-
-Full report at:
-/tmp/clojure-14120043041609521303.edn
+missing output: open /workspace/mochi/tests/rosetta/transpiler/Clojure/chinese-zodiac.out: no such file or directory

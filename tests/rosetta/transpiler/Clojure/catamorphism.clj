@@ -12,7 +12,7 @@
 
 (declare add sub mul fold)
 
-(declare fold_i fold_r n)
+(declare fold_i fold_r main_n)
 
 (defn add [add_a add_b]
   (try (throw (ex-info "return" {:v (+ add_a add_b)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -26,11 +26,22 @@
 (defn fold [fold_f fold_xs]
   (try (do (def fold_r (nth fold_xs 0)) (def fold_i 1) (while (< fold_i (count fold_xs)) (do (def fold_r (f fold_r (nth fold_xs fold_i))) (def fold_i (+ fold_i 1)))) (throw (ex-info "return" {:v fold_r}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def n [1 2 3 4 5])
+(def main_n [1 2 3 4 5])
 
 (defn -main []
-  (println (fold (fn [a b] (add a b)) n))
-  (println (fold (fn [a b] (sub a b)) n))
-  (println (fold (fn [a b] (mul a b)) n)))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println (fold (fn [a b] (add a b)) main_n))
+      (println (fold (fn [a b] (sub a b)) main_n))
+      (println (fold (fn [a b] (mul a b)) main_n))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

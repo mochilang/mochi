@@ -1,0 +1,7 @@
+run error: exit status 1
+The first 19 circular primes are:
+Execution error (ArithmeticException) at java.lang.Math/multiplyExact (Math.java:1032).
+long overflow
+
+Full report at:
+/tmp/clojure-9102877317931414243.edn

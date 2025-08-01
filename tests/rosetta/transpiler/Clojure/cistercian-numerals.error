@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (ClassCastException) at main/initDraw (cistercian-numerals.clj:37).
+class clojure.lang.Var$Unbound cannot be cast to class clojure.lang.Associative (clojure.lang.Var$Unbound and clojure.lang.Associative are in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-16920221993778956636.edn

@@ -15,7 +15,7 @@
 (declare cart2_p llStr_i llStr_j llStr_row llStr_s)
 
 (defn cart2 [cart2_a cart2_b]
-  (try (do (def cart2_p []) (doseq [x cart2_a] (doseq [y cart2_b] (def cart2_p (conj cart2_p [cart2_x cart2_y])))) (throw (ex-info "return" {:v cart2_p}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (def cart2_p []) (doseq [x cart2_a] (doseq [y cart2_b] (def cart2_p (conj cart2_p [x y])))) (throw (ex-info "return" {:v cart2_p}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn llStr [llStr_lst]
   (try (do (def llStr_s "[") (def llStr_i 0) (while (< llStr_i (count llStr_lst)) (do (def llStr_row (nth llStr_lst llStr_i)) (def llStr_s (str llStr_s "[")) (def llStr_j 0) (while (< llStr_j (count llStr_row)) (do (def llStr_s (str llStr_s (str (nth llStr_row llStr_j)))) (when (< llStr_j (- (count llStr_row) 1)) (def llStr_s (str llStr_s " "))) (def llStr_j (+ llStr_j 1)))) (def llStr_s (str llStr_s "]")) (when (< llStr_i (- (count llStr_lst) 1)) (def llStr_s (str llStr_s " "))) (def llStr_i (+ llStr_i 1)))) (def llStr_s (str llStr_s "]")) (throw (ex-info "return" {:v llStr_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -24,6 +24,17 @@
   (do (println (llStr (cart2 [1 2] [3 4]))) (println (llStr (cart2 [3 4] [1 2]))) (println (llStr (cart2 [1 2] []))) (println (llStr (cart2 [] [1 2])))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

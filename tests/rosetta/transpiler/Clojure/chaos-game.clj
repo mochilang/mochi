@@ -12,7 +12,7 @@
 
 (declare randInt)
 
-(declare i idx line main_grid main_height main_iterations main_line main_width main_x main_y next_v px py r seed v vertices x)
+(declare main_grid main_height main_i main_idx main_iterations main_line main_px main_py main_r main_seed main_v main_vertices main_width main_x main_y next_v)
 
 (def main_width 60)
 
@@ -27,20 +27,31 @@
 (defn randInt [randInt_s randInt_n]
   (try (do (def next_v (mod (+ (* randInt_s 1664525) 1013904223) 2147483647)) (throw (ex-info "return" {:v [next_v (mod next_v randInt_n)]}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def seed 1)
+(def main_seed 1)
 
-(def vertices [[0 (- height 1)] [(- width 1) (- height 1)] [(int (/ width 2)) 0]])
+(def main_vertices [[0 (- main_height 1)] [(- main_width 1) (- main_height 1)] [(int (/ main_width 2)) 0]])
 
-(def px (int (/ width 2)))
+(def main_px (int (/ main_width 2)))
 
-(def py (int (/ height 2)))
+(def main_py (int (/ main_height 2)))
 
-(def i 0)
+(def main_i 0)
 
 (defn -main []
-  (while (< main_y main_height) (do (def main_line []) (def main_x 0) (while (< main_x main_width) (do (def main_line (conj main_line " ")) (def main_x (+ main_x 1)))) (def main_grid (conj main_grid main_line)) (def main_y (+ main_y 1))))
-  (while (< i iterations) (do (def r (randInt seed 3)) (def seed (nth r 0)) (def idx (int (nth r 1))) (def v (nth vertices idx)) (def px (int (/ (+ px (nth v 0)) 2))) (def py (int (/ (+ py (nth v 1)) 2))) (when (and (and (and (>= px 0) (< px width)) (>= py 0)) (< py height)) (def grid (assoc-in grid [py px] "*"))) (def i (+ i 1))))
-  (def y 0)
-  (while (< y height) (do (def line "") (def x 0) (while (< x width) (do (def line (str line (nth (nth grid y) x))) (def x (+ x 1)))) (println line) (def y (+ y 1)))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (while (< main_y main_height) (do (def main_line []) (def main_x 0) (while (< main_x main_width) (do (def main_line (conj main_line " ")) (def main_x (+ main_x 1)))) (def main_grid (conj main_grid main_line)) (def main_y (+ main_y 1))))
+      (while (< main_i main_iterations) (do (def main_r (randInt main_seed 3)) (def main_seed (nth main_r 0)) (def main_idx (int (nth main_r 1))) (def main_v (nth main_vertices main_idx)) (def main_px (int (/ (+ main_px (nth main_v 0)) 2))) (def main_py (int (/ (+ main_py (nth main_v 1)) 2))) (when (and (and (and (>= main_px 0) (< main_px main_width)) (>= main_py 0)) (< main_py main_height)) (def main_grid (assoc-in main_grid [main_py main_px] "*"))) (def main_i (+ main_i 1))))
+      (def main_y 0)
+      (while (< main_y main_height) (do (def main_line "") (def main_x 0) (while (< main_x main_width) (do (def main_line (+ main_line (nth (nth main_grid main_y) main_x))) (def main_x (+ main_x 1)))) (println main_line) (def main_y (+ main_y 1))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

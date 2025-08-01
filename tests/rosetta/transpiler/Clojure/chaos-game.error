@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/chaos-game.clj:32:19).
-Unable to resolve symbol: height in this context
+Execution error (ClassCastException) at main/-main (chaos-game.clj:47).
+class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
 
 Full report at:
-/tmp/clojure-15549417217110742418.edn
+/tmp/clojure-17582786249982152794.edn

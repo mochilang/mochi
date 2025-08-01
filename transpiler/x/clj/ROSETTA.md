@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 171/491
-Last updated: 2025-08-01 23:23 +0700
+Completed: 173/491
+Last updated: 2025-08-02 00:42 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -166,56 +166,56 @@ Last updated: 2025-08-01 23:23 +0700
 | 159 | call-a-function-8 |   |  |  |
 | 160 | call-a-function-9 | ✓ | 38.208ms | 19.3 MB |
 | 161 | call-an-object-method-1 | ✓ | 40.402ms | 20.1 MB |
-| 162 | call-an-object-method-2 |   |  |  |
-| 163 | call-an-object-method-3 |   |  |  |
-| 164 | call-an-object-method |   |  |  |
+| 162 | call-an-object-method-2 | ✓ | 42.826ms | 19.7 MB |
+| 163 | call-an-object-method-3 |   | 42.852ms | 18.6 MB |
+| 164 | call-an-object-method |   | 35.811ms | 18.7 MB |
 | 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector | ✓ | 55.517ms | 23.6 MB |
+| 166 | canny-edge-detector | ✓ | 78.031ms | 23.6 MB |
 | 167 | canonicalize-cidr |   |  |  |
-| 168 | cantor-set |   |  |  |
+| 168 | cantor-set |   | 66.965ms | 23.5 MB |
 | 169 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 |   | 48.147ms | 20.7 MB |
+| 171 | cartesian-product-of-two-or-more-lists-2 |   | 55.999ms | 24.2 MB |
 | 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 174 | case-sensitivity-of-identifiers |   |  |  |
+| 174 | case-sensitivity-of-identifiers |   | 56.442ms | 19.3 MB |
 | 175 | casting-out-nines |   |  |  |
-| 176 | catalan-numbers-1 |   |  |  |
-| 177 | catalan-numbers-2 |   |  |  |
-| 178 | catalan-numbers-pascals-triangle |   |  |  |
+| 176 | catalan-numbers-1 |   | 48.796ms | 21.5 MB |
+| 177 | catalan-numbers-2 |   | 51.826ms | 19.6 MB |
+| 178 | catalan-numbers-pascals-triangle |   | 50.841ms | 20.8 MB |
 | 179 | catamorphism |   |  |  |
-| 180 | catmull-clark-subdivision-surface |   |  |  |
+| 180 | catmull-clark-subdivision-surface |   | 101.114ms | 40.0 MB |
 | 181 | chaocipher |   |  |  |
 | 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 | ✓ | 35.983ms | 18.4 MB |
-| 184 | character-codes-2 | ✓ | 29.171ms | 18.7 MB |
-| 185 | character-codes-3 | ✓ | 28.017ms | 18.8 MB |
-| 186 | character-codes-4 | ✓ | 29.304ms | 18.7 MB |
-| 187 | character-codes-5 | ✓ | 31.38ms | 18.7 MB |
-| 188 | chat-server |   |  |  |
+| 183 | character-codes-1 | ✓ | 52.035ms | 18.7 MB |
+| 184 | character-codes-2 | ✓ | 51.019ms | 18.6 MB |
+| 185 | character-codes-3 | ✓ | 40.444ms | 19.1 MB |
+| 186 | character-codes-4 | ✓ | 48.252ms | 18.8 MB |
+| 187 | character-codes-5 | ✓ | 49.027ms | 18.3 MB |
+| 188 | chat-server |   | 48.539ms | 19.6 MB |
 | 189 | check-machin-like-formulas |   |  |  |
-| 190 | check-that-file-exists |   |  |  |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 | ✓ | 36.776ms | 20.4 MB |
-| 193 | checkpoint-synchronization-3 | ✓ | 36.056ms | 21.1 MB |
-| 194 | checkpoint-synchronization-4 |   |  |  |
+| 190 | check-that-file-exists |   | 43.926ms | 19.0 MB |
+| 191 | checkpoint-synchronization-1 |   | 44.686ms | 20.1 MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 47.853ms | 20.4 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 61.536ms | 21.1 MB |
+| 194 | checkpoint-synchronization-4 |   | 45.279ms | 19.1 MB |
 | 195 | chernicks-carmichael-numbers |   |  |  |
-| 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem | ✓ | 30.456ms | 20.4 MB |
-| 198 | chinese-zodiac |   |  |  |
-| 199 | cholesky-decomposition-1 | ✓ | 40.822ms | 24.4 MB |
-| 200 | cholesky-decomposition | ✓ | 53.224ms | 21.3 MB |
-| 201 | chowla-numbers |   |  |  |
+| 196 | cheryls-birthday |   | 53.726ms | 22.7 MB |
+| 197 | chinese-remainder-theorem | ✓ | 44.264ms | 20.7 MB |
+| 198 | chinese-zodiac |   | 49.591ms | 19.8 MB |
+| 199 | cholesky-decomposition-1 | ✓ | 55.867ms | 24.3 MB |
+| 200 | cholesky-decomposition | ✓ | 50.742ms | 21.3 MB |
+| 201 | chowla-numbers |   | 39.048ms | 18.2 MB |
 | 202 | church-numerals-1 |   |  |  |
 | 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points |   |  |  |
+| 204 | circles-of-given-radius-through-two-points |   | 53.695ms | 22.3 MB |
 | 205 | circular-primes |   |  |  |
 | 206 | cistercian-numerals |   |  |  |
 | 207 | comma-quibbling |   |  |  |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 210 | compound-data-type |   |  |  |
-| 211 | concurrent-computing-1 |   |  |  |
+| 210 | compound-data-type |   | 51.33ms | 18.0 MB |
+| 211 | concurrent-computing-1 | ✓ | 44.295ms | 19.4 MB |
 | 212 | concurrent-computing-2 |   |  |  |
 | 213 | concurrent-computing-3 |   |  |  |
 | 214 | conditional-structures-1 |   |  |  |

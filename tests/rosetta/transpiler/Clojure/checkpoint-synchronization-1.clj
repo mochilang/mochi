@@ -17,6 +17,17 @@
 (def main_nAssemblies 3)
 
 (defn -main []
-  (doseq [cycle (range 1 (+ main_nAssemblies 1))] (do (println (str "begin assembly cycle " (str main_cycle))) (doseq [p main_partList] (println (str main_p " worker begins part"))) (doseq [p main_partList] (println (str main_p " worker completes part"))) (println (str (str "assemble.  cycle " (str main_cycle)) " complete")))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (doseq [cycle (range 1 (+ main_nAssemblies 1))] (do (println (str "begin assembly cycle " (str cycle))) (doseq [p main_partList] (println (str p " worker begins part"))) (doseq [p main_partList] (println (str p " worker completes part"))) (println (str (str "assemble.  cycle " (str cycle)) " complete"))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

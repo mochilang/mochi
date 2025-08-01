@@ -24,12 +24,23 @@
   (try (do (def pad_s (str pad_n)) (while (< (count pad_s) pad_width) (def pad_s (str " " pad_s))) (throw (ex-info "return" {:v pad_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn carmichael [carmichael_p1]
-  (doseq [h3 (range 2 carmichael_p1)] (loop [d_seq (range 1 (+ carmichael_h3 carmichael_p1))] (when (seq d_seq) (do (when (and (= (mod (* (+ carmichael_h3 carmichael_p1) (- carmichael_p1 1)) carmichael_d) 0) (= (mod (* (- carmichael_p1) carmichael_p1) carmichael_h3) (mod carmichael_d carmichael_h3))) (do (def carmichael_p2 (+ 1 (/ (* (- carmichael_p1 1) (+ carmichael_h3 carmichael_p1)) carmichael_d))) (when (not (isPrime carmichael_p2)) (recur (rest d_seq))) (def carmichael_p3 (+ 1 (/ (* carmichael_p1 carmichael_p2) carmichael_h3))) (when (not (isPrime carmichael_p3)) (recur (rest d_seq))) (when (not= (mod (* carmichael_p2 carmichael_p3) (- carmichael_p1 1)) 1) (recur (rest d_seq))) (def carmichael_c (* (* carmichael_p1 carmichael_p2) carmichael_p3)) (println (str (str (str (str (str (str (pad carmichael_p1 2) "   ") (pad carmichael_p2 4)) "   ") (pad carmichael_p3 5)) "     ") (str carmichael_c))))) (let [d (first d_seq)] (cond :else (recur (rest d_seq)))))))))
+  (doseq [h3 (range 2 carmichael_p1)] (loop [d_seq (range 1 (+ h3 carmichael_p1))] (when (seq d_seq) (do (when (and (= (mod (* (+ h3 carmichael_p1) (- carmichael_p1 1)) d) 0) (= (mod (* (- carmichael_p1) carmichael_p1) h3) (mod d h3))) (do (def carmichael_p2 (+ 1 (/ (* (- carmichael_p1 1) (+ h3 carmichael_p1)) d))) (when (not (isPrime carmichael_p2)) (recur (rest d_seq))) (def carmichael_p3 (+ 1 (/ (* carmichael_p1 carmichael_p2) h3))) (when (not (isPrime carmichael_p3)) (recur (rest d_seq))) (when (not= (mod (* carmichael_p2 carmichael_p3) (- carmichael_p1 1)) 1) (recur (rest d_seq))) (def carmichael_c (* (* carmichael_p1 carmichael_p2) carmichael_p3)) (println (str (str (str (str (str (str (pad carmichael_p1 2) "   ") (pad carmichael_p2 4)) "   ") (pad carmichael_p3 5)) "     ") (str carmichael_c))))) (let [d (first d_seq)] (cond :else (recur (rest d_seq)))))))))
 
 (defn -main []
-  (println "The following are Carmichael munbers for p1 <= 61:\n")
-  (println "p1     p2      p3     product")
-  (println "==     ==      ==     =======")
-  (doseq [p1 (range 2 62)] (when (isPrime p1) (carmichael p1))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println "The following are Carmichael munbers for p1 <= 61:\n")
+      (println "p1     p2      p3     product")
+      (println "==     ==      ==     =======")
+      (doseq [p1 (range 2 62)] (when (isPrime p1) (carmichael p1)))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

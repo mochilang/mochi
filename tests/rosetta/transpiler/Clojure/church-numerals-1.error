@@ -1,0 +1,6 @@
+run error: exit status 1
+Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/church-numerals-1.clj:21:115).
+Unable to resolve symbol: c in this context
+
+Full report at:
+/tmp/clojure-10136885296604730838.edn
