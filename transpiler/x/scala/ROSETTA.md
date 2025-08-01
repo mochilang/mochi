@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (314/491)
-_Last updated: 2025-08-01 18:24 +0700_
+_Last updated: 2025-08-01 18:52 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -282,7 +282,7 @@ _Last updated: 2025-08-01 18:24 +0700_
 | 273 | day-of-the-week |   |  |  |
 | 274 | de-bruijn-sequences |   |  |  |
 | 275 | deal-cards-for-freecell |   |  |  |
-| 276 | death-star |   |  |  |
+| 276 | death-star | error |  |  |
 | 277 | deceptive-numbers |   |  |  |
 | 278 | deconvolution-1d-2 |   |  |  |
 | 279 | deconvolution-1d-3 |   |  |  |
