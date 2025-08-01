@@ -464,13 +464,11 @@ type VarStmt struct {
 func (s *VarStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
-	if typ == "" || typ == "dynamic" {
-		typ = inferType(s.Value)
-		if strings.HasSuffix(typ, "?") {
-			typ = strings.TrimSuffix(typ, "?")
-		}
+	if typ == "" {
+		// Default to dynamic for implicitly typed variables
+		typ = "dynamic"
 	}
-	if inFunc && s.Type == "" {
+	if inFunc && s.Type == "" && typ != "dynamic" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
 			if strings.TrimSuffix(valType, "?") == typ {
@@ -489,7 +487,7 @@ func (s *VarStmt) emit(w io.Writer) error {
 	}
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
-		if _, err := io.WriteString(w, "var "+s.Name); err != nil {
+		if _, err := io.WriteString(w, "dynamic "+s.Name); err != nil {
 			return err
 		}
 	} else {
@@ -626,12 +624,11 @@ func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
-		typ = inferType(s.Value)
-		if strings.HasSuffix(typ, "?") {
-			typ = strings.TrimSuffix(typ, "?")
-		}
+		// Use dynamic for implicitly typed variables so that later
+		// assignments of differing types do not cause runtime errors.
+		typ = "dynamic"
 	}
-	if inFunc && s.Type == "" {
+	if inFunc && s.Type == "" && typ != "dynamic" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != typ {
 			typ = valType
@@ -643,7 +640,7 @@ func (s *LetStmt) emit(w io.Writer) error {
 	nextStructHint = ""
 	localVarTypes[s.Name] = typ
 	if typ == "dynamic" {
-		if _, err := io.WriteString(w, "var "+s.Name+" = "); err != nil {
+		if _, err := io.WriteString(w, "dynamic "+s.Name+" = "); err != nil {
 			return err
 		}
 	} else {
@@ -1235,7 +1232,9 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		return err
 	}
 	rp := precedence(b.Right)
-	if rp > bp {
+	// Ensure correct evaluation order for expressions like `a - (b + c)`
+	// where the right operand has the same precedence as the parent.
+	if rp >= bp {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -4466,11 +4465,16 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if typ == "" && e != nil {
-			typ = inferType(e)
-			if ce, ok := e.(*CallExpr); ok {
-				if n, ok2 := ce.Func.(*Name); ok2 {
-					if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
-						typ = rt
+			if st.Var.Type == nil {
+				// leave type empty so that VarStmt decides based on runtime use
+				typ = ""
+			} else {
+				typ = inferType(e)
+				if ce, ok := e.(*CallExpr); ok {
+					if n, ok2 := ce.Func.(*Name); ok2 {
+						if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
+							typ = rt
+						}
 					}
 				}
 			}
@@ -4501,11 +4505,16 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		if typ == "" && e != nil {
-			typ = inferType(e)
-			if ce, ok := e.(*CallExpr); ok {
-				if n, ok2 := ce.Func.(*Name); ok2 {
-					if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
-						typ = rt
+			if st.Var.Type == nil {
+				// keep empty type so VarStmt emits a dynamic variable
+				typ = ""
+			} else {
+				typ = inferType(e)
+				if ce, ok := e.(*CallExpr); ok {
+					if n, ok2 := ce.Func.(*Name); ok2 {
+						if rt, ok3 := funcReturnTypes[n.Name]; ok3 {
+							typ = rt
+						}
 					}
 				}
 			}

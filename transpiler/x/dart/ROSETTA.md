@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 355/491
+Compiled and ran: 403/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -431,56 +431,56 @@ Compiled and ran: 355/491
 | 422 | find-common-directory-path |   |  |  |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | first-class-environments |   |  |  |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
-| 435 | fivenum-1 |   |  |  |
-| 436 | fivenum-2 |   |  |  |
-| 437 | fivenum-3 |   |  |  |
-| 438 | fixed-length-records-1 |   |  |  |
-| 439 | fixed-length-records-2 |   |  |  |
-| 440 | fizzbuzz-1 |   |  |  |
-| 441 | fizzbuzz-2 |   |  |  |
-| 442 | fizzbuzz |   |  |  |
-| 443 | flatten-a-list-1 |   |  |  |
-| 444 | flatten-a-list-2 |   |  |  |
-| 445 | flipping-bits-game |   |  |  |
-| 446 | flow-control-structures-1 |   |  |  |
-| 447 | flow-control-structures-2 |   |  |  |
-| 448 | flow-control-structures-3 |   |  |  |
-| 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm | ✓ | 12.969ms | 4.5 MB |
-| 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle |   |  |  |
-| 453 | forest-fire |   |  |  |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
-| 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 425 | find-limit-of-recursion | ✓ | 9.523ms | 2.8 MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 434.339ms | 3.1 MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 8.322ms | 3.2 MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 16.314ms | 10.3 MB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 30.495ms | 6.6 MB |
+| 430 | find-the-missing-permutation | ✓ | 15.511ms | 10.7 MB |
+| 431 | first-class-environments | ✓ | 18.039ms | 11.0 MB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 15.949ms | 10.5 MB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 17.06ms | 10.6 MB |
+| 434 | five-weekends | ✓ | 20.127ms | 9.7 MB |
+| 435 | fivenum-1 | ✓ | 12.894ms | 2.7 MB |
+| 436 | fivenum-2 | ✓ | 20.905ms | 9.6 MB |
+| 437 | fivenum-3 | ✓ | 25.252ms | 9.2 MB |
+| 438 | fixed-length-records-1 | ✓ | 13.649ms | 9.8 MB |
+| 439 | fixed-length-records-2 | ✓ | 12.837ms | 2.0 MB |
+| 440 | fizzbuzz-1 | ✓ | 21.52ms | 9.6 MB |
+| 441 | fizzbuzz-2 | ✓ | 8.636ms | 3.8 MB |
+| 442 | fizzbuzz | ✓ | 14.635ms | 5.6 MB |
+| 443 | flatten-a-list-1 | ✓ | 16.161ms | 8.9 MB |
+| 444 | flatten-a-list-2 | ✓ | 16.291ms | 10.9 MB |
+| 445 | flipping-bits-game | ✓ | 10.959ms | 4.4 MB |
+| 446 | flow-control-structures-1 | ✓ | 22.416ms | 11.2 MB |
+| 447 | flow-control-structures-2 | ✓ | 12.578ms | 9.7 MB |
+| 448 | flow-control-structures-3 | ✓ | 18.987ms | 10.4 MB |
+| 449 | flow-control-structures-4 | ✓ | 12.441ms | 10.4 MB |
+| 450 | floyd-warshall-algorithm | ✓ | 11.308ms | 4.1 MB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 9.231ms | 3.8 MB |
+| 452 | floyds-triangle | ✓ | 15.278ms | 10.5 MB |
+| 453 | forest-fire | ✓ | 18.831ms | 7.0 MB |
+| 454 | fork-2 | ✓ | 16.179ms | 10.9 MB |
+| 455 | fork | ✓ | 7.575ms | 2.0 MB |
+| 456 | formal-power-series | ✓ | 17.276ms | 10.5 MB |
+| 457 | formatted-numeric-output | ✓ | 11.24ms | 3.0 MB |
+| 458 | forward-difference | ✓ | 10.891ms | 2.2 MB |
+| 459 | four-bit-adder-1 | ✓ | 15.954ms | 10.5 MB |
+| 460 | four-is-magic | ✓ | 12.091ms | 2.3 MB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
-| 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
+| 462 | fractal-tree | ✓ | 26.279ms | 11.1 MB |
+| 463 | fractran | ✓ | 2.455741s | 2.1 MB |
+| 464 | french-republican-calendar | ✓ | 8.174ms | 3.8 MB |
+| 465 | ftp | ✓ | 9.473ms | 3.9 MB |
+| 466 | function-frequency | ✓ | 16.244ms | 2.8 MB |
+| 467 | function-prototype | ✓ | 6.45ms | 2.6 MB |
+| 468 | functional-coverage-tree | ✓ | 15.421ms | 5.6 MB |
+| 469 | fusc-sequence | ✓ | 14.017ms | 2.4 MB |
+| 470 | gamma-function | ✓ | 12.491ms | 2.2 MB |
+| 471 | general-fizzbuzz | ✓ | 11.619ms | 1.7 MB |
+| 472 | generic-swap | ✓ | 14.772ms | 10.9 MB |
+| 473 | get-system-command-output | ✓ | 18.994ms | 10.3 MB |
+| 474 | giuga-numbers | ✓ | 8.834ms | 3.6 MB |
 | 475 | globally-replace-text-in-several-files |   |  |  |
 | 476 | goldbachs-comet |   |  |  |
 | 477 | golden-ratio-convergence |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 355/491
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-08-01 15:22 +0700_
+_Last updated: 2025-08-01 18:13 +0700_
