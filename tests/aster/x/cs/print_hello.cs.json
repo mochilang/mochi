@@ -61,6 +61,25 @@
                                     "text": "WriteLine"
                                   }
                                 ]
+                              },
+                              {
+                                "kind": "argument_list",
+                                "children": [
+                                  {
+                                    "kind": "argument",
+                                    "children": [
+                                      {
+                                        "kind": "string_literal",
+                                        "children": [
+                                          {
+                                            "kind": "string_literal_content",
+                                            "text": "hello"
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
                               }
                             ]
                           }

@@ -2,8 +2,8 @@
 
 Generated files for C# programs live under `tests/aster/x/cs`.
 
-Checked: 50/50
-_Last updated: 2025-07-31 23:11 GMT+7
+Checked: 75/75
+_Last updated: 2025-08-01 08:29 GMT+7
 
 ## Golden Test Checklist
 1. [x] append_builtin.cs
@@ -56,3 +56,28 @@ _Last updated: 2025-07-31 23:11 GMT+7
 48. [x] let_and_print.cs
 49. [x] list_assign.cs
 50. [x] list_index.cs
+51. [x] list_nested_assign.cs
+52. [x] list_set_ops.cs
+53. [x] load_jsonl.cs
+54. [x] load_yaml.cs
+55. [x] map_assign.cs
+56. [x] map_in_operator.cs
+57. [x] map_index.cs
+58. [x] map_int_key.cs
+59. [x] map_literal_dynamic.cs
+60. [x] map_membership.cs
+61. [x] map_nested_assign.cs
+62. [x] match_expr.cs
+63. [x] match_full.cs
+64. [x] math_ops.cs
+65. [x] membership.cs
+66. [x] min_max_builtin.cs
+67. [x] nested_function.cs
+68. [x] order_by_map.cs
+69. [x] outer_join.cs
+70. [x] partial_application.cs
+71. [x] print_hello.cs
+72. [x] pure_fold.cs
+73. [x] pure_global_fold.cs
+74. [x] python_auto.cs
+75. [x] python_math.cs
