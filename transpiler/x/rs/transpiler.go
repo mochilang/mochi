@@ -595,6 +595,8 @@ type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, "HashMap::from([")
+	mapT := inferType(m)
+	expectStr := strings.HasSuffix(mapT, ", String>")
 	for i, it := range m.Items {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -608,8 +610,18 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		io.WriteString(w, ", ")
-		if inferType(it.Value) == "String" {
+		vt := inferType(it.Value)
+		if vt == "String" {
 			io.WriteString(w, "String::from(")
+			if _, ok := it.Value.(*NameRef); ok {
+				it.Value.emit(w)
+				io.WriteString(w, ".clone()")
+			} else {
+				it.Value.emit(w)
+			}
+			io.WriteString(w, ")")
+		} else if expectStr {
+			io.WriteString(w, "format!(\"{}\", ")
 			it.Value.emit(w)
 			io.WriteString(w, ")")
 		} else {
@@ -686,8 +698,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 			switch idxT {
 			case "String":
-				i.Index.emit(w)
-				io.WriteString(w, ".as_str()")
+				if _, ok := i.Index.(*StringLit); ok {
+					i.Index.emit(w)
+				} else {
+					i.Index.emit(w)
+					io.WriteString(w, ".as_str()")
+				}
 			case "&str":
 				i.Index.emit(w)
 			default:
@@ -736,8 +752,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "[")
 		switch inferType(i.Index) {
 		case "String":
-			i.Index.emit(w)
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); ok {
+				i.Index.emit(w)
+			} else {
+				i.Index.emit(w)
+				io.WriteString(w, ".as_str()")
+			}
 		case "&str":
 			i.Index.emit(w)
 		default:
@@ -758,8 +778,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "[")
 		switch inferType(i.Index) {
 		case "String":
-			i.Index.emit(w)
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); ok {
+				i.Index.emit(w)
+			} else {
+				i.Index.emit(w)
+				io.WriteString(w, ".as_str()")
+			}
 		case "&str":
 			i.Index.emit(w)
 		default:
@@ -984,7 +1008,9 @@ func (g *MapGetExpr) emit(w io.Writer) {
 	}
 	g.Key.emit(w)
 	if inferType(g.Key) == "String" {
-		io.WriteString(w, ".as_str()")
+		if _, ok := g.Key.(*StringLit); !ok {
+			io.WriteString(w, ".as_str()")
+		}
 	}
 	io.WriteString(w, ").cloned().unwrap_or(")
 	g.Default.emit(w)
