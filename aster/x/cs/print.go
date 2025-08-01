@@ -240,9 +240,11 @@ func writeStmt(b *bytes.Buffer, n *Node, indentLevel int) {
 		b.WriteString(";\n")
 	case "for_statement":
 		writeForStatement(b, n, indentLevel)
-	case "foreach_statement":
-		writeForeachStatement(b, n, indentLevel)
-	case "break_statement":
+       case "foreach_statement":
+               writeForeachStatement(b, n, indentLevel)
+       case "while_statement":
+               writeWhileStatement(b, n, indentLevel)
+       case "break_statement":
 		b.WriteString(indent(indentLevel))
 		b.WriteString("break;\n")
 	case "continue_statement":
@@ -290,7 +292,20 @@ func writeForeachStatement(b *bytes.Buffer, n *Node, indentLevel int) {
 	b.WriteString(") {\n")
 	writeBlock(b, n.Children[3], indentLevel+1)
 	b.WriteString(indent(indentLevel))
-	b.WriteString("}\n")
+        b.WriteString("}\n")
+}
+
+func writeWhileStatement(b *bytes.Buffer, n *Node, indentLevel int) {
+       if len(n.Children) < 2 {
+               return
+       }
+       b.WriteString(indent(indentLevel))
+       b.WriteString("while (")
+       writeExpr(b, n.Children[0], indentLevel)
+       b.WriteString(") {\n")
+       writeBlock(b, n.Children[1], indentLevel+1)
+       b.WriteString(indent(indentLevel))
+       b.WriteString("}\n")
 }
 
 func writeIfStatement(b *bytes.Buffer, n *Node, indentLevel int) {

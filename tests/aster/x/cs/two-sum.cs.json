@@ -256,6 +256,7 @@
                           },
                           {
                             "kind": "postfix_unary_expression",
+                            "text": "++",
                             "children": [
                               {
                                 "kind": "identifier",
@@ -322,6 +323,7 @@
                                   },
                                   {
                                     "kind": "postfix_unary_expression",
+                                    "text": "++",
                                     "children": [
                                       {
                                         "kind": "identifier",
@@ -474,6 +476,7 @@
                                 "children": [
                                   {
                                     "kind": "prefix_unary_expression",
+                                    "text": "-",
                                     "children": [
                                       {
                                         "kind": "integer_literal",
@@ -483,6 +486,7 @@
                                   },
                                   {
                                     "kind": "prefix_unary_expression",
+                                    "text": "-",
                                     "children": [
                                       {
                                         "kind": "integer_literal",

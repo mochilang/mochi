@@ -2,8 +2,8 @@
 
 Generated files for C# programs live under `tests/aster/x/cs`.
 
-Checked: 75/75
-_Last updated: 2025-08-01 08:29 GMT+7
+Checked: 103/103
+_Last updated: 2025-08-01 09:17 GMT+7
 
 ## Golden Test Checklist
 1. [x] append_builtin.cs
@@ -81,3 +81,31 @@ _Last updated: 2025-08-01 08:29 GMT+7
 73. [x] pure_global_fold.cs
 74. [x] python_auto.cs
 75. [x] python_math.cs
+76. [x] query_sum_select.cs
+77. [x] record_assign.cs
+78. [x] right_join.cs
+79. [x] save_jsonl_stdout.cs
+80. [x] short_circuit.cs
+81. [x] slice.cs
+82. [x] sort_stable.cs
+83. [x] str_builtin.cs
+84. [x] string_compare.cs
+85. [x] string_concat.cs
+86. [x] string_contains.cs
+87. [x] string_in_operator.cs
+88. [x] string_index.cs
+89. [x] string_prefix_slice.cs
+90. [x] substring_builtin.cs
+91. [x] sum_builtin.cs
+92. [x] tail_recursion.cs
+93. [x] test_block.cs
+94. [x] tree_sum.cs
+95. [x] two-sum.cs
+96. [x] typed_let.cs
+97. [x] typed_var.cs
+98. [x] unary_neg.cs
+99. [x] update_stmt.cs
+100. [x] user_type_literal.cs
+101. [x] values_builtin.cs
+102. [x] var_assignment.cs
+103. [x] while_loop.cs
