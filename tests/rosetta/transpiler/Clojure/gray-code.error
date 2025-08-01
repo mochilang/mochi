@@ -1,0 +1,8 @@
+run error: exit status 1
+decimal  binary   gray    decoded
+  00000   00000   00000  0
+Execution error (ArithmeticException) at java.lang.Math/multiplyExact (Math.java:1032).
+long overflow
+
+Full report at:
+/tmp/clojure-17611497076013144165.edn

@@ -1,0 +1,15 @@
+run error: exit status 1
+ is four, four is magic.
+Four is magic.
+ is four, four is magic.
+ is four, four is magic.
+ is four, four is magic.
+ is four, four is magic.
+ is four, four is magic.
+ is four, four is magic.
+ is four, four is magic.
+Execution error (IndexOutOfBoundsException) at main/say (four-is-magic.clj:27).
+null
+
+Full report at:
+/tmp/clojure-17978229302070701624.edn

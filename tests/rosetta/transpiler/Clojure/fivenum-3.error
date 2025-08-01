@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (ClassCastException) at main/fivenum (fivenum-3.clj:24).
+class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
+
+Full report at:
+/tmp/clojure-18392143838889538661.edn

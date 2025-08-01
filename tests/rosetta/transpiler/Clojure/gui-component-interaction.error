@@ -1,0 +1,10 @@
+run error: exit status 1
+Value: 0
+i=increment, r=random, s num=set, q=quit:
+Value: 1
+i=increment, r=random, s num=set, q=quit:
+Execution error (ClassCastException) at main/-main (gui-component-interaction.clj:32).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
+
+Full report at:
+/tmp/clojure-14460919137219866798.edn
