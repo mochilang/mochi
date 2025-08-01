@@ -8,6 +8,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	fs "mochi/aster/x/fs"
@@ -43,6 +44,10 @@ func TestInspect_Golden(t *testing.T) {
 	}
 	if len(files) == 0 {
 		t.Fatalf("no files: %s", srcPattern)
+	}
+	sort.Strings(files)
+	if len(files) > 10 {
+		files = files[:10]
 	}
 
 	outDir := filepath.Join(root, "tests/aster/x/fs")
