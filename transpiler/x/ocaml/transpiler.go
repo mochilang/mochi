@@ -31,6 +31,7 @@ var usesMem bool
 var usesBigInt bool
 var usesBigRat bool
 var usesSHA bool
+var usesGetOutput bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -1940,7 +1941,7 @@ func (in *InExpr) emit(w io.Writer) {
 		in.Coll.emit(w)
 		io.WriteString(w, ")")
 	default: // list
-		if strings.HasPrefix(in.Typ, "map-") {
+		if strings.HasPrefix(in.Typ, "map-") || strings.HasPrefix(in.Typ, "map{") || strings.HasPrefix(in.Typ, "map-dyn{") {
 			io.WriteString(w, "(List.mem_assoc ")
 			in.Item.emit(w)
 			io.WriteString(w, " ")
@@ -2801,6 +2802,21 @@ let _mem () =
   int_of_float (Gc.allocated_bytes ())
 `
 
+const helperGetOutput = `
+let _getoutput cmd =
+  let tmp = Filename.temp_file "mochi" ".tmp" in
+  let _ = Sys.command (cmd ^ " > " ^ tmp) in
+  let ic = open_in tmp in
+  let len = in_channel_length ic in
+  let buf = really_input_string ic len in
+  close_in ic;
+  Sys.remove tmp;
+  let n = String.length buf in
+  if n > 0 && buf.[n - 1] = '\n' then
+    String.sub buf 0 (n - 1)
+  else buf
+`
+
 const helperDynMath = `
 let _dyn_add a b =
   if Obj.is_int a && Obj.is_int b then
@@ -2975,6 +2991,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMem)
 		buf.WriteString("\n")
 	}
+	if usesGetOutput {
+		buf.WriteString(helperGetOutput)
+		buf.WriteString("\n")
+	}
 	if usesSHA {
 		buf.WriteString(helperSHA)
 		buf.WriteString("\n")
@@ -3041,6 +3061,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			case "python":
 				if path == "math" {
 					vars[alias] = VarInfo{typ: "python_math"}
+					return nil, nil
+				}
+				if path == "subprocess" {
+					vars[alias] = VarInfo{typ: "python_subprocess"}
 					return nil, nil
 				}
 			case "go":
@@ -3597,6 +3621,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBigInt = false
 	usesBigRat = false
 	usesSHA = false
+	usesGetOutput = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -4038,6 +4063,19 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 						i++
 						continue
 					}
+				} else if nameTyp == "python_subprocess" {
+					field := op.Field.Name
+					if field == "getoutput" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && len(p.Ops[i+1].Call.Args) == 1 {
+						arg, _, err := convertExpr(p.Ops[i+1].Call.Args[0], env, vars)
+						if err != nil {
+							return nil, "", err
+						}
+						usesGetOutput = true
+						expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
+						typ = "string"
+						i += 2
+						continue
+					}
 				} else if nameTyp == "go_strings" {
 					field := op.Field.Name
 					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
@@ -4277,6 +4315,21 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 							}
 							i++
 							continue
+						}
+					} else if info.typ == "python_subprocess" {
+						if key, ok := idx.Key.(*StringLit); ok {
+							field := key.Value
+							if field == "getoutput" && len(op.Call.Args) == 1 {
+								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								usesGetOutput = true
+								expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
+								typ = "string"
+								i++
+								continue
+							}
 						}
 					} else if info.typ == "go_strings" {
 						if key, ok := idx.Key.(*StringLit); ok {
@@ -5403,7 +5456,9 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				}
 				if ptyp == "float" && at == "int" {
 					ex = &CastExpr{Expr: ex, Type: "int_to_float"}
-				} else if ptyp == "" {
+					at = "float"
+				}
+				if ptyp == "" {
 					switch {
 					case at == "int":
 						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
@@ -5412,8 +5467,17 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 					case strings.HasPrefix(at, "list-"):
 						ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
 					}
-				} else if ptyp == "list" && strings.HasPrefix(at, "list-") {
-					ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
+				} else {
+					if ptyp == "int" {
+						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
+					} else if ptyp == "float" {
+						if at == "int" {
+							// already converted above
+						}
+						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
+					} else if ptyp == "list" && strings.HasPrefix(at, "list-") {
+						ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
+					}
 				}
 			}
 			args[i] = ex

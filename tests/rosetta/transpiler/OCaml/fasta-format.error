@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fasta-format.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Fasta-format" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fasta-format.ml", line 110, characters 29-35:
+110 |   let res = ref (parseFasta (_fasta)) in
+                                   ^^^^^^
+Error: Unbound value _fasta

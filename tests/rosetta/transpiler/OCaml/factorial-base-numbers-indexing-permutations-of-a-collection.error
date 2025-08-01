@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/factorial-base-numbers-indexing-permutations-of-a-collection.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Factorial-base-numbers-indexing-permutations-of-a-collection" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/factorial-base-numbers-indexing-permutations-of-a-collection.ml", line 250, characters 30-41:
+250 |   let perms = ref (mapToPerms (!factNums)) in
+                                    ^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         int list list

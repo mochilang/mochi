@@ -1,0 +1,7 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fibonacci-sequence-5.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Fibonacci-sequence-5" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/fibonacci-sequence-5.ml", line 52, characters 24-28:
+52 |   if (List.mem_assoc n !memo) then (
+                             ^^^^
+Error: Unbound value memo
