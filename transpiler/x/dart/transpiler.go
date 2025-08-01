@@ -1261,15 +1261,31 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		return err
 	}
 	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "dynamic" || rt == "dynamic") {
-		// For dynamic values assume the underlying types implement the
-		// comparison operators directly and emit a normal comparison.
+		// When types are dynamic we can't rely on the comparison
+		// operators being defined directly. Instead use Comparable
+		// which works for strings and numbers.
 		if err := b.Left.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, " "+b.Op+" "); err != nil {
+		if _, err := io.WriteString(w, ".compareTo("); err != nil {
 			return err
 		}
-		return b.Right.emit(w)
+		if err := b.Right.emit(w); err != nil {
+			return err
+		}
+		var cmp string
+		switch b.Op {
+		case "<":
+			cmp = " < 0"
+		case "<=":
+			cmp = " <= 0"
+		case ">":
+			cmp = " > 0"
+		case ">=":
+			cmp = " >= 0"
+		}
+		_, err := io.WriteString(w, ")"+cmp)
+		return err
 	}
 	lp := precedence(b.Left)
 	bp := precedence(b)
