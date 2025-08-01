@@ -1,0 +1,8 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+sqrt2: 1.4142135623730965
+nap:   2.7182818284590455
+pi:    3.141623806667839
