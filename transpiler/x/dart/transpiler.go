@@ -553,29 +553,14 @@ func (s *VarStmt) emit(w io.Writer) error {
 			return err
 		}
 		if n, ok := s.Value.(*Name); ok {
-			valType := inferType(s.Value)
-			if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
-				_, err := io.WriteString(w, " = "+n.Name+"!")
-				return err
-			}
+			_ = n
 		}
 		if iex, ok := s.Value.(*IndexExpr); ok {
-			valType := inferType(s.Value)
-			if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
-				if _, err := io.WriteString(w, " = "); err != nil {
-					return err
-				}
-				old := iex.NoBang
-				iex.NoBang = true
-				if err := iex.emit(w); err != nil {
-					return err
-				}
-				iex.NoBang = old
-				_, err := io.WriteString(w, "!")
-				typ = strings.TrimSuffix(typ, "?")
-				localVarTypes[s.Name] = typ
-				return err
-			}
+			oldBang := iex.NoBang
+			oldSuf := iex.NoSuffix
+			iex.NoBang = true
+			iex.NoSuffix = true
+			defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 		}
 		if typ == "BigInt" && inferType(s.Value) == "int" {
 			if lit, ok := s.Value.(*IntLit); ok {
@@ -718,19 +703,11 @@ func (s *LetStmt) emit(w io.Writer) error {
 		}
 	}
 	if iex, ok := s.Value.(*IndexExpr); ok {
-		valType := inferType(s.Value)
-		if strings.HasSuffix(valType, "?") && !strings.HasSuffix(typ, "?") {
-			old := iex.NoBang
-			iex.NoBang = true
-			if err := iex.emit(w); err != nil {
-				return err
-			}
-			iex.NoBang = old
-			_, err := io.WriteString(w, "!")
-			typ = strings.TrimSuffix(typ, "?")
-			localVarTypes[s.Name] = typ
-			return err
-		}
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		iex.NoBang = true
+		iex.NoSuffix = true
+		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
 	valType := inferType(s.Value)
 	if typ == "BigInt" && valType == "int" {
@@ -4622,8 +4599,14 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		if _, ok := e.(*IndexExpr); ok && strings.HasSuffix(typ, "?") {
 			typ = strings.TrimSuffix(typ, "?")
 		}
+		valType := ""
+		if e != nil {
+			valType = inferType(e)
+		}
 		if typ != "" {
 			localVarTypes[name] = typ
+		} else if valType != "" {
+			localVarTypes[name] = valType
 		}
 		return &LetStmt{Name: name, Type: typ, Value: e}, nil
 	case st.Var != nil:
@@ -4972,6 +4955,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				iex := &IndexExpr{Target: expr, Index: idx}
 				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
 					iex.NoBang = true
+					iex.NoSuffix = true
 				}
 				expr = iex
 			}

@@ -22,6 +22,105 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+Map<String, dynamic> node(String cl, dynamic le, int aa, dynamic ri) {
+  return {"cl": cl, "le": le, "aa": aa, "ri": ri};
+}
+
+String treeString(dynamic t) {
+  if (t == null) {
+    return "E";
+  }
+  Map<String, dynamic> m = t as Map<String, dynamic>;
+  return "T(" + m["cl"] + ", " + treeString(m["le"]) + ", " + (m["aa"]).toString() + ", " + treeString(m["ri"]) + ")";
+}
+
+dynamic balance(dynamic t) {
+  if (t == null) {
+    return t;
+  }
+  Map<String, dynamic> m = t as Map<String, dynamic>;
+  if (m["cl"] != "B") {
+    return t;
+  }
+  dynamic le = m["le"];
+  dynamic ri = m["ri"];
+  if (le != null) {
+    Map<String, dynamic> leMap = le as Map<String, dynamic>;
+    if (leMap["cl"] == "R") {
+    dynamic lele = leMap["le"];
+    if (lele != null) {
+    Map<String, dynamic> leleMap = lele as Map<String, dynamic>;
+    if (leleMap["cl"] == "R") {
+    return node("R", node("B", leleMap["le"], leleMap["aa"], leleMap["ri"]), leMap["aa"], node("B", leMap["ri"], m["aa"], ri));
+  };
+  };
+    dynamic leri = leMap["ri"];
+    if (leri != null) {
+    Map<String, dynamic> leriMap = leri as Map<String, dynamic>;
+    if (leriMap["cl"] == "R") {
+    return node("R", node("B", leMap["le"], leMap["aa"], leriMap["le"]), leriMap["aa"], node("B", leriMap["ri"], m["aa"], ri));
+  };
+  };
+  };
+  }
+  if (ri != null) {
+    Map<String, dynamic> riMap = ri as Map<String, dynamic>;
+    if (riMap["cl"] == "R") {
+    dynamic rile = riMap["le"];
+    if (rile != null) {
+    Map<String, dynamic> rileMap = rile as Map<String, dynamic>;
+    if (rileMap["cl"] == "R") {
+    return node("R", node("B", m["le"], m["aa"], rileMap["le"]), rileMap["aa"], node("B", rileMap["ri"], riMap["aa"], riMap["ri"]));
+  };
+  };
+    dynamic riri = riMap["ri"];
+    if (riri != null) {
+    Map<String, dynamic> ririMap = riri as Map<String, dynamic>;
+    if (ririMap["cl"] == "R") {
+    return node("R", node("B", m["le"], m["aa"], riMap["le"]), riMap["aa"], node("B", ririMap["le"], ririMap["aa"], ririMap["ri"]));
+  };
+  };
+  };
+  }
+  return t;
+}
+
+dynamic ins(dynamic tr, int x) {
+  if (tr == null) {
+    return node("R", null, x, null);
+  }
+  if (x.compareTo(tr["aa"]) < 0) {
+    return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]));
+  }
+  if (x.compareTo(tr["aa"]) > 0) {
+    return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)));
+  }
+  return tr;
+}
+
+dynamic insert(dynamic tr, int x) {
+  dynamic t = ins(tr, x);
+  if (t == null) {
+    return null;
+  }
+  Map<String, dynamic> m = t as Map<String, dynamic>;
+  return node("B", m["le"], m["aa"], m["ri"]);
+}
+
+dynamic? tr = null;
+int i = 1;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -29,88 +128,6 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  Map<String, dynamic> node(String cl, dynamic le, int aa, dynamic ri) {
-  return {"cl": cl, "le": le, "aa": aa, "ri": ri};
-}
-  String treeString(dynamic t) {
-  if (t == null) {
-    return "E";
-  }
-  final Map<String, dynamic> m = t as Map<String, dynamic>;
-  return "T(" + m["cl"]! + ", " + treeString(m["le"]!) + ", " + (m["aa"]!).toString() + ", " + treeString(m["ri"]!) + ")";
-}
-  dynamic balance(dynamic t) {
-  if (t == null) {
-    return t;
-  }
-  final Map<String, dynamic> m = t as Map<String, dynamic>;
-  if (m["cl"]! != "B") {
-    return t;
-  }
-  final le = m["le"]!;
-  final ri = m["ri"]!;
-  if (le != null) {
-    final Map<String, dynamic> leMap = le as Map<String, dynamic>;
-    if (leMap["cl"]! == "R") {
-    final lele = leMap["le"]!;
-    if (lele != null) {
-    final Map<String, dynamic> leleMap = lele as Map<String, dynamic>;
-    if (leleMap["cl"]! == "R") {
-    return node("R", node("B", leleMap["le"]!, leleMap["aa"]!, leleMap["ri"]!), leMap["aa"]!, node("B", leMap["ri"]!, m["aa"]!, ri));
-  };
-  };
-    final leri = leMap["ri"]!;
-    if (leri != null) {
-    final Map<String, dynamic> leriMap = leri as Map<String, dynamic>;
-    if (leriMap["cl"]! == "R") {
-    return node("R", node("B", leMap["le"]!, leMap["aa"]!, leriMap["le"]!), leriMap["aa"]!, node("B", leriMap["ri"]!, m["aa"]!, ri));
-  };
-  };
-  };
-  }
-  if (ri != null) {
-    final Map<String, dynamic> riMap = ri as Map<String, dynamic>;
-    if (riMap["cl"]! == "R") {
-    final rile = riMap["le"]!;
-    if (rile != null) {
-    final Map<String, dynamic> rileMap = rile as Map<String, dynamic>;
-    if (rileMap["cl"]! == "R") {
-    return node("R", node("B", m["le"]!, m["aa"]!, rileMap["le"]!), rileMap["aa"]!, node("B", rileMap["ri"]!, riMap["aa"]!, riMap["ri"]!));
-  };
-  };
-    final riri = riMap["ri"]!;
-    if (riri != null) {
-    final Map<String, dynamic> ririMap = riri as Map<String, dynamic>;
-    if (ririMap["cl"]! == "R") {
-    return node("R", node("B", m["le"]!, m["aa"]!, riMap["le"]!), riMap["aa"]!, node("B", ririMap["le"]!, ririMap["aa"]!, ririMap["ri"]!));
-  };
-  };
-  };
-  }
-  return t;
-}
-  dynamic ins(dynamic tr, int x) {
-  if (tr == null) {
-    return node("R", null, x, null);
-  }
-  if (x.toString().compareTo(tr["aa"].toString()) < 0) {
-    return balance(node(tr["cl"], ins(tr["le"], x), tr["aa"], tr["ri"]));
-  }
-  if (x.toString().compareTo(tr["aa"].toString()) > 0) {
-    return balance(node(tr["cl"], tr["le"], tr["aa"], ins(tr["ri"], x)));
-  }
-  return tr;
-}
-  dynamic insert(dynamic tr, int x) {
-  final t = ins(tr, x);
-  if (t == null) {
-    return null;
-  }
-  final Map<String, dynamic> m = t as Map<String, dynamic>;
-  return node("B", m["le"]!, m["aa"]!, m["ri"]!);
-}
-  var tr = null;
-  int i = 1;
   while (i <= 16) {
     tr = insert(tr, i);
     i = i + 1;
