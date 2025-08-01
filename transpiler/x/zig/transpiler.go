@@ -47,6 +47,7 @@ var useLookupHost bool
 var useAscii bool
 var useMem bool
 var usePrint bool
+var useSplit bool
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -829,6 +830,8 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		case "_str", "_concat_string":
 			return "[]const u8"
+		case "_split_string":
+			return "[][]const u8"
 		case "_now":
 			return "i64"
 		case "_input":
@@ -1192,6 +1195,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ lhs, rhs }) catch unreachable;\n")
 		buf.WriteString("}\n")
 	}
+	if useSplit {
+		buf.WriteString("\nfn _split_string(s: []const u8, sep: []const u8) [][]const u8 {\n")
+		buf.WriteString("    var res = std.ArrayList([]const u8).init(std.heap.page_allocator);\n")
+		buf.WriteString("    defer res.deinit();\n")
+		buf.WriteString("    var it = std.mem.splitSequence(u8, s, sep);\n")
+		buf.WriteString("    while (it.next()) |p| { res.append(p) catch unreachable; }\n")
+		buf.WriteString("    return res.toOwnedSlice() catch unreachable;\n")
+		buf.WriteString("}\n")
+	}
 	if useInput {
 		buf.WriteString("\nfn _input() []const u8 {\n")
 		buf.WriteString("    var reader = std.io.bufferedReaderSize(4096, std.io.getStdIn().reader());\n")
@@ -1336,7 +1348,11 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	io.WriteString(w, " = ")
 	if v.Value == nil {
 		if t, ok := varTypes[v.Name]; ok && strings.HasPrefix(t, "[]") {
-			fmt.Fprintf(w, "&[_]%s{}", t[2:])
+			base := t[2:]
+			if strings.HasPrefix(base, "const ") {
+				base = base[len("const "):]
+			}
+			fmt.Fprintf(w, "&[_]%s{}", base)
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -1427,7 +1443,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, ") |row| {\n")
 		writeIndent(w, indent+1)
-                io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
+		io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "const _tmp = std.mem.replaceOwned(u8, std.heap.page_allocator, __j, %q, %q) catch unreachable;\n", ":", ": ")
 		writeIndent(w, indent+1)
@@ -1450,13 +1466,13 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-        io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
-        if j.Value != nil {
-                j.Value.emit(w)
-        } else {
-                io.WriteString(w, "null")
-        }
-        io.WriteString(w, ", .{}) catch unreachable;\n")
+	io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
+	if j.Value != nil {
+		j.Value.emit(w)
+	} else {
+		io.WriteString(w, "null")
+	}
+	io.WriteString(w, ", .{}) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__j});\n")
 	writeIndent(w, indent)
@@ -1644,10 +1660,18 @@ func precedence(op string) int {
 func (l *ListLit) emit(w io.Writer) {
 	if l.ElemType != "" {
 		if len(l.Elems) == 0 {
-			fmt.Fprintf(w, "&[_]%s{}", l.ElemType)
+			et := l.ElemType
+			if strings.HasPrefix(et, "const ") {
+				et = et[len("const "):]
+			}
+			fmt.Fprintf(w, "&[_]%s{}", et)
 			return
 		}
-		fmt.Fprintf(w, "@constCast(&[_]%s{", l.ElemType)
+		et := l.ElemType
+		if strings.HasPrefix(et, "const ") {
+			et = et[len("const "):]
+		}
+		fmt.Fprintf(w, "@constCast(&[_]%s{", et)
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
@@ -1869,7 +1893,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
 	writeIndent(w, indent)
-        io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
+	io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
 	writeIndent(w, indent)
@@ -2069,6 +2093,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useAscii = false
 	useMem = false
 	usePrint = false
+	useSplit = false
 	aliasStack = nil
 	namesStack = nil
 	nameCounts = map[string]int{}
@@ -2612,6 +2637,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useAscii = true
 			return &CallExpr{Func: "std.ascii.lowerString", Args: args}, nil
+		case "split":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("split expects two arguments")
+			}
+			useSplit = true
+			return &CallExpr{Func: "_split_string", Args: args}, nil
 		case "print":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("print expects one argument")
@@ -3298,34 +3329,34 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	pushAliasScope()
 	aliases := aliasStack[len(aliasStack)-1]
 	defer popAliasScope()
-        preStmts := []Stmt{}
-        for i, p := range fn.Params {
-                typ := toZigType(p.Type)
-                name := p.Name
-                paramName := name
-                if mutables[p.Name] {
-                        paramName = uniqueName(name + "_param")
-                } else if globalNames[name] {
-                        paramName = name + "_param"
-                }
-                aliasName := paramName
-                if mutables[p.Name] {
-                        aliasName = uniqueName(name + "_var")
-                        namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
-                        vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true}
-                        preStmts = append(preStmts, vd)
-                        varDecls[p.Name] = vd
-                        varDecls[aliasName] = vd
-                }
-                aliases[name] = aliasName
-                params[i] = Param{Name: paramName, Type: typ}
-                names[i] = aliasName
-                varTypes[aliasName] = typ
-                varTypes[name] = typ
-                if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
-                        mapVars[aliasName] = true
-                }
-        }
+	preStmts := []Stmt{}
+	for i, p := range fn.Params {
+		typ := toZigType(p.Type)
+		name := p.Name
+		paramName := name
+		if mutables[p.Name] {
+			paramName = uniqueName(name + "_param")
+		} else if globalNames[name] {
+			paramName = name + "_param"
+		}
+		aliasName := paramName
+		if mutables[p.Name] {
+			aliasName = uniqueName(name + "_var")
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+			vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true}
+			preStmts = append(preStmts, vd)
+			varDecls[p.Name] = vd
+			varDecls[aliasName] = vd
+		}
+		aliases[name] = aliasName
+		params[i] = Param{Name: paramName, Type: typ}
+		names[i] = aliasName
+		varTypes[aliasName] = typ
+		varTypes[name] = typ
+		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+			mapVars[aliasName] = true
+		}
+	}
 	funParamsStack = append(funParamsStack, names)
 	funDepth++
 	defer func() {
@@ -3336,13 +3367,13 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	if fn.Return != nil {
 		ret = toZigType(fn.Return)
 	}
-        body := make([]Stmt, 0, len(fn.Body)+len(preStmts))
-        body = append(body, preStmts...)
-        for _, st := range fn.Body {
-                s, err := compileStmt(st, prog)
-                if err != nil {
-                        return nil, err
-                }
+	body := make([]Stmt, 0, len(fn.Body)+len(preStmts))
+	body = append(body, preStmts...)
+	for _, st := range fn.Body {
+		s, err := compileStmt(st, prog)
+		if err != nil {
+			return nil, err
+		}
 		if s != nil {
 			body = append(body, s)
 		}
@@ -3488,10 +3519,16 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
 		varDecls[name] = vd
+		if s.Var.Type != nil {
+			vd.Type = toZigType(s.Var.Type)
+			varTypes[s.Var.Name] = vd.Type
+		}
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Var.Name] = "[]" + lst.ElemType
+			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
+				lst.ElemType = vd.Type[2:]
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
