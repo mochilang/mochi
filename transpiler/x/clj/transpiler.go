@@ -1205,8 +1205,8 @@ func applyBinOp(op string, left, right Node) Node {
 			cat := &List{Elems: []Node{Symbol("concat"), left, right}}
 			return &List{Elems: []Node{Symbol("vec"), cat}}
 		}
-		// use +' to avoid overflow and support bigints
-		return &List{Elems: []Node{Symbol("+'"), left, right}}
+		// use + which supports arbitrary precision integers
+		return &List{Elems: []Node{Symbol("+"), left, right}}
 	case "union":
 		setFn := func(x Node) Node { return &List{Elems: []Node{Symbol("set"), x}} }
 		u := &List{Elems: []Node{Symbol("clojure.set/union"), setFn(left), setFn(right)}}
