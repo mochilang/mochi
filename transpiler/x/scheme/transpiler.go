@@ -1209,15 +1209,22 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			return nil, err
 		}
 		call := pf.Ops[0].Call
-		args := []Node{objNode}
-		for _, a := range call.Args {
+		args := make([]Node, len(call.Args))
+		for j, a := range call.Args {
 			n, err := convertParserExpr(a)
 			if err != nil {
 				return nil, err
 			}
-			args = append(args, n)
+			args[j] = n
 		}
-		node = &List{Elems: append([]Node{Symbol(pf.Target.Selector.Tail[0])}, args...)}
+		if _, ok := currentEnv.GetFunc(pf.Target.Selector.Tail[0]); !ok {
+			needHash = true
+			fn := &List{Elems: []Node{Symbol("hash-table-ref"), objNode, StringLit(pf.Target.Selector.Tail[0])}}
+			node = &List{Elems: append([]Node{fn}, args...)}
+		} else {
+			args = append([]Node{objNode}, args...)
+			node = &List{Elems: append([]Node{Symbol(pf.Target.Selector.Tail[0])}, args...)}
+		}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
 	} else {
 		node, err = convertParserPrimary(pf.Target)
@@ -1334,15 +1341,22 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			i++
 		case op.Field != nil && i+1 < len(pf.Ops) && pf.Ops[i+1].Call != nil:
 			call := pf.Ops[i+1].Call
-			args := []Node{node}
-			for _, a := range call.Args {
+			args := make([]Node, len(call.Args))
+			for j, a := range call.Args {
 				n, err := convertParserExpr(a)
 				if err != nil {
 					return nil, err
 				}
-				args = append(args, n)
+				args[j] = n
 			}
-			node = &List{Elems: append([]Node{Symbol(op.Field.Name)}, args...)}
+			if _, ok := currentEnv.GetFunc(op.Field.Name); !ok {
+				needHash = true
+				fn := &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(op.Field.Name)}}
+				node = &List{Elems: append([]Node{fn}, args...)}
+			} else {
+				args = append([]Node{node}, args...)
+				node = &List{Elems: append([]Node{Symbol(op.Field.Name)}, args...)}
+			}
 			i++
 		default:
 			return nil, fmt.Errorf("unsupported postfix")

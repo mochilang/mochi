@@ -1,0 +1,6 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71
