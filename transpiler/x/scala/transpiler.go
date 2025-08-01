@@ -1136,7 +1136,7 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" || c.Type == "int" {
+	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" {
 		if c.Type == "int" && inferType(c.Value) == "Double" {
 			c.Value.emit(w)
 			fmt.Fprint(w, ".toInt")
@@ -1214,7 +1214,7 @@ func (f *FieldExpr) emit(w io.Writer) {
 		}
 	}
 	f.Receiver.emit(w)
-	if isMap {
+	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
 		fmt.Fprintf(w, "(\"%s\")", f.Name)
 	} else {
 		fmt.Fprintf(w, ".%s", escapeName(f.Name))
@@ -1920,7 +1920,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if assignedVars != nil && assignedVars[st.Let.Name] {
 			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
-		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
+		g := env == nil || env.Parent() == nil
+		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e, Global: g}, nil
 	case st.Var != nil:
 		if st.Var.Type != nil && env != nil {
 			env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
@@ -2015,7 +2016,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
 		}
-		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e}, nil
+		g := env == nil || env.Parent() == nil
+		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: g}, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
 			if len(st.Type.Variants) == 1 && st.Type.Variants[0].Name == "int" && len(st.Type.Variants[0].Fields) == 0 {
