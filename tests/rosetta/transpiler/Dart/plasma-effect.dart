@@ -34,18 +34,50 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-
-String _md5hex(String s) {
-  final tmp = File('${Directory.systemTemp.path}/md5_${DateTime.now().microsecondsSinceEpoch}.txt');
-  tmp.writeAsStringSync(s);
-  final result = Process.runSync('md5sum', [tmp.path]);
-  tmp.deleteSync();
-  if (result.stdout is String) {
-    return (result.stdout as String).split(' ')[0];
+num PI = 3.141592653589793;
+num floorf(num x) {
+  dynamic i = (x).toInt();
+  if ((i as num) > x) {
+    i = i - 1;
   }
-  return '';
+  return i as num;
 }
 
+num frac(num x) {
+  return x - floorf(x);
+}
+
+num sinApprox(num x) {
+  dynamic term = x;
+  dynamic sum = x;
+  dynamic n = 1;
+  while (n <= 10) {
+    num denom = 2 * n * (2 * n + 1) as num;
+    term = -term * x * x / denom;
+    sum = sum + term;
+    n = n + 1;
+  }
+  return sum;
+}
+
+num sqrtApprox(num x) {
+  if (x <= 0) {
+    return 0.0;
+  }
+  dynamic guess = x;
+  dynamic i = 0;
+  while (i < 10) {
+    guess = (guess + x / guess) / 2.0;
+    i = i + 1;
+  }
+  return guess;
+}
+
+int nframes = 10;
+int w = 32;
+int h = 32;
+int total = 0;
+int f = 1;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -53,15 +85,29 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (List<String> pair in [["d41d8cd98f00b204e9800998ecf8427e", ""], ["0cc175b9c0f1b6a831c399e269772661", "a"], ["900150983cd24fb0d6963f7d28e17f72", "abc"], ["f96b697d7cb7938d525a2f31aaf161d0", "message digest"], ["c3fcd3d76192e4007dfb496cca67e13b", "abcdefghijklmnopqrstuvwxyz"], ["d174ab98d277d9f5a5611c2c9f419d9f", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"], ["57edf4a22be3c955ac49da2e2107b67a", "12345678901234567890" + "123456789012345678901234567890123456789012345678901234567890"], ["e38ca1d920c4b8b8d3946b2c72f01680", "The quick brown fox jumped over the lazy dog's back"]]) {
-    dynamic sum = _md5hex(pair[1]);
-    if (sum != pair[0]) {
-    print("MD5 fail");
-    print(["  for string,", pair[1]].join(" "));
-    print(["  expected:  ", pair[0]].join(" "));
-    print(["  got:       ", sum].join(" "));
+  while (f <= nframes) {
+    dynamic y = 0;
+    while (y < h) {
+    dynamic x = 0;
+    while (x < w) {
+    dynamic fx = x as num;
+    dynamic fy = y as num;
+    dynamic value = sinApprox(fx / 16.0);
+    value = value + sinApprox(fy / 8.0);
+    value = value + sinApprox((fx + fy) / 16.0);
+    value = value + sinApprox(sqrtApprox(fx * fx + fy * fy) / 8.0);
+    value = value + 4.0;
+    value = value / 8.0;
+    dynamic rem = frac(value + ((f).toDouble()) / ((nframes).toDouble()));
+    dynamic ci = ((((nframes).toDouble()) * rem).toInt()) + 1;
+    total = (total + ci).toInt();
+    x = x + 1;
   }
+    y = y + 1;
   }
+    f = f + 1;
+  }
+  print(total);
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
