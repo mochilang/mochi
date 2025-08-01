@@ -82,7 +82,7 @@ Compiled and ran: 420/491
 | 73 | array-concatenation | ✓ | 12.589ms | 3.5 MB |
 | 74 | array-length | ✓ |  |  |
 | 75 | arrays | ✓ | 12.049ms | 3.4 MB |
-| 76 | ascending-primes | ✓ |  |  |
+| 76 | ascending-primes | ✓ | 24.433ms | 9.6 MB |
 | 77 | ascii-art-diagram-converter | ✓ |  |  |
 | 78 | assertions | ✓ |  |  |
 | 79 | associative-array-creation | ✓ |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 00:50 +0700_
+_Last updated: 2025-08-02 01:14 +0700_
