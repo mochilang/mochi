@@ -3,7 +3,7 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 333/491
-Last updated: 2025-08-01 21:57 +0700
+Last updated: 2025-08-01 22:46 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -261,7 +261,7 @@ Last updated: 2025-08-01 21:57 +0700
 | 252 | create-a-file | ✓ | 295µs | 3.1 MB |
 | 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 424µs | 3.2 MB |
 | 254 | create-an-html-table | ✓ | 472µs | 3.0 MB |
-| 255 | create-an-object-at-a-given-address | ✓ | 495µs | 3.3 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 383µs | 3.4 MB |
 | 256 | csv-data-manipulation |   |  |  |
 | 257 | csv-to-html-translation-1 |   |  |  |
 | 258 | csv-to-html-translation-2 |   |  |  |
