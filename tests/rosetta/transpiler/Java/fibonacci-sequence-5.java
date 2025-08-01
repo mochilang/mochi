@@ -1,31 +1,28 @@
 public class Main {
-    static java.util.function.Supplier<Integer> fibNumber() {
-        int[] a = new int[1];
-        a[0] = 0;
-        int[] b = new int[1];
-        b[0] = 1;
-        return () -> {
-        int tmp = a[0] + b[0];
-        a[0] = b[0];
-        b[0] = tmp;
-        return a[0];
-};
+    static java.util.Map<Integer,Integer> memo;
+
+    static int fib(int n) {
+        if (memo.containsKey(n)) {
+            return ((int)(memo).getOrDefault(n, 0));
+        }
+        int v = fib(n - 1) + fib(n - 2);
+memo.put(n, v);
+        return v;
     }
 
-    static int fibSequence(int n) {
-        java.util.function.Supplier<Integer> f = fibNumber();
-        int r = 0;
-        int i = 0;
-        while (i < n) {
-            r = ((Number)(f.get())).intValue();
+    static void main() {
+        int i = 1;
+        while (i <= 30) {
+            System.out.println(String.valueOf(fib(i)));
             i = i + 1;
         }
-        return r;
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            memo = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>(java.util.Map.ofEntries(java.util.Map.entry(0, 0), java.util.Map.entry(1, 1)))));
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

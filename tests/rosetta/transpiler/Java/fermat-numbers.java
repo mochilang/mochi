@@ -15,17 +15,17 @@ public class Main {
     }
 
     static java.math.BigInteger pow_big(java.math.BigInteger base, int exp) {
-        java.math.BigInteger result = java.math.BigInteger.valueOf(1);
-        java.math.BigInteger b = base;
-        int e = exp;
-        while (e > 0) {
-            if (Math.floorMod(e, 2) == 1) {
-                result = result.multiply(b);
+        java.math.BigInteger result_1 = java.math.BigInteger.valueOf(1);
+        java.math.BigInteger b_1 = base;
+        int e_1 = exp;
+        while (e_1 > 0) {
+            if (Math.floorMod(e_1, 2) == 1) {
+                result_1 = result_1.multiply(b_1);
             }
-            b = b.multiply(b);
-            e = ((Number)((e / 2))).intValue();
+            b_1 = b_1.multiply(b_1);
+            e_1 = ((Number)((e_1 / 2))).intValue();
         }
-        return result;
+        return result_1;
     }
 
     static java.math.BigInteger parseBigInt(String str) {
@@ -56,18 +56,18 @@ public class Main {
     static java.math.BigInteger[] primeFactorsBig(java.math.BigInteger n) {
         java.math.BigInteger[] factors = new java.math.BigInteger[]{};
         java.math.BigInteger m = n;
-        java.math.BigInteger d = java.math.BigInteger.valueOf(2);
-        while (m.remainder(d).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
-            factors = java.util.stream.Stream.concat(java.util.Arrays.stream(factors), java.util.stream.Stream.of(d)).toArray(java.math.BigInteger[]::new);
-            m = m.divide(d);
+        java.math.BigInteger d_1 = java.math.BigInteger.valueOf(2);
+        while (m.remainder(d_1).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+            factors = java.util.stream.Stream.concat(java.util.Arrays.stream(factors), java.util.stream.Stream.of(d_1)).toArray(java.math.BigInteger[]::new);
+            m = m.divide(d_1);
         }
-        d = java.math.BigInteger.valueOf(3);
-        while (d.multiply(d).compareTo(m) <= 0) {
-            while (m.remainder(d).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
-                factors = java.util.stream.Stream.concat(java.util.Arrays.stream(factors), java.util.stream.Stream.of(d)).toArray(java.math.BigInteger[]::new);
-                m = m.divide(d);
+        d_1 = java.math.BigInteger.valueOf(3);
+        while (d_1.multiply(d_1).compareTo(m) <= 0) {
+            while (m.remainder(d_1).compareTo(java.math.BigInteger.valueOf(0)) == 0) {
+                factors = java.util.stream.Stream.concat(java.util.Arrays.stream(factors), java.util.stream.Stream.of(d_1)).toArray(java.math.BigInteger[]::new);
+                m = m.divide(d_1);
             }
-            d = d.add(java.math.BigInteger.valueOf(2));
+            d_1 = d_1.add(java.math.BigInteger.valueOf(2));
         }
         if (m.compareTo(java.math.BigInteger.valueOf(1)) > 0) {
             factors = java.util.stream.Stream.concat(java.util.Arrays.stream(factors), java.util.stream.Stream.of(m)).toArray(java.math.BigInteger[]::new);
@@ -77,13 +77,13 @@ public class Main {
 
     static String show_list(java.math.BigInteger[] xs) {
         String line = "";
-        int i = 0;
-        while (i < xs.length) {
-            line = line + String.valueOf(xs[i]);
-            if (i < xs.length - 1) {
+        int i_1 = 0;
+        while (i_1 < xs.length) {
+            line = line + String.valueOf(xs[i_1]);
+            if (i_1 < xs.length - 1) {
                 line = line + " ";
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return line;
     }
@@ -99,20 +99,54 @@ public class Main {
         }
         java.util.Map<Integer,java.math.BigInteger[]> extra = ((java.util.Map<Integer,java.math.BigInteger[]>)(new java.util.LinkedHashMap<Integer, java.math.BigInteger[]>(java.util.Map.ofEntries(java.util.Map.entry(6, new java.math.BigInteger[]{java.math.BigInteger.valueOf(274177), java.math.BigInteger.valueOf((int)67280421310721L)}), java.util.Map.entry(7, new java.math.BigInteger[]{parseBigInt("59649589127497217"), parseBigInt("5704689200685129054721")})))));
         System.out.println("\nFactors:");
-        int i = 0;
-        while (i < nums.length) {
+        int i_2 = 0;
+        while (i_2 < nums.length) {
             java.math.BigInteger[] facs = new java.math.BigInteger[]{};
-            if (i <= 5) {
-                facs = primeFactorsBig(nums[i]);
+            if (i_2 <= 5) {
+                facs = primeFactorsBig(nums[i_2]);
             } else {
-                facs = (java.math.BigInteger[])(((java.math.BigInteger[])(extra).get(i)));
+                facs = (java.math.BigInteger[])(((java.math.BigInteger[])(extra).get(i_2)));
             }
-            System.out.println("F" + String.valueOf(i) + " = " + String.valueOf(show_list(facs)));
-            i = i + 1;
+            System.out.println("F" + String.valueOf(i_2) + " = " + String.valueOf(show_list(facs)));
+            i_2 = i_2 + 1;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

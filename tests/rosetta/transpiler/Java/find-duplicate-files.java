@@ -1,24 +1,25 @@
 public class Main {
 
-    static int[] fib(int n) {
-        int a = 0;
-        int b = 1;
-        int[] res = new int[]{};
-        int i = 0;
-        while (i < n) {
-            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(a)).toArray();
-            int tmp = a + b;
-            a = b;
-            i = i + 1;
-            b = tmp;
+    static String[][] findDuplicates(java.util.Map<String,String> fs, String[] paths) {
+        java.util.Map<String,String> seen = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>()));
+        String[][] dups = new String[][]{};
+        for (String path : paths) {
+            String content = ((String)(fs).get(path));
+            if (seen.containsKey(content)) {
+                dups = appendObj(dups, new Object[]{((String)(seen).get(content)), path});
+            } else {
+seen.put(content, path);
+            }
         }
-        return res;
+        return dups;
     }
 
     static void main() {
-        int[] seq = fib(10);
-        for (int v : seq) {
-            System.out.println(String.valueOf(v));
+        java.util.Map<String,String> fs = ((java.util.Map<String,String>)(new java.util.LinkedHashMap<String, String>(java.util.Map.ofEntries(java.util.Map.entry("a.txt", "hello"), java.util.Map.entry("b.txt", "world"), java.util.Map.entry("c.txt", "hello"), java.util.Map.entry("d.txt", "foo"), java.util.Map.entry("e.txt", "world")))));
+        String[] paths = new String[]{"a.txt", "b.txt", "c.txt", "d.txt", "e.txt"};
+        String[][] dups_1 = findDuplicates(fs, paths);
+        for (String[] pair : dups_1) {
+            System.out.println(pair[0] + " <==> " + pair[1]);
         }
     }
     public static void main(String[] args) {
@@ -57,5 +58,11 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static <T> T[] appendObj(T[] arr, T v) {
+        T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
+        out[arr.length] = v;
+        return out;
     }
 }

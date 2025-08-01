@@ -48,24 +48,58 @@ a[j - 1] = _mul((_bigrat(j, null)), (_sub(a[j - 1], a[j])));
         int p = 0;
         while (p < 10) {
             String line = String.valueOf(p) + " :";
-            int j = 0;
-            while (j <= p) {
-                BigRat c = coeff(p, j);
-                if (!(String.valueOf(c).equals("0/1"))) {
-                    line = line + " " + String.valueOf(c) + "×n";
-                    int exp = p + 1 - j;
+            int j_1 = 0;
+            while (j_1 <= p) {
+                BigRat c_1 = coeff(p, j_1);
+                if (!(String.valueOf(c_1).equals("0/1"))) {
+                    line = line + " " + String.valueOf(c_1) + "×n";
+                    int exp = p + 1 - j_1;
                     if (exp > 1) {
                         line = line + "^" + String.valueOf(exp);
                     }
                 }
-                j = j + 1;
+                j_1 = j_1 + 1;
             }
             System.out.println(line);
             p = p + 1;
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static class BigRat {

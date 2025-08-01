@@ -1,31 +1,24 @@
 public class Main {
-    static java.util.function.Supplier<Integer> fibNumber() {
-        int[] a = new int[1];
-        a[0] = 0;
-        int[] b = new int[1];
-        b[0] = 1;
-        return () -> {
-        int tmp = a[0] + b[0];
-        a[0] = b[0];
-        b[0] = tmp;
-        return a[0];
-};
+
+    static void printSize(java.util.Map<String,Integer> fs, String path) {
+        if (fs.containsKey(path)) {
+            System.out.println(String.valueOf(((int)(fs).getOrDefault(path, 0))));
+        } else {
+            System.out.println("stat " + path + ": no such file or directory");
+        }
     }
 
-    static int fibSequence(int n) {
-        java.util.function.Supplier<Integer> f = fibNumber();
-        int r = 0;
-        int i = 0;
-        while (i < n) {
-            r = ((Number)(f.get())).intValue();
-            i = i + 1;
-        }
-        return r;
+    static void main() {
+        java.util.Map<String,Integer> fs = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>()));
+fs.put("input.txt", 123);
+        printSize(fs, "input.txt");
+        printSize(fs, "/input.txt");
     }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

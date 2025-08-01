@@ -38,23 +38,23 @@ a[j - 1] = _mul((_bigrat(j, null)), (_sub(a[j - 1], a[j])));
 
     static BigRat[] faulhaberRow(int p) {
         BigRat[] coeffs = new BigRat[]{};
-        int i = 0;
-        while (i <= p) {
+        int i_1 = 0;
+        while (i_1 <= p) {
             coeffs = java.util.stream.Stream.concat(java.util.Arrays.stream(coeffs), java.util.stream.Stream.of(_bigrat(0, null))).toArray(BigRat[]::new);
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        int j = 0;
+        int j_1 = 0;
         int sign = -1;
-        while (j <= p) {
+        while (j_1 <= p) {
             sign = -sign;
             BigRat c = _div(_bigrat(1, null), (_bigrat((p + 1), null)));
             if (sign < 0) {
                 c = _sub(_bigrat(0, null), c);
             }
-            c = _mul(c, (_bigrat(binom(p + 1, j), null)));
-            c = _mul(c, bernoulli(j));
-coeffs[p - j] = c;
-            j = j + 1;
+            c = _mul(c, (_bigrat(binom(p + 1, j_1), null)));
+            c = _mul(c, bernoulli(j_1));
+coeffs[p - j_1] = c;
+            j_1 = j_1 + 1;
         }
         return coeffs;
     }
@@ -92,20 +92,54 @@ coeffs[p - j] = c;
         }
         System.out.println("");
         int k = 17;
-        BigRat[] coeffs = faulhaberRow(k);
+        BigRat[] coeffs_1 = faulhaberRow(k);
         BigRat nn = _bigrat(1000, null);
         BigRat np = _bigrat(1, null);
         BigRat sum = _bigrat(0, null);
-        int i = 0;
-        while (i < coeffs.length) {
+        int i_2 = 0;
+        while (i_2 < coeffs_1.length) {
             np = _mul(np, nn);
-            sum = _add(sum, _mul(coeffs[i], np));
-            i = i + 1;
+            sum = _add(sum, _mul(coeffs_1[i_2], np));
+            i_2 = i_2 + 1;
         }
         System.out.println(ratStr(sum));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static String _padStart(String s, int width, String pad) {

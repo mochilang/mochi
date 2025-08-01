@@ -370,6 +370,16 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
+		if typ == "int" {
+			if it == "double" {
+				typ = "double"
+			} else if ce, ok := e.(*CallExpr); ok {
+				if strings.HasPrefix(ce.Func, "Math.") {
+					e.emit(w)
+					return
+				}
+			}
+		}
 		if it == "" || it == "Object" {
 			fmt.Fprint(w, "((Number)(")
 			e.emit(w)
@@ -576,7 +586,7 @@ func inferType(e Expr) string {
 				}
 				if t == "" {
 					t = et
-				} else if et != t {
+				} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
 					same = false
 					break
 				}
@@ -586,7 +596,7 @@ func inferType(e Expr) string {
 					return t + "[]"
 				}
 				switch t {
-				case "string":
+				case "string", "String":
 					return "string[]"
 				case "boolean":
 					return "bool[]"
@@ -2165,24 +2175,32 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 		if lt == "" {
-			fmt.Fprint(w, "((Number)(")
-			b.Left.emit(w)
-			if typ == "int" {
-				fmt.Fprint(w, ")).intValue()")
+			if ce, ok := b.Left.(*CallExpr); ok && strings.HasPrefix(ce.Func, "Math.") {
+				b.Left.emit(w)
 			} else {
-				fmt.Fprint(w, ")).doubleValue()")
+				fmt.Fprint(w, "((Number)(")
+				b.Left.emit(w)
+				if typ == "int" {
+					fmt.Fprint(w, ")).intValue()")
+				} else {
+					fmt.Fprint(w, ")).doubleValue()")
+				}
 			}
 		} else {
 			emitCastExpr(w, b.Left, typ)
 		}
 		fmt.Fprint(w, " "+b.Op+" ")
 		if rt == "" {
-			fmt.Fprint(w, "((Number)(")
-			b.Right.emit(w)
-			if typ == "int" {
-				fmt.Fprint(w, ")).intValue()")
+			if ce, ok := b.Right.(*CallExpr); ok && strings.HasPrefix(ce.Func, "Math.") {
+				b.Right.emit(w)
 			} else {
-				fmt.Fprint(w, ")).doubleValue()")
+				fmt.Fprint(w, "((Number)(")
+				b.Right.emit(w)
+				if typ == "int" {
+					fmt.Fprint(w, ")).intValue()")
+				} else {
+					fmt.Fprint(w, ")).doubleValue()")
+				}
 			}
 		} else {
 			emitCastExpr(w, b.Right, typ)
@@ -4252,7 +4270,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 			}
 		default:
 			if isMapExpr(iter) {
-				isMap = true
+				if strings.Contains(inferType(iter), "Map") {
+					isMap = true
+				}
 				keyType = mapKeyType(inferType(iter))
 			}
 		}
@@ -4286,6 +4306,12 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		if s.Import.Lang != nil && *s.Import.Lang == "python" && strings.Trim(s.Import.Path, "\"") == "math" {
 			pyMathAliases[alias] = true
 			varTypes[alias] = "module"
+			if funcRet != nil {
+				mathFns := []string{"log", "sqrt", "sin", "cos", "tan", "pow", "exp", "log10"}
+				for _, fn := range mathFns {
+					funcRet["Math."+fn] = "double"
+				}
+			}
 			return nil, nil
 		}
 		if s.Import.Lang != nil && *s.Import.Lang == "go" {
@@ -4650,8 +4676,11 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if fe, ok := expr.(*FieldExpr); ok {
 				if fe.Name == "keys" && len(args) == 0 && (isMapExpr(fe.Target) || strings.Contains(inferType(fe.Target), "Map")) {
 					expr = &MethodCallExpr{Target: fe.Target, Name: "keySet", Args: nil}
-				} else if v, ok2 := fe.Target.(*VarExpr); ok2 && pyMathAliases[v.Name] {
+				} else if v, ok2 := fe.Target.(*VarExpr); ok2 && (pyMathAliases[v.Name] || v.Name == "Math") {
 					expr = &CallExpr{Func: "Math." + fe.Name, Args: args}
+					if funcRet != nil {
+						funcRet["Math."+fe.Name] = "double"
+					}
 				} else if v, ok2 := fe.Target.(*VarExpr); ok2 {
 					if kind, ok3 := builtinAliases[v.Name]; ok3 && kind == "go_testpkg" {
 						if fe.Name == "FifteenPuzzleExample" && len(args) == 0 {
