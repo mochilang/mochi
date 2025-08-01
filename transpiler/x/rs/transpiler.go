@@ -594,6 +594,13 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
+	vt := ""
+	if t := inferType(m); strings.HasPrefix(t, "HashMap<") {
+		parts := strings.TrimPrefix(t, "HashMap<")
+		if idx := strings.Index(parts, ","); idx > 0 {
+			vt = strings.TrimSpace(strings.TrimSuffix(parts[idx+1:], ">"))
+		}
+	}
 	io.WriteString(w, "HashMap::from([")
 	for i, it := range m.Items {
 		if i > 0 {
@@ -608,10 +615,20 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		io.WriteString(w, ", ")
-		if inferType(it.Value) == "String" {
-			io.WriteString(w, "String::from(")
+		if vt == "String" && inferType(it.Value) != "String" {
+			io.WriteString(w, "(")
 			it.Value.emit(w)
 			io.WriteString(w, ")")
+			io.WriteString(w, ".to_string()")
+		} else if inferType(it.Value) == "String" {
+			if _, ok := it.Value.(*NameRef); ok {
+				it.Value.emit(w)
+				io.WriteString(w, ".clone()")
+			} else {
+				io.WriteString(w, "String::from(")
+				it.Value.emit(w)
+				io.WriteString(w, ")")
+			}
 		} else {
 			it.Value.emit(w)
 		}
@@ -686,8 +703,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 			}
 			switch idxT {
 			case "String":
-				i.Index.emit(w)
-				io.WriteString(w, ".as_str()")
+				if _, ok := i.Index.(*StringLit); ok {
+					i.Index.emit(w)
+				} else {
+					i.Index.emit(w)
+					io.WriteString(w, ".as_str()")
+				}
 			case "&str":
 				i.Index.emit(w)
 			default:
@@ -736,8 +757,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "[")
 		switch inferType(i.Index) {
 		case "String":
-			i.Index.emit(w)
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); ok {
+				i.Index.emit(w)
+			} else {
+				i.Index.emit(w)
+				io.WriteString(w, ".as_str()")
+			}
 		case "&str":
 			i.Index.emit(w)
 		default:
@@ -758,8 +783,12 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "[")
 		switch inferType(i.Index) {
 		case "String":
-			i.Index.emit(w)
-			io.WriteString(w, ".as_str()")
+			if _, ok := i.Index.(*StringLit); ok {
+				i.Index.emit(w)
+			} else {
+				i.Index.emit(w)
+				io.WriteString(w, ".as_str()")
+			}
 		case "&str":
 			i.Index.emit(w)
 		default:

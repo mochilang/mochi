@@ -1,0 +1,834 @@
+error[E0106]: missing lifetime specifier
+ --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:5:11
+  |
+5 |     name: &str,
+  |           ^ expected named lifetime parameter
+  |
+help: consider introducing a named lifetime parameter
+  |
+4 ~ struct Map<'a> {
+5 ~     name: &'a str,
+  |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:68:11
+   |
+68 |     while (i < n) {
+   |           ^     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+68 -     while (i < n) {
+68 +     while i < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:69:13
+   |
+69 |         r = (r * 10.0);
+   |             ^        ^
+   |
+help: remove these parentheses
+   |
+69 -         r = (r * 10.0);
+69 +         r = r * 10.0;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:70:13
+   |
+70 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+70 -         i = (i + 1);
+70 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:77:27
+   |
+77 |     let mut scaled: f64 = ((f * scale) + 0.5);
+   |                           ^                 ^
+   |
+help: remove these parentheses
+   |
+77 -     let mut scaled: f64 = ((f * scale) + 0.5);
+77 +     let mut scaled: f64 = (f * scale) + 0.5;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:78:22
+   |
+78 |     let mut n: i64 = (scaled as i64);
+   |                      ^             ^
+   |
+help: remove these parentheses
+   |
+78 -     let mut n: i64 = (scaled as i64);
+78 +     let mut n: i64 = scaled as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:80:11
+   |
+80 |     while ((digits.len() as i64) <= prec) {
+   |           ^                             ^
+   |
+help: remove these parentheses
+   |
+80 -     while ((digits.len() as i64) <= prec) {
+80 +     while (digits.len() as i64) <= prec {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:90:22
+   |
+90 |     let mut n: i64 = (w - (s.len() as i64));
+   |                      ^                    ^
+   |
+help: remove these parentheses
+   |
+90 -     let mut n: i64 = (w - (s.len() as i64));
+90 +     let mut n: i64 = w - (s.len() as i64);
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:91:11
+   |
+91 |     while (n > 0) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+91 -     while (n > 0) {
+91 +     while n > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:93:13
+   |
+93 |         n = (n - 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+93 -         n = (n - 1);
+93 +         n = n - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:101:11
+    |
+101 |     while (i < n) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+101 -     while (i < n) {
+101 +     while i < n {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:103:13
+    |
+103 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+103 -         i = (i + 1);
+103 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:109:12
+    |
+109 |     return (i as f64)
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+109 -     return (i as f64)
+109 +     return i as f64
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:130:8
+    |
+130 |     if ((cs.len() as i64) == 0) {
+    |        ^                      ^
+    |
+help: remove these parentheses
+    |
+130 -     if ((cs.len() as i64) == 0) {
+130 +     if (cs.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:131:16
+    |
+131 |         return (n["coverage"].clone() as f64)
+    |                ^                            ^
+    |
+help: remove these parentheses
+    |
+131 -         return (n["coverage"].clone() as f64)
+131 +         return n["coverage"].clone() as f64
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:138:14
+    |
+138 |         v1 = (v1 + (toFloat(m["weight" as usize]) * c));
+    |              ^                                        ^
+    |
+help: remove these parentheses
+    |
+138 -         v1 = (v1 + (toFloat(m["weight" as usize]) * c));
+138 +         v1 = v1 + (toFloat(m["weight" as usize]) * c);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:139:14
+    |
+139 |         v2 = (v2 + m["weight" as usize]);
+    |              ^                         ^
+    |
+help: remove these parentheses
+    |
+139 -         v2 = (v2 + m["weight" as usize]);
+139 +         v2 = v2 + m["weight" as usize];
+    |
+
+warning: unnecessary parentheses around `return` value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:141:12
+    |
+141 |     return (v1 / toFloat(v2))
+    |            ^                ^
+    |
+help: remove these parentheses
+    |
+141 -     return (v1 / toFloat(v2))
+141 +     return v1 / toFloat(v2)
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:149:27
+    |
+149 |     let mut indent: i64 = (level * 4);
+    |                           ^         ^
+    |
+help: remove these parentheses
+    |
+149 -     let mut indent: i64 = (level * 4);
+149 +     let mut indent: i64 = level * 4;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:151:18
+    |
+151 |     let mut nl = ((name.len() as i64) + indent);
+    |                  ^                            ^
+    |
+help: remove these parentheses
+    |
+151 -     let mut nl = ((name.len() as i64) + indent);
+151 +     let mut nl = (name.len() as i64) + indent;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:153:57
+    |
+153 |     line = format!("{}{}", format!("{}{}", line, spaces((32 - nl))), "|  ");
+    |                                                         ^       ^
+    |
+help: remove these parentheses
+    |
+153 -     line = format!("{}{}", format!("{}{}", line, spaces((32 - nl))), "|  ");
+153 +     line = format!("{}{}", format!("{}{}", line, spaces(32 - nl)), "|  ");
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:159:26
+    |
+159 |         show(&mut child, (level + 1));
+    |                          ^         ^
+    |
+help: remove these parentheses
+    |
+159 -         show(&mut child, (level + 1));
+159 +         show(&mut child, level + 1);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:181:25
+    |
+181 |     let mut diff: f64 = (computeCoverage(&cleaning) - topCoverage);
+    |                         ^                                        ^
+    |
+help: remove these parentheses
+    |
+181 -     let mut diff: f64 = (computeCoverage(&cleaning) - topCoverage);
+181 +     let mut diff: f64 = computeCoverage(&cleaning) - topCoverage;
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:184:157
+    |
+184 | ...crease by ", formatFloat(diff, 6)), " to "), formatFloat((topCoverage + diff), 6)));
+    |                                                             ^                  ^
+    |
+help: remove these parentheses
+    |
+184 -     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "the top level coverage would increase by ", formatFloat(diff, 6)), " to "), formatFloat((topCoverage + diff), 6)));
+184 +     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "the top level coverage would increase by ", formatFloat(diff, 6)), " to "), formatFloat(topCoverage + diff, 6)));
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:119:49
+    |
+119 |         cs = { let mut _v = cs.clone(); _v.push(node); _v };
+    |                                            ---- ^^^^ expected `char`, found `&HashMap<String, String>`
+    |                                            |
+    |                                            arguments to this method are incorrect
+    |
+    = note:   expected type `char`
+            found reference `&HashMap<String, String>`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/string.rs:1403:12
+note: you might have meant to use method `push_str`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/string.rs:1111:5
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:125:40
+    |
+125 |     n.insert(String::from("coverage"), value);
+    |       ------                           ^^^^^- help: try using a conversion method: `.to_string()`
+    |       |                                |
+    |       |                                expected `String`, found `f64`
+    |       arguments to this method are incorrect
+    |
+help: the return type of this call is `f64` due to the type of the argument passed
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:125:5
+    |
+125 |     n.insert(String::from("coverage"), value);
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-----^
+    |                                        |
+    |                                        this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1201:12
+
+error[E0277]: `String` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:135:17
+    |
+135 |     for node in cs {
+    |                 ^^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+    |
+    = help: the trait `Iterator` is not implemented for `String`
+    = note: required for `String` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:137:42
+    |
+137 |         let mut c: f64 = computeCoverage(&m);
+    |                          --------------- ^^ expected `&HashMap<String, String>`, found `&i64`
+    |                          |
+    |                          arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, String>`
+               found reference `&i64`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:128:11
+    |
+128 | unsafe fn computeCoverage(n: &HashMap<String, String>) -> f64 {
+    |           ^^^^^^^^^^^^^^^ ---------------------------
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:138:30
+    |
+138 |         v1 = (v1 + (toFloat(m["weight" as usize]) * c));
+    |                              ^^^^^^^^^^^^^^^^^^^
+
+error[E0608]: cannot index into a value of type `i64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:139:21
+    |
+139 |         v2 = (v2 + m["weight" as usize]);
+    |                     ^^^^^^^^^^^^^^^^^^^
+
+error[E0605]: non-primitive cast: `String` as `f64`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:131:16
+    |
+131 |         return (n["coverage"].clone() as f64)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ an `as` expression can only be used to convert between primitive types or to coerce to a specific trait object
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:138:31
+    |
+138 |         v1 = (v1 + (toFloat(m["weight" as usize]) * c));
+    |                               ^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:139:22
+    |
+139 |         v2 = (v2 + m["weight" as usize]);
+    |                      ^^^^^^^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0277]: `String` is not an iterator
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:158:18
+    |
+158 |     for child in cs {
+    |                  ^^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+    |
+    = help: the trait `Iterator` is not implemented for `String`
+    = note: required for `String` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:165:43
+    |
+165 |     addChildren(&mut g_h1_bathrooms, vec![g_h1_bathroom1.clone(), g_h1_bathroom2.clone(), g_h1_outside.clone()]);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:165:17
+    |
+165 |     addChildren(&mut g_h1_bathrooms, vec![g_h1_bathroom1.clone(), g_h1_bathroom2.clone(), g_h1_outside.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:166:46
+    |
+166 |     addChildren(&mut g_h1_living_rooms, vec![g_h1_lounge.clone(), g_h1_dining.clone(), g_h1_conservatory.clone(), g_h1_playroom.clone()]);
+    |                                              ^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:166:17
+    |
+166 |     addChildren(&mut g_h1_living_rooms, vec![g_h1_lounge.clone(), g_h1_dining.clone(), g_h1_conservatory.clone(), g_h1_playroom.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:167:37
+    |
+167 |     addChildren(&mut g_house1, vec![g_h1_bedrooms.clone(), g_h1_bathrooms.clone(), g_h1_attic.clone(), g_h1_kitchen.clone(), g_h1_living_...
+    |                                     ^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:167:17
+    |
+167 |     addChildren(&mut g_house1, vec![g_h1_bedrooms.clone(), g_h1_bathrooms.clone(), g_h1_attic.clone(), g_h1_kitchen.clone(), g_h1_living_...
+    |     ----------- ^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:168:42
+    |
+168 |     addChildren(&mut g_h2_bedrooms, vec![g_h2_suite1.clone(), g_h2_suite2.clone(), g_h2_bedroom3.clone(), g_h2_bedroom4.clone()]);
+    |                                          ^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:168:17
+    |
+168 |     addChildren(&mut g_h2_bedrooms, vec![g_h2_suite1.clone(), g_h2_suite2.clone(), g_h2_bedroom3.clone(), g_h2_bedroom4.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:169:42
+    |
+169 |     addChildren(&mut g_h2_upstairs, vec![g_h2_bedrooms.clone(), g_h2_bathroom.clone(), g_h2_toilet.clone(), g_h2_attics.clone()]);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:169:17
+    |
+169 |     addChildren(&mut g_h2_upstairs, vec![g_h2_bedrooms.clone(), g_h2_bathroom.clone(), g_h2_toilet.clone(), g_h2_attics.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:170:46
+    |
+170 |     addChildren(&mut g_h2_living_rooms, vec![g_h2_lounge.clone(), g_h2_dining.clone(), g_h2_conservatory.clone(), g_h2_playroom.clone()]);
+    |                                              ^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:170:17
+    |
+170 |     addChildren(&mut g_h2_living_rooms, vec![g_h2_lounge.clone(), g_h2_dining.clone(), g_h2_conservatory.clone(), g_h2_playroom.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:171:45
+    |
+171 |     addChildren(&mut g_h2_groundfloor, vec![g_h2_kitchen.clone(), g_h2_living_rooms.clone(), g_h2_wet_room.clone(), g_h2_garage.clone(), ...
+    |                                             ^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:171:17
+    |
+171 |     addChildren(&mut g_h2_groundfloor, vec![g_h2_kitchen.clone(), g_h2_living_rooms.clone(), g_h2_wet_room.clone(), g_h2_garage.clone(), ...
+    |     ----------- ^^^^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:172:42
+    |
+172 |     addChildren(&mut g_h2_basement, vec![g_h2_cellars.clone(), g_h2_wine_cellar.clone(), g_h2_cinema.clone()]);
+    |                                          ^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:172:17
+    |
+172 |     addChildren(&mut g_h2_basement, vec![g_h2_cellars.clone(), g_h2_wine_cellar.clone(), g_h2_cinema.clone()]);
+    |     ----------- ^^^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:173:37
+    |
+173 |     addChildren(&mut g_house2, vec![g_h2_upstairs.clone(), g_h2_groundfloor.clone(), g_h2_basement.clone()]);
+    |                                     ^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:173:17
+    |
+173 |     addChildren(&mut g_house2, vec![g_h2_upstairs.clone(), g_h2_groundfloor.clone(), g_h2_basement.clone()]);
+    |     ----------- ^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:174:37
+    |
+174 |     addChildren(&mut cleaning, vec![g_house1.clone(), g_house2.clone()]);
+    |                                     ^^^^^^^^^^^^^^^^ expected `HashMap<String, String>`, found `Map`
+    |
+    = note: expected struct `HashMap<String, String>`
+               found struct `Map`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:174:17
+    |
+174 |     addChildren(&mut cleaning, vec![g_house1.clone(), g_house2.clone()]);
+    |     ----------- ^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:116:11
+    |
+116 | unsafe fn addChildren(n: &mut HashMap<String, String>, mut nodes: Vec<HashMap<String, String>>) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:175:48
+    |
+175 |     let mut topCoverage: f64 = computeCoverage(&cleaning);
+    |                                --------------- ^^^^^^^^^ expected `&HashMap<String, String>`, found `&Map`
+    |                                |
+    |                                arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, String>`
+               found reference `&Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:128:11
+    |
+128 | unsafe fn computeCoverage(n: &HashMap<String, String>) -> f64 {
+    |           ^^^^^^^^^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:179:10
+    |
+179 |     show(&mut cleaning, 0);
+    |     ---- ^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:148:11
+    |
+148 | unsafe fn show(n: &mut HashMap<String, String>, mut level: i64) {
+    |           ^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:180:17
+    |
+180 |     setCoverage(&mut g_h2_cinema, 1.0);
+    |     ----------- ^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:124:11
+    |
+124 | unsafe fn setCoverage(n: &mut HashMap<String, String>, mut value: f64) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:181:42
+    |
+181 |     let mut diff: f64 = (computeCoverage(&cleaning) - topCoverage);
+    |                          --------------- ^^^^^^^^^ expected `&HashMap<String, String>`, found `&Map`
+    |                          |
+    |                          arguments to this function are incorrect
+    |
+    = note: expected reference `&HashMap<String, String>`
+               found reference `&Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:128:11
+    |
+128 | unsafe fn computeCoverage(n: &HashMap<String, String>) -> f64 {
+    |           ^^^^^^^^^^^^^^^ ---------------------------
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:185:17
+    |
+185 |     setCoverage(&mut g_h2_cinema, 0.75);
+    |     ----------- ^^^^^^^^^^^^^^^^ expected `&mut HashMap<String, String>`, found `&mut Map`
+    |     |
+    |     arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut HashMap<String, String>`
+               found mutable reference `&mut Map`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:124:11
+    |
+124 | unsafe fn setCoverage(n: &mut HashMap<String, String>, mut value: f64) {
+    |           ^^^^^^^^^^^ -------------------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:65:17
+   |
+65 | unsafe fn pow10(mut n: i64) -> f64 {
+   |                 ----^
+   |                 |
+   |                 help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:75:23
+   |
+75 | unsafe fn formatFloat(mut f: f64, mut prec: i64) -> String {
+   |                       ----^
+   |                       |
+   |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:75:35
+   |
+75 | unsafe fn formatFloat(mut f: f64, mut prec: i64) -> String {
+   |                                   ----^^^^
+   |                                   |
+   |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:76:9
+   |
+76 |     let mut scale: f64 = pow10(prec);
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:77:9
+   |
+77 |     let mut scaled: f64 = ((f * scale) + 0.5);
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:78:9
+   |
+78 |     let mut n: i64 = (scaled as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:83:9
+   |
+83 |     let mut intPart: String = { let tmp = &digits; tmp.chars().skip(0 as usize).take((((digits.len() as i64) - prec) - 0) as usize).colle...
+   |         ----^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:84:9
+   |
+84 |     let mut fracPart: String = { let tmp = &digits; tmp.chars().skip(((digits.len() as i64) - prec) as usize).take(((digits.len() as i64)...
+   |         ----^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:88:28
+   |
+88 | unsafe fn padLeft(s: &str, mut w: i64) -> String {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:98:28
+   |
+98 | unsafe fn repeat(ch: &str, mut n: i64) -> String {
+   |                            ----^
+   |                            |
+   |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:108:19
+    |
+108 | unsafe fn toFloat(mut i: i64) -> f64 {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:144:18
+    |
+144 | unsafe fn spaces(mut n: i64) -> String {
+    |                  ----^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: unnecessary `unsafe` block
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/functional-coverage-tree.rs:231:9
+    |
+189 |     unsafe {
+    |     ------ because it's nested under this `unsafe` block
+...
+231 |         unsafe { mochi_main(); }
+    |         ^^^^^^ unnecessary `unsafe` block
+    |
+    = note: `#[warn(unused_unsafe)]` on by default
+
+error: aborting due to 36 previous errors; 36 warnings emitted
+
+Some errors have detailed explanations: E0106, E0277, E0308, E0605, E0606, E0608.
+For more information about an error, try `rustc --explain E0106`.
