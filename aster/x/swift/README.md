@@ -79,4 +79,31 @@ This directory contains utilities for generating and printing simplified Swift A
 - [x] 73. pure_global_fold.swift
 - [x] 74. python_auto.swift
 - [x] 75. python_math.swift
-Completed 75/102 at 2025-08-01 10:46 GMT+7
+- [x] 76. query_sum_select.swift
+- [x] 77. record_assign.swift
+- [x] 78. right_join.swift
+- [x] 79. save_jsonl_stdout.swift
+- [x] 80. short_circuit.swift
+- [x] 81. slice.swift
+- [x] 82. str_builtin.swift
+- [x] 83. string_compare.swift
+- [x] 84. string_concat.swift
+- [x] 85. string_contains.swift
+- [x] 86. string_in_operator.swift
+- [x] 87. string_index.swift
+- [x] 88. string_prefix_slice.swift
+- [x] 89. substring_builtin.swift
+- [x] 90. sum_builtin.swift
+- [x] 91. tail_recursion.swift
+- [x] 92. test_block.swift
+- [x] 93. tree_sum.swift
+- [x] 94. two-sum.swift
+- [x] 95. typed_let.swift
+- [x] 96. typed_var.swift
+- [x] 97. unary_neg.swift
+- [x] 98. update_stmt.swift
+- [x] 99. user_type_literal.swift
+- [x] 100. values_builtin.swift
+- [x] 101. var_assignment.swift
+- [x] 102. while_loop.swift
+Completed 102/102 at 2025-08-01 10:46 GMT+7

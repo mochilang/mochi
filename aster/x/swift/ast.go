@@ -143,17 +143,23 @@ func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node 
 				op := n.Child(0)
 				out.Text = strings.TrimSpace(op.Utf8Text(src))
 			}
-		case "control_transfer_statement", "class_declaration", "property_declaration", "value_argument":
-			if n.ChildCount() >= 1 && !n.Child(0).IsNamed() {
-				kw := n.Child(0)
-				out.Text = strings.TrimSpace(kw.Utf8Text(src))
-			} else if out.Kind == "property_declaration" && n.NamedChildCount() > 0 {
-				kw := strings.TrimSpace(string(src[n.StartByte():n.NamedChild(0).StartByte()]))
-				if kw == "var" || kw == "let" {
-					out.Text = kw
-				}
-			}
-		}
+               case "control_transfer_statement", "class_declaration", "property_declaration", "value_argument":
+                       if n.ChildCount() >= 1 && !n.Child(0).IsNamed() {
+                               kw := n.Child(0)
+                               out.Text = strings.TrimSpace(kw.Utf8Text(src))
+                       } else if out.Kind == "property_declaration" && n.NamedChildCount() > 0 {
+                               first := n.NamedChild(0)
+                               kw := strings.TrimSpace(string(src[n.StartByte():first.StartByte()]))
+                               if kw == "" {
+                                       txt := strings.TrimSpace(first.Utf8Text(src))
+                                       if txt == "var" || txt == "let" {
+                                               out.Text = txt
+                                       }
+                               } else if kw == "var" || kw == "let" {
+                                       out.Text = kw
+                               }
+                       }
+               }
 	}
 
 	for i := 0; i < int(n.NamedChildCount()); i++ {

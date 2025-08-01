@@ -47,9 +47,9 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
-	if len(files) > 75 {
-		files = files[:75]
-	}
+       if len(files) > 105 {
+               files = files[:105]
+       }
 
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".swift")
