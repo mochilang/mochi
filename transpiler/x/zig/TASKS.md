@@ -1,3 +1,23 @@
+## Progress (2025-08-01 23:15 +0700)
+- Commit 2cbc3775e7: transpiler(zig): support call-a-function-10
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 23:06 +0700)
+- Commit 38dd78ab26: fix transpiler variable usage detection
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 23:06 +0700)
+- Commit 38dd78ab26: fix transpiler variable usage detection
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 23:06 +0700)
+- Commit 38dd78ab26: fix transpiler variable usage detection
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-01 20:46 +0700)
 - Commit 518da8fd12: transpiler scheme: add outputs for rosetta indices 210-259 and fix map index assignment
 - Generated Zig for 98/105 programs
