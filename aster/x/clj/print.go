@@ -109,6 +109,15 @@ func writeNode(b *bytes.Buffer, n *Node) {
 			}
 		}
 		b.WriteByte('}')
+	case "set":
+		b.WriteString("#{")
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, c)
+		}
+		b.WriteByte('}')
 	case "entry":
 		if len(n.Children) == 2 {
 			writeNode(b, n.Children[0])

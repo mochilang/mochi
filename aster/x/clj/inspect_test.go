@@ -53,8 +53,8 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(entries)
-	if len(entries) > 25 {
-		entries = entries[:25]
+	if len(entries) > 50 {
+		entries = entries[:50]
 	}
 	files := entries
 

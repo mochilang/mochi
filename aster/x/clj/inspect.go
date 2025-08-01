@@ -38,6 +38,7 @@ type rawNode struct {
 	List   []*rawNode `json:"list,omitempty"`
 	Vector []*rawNode `json:"vector,omitempty"`
 	Map    []rawEntry `json:"map,omitempty"`
+	Set    []*rawNode `json:"set,omitempty"`
 }
 
 type rawEntry struct {
@@ -90,6 +91,14 @@ func toNode(r *rawNode) *Node {
 			n.Children = append(n.Children, en)
 		}
 		return n
+	case len(r.Set) > 0:
+		n := &Node{Kind: "set"}
+		for _, c := range r.Set {
+			if cn := toNode(c); cn != nil {
+				n.Children = append(n.Children, cn)
+			}
+		}
+		return n
 	}
 	return nil
 }
@@ -101,6 +110,7 @@ const bbScript = `(require '[cheshire.core :as json])
     (list? x) {:list (mapv node->json x)}
     (vector? x) {:vector (mapv node->json x)}
     (map? x) {:map (mapv (fn [[k v]] {:key (node->json k) :val (node->json v)}) x)}
+    (set? x) {:set (mapv node->json x)}
     (symbol? x) {:sym (str x)}
     (keyword? x) {:kw (str x)}
     (string? x) {:str x}
