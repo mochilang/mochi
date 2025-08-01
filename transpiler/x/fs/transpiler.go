@@ -3269,7 +3269,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-			if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
+			if t := varTypes[st.Assign.Name]; strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") || t == "array" {
+				// array or list assignment
+				// handled by IndexAssignStmt below
+			} else if t := varTypes[st.Assign.Name]; strings.HasPrefix(t, "Map<") {
 				if len(st.Assign.Index) == 1 {
 					mapVal := mapValueType(t)
 					v := val

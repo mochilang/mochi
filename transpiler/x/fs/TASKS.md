@@ -1,3 +1,7 @@
+## Progress (2025-08-01 22:40 +0700)
+- WIP: attempt to fix ftp transpilation
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 12:52 +0000)
 - fs rosetta: fix ordering and add french republican calendar
 - Generated F# for 103/105 programs (103 passing)
