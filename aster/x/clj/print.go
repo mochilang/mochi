@@ -124,6 +124,8 @@ func writeNode(b *bytes.Buffer, n *Node) {
 			b.WriteByte(' ')
 			writeNode(b, n.Children[1])
 		}
+	case "comment":
+		b.WriteString(n.Text)
 	case "string":
 		fmt.Fprintf(b, "%q", n.Text)
 	default:
