@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (313/491)
-_Last updated: 2025-08-01 17:44 +0700_
+## Golden Test Checklist (314/491)
+_Last updated: 2025-08-01 18:24 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -307,7 +307,7 @@ _Last updated: 2025-08-01 17:44 +0700_
 | 298 | dice-game-probabilities-2 | ✓ |  |  |
 | 299 | digital-root-multiplicative-digital-root | ✓ |  |  |
 | 300 | dijkstras-algorithm | error |  |  |
-| 301 | dinesmans-multiple-dwelling-problem |   |  |  |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 4µs | 8.7 MB |
 | 302 | dining-philosophers-1 |   |  |  |
 | 303 | dining-philosophers-2 |   |  |  |
 | 304 | disarium-numbers |   |  |  |
@@ -494,7 +494,7 @@ _Last updated: 2025-08-01 17:44 +0700_
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 1.532ms | 8.7 MB |
 | 486 | md5 | ✓ | 52µs | 8.9 MB |
 | 487 | nim-game | ✓ | 9µs | 8.7 MB |
-| 488 | plasma-effect | error |  |  |
+| 488 | plasma-effect | ✓ |  |  |
 | 489 | sorting-algorithms-bubble-sort | ✓ | 6µs | 8.7 MB |
 | 490 | window-management | ✓ | 5µs | 8.7 MB |
 | 491 | zumkeller-numbers | ✓ | 38.459ms | 8.8 MB |
