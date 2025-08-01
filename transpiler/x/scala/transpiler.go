@@ -453,6 +453,11 @@ func (s *VarStmt) emit(w io.Writer) {
 	if s.Value != nil {
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
+	} else if s.Type != "" {
+		if def := defaultExpr(s.Type); def != nil {
+			fmt.Fprint(w, " = ")
+			def.emit(w)
+		}
 	}
 }
 
@@ -1138,8 +1143,25 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	isMap := false
+	switch r := f.Receiver.(type) {
+	case *Name:
+		if typ, ok := localVarTypes[r.Name]; ok {
+			if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
+				isMap = true
+			}
+		}
+	case *IndexExpr:
+		if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
+			isMap = true
+		}
+	}
 	f.Receiver.emit(w)
-	fmt.Fprintf(w, ".%s", escapeName(f.Name))
+	if isMap {
+		fmt.Fprintf(w, "(\"%s\")", f.Name)
+	} else {
+		fmt.Fprintf(w, ".%s", escapeName(f.Name))
+	}
 }
 
 // SubstringExpr represents substring(s, i, j) which becomes s.substring(i, j).
@@ -2652,14 +2674,17 @@ func convertPrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		expr := Expr(&Name{Name: p.Selector.Root})
 		if env != nil {
 			if typ, err := env.GetVar(p.Selector.Root); err == nil {
-				if _, ok := typ.(types.GroupType); ok && len(p.Selector.Tail) > 0 {
-					ie := &IndexExpr{Value: expr, Index: &StringLit{Value: p.Selector.Tail[0]}, Container: toScalaTypeFromType(typ)}
-					ie.Type = inferTypeWithEnv(ie, env)
-					expr = ie
-					for _, f := range p.Selector.Tail[1:] {
-						expr = &FieldExpr{Receiver: expr, Name: f}
+				switch typ.(type) {
+				case types.GroupType, types.MapType:
+					if len(p.Selector.Tail) > 0 {
+						ie := &IndexExpr{Value: expr, Index: &StringLit{Value: p.Selector.Tail[0]}, Container: toScalaTypeFromType(typ)}
+						ie.Type = inferTypeWithEnv(ie, env)
+						expr = ie
+						for _, f := range p.Selector.Tail[1:] {
+							expr = &FieldExpr{Receiver: expr, Name: f}
+						}
+						return expr, nil
 					}
-					return expr, nil
 				}
 			}
 			if kind, ok := builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
@@ -4342,7 +4367,7 @@ func defaultExpr(typ string) Expr {
 	case strings.HasPrefix(typ, "Map"):
 		return &CallExpr{Fn: &Name{Name: "Map"}, Args: nil}
 	default:
-		return nil
+		return &Name{Name: "null"}
 	}
 }
 
