@@ -768,9 +768,13 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w)
 	}
 	for _, st := range p.Structs {
-		if st.Abstract {
-			fmt.Fprintf(w, "struct %s;\n", st.Name)
-		}
+		fmt.Fprintf(w, "struct %s;\n", st.Name)
+	}
+	if len(p.Structs) > 0 {
+		fmt.Fprintln(w)
+	}
+	for _, st := range p.Structs {
+		fmt.Fprintf(w, "std::ostream& operator<<(std::ostream&, const %s&);\n", st.Name)
 	}
 	if len(p.Structs) > 0 {
 		fmt.Fprintln(w)
@@ -839,9 +843,16 @@ func (p *Program) write(w io.Writer) {
 			case strings.HasPrefix(f.Type, "std::optional<"):
 				fmt.Fprintf(w, "; if(v.%s) os << *v.%s; else os << \"None\"; os", f.Name, f.Name)
 			case strings.HasPrefix(f.Type, "std::vector<"):
-				fmt.Fprintf(w, "<< \"[\"; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; os << v.%s[i]; } os << \"]\"", f.Name, f.Name)
+				elem := elementTypeFromListType(f.Type)
+				if elem == "std::any" {
+					fmt.Fprintf(w, "<< \"[\"; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; any_to_stream(os, v.%s[i]); } os << \"]\"", f.Name, f.Name)
+				} else {
+					fmt.Fprintf(w, "<< \"[\"; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; os << v.%s[i]; } os << \"]\"", f.Name, f.Name)
+				}
 			case strings.HasPrefix(f.Type, "std::map<"):
 				fmt.Fprintf(w, "<< \"{\"; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << \", \"; first_%d=false; os << p.first << ': ' << p.second; } os << \"}\"", i, f.Name, i, i)
+			case strings.HasPrefix(f.Type, "std::function<"):
+				fmt.Fprint(w, "<< \"<fn>\"")
 			default:
 				fmt.Fprintf(w, "<< v.%s", f.Name)
 			}
@@ -5181,30 +5192,40 @@ func convertMatchExpr(me *parser.MatchExpr) (Expr, error) {
 				return nil, err
 			}
 			localTypes = old
-			then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
+			if currentReturnType == "" || currentReturnType == "void" {
+				then = append(then, &ExprStmt{Expr: res})
+			} else {
+				then = append(then, &ReturnStmt{Value: res, Type: currentReturnType})
+			}
 			body = append(body, &IfStmt{Cond: &VarRef{Name: tmp}, Then: then})
 		} else {
 			res, err := convertExpr(c.Result)
 			if err != nil {
 				return nil, err
 			}
-			body = append(body, &ReturnStmt{Value: res, Type: currentReturnType})
+			if currentReturnType == "" || currentReturnType == "void" {
+				body = append(body, &ExprStmt{Expr: res})
+			} else {
+				body = append(body, &ReturnStmt{Value: res, Type: currentReturnType})
+			}
 		}
 	}
-	var def Expr = &StringLit{Value: ""}
-	switch {
-	case currentReturnType == "int64_t":
-		def = &IntLit{Value: 0}
-	case currentReturnType == "double":
-		def = &FloatLit{Value: 0}
-	case currentReturnType == "bool":
-		def = &BoolLit{Value: false}
-	case strings.HasPrefix(currentReturnType, "std::unique_ptr<") || strings.HasPrefix(currentReturnType, "std::shared_ptr<"):
-		def = &NullLit{}
-	default:
-		def = &StructLit{Name: currentReturnType}
+	if currentReturnType != "" && currentReturnType != "void" {
+		var def Expr = &StringLit{Value: ""}
+		switch {
+		case currentReturnType == "int64_t":
+			def = &IntLit{Value: 0}
+		case currentReturnType == "double":
+			def = &FloatLit{Value: 0}
+		case currentReturnType == "bool":
+			def = &BoolLit{Value: false}
+		case strings.HasPrefix(currentReturnType, "std::unique_ptr<") || strings.HasPrefix(currentReturnType, "std::shared_ptr<"):
+			def = &NullLit{}
+		default:
+			def = &StructLit{Name: currentReturnType}
+		}
+		body = append(body, &ReturnStmt{Value: def, Type: currentReturnType})
 	}
-	body = append(body, &ReturnStmt{Value: def, Type: currentReturnType})
 	return &MatchBlock{Body: body}, nil
 }
 
