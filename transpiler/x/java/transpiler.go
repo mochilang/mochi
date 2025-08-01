@@ -3617,6 +3617,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					if len(ex.Values) > 0 {
 						vt := inferType(ex.Values[0])
 						t = fmt.Sprintf("java.util.Map<String,%s>", javaBoxType(vt))
+						if topEnv != nil {
+							if tt := toJavaTypeFromType(types.ExprType(s.Let.Value, currentEnv())); tt != "" {
+								t = tt
+							}
+						}
 					}
 				}
 			}
@@ -5127,7 +5132,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		return &MapLit{Keys: keys, Values: vals, Fields: fields}, nil
+		keyType := ""
+		if len(keys) > 0 {
+			keyType = inferType(keys[0])
+			if keyType == "" && topEnv != nil {
+				keyType = toJavaTypeFromType(types.ExprType(ml.Items[0].Key, currentEnv()))
+			}
+		}
+		return &MapLit{Keys: keys, Values: vals, Fields: fields, KeyType: keyType}, nil
 	case p.Struct != nil:
 		var st types.StructType
 		if topEnv != nil {

@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-01 19:02 GMT+7
+Last updated: 2025-08-01 21:02 GMT+7
 
-## Rosetta Checklist (323/491)
+## Rosetta Checklist (327/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -442,10 +442,10 @@ Last updated: 2025-08-01 19:02 GMT+7
 | 434 | five-weekends | ✓ | 93.0ms | 115.09KB |
 | 435 | fivenum-1 | ✓ | 19.0ms | 944B |
 | 436 | fivenum-2 | ✓ | 34.0ms | 47.39KB |
-| 437 | fivenum-3 |   |  |  |
-| 438 | fixed-length-records-1 |   |  |  |
-| 439 | fixed-length-records-2 |   |  |  |
-| 440 | fizzbuzz-1 |   |  |  |
+| 437 | fivenum-3 | ✓ | 26.0ms | 57.16KB |
+| 438 | fixed-length-records-1 | ✓ | 18.0ms | 33.36KB |
+| 439 | fixed-length-records-2 | ✓ | 29.0ms | 53.98KB |
+| 440 | fizzbuzz-1 | ✓ | 17.0ms | 696B |
 | 441 | fizzbuzz-2 |   |  |  |
 | 442 | fizzbuzz |   |  |  |
 | 443 | flatten-a-list-1 |   |  |  |
