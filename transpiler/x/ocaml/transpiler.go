@@ -1999,9 +1999,9 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	if mu.Dyn {
 		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ") :: List.remove_assoc ")
+	io.WriteString(w, ") :: List.remove_assoc (")
 	mu.Key.emit(w)
-	io.WriteString(w, " ")
+	io.WriteString(w, ") ")
 	if mu.Dyn {
 		io.WriteString(w, "(Obj.magic (")
 		mu.Map.emit(w)
@@ -2233,6 +2233,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "List.map (fun v -> Obj.repr v) (")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "list_to_any":
+		io.WriteString(w, "(Obj.repr (List.map (fun v -> Obj.repr v) (")
+		c.Expr.emit(w)
+		io.WriteString(w, ")))")
 	case "obj_to_int":
 		io.WriteString(w, "(Obj.magic ")
 		c.Expr.emit(w)
@@ -2246,7 +2250,16 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		io.WriteString(w, " : string)")
 	default:
-		c.Expr.emit(w)
+		if strings.HasPrefix(c.Type, "obj_to_") {
+			typ := strings.TrimPrefix(c.Type, "obj_to_")
+			io.WriteString(w, "(Obj.magic ")
+			c.Expr.emit(w)
+			io.WriteString(w, " : ")
+			io.WriteString(w, ocamlType(typ))
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
 	}
 }
 
@@ -2302,6 +2315,10 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "__show (")
 		c.emit(w)
 		io.WriteString(w, ")")
+	case "list_to_any":
+		io.WriteString(w, "__show (")
+		c.emit(w)
+		io.WriteString(w, ")")
 	case "obj_to_int":
 		io.WriteString(w, "string_of_int (Obj.magic ")
 		c.Expr.emit(w)
@@ -2315,7 +2332,13 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		c.Expr.emit(w)
 		io.WriteString(w, " : string)")
 	default:
-		c.Expr.emitPrint(w)
+		if strings.HasPrefix(c.Type, "obj_to_") {
+			io.WriteString(w, "__show (")
+			c.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emitPrint(w)
+		}
 	}
 }
 
@@ -4457,6 +4480,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "float_to_int"}
 			} else if target == "string" && typ != "string" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_string"}
+			} else if strings.HasPrefix(target, "list") || strings.HasPrefix(target, "map") || structFields[target] != nil {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_" + target}
 			} else if mi, ok := expr.(*MapIndexExpr); ok {
 				mi.Typ = target
 				expr = mi
@@ -5513,8 +5538,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
 					case at == "float":
 						ex = &CastExpr{Expr: ex, Type: "float_to_obj"}
-					case strings.HasPrefix(at, "list-"):
-						ex = &CastExpr{Expr: ex, Type: "list_to_obj"}
+					case strings.HasPrefix(at, "list-") || at == "list":
+						ex = &CastExpr{Expr: ex, Type: "list_to_any"}
 					}
 				} else {
 					if ptyp == "int" {

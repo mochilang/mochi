@@ -1,8 +1,8 @@
 exit status 2
 File "/workspace/mochi/tests/rosetta/transpiler/OCaml/catmull-clark-subdivision-surface.ml", line 1:
 Warning 24 [bad-module-name]: bad source file name: "Catmull-clark-subdivision-surface" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/catmull-clark-subdivision-surface.ml", line 247, characters 67-75:
-247 |   edgesCenters := (List.append !edgesCenters [(Obj.magic ([("pn1", Obj.repr List.nth (me) (0)); ("pn2", Obj.repr List.nth (me) (1)); ("fn1", Obj.repr List.nth (me) (2)); ("fn2", Obj.repr List.nth (me) (3)); ("cp", Obj.repr cp)]) : Obj.t)]);
-                                                                         ^^^^^^^^
-Error: This function has type 'a -> Obj.t
-       It is applied to too many arguments; maybe you forgot a `;'.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/catmull-clark-subdivision-surface.ml", line 491, characters 18-37:
+491 |   outputPoints := List.nth (!res) (0);
+                        ^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         (string * Obj.t) list list

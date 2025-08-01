@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 215/491
+Completed programs: 220/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -170,21 +170,21 @@ Completed programs: 215/491
 | 162 | call-an-object-method-2 | error |  |  |
 | 163 | call-an-object-method-3 | error |  |  |
 | 164 | call-an-object-method | error |  |  |
-| 165 | camel-case-and-snake-case | ✓ | 235.0µs | 38.01KB |
-| 166 | canny-edge-detector | ✓ | 360.0µs | 75.23KB |
-| 167 | canonicalize-cidr | error |  |  |
-| 168 | cantor-set | ✓ | 213.0µs | 125.97KB |
+| 165 | camel-case-and-snake-case | ✓ | 374.0µs | 38.01KB |
+| 166 | canny-edge-detector | ✓ | 496.0µs | 75.23KB |
+| 167 | canonicalize-cidr | ✓ | 490.0µs | 37.84KB |
+| 168 | cantor-set | ✓ | 533.0µs | 125.97KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.0ms | 19.37KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56.0µs | 3.67KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | error |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 | error |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 | error |  |  |
-| 174 | case-sensitivity-of-identifiers | ✓ | 43.0µs | 2.72KB |
-| 175 | casting-out-nines | ✓ | 3.0ms | 632.52KB |
-| 176 | catalan-numbers-1 | ✓ | 31.0µs | 448B |
-| 177 | catalan-numbers-2 | ✓ | 27.0µs | 448B |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 369.0µs | 121.80KB |
-| 179 | catamorphism | error |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 120.0µs | 3.67KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 476.0µs | 54.86KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 74.0µs | 11.35KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 64.0µs | 7.79KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 89.0µs | 2.72KB |
+| 175 | casting-out-nines | ✓ | 6.0ms | 632.52KB |
+| 176 | catalan-numbers-1 | ✓ | 110.0µs | 448B |
+| 177 | catalan-numbers-2 | ✓ | 168.0µs | 448B |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 692.0µs | 121.80KB |
+| 179 | catamorphism | ✓ | 97.0µs | 712B |
 | 180 | catmull-clark-subdivision-surface | error |  |  |
 | 181 | chaocipher | ✓ | 158.0µs | 34.91KB |
 | 182 | chaos-game | ✓ |  |  |
@@ -497,4 +497,4 @@ Completed programs: 215/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 19:58 +0700
+Last updated 2025-08-01 21:30 +0700
