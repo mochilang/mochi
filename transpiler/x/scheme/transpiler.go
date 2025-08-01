@@ -184,35 +184,7 @@ func Format(src []byte) []byte {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	var buf bytes.Buffer
-	indent := 0
-	for i := 0; i < len(src); i++ {
-		ch := src[i]
-		switch ch {
-		case '(':
-			if i > 0 && src[i-1] == '\n' {
-				buf.WriteString(strings.Repeat("  ", indent))
-			}
-			buf.WriteByte('(')
-			indent++
-		case ')':
-			if indent > 0 {
-				indent--
-			}
-			buf.WriteByte(')')
-			if i+1 < len(src) && src[i+1] != '\n' {
-				buf.WriteByte('\n')
-			}
-		case '\n':
-			buf.WriteByte('\n')
-		default:
-			buf.WriteByte(ch)
-		}
-	}
-	if buf.Len() > 0 && buf.Bytes()[buf.Len()-1] != '\n' {
-		buf.WriteByte('\n')
-	}
-	return append(header(), buf.Bytes()...)
+	return append(header(), src...)
 }
 
 func header() []byte {
@@ -234,6 +206,7 @@ func header() []byte {
 	prelude += "(import (only (scheme char) string-upcase string-downcase))\n"
 	prelude += "(import (scheme write))\n"
 	prelude += "(import (srfi 69))\n"
+	prelude += "(import (srfi 1))\n"
 	if usesInput {
 		prelude += "(import (chibi io))\n"
 	}
@@ -330,6 +303,17 @@ func header() []byte {
     (if (< i n)
         (loop (+ i 1) (string-append out s))
         out)))`
+	prelude += `
+(define (slice seq start end)
+  (let* ((len (if (string? seq) (string-length seq) (length seq)))
+         (s (if (< start 0) (+ len start) start))
+         (e (if (< end 0) (+ len end) end)))
+    (set! s (max 0 (min len s)))
+    (set! e (max 0 (min len e)))
+    (when (< e s) (set! e s))
+    (if (string? seq)
+        (substring seq s e)
+        (take (drop seq s) (- e s))))`
 	prelude += `
 (define (_parseIntStr s base)
   (let* ((b (if (number? base) base 10))
@@ -2237,6 +2221,11 @@ func makeBinary(op string, left, right Node) Node {
 	}
 	switch op {
 	case "+":
+		if lstr, ok := left.(StringLit); ok {
+			if rstr, ok2 := right.(StringLit); ok2 {
+				return StringLit(string(lstr) + string(rstr))
+			}
+		}
 		if isStr(left) || isStr(right) {
 			return &List{Elems: []Node{Symbol("string-append"), left, right}}
 		}
@@ -2401,6 +2390,11 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		}
 		switch op {
 		case "+":
+			if lstr, ok := left.(StringLit); ok {
+				if rstr, ok2 := right.(StringLit); ok2 {
+					return StringLit(string(lstr) + string(rstr))
+				}
+			}
 			return &List{Elems: []Node{Symbol("string-append"), left, right}}
 		case "<":
 			return &List{Elems: []Node{Symbol("string<?"), left, right}}
