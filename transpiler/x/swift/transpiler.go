@@ -233,6 +233,36 @@ type FunExpr struct {
 	Body   Expr
 }
 
+// FunBlock represents an anonymous function with statement body.
+type FunBlock struct {
+	Params []Param
+	Ret    string
+	Body   []Stmt
+}
+
+func (f *FunBlock) emit(w io.Writer) {
+	fmt.Fprint(w, "{ (")
+	for i, p := range f.Params {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		if p.Type != "" {
+			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		} else {
+			fmt.Fprint(w, p.Name)
+		}
+	}
+	fmt.Fprint(w, ")")
+	if f.Ret != "" {
+		fmt.Fprintf(w, " -> %s", f.Ret)
+	}
+	fmt.Fprint(w, " in\n")
+	for _, s := range f.Body {
+		s.emit(w)
+	}
+	fmt.Fprint(w, "}")
+}
+
 // UnionMatchExpr represents a switch over a union enum value.
 type UnionMatchExpr struct {
 	Target Expr
@@ -2599,6 +2629,11 @@ func convertUpdateStmt(env *types.Env, us *parser.UpdateStmt) (Stmt, error) {
 }
 
 func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
+	if td.Alias != nil {
+		// simple type alias
+		ali := toSwiftType(td.Alias)
+		return &RawStmt{Code: fmt.Sprintf("typealias %s = %s\n", td.Name, ali)}, nil
+	}
 	if len(td.Variants) > 0 {
 		if _, ok := env.GetUnion(td.Name); ok {
 			variants := make([]UnionVariant, 0, len(td.Variants))
@@ -4120,6 +4155,25 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		fn := &FunExpr{Ret: toSwiftType(pr.FunExpr.Return)}
+		for _, p := range pr.FunExpr.Params {
+			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+		}
+		fn.Body = body
+		return fn, nil
+	case pr.FunExpr != nil && pr.FunExpr.BlockBody != nil:
+		child := types.NewEnv(env)
+		for _, p := range pr.FunExpr.Params {
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, env)
+			}
+			child.SetVar(p.Name, pt, false)
+		}
+		body, err := convertStmts(child, pr.FunExpr.BlockBody)
+		if err != nil {
+			return nil, err
+		}
+		fn := &FunBlock{Ret: toSwiftType(pr.FunExpr.Return)}
 		for _, p := range pr.FunExpr.Params {
 			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
 		}
