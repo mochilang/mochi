@@ -35,6 +35,11 @@ var benchMain bool
 
 var continueLabels []string
 
+// funcNameMap tracks sanitized names for user defined functions so that
+// subsequent calls can use the sanitized version rather than clashing with
+// Racket builtins such as `list` or `length`.
+var funcNameMap = map[string]string{}
+
 func pushContinue(label string) {
 	continueLabels = append(continueLabels, label)
 }
@@ -2086,7 +2091,11 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &FunDecl{Name: fn.Name, Params: params, Body: body}, nil
+	name := sanitizeName(fn.Name)
+	if name != fn.Name {
+		funcNameMap[fn.Name] = name
+	}
+	return &FunDecl{Name: name, Params: params, Body: body}, nil
 }
 
 func convertFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
@@ -2867,6 +2876,9 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		args = append(args, ae)
+	}
+	if fn, ok := funcNameMap[c.Func]; ok {
+		return &CallExpr{Func: fn, Args: args}, nil
 	}
 	if env != nil {
 		if ut, ok := env.FindUnionByVariant(c.Func); ok {
