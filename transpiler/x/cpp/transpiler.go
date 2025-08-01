@@ -312,6 +312,12 @@ type CallExpr struct {
 	Args []Expr
 }
 
+// FuncCallExpr represents calling the result of an expression.
+type FuncCallExpr struct {
+	Fun  Expr
+	Args []Expr
+}
+
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
 type NowExpr struct{}
 
@@ -1753,6 +1759,19 @@ func (v *VarRef) emit(w io.Writer) {
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Name)
 	io.WriteString(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		a.emit(w)
+	}
+	io.WriteString(w, ")")
+}
+
+func (c *FuncCallExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
+	c.Fun.emit(w)
+	io.WriteString(w, ")(")
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
@@ -4170,12 +4189,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					args = append([]Expr{sel2.Target}, args...)
 					expr = &CallExpr{Name: methodName, Args: args}
 				} else {
-					return nil, fmt.Errorf("unsupported call")
+					expr = &FuncCallExpr{Fun: expr, Args: args}
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
 				expr = &CallExpr{Name: safeName(vr.Name), Args: args}
 			} else {
-				return nil, fmt.Errorf("unsupported call")
+				expr = &FuncCallExpr{Fun: expr, Args: args}
 			}
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil:
 			name := *op.Cast.Type.Simple
@@ -4947,6 +4966,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			return nil, err
 		}
 		return &LambdaExpr{Params: params, Body: body}, nil
+	case p.FunExpr != nil && len(p.FunExpr.BlockBody) > 0:
+		fn := &parser.FunStmt{Params: p.FunExpr.Params, Body: p.FunExpr.BlockBody, Return: p.FunExpr.Return}
+		lam, err := convertFunLambda(fn)
+		if err != nil {
+			return nil, err
+		}
+		return lam, nil
 	case p.Group != nil:
 		return convertExpr(p.Group)
 	default:
@@ -6411,6 +6437,18 @@ func exprType(e Expr) string {
 			return "boost::multiprecision::cpp_int"
 		}
 		return "auto"
+	case *FuncCallExpr:
+		ft := exprType(v.Fun)
+		if strings.HasPrefix(ft, "std::function<") {
+			body := strings.TrimPrefix(ft, "std::function<")
+			if idx := strings.Index(body, "("); idx >= 0 {
+				ret := strings.TrimSpace(body[:idx])
+				if ret != "" {
+					return ret
+				}
+			}
+		}
+		return "auto"
 	case *BinaryExpr:
 		switch v.Op {
 		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
@@ -6595,7 +6633,7 @@ func structFieldType(stName, field string) string {
 			}
 		}
 	}
-	return "auto"
+	return ""
 }
 
 func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
