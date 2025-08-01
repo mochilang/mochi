@@ -4840,9 +4840,14 @@ func convertUnary(u *parser.Unary) Expr {
 			if castType != "" {
 				switch castType {
 				case "int":
-					if sliceStart != nil && sliceEnd != nil {
+					if inferExprType(currentEnv, current) == "const char*" {
+						needAtoi = true
+						current = &CallExpr{Func: "_atoi", Args: []Expr{current}}
+					} else if sliceStart != nil && sliceEnd != nil {
 						needCharAt = true
-						current = &CallExpr{Func: "_char_at", Args: []Expr{current, sliceStart}}
+						// when casting a single-character slice to int,
+						// the index within the slice should be 0
+						current = &CallExpr{Func: "_char_at", Args: []Expr{current, &IntLit{Value: 0}}}
 					}
 					return &UnaryExpr{Op: "(int)", Expr: current}
 				case "float":

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (117/491) - Last updated 2025-08-01 17:57 +0700:
+Checklist of programs that currently transpile and run (118/491) - Last updated 2025-08-01 12:32 +0000:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -430,7 +430,7 @@ Checklist of programs that currently transpile and run (117/491) - Last updated 
 | 423 | find-duplicate-files |  |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |  |  |  |
 | 425 | find-limit-of-recursion |  |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |  |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane |  |  |  |
 | 428 | find-the-intersection-of-two-lines |  |  |  |
 | 429 | find-the-last-sunday-of-each-month |  |  |  |
