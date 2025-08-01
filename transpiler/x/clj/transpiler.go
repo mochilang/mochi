@@ -423,6 +423,18 @@ func renameVar(name string) string {
 	return newName
 }
 
+func originalVar(name string) string {
+	if renameVars == nil {
+		return name
+	}
+	for k, v := range renameVars {
+		if v == name {
+			return k
+		}
+	}
+	return name
+}
+
 func validCljIdent(name string) bool {
 	if name == "" {
 		return false
@@ -722,6 +734,28 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		}},
 	}}
 	pr.Forms = append(pr.Forms, padStartFn)
+
+	if env != nil {
+		structs := env.Structs()
+		names := make([]string, 0, len(structs))
+		for n := range structs {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			st := structs[n]
+			for _, meth := range st.Methods {
+				fs := *meth.Decl
+				fs.Name = n + "_" + meth.Decl.Name
+				fs.Params = append([]*parser.Param{{Name: "self"}}, fs.Params...)
+				defn, err := transpileFunStmt(&fs)
+				if err != nil {
+					return nil, err
+				}
+				pr.Forms = append(pr.Forms, defn)
+			}
+		}
+	}
 	initSeed := &List{Elems: []Node{
 		Symbol("let"), &Vector{Elems: []Node{
 			Symbol("s"), &List{Elems: []Node{Symbol("System/getenv"), StringLit("MOCHI_NOW_SEED")}},
@@ -1651,6 +1685,30 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), n, arg}}
 				i++
 				continue
+			}
+			if i+1 < len(ops) && ops[i+1].Call != nil && transpileEnv != nil {
+				if sym, ok := n.(Symbol); ok {
+					orig := originalVar(string(sym))
+					if typ, err := transpileEnv.GetVar(orig); err == nil {
+						if st, ok := typ.(types.StructType); ok {
+							if m, ok := st.Methods[op.Field.Name]; ok {
+								call := ops[i+1].Call
+								args := []Node{n}
+								for _, a := range call.Args {
+									ae, err := transpileExpr(a)
+									if err != nil {
+										return nil, err
+									}
+									args = append(args, ae)
+								}
+								fn := Symbol(st.Name + "_" + m.Decl.Name)
+								n = &List{Elems: append([]Node{fn}, args...)}
+								i++
+								continue
+							}
+						}
+					}
+				}
 			}
 			// access map fields by keyword as function
 			key := Keyword(op.Field.Name)

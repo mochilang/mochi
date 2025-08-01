@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 170/491
-Last updated: 2025-08-01 22:51 +0700
+Completed: 171/491
+Last updated: 2025-08-01 23:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -165,7 +165,7 @@ Last updated: 2025-08-01 22:51 +0700
 | 158 | call-a-function-7 | ✓ | 28.845ms | 18.8 MB |
 | 159 | call-a-function-8 |   |  |  |
 | 160 | call-a-function-9 | ✓ | 38.208ms | 19.3 MB |
-| 161 | call-an-object-method-1 |   |  |  |
+| 161 | call-an-object-method-1 | ✓ | 40.402ms | 20.1 MB |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
