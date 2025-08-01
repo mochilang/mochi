@@ -1872,17 +1872,23 @@ func inferType(e Expr) string {
 	case *ListLit:
 		return "array"
 	case *MapLit:
-		if len(v.Types) > 0 {
-			valT := v.Types[0]
-			same := valT != "obj"
-			for _, t := range v.Types[1:] {
-				if t != valT {
-					same = false
-					break
+		if len(v.Items) > 0 {
+			keyT := inferType(v.Items[0][0])
+			valT := inferType(v.Items[0][1])
+			uniformKey := keyT != "obj"
+			uniformVal := valT != "obj"
+			for _, kv := range v.Items[1:] {
+				kt := inferType(kv[0])
+				vt := inferType(kv[1])
+				if kt != keyT {
+					uniformKey = false
+				}
+				if vt != valT {
+					uniformVal = false
 				}
 			}
-			if same {
-				return fmt.Sprintf("Map<string, %s>", valT)
+			if uniformKey && uniformVal {
+				return fmt.Sprintf("Map<%s, %s>", fsTypeFromString(keyT), valT)
 			}
 		}
 		return "map"
@@ -2737,24 +2743,44 @@ func Emit(prog *Program) []byte {
 			}
 		}
 	}
-	for i := 0; i < len(prog.Stmts); {
-		if fd, ok := prog.Stmts[i].(*FunDef); ok {
-			fd.emitWithPrefix(&buf, "let rec")
-			i++
-			for i < len(prog.Stmts) {
-				next, ok := prog.Stmts[i].(*FunDef)
-				if !ok {
-					break
-				}
-				buf.WriteByte('\n')
-				next.emitWithPrefix(&buf, "and")
-				i++
-			}
+	// Emit leading function definitions before other statements so that
+	// top-level values can call them without forward references. Functions
+	// appearing after the first non-function statement retain their
+	// relative position.
+	var funs []*FunDef
+	var others []Stmt
+	leading := true
+	for _, st := range prog.Stmts {
+		if fd, ok := st.(*FunDef); ok && leading {
+			funs = append(funs, fd)
 		} else {
-			prog.Stmts[i].emit(&buf)
-			i++
+			leading = false
+			others = append(others, st)
 		}
-		if i < len(prog.Stmts) {
+	}
+
+	for i, fd := range funs {
+		prefix := "let rec"
+		if i > 0 {
+			buf.WriteByte('\n')
+			prefix = "and"
+		}
+		fd.emitWithPrefix(&buf, prefix)
+	}
+
+	if len(funs) > 0 && len(others) > 0 {
+		buf.WriteByte('\n')
+	}
+
+	for i, st := range others {
+		st.emit(&buf)
+		if i < len(others)-1 {
+			buf.WriteByte('\n')
+		}
+	}
+
+	if len(others) > 0 && buf.Len() > 0 {
+		if b := buf.Bytes(); b[len(b)-1] != '\n' {
 			buf.WriteByte('\n')
 		}
 	}
@@ -2817,37 +2843,19 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		p.Stmts = append(opens, p.Stmts...)
 	}
-	// Move all function definitions ahead of other statements
-	// while preserving any leading non-function statements so
-	// variable declarations remain before their usage.
-	if len(p.Stmts) > 1 {
-		var pre, funs, post []Stmt
-		seenFun := false
-		for _, st := range p.Stmts {
-			switch s := st.(type) {
-			case *FunDef:
-				funs = append(funs, st)
-				seenFun = true
-			case *LetStmt:
-				pre = append(pre, st)
-			case *ExprStmt:
-				if !seenFun {
-					pre = append(pre, st)
-				} else if exprUsesFunc(s.Expr) {
-					post = append(post, st)
-				} else {
-					pre = append(pre, st)
-				}
-			default:
-				pre = append(pre, st)
-			}
-		}
-		p.Stmts = append(pre, append(funs, post...)...)
-	}
+	// Preserve original statement order when building the program.
 	for name, lsts := range letPtrs {
 		if mutatedVars[name] {
 			for _, ls := range lsts {
 				ls.Mutable = true
+			}
+		}
+		if typ := varTypes[name]; typ != "" {
+			for _, ls := range lsts {
+				ls.Type = fsTypeFromString(typ)
+				if typ == "obj" {
+					ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
+				}
 			}
 		}
 	}
@@ -3257,6 +3265,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			if cur == "" || cur == "array" || cur == "map" {
 				varTypes[st.Assign.Name] = t
 				cur = t
+			} else if cur != t {
+				if t == "obj" || cur == "obj" {
+					varTypes[st.Assign.Name] = "obj"
+					cur = "obj"
+				}
 			}
 			if cur != "" && cur != t && cur != "obj" {
 				e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}

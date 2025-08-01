@@ -1,3 +1,11 @@
+## Progress (2025-08-01 18:08 +0000)
+- fs transpiler: support functional coverage tree
+- Generated F# for 103/105 programs (103 passing)
+
+## Progress (2025-08-02 00:57 +0700)
+- ocaml: fix map field parsing and add benchmark
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-01 23:54 +0700)
 - fs transpiler: fix array-of-map assignment
 - Generated F# for 103/105 programs (103 passing)
