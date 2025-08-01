@@ -608,7 +608,13 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		io.WriteString(w, ", ")
-		it.Value.emit(w)
+		if inferType(it.Value) == "String" {
+			io.WriteString(w, "String::from(")
+			it.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			it.Value.emit(w)
+		}
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "])")
@@ -1310,7 +1316,11 @@ func (v *VarDecl) emit(w io.Writer) {
 			io.WriteString(w, ": LazyLock<Mutex<")
 			io.WriteString(w, typ)
 			io.WriteString(w, ">> = LazyLock::new(|| Mutex::new(")
-			io.WriteString(w, zeroValue(typ))
+			if v.Expr != nil {
+				v.Expr.emit(w)
+			} else {
+				io.WriteString(w, zeroValue(typ))
+			}
 			io.WriteString(w, "));")
 			return
 		}
@@ -2459,7 +2469,6 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
-				vd.Expr = nil
 			}
 		} else {
 			if len(localVarStack) > 0 {
@@ -2588,7 +2597,6 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
-				vd.Expr = nil
 			}
 		} else {
 			if len(localVarStack) > 0 {
@@ -3157,7 +3165,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if mut {
+				sigType = "&mut " + typ
+			} else {
 				sigType = "&" + typ
 			}
 		}
@@ -5273,6 +5283,17 @@ func Emit(prog *Program) []byte {
 	}
 	for _, g := range prog.Globals {
 		if g.Expr != nil {
+			typ := g.Type
+			if typ == "" {
+				if orig, ok := globalRenameBack[g.Name]; ok {
+					typ = varTypes[orig]
+				} else {
+					typ = varTypes[g.Name]
+				}
+			}
+			if strings.HasPrefix(typ, "HashMap") {
+				continue
+			}
 			for i := 0; i < indent; i++ {
 				buf.WriteString("    ")
 			}
