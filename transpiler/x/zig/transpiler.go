@@ -1427,7 +1427,7 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, ") |row| {\n")
 		writeIndent(w, indent+1)
-		io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(row, .{})}) catch unreachable;\n")
+                io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, row, .{}) catch unreachable;\n")
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "const _tmp = std.mem.replaceOwned(u8, std.heap.page_allocator, __j, %q, %q) catch unreachable;\n", ":", ": ")
 		writeIndent(w, indent+1)
@@ -1450,13 +1450,13 @@ func (s *SaveStmt) emit(w io.Writer, indent int) {
 
 func (j *JSONStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	io.WriteString(w, "const __j = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(")
-	if j.Value != nil {
-		j.Value.emit(w)
-	} else {
-		io.WriteString(w, "null")
-	}
-	io.WriteString(w, ", .{})}) catch unreachable;\n")
+        io.WriteString(w, "const __j = std.json.stringifyAlloc(std.heap.page_allocator, ")
+        if j.Value != nil {
+                j.Value.emit(w)
+        } else {
+                io.WriteString(w, "null")
+        }
+        io.WriteString(w, ", .{}) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__j});\n")
 	writeIndent(w, indent)
@@ -1869,7 +1869,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
 	writeIndent(w, indent)
-	io.WriteString(w, "const __bj = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(__bench, .{ .whitespace = .indent_2 })}) catch unreachable;\n")
+        io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
 	writeIndent(w, indent)
@@ -3298,21 +3298,34 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	pushAliasScope()
 	aliases := aliasStack[len(aliasStack)-1]
 	defer popAliasScope()
-	for i, p := range fn.Params {
-		typ := toZigType(p.Type)
-		name := p.Name
-		if globalNames[name] {
-			alias := name + "_param"
-			aliases[name] = alias
-			name = alias
-		}
-		params[i] = Param{Name: name, Type: typ}
-		names[i] = name
-		varTypes[name] = typ
-		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
-			mapVars[name] = true
-		}
-	}
+        preStmts := []Stmt{}
+        for i, p := range fn.Params {
+                typ := toZigType(p.Type)
+                name := p.Name
+                paramName := name
+                if mutables[p.Name] {
+                        paramName = uniqueName(name + "_param")
+                } else if globalNames[name] {
+                        paramName = name + "_param"
+                }
+                aliasName := paramName
+                if mutables[p.Name] {
+                        aliasName = uniqueName(name + "_var")
+                        namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+                        vd := &VarDecl{Name: aliasName, Value: &VarRef{Name: paramName}, Mutable: true}
+                        preStmts = append(preStmts, vd)
+                        varDecls[p.Name] = vd
+                        varDecls[aliasName] = vd
+                }
+                aliases[name] = aliasName
+                params[i] = Param{Name: paramName, Type: typ}
+                names[i] = aliasName
+                varTypes[aliasName] = typ
+                varTypes[name] = typ
+                if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+                        mapVars[aliasName] = true
+                }
+        }
 	funParamsStack = append(funParamsStack, names)
 	funDepth++
 	defer func() {
@@ -3323,12 +3336,13 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	if fn.Return != nil {
 		ret = toZigType(fn.Return)
 	}
-	body := make([]Stmt, 0, len(fn.Body))
-	for _, st := range fn.Body {
-		s, err := compileStmt(st, prog)
-		if err != nil {
-			return nil, err
-		}
+        body := make([]Stmt, 0, len(fn.Body)+len(preStmts))
+        body = append(body, preStmts...)
+        for _, st := range fn.Body {
+                s, err := compileStmt(st, prog)
+                if err != nil {
+                        return nil, err
+                }
 		if s != nil {
 			body = append(body, s)
 		}
