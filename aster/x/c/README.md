@@ -2,9 +2,8 @@
 
 Generated files for C programs live under `tests/aster/x/c`.
 
-
-Checked: 52/52
-_Last updated: 2025-07-31 23:15 GMT+7_
+Checked: 75/75
+_Last updated: 2025-08-01 08:34 GMT+7_
 
 ## Golden Test Checklist
 1. [x] append_builtin.c
@@ -57,5 +56,28 @@ _Last updated: 2025-07-31 23:15 GMT+7_
 48. [x] list_index.c
 49. [x] list_nested_assign.c
 50. [x] list_set_ops.c
-51. [x] two-sum.c
-52. [x] while_loop.c
+51. [x] map_index.c
+52. [x] map_int_key.c
+53. [x] match_expr.c
+54. [x] match_full.c
+55. [x] math_ops.c
+56. [x] membership.c
+57. [x] min_max_builtin.c
+58. [x] print_hello.c
+59. [x] pure_fold.c
+60. [x] pure_global_fold.c
+61. [x] record_assign.c
+62. [x] short_circuit.c
+63. [x] slice.c
+64. [x] str_builtin.c
+65. [x] string_compare.c
+66. [x] string_concat.c
+67. [x] string_contains.c
+68. [x] string_in_operator.c
+69. [x] string_index.c
+70. [x] string_prefix_slice.c
+71. [x] substring_builtin.c
+72. [x] sum_builtin.c
+73. [x] tail_recursion.c
+74. [x] test_block.c
+75. [x] two-sum.c
