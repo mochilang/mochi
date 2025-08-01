@@ -2422,7 +2422,10 @@ func convertReturnStmt(env *types.Env, r *parser.ReturnStmt) (Stmt, error) {
 			} else {
 				typ := swiftTypeOf(rt)
 				if typ != "Any" {
-					ex = &CastExpr{Expr: ex, Type: typ + "!"}
+					srcTyp := swiftTypeOf(types.TypeOfExpr(r.Value, env))
+					if srcTyp != typ {
+						ex = &CastExpr{Expr: ex, Type: typ + "!"}
+					}
 				} else if lit, ok := ex.(*LitExpr); ok && lit.Value == "nil" {
 					ex = &RawStmt{Code: "nil as Any?"}
 				}
@@ -3474,7 +3477,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
 						ae = &RawStmt{Code: "nil as Any?"}
 					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
-						ae = &CastExpr{Expr: ae, Type: pt + "!"}
+						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+						if srcT != pt {
+							ae = &CastExpr{Expr: ae, Type: pt + "!"}
+						}
 					}
 				}
 				ce.Args = append(ce.Args, ae)
@@ -4150,6 +4156,10 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			child.SetVar(p.Name, pt, false)
 		}
+		if pr.FunExpr.Return != nil {
+			rt := types.ResolveTypeRef(pr.FunExpr.Return, env)
+			child.SetVar("$retType", rt, false)
+		}
 		body, err := convertExpr(child, pr.FunExpr.ExprBody)
 		if err != nil {
 			return nil, err
@@ -4168,6 +4178,10 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 				pt = types.ResolveTypeRef(p.Type, env)
 			}
 			child.SetVar(p.Name, pt, false)
+		}
+		if pr.FunExpr.Return != nil {
+			rt := types.ResolveTypeRef(pr.FunExpr.Return, env)
+			child.SetVar("$retType", rt, false)
 		}
 		body, err := convertStmts(child, pr.FunExpr.BlockBody)
 		if err != nil {
@@ -4400,6 +4414,16 @@ func toSwiftOptionalType(t *parser.TypeRef) string {
 
 func swiftTypeOf(t types.Type) string {
 	switch tt := t.(type) {
+	case types.FuncType:
+		params := make([]string, len(tt.Params))
+		for i, p := range tt.Params {
+			params[i] = swiftTypeOf(p)
+		}
+		ret := "Any"
+		if tt.Return != nil {
+			ret = swiftTypeOf(tt.Return)
+		}
+		return "(" + strings.Join(params, ", ") + ") -> " + ret
 	case types.IntType:
 		return "Int"
 	case types.Int64Type:
@@ -4413,6 +4437,8 @@ func swiftTypeOf(t types.Type) string {
 		return "String"
 	case types.BoolType:
 		return "Bool"
+	case types.AnyType:
+		return "Any?"
 	case types.ListType:
 		return "[" + swiftTypeOf(tt.Elem) + "]"
 	case types.MapType:
