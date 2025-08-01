@@ -4015,6 +4015,11 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	if currentRetType == "" {
+		if _, ok := val.(*NullLit); ok {
+			return &ReturnStmt{}, nil
+		}
+	}
 	fixListLits(val, env)
 	if currentRetType == "map[string]any" {
 		if ml, ok := val.(*MapLit); ok {
@@ -4027,7 +4032,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		if exprType == "" {
 			exprType = "any"
 		}
-		if exprType != ret && ret != "any" {
+		if ret != "any" && exprType != ret && exprType != "any" {
 			if exprType == "*big.Int" && (ret == "int" || ret == "int64") {
 				usesBigInt = true
 				val = &BigIntToIntExpr{Value: val}
@@ -4078,6 +4083,13 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	hasRetVal := false
 	for _, st := range fn.Body {
 		if st.Return != nil && st.Return.Value != nil {
+			if fn.Return == nil {
+				if v, err := compileExpr(st.Return.Value, child, ""); err == nil {
+					if _, ok := v.(*NullLit); ok {
+						continue
+					}
+				}
+			}
 			hasRetVal = true
 			break
 		}

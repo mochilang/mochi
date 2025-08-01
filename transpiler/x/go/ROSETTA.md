@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 461/491
-Last updated: 2025-08-02 00:55 +0700
+Completed programs: 459/491
+Last updated: 2025-08-02 01:16 +0700
 
 Checklist:
 
@@ -135,7 +135,7 @@ Checklist:
 | 126 | bitmap | ✓ | 17.0ms | 2.86MB |
 | 127 | bitwise-io-1 | ✓ | 407.0µs | 1.12KB |
 | 128 | bitwise-io-2 |   |  |  |
-| 129 | bitwise-operations |   |  |  |
+| 129 | bitwise-operations | ✓ |  |  |
 | 130 | blum-integer | ✓ | 449.0µs | 4.83KB |
 | 131 | boolean-values |   |  |  |
 | 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
@@ -153,7 +153,7 @@ Checklist:
 | 144 | calendar---for-real-programmers-1 | ✓ | 595.0µs | 11.21KB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 1.0ms | 11.21KB |
 | 146 | calendar | ✓ | 518.0µs | 11.21KB |
-| 147 | calkin-wilf-sequence | ✓ | 1.0ms | 34.42KB |
+| 147 | calkin-wilf-sequence |   | 1.0ms | 34.42KB |
 | 148 | call-a-foreign-language-function | ✓ | 203.0µs | 952B |
 | 149 | call-a-function-1 | ✓ | 26.0µs | 0B |
 | 150 | call-a-function-10 | ✓ | 125.0µs | 64B |
@@ -168,20 +168,20 @@ Checklist:
 | 159 | call-a-function-8 | ✓ | 202.0µs | 176B |
 | 160 | call-a-function-9 | ✓ | 29.0µs | 64B |
 | 161 | call-an-object-method-1 | ✓ | 275.0µs | 0B |
-| 162 | call-an-object-method-2 | ✓ | 43.0µs | 96B |
+| 162 | call-an-object-method-2 |   | 43.0µs | 96B |
 | 163 | call-an-object-method-3 | ✓ | 200.0µs | 0B |
 | 164 | call-an-object-method | ✓ | 206.0µs | 0B |
-| 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector |   |  |  |
-| 167 | canonicalize-cidr |   |  |  |
+| 165 | camel-case-and-snake-case | ✓ |  |  |
+| 166 | canny-edge-detector | ✓ |  |  |
+| 167 | canonicalize-cidr | ✓ |  |  |
 | 168 | cantor-set | ✓ | 338.0µs | 195.69KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 545.0µs | 7.96KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 60.0µs | 2.23KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 539.0µs | 10.30KB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 165.0µs | 12.81KB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 134.0µs | 12.91KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 |   | 539.0µs | 10.30KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 |   | 165.0µs | 12.81KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 |   | 134.0µs | 12.91KB |
 | 174 | case-sensitivity-of-identifiers | ✓ | 816.0µs | 2.51KB |
-| 175 | casting-out-nines | ✓ | 14.0ms | 2.64MB |
+| 175 | casting-out-nines |   | 14.0ms | 2.64MB |
 | 176 | catalan-numbers-1 | ✓ | 293.0µs | 1.27KB |
 | 177 | catalan-numbers-2 | ✓ | 579.0µs | 1.29KB |
 | 178 | catalan-numbers-pascals-triangle | ✓ | 472.0µs | 1.98KB |
