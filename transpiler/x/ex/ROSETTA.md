@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (157/491)
-_Last updated: 2025-07-31 00:20 +0700_
+## Rosetta Test Checklist (156/491)
+_Last updated: 2025-08-01 10:51 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -402,10 +402,10 @@ _Last updated: 2025-07-31 00:20 +0700_
 | 394 | factors-of-a-mersenne-number |  |  |  |
 | 395 | factors-of-an-integer |  |  |  |
 | 396 | fairshare-between-two-and-more |  |  |  |
-| 397 | farey-sequence | ✓ |  |  |
-| 398 | fast-fourier-transform | ✓ |  |  |
-| 399 | fasta-format | ✓ |  |  |
-| 400 | faulhabers-formula | ✓ |  |  |
+| 397 | farey-sequence |  |  |  |
+| 398 | fast-fourier-transform |  |  |  |
+| 399 | fasta-format |  |  |  |
+| 400 | faulhabers-formula |  |  |  |
 | 401 | faulhabers-triangle |  |  |  |
 | 402 | feigenbaum-constant-calculation |  |  |  |
 | 403 | fermat-numbers |  |  |  |
@@ -455,20 +455,20 @@ _Last updated: 2025-07-31 00:20 +0700_
 | 447 | flow-control-structures-2 |  |  |  |
 | 448 | flow-control-structures-3 |  |  |  |
 | 449 | flow-control-structures-4 |  |  |  |
-| 450 | floyd-warshall-algorithm |  |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 271us | 2.5 MB |
 | 451 | floyd-warshall-algorithm2 |  |  |  |
 | 452 | floyds-triangle |  |  |  |
 | 453 | forest-fire |  |  |  |
 | 454 | fork-2 |  |  |  |
 | 455 | fork |  |  |  |
-| 456 | formal-power-series |  |  |  |
+| 456 | formal-power-series | ✓ | 1.72ms | 3.6 MB |
 | 457 | formatted-numeric-output |  |  |  |
 | 458 | forward-difference |  |  |  |
 | 459 | four-bit-adder-1 |  |  |  |
 | 460 | four-is-magic |  |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |  |  |  |
 | 462 | fractal-tree |  |  |  |
-| 463 | fractran |  |  |  |
+| 463 | fractran | ✓ | 1.76s | 121.7 KB |
 | 464 | french-republican-calendar |  |  |  |
 | 465 | ftp |  |  |  |
 | 466 | function-frequency |  |  |  |
