@@ -1,0 +1,32 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "func",
+      "name": "makeAdder",
+      "params": [
+        "n"
+      ],
+      "body": "\\ x -\u003e x + n"
+    },
+    {
+      "kind": "var",
+      "name": "add10",
+      "body": "makeAdder 10"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (add10 7)"
+    }
+  ]
+}

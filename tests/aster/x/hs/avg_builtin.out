@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/avg_builtin.hs:5:8: error:
+    Unexpected do block in function application:
+        do print
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+  |
+5 | main = do print
+  |        ^^^^^^^^

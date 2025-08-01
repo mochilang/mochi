@@ -1,0 +1,51 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (l, n)"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "n",
+          "type": "Int"
+        },
+        {
+          "name": "l",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "letters",
+      "body": "[\"A\", \"B\"]"
+    },
+    {
+      "kind": "var",
+      "name": "nums",
+      "body": "[1, 2, 3]"
+    },
+    {
+      "kind": "var",
+      "name": "pairs",
+      "body": "[GenType1{n = n, l = l} | n \u003c- nums, l \u003c- letters, n `mod` 2 == 0]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn \"--- Even pairs ---\"\n   mapM_ (\\ p -\u003e do putStrLn (show p . n ++ \" \" ++ p . l)) pairs"
+    }
+  ]
+}

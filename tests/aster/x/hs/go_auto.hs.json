@@ -1,0 +1,38 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "func",
+      "name": "testpkg_Add",
+      "params": [
+        "a",
+        "b"
+      ],
+      "body": "a + b"
+    },
+    {
+      "kind": "var",
+      "name": "testpkg_Answer",
+      "body": "42"
+    },
+    {
+      "kind": "var",
+      "name": "testpkg_Pi",
+      "body": "3.14"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (testpkg_Add 2 3)\n   print (testpkg_Pi)\n   print (testpkg_Answer)"
+    }
+  ]
+}

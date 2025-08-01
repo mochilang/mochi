@@ -1,0 +1,27 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Data.List (intercalate, isInfixOf, union, intersect, nub, sortOn, (\\\\))"
+  ],
+  "items": [
+    {
+      "kind": "var",
+      "name": "a",
+      "body": "[1, 2]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (a ++ [3])"
+    }
+  ]
+}

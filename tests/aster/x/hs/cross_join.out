@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/cross_join.hs:17:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- Cross Join: All order-customer pairs ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+17 | main = do putStrLn "--- Cross Join: All order-customer pairs ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

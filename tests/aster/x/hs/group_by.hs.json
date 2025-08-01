@@ -1,0 +1,83 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (age, avg_age, city, count, name)",
+    "import Data.List (intercalate, isInfixOf, union, intersect, nub, sortOn, (\\\\))"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "MGroup",
+      "fields": [
+        {
+          "name": "key",
+          "type": "k"
+        },
+        {
+          "name": "items",
+          "type": "[a]"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "name": "age",
+          "type": "Int"
+        },
+        {
+          "name": "city",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType2",
+      "fields": [
+        {
+          "name": "city",
+          "type": "String"
+        },
+        {
+          "name": "count",
+          "type": "Int"
+        },
+        {
+          "name": "avg_age",
+          "type": "Double"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "people",
+      "body": "[GenType1{name = \"Alice\", age = 30, city = \"Paris\"},\n GenType1{name = \"Bob\", age = 15, city = \"Hanoi\"},\n GenType1{name = \"Charlie\", age = 65, city = \"Paris\"},\n GenType1{name = \"Diana\", age = 45, city = \"Hanoi\"},\n GenType1{name = \"Eve\", age = 70, city = \"Paris\"},\n GenType1{name = \"Frank\", age = 22, city = \"Hanoi\"}]"
+    },
+    {
+      "kind": "var",
+      "name": "stats",
+      "body": "[GenType2{city = g . key, count = length g . items,\n          avg_age =\n            fromIntegral (sum [p . age | p \u003c- g . items]) /\n              fromIntegral (length [p . age | p \u003c- g . items])}\n |\n g \u003c- [MGroup{key = k,\n              items = [person | person \u003c- people, person . city == k]}\n       | k \u003c- nub ([person . city | person \u003c- people])]]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn \"--- People grouped by city ---\"\n   mapM_\n     (\\ s -\u003e\n        do putStrLn\n             (s . city ++\n                \" \" ++\n                  \": count =\" ++\n                    \" \" ++\n                      show s . count ++ \" \" ++ \", avg_age =\" ++ \" \" ++ show s . avg_age))\n     stats"
+    }
+  ]
+}

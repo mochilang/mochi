@@ -1,0 +1,19 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (1 + 2 * 3)\n   print ((1 + 2) * 3)\n   print (2 * 3 + 1)\n   print (2 * (3 + 1))"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+
+/workspace/mochi/tests/aster/x/hs/group_by_conditional_sum.hs:6:30: error:
+    Not in scope: type variable ‘k’
+  |
+6 | data MGroup = MGroup {key :: k, items :: [a] }
+  |                              ^
+
+/workspace/mochi/tests/aster/x/hs/group_by_conditional_sum.hs:6:43: error:
+    Not in scope: type variable ‘a’
+  |
+6 | data MGroup = MGroup {key :: k, items :: [a] }
+  |                                           ^

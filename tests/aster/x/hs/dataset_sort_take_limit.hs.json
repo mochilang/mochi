@@ -1,0 +1,47 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (name, price)",
+    "import Data.List (intercalate, isInfixOf, union, intersect, nub, sortOn, (\\\\))"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "name": "price",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "expensive",
+      "body": "sortOn (\\ p -\u003e -p . price) [p | p \u003c- products]"
+    },
+    {
+      "kind": "var",
+      "name": "products",
+      "body": "[GenType1{name = \"Laptop\", price = 1500},\n GenType1{name = \"Smartphone\", price = 900},\n GenType1{name = \"Tablet\", price = 600},\n GenType1{name = \"Monitor\", price = 300},\n GenType1{name = \"Keyboard\", price = 100},\n GenType1{name = \"Mouse\", price = 50},\n GenType1{name = \"Headphones\", price = 200}]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn \"--- Top products (excluding most expensive) ---\"\n   mapM_\n     (\\ item -\u003e\n        do putStrLn show item . name ++\n             \" \" ++ \"costs $\" ++ \" \" ++ show item . price)\n     expensive"
+    }
+  ]
+}

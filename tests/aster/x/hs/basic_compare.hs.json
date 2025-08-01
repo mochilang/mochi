@@ -1,0 +1,29 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "var",
+      "name": "a",
+      "body": "10 - 3"
+    },
+    {
+      "kind": "var",
+      "name": "b",
+      "body": "2 + 2"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (a)\n   print (a == 7)\n   print (b \u003c 5)"
+    }
+  ]
+}

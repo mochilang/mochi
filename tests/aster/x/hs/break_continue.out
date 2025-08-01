@@ -1,0 +1,16 @@
+
+/workspace/mochi/tests/aster/x/hs/break_continue.hs:6:8: error:
+    Unexpected do block in function application:
+        do let loop [] = return ()
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+  |
+6 | main = do let loop [] = return ()
+  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/aster/x/hs/break_continue.hs:8:10: error:
+    parse error on input ‘|’
+  |
+8 |          | n `mod` 2 == 0 = loop xs
+  |          ^

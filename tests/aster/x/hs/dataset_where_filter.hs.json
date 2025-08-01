@@ -1,0 +1,64 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (age, is_senior, name)"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "name": "age",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType2",
+      "fields": [
+        {
+          "name": "name",
+          "type": "String"
+        },
+        {
+          "name": "age",
+          "type": "Int"
+        },
+        {
+          "name": "is_senior",
+          "type": "Bool"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "adults",
+      "body": "[GenType2{name = person . name, age = person . age,\n          is_senior = person . age \u003e= 60}\n | person \u003c- people, person . age \u003e= 18]"
+    },
+    {
+      "kind": "var",
+      "name": "people",
+      "body": "[GenType1{name = \"Alice\", age = 30},\n GenType1{name = \"Bob\", age = 15},\n GenType1{name = \"Charlie\", age = 65},\n GenType1{name = \"Diana\", age = 45}]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn \"--- Adults ---\"\n   mapM_\n     (\\ person -\u003e\n        do putStrLn\n             (person . name ++\n                \" \" ++\n                  \"is\" ++\n                    \" \" ++\n                      show person . age ++\n                        \" \" ++ if person . is_senior then \" (senior)\" else \"\"))\n     adults"
+    }
+  ]
+}

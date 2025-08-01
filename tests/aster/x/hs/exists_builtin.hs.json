@@ -1,0 +1,29 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "var",
+      "name": "_data",
+      "body": "[1, 2]"
+    },
+    {
+      "kind": "var",
+      "name": "flag",
+      "body": "not ((null [x | x \u003c- _data, x == 1]))"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (flag)"
+    }
+  ]
+}
