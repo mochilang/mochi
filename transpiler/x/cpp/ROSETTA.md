@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (219/491) - Last updated 2025-08-01 18:02 +0700:
+Checklist of programs that currently transpile and run (230/491) - Last updated 2025-08-01 18:27 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -195,18 +195,18 @@ Checklist of programs that currently transpile and run (219/491) - Last updated 
 | 188 | chat-server | ✓ | 53.0µs | 13.29MB |
 | 189 | check-machin-like-formulas | ✓ | 54.0ms | 14.19MB |
 | 190 | check-that-file-exists | ✓ | 297.0µs | 13.13MB |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 |   |  |  |
-| 193 | checkpoint-synchronization-3 |   |  |  |
-| 194 | checkpoint-synchronization-4 |   |  |  |
-| 195 | chernicks-carmichael-numbers |   |  |  |
-| 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem |   |  |  |
-| 198 | chinese-zodiac |   |  |  |
+| 191 | checkpoint-synchronization-1 | ✓ | 188.0µs | 13.18MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 261.0µs | 13.05MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 290.0µs | 13.00MB |
+| 194 | checkpoint-synchronization-4 | ✓ | 356.0µs | 12.62MB |
+| 195 | chernicks-carmichael-numbers | ✓ | 334.0ms | 13.98MB |
+| 196 | cheryls-birthday | ✓ | 221.0µs | 13.49MB |
+| 197 | chinese-remainder-theorem | ✓ | 175.0µs | 12.80MB |
+| 198 | chinese-zodiac | ✓ | 285.0µs | 13.36MB |
 | 199 | cholesky-decomposition-1 |   |  |  |
-| 200 | cholesky-decomposition |   |  |  |
-| 201 | chowla-numbers |   |  |  |
-| 202 | church-numerals-1 |   |  |  |
+| 200 | cholesky-decomposition | ✓ | 573.0µs | 13.04MB |
+| 201 | chowla-numbers | ✓ | 174.0µs | 13.23MB |
+| 202 | church-numerals-1 | ✓ | 677.0µs | 13.62MB |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points |   |  |  |
 | 205 | circular-primes |   |  |  |
