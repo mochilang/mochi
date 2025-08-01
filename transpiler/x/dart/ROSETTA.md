@@ -21,27 +21,27 @@ Compiled and ran: 420/491
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 2.671112s | 319.5 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 48.009ms | 15.8 MB |
 | 14 | 99-bottles-of-beer | ✓ | 8.928ms | 3.2 MB |
-| 15 | a+b | ✓ | 14.005ms | 11.3 MB |
-| 16 | abbreviations-automatic | ✓ | 19.029ms | 1.9 MB |
-| 17 | abbreviations-easy | ✓ | 9.104ms | 2.0 MB |
-| 18 | abbreviations-simple | ✓ | 11.198ms | 84.0 KB |
-| 19 | abc-problem | ✓ | 8.068ms | 568.0 KB |
-| 20 | abelian-sandpile-model-identity | ✓ | 6.995ms | 12.0 MB |
-| 21 | abelian-sandpile-model | ✓ | 6.336ms | 2.7 MB |
-| 22 | abstract-type | ✓ | 6.366ms | 13.1 MB |
-| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 186.855ms | 13.1 MB |
-| 24 | abundant-odd-numbers | ✓ | 385.384ms | 3.8 MB |
-| 25 | accumulator-factory | ✓ | 6.201ms | 11.8 MB |
-| 26 | achilles-numbers | ✓ | 23.77ms | 3.9 MB |
-| 27 | ackermann-function-2 | ✓ | 5.871ms | 2.8 MB |
+| 15 | a+b | ✓ | 23.382ms | 6.4 MB |
+| 16 | abbreviations-automatic | ✓ | 39.1ms | 8.3 MB |
+| 17 | abbreviations-easy | ✓ | 15.511ms | 4.8 MB |
+| 18 | abbreviations-simple | ✓ | 23.523ms | 6.0 MB |
+| 19 | abc-problem | ✓ | 15.901ms | 4.0 MB |
+| 20 | abelian-sandpile-model-identity | ✓ | 19.27ms | 5.0 MB |
+| 21 | abelian-sandpile-model | ✓ | 28.349ms | 9.7 MB |
+| 22 | abstract-type | ✓ | 9.782ms | 2.9 MB |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 335.06ms | 2.5 MB |
+| 24 | abundant-odd-numbers | ✓ | 574.917ms | 3.4 MB |
+| 25 | accumulator-factory | ✓ | 31.285ms | 11.0 MB |
+| 26 | achilles-numbers | ✓ | 124.164ms | 3.1 MB |
+| 27 | ackermann-function-2 | ✓ | 19.882ms | 9.2 MB |
 | 28 | ackermann-function-3 | ✓ | 2m6.732393s | 8.3 MB |
 | 29 | ackermann-function | ✓ | 6.601ms | 1.2 MB |
 | 30 | active-directory-connect | ✓ | 13.872ms | 1.5 MB |
 | 31 | active-directory-search-for-a-user | ✓ | 6.278ms | 88.0 KB |
 | 32 | active-object | ✓ | 6.874ms | 11.9 MB |
-| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 21.949ms | 11.9 MB |
-| 34 | additive-primes | ✓ | 6.327ms | 12.6 MB |
-| 35 | address-of-a-variable | ✓ | 5.84ms | 10.7 MB |
+| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 41.775ms | 7.1 MB |
+| 34 | additive-primes | ✓ | 23.011ms | 10.5 MB |
+| 35 | address-of-a-variable | ✓ | 17.624ms | 9.9 MB |
 | 36 | adfgvx-cipher | ✓ | 9.665ms | 1.6 MB |
 | 37 | aks-test-for-primes | ✓ | 5.546ms | 496.0 KB |
 | 38 | algebraic-data-types | ✓ |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-01 19:03 +0700_
+_Last updated: 2025-08-01 22:47 +0700_

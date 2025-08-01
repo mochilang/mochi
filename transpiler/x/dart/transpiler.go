@@ -507,8 +507,11 @@ func (s *VarStmt) emit(w io.Writer) error {
 	nextStructHint = s.Name
 	typ := s.Type
 	if typ == "" {
-		// Default to dynamic for implicitly typed variables
-		typ = "dynamic"
+		// Try to infer type from the assigned value for untyped variables
+		typ = inferType(s.Value)
+		if typ == "" {
+			typ = "dynamic"
+		}
 	}
 	if inFunc && s.Type == "" && typ != "dynamic" {
 		valType := inferType(s.Value)
@@ -607,8 +610,22 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		// assigning null to a non-null variable is a no-op
 		return nil
 	}
-	if err := s.Target.emit(w); err != nil {
-		return err
+	if iex, ok := s.Target.(*IndexExpr); ok {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		iex.NoBang = true
+		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
+			iex.NoSuffix = true
+		}
+		if err := iex.emit(w); err != nil {
+			return err
+		}
+		iex.NoBang = oldBang
+		iex.NoSuffix = oldSuf
+	} else {
+		if err := s.Target.emit(w); err != nil {
+			return err
+		}
 	}
 	if _, err := io.WriteString(w, " = "); err != nil {
 		return err
@@ -1125,7 +1142,20 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 		if err := b.Right.emit(w); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, ".contains("); err != nil {
+		method := ".contains("
+		if strings.HasPrefix(inferType(b.Right), "Map<") {
+			method = ".containsKey("
+		} else if sel, ok := b.Right.(*SelectorExpr); ok {
+			if fields, ok := structFields[inferType(sel.Receiver)]; ok {
+				for _, f := range fields {
+					if f.Name == sel.Field && strings.HasPrefix(f.Type, "Map<") {
+						method = ".containsKey("
+						break
+					}
+				}
+			}
+		}
+		if _, err := io.WriteString(w, method); err != nil {
 			return err
 		}
 		if err := b.Left.emit(w); err != nil {
@@ -1206,7 +1236,7 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	left := func() error { return emitWithBigIntCast(w, b.Left, lt, target) }
 	right := func() error { return emitWithBigIntCast(w, b.Right, rt, target) }
-	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && lt == "String" && rt == "String" {
+	if (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "String" || isMaybeString(b.Left)) && (rt == "String" || isMaybeString(b.Right)) {
 		if err := left(); err != nil {
 			return err
 		}
@@ -2321,6 +2351,10 @@ func isMaybeString(e Expr) bool {
 					return true
 				}
 			}
+		}
+	case *IndexExpr:
+		if isMaybeString(ex.Target) {
+			return true
 		}
 	case *CallExpr:
 		if n, ok := ex.Func.(*Name); ok {
