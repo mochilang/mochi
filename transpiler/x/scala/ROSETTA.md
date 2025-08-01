@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (311/491)
-_Last updated: 2025-07-31 08:01 +0700_
+## Golden Test Checklist (313/491)
+_Last updated: 2025-08-01 17:44 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -456,7 +456,7 @@ _Last updated: 2025-07-31 08:01 +0700_
 | 447 | flow-control-structures-2 | ✓ | 2µs | 8.7 MB |
 | 448 | flow-control-structures-3 | ✓ | 17µs | 8.7 MB |
 | 449 | flow-control-structures-4 | ✓ | 2µs | 8.7 MB |
-| 450 | floyd-warshall-algorithm | error |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 8µs | 8.7 MB |
 | 451 | floyd-warshall-algorithm2 | error |  |  |
 | 452 | floyds-triangle | error |  |  |
 | 453 | forest-fire | ✓ | 66µs | 8.7 MB |

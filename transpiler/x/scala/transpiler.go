@@ -4297,6 +4297,11 @@ func isBigIntExpr(e Expr) bool {
 		return true
 	case *Name:
 		return localVarTypes[v.Name] == "BigInt"
+	case *IndexExpr:
+		if strings.Contains(v.Container, "BigInt") {
+			return true
+		}
+		return isBigIntExpr(v.Value) || isBigIntExpr(v.Index)
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			lt := inferType(v.Left)
