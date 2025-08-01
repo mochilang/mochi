@@ -90,8 +90,14 @@ type StructDef struct {
 	Fields   []Param
 }
 
+type AliasDef struct {
+	Name string
+	Type string
+}
+
 type Program struct {
 	Includes  []string
+	Aliases   []AliasDef
 	Structs   []StructDef
 	Globals   []Stmt
 	Functions []*Func
@@ -747,6 +753,12 @@ func (p *Program) write(w io.Writer) {
 	fmt.Fprintln(w, "    ss << std::boolalpha << v;")
 	fmt.Fprintln(w, "    return ss.str();")
 	fmt.Fprintln(w, "}")
+	for _, al := range p.Aliases {
+		fmt.Fprintf(w, "using %s = %s;\n", al.Name, al.Type)
+	}
+	if len(p.Aliases) > 0 {
+		fmt.Fprintln(w)
+	}
 	for _, st := range p.Structs {
 		if st.Abstract {
 			fmt.Fprintf(w, "struct %s;\n", st.Name)
@@ -1640,6 +1652,8 @@ func (c *CastExpr) emit(w io.Writer) {
 			if strings.HasPrefix(t, "std::map<") && strings.Contains(t, "std::any>") {
 				valType = "std::any"
 			}
+		} else if _, ok := c.Value.(*FuncCallExpr); ok {
+			valType = "std::any"
 		}
 	}
 	if ml, ok := c.Value.(*MapLit); ok && strings.HasPrefix(c.Type, "std::map<") && valType == "std::map<std::string, std::any>" {
@@ -3329,7 +3343,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
-				cp.Structs = append(cp.Structs, *st)
+				if st != nil {
+					cp.Structs = append(cp.Structs, *st)
+				}
 			}
 		case stmt.Assign != nil:
 			val, err := convertExpr(stmt.Assign.Value)
@@ -4192,7 +4208,15 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &FuncCallExpr{Fun: expr, Args: args}
 				}
 			} else if vr, ok := expr.(*VarRef); ok {
-				expr = &CallExpr{Name: safeName(vr.Name), Args: args}
+				if currentEnv != nil {
+					if _, ok := currentEnv.GetFunc(vr.Name); ok {
+						expr = &CallExpr{Name: safeName(vr.Name), Args: args}
+					} else {
+						expr = &FuncCallExpr{Fun: expr, Args: args}
+					}
+				} else {
+					expr = &FuncCallExpr{Fun: expr, Args: args}
+				}
 			} else {
 				expr = &FuncCallExpr{Fun: expr, Args: args}
 			}
@@ -5907,6 +5931,28 @@ func convertOuterJoinQuery(q *parser.QueryExpr, target string) (Expr, *StructDef
 	return &OuterJoinComp{LeftVar: q.Var, LeftIter: leftIter, RightVar: j.Var, RightIter: rightIter, LeftType: optLeftType, RightType: optRightType, LeftInner: leftType, RightInner: rightType, Cond: cond, Body: body, ElemType: elemType}, def, elemType, nil
 }
 
+func funcReturnType(ft string) string {
+	if strings.HasPrefix(ft, "std::function<") {
+		body := strings.TrimSuffix(strings.TrimPrefix(ft, "std::function<"), ">")
+		depth := 0
+		for i := 0; i < len(body); i++ {
+			switch body[i] {
+			case '<':
+				depth++
+			case '>':
+				if depth > 0 {
+					depth--
+				}
+			case '(':
+				if depth == 0 {
+					return strings.TrimSpace(body[:i])
+				}
+			}
+		}
+	}
+	return "auto"
+}
+
 func cppType(t string) string {
 	switch t {
 	case "int":
@@ -5999,6 +6045,9 @@ func cppType(t string) string {
 				currentProgram.addInclude("<memory>")
 			}
 			return fmt.Sprintf("std::shared_ptr<%s>", t)
+		}
+		if alias, ok := currentEnv.LookupType(t); ok {
+			return cppTypeFrom(alias)
 		}
 	}
 	return "auto"
@@ -6439,14 +6488,8 @@ func exprType(e Expr) string {
 		return "auto"
 	case *FuncCallExpr:
 		ft := exprType(v.Fun)
-		if strings.HasPrefix(ft, "std::function<") {
-			body := strings.TrimPrefix(ft, "std::function<")
-			if idx := strings.Index(body, "("); idx >= 0 {
-				ret := strings.TrimSpace(body[:idx])
-				if ret != "" {
-					return ret
-				}
-			}
+		if ret := funcReturnType(ft); ret != "auto" {
+			return ret
 		}
 		return "auto"
 	case *BinaryExpr:
@@ -6642,6 +6685,13 @@ func convertTypeDecl(td *parser.TypeDecl) (*StructDef, error) {
 	}
 	if len(td.Variants) > 0 {
 		return nil, fmt.Errorf("unsupported type variants")
+	}
+	if td.Alias != nil && len(td.Members) == 0 {
+		typ := cppTypeFrom(types.ResolveTypeRef(td.Alias, currentEnv))
+		if currentProgram != nil {
+			currentProgram.Aliases = append(currentProgram.Aliases, AliasDef{Name: td.Name, Type: typ})
+		}
+		return nil, nil
 	}
 	st := &StructDef{Name: td.Name}
 	for _, m := range td.Members {

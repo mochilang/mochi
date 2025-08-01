@@ -1,0 +1,170 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:21:181: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:22:209: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:22:295: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:23:189: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:24:183: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:25:215: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:25:251: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> zero()’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:73:12: error: could not convert ‘<lambda closure object>zero()::<lambda(std::function<std::any(std::any)>)>()’ from ‘zero()::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+   73 |     return [=](std::function<std::any(std::any)> f) mutable {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            |
+      |            zero()::<lambda(std::function<std::any(std::any)>)>
+   74 |     return id;
+      |     ~~~~~~~~~~
+   75 | };
+      | ~           
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:84:63: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+   84 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
+      |                                                               ^
+In file included from /usr/include/c++/13/functional:59,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:4:
+/usr/include/c++/13/bits/std_function.h:435:9: note: candidate: ‘template<class _Functor, class _Constraints> std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Constraints = _Functor; _Res = std::any; _ArgTypes = {std::any}]’
+  435 |         function(_Functor&& __f)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:435:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/13/bits/move.h:37,
+                 from /usr/include/c++/13/bits/exception_ptr.h:41,
+                 from /usr/include/c++/13/exception:164,
+                 from /usr/include/c++/13/ios:41,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:2:
+/usr/include/c++/13/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::__enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
+/usr/include/c++/13/bits/std_function.h:353:8:   required by substitution of ‘template<class _Res, class ... _ArgTypes> template<class _Cond, class _Tp> using std::function<_Res(_ArgTypes ...)>::_Requires = std::__enable_if_t<_Cond::value, _Tp> [with _Cond = std::function<std::any(std::any)>::_Callable<std::any, std::any, std::__invoke_result<std::any&, std::any> >; _Tp = void; _Res = std::any; _ArgTypes = {std::any}]’
+/usr/include/c++/13/bits/std_function.h:434:9:   required from here
+/usr/include/c++/13/type_traits:116:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
+  116 |     using __enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~~~
+/usr/include/c++/13/bits/std_function.h:404:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  404 |       function(function&& __x) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:404:27: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::function<std::any(std::any)>&&’
+  404 |       function(function&& __x) noexcept
+      |                ~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:386:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(const std::function<_Res(_ArgTypes ...)>&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  386 |       function(const function& __x)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:386:32: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::function<std::any(std::any)>&’
+  386 |       function(const function& __x)
+      |                ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:375:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::nullptr_t) [with _Res = std::any; _ArgTypes = {std::any}; std::nullptr_t = std::nullptr_t]’
+  375 |       function(nullptr_t) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:375:16: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::nullptr_t’
+  375 |       function(nullptr_t) noexcept
+      |                ^~~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function() [with _Res = std::any; _ArgTypes = {std::any}]’
+  368 |       function() noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> succ(std::function<std::any(std::any)>)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:83:12: error: could not convert ‘<lambda closure object>succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(n)}’ from ‘succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+   83 |     return [=](std::function<std::any(std::any)> f) mutable {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            |
+      |            succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>
+   84 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   85 | };
+      | ~           
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:90:60: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+      |                                                            ^
+/usr/include/c++/13/bits/std_function.h:435:9: note: candidate: ‘template<class _Functor, class _Constraints> std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Constraints = _Functor; _Res = std::any; _ArgTypes = {std::any}]’
+  435 |         function(_Functor&& __f)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:435:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/std_function.h:404:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  404 |       function(function&& __x) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:404:27: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::function<std::any(std::any)>&&’
+  404 |       function(function&& __x) noexcept
+      |                ~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:386:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(const std::function<_Res(_ArgTypes ...)>&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  386 |       function(const function& __x)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:386:32: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::function<std::any(std::any)>&’
+  386 |       function(const function& __x)
+      |                ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:375:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::nullptr_t) [with _Res = std::any; _ArgTypes = {std::any}; std::nullptr_t = std::nullptr_t]’
+  375 |       function(nullptr_t) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:375:16: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::nullptr_t’
+  375 |       function(nullptr_t) noexcept
+      |                ^~~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function() [with _Res = std::any; _ArgTypes = {std::any}]’
+  368 |       function() noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:90:103: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+      |                                                                                                       ^
+/usr/include/c++/13/bits/std_function.h:435:9: note: candidate: ‘template<class _Functor, class _Constraints> std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Constraints = _Functor; _Res = std::any; _ArgTypes = {std::any}]’
+  435 |         function(_Functor&& __f)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:435:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/std_function.h:404:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  404 |       function(function&& __x) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:404:27: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::function<std::any(std::any)>&&’
+  404 |       function(function&& __x) noexcept
+      |                ~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:386:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(const std::function<_Res(_ArgTypes ...)>&) [with _Res = std::any; _ArgTypes = {std::any}]’
+  386 |       function(const function& __x)
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:386:32: note:   no known conversion for argument 1 from ‘std::any’ to ‘const std::function<std::any(std::any)>&’
+  386 |       function(const function& __x)
+      |                ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/std_function.h:375:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function(std::nullptr_t) [with _Res = std::any; _ArgTypes = {std::any}; std::nullptr_t = std::nullptr_t]’
+  375 |       function(nullptr_t) noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:375:16: note:   no known conversion for argument 1 from ‘std::any’ to ‘std::nullptr_t’
+  375 |       function(nullptr_t) noexcept
+      |                ^~~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note: candidate: ‘std::function<_Res(_ArgTypes ...)>::function() [with _Res = std::any; _ArgTypes = {std::any}]’
+  368 |       function() noexcept
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:89:12: error: could not convert ‘<lambda closure object>plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(m), std::function<std::any(std::any)>(n)}’ from ‘plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+   89 |     return [=](std::function<std::any(std::any)> f) mutable {
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |            |
+      |            plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>
+   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   91 | };
+      | ~           
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> exp(std::function<std::any(std::any)>, std::function<std::any(std::any)>)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:99:13: error: could not convert ‘std::function<_Res(_ArgTypes ...)>::operator()(_ArgTypes ...) const [with _Res = std::any; _ArgTypes = {std::any}](std::any(m))’ from ‘std::any’ to ‘std::function<std::any(std::any)>’
+   99 |     return n(m);
+      |            ~^~~
+      |             |
+      |             std::any
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘int64_t toInt(std::function<std::any(std::any)>)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:108:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
+  108 |     (x(fCounter))(id);
+      |     ~~~~~~~~~~~~~^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::string toStr(std::function<std::any(std::any)>)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:118:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
+  118 |     (x(fCounter))(id);
+      |     ~~~~~~~~~~~~~^~~~
