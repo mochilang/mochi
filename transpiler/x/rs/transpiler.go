@@ -608,7 +608,13 @@ func (m *MapLit) emit(w io.Writer) {
 			it.Key.emit(w)
 		}
 		io.WriteString(w, ", ")
-		it.Value.emit(w)
+		if _, ok := it.Value.(*StringLit); ok {
+			io.WriteString(w, "String::from(")
+			it.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			it.Value.emit(w)
+		}
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "])")
@@ -2257,9 +2263,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 		}
 	}
 	for _, st := range prog.Stmts {
-		if vd, ok := st.(*VarDecl); ok && vd.Global {
-			prog.Globals = append(prog.Globals, vd)
-		}
+		collectGlobals(st, &prog.Globals)
 	}
 	if len(prog.Globals) > 0 {
 		for _, st := range prog.Stmts {
@@ -2459,7 +2463,10 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
+				// initialize after declaration
+				init := &AssignStmt{Name: stmt.Let.Name, Expr: e}
 				vd.Expr = nil
+				return &MultiStmt{Stmts: []Stmt{vd, init}}, nil
 			}
 		} else {
 			if len(localVarStack) > 0 {
@@ -2588,7 +2595,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
+				init := &AssignStmt{Name: stmt.Var.Name, Expr: e}
 				vd.Expr = nil
+				return &MultiStmt{Stmts: []Stmt{vd, init}}, nil
 			}
 		} else {
 			if len(localVarStack) > 0 {
@@ -3157,7 +3166,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if mut {
+				sigType = "&mut " + typ
+			} else {
 				sigType = "&" + typ
 			}
 		}
@@ -4971,6 +4982,19 @@ func zeroValue(typ string) string {
 	}
 }
 
+func collectGlobals(s Stmt, out *[]*VarDecl) {
+	switch v := s.(type) {
+	case *VarDecl:
+		if v.Global {
+			*out = append(*out, v)
+		}
+	case *MultiStmt:
+		for _, st := range v.Stmts {
+			collectGlobals(st, out)
+		}
+	}
+}
+
 func typeFromString(typ string) types.Type {
 	switch typ {
 	case "i64":
@@ -5047,6 +5071,9 @@ func writeStmt(buf *bytes.Buffer, s Stmt, indent int) {
 		writeForStmt(buf, st, indent)
 	case *MultiStmt:
 		for _, ms := range st.Stmts {
+			if vd, ok := ms.(*VarDecl); ok && vd.Global && indent > 0 {
+				continue
+			}
 			writeStmt(buf, ms, indent)
 		}
 	case *SaveStmt:
