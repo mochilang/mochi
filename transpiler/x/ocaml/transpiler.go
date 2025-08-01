@@ -37,6 +37,17 @@ var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
 var currentRetTyp string
 
+// GetStructFields returns the collected struct field type information.
+func GetStructFields() map[string]map[string]string { return structFields }
+
+// GetVarType reports the string type for a variable in the provided env.
+func GetVarType(env *types.Env, name string) string {
+	if t, err := env.GetVar(name); err == nil {
+		return typeString(t)
+	}
+	return ""
+}
+
 // Program represents an OCaml program. All statements are emitted inside
 // a `let () =` block.
 type Program struct {
@@ -401,6 +412,30 @@ func guessTypeFromName(name string) string {
 	return ""
 }
 
+// splitTopLevel splits s by sep, ignoring separators inside curly braces.
+func splitTopLevel(s string, sep rune) []string {
+	parts := []string{}
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '{':
+			depth++
+		case '}':
+			if depth > 0 {
+				depth--
+			}
+		default:
+			if r == sep && depth == 0 {
+				parts = append(parts, s[start:i])
+				start = i + 1
+			}
+		}
+	}
+	parts = append(parts, s[start:])
+	return parts
+}
+
 func mapFieldType(typ, field string) (string, bool) {
 	if (strings.HasPrefix(typ, "map{") || strings.HasPrefix(typ, "map-dyn{")) && strings.HasSuffix(typ, "}") {
 		inner := strings.TrimSuffix(typ, "}")
@@ -409,7 +444,7 @@ func mapFieldType(typ, field string) (string, bool) {
 		} else {
 			inner = strings.TrimPrefix(inner, "map{")
 		}
-		parts := strings.Split(inner, ",")
+		parts := splitTopLevel(inner, ',')
 		for _, p := range parts {
 			kv := strings.SplitN(p, ":", 2)
 			if len(kv) == 2 && kv[0] == field {
