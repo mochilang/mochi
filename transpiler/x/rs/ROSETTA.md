@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-07-31 01:10 UTC
+Last updated: 2025-08-01 10:44 UTC
 
 ## Rosetta Golden Test Checklist (180/491)
 | Index | Name | Status | Duration | Memory |
@@ -456,7 +456,7 @@ Last updated: 2025-07-31 01:10 UTC
 | 447 | flow-control-structures-2 | ✓ | 12µs |  |
 | 448 | flow-control-structures-3 | ✓ | 12µs |  |
 | 449 | flow-control-structures-4 | ✓ | 16µs |  |
-| 450 | floyd-warshall-algorithm | ✓ | 103µs |  |
+| 450 | floyd-warshall-algorithm | ✓ | 86µs |  |
 | 451 | floyd-warshall-algorithm2 |   |  |  |
 | 452 | floyds-triangle |   |  |  |
 | 453 | forest-fire |   |  |  |
