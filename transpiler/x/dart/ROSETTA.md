@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 354/491
+Compiled and ran: 355/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -456,7 +456,7 @@ Compiled and ran: 354/491
 | 447 | flow-control-structures-2 |   |  |  |
 | 448 | flow-control-structures-3 |   |  |  |
 | 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 12.969ms | 4.5 MB |
 | 451 | floyd-warshall-algorithm2 |   |  |  |
 | 452 | floyds-triangle |   |  |  |
 | 453 | forest-fire |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 354/491
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-_Last updated: 2025-07-31 07:45 +0700_
+_Last updated: 2025-08-01 15:22 +0700_
