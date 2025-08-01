@@ -34,7 +34,7 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-void main() {
+void _main() {
   print("Diagram after trimming whitespace and removal of blank lines:\n");
   print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+");
   print("|                      ID                       |");
@@ -94,13 +94,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
