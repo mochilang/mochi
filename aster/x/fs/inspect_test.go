@@ -46,8 +46,8 @@ func TestInspect_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", srcPattern)
 	}
 	sort.Strings(files)
-	if len(files) > 10 {
-		files = files[:10]
+	if len(files) > 25 {
+		files = files[:25]
 	}
 
 	outDir := filepath.Join(root, "tests/aster/x/fs")

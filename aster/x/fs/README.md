@@ -19,7 +19,17 @@ This directory contains utilities for generating and printing simplified F# ASTs
 13. cross_join_filter.fs
 14. cross_join_triple.fs
 15. dataset_sort_take_limit.fs
+16. dataset_where_filter.fs
+17. exists_builtin.fs
+18. for_list_collection.fs
+19. for_loop.fs
+20. for_map_collection.fs
+21. fun_call.fs
+22. fun_expr_in_let.fs
+23. fun_three_args.fs
+24. go_auto.fs
+25. group_by.fs
 
-Checked: 15/15
+Checked: 25/25
 
-_Last updated: 2025-08-01 10:43 GMT+7_
+_Last updated: 2025-08-01 11:02 GMT+7_
