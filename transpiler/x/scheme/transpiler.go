@@ -781,14 +781,27 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		return &List{Elems: []Node{Symbol("set!"), Symbol(st.Assign.Name), val}}, nil
 	case st.Assign != nil && len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0:
 		var target Node = Symbol(st.Assign.Name)
+		typ, _ := currentEnv.GetVar(st.Assign.Name)
 		for i := 0; i < len(st.Assign.Index)-1; i++ {
 			idx := st.Assign.Index[i]
-			var err error
-			target, err = convertIndex(target, &parser.Primary{Selector: &parser.SelectorExpr{Root: st.Assign.Name}}, idx)
+			idxNode, err := convertParserExpr(idx.Start)
 			if err != nil {
 				return nil, err
 			}
+			switch t := typ.(type) {
+			case types.ListType:
+				target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+				typ = t.Elem
+			case types.MapType:
+				needHash = true
+				target = &List{Elems: []Node{Symbol("hash-table-ref"), target, idxNode}}
+				typ = t.Value
+			default:
+				target = &List{Elems: []Node{Symbol("list-ref"), target, idxNode}}
+				typ = types.AnyType{}
+			}
 		}
+
 		last := st.Assign.Index[len(st.Assign.Index)-1]
 		idxNode, err := convertParserExpr(last.Start)
 		if err != nil {
@@ -798,7 +811,6 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		typ, _ := currentEnv.GetVar(st.Assign.Name)
 		if _, ok := typ.(types.MapType); ok {
 			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
@@ -1396,6 +1408,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 	case p.Group != nil:
 		return convertParserExpr(p.Group)
 	case p.List != nil:
+		needBase = true
 		elems := []Node{}
 		for _, e := range p.List.Elems {
 			n, err := convertParserExpr(e)
@@ -1406,6 +1419,7 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return &List{Elems: append([]Node{Symbol("_list")}, elems...)}, nil
 	case p.Map != nil:
+		needBase = true
 		needHash = true
 		pairs := []Node{Symbol("_list")}
 		for _, it := range p.Map.Items {

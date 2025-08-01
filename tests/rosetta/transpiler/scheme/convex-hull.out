@@ -1,0 +1,6 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+Convex Hull: [(-9,-3) (-3,-9) (19,-8) (17,5) (12,17) (5,19) (-3,15)]
