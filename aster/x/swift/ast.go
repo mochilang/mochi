@@ -132,7 +132,8 @@ func convert(n *sitter.Node, src []byte, withPos bool, keepComments bool) *Node 
 		switch out.Kind {
 		case "additive_expression", "multiplicative_expression", "range_expression",
 			"equality_expression", "comparison_expression", "conjunction_expression",
-			"disjunction_expression", "nil_coalescing_expression", "as_expression":
+			"disjunction_expression", "nil_coalescing_expression", "as_expression",
+			"infix_expression":
 			if n.ChildCount() >= 3 {
 				op := n.Child(1)
 				out.Text = strings.TrimSpace(op.Utf8Text(src))

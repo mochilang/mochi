@@ -304,7 +304,7 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		b.WriteByte(')')
 	case "additive_expression", "multiplicative_expression", "range_expression",
 		"equality_expression", "comparison_expression", "conjunction_expression",
-		"disjunction_expression", "nil_coalescing_expression":
+		"disjunction_expression", "nil_coalescing_expression", "infix_expression":
 		if len(n.Children) == 2 {
 			writeExpr(b, n.Children[0], indent)
 			op := n.Text
@@ -410,10 +410,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 			callee := n.Children[0]
 			argsNode := n.Children[1]
 			// detect indexing vs function call
-			if isIndexingCall(callee) {
+			if isIndexingCall(callee, argsNode) {
 				writeExpr(b, callee, indent)
 				b.WriteByte('[')
-				writeValueArguments(b, argsNode.Children[0])
+				if len(argsNode.Children) > 0 {
+					writeValueArguments(b, argsNode.Children[0])
+				}
 				b.WriteByte(']')
 			} else {
 				writeExpr(b, callee, indent)
@@ -436,16 +438,30 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 	}
 }
 
-func isIndexingCall(callee *Node) bool {
-	if callee.Kind != "simple_identifier" {
+func isIndexingCall(callee *Node, args *Node) bool {
+	if callee.Kind != "simple_identifier" || args == nil {
+		return false
+	}
+	if len(args.Children) != 1 {
+		return false
+	}
+	arg := args.Children[0]
+	if len(arg.Children) >= 1 && arg.Children[0].Kind == "value_argument_label" {
 		return false
 	}
 	name := callee.Text
-	switch name {
-	case "print", "twoSum", "String", "Double":
+	if name == "" {
 		return false
 	}
-	return true
+	if name == "print" || name == "twoSum" || name == "String" || name == "Double" {
+		return false
+	}
+	// simple heuristic: treat identifiers starting with lowercase as variables
+	first := name[0]
+	if first >= 'a' && first <= 'z' {
+		return true
+	}
+	return false
 }
 
 func writeCallSuffix(b *bytes.Buffer, n *Node) {
