@@ -503,7 +503,17 @@ func (f *FuncLit) emit(w io.Writer) {
 		return
 	}
 	io.WriteString(w, "\n")
-	for _, s := range f.Body {
+	for i, s := range f.Body {
+		if i == len(f.Body)-1 {
+			if rs, ok := s.(*ReturnStmt); ok {
+				indent(w, 1)
+				if rs.Value != nil {
+					rs.Value.emit(w)
+				}
+				io.WriteString(w, "\n")
+				continue
+			}
+		}
 		s.emit(w, 1)
 		io.WriteString(w, "\n")
 	}
@@ -972,18 +982,30 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, fn+"(")
 			if _, ok := b.Left.(*BinaryExpr); ok {
 				io.WriteString(w, "(")
+			}
+			if guessType(b.Left) != "BigRat" {
+				io.WriteString(w, "_bigrat(")
 				b.Left.emit(w)
 				io.WriteString(w, ")")
 			} else {
 				b.Left.emit(w)
 			}
+			if _, ok := b.Left.(*BinaryExpr); ok {
+				io.WriteString(w, ")")
+			}
 			io.WriteString(w, ", ")
 			if _, ok := b.Right.(*BinaryExpr); ok {
 				io.WriteString(w, "(")
+			}
+			if guessType(b.Right) != "BigRat" {
+				io.WriteString(w, "_bigrat(")
 				b.Right.emit(w)
 				io.WriteString(w, ")")
 			} else {
 				b.Right.emit(w)
+			}
+			if _, ok := b.Right.(*BinaryExpr); ok {
+				io.WriteString(w, ")")
 			}
 			io.WriteString(w, ")")
 			return
@@ -2515,6 +2537,8 @@ func guessType(e Expr) string {
 		return "MutableList<" + elem + ">"
 	case *SliceExpr:
 		return guessType(v.Value)
+	case *SubstringExpr:
+		return "String"
 	case *BinaryExpr:
 		if v.Op == "+" {
 			lt := guessType(v.Left)
@@ -4888,7 +4912,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &ContainsExpr{Str: str, Sub: sub}, nil
-		case "substring":
+		case "substring", "substr":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
 			}
@@ -4905,6 +4929,24 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &SubstringExpr{Value: str, Start: start, End: end}, nil
+		case "slice":
+			if len(p.Call.Args) != 3 {
+				return nil, fmt.Errorf("slice expects 3 args")
+			}
+			expr, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			startExpr, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			endExpr, err := convertExpr(env, p.Call.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			isStr := types.IsStringExpr(p.Call.Args[0], env)
+			return &SliceExpr{Value: expr, Start: startExpr, End: endExpr, IsString: isStr}, nil
 		case "padStart":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("padStart expects 3 args")

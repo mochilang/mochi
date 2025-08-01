@@ -1,0 +1,12 @@
+BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=0, den=1)  BigRat(num=1, den=1)
+
+BigRat(num=1000000000000000000000000000000000000000000000000000000, den=1)

@@ -1,0 +1,10 @@
+0 : BigRat(num=1, den=1)×n
+1 : BigRat(num=1, den=1)×n^2 BigRat(num=0, den=1)×n
+2 : BigRat(num=1, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+3 : BigRat(num=1, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+4 : BigRat(num=1, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+5 : BigRat(num=1, den=1)×n^6 BigRat(num=0, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+6 : BigRat(num=1, den=1)×n^7 BigRat(num=0, den=1)×n^6 BigRat(num=0, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+7 : BigRat(num=1, den=1)×n^8 BigRat(num=0, den=1)×n^7 BigRat(num=0, den=1)×n^6 BigRat(num=0, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+8 : BigRat(num=1, den=1)×n^9 BigRat(num=0, den=1)×n^8 BigRat(num=0, den=1)×n^7 BigRat(num=0, den=1)×n^6 BigRat(num=0, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n
+9 : BigRat(num=1, den=1)×n^10 BigRat(num=0, den=1)×n^9 BigRat(num=0, den=1)×n^8 BigRat(num=0, den=1)×n^7 BigRat(num=0, den=1)×n^6 BigRat(num=0, den=1)×n^5 BigRat(num=0, den=1)×n^4 BigRat(num=0, den=1)×n^3 BigRat(num=0, den=1)×n^2 BigRat(num=0, den=1)×n

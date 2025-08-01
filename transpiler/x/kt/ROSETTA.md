@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-01 18:19 +0700
+Last updated: 2025-08-01 18:48 +0700
 
-Completed tasks: **182/491**
+Completed tasks: **190/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -408,14 +408,14 @@ Completed tasks: **182/491**
 | 397 | farey-sequence |  |  |  |
 | 398 | fast-fourier-transform |  |  |  |
 | 399 | fasta-format |  |  |  |
-| 400 | faulhabers-formula |  |  |  |
-| 401 | faulhabers-triangle |  |  |  |
-| 402 | feigenbaum-constant-calculation |  |  |  |
-| 403 | fermat-numbers |  |  |  |
-| 404 | fibonacci-n-step-number-sequences |  |  |  |
-| 405 | fibonacci-sequence-1 |  |  |  |
-| 406 | fibonacci-sequence-2 |  |  |  |
-| 407 | fibonacci-sequence-3 |  |  |  |
+| 400 | faulhabers-formula | ✓ | 34.45ms | 132.2 KB |
+| 401 | faulhabers-triangle | ✓ | 47.31ms | 68.2 KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 19.08ms | 105.6 KB |
+| 403 | fermat-numbers | ✓ | 24.97ms | 110.0 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 16.91ms | 123.2 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 5.26ms | 134.6 KB |
+| 406 | fibonacci-sequence-2 | ✓ | 4.46ms | 134.6 KB |
+| 407 | fibonacci-sequence-3 | ✓ | 4.72ms | 134.6 KB |
 | 408 | fibonacci-sequence-4 |  |  |  |
 | 409 | fibonacci-sequence-5 |  |  |  |
 | 410 | fibonacci-word-fractal |  |  |  |
