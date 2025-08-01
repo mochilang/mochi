@@ -2832,10 +2832,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needSliceInt = false
 	needSliceDouble = false
 	needSliceStr = false
+	needGMP = false
+	needStrBigInt = false
+	needListAppendBigRat = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
 	builtinAliases = make(map[string]string)
 	funcAliases = make(map[string]string)
+
+	// downgrade bigint variables to int to avoid unnecessary GMP usage
+	for name, typ := range env.Types() {
+		if _, ok := typ.(types.BigIntType); ok {
+			env.SetVarDeep(name, types.IntType{}, true)
+		}
+	}
 
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -2937,7 +2947,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if isConstExpr(val) {
 					globals = append(globals, stmt)
 				} else {
-					mainFn.Body = append(mainFn.Body, stmt)
+					if ds, ok := stmt.(*DeclStmt); ok {
+						globals = append(globals, &DeclStmt{Name: ds.Name, Type: ds.Type})
+						mainFn.Body = append(mainFn.Body, &AssignStmt{Name: ds.Name, Value: ds.Value})
+					} else {
+						mainFn.Body = append(mainFn.Body, stmt)
+					}
 				}
 			} else {
 				mainFn.Body = append(mainFn.Body, stmt)
