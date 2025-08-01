@@ -86,9 +86,10 @@ type FunDecl struct {
 }
 
 type Param struct {
-	Name  string
-	Type  string
-	InOut bool
+	Name     string
+	Type     string
+	InOut    bool
+	Escaping bool
 }
 
 type ReturnStmt struct{ Expr Expr }
@@ -247,7 +248,11 @@ func (f *FunBlock) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			if p.Escaping {
+				fmt.Fprintf(w, "%s: @escaping %s", p.Name, p.Type)
+			} else {
+				fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			}
 		} else {
 			fmt.Fprint(w, p.Name)
 		}
@@ -283,7 +288,11 @@ func (f *FunExpr) emit(w io.Writer) {
 			fmt.Fprint(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			if p.Escaping {
+				fmt.Fprintf(w, "%s: @escaping %s", p.Name, p.Type)
+			} else {
+				fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			}
 		} else {
 			fmt.Fprint(w, p.Name)
 		}
@@ -1426,7 +1435,11 @@ func (f *FunDecl) emit(w io.Writer) {
 			if p.InOut {
 				fmt.Fprintf(w, "_ %s: inout %s", esc(p.Name), p.Type)
 			} else {
-				fmt.Fprintf(w, "_ %s: %s", esc(p.Name), p.Type)
+				if p.Escaping {
+					fmt.Fprintf(w, "_ %s: @escaping %s", esc(p.Name), p.Type)
+				} else {
+					fmt.Fprintf(w, "_ %s: %s", esc(p.Name), p.Type)
+				}
 			}
 		} else {
 			if p.InOut {
@@ -2386,7 +2399,8 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		child.SetVar(p.Name, pt, true)
 		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
 		inFlags[i] = useInOut
-		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), InOut: useInOut})
+		esc := isFuncTypeRef(p.Type) || isFuncType(pt)
+		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), InOut: useInOut, Escaping: esc})
 	}
 	funcMutParams[f.Name] = mutFlags
 	funcInOutParams[f.Name] = inFlags
@@ -2635,6 +2649,27 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 	if td.Alias != nil {
 		// simple type alias
 		ali := toSwiftType(td.Alias)
+		if td.Alias.Fun != nil {
+			params := make([]string, len(td.Alias.Fun.Params))
+			for i, p := range td.Alias.Fun.Params {
+				esc := isFuncTypeRef(p)
+				if !esc && p.Simple != nil {
+					if ali, ok := env.LookupType(*p.Simple); ok {
+						esc = isFuncType(ali)
+					}
+				}
+				if esc {
+					params[i] = "@escaping " + toSwiftType(p)
+				} else {
+					params[i] = toSwiftType(p)
+				}
+			}
+			ret := "Any"
+			if td.Alias.Fun.Return != nil {
+				ret = toSwiftType(td.Alias.Fun.Return)
+			}
+			ali = "(" + strings.Join(params, ", ") + ") -> " + ret
+		}
 		return &RawStmt{Code: fmt.Sprintf("typealias %s = %s\n", td.Name, ali)}, nil
 	}
 	if len(td.Variants) > 0 {
@@ -4166,7 +4201,11 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		}
 		fn := &FunExpr{Ret: toSwiftType(pr.FunExpr.Return)}
 		for _, p := range pr.FunExpr.Params {
-			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, env)
+			}
+			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), Escaping: isFuncTypeRef(p.Type) || isFuncType(pt)})
 		}
 		fn.Body = body
 		return fn, nil
@@ -4189,7 +4228,11 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		}
 		fn := &FunBlock{Ret: toSwiftType(pr.FunExpr.Return)}
 		for _, p := range pr.FunExpr.Params {
-			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type)})
+			var pt types.Type = types.AnyType{}
+			if p.Type != nil {
+				pt = types.ResolveTypeRef(p.Type, env)
+			}
+			fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), Escaping: isFuncTypeRef(p.Type) || isFuncType(pt)})
 		}
 		fn.Body = body
 		return fn, nil
@@ -4318,6 +4361,15 @@ func isNullLiteral(e *parser.Expr) bool {
 	return false
 }
 
+func isFuncTypeRef(t *parser.TypeRef) bool {
+	return t != nil && t.Fun != nil
+}
+
+func isFuncType(t types.Type) bool {
+	_, ok := t.(types.FuncType)
+	return ok
+}
+
 func toSwiftType(t *parser.TypeRef) string {
 	if t == nil {
 		return ""
@@ -4417,7 +4469,11 @@ func swiftTypeOf(t types.Type) string {
 	case types.FuncType:
 		params := make([]string, len(tt.Params))
 		for i, p := range tt.Params {
-			params[i] = swiftTypeOf(p)
+			if isFuncType(p) {
+				params[i] = "@escaping " + swiftTypeOf(p)
+			} else {
+				params[i] = swiftTypeOf(p)
+			}
 		}
 		ret := "Any"
 		if tt.Return != nil {

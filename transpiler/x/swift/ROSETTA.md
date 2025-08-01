@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 306/491
-Last updated: 2025-08-01 18:59 +0700
+Completed: 307/491
+Last updated: 2025-08-01 20:02 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -208,7 +208,7 @@ Last updated: 2025-08-01 18:59 +0700
 | 199 | cholesky-decomposition-1 | ✓ | 288µs | 3.1 MB |
 | 200 | cholesky-decomposition | ✓ | 720µs | 3.0 MB |
 | 201 | chowla-numbers | ✓ | 273µs | 2.9 MB |
-| 202 | church-numerals-1 |   |  |  |
+| 202 | church-numerals-1 | ✓ |  |  |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points |   |  |  |
 | 205 | circular-primes |   |  |  |
