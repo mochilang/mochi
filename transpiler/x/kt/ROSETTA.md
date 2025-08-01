@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-07-31 08:02 +0700
+Last updated: 2025-08-01 15:22 +0700
 
-Completed tasks: **141/491**
+Completed tasks: **143/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -458,8 +458,8 @@ Completed tasks: **141/491**
 | 447 | flow-control-structures-2 |  |  |  |
 | 448 | flow-control-structures-3 |  |  |  |
 | 449 | flow-control-structures-4 |  |  |  |
-| 450 | floyd-warshall-algorithm |  |  |  |
-| 451 | floyd-warshall-algorithm2 |  |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 26.86ms | 111.4 KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 28.59ms | 113.9 KB |
 | 452 | floyds-triangle |  |  |  |
 | 453 | forest-fire |  |  |  |
 | 454 | fork-2 |  |  |  |

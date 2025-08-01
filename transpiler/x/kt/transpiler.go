@@ -601,7 +601,14 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		}
 	}
 
-	if isMap || dynamicCast != "" {
+	needParens := false
+	switch ix.Target.(type) {
+	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
+		*UnionExpr, *UnionAllExpr, *ExceptExpr, *IntersectExpr:
+		needParens = true
+	}
+
+	if isMap || dynamicCast != "" || needParens {
 		io.WriteString(w, "(")
 		ix.Target.emit(w)
 		if dynamicCast != "" {
@@ -2737,6 +2744,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	helpersUsed = map[string]bool{}
 	localFuncs = map[string]bool{}
 	p := &Program{}
+	seenStmt := false
 	for _, st := range prog.Statements {
 		switch {
 		case st.Import != nil:
@@ -2755,12 +2763,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			fname := "test_" + strings.ReplaceAll(strings.Trim(st.Test.Name, "\""), " ", "_")
 			p.Funcs = append(p.Funcs, &FuncDef{Name: fname, Body: body})
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: &CallExpr{Func: fname}})
+			seenStmt = true
 		case st.Expr != nil:
 			e, err := convertExpr(env, st.Expr.Expr)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExprStmt{Expr: e})
+			seenStmt = true
 		case st.Expect != nil:
 			useHelper("expect")
 			cond, err := convertExpr(env, st.Expect.Value)
@@ -2768,6 +2778,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, &ExpectStmt{Cond: cond})
+			seenStmt = true
 		case st.Let != nil:
 			var val Expr
 			if st.Let.Value != nil {
@@ -2816,7 +2827,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 			}
-			p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+			if seenStmt {
+				p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+				seenStmt = true
+			} else {
+				p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+			}
 			if env != nil {
 				var tt types.Type
 				if st.Let.Type != nil {
@@ -2874,7 +2890,12 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					val = &CastExpr{Value: val, Type: typ}
 				}
 			}
-			p.Globals = append(p.Globals, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+			if seenStmt {
+				p.Stmts = append(p.Stmts, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+				seenStmt = true
+			} else {
+				p.Globals = append(p.Globals, &VarStmt{Name: st.Var.Name, Type: typ, Value: val})
+			}
 			if env != nil {
 				var tt types.Type
 				if st.Var.Type != nil {
@@ -2901,6 +2922,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			// skip assignment casting; rely on expression types
 			p.Stmts = append(p.Stmts, &AssignStmt{Name: st.Assign.Name, Value: e})
+			seenStmt = true
 		case st.Assign != nil && (len(st.Assign.Index) > 0 || len(st.Assign.Field) > 0):
 			target, err := buildAccessTarget(env, st.Assign.Name, st.Assign.Index, st.Assign.Field)
 			if err != nil {
@@ -2919,12 +2941,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Value: v})
+			seenStmt = true
 		case st.Update != nil:
 			stmt, err := convertUpdateStmt(env, st.Update)
 			if err != nil {
 				return nil, err
 			}
 			p.Stmts = append(p.Stmts, stmt)
+			seenStmt = true
 		case st.Return != nil:
 			var val Expr
 			if st.Return.Value != nil {
@@ -2940,6 +2964,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
+			seenStmt = true
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
 			ftParams := make([]types.Type, 0, len(st.Fun.Params))
