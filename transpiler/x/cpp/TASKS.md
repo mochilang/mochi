@@ -1,3 +1,113 @@
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-01 18:02 +0700)
+- erl: add fork
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-07-30 21:05 +0700)
 - fix mochix build
 - Generated C++ for 103/105 programs
