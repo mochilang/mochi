@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (314/491)
-_Last updated: 2025-08-01 18:52 +0700_
+## Golden Test Checklist (352/491)
+_Last updated: 2025-08-01 19:22 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -283,56 +283,56 @@ _Last updated: 2025-08-01 18:52 +0700_
 | 274 | de-bruijn-sequences |   |  |  |
 | 275 | deal-cards-for-freecell |   |  |  |
 | 276 | death-star | error |  |  |
-| 277 | deceptive-numbers |   |  |  |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 |   |  |  |
-| 280 | deconvolution-1d |   |  |  |
-| 281 | deepcopy-1 |   |  |  |
-| 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates |   |  |  |
-| 284 | demings-funnel |   |  |  |
-| 285 | department-numbers |   |  |  |
-| 286 | descending-primes |   |  |  |
-| 287 | detect-division-by-zero |   |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable |   |  |  |
-| 294 | determine-if-only-one-instance-is-running |   |  |  |
-| 295 | determine-if-two-triangles-overlap |   |  |  |
-| 296 | determine-sentence-type |   |  |  |
-| 297 | dice-game-probabilities-1 | ✓ | 240µs | 8.7 MB |
-| 298 | dice-game-probabilities-2 | ✓ |  |  |
-| 299 | digital-root-multiplicative-digital-root | ✓ |  |  |
+| 277 | deceptive-numbers | ✓ | 173µs | 8.7 MB |
+| 278 | deconvolution-1d-2 | ✓ | 11µs | 8.7 MB |
+| 279 | deconvolution-1d-3 | ✓ | 12µs | 8.7 MB |
+| 280 | deconvolution-1d | ✓ | 10µs | 8.7 MB |
+| 281 | deepcopy-1 | ✓ | 9µs | 8.7 MB |
+| 282 | define-a-primitive-data-type | ✓ | 4µs | 8.7 MB |
+| 283 | delegates | ✓ | 4µs | 8.7 MB |
+| 284 | demings-funnel | ✓ | 38µs | 8.7 MB |
+| 285 | department-numbers | ✓ | 5µs | 8.7 MB |
+| 286 | descending-primes | ✓ | 38µs | 8.7 MB |
+| 287 | detect-division-by-zero | ✓ | 4µs | 8.7 MB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 9µs | 8.7 MB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 11µs | 8.7 MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 10µs | 8.7 MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 7µs | 8.7 MB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 7µs | 8.7 MB |
+| 293 | determine-if-a-string-is-squeezable | error |  |  |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 3µs | 8.7 MB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 13µs | 8.7 MB |
+| 296 | determine-sentence-type | ✓ | 8µs | 8.7 MB |
+| 297 | dice-game-probabilities-1 | ✓ | 237µs | 8.7 MB |
+| 298 | dice-game-probabilities-2 | ✓ | 477µs | 8.8 MB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 86µs | 8.7 MB |
 | 300 | dijkstras-algorithm | error |  |  |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ | 4µs | 8.7 MB |
-| 302 | dining-philosophers-1 |   |  |  |
-| 303 | dining-philosophers-2 |   |  |  |
-| 304 | disarium-numbers |   |  |  |
-| 305 | discordian-date |   |  |  |
-| 306 | display-a-linear-combination |   |  |  |
-| 307 | display-an-outline-as-a-nested-table |   |  |  |
-| 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem |   |  |  |
-| 311 | dns-query |   |  |  |
-| 312 | documentation |   |  |  |
-| 313 | doomsday-rule |   |  |  |
-| 314 | dot-product |   |  |  |
-| 315 | doubly-linked-list-definition-1 |   |  |  |
-| 316 | doubly-linked-list-definition-2 |   |  |  |
-| 317 | doubly-linked-list-element-definition |   |  |  |
-| 318 | doubly-linked-list-traversal |   |  |  |
-| 319 | dragon-curve |   |  |  |
-| 320 | draw-a-clock |   |  |  |
-| 321 | draw-a-cuboid |   |  |  |
-| 322 | draw-a-pixel-1 |   |  |  |
-| 323 | draw-a-rotating-cube |   |  |  |
-| 324 | draw-a-sphere |   |  |  |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
+| 302 | dining-philosophers-1 | ✓ | 7µs | 8.7 MB |
+| 303 | dining-philosophers-2 | ✓ | 6µs | 8.7 MB |
+| 304 | disarium-numbers | ✓ | 7.149ms | 8.7 MB |
+| 305 | discordian-date | ✓ | 6µs | 8.7 MB |
+| 306 | display-a-linear-combination | ✓ | 10µs | 8.7 MB |
+| 307 | display-an-outline-as-a-nested-table | error |  |  |
+| 308 | distance-and-bearing | error |  |  |
+| 309 | distributed-programming | error |  |  |
+| 310 | diversity-prediction-theorem | ✓ | 8µs | 8.7 MB |
+| 311 | dns-query | ✓ | 501µs | 8.7 MB |
+| 312 | documentation | ✓ | 1µs | 8.7 MB |
+| 313 | doomsday-rule | ✓ | 6µs | 8.7 MB |
+| 314 | dot-product | ✓ | 5µs | 8.7 MB |
+| 315 | doubly-linked-list-definition-1 | ✓ |  | 8.7 MB |
+| 316 | doubly-linked-list-definition-2 | error |  |  |
+| 317 | doubly-linked-list-element-definition | ✓ | 3µs | 8.7 MB |
+| 318 | doubly-linked-list-traversal | error |  |  |
+| 319 | dragon-curve | ✓ | 15µs | 8.7 MB |
+| 320 | draw-a-clock | ✓ | 8µs | 8.7 MB |
+| 321 | draw-a-cuboid | ✓ | 14µs | 8.7 MB |
+| 322 | draw-a-pixel-1 | ✓ | 147µs | 8.7 MB |
+| 323 | draw-a-rotating-cube | ✓ | 51µs | 8.7 MB |
+| 324 | draw-a-sphere | error |  |  |
+| 325 | duffinian-numbers | ✓ | 451µs | 8.8 MB |
+| 326 | dutch-national-flag-problem | ✓ | 12µs | 8.7 MB |
 | 327 | dynamic-variable-names |   |  |  |
 | 328 | earliest-difference-between-prime-gaps |   |  |  |
 | 329 | eban-numbers |   |  |  |

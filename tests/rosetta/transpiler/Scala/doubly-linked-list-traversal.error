@@ -1,0 +1,17 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-traversal.scala:38: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+  var id: BigInt = nodes(head).asInstanceOf[scala.collection.mutable.Map[String,Any]]("next")
+                                                                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-traversal.scala:41: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+    id = nodes(id).asInstanceOf[scala.collection.mutable.Map[String,Any]]("next")
+                                                                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-traversal.scala:76: error: type mismatch;
+ found   : Any
+ required: scala.math.BigInt
+      id = nodes(id).asInstanceOf[scala.collection.mutable.Map[String,Any]]("prev")
+                                                                           ^
+three errors found

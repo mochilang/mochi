@@ -1,0 +1,65 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:38: error: value toInt is not a member of Any
+  val id: BigInt = BigInt((l("nextID")).toInt)
+                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:50: error: value toInt is not a member of Any
+  if (BigInt((l("head")).toInt) != BigInt(0)) {
+                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:52: error: value toInt is not a member of Any
+    var h: scala.collection.mutable.Map[String,Any] = nodes(BigInt((l("head")).toInt)).asInstanceOf[scala.collection.mutable.Map[String,Any]]
+                                                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:54: error: value toInt is not a member of Any
+    nodes.update(BigInt((h("id")).toInt), h)
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:61: error: value toInt is not a member of Any
+  nodes2.update(BigInt((n("id")).toInt), n)
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:69: error: value toInt is not a member of Any
+  if (BigInt((l("tail")).toInt) != BigInt(0)) {
+                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:71: error: value toInt is not a member of Any
+    var t: scala.collection.mutable.Map[String,Any] = nodes(BigInt((l("tail")).toInt)).asInstanceOf[scala.collection.mutable.Map[String,Any]]
+                                                                               ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:73: error: value toInt is not a member of Any
+    nodes.update(BigInt((t("id")).toInt), t)
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:80: error: value toInt is not a member of Any
+  nodes2.update(BigInt((n("id")).toInt), n)
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:94: error: value toInt is not a member of Any
+  if (BigInt((ref("prev")).toInt) != BigInt(0)) {
+                           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:95: error: value toInt is not a member of Any
+    var p: scala.collection.mutable.Map[String,Any] = nodes(BigInt((ref("prev")).toInt)).asInstanceOf[scala.collection.mutable.Map[String,Any]]
+                                                                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:97: error: value toInt is not a member of Any
+    nodes.update(BigInt((p("id")).toInt), p)
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:103: error: value toInt is not a member of Any
+  nodes.update(BigInt((n("id")).toInt), n)
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:117: error: value toInt is not a member of Any
+  if (BigInt((ref("next")).toInt) != BigInt(0)) {
+                           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:118: error: value toInt is not a member of Any
+    var nx: scala.collection.mutable.Map[String,Any] = nodes(BigInt((ref("next")).toInt)).asInstanceOf[scala.collection.mutable.Map[String,Any]]
+                                                                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:120: error: value toInt is not a member of Any
+    nodes.update(BigInt((nx("id")).toInt), nx)
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:126: error: value toInt is not a member of Any
+  nodes.update(BigInt((n("id")).toInt), n)
+                                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:135: error: value toInt is not a member of Any
+  insertBefore(l, BigInt((e4("id")).toInt), BigInt(3))
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:136: error: value toInt is not a member of Any
+  insertAfter(l, BigInt((e1("id")).toInt), "two")
+                                   ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:137: error: value toInt is not a member of Any
+  var id: BigInt = BigInt((l("head")).toInt)
+                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/doubly-linked-list-definition-2.scala:142: error: value toInt is not a member of Any
+    id = BigInt((node("next")).toInt)
+                               ^
+21 errors found

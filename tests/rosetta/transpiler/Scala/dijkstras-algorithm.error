@@ -1,22 +1,15 @@
 exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:53: error: type mismatch;
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:59: error: type mismatch;
  found   : (String, scala.math.BigInt)
  required: String
-        val alt: Int = dist.getOrElse(u, BigInt(0)) + graph.getOrElse(u, scala.collection.mutable.Map[String,BigInt]()).getOrElse(v, BigInt(0))
-                                                                                                                                  ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:54: error: type mismatch;
+    dist.update(v, INF)
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:60: error: type mismatch;
  found   : (String, scala.math.BigInt)
  required: String
-        if (alt < dist.getOrElse(v, BigInt(0))) {
-                                 ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:55: error: type mismatch;
- found   : (String, scala.math.BigInt)
- required: String
-          dist.update(v, alt)
+    prev.update(v, "")
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:80: error: value foreach is not a member of scala.math.BigInt
+    for (v <- graph(u)("keys")) {
                       ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/dijkstras-algorithm.scala:56: error: type mismatch;
- found   : (String, scala.math.BigInt)
- required: String
-          prev.update(v, u)
-                      ^
-four errors found
+three errors found

@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode/utf16"
 
 	yaml "gopkg.in/yaml.v3"
 
@@ -77,7 +78,7 @@ func escapeName(name string) string {
 
 func quoteScalaString(s string) string {
 	q := strconv.QuoteToASCII(s)
-	// Convert \xXX escapes produced by Go to \u00XX for Java/Scala compatibility
+	// Convert \xXX and \UXXXXXXXX escapes produced by Go to Java/Scala compatible forms
 	var b strings.Builder
 	i := 0
 	for i < len(q) {
@@ -87,6 +88,18 @@ func quoteScalaString(s string) string {
 			b.WriteByte(q[i+3])
 			i += 4
 			continue
+		}
+		if q[i] == '\\' && i+9 < len(q) && q[i+1] == 'U' {
+			if cp, err := strconv.ParseUint(q[i+2:i+10], 16, 32); err == nil {
+				r := rune(cp)
+				if r1, r2 := utf16.EncodeRune(r); r1 != '\uFFFD' {
+					fmt.Fprintf(&b, "\\u%04X\\u%04X", r1, r2)
+				} else {
+					fmt.Fprintf(&b, "\\u%04X", r)
+				}
+				i += 10
+				continue
+			}
 		}
 		b.WriteByte(q[i])
 		i++
@@ -1726,7 +1739,28 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	if wrap {
 		needsJSON = true
 		useNow = true
-		sc.Stmts = []Stmt{&BenchStmt{Name: "main", Body: sc.Stmts}}
+		var pre, body []Stmt
+		for _, st := range sc.Stmts {
+			switch s := st.(type) {
+			case *FunStmt, *TypeDeclStmt:
+				pre = append(pre, st)
+			case *LetStmt:
+				if s.Global {
+					pre = append(pre, st)
+				} else {
+					body = append(body, st)
+				}
+			case *VarStmt:
+				if s.Global {
+					pre = append(pre, st)
+				} else {
+					body = append(body, st)
+				}
+			default:
+				body = append(body, st)
+			}
+		}
+		sc.Stmts = append(pre, &BenchStmt{Name: "main", Body: body})
 	}
 	if len(typeDecls) > 0 {
 		stmts := make([]Stmt, 0, len(typeDecls)+len(sc.Stmts))
@@ -3832,6 +3866,13 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(typ)}
 			}
 		}
+	} else if env != nil {
+		t := inferTypeWithEnv(iter, env)
+		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
+			iter = &FieldExpr{Receiver: iter, Name: "keys"}
+		} else if strings.HasPrefix(t, "Group[") {
+			iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: t}
+		}
 	}
 	var body []Stmt
 	for _, st := range fs.Body {
@@ -4326,7 +4367,7 @@ func isBigIntExpr(e Expr) bool {
 		if strings.Contains(v.Container, "BigInt") {
 			return true
 		}
-		return isBigIntExpr(v.Value) || isBigIntExpr(v.Index)
+		return isBigIntExpr(v.Value)
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			lt := inferType(v.Left)
@@ -4342,7 +4383,7 @@ func isBigIntExpr(e Expr) bool {
 		return isBigIntExpr(v.Left) || isBigIntExpr(v.Right)
 	case *CastExpr:
 		t := strings.ToLower(v.Type)
-		if t == "bigint" || (t == "int" && v.Type == "int") {
+		if t == "bigint" {
 			return true
 		}
 		return isBigIntExpr(v.Value)
