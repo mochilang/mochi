@@ -98,6 +98,38 @@ func isNullLit(e Expr) bool {
 	return ok
 }
 
+func isConstExpr(e Expr) bool {
+	if e == nil {
+		return true
+	}
+	switch v := e.(type) {
+	case *StringLit, *NumberLit, *BoolLit, *NullLit:
+		return true
+	case *ListLit:
+		for _, el := range v.Elems {
+			if !isConstExpr(el) {
+				return false
+			}
+		}
+		return true
+	case *MapLit:
+		for _, it := range v.Items {
+			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
+				return false
+			}
+		}
+		return true
+	case *StructLit:
+		for _, f := range v.Fields {
+			if !isConstExpr(f) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 	if im.Lang == nil {
 		return false
@@ -2395,7 +2427,8 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		}
 		mut := true
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
-		if funcDepth == 0 && len(localVarStack) == 0 {
+		global := funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e)
+		if global {
 			vd.Global = true
 			newName := "g_" + stmt.Let.Name
 			globalRenames[stmt.Let.Name] = newName
@@ -3726,6 +3759,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				} else if nr, ok := args[i].(*NameRef); ok && boxVars[nr.Name] && !strings.HasPrefix(pts[i], "Box<") {
 					args[i] = &UnaryExpr{Op: "*", Expr: &MethodCallExpr{Receiver: args[i], Name: "clone"}}
 				} else if _, ok := args[i].(*NameRef); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
+					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
+				} else if _, ok := args[i].(*FieldExpr); ok && !strings.HasPrefix(pts[i], "&") && (pts[i] == "String" || strings.HasPrefix(pts[i], "Vec<") || strings.HasPrefix(pts[i], "HashMap<")) {
 					args[i] = &MethodCallExpr{Receiver: args[i], Name: "clone"}
 				}
 			}

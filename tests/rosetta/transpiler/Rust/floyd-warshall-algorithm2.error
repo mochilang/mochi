@@ -1,5 +1,474 @@
-pair	dist	path
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:64:35
+   |
+64 |         static mut g_INF: i64 = 0;;
+   |                                   ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
 
-thread 'main' panicked at /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:111:13:
-index out of bounds: the len is 0 but the index is 0
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:119:2
+    |
+119 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:131:2
+    |
+131 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:132:33
+    |
+132 |         static mut g_n: i64 = 0;;
+    |                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:133:52
+    |
+133 |         static mut g_g: Vec<Vec<i64>> = Vec::new();;
+    |                                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:152:33
+    |
+152 |         static mut g_i: i64 = 0;;
+    |                                 ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:66:22
+   |
+66 |     let mut n: i64 = (graph.len() as i64);
+   |                      ^                  ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+66 -     let mut n: i64 = (graph.len() as i64);
+66 +     let mut n: i64 = graph.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:70:11
+   |
+70 |     while (i < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+70 -     while (i < n) {
+70 +     while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:74:15
+   |
+74 |         while (j < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+74 -         while (j < n) {
+74 +         while j < n {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:76:16
+   |
+76 |             if ((graph[i as usize].clone()[j as usize] < g_INF) && (i != j)) {
+   |                ^                                                           ^
+   |
+help: remove these parentheses
+   |
+76 -             if ((graph[i as usize].clone()[j as usize] < g_INF) && (i != j)) {
+76 +             if (graph[i as usize].clone()[j as usize] < g_INF) && (i != j) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:81:17
+   |
+81 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+81 -             j = (j + 1);
+81 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:85:13
+   |
+85 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+85 -         i = (i + 1);
+85 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:88:11
+   |
+88 |     while (k < n) {
+   |           ^     ^
+   |
+help: remove these parentheses
+   |
+88 -     while (k < n) {
+88 +     while k < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:90:15
+   |
+90 |         while (i < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         while (i < n) {
+90 +         while i < n {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:92:19
+   |
+92 |             while (j < n) {
+   |                   ^     ^
+   |
+help: remove these parentheses
+   |
+92 -             while (j < n) {
+92 +             while j < n {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:93:20
+   |
+93 |                 if ((dist[i as usize].clone()[k as usize] < g_INF) && (dist[k as usize].clone()[j as usize] < g_INF)) {
+   |                    ^                                                                                                ^
+   |
+help: remove these parentheses
+   |
+93 -                 if ((dist[i as usize].clone()[k as usize] < g_INF) && (dist[k as usize].clone()[j as usize] < g_INF)) {
+93 +                 if (dist[i as usize].clone()[k as usize] < g_INF) && (dist[k as usize].clone()[j as usize] < g_INF) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:94:40
+   |
+94 |                     let mut alt: i64 = (dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize]);
+   |                                        ^                                                                           ^
+   |
+help: remove these parentheses
+   |
+94 -                     let mut alt: i64 = (dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize]);
+94 +                     let mut alt: i64 = dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize];
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:95:24
+   |
+95 |                     if (alt < dist[i as usize].clone()[j as usize]) {
+   |                        ^                                          ^
+   |
+help: remove these parentheses
+   |
+95 -                     if (alt < dist[i as usize].clone()[j as usize]) {
+95 +                     if alt < dist[i as usize].clone()[j as usize] {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:100:21
+    |
+100 |                 j = (j + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+100 -                 j = (j + 1);
+100 +                 j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:102:17
+    |
+102 |             i = (i + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+102 -             i = (i + 1);
+102 +             i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:104:13
+    |
+104 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+104 -         k = (k + 1);
+104 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:109:8
+    |
+109 |     if (next[u as usize].clone()[v as usize] < 0) {
+    |        ^                                        ^
+    |
+help: remove these parentheses
+    |
+109 -     if (next[u as usize].clone()[v as usize] < 0) {
+109 +     if next[u as usize].clone()[v as usize] < 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:114:11
+    |
+114 |     while (x != v) {
+    |           ^      ^
+    |
+help: remove these parentheses
+    |
+114 -     while (x != v) {
+114 +     while x != v {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:123:11
+    |
+123 |     while (i < (p.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+123 -     while (i < (p.len() as i64)) {
+123 +     while i < (p.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:125:12
+    |
+125 |         if (i < ((p.len() as i64) - 1)) {
+    |            ^                          ^
+    |
+help: remove these parentheses
+    |
+125 -         if (i < ((p.len() as i64) - 1)) {
+125 +         if i < ((p.len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:128:13
+    |
+128 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+128 -         i = (i + 1);
+128 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:137:20
+    |
+137 |                 if (g_i == j) {
+    |                    ^        ^
+    |
+help: remove these parentheses
+    |
+137 -                 if (g_i == j) {
+137 +                 if g_i == j {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:153:15
+    |
+153 |         while (g_i < g_n) {
+    |               ^         ^
+    |
+help: remove these parentheses
+    |
+153 -         while (g_i < g_n) {
+153 +         while g_i < g_n {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:155:19
+    |
+155 |             while (j < g_n) {
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+155 -             while (j < g_n) {
+155 +             while j < g_n {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:156:20
+    |
+156 |                 if (g_i != j) {
+    |                    ^        ^
+    |
+help: remove these parentheses
+    |
+156 -                 if (g_i != j) {
+156 +                 if g_i != j {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:160:21
+    |
+160 |                 j = (j + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+160 -                 j = (j + 1);
+160 +                 j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:162:19
+    |
+162 |             g_i = (g_i + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+162 -             g_i = (g_i + 1);
+162 +             g_i = g_i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:166:32
+    |
+166 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+166 -         let duration_us: i64 = ((_end - _start) / 1000);
+166 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:167:33
+    |
+167 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                                 ^                     ^
+    |
+help: remove these parentheses
+    |
+167 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+167 +         let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+warning: unused variable: `i`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:134:13
+    |
+134 |         for i in 0..g_n {
+    |             ^ help: if this is intentional, prefix it with an underscore: `_i`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:150:13
+    |
+150 |         let mut res: FWResult = floydWarshall(g_g.clone().clone());
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:157:25
+    |
+157 |                     let mut p: Vec<i64> = path(g_i, j, res.next);
+    |                         ----^
+    |                         |
+    |                         help: remove this `mut`
+
+error[E0382]: use of moved value: `res.next`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:157:56
+    |
+157 |                     let mut p: Vec<i64> = path(g_i, j, res.next);
+    |                                                        ^^^^^^^^ value moved here, in previous iteration of loop
+    |
+    = note: move occurs because `res.next` has type `Vec<Vec<i64>>`, which does not implement the `Copy` trait
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:65:33
+   |
+65 |         unsafe fn floydWarshall(mut graph: Vec<Vec<i64>>) -> FWResult {
+   |                                 ----^^^^^
+   |                                 |
+   |                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:66:9
+   |
+66 |     let mut n: i64 = (graph.len() as i64);
+   |         ----^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:94:25
+   |
+94 |                     let mut alt: i64 = (dist[i as usize].clone()[k as usize] + dist[k as usize].clone()[j as usize]);
+   |                         ----^^^
+   |                         |
+   |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:108:24
+    |
+108 |         unsafe fn path(mut u: i64, mut v: i64, mut next: Vec<Vec<i64>>) -> Vec<i64> {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:108:36
+    |
+108 |         unsafe fn path(mut u: i64, mut v: i64, mut next: Vec<Vec<i64>>) -> Vec<i64> {
+    |                                    ----^
+    |                                    |
+    |                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:108:48
+    |
+108 |         unsafe fn path(mut u: i64, mut v: i64, mut next: Vec<Vec<i64>>) -> Vec<i64> {
+    |                                                ----^^^^
+    |                                                |
+    |                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/floyd-warshall-algorithm2.rs:120:27
+    |
+120 |         unsafe fn pathStr(mut p: Vec<i64>) -> String {
+    |                           ----^
+    |                           |
+    |                           help: remove this `mut`
+
+error: aborting due to 1 previous error; 45 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.
