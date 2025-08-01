@@ -30,9 +30,20 @@
   (try (do (def camelToSnake_s camelToSnake_s_p) (def camelToSnake_s (trimSpace camelToSnake_s)) (def camelToSnake_out "") (def camelToSnake_prevUnd false) (def camelToSnake_i 0) (loop [while_flag_2 true] (when (and while_flag_2 (< camelToSnake_i (count camelToSnake_s))) (do (def camelToSnake_ch (subs camelToSnake_s camelToSnake_i (+ camelToSnake_i 1))) (cond (or (or (= camelToSnake_ch " ") (= camelToSnake_ch "-")) (= camelToSnake_ch ".")) (do (when (and (not camelToSnake_prevUnd) (> (count camelToSnake_out) 0)) (do (def camelToSnake_out (str camelToSnake_out "_")) (def camelToSnake_prevUnd true))) (def camelToSnake_i (+ camelToSnake_i 1)) (recur true)) :else (do (when (= camelToSnake_ch "_") (do (when (and (not camelToSnake_prevUnd) (> (count camelToSnake_out) 0)) (do (def camelToSnake_out (str camelToSnake_out "_")) (def camelToSnake_prevUnd true))) (def camelToSnake_i (+ camelToSnake_i 1)) (recur true))) (if (isUpper camelToSnake_ch) (do (when (and (> camelToSnake_i 0) (not camelToSnake_prevUnd)) (def camelToSnake_out (str camelToSnake_out "_"))) (def camelToSnake_out (+ camelToSnake_out (clojure.string/lower-case camelToSnake_ch))) (def camelToSnake_prevUnd false)) (do (def camelToSnake_out (+ camelToSnake_out (clojure.string/lower-case camelToSnake_ch))) (def camelToSnake_prevUnd false))) (def camelToSnake_i (+ camelToSnake_i 1)) (recur while_flag_2)))))) (def camelToSnake_start 0) (while (and (< camelToSnake_start (count camelToSnake_out)) (= (subvec camelToSnake_out camelToSnake_start (+ camelToSnake_start 1)) "_")) (def camelToSnake_start (+ camelToSnake_start 1))) (def camelToSnake_end (count camelToSnake_out)) (while (and (> camelToSnake_end camelToSnake_start) (= (subvec camelToSnake_out (- camelToSnake_end 1) camelToSnake_end) "_")) (def camelToSnake_end (- camelToSnake_end 1))) (def camelToSnake_out (subvec camelToSnake_out camelToSnake_start camelToSnake_end)) (def camelToSnake_res "") (def camelToSnake_j 0) (def camelToSnake_lastUnd false) (while (< camelToSnake_j (count camelToSnake_out)) (do (def camelToSnake_c (subvec camelToSnake_out camelToSnake_j (+ camelToSnake_j 1))) (if (= camelToSnake_c "_") (do (when (not camelToSnake_lastUnd) (def camelToSnake_res (+ camelToSnake_res camelToSnake_c))) (def camelToSnake_lastUnd true)) (do (def camelToSnake_res (+ camelToSnake_res camelToSnake_c)) (def camelToSnake_lastUnd false))) (def camelToSnake_j (+ camelToSnake_j 1)))) (throw (ex-info "return" {:v camelToSnake_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (def main_samples ["snakeCase" "snake_case" "snake-case" "snake case" "snake CASE" "snake.case" "variable_10_case" "variable10Case" "ɛrgo rE tHis" "hurry-up-joe!" "c://my-docs/happy_Flag-Day/12.doc" " spaces "]) (println "=== To snake_case ===") (doseq [s main_samples] (println (str (str (padLeft main_s 34) " => ") (camelToSnake main_s)))) (println "") (println "=== To camelCase ===") (doseq [s main_samples] (println (str (str (padLeft main_s 34) " => ") (snakeToCamel main_s))))))
+  (do (def main_samples ["snakeCase" "snake_case" "snake-case" "snake case" "snake CASE" "snake.case" "variable_10_case" "variable10Case" "ɛrgo rE tHis" "hurry-up-joe!" "c://my-docs/happy_Flag-Day/12.doc" " spaces "]) (println "=== To snake_case ===") (doseq [s main_samples] (println (str (str (padLeft s 34) " => ") (camelToSnake s)))) (println "") (println "=== To camelCase ===") (doseq [s main_samples] (println (str (str (padLeft s 34) " => ") (snakeToCamel s))))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

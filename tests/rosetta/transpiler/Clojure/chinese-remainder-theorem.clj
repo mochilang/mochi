@@ -12,7 +12,7 @@
 
 (declare egcd modInv crt)
 
-(declare a crt_ai crt_i crt_inv crt_ni crt_p crt_prod crt_x egcd_g egcd_res egcd_x1 egcd_y1 modInv_r modInv_x n res)
+(declare crt_ai crt_i crt_inv crt_ni crt_p crt_prod crt_x egcd_g egcd_res egcd_x1 egcd_y1 main_a main_n main_res modInv_r modInv_x)
 
 (defn egcd [egcd_a egcd_b]
   (try (do (when (= egcd_a 0) (throw (ex-info "return" {:v [egcd_b 0 1]}))) (def egcd_res (egcd (mod egcd_b egcd_a) egcd_a)) (def egcd_g (nth egcd_res 0)) (def egcd_x1 (nth egcd_res 1)) (def egcd_y1 (nth egcd_res 2)) (throw (ex-info "return" {:v [egcd_g (- egcd_y1 (* (/ egcd_b egcd_a) egcd_x1)) egcd_x1]}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -23,13 +23,24 @@
 (defn crt [crt_a crt_n]
   (try (do (def crt_prod 1) (def crt_i 0) (while (< crt_i (count crt_n)) (do (def crt_prod (* crt_prod (nth crt_n crt_i))) (def crt_i (+ crt_i 1)))) (def crt_x 0) (def crt_i 0) (while (< crt_i (count crt_n)) (do (def crt_ni (nth crt_n crt_i)) (def crt_ai (nth crt_a crt_i)) (def crt_p (/ crt_prod crt_ni)) (def crt_inv (modInv (mod crt_p crt_ni) crt_ni)) (def crt_x (+ crt_x (* (* crt_ai crt_inv) crt_p))) (def crt_i (+ crt_i 1)))) (throw (ex-info "return" {:v (mod crt_x crt_prod)}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def n [3 5 7])
+(def main_n [3 5 7])
 
-(def a [2 3 2])
+(def main_a [2 3 2])
 
-(def res (crt a n))
+(def main_res (crt main_a main_n))
 
 (defn -main []
-  (println (str (str res) " <nil>")))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println (str (str main_res) " <nil>"))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

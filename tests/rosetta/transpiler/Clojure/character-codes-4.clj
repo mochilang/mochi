@@ -12,17 +12,28 @@
 
 (declare chr)
 
-(declare b r)
+(declare main_b main_r)
 
 (defn chr [chr_n]
   (try (do (when (= chr_n 97) (throw (ex-info "return" {:v "a"}))) (when (= chr_n 960) (throw (ex-info "return" {:v "π"}))) (if (= chr_n 65) "A" "?")) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def b 97)
+(def main_b 97)
 
-(def r 960)
+(def main_r 960)
 
 (defn -main []
-  (println (str (str (chr 97) " ") (chr 960)))
-  (println (str (str (chr b) " ") (chr r))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println (str (str (chr 97) " ") (chr 960)))
+      (println (str (str (chr main_b) " ") (chr main_r)))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

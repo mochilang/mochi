@@ -1,0 +1,6 @@
+run error: exit status 1
+Execution error (UnsupportedOperationException) at main/indexOf (composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.clj:24).
+count not supported on this type: Unbound
+
+Full report at:
+/tmp/clojure-15616131491144356918.edn

@@ -3,4 +3,4 @@ Execution error (UnsupportedOperationException) at main/bigMulSmall (chernicks-c
 count not supported on this type: BigInt
 
 Full report at:
-/tmp/clojure-496988523200804848.edn
+/tmp/clojure-7341092236359232645.edn

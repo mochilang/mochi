@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/cartesian-product-of-two-or-more-lists-4.clj:24:63).
-Unable to resolve symbol: copy_v in this context
+Execution error (IndexOutOfBoundsException) at main/cartN (cartesian-product-of-two-or-more-lists-4.clj:27).
+null
 
 Full report at:
-/tmp/clojure-16670189079774122410.edn
+/tmp/clojure-7895318915016010226.edn

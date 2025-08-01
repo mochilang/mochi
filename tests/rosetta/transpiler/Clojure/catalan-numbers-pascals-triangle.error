@@ -1,6 +1,1 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/catalan-numbers-pascals-triangle.clj:22:41).
-Unable to resolve symbol: main_i in this context
-
-Full report at:
-/tmp/clojure-8435863498873504664.edn
+missing output: open /workspace/mochi/tests/rosetta/transpiler/Clojure/catalan-numbers-pascals-triangle.out: no such file or directory

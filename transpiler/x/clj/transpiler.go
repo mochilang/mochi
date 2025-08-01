@@ -435,6 +435,22 @@ func originalVar(name string) string {
 	return name
 }
 
+func lookupVar(name string) (string, bool) {
+	if renameVars != nil {
+		if v, ok := renameVars[name]; ok {
+			return v, true
+		}
+	}
+	for i := len(outerVarStack) - 1; i >= 0; i-- {
+		if m := outerVarStack[i]; m != nil {
+			if v, ok := m[name]; ok {
+				return v, true
+			}
+		}
+	}
+	return name, false
+}
+
 func validCljIdent(name string) bool {
 	if name == "" {
 		return false
@@ -634,6 +650,9 @@ var stringListVars map[string]bool
 var renameVars map[string]string
 var currentFun string
 var declVars map[string]bool
+var currentStruct *types.StructType
+var currentSelf string
+var outerVarStack []map[string]string
 var reservedNames = map[string]bool{
 	"count": true,
 	"in":    true,
@@ -667,6 +686,9 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	stringVars = nil
 	renameVars = nil
 	declVars = make(map[string]bool)
+	currentStruct = nil
+	currentSelf = ""
+	outerVarStack = nil
 	pr := &Program{}
 	currentProgram = pr
 	defer func() {
@@ -678,6 +700,9 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		stringVars = nil
 		renameVars = nil
 		declVars = nil
+		currentStruct = nil
+		currentSelf = ""
+		outerVarStack = nil
 	}()
 
 	// emit (ns main)
@@ -1052,13 +1077,29 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	funDepth++
 	prevFun := currentFun
 	currentFun = f.Name
+	prevStruct := currentStruct
+	prevSelf := currentSelf
+	prevRename := renameVars
+	outerVarStack = append(outerVarStack, renameVars)
+	if transpileEnv != nil {
+		if parts := strings.SplitN(f.Name, "_", 2); len(parts) == 2 {
+			if st, ok := transpileEnv.GetStruct(parts[0]); ok {
+				s := st
+				currentStruct = &s
+			}
+		}
+	}
+	currentSelf = ""
 	defer func() {
 		funDepth--
 		currentFun = prevFun
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		stringVars = nil
 		stringListVars = nil
-		renameVars = nil
+		renameVars = prevRename
+		outerVarStack = outerVarStack[:len(outerVarStack)-1]
+		currentStruct = prevStruct
+		currentSelf = prevSelf
 	}()
 
 	stringVars = make(map[string]bool)
@@ -1099,6 +1140,9 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 	names := []string{}
 	for _, p := range f.Params {
 		newName := renameVar(p.Name)
+		if p.Name == "self" && currentStruct != nil {
+			currentSelf = newName
+		}
 		if mutated[p.Name] {
 			initName := newName + "_p"
 			params = append(params, Symbol(initName))
@@ -1951,7 +1995,14 @@ func transpilePrimary(p *parser.Primary) (Node, error) {
 		return &List{Elems: []Node{Symbol("doseq"), binding, printExpr}}, nil
 	case p.Selector != nil && len(p.Selector.Tail) == 0:
 		name := p.Selector.Root
-		name = renameVar(name)
+		if v, ok := lookupVar(name); ok {
+			return Symbol(v), nil
+		}
+		if currentStruct != nil {
+			if _, ok := currentStruct.Fields[name]; ok && currentSelf != "" {
+				return &List{Elems: []Node{Keyword(name), Symbol(currentSelf)}}, nil
+			}
+		}
 		if transpileEnv != nil {
 			if st, ok := transpileEnv.GetStruct(name); ok && len(st.Order) == 0 {
 				if _, ok2 := transpileEnv.FindUnionByVariant(name); ok2 {

@@ -1,6 +1,1 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/checkpoint-synchronization-1.clj:20:93).
-Unable to resolve symbol: main_cycle in this context
-
-Full report at:
-/tmp/clojure-6942852094801502078.edn
+missing output: open /workspace/mochi/tests/rosetta/transpiler/Clojure/checkpoint-synchronization-1.out: no such file or directory

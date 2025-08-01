@@ -12,7 +12,7 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare frame i index j lenSeg main_height main_j main_lines main_row main_width seg stack start)
+(declare main_frame main_height main_i main_index main_j main_lenSeg main_lines main_row main_seg main_stack main_start main_width)
 
 (declare setChar)
 
@@ -25,11 +25,22 @@
 (defn setChar [setChar_s setChar_idx setChar_ch]
   (try (throw (ex-info "return" {:v (str (str (subs setChar_s 0 setChar_idx) setChar_ch) (subs setChar_s (+ setChar_idx 1) (count setChar_s)))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def stack [{"start" 0 "len" width "index" 1}])
+(def main_stack [{"start" 0 "len" main_width "index" 1}])
 
 (defn -main []
-  (dotimes [i main_height] (do (def main_row "") (def main_j 0) (while (< main_j main_width) (do (def main_row (str main_row "*")) (def main_j (+ main_j 1)))) (def main_lines (conj main_lines main_row))))
-  (loop [while_flag_1 true] (when (and while_flag_1 (> (count stack) 0)) (do (def frame (nth stack (- (count stack) 1))) (def stack (subvec stack 0 (- (count stack) 1))) (def start (get frame "start")) (def lenSeg (get frame "len")) (def index (get frame "index")) (def seg (int (/ lenSeg 3))) (cond (= seg 0) (recur true) :else (do (def i index) (while (< i height) (do (def j (+ start seg)) (while (< j (+ start (* 2 seg))) (do (def lines (assoc lines i (setChar (nth lines i) j " "))) (def j (+ j 1)))) (def i (+ i 1)))) (def stack (conj stack {"start" start "len" seg "index" (+ index 1)})) (def stack (conj stack {"start" (+ start (* seg 2)) "len" seg "index" (+ index 1)})) (recur while_flag_1))))))
-  (doseq [line lines] (println line)))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (dotimes [i main_height] (do (def main_row "") (def main_j 0) (while (< main_j main_width) (do (def main_row (str main_row "*")) (def main_j (+ main_j 1)))) (def main_lines (conj main_lines main_row))))
+      (loop [while_flag_1 true] (when (and while_flag_1 (> (count main_stack) 0)) (do (def main_frame (nth main_stack (- (count main_stack) 1))) (def main_stack (subvec main_stack 0 (- (count main_stack) 1))) (def main_start (get main_frame "start")) (def main_lenSeg (get main_frame "len")) (def main_index (get main_frame "index")) (def main_seg (int (/ main_lenSeg 3))) (cond (= main_seg 0) (recur true) :else (do (def main_i main_index) (while (< main_i main_height) (do (def main_j (+ main_start main_seg)) (while (< main_j (+ main_start (* 2 main_seg))) (do (def main_lines (assoc main_lines main_i (setChar (nth main_lines main_i) main_j " "))) (def main_j (+ main_j 1)))) (def main_i (+ main_i 1)))) (def main_stack (conj main_stack {"start" main_start "len" main_seg "index" (+ main_index 1)})) (def main_stack (conj main_stack {"start" (+ main_start (* main_seg 2)) "len" main_seg "index" (+ main_index 1)})) (recur while_flag_1))))))
+      (doseq [line main_lines] (println line))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

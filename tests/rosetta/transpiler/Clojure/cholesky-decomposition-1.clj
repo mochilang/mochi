@@ -39,7 +39,18 @@
   (do (println "A:") (printSym demo_a) (println "L:") (def demo_l (choleskyLower demo_a)) (printLower demo_l)))
 
 (defn -main []
-  (demo (makeSym 3 [25.0 15.0 18.0 (- 5.0) 0.0 11.0]))
-  (demo (makeSym 4 [18.0 22.0 70.0 54.0 86.0 174.0 42.0 62.0 134.0 106.0])))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (demo (makeSym 3 [25.0 15.0 18.0 (- 5.0) 0.0 11.0]))
+      (demo (makeSym 4 [18.0 22.0 70.0 54.0 86.0 174.0 42.0 62.0 134.0 106.0]))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

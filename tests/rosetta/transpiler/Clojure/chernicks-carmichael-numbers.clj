@@ -39,6 +39,17 @@
   (do (def ccNumbers_n ccNumbers_start) (while (<= ccNumbers_n ccNumbers_end) (do (def ccNumbers_m 1) (when (> ccNumbers_n 4) (def ccNumbers_m (pow2 (- ccNumbers_n 4)))) (loop [while_flag_1 true] (when (and while_flag_1 true) (do (def ccNumbers_num (ccFactors ccNumbers_n ccNumbers_m)) (cond (> (count ccNumbers_num) 0) (do (println (str (str (str "a(" (str ccNumbers_n)) ") = ") (bigToString ccNumbers_num))) (recur false)) :else (do (if (<= ccNumbers_n 4) (def ccNumbers_m (+ ccNumbers_m 1)) (def ccNumbers_m (+ ccNumbers_m (pow2 (- ccNumbers_n 4))))) (recur while_flag_1)))))) (def ccNumbers_n (+ ccNumbers_n 1))))))
 
 (defn -main []
-  (ccNumbers 3 9))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (ccNumbers 3 9)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

@@ -1,6 +1,1 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/chat-server.clj:18:70).
-Unable to resolve symbol: removeName_n in this context
-
-Full report at:
-/tmp/clojure-16587628453307977784.edn
+missing output: open /workspace/mochi/tests/rosetta/transpiler/Clojure/chat-server.out: no such file or directory

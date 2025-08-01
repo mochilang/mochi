@@ -12,7 +12,7 @@
 
 (declare split join repeat parseIntStr toBinary binToInt padRight canonicalize)
 
-(declare binToInt_i binToInt_n canonicalize_binParts canonicalize_binary canonicalize_canonParts canonicalize_dotted canonicalize_i canonicalize_parts canonicalize_size join_i join_res padRight_out parseIntStr_digits parseIntStr_i parseIntStr_n parseIntStr_neg repeat_i repeat_out split_cur split_i split_parts tests toBinary_b toBinary_i toBinary_val)
+(declare binToInt_i binToInt_n canonicalize_binParts canonicalize_binary canonicalize_canonParts canonicalize_dotted canonicalize_i canonicalize_parts canonicalize_size join_i join_res main_tests padRight_out parseIntStr_digits parseIntStr_i parseIntStr_n parseIntStr_neg repeat_i repeat_out split_cur split_i split_parts toBinary_b toBinary_i toBinary_val)
 
 (defn split [split_s split_sep]
   (try (do (def split_parts []) (def split_cur "") (def split_i 0) (while (< split_i (count split_s)) (if (and (and (> (count split_sep) 0) (<= (+ split_i (count split_sep)) (count split_s))) (= (subs split_s split_i (+ split_i (count split_sep))) split_sep)) (do (def split_parts (conj split_parts split_cur)) (def split_cur "") (def split_i (+ split_i (count split_sep)))) (do (def split_cur (str split_cur (subs split_s split_i (+ split_i 1)))) (def split_i (+ split_i 1))))) (def split_parts (conj split_parts split_cur)) (throw (ex-info "return" {:v split_parts}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
@@ -36,11 +36,22 @@
   (try (do (def padRight_out padRight_s) (while (< (count padRight_out) padRight_width) (def padRight_out (str padRight_out " "))) (throw (ex-info "return" {:v padRight_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn canonicalize [canonicalize_cidr]
-  (try (do (def canonicalize_parts (split canonicalize_cidr "/")) (def canonicalize_dotted (nth canonicalize_parts 0)) (def canonicalize_size (parseIntStr (nth canonicalize_parts 1))) (def canonicalize_binParts []) (doseq [p (split canonicalize_dotted ".")] (def canonicalize_binParts (conj canonicalize_binParts (toBinary (parseIntStr canonicalize_p) 8)))) (def canonicalize_binary (join canonicalize_binParts "")) (def canonicalize_binary (str (subvec canonicalize_binary 0 canonicalize_size) (repeat "0" (- 32 canonicalize_size)))) (def canonicalize_canonParts []) (def canonicalize_i 0) (while (< canonicalize_i (count canonicalize_binary)) (do (def canonicalize_canonParts (conj canonicalize_canonParts (str (binToInt (subvec canonicalize_binary canonicalize_i (+ canonicalize_i 8)))))) (def canonicalize_i (+ canonicalize_i 8)))) (throw (ex-info "return" {:v (str (str (join canonicalize_canonParts ".") "/") (nth canonicalize_parts 1))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (def canonicalize_parts (split canonicalize_cidr "/")) (def canonicalize_dotted (nth canonicalize_parts 0)) (def canonicalize_size (parseIntStr (nth canonicalize_parts 1))) (def canonicalize_binParts []) (doseq [p (split canonicalize_dotted ".")] (def canonicalize_binParts (conj canonicalize_binParts (toBinary (parseIntStr p) 8)))) (def canonicalize_binary (join canonicalize_binParts "")) (def canonicalize_binary (str (subvec canonicalize_binary 0 canonicalize_size) (repeat "0" (- 32 canonicalize_size)))) (def canonicalize_canonParts []) (def canonicalize_i 0) (while (< canonicalize_i (count canonicalize_binary)) (do (def canonicalize_canonParts (conj canonicalize_canonParts (str (binToInt (subvec canonicalize_binary canonicalize_i (+ canonicalize_i 8)))))) (def canonicalize_i (+ canonicalize_i 8)))) (throw (ex-info "return" {:v (str (str (join canonicalize_canonParts ".") "/") (nth canonicalize_parts 1))}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(def tests ["87.70.141.1/22" "36.18.154.103/12" "62.62.197.11/29" "67.137.119.181/4" "161.214.74.21/24" "184.232.176.184/18"])
+(def main_tests ["87.70.141.1/22" "36.18.154.103/12" "62.62.197.11/29" "67.137.119.181/4" "161.214.74.21/24" "184.232.176.184/18"])
 
 (defn -main []
-  (doseq [t tests] (println (str (str (padRight t 18) " -> ") (canonicalize t)))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (doseq [t main_tests] (println (str (str (padRight t 18) " -> ") (canonicalize t))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

@@ -21,12 +21,23 @@
   (try (do (def llStr_s "[") (def llStr_i 0) (while (< llStr_i (count llStr_lst)) (do (def llStr_s (str llStr_s (listStr (nth llStr_lst llStr_i)))) (when (< llStr_i (- (count llStr_lst) 1)) (def llStr_s (str llStr_s " "))) (def llStr_i (+ llStr_i 1)))) (def llStr_s (str llStr_s "]")) (throw (ex-info "return" {:v llStr_s}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn cartN [cartN_lists]
-  (try (do (when (= cartN_lists nil) (throw (ex-info "return" {:v []}))) (def cartN_a cartN_lists) (when (= (count cartN_a) 0) (throw (ex-info "return" {:v [[]]}))) (def cartN_c 1) (doseq [xs cartN_a] (def cartN_c (* cartN_c (count cartN_xs)))) (when (= cartN_c 0) (throw (ex-info "return" {:v []}))) (def cartN_res []) (def cartN_idx []) (doseq [_ cartN_a] (def cartN_idx (conj cartN_idx 0))) (def cartN_n (count cartN_a)) (def count_v 0) (while (< count_v cartN_c) (do (def cartN_row []) (def cartN_j 0) (while (< cartN_j cartN_n) (do (def cartN_row (conj cartN_row (nth (nth cartN_a cartN_j) (nth cartN_idx cartN_j)))) (def cartN_j (+ cartN_j 1)))) (def cartN_res (conj cartN_res cartN_row)) (def cartN_k (- cartN_n 1)) (loop [while_flag_1 true] (when (and while_flag_1 (>= cartN_k 0)) (do (def cartN_idx (assoc cartN_idx cartN_k (+ (nth cartN_idx cartN_k) 1))) (cond (< (nth cartN_idx cartN_k) (count (nth cartN_a cartN_k))) (recur false) :else (do (def cartN_idx (assoc cartN_idx cartN_k 0)) (def cartN_k (- cartN_k 1)) (recur while_flag_1)))))) (def count_v (+ count_v 1)))) (throw (ex-info "return" {:v cartN_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+  (try (do (when (= cartN_lists nil) (throw (ex-info "return" {:v []}))) (def cartN_a cartN_lists) (when (= (count cartN_a) 0) (throw (ex-info "return" {:v [[]]}))) (def cartN_c 1) (doseq [xs cartN_a] (def cartN_c (* cartN_c (count xs)))) (when (= cartN_c 0) (throw (ex-info "return" {:v []}))) (def cartN_res []) (def cartN_idx []) (doseq [_ cartN_a] (def cartN_idx (conj cartN_idx 0))) (def cartN_n (count cartN_a)) (def count_v 0) (while (< count_v cartN_c) (do (def cartN_row []) (def cartN_j 0) (while (< cartN_j cartN_n) (do (def cartN_row (conj cartN_row (nth (nth cartN_a cartN_j) (nth cartN_idx cartN_j)))) (def cartN_j (+ cartN_j 1)))) (def cartN_res (conj cartN_res cartN_row)) (def cartN_k (- cartN_n 1)) (loop [while_flag_1 true] (when (and while_flag_1 (>= cartN_k 0)) (do (def cartN_idx (assoc cartN_idx cartN_k (+ (nth cartN_idx cartN_k) 1))) (cond (< (nth cartN_idx cartN_k) (count (nth cartN_a cartN_k))) (recur false) :else (do (def cartN_idx (assoc cartN_idx cartN_k 0)) (def cartN_k (- cartN_k 1)) (recur while_flag_1)))))) (def count_v (+ count_v 1)))) (throw (ex-info "return" {:v cartN_res}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (println (llStr (cartN [[1 2] [3 4]]))) (println (llStr (cartN [[3 4] [1 2]]))) (println (llStr (cartN [[1 2] []]))) (println (llStr (cartN [[] [1 2]]))) (println "") (println "[") (doseq [p (cartN [[1776 1789] [7 12] [4 14 23] [0 1]])] (println (str " " (listStr main_p)))) (println "]") (println (llStr (cartN [[1 2 3] [30] [500 100]]))) (println (llStr (cartN [[1 2 3] [] [500 100]]))) (println "") (println (llStr (cartN nil))) (println (llStr (cartN [])))))
+  (do (println (llStr (cartN [[1 2] [3 4]]))) (println (llStr (cartN [[3 4] [1 2]]))) (println (llStr (cartN [[1 2] []]))) (println (llStr (cartN [[] [1 2]]))) (println "") (println "[") (doseq [p (cartN [[1776 1789] [7 12] [4 14 23] [0 1]])] (println (str " " (listStr p)))) (println "]") (println (llStr (cartN [[1 2 3] [30] [500 100]]))) (println (llStr (cartN [[1 2 3] [] [500 100]]))) (println "") (println (llStr (cartN nil))) (println (llStr (cartN [])))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

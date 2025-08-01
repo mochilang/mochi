@@ -16,7 +16,18 @@
   (try (do (when (= ord_ch "a") (throw (ex-info "return" {:v 97}))) (when (= ord_ch "π") (throw (ex-info "return" {:v 960}))) (if (= ord_ch "A") 65 0)) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn -main []
-  (println (str (ord "a")))
-  (println (str (ord "π"))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (println (str (ord "a")))
+      (println (str (ord "π")))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

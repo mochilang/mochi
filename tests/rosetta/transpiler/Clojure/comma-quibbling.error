@@ -1,0 +1,9 @@
+run error: exit status 1
+{}
+{ABC}
+{ABC and DEF}
+Execution error (IllegalArgumentException) at main/quibble (comma-quibbling.clj:18).
+Don't know how to create ISeq from: java.lang.Long
+
+Full report at:
+/tmp/clojure-4135809089548896515.edn

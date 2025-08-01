@@ -33,6 +33,17 @@
   (do (def main_plain "WELLDONEISBETTERTHANWELLSAID") (def main_cipher (chao main_plain true)) (println main_plain) (println main_cipher) (println (chao main_cipher false))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)

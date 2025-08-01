@@ -1,6 +1,1 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/cartesian-product-of-two-or-more-lists-2.clj:24:226).
-Unable to resolve symbol: cartN_xs in this context
-
-Full report at:
-/tmp/clojure-17313827240636068245.edn
+missing output: open /workspace/mochi/tests/rosetta/transpiler/Clojure/cartesian-product-of-two-or-more-lists-2.out: no such file or directory

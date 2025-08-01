@@ -1,6 +1,6 @@
 run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/canonicalize-cidr.clj:39:324).
-Unable to resolve symbol: canonicalize_p in this context
+Execution error (ClassCastException) at main/canonicalize (canonicalize-cidr.clj:39).
+class java.lang.String cannot be cast to class clojure.lang.IPersistentVector (java.lang.String is in module java.base of loader 'bootstrap'; clojure.lang.IPersistentVector is in unnamed module of loader 'app')
 
 Full report at:
-/tmp/clojure-6679335046921932844.edn
+/tmp/clojure-930927773204315985.edn

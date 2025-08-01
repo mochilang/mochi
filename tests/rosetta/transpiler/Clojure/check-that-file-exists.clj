@@ -18,9 +18,20 @@
   (if (in printStat_path printStat_fs) (if (get printStat_fs printStat_path) (println (str printStat_path " is a directory")) (println (str printStat_path " is a file"))) (println (str (str "stat " printStat_path) ": no such file or directory"))))
 
 (defn main []
-  (do (def main_fs {}) (def main_fs (assoc main_fs "docs" true)) (doseq [p ["input.txt" "/input.txt" "docs" "/docs"]] (printStat main_fs main_p))))
+  (do (def main_fs {}) (def main_fs (assoc main_fs "docs" true)) (doseq [p ["input.txt" "/input.txt" "docs" "/docs"]] (printStat main_fs p))))
 
 (defn -main []
-  (main))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (main)
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
