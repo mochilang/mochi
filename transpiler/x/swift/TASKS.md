@@ -1,5 +1,5 @@
-## Progress (2025-08-01 21:57 +0700)
-- swift transpiler: support escaping function types
+## Progress (2025-08-01 23:57 +0700)
+- swift transpiler: cast optionals and any to Int
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
