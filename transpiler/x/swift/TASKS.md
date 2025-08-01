@@ -1,5 +1,5 @@
-## Progress (2025-08-01 18:44 +0700)
-- swift: transpile rosetta index 200
+## Progress (2025-08-01 18:59 +0700)
+- swift transpiler: support type aliases and block lambdas
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
