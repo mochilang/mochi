@@ -43,10 +43,26 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		}
 	case "import":
 		b.WriteString("import ")
-		for i, c := range n.Children {
-			if i > 0 {
-				b.WriteByte(' ')
+		idx := 0
+		if idx < len(n.Children) && n.Children[idx].Kind == "qualified" {
+			b.WriteString("qualified ")
+			idx++
+		}
+		if idx < len(n.Children) {
+			writeNode(b, &n.Children[idx], indent)
+			idx++
+		}
+		if idx < len(n.Children) && n.Children[idx].Kind == "as" {
+			idx++
+			if idx < len(n.Children) {
+				b.WriteString(" as ")
+				writeNode(b, &n.Children[idx], indent)
+				idx++
 			}
+		}
+		for ; idx < len(n.Children); idx++ {
+			b.WriteByte(' ')
+			c := n.Children[idx]
 			if c.Kind == "hiding" {
 				b.WriteString("hiding ")
 				continue
@@ -86,12 +102,27 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 		}
 		b.WriteByte(')')
 	case "function":
-		if len(n.Children) >= 3 {
+		if len(n.Children) >= 2 {
 			writeNode(b, &n.Children[0], indent)
-			b.WriteByte(' ')
-			writeNode(b, &n.Children[1], indent)
-			b.WriteString(" = ")
-			writeNode(b, &n.Children[2], indent)
+			if n.Children[1].Kind == "patterns" {
+				b.WriteByte(' ')
+				writeNode(b, &n.Children[1], indent)
+			}
+			idx := 2
+			if n.Children[1].Kind != "patterns" {
+				idx = 1
+			}
+			for i := idx; i < len(n.Children); i++ {
+				c := &n.Children[i]
+				if i == idx {
+					b.WriteString(" = ")
+				} else {
+					b.WriteByte('\n')
+					writeIndent(b, indent+1)
+					b.WriteString("| ")
+				}
+				writeNode(b, c, indent+1)
+			}
 		}
 	case "bind":
 		if len(n.Children) == 2 {
@@ -113,11 +144,25 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			writeNode(b, &n.Children[i], indent)
 		}
 	case "match":
-		for i := range n.Children {
-			if i > 0 {
-				b.WriteByte(' ')
+		if len(n.Children) == 1 {
+			writeNode(b, &n.Children[0], indent)
+		} else if len(n.Children) == 2 {
+			if n.Children[0].Kind == "guards" {
+				writeNode(b, &n.Children[0], indent)
+				b.WriteString(" = ")
+				writeNode(b, &n.Children[1], indent)
+			} else {
+				writeNode(b, &n.Children[0], indent)
+				b.WriteString(" = ")
+				writeNode(b, &n.Children[1], indent)
 			}
-			writeNode(b, &n.Children[i], indent)
+		} else {
+			for i := range n.Children {
+				if i > 0 {
+					b.WriteByte(' ')
+				}
+				writeNode(b, &n.Children[i], indent)
+			}
 		}
 	case "do":
 		b.WriteString("do")
@@ -125,6 +170,21 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte('\n')
 			writeIndent(b, indent+1)
 			writeNode(b, &c, indent+1)
+		}
+	case "let":
+		b.WriteString("let")
+		for _, c := range n.Children {
+			b.WriteByte('\n')
+			writeIndent(b, indent+1)
+			writeNode(b, &c, indent+1)
+		}
+	case "local_binds":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteByte('\n')
+				writeIndent(b, indent)
+			}
+			writeNode(b, &c, indent)
 		}
 	case "exp":
 		for i := range n.Children {
@@ -155,6 +215,15 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteByte(' ')
 			writeNode(b, &n.Children[2], indent)
 		}
+	case "infix_id":
+		b.WriteByte('`')
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteByte(' ')
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+		b.WriteByte('`')
 	case "parens":
 		b.WriteByte('(')
 		for i := range n.Children {
@@ -173,6 +242,15 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			writeNode(b, &n.Children[i], indent)
 		}
 		b.WriteByte(']')
+	case "tuple":
+		b.WriteByte('(')
+		for i := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, &n.Children[i], indent)
+		}
+		b.WriteByte(')')
 	case "arithmetic_sequence":
 		if len(n.Children) == 2 {
 			writeNode(b, &n.Children[0], indent)
@@ -272,7 +350,20 @@ func writeNode(b *bytes.Buffer, n *Node, indent int) {
 			b.WriteString(" <- ")
 			writeNode(b, &n.Children[1], indent)
 		}
+	case "guards":
+		for i, c := range n.Children {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			writeNode(b, &c, indent)
+		}
 	case "projection":
+		if len(n.Children) == 2 {
+			writeNode(b, &n.Children[0], indent)
+			b.WriteByte('.')
+			writeNode(b, &n.Children[1], indent)
+		}
+	case "qualified":
 		if len(n.Children) == 2 {
 			writeNode(b, &n.Children[0], indent)
 			b.WriteByte('.')

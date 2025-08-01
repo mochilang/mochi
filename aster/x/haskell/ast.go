@@ -57,20 +57,27 @@ type (
 	Unit              Node
 	Literal           Node
 	List              Node
+	Tuple             Node
 	ListComprehension Node
 	Match             Node
+	Guards            Node
 	Bind              Node
+	Let               Node
+	LocalBinds        Node
 	Generator         Node
 	Patterns          Node
 	Apply             Node
 	Projection        Node
 	Exp               Node
 	Infix             Node
+	InfixID           Node
 	Lambda            Node
 	Do                Node
 	Signature         Node
 	Parens            Node
 	Qualifiers        Node
+	Qualified         Node
+	As                Node
 )
 
 // convert transforms a tree-sitter node into the Node structure defined above.
@@ -103,11 +110,13 @@ func convert(n *sitter.Node, src []byte, opt Option) *Node {
 		c := n.Child(i)
 		if !c.IsNamed() {
 			kind := c.Kind()
-			if kind == "hiding" {
+			switch kind {
+			case "hiding", "qualified", "as":
 				node.Children = append(node.Children, Node{Kind: kind, Text: c.Utf8Text(src)})
 				continue
+			default:
+				continue
 			}
-			continue
 		}
 		child := convert(c, src, opt)
 		if child != nil {
