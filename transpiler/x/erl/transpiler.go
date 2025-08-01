@@ -1262,6 +1262,8 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 				switch t.(type) {
 				case types.IntType, types.Int64Type, types.BigIntType:
 					return true
+				case types.AnyType:
+					return true
 				default:
 					return false
 				}
@@ -1275,6 +1277,15 @@ func isIntExpr(e Expr, env *types.Env, ctx *context) bool {
 func isBigRatType(t types.Type) bool {
 	_, ok := t.(types.BigRatType)
 	return ok
+}
+
+func isIntType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.BigIntType, types.AnyType:
+		return true
+	default:
+		return false
+	}
 }
 
 func ensureBigRatExpr(e Expr, t types.Type) Expr {
@@ -3999,6 +4010,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 		alias := fctx.alias[mname]
 		if isZeroExpr(ret) {
 			ret = &NameRef{Name: alias}
+		} else if nr, ok := ret.(*NameRef); ok && nr.Name == alias {
+			// already returning mutated variable
 		} else {
 			ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
 		}
@@ -4217,9 +4230,13 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" && isIntExpr(l, env, ctx) && isIntExpr(r, env, ctx) {
-					op = "div"
-					typesList[i] = types.IntType{}
+				if op == "/" {
+					lt := exprType(l, env, ctx)
+					rt := exprType(r, env, ctx)
+					if !isFloatExpr(l, env, ctx) && !isFloatExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
+						op = "div"
+						typesList[i] = types.IntType{}
+					}
 				} else if op == "%" {
 					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
 						exprs[i] = &CallExpr{Func: "math:fmod", Args: []Expr{l, r}}
@@ -4658,10 +4675,6 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				return &MapLit{Items: []MapItem{{Key: &StringLit{Value: "tag"}, Value: &StringLit{Value: strings.ToLower(p.Selector.Root)}}}}, nil
 			}
 		}
-		if fn, ok := env.GetFunc(p.Selector.Root); ok {
-			name := sanitizeFuncName(fn.Name)
-			return &FunRef{Name: name, Arity: len(fn.Params)}, nil
-		}
 		if ctx.isGlobal(p.Selector.Root) {
 			call := &CallExpr{Func: "erlang:get", Args: []Expr{&AtomLit{Name: fmt.Sprintf("'%s'", p.Selector.Root)}}}
 			if ctx.isStringVar(p.Selector.Root) {
@@ -4677,13 +4690,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 				}
 				_ = ft
 			}
-		}
-		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
-		if t, err := env.GetVar(p.Selector.Root); err == nil {
+			nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 			if _, ok := t.(types.StringType); ok {
 				nr.IsString = true
 			}
+			if !nr.IsString && ctx.isStringVar(p.Selector.Root) {
+				nr.IsString = true
+			}
+			return nr, nil
 		}
+		if fn, ok := env.GetFunc(p.Selector.Root); ok {
+			name := sanitizeFuncName(fn.Name)
+			return &FunRef{Name: name, Arity: len(fn.Params)}, nil
+		}
+		nr := &NameRef{Name: ctx.current(p.Selector.Root)}
 		if !nr.IsString && ctx.isStringVar(p.Selector.Root) {
 			nr.IsString = true
 		}
