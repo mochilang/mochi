@@ -972,6 +972,14 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				return
 			}
 		}
+		if cmpOp || numOp {
+			if _, ok := e.(*CastExpr); ok {
+				io.WriteString(w, "(")
+				e.emit(w)
+				io.WriteString(w, ")")
+				return
+			}
+		}
 		e.emit(w)
 	}
 	if ratOp {
@@ -2699,8 +2707,10 @@ func newVarRef(env *types.Env, name string) *VarRef {
 			typ = kotlinTypeFromType(t)
 			hasVar = true
 		}
-		if _, ok := env.GetFunc(name); ok {
-			isFunc = true
+		if !hasVar {
+			if _, ok := env.GetFunc(name); ok {
+				isFunc = true
+			}
 		}
 	}
 	if !hasVar && localFuncs[name] {
