@@ -1,0 +1,9 @@
+
+/workspace/mochi/tests/aster/x/hs/cast_struct.hs:9:28: error:
+    Variable not in scope: title :: a0 -> b0
+    Suggested fix:
+      Notice that ‘title’ is a field selector belonging to the type ‘Todo’
+      that has been suppressed by NoFieldSelectors.
+  |
+9 | main = do putStrLn (todo . title)
+  |                            ^^^^^

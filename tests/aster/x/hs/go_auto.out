@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/go_auto.hs:8:8: error:
+    Unexpected do block in function application:
+        do print (testpkg_Add 2 3)
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+  |
+8 | main = do print (testpkg_Add 2 3)
+  |        ^^^^^^^^^^^^^^^^^^^^^^^^^^

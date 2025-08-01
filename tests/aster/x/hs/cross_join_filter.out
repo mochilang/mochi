@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/cross_join_filter.hs:10:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- Even pairs ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+10 | main = do putStrLn "--- Even pairs ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/dataset_sort_take_limit.hs:16:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- Top products (excluding most expensive) ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+16 | main = do putStrLn "--- Top products (excluding most expensive) ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

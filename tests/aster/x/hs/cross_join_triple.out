@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/cross_join_triple.hs:12:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- Cross Join of three lists ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+12 | main = do putStrLn "--- Cross Join of three lists ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

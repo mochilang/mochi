@@ -1,0 +1,38 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (title)",
+    "import qualified Data.Map as Map"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "Todo",
+      "fields": [
+        {
+          "name": "title",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "todo",
+      "body": "Todo{title = \"hi\"}"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn (todo . title)"
+    }
+  ]
+}

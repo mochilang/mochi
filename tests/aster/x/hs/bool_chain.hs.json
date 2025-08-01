@@ -1,0 +1,27 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Debug.Trace (trace)"
+  ],
+  "items": [
+    {
+      "kind": "var",
+      "name": "boom",
+      "body": "trace \"boom\" True"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (fromEnum ((1 \u003c 2) \u0026\u0026 (2 \u003c 3) \u0026\u0026 (3 \u003c 4)))\n   print (fromEnum ((1 \u003c 2) \u0026\u0026 (2 \u003e 3) \u0026\u0026 boom))\n   print (fromEnum ((1 \u003c 2) \u0026\u0026 (2 \u003c 3) \u0026\u0026 (3 \u003e 4) \u0026\u0026 boom))"
+    }
+  ]
+}

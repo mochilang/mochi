@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/group_by.hs:24:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- People grouped by city ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+24 | main = do putStrLn "--- People grouped by city ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

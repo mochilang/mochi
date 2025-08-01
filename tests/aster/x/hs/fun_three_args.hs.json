@@ -1,0 +1,29 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "items": [
+    {
+      "kind": "func",
+      "name": "sum3",
+      "params": [
+        "a",
+        "b",
+        "c"
+      ],
+      "body": "a + b + c"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (sum3 1 2 3)"
+    }
+  ]
+}

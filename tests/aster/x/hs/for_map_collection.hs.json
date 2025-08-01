@@ -1,0 +1,27 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import qualified Data.Map as Map"
+  ],
+  "items": [
+    {
+      "kind": "var",
+      "name": "m",
+      "body": "Map.fromList [(\"a\", 1), (\"b\", 2)]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do mapM_ (\\ k -\u003e do putStrLn k) (Map.keys m)"
+    }
+  ]
+}

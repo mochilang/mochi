@@ -1,0 +1,10 @@
+
+/workspace/mochi/tests/aster/x/hs/dataset_where_filter.hs:15:8: error:
+    Unexpected do block in function application:
+        do putStrLn "--- Adults ---"
+    Suggested fixes:
+      • Use parentheses.
+      • Perhaps you intended to use BlockArguments
+   |
+15 | main = do putStrLn "--- Adults ---"
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

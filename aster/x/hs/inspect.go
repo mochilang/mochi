@@ -3,12 +3,16 @@
 package hs
 
 import (
+	"strings"
+
 	hsparse "mochi/tools/a2mochi/x/hs"
 )
 
 // Program represents a parsed Haskell source file.
 type Program struct {
-	Items []hsparse.Item `json:"items"`
+	Pragmas []string       `json:"pragmas,omitempty"`
+	Imports []string       `json:"imports,omitempty"`
+	Items   []hsparse.Item `json:"items"`
 }
 
 // Inspect parses the provided Haskell source code using the official parser
@@ -18,5 +22,23 @@ func Inspect(src string) (*Program, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Program{Items: prog.Items}, nil
+	lines := strings.Split(src, "\n")
+	var pragmas []string
+	var imports []string
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "{-#") {
+			pragmas = append(pragmas, trimmed)
+			continue
+		}
+		if strings.HasPrefix(trimmed, "import") {
+			imports = append(imports, trimmed)
+			continue
+		}
+		if trimmed == "" || strings.HasPrefix(trimmed, "--") {
+			continue
+		}
+		break
+	}
+	return &Program{Pragmas: pragmas, Imports: imports, Items: prog.Items}, nil
 }

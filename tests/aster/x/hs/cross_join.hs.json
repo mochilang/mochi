@@ -1,0 +1,91 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (customerId, id, name, orderCustomerId, orderId, orderTotal, pairedCustomerName, total)"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType2",
+      "fields": [
+        {
+          "name": "id",
+          "type": "Int"
+        },
+        {
+          "name": "customerId",
+          "type": "Int"
+        },
+        {
+          "name": "total",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType3",
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "Int"
+        },
+        {
+          "name": "orderCustomerId",
+          "type": "Int"
+        },
+        {
+          "name": "pairedCustomerName",
+          "type": "String"
+        },
+        {
+          "name": "orderTotal",
+          "type": "Int"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "customers",
+      "body": "[GenType1{id = 1, name = \"Alice\"}, GenType1{id = 2, name = \"Bob\"},\n GenType1{id = 3, name = \"Charlie\"}]"
+    },
+    {
+      "kind": "var",
+      "name": "orders",
+      "body": "[GenType2{id = 100, customerId = 1, total = 250},\n GenType2{id = 101, customerId = 2, total = 125},\n GenType2{id = 102, customerId = 1, total = 300}]"
+    },
+    {
+      "kind": "var",
+      "name": "result",
+      "body": "[GenType3{orderId = o . id, orderCustomerId = o . customerId,\n          pairedCustomerName = c . name, orderTotal = o . total}\n | o \u003c- orders, c \u003c- customers]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do putStrLn \"--- Cross Join: All order-customer pairs ---\"\n   mapM_\n     (\\ entry -\u003e\n        do putStrLn\n             (\"Order\" ++\n                \" \" ++\n                  show entry . orderId ++\n                    \" \" ++\n                      \"(customerId:\" ++\n                        \" \" ++\n                          show entry . orderCustomerId ++\n                            \" \" ++\n                              \", total: $\" ++\n                                \" \" ++\n                                  show entry . orderTotal ++\n                                    \" \" ++ \") paired with\" ++ \" \" ++ entry . pairedCustomerName))\n     result"
+    }
+  ]
+}

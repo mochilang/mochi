@@ -1,0 +1,79 @@
+{
+  "pragmas": [
+    "{-# LANGUAGE DuplicateRecordFields #-}",
+    "{-# LANGUAGE OverloadedRecordDot #-}",
+    "{-# LANGUAGE NoFieldSelectors #-}"
+  ],
+  "imports": [
+    "import Prelude hiding (cat, flag, share, val)",
+    "import Data.List (intercalate, isInfixOf, union, intersect, nub, sortOn, (\\\\))"
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "MGroup",
+      "fields": [
+        {
+          "name": "key",
+          "type": "k"
+        },
+        {
+          "name": "items",
+          "type": "[a]"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType1",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "String"
+        },
+        {
+          "name": "val",
+          "type": "Int"
+        },
+        {
+          "name": "flag",
+          "type": "Bool"
+        }
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "GenType2",
+      "fields": [
+        {
+          "name": "cat",
+          "type": "String"
+        },
+        {
+          "name": "share",
+          "type": "Double"
+        }
+      ]
+    },
+    {
+      "kind": "var",
+      "name": "items",
+      "body": "[GenType1{cat = \"a\", val = 10, flag = True},\n GenType1{cat = \"a\", val = 5, flag = False},\n GenType1{cat = \"b\", val = 20, flag = True}]"
+    },
+    {
+      "kind": "var",
+      "name": "result",
+      "body": "sortOn (\\ g -\u003e g . key)\n  [GenType2{cat = g . key,\n            share =\n              sum [if x . flag then x . val else 0 | x \u003c- g . items] `div`\n                sum [x . val | x \u003c- g . items]}\n   |\n   g \u003c- [MGroup{key = k, items = [i | i \u003c- items, i . cat == k]} |\n         k \u003c- nub ([i . cat | i \u003c- items])]]"
+    },
+    {
+      "kind": "sig",
+      "name": "main",
+      "type": "IO ()"
+    },
+    {
+      "kind": "var",
+      "name": "main",
+      "body": "do print (result)"
+    }
+  ]
+}
