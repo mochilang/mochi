@@ -146,7 +146,7 @@ func safeName(n string) string {
 
 func shouldWrapCall(name string) bool {
 	switch name {
-	case "input", "print", "putStrLn", "trace", "main", "randDigit":
+	case "input", "print", "putStrLn", "trace", "main", "randDigit", "maxOf":
 		return false
 	case "beatingProbability":
 		return true
@@ -154,7 +154,7 @@ func shouldWrapCall(name string) bool {
 	if strings.Contains(name, ".") {
 		return false
 	}
-	return false
+	return true
 }
 
 func isMainCall(e Expr) bool {
@@ -561,7 +561,7 @@ func isPureStmt(s Stmt) bool {
 
 func isPureExpr(e Expr) bool {
 	switch ex := e.(type) {
-	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NameRef,
+	case *IntLit, *FloatLit, *StringLit, *BoolLit, *UnitLit, *NameRef,
 		*RecordLit, *FieldExpr, *IndexExpr, *GroupExpr:
 		return true
 	case *BinaryExpr:
@@ -924,18 +924,16 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 func (r *ReturnStmt) emit(w io.Writer) {
 	writeIndent(w)
-	switch ex := r.Expr.(type) {
+	switch r.Expr.(type) {
 	case *WhileExpr:
 		// WhileExpr already yields an IO action, so avoid wrapping
 		r.Expr.emit(w)
 	case *ForExpr:
 		// ForExpr already yields an IO action
 		r.Expr.emit(w)
+	case *UnitLit:
+		io.WriteString(w, "return ()")
 	case *IntLit:
-		if ex.Value == "0" {
-			io.WriteString(w, "return ()")
-			return
-		}
 		io.WriteString(w, "return (")
 		r.Expr.emit(w)
 		io.WriteString(w, ")")
@@ -1427,6 +1425,7 @@ type IntLit struct{ Value string }
 type FloatLit struct{ Value string }
 type StringLit struct{ Value string }
 type BoolLit struct{ Value bool }
+type UnitLit struct{}
 type NameRef struct{ Name string }
 type LenExpr struct{ Arg Expr }
 type BinaryExpr struct {
@@ -1588,6 +1587,7 @@ func (b *BoolLit) emit(w io.Writer) {
 		io.WriteString(w, "False")
 	}
 }
+func (u *UnitLit) emit(w io.Writer) { io.WriteString(w, "()") }
 func (l *ListLit) emit(w io.Writer) {
 	io.WriteString(w, "[")
 	for i, e := range l.Elems {
@@ -3130,9 +3130,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			}
 		}
 		if op.Cast != nil {
+			tname := typeNameFromRef(op.Cast.Type)
 			if op.Cast.Type.Simple != nil {
-				tname := *op.Cast.Type.Simple
-				if tname == "int" {
+				ts := *op.Cast.Type.Simple
+				if ts == "int" {
 					if g, ok := expr.(*GroupExpr); ok {
 						expr = g.Expr
 					}
@@ -3148,7 +3149,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 					continue
 				}
-				if tname == "float" {
+				if ts == "float" {
 					expr = &CallExpr{Fun: &NameRef{Name: "fromIntegral"}, Args: []Expr{expr}}
 					continue
 				}
@@ -3165,11 +3166,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 						}
 						vals[i] = ml.Values[i]
 					}
-					expr = &RecordLit{Name: tname, Names: names, Fields: vals}
+					expr = &RecordLit{Name: ts, Names: names, Fields: vals}
 					continue
 				}
 			}
-			return nil, fmt.Errorf("unsupported cast")
+			// Generic cast for remaining types
+			expr = &CastExpr{Expr: expr, Type: tname}
+			continue
 		}
 		return nil, fmt.Errorf("postfix op not supported")
 	}
@@ -4253,11 +4256,15 @@ func convertStmtList(list []*parser.Statement) ([]Stmt, error) {
 			out = append(out, &ExprStmt{Expr: ex})
 			continue
 		case st.Return != nil:
-			ex, err := convertExpr(st.Return.Value)
-			if err != nil {
-				return nil, err
+			if st.Return.Value == nil {
+				out = append(out, &ReturnStmt{Expr: &UnitLit{}})
+			} else {
+				ex, err := convertExpr(st.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &ReturnStmt{Expr: ex})
 			}
-			out = append(out, &ReturnStmt{Expr: ex})
 		case st.If != nil:
 			// Detect an if statement that ends with a return and has
 			// no else branch. Combine it with the remaining
