@@ -32,6 +32,7 @@ var usesBigInt bool
 var usesBigRat bool
 var usesSHA bool
 var usesGetOutput bool
+var usesSplit bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -60,6 +61,9 @@ type Program struct {
 func SetBenchMain(v bool) { benchMain = v }
 
 func (p *Program) UsesStrModule() bool {
+	if usesSplit {
+		return true
+	}
 	var exprUses func(Expr) bool
 	exprUses = func(e Expr) bool {
 		switch x := e.(type) {
@@ -2928,6 +2932,12 @@ let _sha256 lst =
   loop (String.length digest - 1) []
 `
 
+const helperSplit = `
+let _split s sep =
+  let c = if String.length sep = 0 then ' ' else sep.[0] in
+  String.split_on_char c s
+`
+
 const helperShow = `
 let rec __show v =
   let open Obj in
@@ -3066,48 +3076,46 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperSHA)
 		buf.WriteString("\n")
 	}
+	if usesSplit {
+		buf.WriteString(helperSplit)
+		buf.WriteString("\n")
+	}
 	if p.UsesControl() {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
 	buf.WriteString("exception Return\n\n")
 	var funs []*FunStmt
-	var vars []Stmt
+	flushFuns := func() {
+		if len(funs) > 0 {
+			funs[0].emitWith(&buf, "let rec")
+			for i := 1; i < len(funs); i++ {
+				funs[i].emitWith(&buf, "and")
+			}
+			buf.WriteString("\n")
+			funs = nil
+		}
+	}
+
+	var body []Stmt
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *FunStmt:
 			funs = append(funs, st)
 		case *VarStmt:
-			if isConstExpr(st.Expr) {
-				st.emitTop(&buf)
-			} else {
-				vars = append(vars, st)
-			}
+			flushFuns()
+			st.emitTop(&buf)
 		case *LetStmt:
-			if isConstExpr(st.Expr) {
-				st.emitTop(&buf)
-			}
+			flushFuns()
+			st.emitTop(&buf)
+		default:
+			flushFuns()
+			body = append(body, st)
 		}
 	}
-	if len(funs) > 0 {
-		funs[0].emitWith(&buf, "let rec")
-		for i := 1; i < len(funs); i++ {
-			funs[i].emitWith(&buf, "and")
-		}
-		buf.WriteString("\n")
-	}
+	flushFuns()
+
 	buf.WriteString("let () =\n")
-	for _, v := range vars {
-		v.emit(&buf)
-	}
-	for _, s := range p.Stmts {
-		switch st := s.(type) {
-		case *FunStmt, *VarStmt:
-			continue
-		case *LetStmt:
-			if isConstExpr(st.Expr) {
-				continue
-			}
-		}
+	for _, s := range body {
 		s.emit(&buf)
 	}
 	buf.WriteString("  ()")
@@ -3279,6 +3287,14 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		valExpr, valTyp, err := convertExpr(st.Assign.Value, env, vars)
 		if err != nil {
 			return nil, err
+		}
+		if valTyp == "" {
+			if r, ok := valExpr.(*RawExpr); ok && r.Code == "nil" {
+				if strings.HasPrefix(info.typ, "list-") || strings.HasPrefix(info.typ, "map-") {
+					valExpr = defaultValueExpr(info.typ)
+					valTyp = info.typ
+				}
+			}
 		}
 		if info.typ == "int" && valTyp != "int" {
 			valExpr = &CastExpr{Expr: valExpr, Type: "obj_to_int"}
@@ -3706,6 +3722,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBigRat = false
 	usesSHA = false
 	usesGetOutput = false
+	usesSplit = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -5419,6 +5436,21 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("contains expects string")
 		}
 		return &StringContainsBuiltin{Str: strArg, Sub: subArg}, "bool", nil
+	}
+	if c.Func == "split" && len(c.Args) == 2 {
+		strArg, styp, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		sepArg, typ2, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if styp != "string" || typ2 != "string" {
+			return nil, "", fmt.Errorf("split expects string,string")
+		}
+		usesSplit = true
+		return &FuncCall{Name: "_split", Args: []Expr{strArg, sepArg}, Ret: "list-string"}, "list-string", nil
 	}
 	if c.Func == "sha256" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)

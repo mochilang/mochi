@@ -40,43 +40,49 @@ let _now () =
 let _mem () =
   int_of_float (Gc.allocated_bytes ())
 
-exception Break
-exception Continue
-
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec createFile fs fn =
+  let __ret = ref (Obj.magic 0) in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
-    try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  if (List.mem_assoc fn !fs) then (
+  print_endline ((("open " ^ fn) ^ ": file exists"));
+  ) else (
+  fs := ((fn, false) :: List.remove_assoc (fn) !fs);
+  print_endline ((("file " ^ fn) ^ " created!"));
+  );
+    !__ret
+  with Return -> !__ret)
+
+and createDir fs dn =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  if (List.mem_assoc dn !fs) then (
+  print_endline ((("mkdir " ^ dn) ^ ": file exists"));
+  ) else (
+  fs := ((dn, true) :: List.remove_assoc (dn) !fs);
+  print_endline ((("directory " ^ dn) ^ " created!"));
+  );
+    !__ret
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  let fs = ref ([]) in
+  fs := (("docs", true) :: List.remove_assoc ("docs") !fs);
+  ignore (createFile (fs) ("input.txt"));
+  ignore (createFile (fs) ("/input.txt"));
+  ignore (createDir (fs) ("docs"));
+  ignore (createDir (fs) ("/docs"));
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

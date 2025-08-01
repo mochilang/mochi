@@ -45,38 +45,39 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec main () =
+  let __ret = ref (Obj.magic 0) in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
+  let row = 3 in
+  let col = 4 in
+  let a = ref (([] : int list list)) in
   let i = ref (0) in
-  (try while (!i <= amount) do
+  (try while (!i < row) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  let rowArr = ref (([] : int list)) in
+  let j = ref (0) in
+  (try while (!j < col) do
     try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
+  rowArr := (List.append (!rowArr) [(Obj.magic (0) : int)]);
   j := (!j + 1);
     with Continue -> ()
   done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  a := (List.append (!a) [(Obj.magic (!rowArr) : int list)]);
+  i := (!i + 1);
+    with Continue -> ()
+  done with Break -> ());
+  print_endline (("a[0][0] = " ^ (string_of_int (List.nth (List.nth (!a) (0)) (0)))));
+  a := (List.mapi (fun __i __x -> if __i = (row - 1) then (List.mapi (fun __i __x -> if __i = (col - 1) then 7 else __x) (List.nth (!a) ((row - 1)))) else __x) (!a));
+  print_endline (((((("a[" ^ (string_of_int ((row - 1)))) ^ "][") ^ (string_of_int ((col - 1)))) ^ "] = ") ^ (string_of_int (List.nth (List.nth (!a) ((row - 1))) ((col - 1))))));
+  a := ([] : int list list);
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

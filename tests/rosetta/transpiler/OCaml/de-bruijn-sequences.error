@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/de-bruijn-sequences.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "De-bruijn-sequences" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/de-bruijn-sequences.ml", line 104, characters 28-38:
+104 |   b := (!b ^ String.make 1 (String.get (!alphabet) List.nth (!seq) (!idx)));
+                                  ^^^^^^^^^^
+Error: This function has type string -> int -> char
+       It is applied to too many arguments; maybe you forgot a `;'.

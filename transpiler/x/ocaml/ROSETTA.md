@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 239/491
+Completed programs: 281/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -241,57 +241,57 @@ Completed programs: 239/491
 | 233 | convert-seconds-to-compound-duration | ✓ | 77.0µs | 768B |
 | 234 | convex-hull | ✓ | 131.0µs | 1.71KB |
 | 235 | conways-game-of-life | ✓ | 4.30s | 1.27GB |
-| 236 | copy-a-string-1 |   |  |  |
-| 237 | copy-a-string-2 |   |  |  |
-| 238 | copy-stdin-to-stdout-1 |   |  |  |
-| 239 | copy-stdin-to-stdout-2 |   |  |  |
-| 240 | count-in-factors |   |  |  |
-| 241 | count-in-octal-1 |   |  |  |
-| 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 |   |  |  |
-| 244 | count-in-octal-4 |   |  |  |
-| 245 | count-occurrences-of-a-substring |   |  |  |
-| 246 | count-the-coins-1 |   |  |  |
-| 247 | count-the-coins-2 | ✓ | 257.0ms | 145.24MB |
-| 248 | cramers-rule |   |  |  |
-| 249 | crc-32-1 |   |  |  |
-| 250 | crc-32-2 |   |  |  |
-| 251 | create-a-file-on-magnetic-tape |   |  |  |
-| 252 | create-a-file |   |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 254 | create-an-html-table |   |  |  |
-| 255 | create-an-object-at-a-given-address |   |  |  |
-| 256 | csv-data-manipulation |   |  |  |
-| 257 | csv-to-html-translation-1 |   |  |  |
-| 258 | csv-to-html-translation-2 |   |  |  |
-| 259 | csv-to-html-translation-3 |   |  |  |
-| 260 | csv-to-html-translation-4 |   |  |  |
-| 261 | csv-to-html-translation-5 |   |  |  |
-| 262 | cuban-primes |   |  |  |
-| 263 | cullen-and-woodall-numbers |   |  |  |
-| 264 | cumulative-standard-deviation |   |  |  |
-| 265 | currency |   |  |  |
-| 266 | currying |   |  |  |
-| 267 | curzon-numbers |   |  |  |
-| 268 | cusip |   |  |  |
-| 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm |   |  |  |
-| 271 | date-format |   |  |  |
-| 272 | date-manipulation |   |  |  |
-| 273 | day-of-the-week |   |  |  |
-| 274 | de-bruijn-sequences |   |  |  |
-| 275 | deal-cards-for-freecell |   |  |  |
-| 276 | death-star |   |  |  |
-| 277 | deceptive-numbers |   |  |  |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 |   |  |  |
-| 280 | deconvolution-1d |   |  |  |
-| 281 | deepcopy-1 |   |  |  |
-| 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates |   |  |  |
-| 284 | demings-funnel |   |  |  |
-| 285 | department-numbers |   |  |  |
-| 286 | descending-primes |   |  |  |
+| 236 | copy-a-string-1 | ✓ | 2.0µs | 208B |
+| 237 | copy-a-string-2 | ✓ | 32.0µs | 456B |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 21.0µs | 536B |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 18.0µs | 536B |
+| 240 | count-in-factors | ✓ | 641.0µs | 7.50KB |
+| 241 | count-in-octal-1 | ✓ | 234.0µs | 9.92KB |
+| 242 | count-in-octal-2 | ✓ | 113.0ms | 10.86MB |
+| 243 | count-in-octal-3 | ✓ | 87.0µs | 4.97KB |
+| 244 | count-in-octal-4 | ✓ | 60.0µs | 944B |
+| 245 | count-occurrences-of-a-substring | ✓ | 146.0µs | 464B |
+| 246 | count-the-coins-1 | ✓ | 174.0µs | 8.11KB |
+| 247 | count-the-coins-2 | ✓ | 360.0ms | 145.24MB |
+| 248 | cramers-rule | ✓ | 696.0µs | 94.28KB |
+| 249 | crc-32-1 | ✓ | 270.0µs | 2.17KB |
+| 250 | crc-32-2 | ✓ | 272.0µs | 2.20KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 4.0µs | 408B |
+| 252 | create-a-file | ✓ | 34.0µs | 776B |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 118.0µs | 1.32KB |
+| 254 | create-an-html-table | ✓ | 107.0µs | 2.71KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 246.0µs | 7.95KB |
+| 256 | csv-data-manipulation | ✓ | 120.0µs | 2.66KB |
+| 257 | csv-to-html-translation-1 | ✓ | 56.0µs | 6.15KB |
+| 258 | csv-to-html-translation-2 | ✓ | 72.0µs | 6.27KB |
+| 259 | csv-to-html-translation-3 | ✓ | 35.0µs | 208B |
+| 260 | csv-to-html-translation-4 | ✓ | 27.0µs | 208B |
+| 261 | csv-to-html-translation-5 | ✓ | 203.0µs | 21.38KB |
+| 262 | cuban-primes | ✓ |  |  |
+| 263 | cullen-and-woodall-numbers | ✓ | 280.0µs | 17.44KB |
+| 264 | cumulative-standard-deviation | ✓ | 398.0µs | 13.15KB |
+| 265 | currency | ✓ | 136.0µs | 1.48KB |
+| 266 | currying | error |  |  |
+| 267 | curzon-numbers | ✓ | 73.0ms | 185.93KB |
+| 268 | cusip | error |  |  |
+| 269 | cyclops-numbers | ✓ |  |  |
+| 270 | damm-algorithm | ✓ | 142.0µs | 2.01KB |
+| 271 | date-format | ✓ | 116.0µs | 736B |
+| 272 | date-manipulation | error |  |  |
+| 273 | day-of-the-week | ✓ | 148.0µs | 1.66KB |
+| 274 | de-bruijn-sequences | error |  |  |
+| 275 | deal-cards-for-freecell | error |  |  |
+| 276 | death-star | error |  |  |
+| 277 | deceptive-numbers | ✓ | 142.0ms | 50.23MB |
+| 278 | deconvolution-1d-2 | ✓ | 564.0µs | 48.94KB |
+| 279 | deconvolution-1d-3 | ✓ | 505.0µs | 26.11KB |
+| 280 | deconvolution-1d | ✓ | 299.0µs | 23.87KB |
+| 281 | deepcopy-1 | ✓ | 141.0µs | 3.61KB |
+| 282 | define-a-primitive-data-type | error |  |  |
+| 283 | delegates | error |  |  |
+| 284 | demings-funnel | ✓ | 12.0ms | 1.10MB |
+| 285 | department-numbers | ✓ | 197.0µs | 2.66KB |
+| 286 | descending-primes | ✓ | 496.0µs | 20.91KB |
 | 287 | detect-division-by-zero |   |  |  |
 | 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
 | 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 239/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-02 00:28 +0700
+Last updated 2025-08-02 00:57 +0700

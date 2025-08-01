@@ -45,38 +45,55 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec show n =
+  let __ret = ref (Obj.magic 0) in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
+  let n = (Obj.magic n : int) in
+  if (n = 1) then (
+  print_endline ("1: 1");
+  __ret := (); raise Return
+  );
+  let out = ref (((string_of_int (n)) ^ ": ")) in
+  let x = ref ("") in
+  let m = ref (n) in
+  let f = ref (2) in
+  (try while (!m <> 1) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
+  if ((!m mod !f) = 0) then (
+  out := ((!out ^ !x) ^ (string_of_int (!f)));
+  x := "×";
+  m := (!m / !f);
+  ) else (
+  f := (!f + 1);
+  );
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  print_endline (__show !out);
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (show (Obj.repr (1)));
+  (try for i = 2 to (10 - 1) do
+    try
+  ignore (show (Obj.repr (i)));
+    with Continue -> ()
+  done with Break -> ());
+  print_endline ("...");
+  (try for i = 2144 to (2155 - 1) do
+    try
+  ignore (show (Obj.repr (i)));
+    with Continue -> ()
+  done with Break -> ());
+  print_endline ("...");
+  (try for i = 9987 to (10000 - 1) do
+    try
+  ignore (show (Obj.repr (i)));
+    with Continue -> ()
+  done with Break -> ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

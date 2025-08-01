@@ -45,38 +45,51 @@ exception Continue
 
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec damm s =
+  let __ret = ref false in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
+  let tbl = ref ([[0; 3; 1; 7; 5; 9; 8; 6; 4; 2]; [7; 0; 9; 2; 1; 5; 4; 8; 6; 3]; [4; 2; 0; 6; 8; 7; 1; 3; 5; 9]; [1; 7; 5; 0; 9; 8; 3; 4; 2; 6]; [6; 1; 2; 3; 0; 4; 5; 9; 7; 8]; [3; 6; 7; 4; 2; 0; 9; 5; 8; 1]; [5; 8; 6; 9; 7; 2; 0; 1; 3; 4]; [8; 9; 4; 5; 3; 6; 2; 0; 1; 7]; [9; 4; 3; 8; 6; 1; 7; 2; 0; 5]; [2; 5; 8; 1; 4; 3; 6; 7; 9; 0]]) in
+  let digits = ref ([("0", 0); ("1", 1); ("2", 2); ("3", 3); ("4", 4); ("5", 5); ("6", 6); ("7", 7); ("8", 8); ("9", 9)]) in
+  let interim = ref (0) in
   let i = ref (0) in
-  (try while (!i <= amount) do
+  (try while (!i < String.length (s)) do
     try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
+  let digit = (try List.assoc (String.sub (s) !i ((!i + 1) - !i)) !digits with Not_found -> (Obj.magic 0)) in
+  let row = ref (List.nth (!tbl) (!interim)) in
+  interim := List.nth (!row) (digit);
   i := (!i + 1);
     with Continue -> ()
   done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
+  __ret := (Obj.magic ((!interim = 0)) : bool); raise Return
+  with Return -> !__ret)
+
+and padLeft s width =
+  let __ret = ref "" in
+  (try
+  let width = (Obj.magic width : int) in
+  (try while (String.length (!s) < width) do
     try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
+  s := (" " ^ !s);
     with Continue -> ()
   done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  __ret := (Obj.magic (!s) : string); raise Return
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  (try List.iter (fun s ->
+    try
+  print_endline (((padLeft (ref (s)) (Obj.repr (6)) ^ "  ") ^ __show (damm (s))));
+    with Continue -> ()) (["5724"; "5727"; "112946"; "112949"]) with Break -> ());
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in

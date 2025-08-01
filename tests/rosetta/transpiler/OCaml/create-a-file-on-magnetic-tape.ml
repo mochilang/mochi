@@ -40,43 +40,58 @@ let _now () =
 let _mem () =
   int_of_float (Gc.allocated_bytes ())
 
-exception Break
-exception Continue
-
 exception Return
 
-let amount = 1000
-let rec countChange amount =
-  let __ret = ref 0 in
+let rec gzipWriter w =
+  let __ret = ref (Obj.magic 0) in
   (try
-  let amount = (Obj.magic amount : int) in
-  let ways = ref (([] : int list)) in
-  let i = ref (0) in
-  (try while (!i <= amount) do
-    try
-  ways := (List.append (!ways) [(Obj.magic (0) : int)]);
-  i := (!i + 1);
-    with Continue -> ()
-  done with Break -> ());
-  ways := (List.mapi (fun __i __x -> if __i = 0 then 1 else __x) (!ways));
-  (try List.iter (fun coin ->
-    try
-  let j = ref (coin) in
-  (try while (!j <= amount) do
-    try
-  ways := (List.mapi (fun __i __x -> if __i = !j then (List.nth (!ways) (!j) + List.nth (!ways) ((!j - coin))) else __x) (!ways));
-  j := (!j + 1);
-    with Continue -> ()
-  done with Break -> ());
-    with Continue -> ()) ([100; 50; 25; 10; 5; 1]) with Break -> ());
-  __ret := (Obj.magic (List.nth (!ways) (amount)) : int); raise Return
+  __ret := w; raise Return
+  with Return -> !__ret)
+
+and tarWriter w =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  __ret := w; raise Return
+  with Return -> !__ret)
+
+and tarWriteHeader w hdr =
+  let __ret = ref (Obj.magic 0) in
+  (try
+    !__ret
+  with Return -> !__ret)
+
+and tarWrite w data =
+  let __ret = ref (Obj.magic 0) in
+  (try
+    !__ret
+  with Return -> !__ret)
+
+and main () =
+  let __ret = ref (Obj.magic 0) in
+  (try
+  let filename = "TAPE.FILE" in
+  let data = "" in
+  let outfile = "" in
+  let gzipFlag = false in
+  let w = ref (nil) in
+  if (outfile <> "") then (
+  w := nil;
+  );
+  if gzipFlag then (
+  w := gzipWriter (!w);
+  );
+  w := tarWriter (!w);
+  let hdr = ref ([("Name", Obj.repr (filename)); ("Mode", Obj.repr (432)); ("Size", Obj.repr (String.length (data))); ("ModTime", Obj.repr (_now ())); ("Typeflag", Obj.repr (0)); ("Uname", Obj.repr ("guest")); ("Gname", Obj.repr ("guest"))]) in
+  ignore (tarWriteHeader (!w) (!hdr));
+  ignore (tarWrite (!w) (data));
+    !__ret
   with Return -> !__ret)
 
 
 let () =
   let mem_start = _mem () in
   let start = _now () in
-  print_endline (((("amount, ways to make change: " ^ (string_of_int (amount))) ^ " ") ^ (string_of_int (countChange (Obj.repr (amount))))));
+  ignore (main ());
   let finish = _now () in
   let mem_end = _mem () in
   let dur = (finish - start) / 1000 in
