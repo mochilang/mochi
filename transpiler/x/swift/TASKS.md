@@ -1,5 +1,5 @@
-## Progress (2025-08-01 18:59 +0700)
-- swift transpiler: support type aliases and block lambdas
+## Progress (2025-08-01 20:02 +0700)
+- swift transpiler: handle func types
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 
