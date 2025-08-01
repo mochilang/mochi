@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 307/491
-Last updated: 2025-08-01 20:02 +0700
+Completed: 333/491
+Last updated: 2025-08-01 21:57 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -210,53 +210,53 @@ Last updated: 2025-08-01 20:02 +0700
 | 201 | chowla-numbers | ✓ | 273µs | 2.9 MB |
 | 202 | church-numerals-1 | ✓ |  |  |
 | 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points |   |  |  |
-| 205 | circular-primes |   |  |  |
+| 204 | circles-of-given-radius-through-two-points | ✓ |  |  |
+| 205 | circular-primes | ✓ |  |  |
 | 206 | cistercian-numerals |   |  |  |
-| 207 | comma-quibbling |   |  |  |
+| 207 | comma-quibbling | ✓ |  |  |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 210 | compound-data-type |   |  |  |
-| 211 | concurrent-computing-1 |   |  |  |
-| 212 | concurrent-computing-2 |   |  |  |
-| 213 | concurrent-computing-3 |   |  |  |
+| 210 | compound-data-type | ✓ |  |  |
+| 211 | concurrent-computing-1 | ✓ |  |  |
+| 212 | concurrent-computing-2 | ✓ |  |  |
+| 213 | concurrent-computing-3 | ✓ |  |  |
 | 214 | conditional-structures-1 |   |  |  |
-| 215 | conditional-structures-10 |   |  |  |
+| 215 | conditional-structures-10 | ✓ |  |  |
 | 216 | conditional-structures-2 |   |  |  |
 | 217 | conditional-structures-3 |   |  |  |
-| 218 | conditional-structures-4 |   |  |  |
+| 218 | conditional-structures-4 | ✓ |  |  |
 | 219 | conditional-structures-5 |   |  |  |
 | 220 | conditional-structures-6 |   |  |  |
 | 221 | conditional-structures-7 |   |  |  |
 | 222 | conditional-structures-8 |   |  |  |
-| 223 | conditional-structures-9 |   |  |  |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 |   |  |  |
-| 226 | constrained-genericity-2 |   |  |  |
+| 223 | conditional-structures-9 | ✓ |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
+| 225 | constrained-genericity-1 | ✓ |  |  |
+| 226 | constrained-genericity-2 | ✓ |  |  |
 | 227 | constrained-genericity-3 |   |  |  |
-| 228 | constrained-genericity-4 |   |  |  |
+| 228 | constrained-genericity-4 | ✓ |  |  |
 | 229 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 230 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 231 | continued-fraction |   |  |  |
-| 232 | convert-decimal-number-to-rational |   |  |  |
-| 233 | convert-seconds-to-compound-duration |   |  |  |
+| 232 | convert-decimal-number-to-rational | ✓ |  |  |
+| 233 | convert-seconds-to-compound-duration | ✓ |  |  |
 | 234 | convex-hull |   |  |  |
 | 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 |   |  |  |
-| 237 | copy-a-string-2 |   |  |  |
-| 238 | copy-stdin-to-stdout-1 |   |  |  |
-| 239 | copy-stdin-to-stdout-2 |   |  |  |
-| 240 | count-in-factors |   |  |  |
-| 241 | count-in-octal-1 |   |  |  |
-| 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 |   |  |  |
-| 244 | count-in-octal-4 |   |  |  |
-| 245 | count-occurrences-of-a-substring |   |  |  |
-| 246 | count-the-coins-1 |   |  |  |
+| 236 | copy-a-string-1 | ✓ |  |  |
+| 237 | copy-a-string-2 | ✓ |  |  |
+| 238 | copy-stdin-to-stdout-1 | ✓ |  |  |
+| 239 | copy-stdin-to-stdout-2 | ✓ |  |  |
+| 240 | count-in-factors | ✓ |  |  |
+| 241 | count-in-octal-1 | ✓ |  |  |
+| 242 | count-in-octal-2 | ✓ |  |  |
+| 243 | count-in-octal-3 | ✓ |  |  |
+| 244 | count-in-octal-4 | ✓ |  |  |
+| 245 | count-occurrences-of-a-substring | ✓ |  |  |
+| 246 | count-the-coins-1 | ✓ |  |  |
 | 247 | count-the-coins-2 | ✓ | 765µs | 3.2 MB |
 | 248 | cramers-rule | ✓ | 638µs | 3.4 MB |
 | 249 | crc-32-1 | ✓ | 1.565ms | 3.2 MB |
-| 250 | crc-32-2 | ✓ | 1.664ms | 3.3 MB |
+| 250 | crc-32-2 |   | 1.664ms | 3.3 MB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 234µs | 3.0 MB |
 | 252 | create-a-file | ✓ | 295µs | 3.1 MB |
 | 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 424µs | 3.2 MB |
