@@ -141,11 +141,11 @@ const helperDictAdd = `let _dictAdd (d:System.Collections.Generic.IDictionary<st
     d.[k] <- v
     d`
 
-const helperDictCreate = `let _dictCreate (pairs:(string * obj) list) =
-    let d = System.Collections.Generic.Dictionary<string, obj>()
+const helperDictCreate = `let _dictCreate<'T> (pairs:(string * 'T) list) : System.Collections.Generic.IDictionary<string,'T> =
+    let d = System.Collections.Generic.Dictionary<string, 'T>()
     for (k, v) in pairs do
         d.[k] <- v
-    d`
+    upcast d`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -841,8 +841,9 @@ type MapLit struct {
 func (m *MapLit) emit(w io.Writer) {
 	usesDictAdd = true
 	neededOpens["System.Collections.Generic"] = true
-	io.WriteString(w, "_dictCreate [")
+	io.WriteString(w, "_dictCreate")
 	same := true
+	valType := ""
 	if len(m.Types) == 0 {
 		m.Types = make([]string, len(m.Items))
 		prev := ""
@@ -863,9 +864,17 @@ func (m *MapLit) emit(w io.Writer) {
 				break
 			}
 		}
+		if same && prev != "obj" {
+			valType = fsTypeFromString(prev)
+		}
 	}
+	if valType != "" {
+		fmt.Fprintf(w, "<%s>", valType)
+	}
+	io.WriteString(w, " [")
 	for i, kv := range m.Items {
 		io.WriteString(w, "(")
+		io.WriteString(w, "string ")
 		kv[0].emit(w)
 		io.WriteString(w, ", ")
 		if !same && m.Types[i] != "obj" {
@@ -2141,10 +2150,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
 		if needsParen(i.Index) {
-			io.WriteString(w, "(")
+			io.WriteString(w, "(string ")
 			i.Index.emit(w)
 			io.WriteString(w, ")")
 		} else {
+			io.WriteString(w, "string ")
 			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
@@ -2154,10 +2164,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
 		if needsParen(i.Index) {
-			io.WriteString(w, "(")
+			io.WriteString(w, "(string ")
 			i.Index.emit(w)
 			io.WriteString(w, ")")
 		} else {
+			io.WriteString(w, "string ")
 			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
@@ -2847,6 +2858,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		if mutatedVars[name] {
 			for _, ls := range lsts {
 				ls.Mutable = true
+				if varTypes[name] == "obj" {
+					ls.Type = "obj"
+				}
 			}
 		}
 	}
@@ -3259,7 +3273,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				cur = t
 			}
 			if cur != "" && cur != t && cur != "obj" {
-				e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
+				varTypes[st.Assign.Name] = "obj"
+				e = &CallExpr{Func: "box", Args: []Expr{e}}
 			}
 		} else if vt := varTypes[st.Assign.Name]; vt != "" && vt != "obj" {
 			e = &CastExpr{Expr: e, Type: fsTypeFromString(vt)}
@@ -3749,6 +3764,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "str":
+			if len(args) == 1 {
+				t := inferType(args[0])
+				if t == "array" || strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
+					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
+					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
+					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
+					return wrapped, nil
+				}
+			}
 			return &CallExpr{Func: "string", Args: args}, nil
 		case "sum":
 			fn := "Seq.sum"
