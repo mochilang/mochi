@@ -1,5 +1,5 @@
-## Progress (2025-07-31 00:20 +0700)
-- Commit 0331f612c6: rosetta java: add benchmark instrumentation
+## Progress (2025-08-01 17:51 +0700)
+- Commit 94fbee8c88: transpiler/ex: handle constants and map function calls
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference

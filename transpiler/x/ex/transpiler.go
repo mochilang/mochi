@@ -28,13 +28,14 @@ var elixirReserved = map[string]struct{}{
 	"abs":  {},
 	"end":  {},
 	"node": {},
+	"div":  {},
 }
 
 func sanitizeIdent(name string) string {
 	if _, ok := elixirReserved[name]; ok {
 		return name + "_"
 	}
-	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' && !isConstName(name) {
+	if len(name) > 0 && name[0] >= 'A' && name[0] <= 'Z' {
 		return strings.ToLower(name)
 	}
 	return name
@@ -92,10 +93,6 @@ func moduleAttrName(name string) string {
 		return strings.ToLower(name)
 	}
 	return name
-}
-
-func isConstName(name string) bool {
-	return name == strings.ToUpper(name)
 }
 
 func uniqueWhileName() string {
@@ -1238,6 +1235,8 @@ func isStringExpr(e Expr) bool {
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, c.Func)
 	if c.Var {
+		io.WriteString(w, ".(")
+	} else if strings.Contains(c.Func, ".") && len(c.Func) > 0 && c.Func[0] >= 'a' && c.Func[0] <= 'z' {
 		io.WriteString(w, ".(")
 	} else {
 		io.WriteString(w, "(")
@@ -3126,7 +3125,8 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 								bin.StrConcat = true
 							}
 						} else if opName == "/" {
-							if types.IsIntType(typesSlice[i]) && types.IsIntType(typesSlice[i+1]) {
+							if (types.IsIntType(typesSlice[i]) || types.IsBigIntType(typesSlice[i])) &&
+								(types.IsIntType(typesSlice[i+1]) || types.IsBigIntType(typesSlice[i+1])) {
 								bin.IntDiv = true
 							}
 						}
@@ -3346,7 +3346,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &CallExpr{Func: "String.pad_leading", Args: append([]Expr{strExpr}, args...)}
 			} else if v, ok := expr.(*VarRef); ok {
 				methodName := v.Name + "." + op.Field.Name
-				expr = &CallExpr{Func: methodName, Args: args}
+				expr = &CallExpr{Func: methodName, Args: args, Var: true}
 			} else {
 				// treat as map field returning function and call it
 				expr = &CallExpr{Func: "" /*unused*/, Args: append([]Expr{expr}, args...)}
