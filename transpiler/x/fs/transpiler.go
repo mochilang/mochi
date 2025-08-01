@@ -1383,7 +1383,7 @@ func (fst *ForStmt) emit(w io.Writer) {
 	}
 	writeIndent(w)
 	io.WriteString(w, "for ")
-	if fst.End == nil && inferType(fst.Start) == "map" {
+	if fst.End == nil && isMapType(inferType(fst.Start)) {
 		io.WriteString(w, "KeyValue(")
 		io.WriteString(w, fsIdent(fst.Name))
 		io.WriteString(w, ", _)")
@@ -2113,7 +2113,33 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "])")
 		return
 	}
-	if strings.HasPrefix(t, "Map<") || t == "map" || t == "obj" || t == "" {
+	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "Map<") {
+		i.Target.emit(w)
+		io.WriteString(w, ".[")
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
+		io.WriteString(w, "]")
+		return
+	}
+	if strings.HasPrefix(t, "Map<") {
+		i.Target.emit(w)
+		io.WriteString(w, ".[")
+		if needsParen(i.Index) {
+			io.WriteString(w, "(")
+			i.Index.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			i.Index.emit(w)
+		}
+		io.WriteString(w, "]")
+		return
+	}
+	if t == "map" || t == "obj" || t == "" {
 		valT := mapValueType(t)
 		if id, ok := i.Target.(*IdentExpr); ok {
 			if vt := id.Type; vt != "" {
@@ -2127,41 +2153,35 @@ func (i *IndexExpr) emit(w io.Writer) {
 				}
 			}
 		}
-		if t == "obj" || t == "" {
-			io.WriteString(w, "((")
-			i.Target.emit(w)
-			if inferType(i.Index) == "int" {
-				io.WriteString(w, " :?> System.Array).GetValue(")
-				if needsParen(i.Index) {
-					io.WriteString(w, "(")
-					i.Index.emit(w)
-					io.WriteString(w, ")")
-				} else {
-					i.Index.emit(w)
-				}
+		io.WriteString(w, "((")
+		i.Target.emit(w)
+		if inferType(i.Index) == "int" {
+			io.WriteString(w, " :?> System.Array).GetValue(")
+			if needsParen(i.Index) {
+				io.WriteString(w, "(")
+				i.Index.emit(w)
 				io.WriteString(w, ")")
-				if valT != "obj" {
-					io.WriteString(w, ")") // closing ((target :?> System.Array).GetValue(...)
-					io.WriteString(w, " |> unbox<")
-					io.WriteString(w, valT)
-					io.WriteString(w, ">")
-					return
-				}
+			} else {
+				i.Index.emit(w)
+			}
+			io.WriteString(w, ")")
+			if valT != "obj" {
 				io.WriteString(w, ")")
+				io.WriteString(w, " |> unbox<")
+				io.WriteString(w, valT)
+				io.WriteString(w, ">")
 				return
 			}
-			io.WriteString(w, " :?> Map<string, ")
-			if valT != "obj" {
-				io.WriteString(w, valT)
-			} else {
-				io.WriteString(w, "obj")
-			}
-			io.WriteString(w, ">).")
-			io.WriteString(w, "[")
-		} else {
-			i.Target.emit(w)
-			io.WriteString(w, ".[")
+			io.WriteString(w, ")")
+			return
 		}
+		io.WriteString(w, " :?> Map<string, ")
+		if valT != "obj" {
+			io.WriteString(w, valT)
+		} else {
+			io.WriteString(w, "obj")
+		}
+		io.WriteString(w, ">).[")
 		if needsParen(i.Index) {
 			io.WriteString(w, "(")
 			i.Index.emit(w)
@@ -2170,9 +2190,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			i.Index.emit(w)
 		}
 		io.WriteString(w, "]")
-		if t == "obj" || t == "" {
-			io.WriteString(w, ")")
-		}
+		io.WriteString(w, ")")
 		if valT != "obj" {
 			io.WriteString(w, " |> unbox<")
 			io.WriteString(w, valT)
@@ -3097,6 +3115,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				e = &CastExpr{Expr: e, Type: fsDecl}
 			}
 		}
+		if ml, ok := e.(*MapLit); ok && len(ml.Items) == 1 && strings.HasPrefix(fsDecl, "Map<") {
+			vtyp := mapValueType(fsDecl)
+			if call, ok2 := ml.Items[0][1].(*CallExpr); ok2 && call.Func == "box" && len(call.Args) == 1 {
+				ml.Items[0][1] = call.Args[0]
+			}
+			ml.Types = []string{vtyp}
+		}
 		varTypes[st.Let.Name] = declared
 		typ := fsDecl
 		mut := mutatedVars[st.Let.Name]
@@ -4005,9 +4030,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				items[i][1] = &CallExpr{Func: "box", Args: []Expr{items[i][1]}}
 				types[i] = "obj"
 			}
-		} else if len(items) == 1 && types[0] != "obj" {
-			items[0][1] = &CallExpr{Func: "box", Args: []Expr{items[0][1]}}
-			types[0] = "obj"
 		}
 		return &MapLit{Items: items, Types: types}, nil
 	case p.Match != nil:
