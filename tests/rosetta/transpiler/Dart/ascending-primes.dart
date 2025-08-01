@@ -62,7 +62,7 @@ List<int> asc = <int>[];
 void gen(int first, int cand, int digits) {
   if (digits == 0) {
     if (isPrime(cand)) {
-    asc = asc + [cand];
+    asc = (asc + [cand] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   };
     return;
   }
@@ -81,7 +81,7 @@ String pad(int n, int width) {
   return s;
 }
 
-void main() {
+void _main() {
   int digits = 1;
   while (digits < 10) {
     gen(1, 0, digits);
@@ -110,13 +110,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
