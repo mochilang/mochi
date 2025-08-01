@@ -1,0 +1,45 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Church-numerals-2" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 56, characters 2-3:
+56 |   f (g (Obj.repr (x))))) : Obj.t -> Obj.t); raise Return
+       ^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 56, characters 4-22:
+56 |   f (g (Obj.repr (x))))) : Obj.t -> Obj.t); raise Return
+         ^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 64, characters 2-4:
+64 |   id)) : Obj.t -> Obj.t); raise Return
+       ^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 78, characters 2-9:
+78 |   compose (f) (n (f)))) : Obj.t -> Obj.t); raise Return
+       ^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 78, characters 10-13:
+78 |   compose (f) (n (f)))) : Obj.t -> Obj.t); raise Return
+               ^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 78, characters 14-21:
+78 |   compose (f) (n (f)))) : Obj.t -> Obj.t); raise Return
+                   ^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 86, characters 2-9:
+86 |   compose (m (f)) (n (f)))) : Obj.t -> Obj.t); raise Return
+       ^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 86, characters 10-17:
+86 |   compose (m (f)) (n (f)))) : Obj.t -> Obj.t); raise Return
+               ^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 86, characters 18-25:
+86 |   compose (m (f)) (n (f)))) : Obj.t -> Obj.t); raise Return
+                       ^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-2.ml", line 132, characters 52-61:
+132 |   print_endline (("zero = " ^ (string_of_int (toInt (zero ())))));
+                                                          ^^^^^^^^^
+Error: This expression has type Obj.t -> Obj.t
+       but an expression was expected of type ('a -> Obj.t -> Obj.t) -> 'b
+       Type Obj.t is not compatible with type 'a -> Obj.t -> Obj.t 

@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 220/491
+Completed programs: 237/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -189,56 +189,56 @@ Completed programs: 220/491
 | 181 | chaocipher | ✓ | 158.0µs | 34.91KB |
 | 182 | chaos-game | ✓ |  |  |
 | 183 | character-codes-1 | ✓ | 100.0µs | 240B |
-| 184 | character-codes-2 | ✓ | 48.0µs | 224B |
-| 185 | character-codes-3 | ✓ | 42.0µs | 656B |
-| 186 | character-codes-4 | ✓ | 26.0µs | 272B |
-| 187 | character-codes-5 | ✓ | 21.0µs | 224B |
-| 188 | chat-server | ✓ | 40.0µs | 1.23KB |
-| 189 | check-machin-like-formulas | ✓ | 5.0ms | 512.06KB |
-| 190 | check-that-file-exists | ✓ | 34.0µs | 560B |
-| 191 | checkpoint-synchronization-1 | ✓ | 167.0µs | 1.54KB |
-| 192 | checkpoint-synchronization-2 | ✓ | 151.0µs | 2.59KB |
-| 193 | checkpoint-synchronization-3 | ✓ | 205.0µs | 2.91KB |
-| 194 | checkpoint-synchronization-4 | ✓ | 242.0µs | 5.24KB |
-| 195 | chernicks-carmichael-numbers | ✓ | 945.0ms | 47.19MB |
-| 196 | cheryls-birthday | ✓ | 228.0µs | 5.97KB |
-| 197 | chinese-remainder-theorem | ✓ | 30.0µs | 248B |
-| 198 | chinese-zodiac | ✓ | 59.0µs | 4.03KB |
-| 199 | cholesky-decomposition-1 | ✓ | 280.0µs | 58.66KB |
-| 200 | cholesky-decomposition | ✓ | 272.0µs | 48.77KB |
-| 201 | chowla-numbers | ✓ | 9.0µs | 208B |
+| 184 | character-codes-2 | ✓ | 82.0µs | 224B |
+| 185 | character-codes-3 | ✓ | 121.0µs | 656B |
+| 186 | character-codes-4 | ✓ | 12.0µs | 272B |
+| 187 | character-codes-5 | ✓ | 12.0µs | 224B |
+| 188 | chat-server | ✓ | 32.0µs | 1.23KB |
+| 189 | check-machin-like-formulas | ✓ | 3.0ms | 512.06KB |
+| 190 | check-that-file-exists | ✓ | 29.0µs | 560B |
+| 191 | checkpoint-synchronization-1 | ✓ | 88.0µs | 1.54KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 81.0µs | 2.59KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 114.0µs | 2.91KB |
+| 194 | checkpoint-synchronization-4 | ✓ | 124.0µs | 5.24KB |
+| 195 | chernicks-carmichael-numbers | ✓ | 484.0ms | 47.19MB |
+| 196 | cheryls-birthday | ✓ | 159.0µs | 5.97KB |
+| 197 | chinese-remainder-theorem | ✓ | 71.0µs | 1.23KB |
+| 198 | chinese-zodiac | ✓ | 92.0µs | 4.03KB |
+| 199 | cholesky-decomposition-1 | ✓ | 692.0µs | 58.66KB |
+| 200 | cholesky-decomposition | ✓ | 448.0µs | 48.77KB |
+| 201 | chowla-numbers | ✓ | 15.0µs | 208B |
 | 202 | church-numerals-1 | error |  |  |
-| 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points |   |  |  |
-| 205 | circular-primes |   |  |  |
-| 206 | cistercian-numerals |   |  |  |
-| 207 | comma-quibbling |   |  |  |
-| 208 | compiler-virtual-machine-interpreter |   |  |  |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 210 | compound-data-type |   |  |  |
-| 211 | concurrent-computing-1 |   |  |  |
-| 212 | concurrent-computing-2 |   |  |  |
-| 213 | concurrent-computing-3 |   |  |  |
-| 214 | conditional-structures-1 |   |  |  |
-| 215 | conditional-structures-10 |   |  |  |
-| 216 | conditional-structures-2 |   |  |  |
-| 217 | conditional-structures-3 |   |  |  |
-| 218 | conditional-structures-4 |   |  |  |
-| 219 | conditional-structures-5 |   |  |  |
-| 220 | conditional-structures-6 |   |  |  |
-| 221 | conditional-structures-7 |   |  |  |
-| 222 | conditional-structures-8 |   |  |  |
-| 223 | conditional-structures-9 |   |  |  |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 |   |  |  |
-| 226 | constrained-genericity-2 |   |  |  |
-| 227 | constrained-genericity-3 |   |  |  |
-| 228 | constrained-genericity-4 |   |  |  |
-| 229 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 231 | continued-fraction |   |  |  |
-| 232 | convert-decimal-number-to-rational |   |  |  |
-| 233 | convert-seconds-to-compound-duration |   |  |  |
+| 203 | church-numerals-2 | error |  |  |
+| 204 | circles-of-given-radius-through-two-points | error |  |  |
+| 205 | circular-primes | ✓ | 5.0ms | 1.38MB |
+| 206 | cistercian-numerals | error |  |  |
+| 207 | comma-quibbling | ✓ | 25.0µs | 720B |
+| 208 | compiler-virtual-machine-interpreter | error |  |  |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 431.0µs | 39.86KB |
+| 210 | compound-data-type | ✓ | 1.0µs | 208B |
+| 211 | concurrent-computing-1 | ✓ | 22.0µs | 1000B |
+| 212 | concurrent-computing-2 | ✓ | 22.0µs | 1000B |
+| 213 | concurrent-computing-3 | ✓ | 33.0µs | 2.52KB |
+| 214 | conditional-structures-1 | error |  |  |
+| 215 | conditional-structures-10 | ✓ | 23.0µs | 208B |
+| 216 | conditional-structures-2 | error |  |  |
+| 217 | conditional-structures-3 | error |  |  |
+| 218 | conditional-structures-4 | ✓ | 2.0µs | 208B |
+| 219 | conditional-structures-5 | error |  |  |
+| 220 | conditional-structures-6 | error |  |  |
+| 221 | conditional-structures-7 | error |  |  |
+| 222 | conditional-structures-8 | error |  |  |
+| 223 | conditional-structures-9 | ✓ | 1.0µs | 208B |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | error |  |  |
+| 225 | constrained-genericity-1 | ✓ | 2.0µs | 208B |
+| 226 | constrained-genericity-2 | ✓ | 2.0µs | 208B |
+| 227 | constrained-genericity-3 | error |  |  |
+| 228 | constrained-genericity-4 | ✓ | 12.0µs | 296B |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 7.0ms | 1.78MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 12.0ms | 3.72MB |
+| 231 | continued-fraction | error |  |  |
+| 232 | convert-decimal-number-to-rational | ✓ | 60.0µs | 1.28KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 77.0µs | 768B |
 | 234 | convex-hull |   |  |  |
 | 235 | conways-game-of-life |   |  |  |
 | 236 | copy-a-string-1 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 220/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-01 21:30 +0700
+Last updated 2025-08-01 22:42 +0700

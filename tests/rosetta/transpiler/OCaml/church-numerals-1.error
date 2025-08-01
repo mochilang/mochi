@@ -1,1 +1,65 @@
-postfix op not supported
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Church-numerals-1" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 53, characters 2-3:
+53 |   x)) : Obj.t -> Obj.t); raise Return
+       ^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 62, characters 2-3:
+62 |   f ((c (f) (Obj.repr (x)))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 62, characters 4-28:
+62 |   f ((c (f) (Obj.repr (x)))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", lines 63-65, characters 2-29:
+63 | ..(fun x ->
+64 |   __ret := (Obj.magic (f ((c (f) (Obj.repr (x))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+65 |   f ((c (f) (Obj.repr (x)))))...........................................
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 65, characters 2-3:
+65 |   f ((c (f) (Obj.repr (x))))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 65, characters 4-28:
+65 |   f ((c (f) (Obj.repr (x))))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 74, characters 2-34:
+74 |   (c (f) ((d (f) (Obj.repr (x))))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", lines 75-77, characters 2-35:
+75 | ..(fun x ->
+76 |   __ret := (Obj.magic ((c (f) ((d (f) (Obj.repr (x)))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+77 |   (c (f) ((d (f) (Obj.repr (x))))))...........................................
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 77, characters 2-34:
+77 |   (c (f) ((d (f) (Obj.repr (x)))))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 86, characters 2-28:
+86 |   (c (d (f)) (Obj.repr (x))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", lines 87-89, characters 2-29:
+87 | ..(fun x ->
+88 |   __ret := (Obj.magic ((c (d (f)) (Obj.repr (x)))) : Obj.t -> Obj.t -> Obj.t); raise Return
+89 |   (c (d (f)) (Obj.repr (x))))...........................................
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 89, characters 2-28:
+89 |   (c (d (f)) (Obj.repr (x)))))) : Obj.t -> Obj.t -> Obj.t); raise Return
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+Warning 20 [ignored-extra-argument]: this argument will not be used by the function.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 100, characters 10-25:
+100 |   prod := mul (!prod) (c);
+                ^^^^^^^^^^^^^^^
+Warning 5 [ignored-partial-application]: this function application is partial,
+maybe some arguments are missing.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/church-numerals-1.ml", line 100, characters 10-25:
+100 |   prod := mul (!prod) (c);
+                ^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t -> Obj.t -> Obj.t
+       but an expression was expected of type (Obj.t -> 'a) -> Obj.t -> 'a
+       Type Obj.t is not compatible with type Obj.t -> 'a 

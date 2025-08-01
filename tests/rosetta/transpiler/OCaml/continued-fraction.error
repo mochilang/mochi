@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/continued-fraction.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Continued-fraction" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/continued-fraction.ml", line 69, characters 86-89:
+69 |   f := (List.mapi (fun __i __x -> if __i = 0 then (List.mapi (fun __i __x -> if __i = "a" then 1 else __x) (List.nth (!f) (0))) else __x) (!f));
+                                                                                           ^^^
+Error: This expression has type string but an expression was expected of type
+         int

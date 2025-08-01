@@ -1,7 +1,13 @@
-## Progress (2025-08-01 18:13 +0700)
-- ocaml transpiler: handle function return types (e2a013af12)
+## Progress (2025-08-01 22:42 +0700)
+- ocaml transpiler: add dynamic cast support (46914a16d7)
 
 - VM valid programs compiled: 102/105
+
+- ocaml transpiler: add dynamic cast support (46914a16d7)
+
+
+- ocaml transpiler: handle function return types (e2a013af12)
+
 
 - ocaml transpiler: start bigrat support (0a65091be7)
 
