@@ -403,7 +403,12 @@ func simpleListType(l *ListLit) string {
 	} else {
 		elemType = first
 		for _, e := range l.Elems[1:] {
-			if inferType(e) != first {
+			t := inferType(e)
+			if (elemType == "int" && t == "int64") || (elemType == "int64" && t == "int") {
+				elemType = "int"
+				continue
+			}
+			if t != elemType {
 				return ""
 			}
 		}
@@ -556,6 +561,7 @@ type LambdaExpr struct {
 	Types  []string
 	Expr   Expr
 	Body   []Stmt
+	Return string
 }
 
 func (l *LambdaExpr) emit(w io.Writer) {
@@ -587,11 +593,36 @@ func (l *LambdaExpr) emit(w io.Writer) {
 		}
 		return
 	}
+	if len(l.Body) == 1 {
+		if r, ok := l.Body[0].(*ReturnStmt); ok {
+			if r.Expr != nil {
+				if needsParen(r.Expr) {
+					io.WriteString(w, "(")
+					r.Expr.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					r.Expr.emit(w)
+				}
+			} else {
+				io.WriteString(w, "()")
+			}
+			return
+		}
+	}
 	if len(l.Body) == 0 {
 		io.WriteString(w, "()")
 		return
 	}
 	w.Write([]byte{'\n'})
+	indentLevel++
+	writeIndent(w)
+	if l.Return != "" {
+		fmt.Fprintf(w, "let mutable __ret : %s = Unchecked.defaultof<%s>\n", l.Return, l.Return)
+	} else {
+		io.WriteString(w, "let mutable __ret = ()\n")
+	}
+	writeIndent(w)
+	io.WriteString(w, "try\n")
 	indentLevel++
 	for i, st := range l.Body {
 		st.emit(w)
@@ -599,6 +630,17 @@ func (l *LambdaExpr) emit(w io.Writer) {
 			w.Write([]byte{'\n'})
 		}
 	}
+	w.Write([]byte{'\n'})
+	writeIndent(w)
+	io.WriteString(w, "__ret")
+	indentLevel--
+	w.Write([]byte{'\n'})
+	writeIndent(w)
+	io.WriteString(w, "with\n")
+	indentLevel++
+	writeIndent(w)
+	io.WriteString(w, "| Return -> __ret")
+	indentLevel--
 	indentLevel--
 }
 
@@ -758,7 +800,7 @@ func (l *ListLit) emit(w io.Writer) {
 		types[i] = t
 		if i == 0 {
 			prev = t
-		} else if t != prev && t != "" && prev != "" {
+		} else if t != prev && !(t == "int" && prev == "int64") && !(t == "int64" && prev == "int") && t != "" && prev != "" {
 			same = false
 		}
 	}
@@ -1657,11 +1699,7 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
 	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		if i.Value >= 0 && i.Value <= math.MaxUint32 {
-			fmt.Fprintf(w, "(int %dL)", i.Value)
-		} else {
-			fmt.Fprintf(w, "%dL", i.Value)
-		}
+		fmt.Fprintf(w, "(int %dL)", i.Value)
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -2339,6 +2377,28 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	}
 
 	typ := inferType(m.Target)
+	if ft, ok := structFieldType(typ, m.Name); ok && strings.Contains(ft, "->") {
+		if needsParen(m.Target) {
+			io.WriteString(w, "(")
+			m.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Target.emit(w)
+		}
+		io.WriteString(w, ".")
+		io.WriteString(w, fsIdent(m.Name))
+		for _, a := range m.Args {
+			io.WriteString(w, " ")
+			if needsParen(a) {
+				io.WriteString(w, "(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				a.emit(w)
+			}
+		}
+		return
+	}
 	if typ != "" && typ != "obj" {
 		// For primitive types like string, prefer direct method calls
 		if typ == "string" && (m.Name == "ToLower" || m.Name == "ToUpper" || m.Name == "Trim" || m.Name == "IndexOf" || m.Name == "Split") {
@@ -2742,13 +2802,18 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		var prefix, funs, others []Stmt
 		seenFun := false
 		for _, st := range p.Stmts {
-			if _, ok := st.(*FunDef); ok {
+			switch st.(type) {
+			case *FunDef:
 				funs = append(funs, st)
 				seenFun = true
-			} else if !seenFun {
+			case *LetStmt:
 				prefix = append(prefix, st)
-			} else {
-				others = append(others, st)
+			default:
+				if !seenFun {
+					prefix = append(prefix, st)
+				} else {
+					others = append(others, st)
+				}
 			}
 		}
 		p.Stmts = append(prefix, append(funs, others...)...)
@@ -3872,6 +3937,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		return convertMatchExpr(p.Match)
 	case p.FunExpr != nil:
 		save := varTypes
+		saveRet := currentReturn
+		currentReturn = ""
+		if p.FunExpr.Return != nil {
+			currentReturn = typeRefString(p.FunExpr.Return)
+		}
 		varTypes = copyMap(varTypes)
 		params := make([]string, len(p.FunExpr.Params))
 		paramTypes := make([]string, len(p.FunExpr.Params))
@@ -3884,23 +3954,28 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		if p.FunExpr.ExprBody != nil {
 			body, err := convertExpr(p.FunExpr.ExprBody)
+			retType := currentReturn
 			varTypes = save
+			currentReturn = saveRet
 			if err != nil {
 				return nil, err
 			}
-			return &LambdaExpr{Params: params, Types: paramTypes, Expr: body}, nil
+			return &LambdaExpr{Params: params, Types: paramTypes, Expr: body, Return: retType}, nil
 		}
 		stmts := make([]Stmt, len(p.FunExpr.BlockBody))
 		for i, s := range p.FunExpr.BlockBody {
 			cs, err := convertStmt(s)
 			if err != nil {
 				varTypes = save
+				currentReturn = saveRet
 				return nil, err
 			}
 			stmts[i] = cs
 		}
 		varTypes = save
-		return &LambdaExpr{Params: params, Types: paramTypes, Body: stmts}, nil
+		retType := currentReturn
+		currentReturn = saveRet
+		return &LambdaExpr{Params: params, Types: paramTypes, Body: stmts, Return: retType}, nil
 	case p.Selector != nil:
 		if p.Selector.Root == "nil" && len(p.Selector.Tail) == 0 {
 			return &NullLit{}, nil
