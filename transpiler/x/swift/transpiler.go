@@ -916,10 +916,11 @@ func (g *GroupByExpr) emit(w io.Writer) {
 }
 
 type IndexExpr struct {
-	Base     Expr
-	Index    Expr
-	AsString bool
-	Force    bool
+	Base      Expr
+	Index     Expr
+	AsString  bool
+	Force     bool
+	KeyString bool
 }
 
 // SliceExpr represents a[start:end] slicing for lists or strings.
@@ -947,7 +948,13 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	}
 	ie.Base.emit(w)
 	fmt.Fprint(w, "[")
-	ie.Index.emit(w)
+	if ie.KeyString {
+		fmt.Fprint(w, "String(")
+		ie.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else {
+		ie.Index.emit(w)
+	}
 	fmt.Fprint(w, "]")
 	if ie.Force {
 		fmt.Fprint(w, "!")
@@ -1094,6 +1101,7 @@ type BinaryExpr struct {
 	Right    Expr
 	InMap    bool
 	FloatMod bool
+	IntOp    bool
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -1135,7 +1143,30 @@ func (b *BinaryExpr) emit(w io.Writer) {
 
 	fmt.Fprint(w, "(")
 	b.Left.emit(w)
-	fmt.Fprintf(w, " %s ", b.Op)
+	var op string
+	switch b.Op {
+	case "+":
+		if b.IntOp {
+			op = "&+"
+		} else {
+			op = "+"
+		}
+	case "-":
+		if b.IntOp {
+			op = "&-"
+		} else {
+			op = "-"
+		}
+	case "*":
+		if b.IntOp {
+			op = "&*"
+		} else {
+			op = "*"
+		}
+	default:
+		op = b.Op
+	}
+	fmt.Fprintf(w, " %s ", op)
 	b.Right.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -2287,11 +2318,16 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			keyStr := false
 			isLast := j == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0
 			if mt, ok := cur.(types.MapType); ok {
+				if types.IsStringType(mt.Key) {
+					ix = &CastExpr{Expr: ix, Type: "String"}
+					keyStr = true
+				}
 				cur = mt.Value
 				force := !isLast
-				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr}
 			} else if lt, ok := cur.(types.ListType); ok {
 				cur = lt.Elem
 				lhs = &IndexExpr{Base: lhs, Index: ix}
@@ -3251,6 +3287,9 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		}
 
 		be := &BinaryExpr{Left: left, Op: op, Right: right, InMap: false}
+		if (types.IsIntType(ltyp) || types.IsInt64Type(ltyp)) && (types.IsIntType(rtyp) || types.IsInt64Type(rtyp)) {
+			be.IntOp = true
+		}
 		if op == "%" && (types.IsFloatType(ltyp) || types.IsFloatType(rtyp)) {
 			be.FloatMod = true
 		}
@@ -3516,7 +3555,14 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
 			} else {
-				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force}
+				keyStr := false
+				if mt, ok := baseType.(types.MapType); ok {
+					if types.IsStringType(mt.Key) {
+						idx = &CastExpr{Expr: idx, Type: "String"}
+						keyStr = true
+					}
+				}
+				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr}
 			}
 			if env != nil && !skipUpdate {
 				// update baseType after indexing
