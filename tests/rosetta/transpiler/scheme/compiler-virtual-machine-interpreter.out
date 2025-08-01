@@ -1,0 +1,14 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+count is: 1
+count is: 2
+count is: 3
+count is: 4
+count is: 5
+count is: 6
+count is: 7
+count is: 8
+count is: 9
