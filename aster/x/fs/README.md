@@ -14,7 +14,12 @@ This directory contains utilities for generating and printing simplified F# ASTs
 8. cast_string_to_int.fs
 9. cast_struct.fs
 10. closure.fs
+11. count_builtin.fs
+12. cross_join.fs
+13. cross_join_filter.fs
+14. cross_join_triple.fs
+15. dataset_sort_take_limit.fs
 
-Checked: 10/10
+Checked: 15/15
 
-_Last updated: 2025-08-01 09:33 GMT+7_
+_Last updated: 2025-08-01 10:43 GMT+7_
