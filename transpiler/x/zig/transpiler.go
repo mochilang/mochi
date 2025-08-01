@@ -2049,6 +2049,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	globals := []*VarDecl{}
 	transEnv = env
 	extraFuncs = nil
+	globalInits = nil
 	funcCounter = 0
 	varTypes = map[string]string{}
 	varDecls = map[string]*VarDecl{}
@@ -2138,6 +2139,12 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		if s != nil {
 			main.Body = append(main.Body, s)
 		}
+	}
+	if len(globalInits) > 0 {
+		newBody := make([]Stmt, 0, len(globalInits)+len(main.Body))
+		newBody = append(newBody, globalInits...)
+		newBody = append(newBody, main.Body...)
+		main.Body = newBody
 	}
 	_ = env
 	if benchMain {
@@ -3390,7 +3397,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			return nil, err
 		}
 		if call, ok := expr.(*CallExpr); ok {
-			if call.Func == "print" && len(call.Args) > 0 {
+			if (call.Func == "print" || call.Func == "_print") && len(call.Args) > 0 {
 				return &PrintStmt{Values: call.Args}, nil
 			}
 			if call.Func == "json" && len(call.Args) == 1 {
@@ -3441,6 +3448,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		varTypes[alias] = varTypes[s.Let.Name]
 		if funDepth == 0 && !isConstExpr(expr) {
 			vd.Value = nil
+			vd.Mutable = true
 			globalInits = append(globalInits, &AssignStmt{Name: s.Let.Name, Value: expr})
 		}
 		return vd, nil
