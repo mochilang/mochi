@@ -1,0 +1,775 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "customerId"
+            },
+            {
+              "kind": "symbol",
+              "text": "total"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "Customers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "id"
+            },
+            {
+              "kind": "symbol",
+              "text": "name"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "customers"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Alice"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Bob"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "3"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Charlie"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "4"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Diana"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "orders"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "100"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":total"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "250"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "101"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "2"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":total"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "125"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":id"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "102"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerId"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":total"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "300"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "result"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "for"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "o"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "orders"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "c"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "let"
+                    },
+                    {
+                      "kind": "vector",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "c_tmp"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "filter"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "fn"
+                                },
+                                {
+                                  "kind": "vector",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "c"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "="
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":customerId"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "o"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "keyword",
+                                          "text": ":id"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "c"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "customers"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "if"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "seq"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "c_tmp"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "c_tmp"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "nil",
+                              "text": "nil"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":customerName"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":name"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "c"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":order"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "o"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "string",
+              "text": "--- Right Join using syntax ---"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "doseq"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "entry"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "result"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "if"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":order"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "entry"
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "println"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Customer"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":customerName"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "entry"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "string",
+                      "text": "has order"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":id"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":order"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "entry"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "string",
+                      "text": "- $"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":total"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "keyword",
+                              "text": ":order"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "entry"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "println"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Customer"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":customerName"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "entry"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "string",
+                      "text": "has no orders"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

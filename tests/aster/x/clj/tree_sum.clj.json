@@ -1,0 +1,374 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "keyword",
+              "text": ":refer-clojure"
+            },
+            {
+              "kind": "keyword",
+              "text": ":exclude"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "sum_tree"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "sum_tree"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "t"
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "cond"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "symbol",
+                  "text": "t"
+                },
+                {
+                  "kind": "keyword",
+                  "text": ":Leaf"
+                }
+              ]
+            },
+            {
+              "kind": "number",
+              "text": "0"
+            },
+            {
+              "kind": "boolean",
+              "text": "true"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "let"
+                },
+                {
+                  "kind": "vector",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "left"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":left"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "t"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "value"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":value"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "t"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "right"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":right"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "t"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "+"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "+"
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "sum_tree"
+                            },
+                            {
+                              "kind": "symbol",
+                              "text": "left"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "value"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "sum_tree"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "right"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "t"
+        },
+        {
+          "kind": "map",
+          "children": [
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":left"
+                },
+                {
+                  "kind": "keyword",
+                  "text": ":Leaf"
+                }
+              ]
+            },
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":value"
+                },
+                {
+                  "kind": "number",
+                  "text": "1"
+                }
+              ]
+            },
+            {
+              "kind": "entry",
+              "children": [
+                {
+                  "kind": "keyword",
+                  "text": ":right"
+                },
+                {
+                  "kind": "map",
+                  "children": [
+                    {
+                      "kind": "entry",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":left"
+                        },
+                        {
+                          "kind": "keyword",
+                          "text": ":Leaf"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "entry",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":value"
+                        },
+                        {
+                          "kind": "number",
+                          "text": "2"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "entry",
+                      "children": [
+                        {
+                          "kind": "keyword",
+                          "text": ":right"
+                        },
+                        {
+                          "kind": "keyword",
+                          "text": ":Leaf"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "sum_tree"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "t"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

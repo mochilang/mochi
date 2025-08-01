@@ -1,0 +1,219 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "prefix"
+        },
+        {
+          "kind": "string",
+          "text": "fore"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "s1"
+        },
+        {
+          "kind": "string",
+          "text": "forest"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "s2"
+        },
+        {
+          "kind": "string",
+          "text": "desert"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "subs"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "s1"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "0"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "count"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "prefix"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "prefix"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "println"
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "="
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "symbol",
+                      "text": "subs"
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "s2"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "0"
+                    },
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "count"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "prefix"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "symbol",
+                  "text": "prefix"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,470 @@
+{
+  "forms": [
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "ns"
+        },
+        {
+          "kind": "symbol",
+          "text": "main"
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "require"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "quote"
+            },
+            {
+              "kind": "symbol",
+              "text": "clojure.set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defrecord"
+        },
+        {
+          "kind": "symbol",
+          "text": "People"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "name"
+            },
+            {
+              "kind": "symbol",
+              "text": "age"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "def"
+        },
+        {
+          "kind": "symbol",
+          "text": "people"
+        },
+        {
+          "kind": "vector",
+          "children": [
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Alice"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "30"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "kind": "map",
+              "children": [
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":name"
+                    },
+                    {
+                      "kind": "string",
+                      "text": "Bob"
+                    }
+                  ]
+                },
+                {
+                  "kind": "entry",
+                  "children": [
+                    {
+                      "kind": "keyword",
+                      "text": ":age"
+                    },
+                    {
+                      "kind": "number",
+                      "text": "25"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "defn"
+        },
+        {
+          "kind": "symbol",
+          "text": "-main"
+        },
+        {
+          "kind": "vector"
+        },
+        {
+          "kind": "list",
+          "children": [
+            {
+              "kind": "symbol",
+              "text": "doseq"
+            },
+            {
+              "kind": "vector",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "item"
+                },
+                {
+                  "kind": "symbol",
+                  "text": "people"
+                }
+              ]
+            },
+            {
+              "kind": "list",
+              "children": [
+                {
+                  "kind": "symbol",
+                  "text": "println"
+                },
+                {
+                  "kind": "list",
+                  "children": [
+                    {
+                      "kind": "list",
+                      "children": [
+                        {
+                          "kind": "symbol",
+                          "text": "fn"
+                        },
+                        {
+                          "kind": "symbol",
+                          "text": "json_str"
+                        },
+                        {
+                          "kind": "vector",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "x"
+                            }
+                          ]
+                        },
+                        {
+                          "kind": "list",
+                          "children": [
+                            {
+                              "kind": "symbol",
+                              "text": "cond"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "map?"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "str"
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "{"
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "clojure.string/join"
+                                    },
+                                    {
+                                      "kind": "string",
+                                      "text": ","
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "map"
+                                        },
+                                        {
+                                          "kind": "list",
+                                          "children": [
+                                            {
+                                              "kind": "symbol",
+                                              "text": "fn"
+                                            },
+                                            {
+                                              "kind": "vector",
+                                              "children": [
+                                                {
+                                                  "kind": "vector",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "k"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "v"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "kind": "list",
+                                              "children": [
+                                                {
+                                                  "kind": "symbol",
+                                                  "text": "str"
+                                                },
+                                                {
+                                                  "kind": "string",
+                                                  "text": "\""
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "name"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "k"
+                                                    }
+                                                  ]
+                                                },
+                                                {
+                                                  "kind": "string",
+                                                  "text": "\":"
+                                                },
+                                                {
+                                                  "kind": "list",
+                                                  "children": [
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "json_str"
+                                                    },
+                                                    {
+                                                      "kind": "symbol",
+                                                      "text": "v"
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "}"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "sequential?"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "str"
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "["
+                                },
+                                {
+                                  "kind": "list",
+                                  "children": [
+                                    {
+                                      "kind": "symbol",
+                                      "text": "clojure.string/join"
+                                    },
+                                    {
+                                      "kind": "string",
+                                      "text": ","
+                                    },
+                                    {
+                                      "kind": "list",
+                                      "children": [
+                                        {
+                                          "kind": "symbol",
+                                          "text": "map"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "json_str"
+                                        },
+                                        {
+                                          "kind": "symbol",
+                                          "text": "x"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "kind": "string",
+                                  "text": "]"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "string?"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "pr-str"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "keyword",
+                              "text": ":else"
+                            },
+                            {
+                              "kind": "list",
+                              "children": [
+                                {
+                                  "kind": "symbol",
+                                  "text": "str"
+                                },
+                                {
+                                  "kind": "symbol",
+                                  "text": "x"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "symbol",
+                      "text": "item"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "list",
+      "children": [
+        {
+          "kind": "symbol",
+          "text": "-main"
+        }
+      ]
+    }
+  ]
+}
