@@ -1,3 +1,411 @@
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
+## Progress (2025-08-02 00:55 +0700)
+- go transpiler: fix float casting and map[string]any returns
+- Regenerated golden files - 104/105 vm valid programs passing
+
 ## Progress (2025-08-01 21:31 +0700)
 - go: regenerate rosetta output for index 34
 - Regenerated golden files - 104/105 vm valid programs passing

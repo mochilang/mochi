@@ -4928,7 +4928,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &AssertExpr{Expr: expr, Type: "int"}
+						switch expr.(type) {
+						case *BinaryExpr, *CallExpr, *IntLit, *FloatLit:
+							expr = &IntCastExpr{Expr: expr}
+						default:
+							expr = &AssertExpr{Expr: expr, Type: "int"}
+						}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true
