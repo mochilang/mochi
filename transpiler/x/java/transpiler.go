@@ -197,6 +197,10 @@ func javaType(t string) string {
 		if t == "" {
 			return ""
 		}
+		if strings.HasSuffix(t, "[]") {
+			elem := strings.TrimSuffix(t, "[]")
+			return javaType(elem) + "[]"
+		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
@@ -1284,6 +1288,57 @@ func stmtUsesVar(s Stmt, name string) bool {
 			if stmtUsesVar(b, name) {
 				return true
 			}
+		}
+	}
+	return false
+}
+
+func stmtModifiesVar(s Stmt, name string) bool {
+	switch st := s.(type) {
+	case *AssignStmt:
+		return st.Name == name
+	case *IndexAssignStmt:
+		if v, ok := st.Target.(*VarExpr); ok {
+			return v.Name == name
+		}
+		return false
+	case *IfStmt:
+		for _, b := range st.Then {
+			if stmtModifiesVar(b, name) {
+				return true
+			}
+		}
+		for _, b := range st.Else {
+			if stmtModifiesVar(b, name) {
+				return true
+			}
+		}
+	case *WhileStmt:
+		for _, b := range st.Body {
+			if stmtModifiesVar(b, name) {
+				return true
+			}
+		}
+	case *ForRangeStmt:
+		for _, b := range st.Body {
+			if stmtModifiesVar(b, name) {
+				return true
+			}
+		}
+	case *ForEachStmt:
+		for _, b := range st.Body {
+			if stmtModifiesVar(b, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func bodyModifiesVar(body []Stmt, name string) bool {
+	for _, st := range body {
+		if stmtModifiesVar(st, name) {
+			return true
 		}
 	}
 	return false
@@ -5185,7 +5240,7 @@ func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 			}
 		}
 		for name := range outer {
-			if exprUsesVar(lam, name) {
+			if exprUsesVar(lam, name) && bodyModifiesVar(body, name) {
 				refVars[name] = true
 			}
 		}

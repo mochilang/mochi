@@ -1,4 +1,84 @@
-## Progress (2025-08-01 15:22 +0700)
+## Progress (2025-08-01 11:11 UTC)
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- rosetta java: add output for find-limit-of-recursion (e8bbb861c9)
+
+- java transpiler: handle variable aliasing and captured arrays (7b7d0e0747)
+
+- java transpiler: handle variable aliasing and captured arrays (7b7d0e0747)
+
 - docs: add v0.10.53 release notes (1deb4f017c)
 
 - docs: add v0.10.53 release notes (1deb4f017c)
