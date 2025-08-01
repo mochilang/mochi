@@ -5585,6 +5585,9 @@ func paramMutated(body []*parser.Statement, name string) bool {
 		if idx || assign {
 			return true
 		}
+		if stmtUsesNameInCall(st, name) {
+			return true
+		}
 	}
 	return false
 }
@@ -5641,6 +5644,143 @@ func stmtsMutate(list []*parser.Statement, name string) (bool, bool) {
 		}
 	}
 	return false, false
+}
+
+func stmtUsesNameInCall(st *parser.Statement, name string) bool {
+	switch {
+	case st == nil:
+		return false
+	case st.Expr != nil:
+		return exprUsesNameInCall(st.Expr.Expr, name)
+	case st.Assign != nil:
+		return exprUsesNameInCall(st.Assign.Value, name)
+	case st.Return != nil:
+		return exprUsesNameInCall(st.Return.Value, name)
+	case st.For != nil:
+		if exprUsesNameInCall(st.For.Source, name) {
+			return true
+		}
+		if exprUsesNameInCall(st.For.RangeEnd, name) {
+			return true
+		}
+		return stmtsUsesNameInCall(st.For.Body, name)
+	case st.While != nil:
+		if exprUsesNameInCall(st.While.Cond, name) {
+			return true
+		}
+		return stmtsUsesNameInCall(st.While.Body, name)
+	case st.If != nil:
+		if exprUsesNameInCall(st.If.Cond, name) {
+			return true
+		}
+		if stmtsUsesNameInCall(st.If.Then, name) {
+			return true
+		}
+		if st.If.ElseIf != nil {
+			if stmtUsesNameInCall(&parser.Statement{If: st.If.ElseIf}, name) {
+				return true
+			}
+		}
+		return stmtsUsesNameInCall(st.If.Else, name)
+	default:
+		return false
+	}
+}
+
+func stmtsUsesNameInCall(list []*parser.Statement, name string) bool {
+	for _, st := range list {
+		if stmtUsesNameInCall(st, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func exprUsesNameInCall(e *parser.Expr, name string) bool {
+	if e == nil {
+		return false
+	}
+	if e.Binary == nil {
+		return false
+	}
+	if unaryUsesNameInCall(e.Binary.Left, name) {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		if postfixUsesNameInCall(op.Right, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func unaryUsesNameInCall(u *parser.Unary, name string) bool {
+	if u == nil {
+		return false
+	}
+	return postfixUsesNameInCall(u.Value, name)
+}
+
+func postfixUsesNameInCall(p *parser.PostfixExpr, name string) bool {
+	if p == nil {
+		return false
+	}
+	if primaryUsesNameInCall(p.Target, name) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Call != nil {
+			for _, a := range op.Call.Args {
+				if exprIsName(a, name) || exprUsesNameInCall(a, name) {
+					return true
+				}
+			}
+		}
+		if op.Index != nil {
+			if exprUsesNameInCall(op.Index.Start, name) || exprUsesNameInCall(op.Index.End, name) || exprUsesNameInCall(op.Index.Step, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func primaryUsesNameInCall(pr *parser.Primary, name string) bool {
+	if pr == nil {
+		return false
+	}
+	if pr.Call != nil {
+		for _, a := range pr.Call.Args {
+			if exprIsName(a, name) || exprUsesNameInCall(a, name) {
+				return true
+			}
+		}
+	}
+	if pr.Group != nil {
+		return exprUsesNameInCall(pr.Group, name)
+	}
+	return false
+}
+
+func exprIsName(e *parser.Expr, name string) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && p.Target.Selector.Root == name {
+		return true
+	}
+	return false
 }
 
 func rustIdent(name string) string {
