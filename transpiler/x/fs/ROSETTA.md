@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (319/491)
+## Rosetta Golden Test Checklist (329/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -280,30 +280,30 @@ This file is auto-generated from rosetta tests.
 | 273 | day-of-the-week | ✓ | 234µs | 47.8 KB |
 | 274 | de-bruijn-sequences | ✓ | 26.917ms | 114.7 KB |
 | 275 | deal-cards-for-freecell | ✓ | 244µs | 45.6 KB |
-| 276 | death-star |   |  |  |
+| 276 | death-star | ✓ |  |  |
 | 277 | deceptive-numbers | ✓ | 925µs | 58.1 KB |
 | 278 | deconvolution-1d-2 | ✓ | 301µs | 70.1 KB |
 | 279 | deconvolution-1d-3 | ✓ | 302µs | 73.6 KB |
 | 280 | deconvolution-1d | ✓ | 248µs | 49.6 KB |
-| 281 | deepcopy-1 |   |  |  |
-| 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates |   |  |  |
+| 281 | deepcopy-1 | ✓ |  |  |
+| 282 | define-a-primitive-data-type | ✓ |  |  |
+| 283 | delegates | ✓ |  |  |
 | 284 | demings-funnel | ✓ | 297µs | 43.4 KB |
 | 285 | department-numbers | ✓ | 227µs | 45.0 KB |
-| 286 | descending-primes |   |  |  |
+| 286 | descending-primes | ✓ |  |  |
 | 287 | detect-division-by-zero | ✓ | 243µs | 52.5 KB |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 252µs | 66.2 KB |
 | 289 | determine-if-a-string-has-all-unique-characters | ✓ | 254µs | 42.8 KB |
-| 290 | determine-if-a-string-is-collapsible |   |  |  |
+| 290 | determine-if-a-string-is-collapsible | ✓ |  |  |
 | 291 | determine-if-a-string-is-numeric-1 | ✓ | 353µs | 56.3 KB |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ |  |  |
 | 293 | determine-if-a-string-is-squeezable | ✓ | 241µs | 41.9 KB |
 | 294 | determine-if-only-one-instance-is-running | ✓ | 290µs | 49.8 KB |
 | 295 | determine-if-two-triangles-overlap | ✓ | 284µs | 66.9 KB |
 | 296 | determine-sentence-type | ✓ | 276µs | 72.9 KB |
 | 297 | dice-game-probabilities-1 | ✓ | 6.176ms | 48.0 KB |
 | 298 | dice-game-probabilities-2 | ✓ | 347µs | 52.6 KB |
-| 299 | digital-root-multiplicative-digital-root | ✓ | 1.035ms | 58.3 KB |
+| 299 | digital-root-multiplicative-digital-root |   | 1.035ms | 58.3 KB |
 | 300 | dijkstras-algorithm |   |  |  |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ |  |  |
 | 302 | dining-philosophers-1 | ✓ | 228µs | 41.8 KB |
@@ -454,10 +454,10 @@ This file is auto-generated from rosetta tests.
 | 447 | flow-control-structures-2 | ✓ | 334µs | 45.7 KB |
 | 448 | flow-control-structures-3 | ✓ | 341µs | 41.6 KB |
 | 449 | flow-control-structures-4 | ✓ | 354µs | 45.5 KB |
-| 450 | floyd-warshall-algorithm |   |  |  |
-| 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle |   |  |  |
-| 453 | forest-fire |   |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 263µs | 55.3 KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 275µs | 51.1 KB |
+| 452 | floyds-triangle | ✓ | 257µs | 56.3 KB |
+| 453 | forest-fire | ✓ | 291µs | 71.5 KB |
 | 454 | fork-2 |   |  |  |
 | 455 | fork |   |  |  |
 | 456 | formal-power-series |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-07-31 00:10 +0700
+Last updated: 2025-08-01 15:22 +0700
