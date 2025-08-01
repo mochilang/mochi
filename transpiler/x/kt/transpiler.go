@@ -274,9 +274,7 @@ type IndexAssignStmt struct {
 func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
 	if ix, ok := s.Target.(*IndexExpr); ok {
-		io.WriteString(w, "(")
-		ix.emit(w)
-		io.WriteString(w, ")")
+		ix.emitTarget(w)
 	} else {
 		s.Target.emit(w)
 	}
