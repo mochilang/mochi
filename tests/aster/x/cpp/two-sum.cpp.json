@@ -65,6 +65,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "twoSum",
             "children": [
               {
                 "kind": "identifier",
@@ -516,6 +517,7 @@
           },
           {
             "kind": "function_declarator",
+            "text": "main",
             "children": [
               {
                 "kind": "identifier",

@@ -95,6 +95,21 @@ func writeStmt(b *bytes.Buffer, n *Node, indent int) {
 		writeForStatement(b, n, indent)
 	case "for_range_loop":
 		writeForRangeLoop(b, n, indent)
+	case "while_statement":
+		if len(n.Children) >= 2 {
+			b.WriteString(ind)
+			b.WriteString("while (")
+			cond := n.Children[0]
+			if cond.Kind == "condition_clause" && len(cond.Children) > 0 {
+				writeExpr(b, cond.Children[0], indent)
+			} else {
+				writeExpr(b, cond, indent)
+			}
+			b.WriteString(") {\n")
+			writeBlock(b, n.Children[1], indent+1)
+			b.WriteString(ind)
+			b.WriteString("}\n")
+		}
 	case "if_statement":
 		writeIfStatement(b, n, indent)
 	default:
@@ -453,8 +468,12 @@ func writeExpr(b *bytes.Buffer, n *Node, indent int) {
 		writeBinaryOp(b, n, indent, op)
 	case "assignment_expression":
 		if len(n.Children) == 2 {
+			op := strings.TrimSpace(n.Text)
+			if op == "" {
+				op = "="
+			}
 			writeExpr(b, n.Children[0], indent)
-			b.WriteString(" = ")
+			b.WriteString(" " + op + " ")
 			writeExpr(b, n.Children[1], indent)
 		}
 	case "update_expression":

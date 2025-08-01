@@ -2,8 +2,8 @@
 
 Golden files for the C++ inspector and printer live in this directory.
 
-Completed programs: 44/103
-Date: 2025-07-31 20:30 GMT+7
+Completed programs: 71/103
+Date: 2025-08-01 09:06 GMT+7
 
 ## Checklist
 - [ ] append_builtin
@@ -81,31 +81,31 @@ Date: 2025-07-31 20:30 GMT+7
 - [ ] pure_fold
 - [ ] pure_global_fold
 - [ ] python_auto
-- [ ] python_math
+- [x] python_math
 - [ ] query_sum_select
-- [ ] record_assign
-- [ ] right_join
-- [ ] save_jsonl_stdout
-- [ ] short_circuit
+- [x] record_assign
+- [x] right_join
+- [x] save_jsonl_stdout
+- [x] short_circuit
 - [ ] slice
 - [ ] sort_stable
-- [ ] str_builtin
-- [ ] string_compare
-- [ ] string_concat
-- [ ] string_contains
-- [ ] string_in_operator
-- [ ] string_index
-- [ ] string_prefix_slice
-- [ ] substring_builtin
-- [ ] sum_builtin
-- [ ] tail_recursion
-- [ ] test_block
+- [x] str_builtin
+- [x] string_compare
+- [x] string_concat
+- [x] string_contains
+- [x] string_in_operator
+- [x] string_index
+- [x] string_prefix_slice
+- [x] substring_builtin
+- [x] sum_builtin
+- [x] tail_recursion
+- [x] test_block
 - [ ] tree_sum
 - [x] two-sum
-- [ ] typed_let
-- [ ] typed_var
-- [ ] unary_neg
-- [ ] user_type_literal
+- [x] typed_let
+- [x] typed_var
+- [x] unary_neg
+- [x] user_type_literal
 - [ ] values_builtin
-- [ ] var_assignment
-- [ ] while_loop
+- [x] var_assignment
+- [x] while_loop
