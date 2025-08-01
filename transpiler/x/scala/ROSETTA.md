@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (353/491)
-_Last updated: 2025-08-01 20:10 +0700_
+## Golden Test Checklist (354/491)
+_Last updated: 2025-08-01 22:02 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -334,7 +334,7 @@ _Last updated: 2025-08-01 20:10 +0700_
 | 325 | duffinian-numbers | ✓ | 451µs | 8.8 MB |
 | 326 | dutch-national-flag-problem | ✓ | 12µs | 8.7 MB |
 | 327 | dynamic-variable-names | ✓ | 19µs | 8.7 MB |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 11µs | 8.7 MB |
 | 329 | eban-numbers |   |  |  |
 | 330 | ecdsa-example |   |  |  |
 | 331 | echo-server |   |  |  |
