@@ -3026,6 +3026,25 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			return
 		}
 
+		if ot, ok := ltyp.(types.OptionType); ok {
+			ltyp = ot.Elem
+			left = &CastExpr{Expr: left, Type: swiftTypeOf(ot.Elem) + "!"}
+		}
+		if ot, ok := rtyp.(types.OptionType); ok {
+			rtyp = ot.Elem
+			right = &CastExpr{Expr: right, Type: swiftTypeOf(ot.Elem) + "!"}
+		}
+		if types.IsAnyType(rtyp) && types.IsIntType(ltyp) {
+			if _, ok := right.(*IndexExpr); ok {
+				right = &CastExpr{Expr: right, Type: "Int!"}
+				rtyp = types.IntType{}
+			}
+		}
+		if types.IsAnyType(ltyp) && types.IsIntType(rtyp) {
+			left = &CastExpr{Expr: left, Type: "Int!"}
+			ltyp = types.IntType{}
+		}
+
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=":
 			if types.IsStringType(ltyp) && isBoolLitExpr(right) {
