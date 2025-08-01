@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 414/491
+Compiled and ran: 420/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -492,11 +492,11 @@ Compiled and ran: 414/491
 | 483 | http | ✓ | 151.1ms | 2.8 MB |
 | 484 | image-noise | ✓ | 115.648ms | 4.5 MB |
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 66.448ms | 1.4 MB |
-| 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 486 | md5 | ✓ | 256.786ms | 13.9 MB |
+| 487 | nim-game | ✓ | 19.45ms | 7.4 MB |
+| 488 | plasma-effect | ✓ | 37.706ms | 9.3 MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 14.748ms | 2.7 MB |
+| 490 | window-management | ✓ | 11.069ms | 2.1 MB |
+| 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-01 18:33 +0700_
+_Last updated: 2025-08-01 18:46 +0700_

@@ -639,6 +639,16 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ").toInt()")
 		return err
 	}
+	if targetType == "int" && valType == "num" {
+		if _, err := io.WriteString(w, "("); err != nil {
+			return err
+		}
+		if err := s.Value.emit(w); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, ").toInt()")
+		return err
+	}
 	if strings.HasPrefix(targetType, "List<") && valType != targetType {
 		return emitListConversion(w, s.Value, targetType)
 	}
@@ -670,9 +680,9 @@ func (s *LetStmt) emit(w io.Writer) error {
 		// assignments of differing types do not cause runtime errors.
 		typ = "dynamic"
 	}
-	if inFunc && s.Type == "" && typ != "dynamic" {
+	if inFunc && s.Type == "" {
 		valType := inferType(s.Value)
-		if valType != "" && valType != typ {
+		if valType != "" && valType != "dynamic" {
 			typ = valType
 		}
 	}
@@ -5028,6 +5038,14 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 						case "FifteenPuzzleExample":
 							if len(args) == 0 {
 								expr = &StringLit{Value: testpkg.FifteenPuzzleExample()}
+								break
+							}
+						case "MD5Hex":
+							if len(args) == 1 {
+								useMD5 = true
+								expr = &CallExpr{Func: &Name{Name: "_md5hex"}, Args: args[:1]}
+								args = nil
+								replaced = true
 								break
 							}
 						}

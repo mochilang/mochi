@@ -34,18 +34,30 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-
-String _md5hex(String s) {
-  final tmp = File('${Directory.systemTemp.path}/md5_${DateTime.now().microsecondsSinceEpoch}.txt');
-  tmp.writeAsStringSync(s);
-  final result = Process.runSync('md5sum', [tmp.path]);
-  tmp.deleteSync();
-  if (result.stdout is String) {
-    return (result.stdout as String).split(' ')[0];
+List<int> bubbleSort(List<int> a) {
+  dynamic arr = a;
+  dynamic itemCount = arr.length - 1;
+  while (true) {
+    dynamic hasChanged = false;
+    dynamic index = 0;
+    while (index < itemCount) {
+    if (arr[(index).toInt()] > arr[(index + 1).toInt()]) {
+    dynamic tmp = arr[(index).toInt()];
+    arr[(index).toInt()] = arr[(index + 1).toInt()];
+    arr[(index + 1).toInt()] = tmp;
+    hasChanged = true;
   }
-  return '';
+    index = index + 1;
+  }
+    if (!hasChanged) {
+    break;
+  }
+    itemCount = itemCount - 1;
+  }
+  return (arr as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
 }
 
+List<int> list = [31, 41, 59, 26, 53, 58, 97, 93, 23, 84];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -53,15 +65,9 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (List<String> pair in [["d41d8cd98f00b204e9800998ecf8427e", ""], ["0cc175b9c0f1b6a831c399e269772661", "a"], ["900150983cd24fb0d6963f7d28e17f72", "abc"], ["f96b697d7cb7938d525a2f31aaf161d0", "message digest"], ["c3fcd3d76192e4007dfb496cca67e13b", "abcdefghijklmnopqrstuvwxyz"], ["d174ab98d277d9f5a5611c2c9f419d9f", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"], ["57edf4a22be3c955ac49da2e2107b67a", "12345678901234567890" + "123456789012345678901234567890123456789012345678901234567890"], ["e38ca1d920c4b8b8d3946b2c72f01680", "The quick brown fox jumped over the lazy dog's back"]]) {
-    dynamic sum = _md5hex(pair[1]);
-    if (sum != pair[0]) {
-    print("MD5 fail");
-    print(["  for string,", pair[1]].join(" "));
-    print(["  expected:  ", pair[0]].join(" "));
-    print(["  got:       ", sum].join(" "));
-  }
-  }
+  print("unsorted: " + (list).toString());
+  list = bubbleSort(list);
+  print("sorted!  " + (list).toString());
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
