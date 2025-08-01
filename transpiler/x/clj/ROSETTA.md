@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 123/491
-Last updated: 2025-08-01 18:11 +0700
+Completed: 149/491
+Last updated: 2025-08-01 18:40 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -429,70 +429,70 @@ Last updated: 2025-08-01 18:11 +0700
 | 422 | find-common-directory-path |   |  |  |
 | 423 | find-duplicate-files |   |  |  |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
+| 425 | find-limit-of-recursion | ✓ | 163.517ms | 18.4 MB |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | first-class-environments |   |  |  |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
-| 435 | fivenum-1 |   |  |  |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 43.404ms | 20.8 MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 49.757ms | 19.9 MB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 110.684ms | 21.1 MB |
+| 430 | find-the-missing-permutation | ✓ | 51.281ms | 20.1 MB |
+| 431 | first-class-environments | ✓ | 81.922ms | 20.4 MB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 46.308ms | 19.6 MB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ |  |  |
+| 434 | five-weekends | ✓ | 139.72ms | 22.9 MB |
+| 435 | fivenum-1 | ✓ | 68.492ms | 21.1 MB |
 | 436 | fivenum-2 |   |  |  |
 | 437 | fivenum-3 |   |  |  |
-| 438 | fixed-length-records-1 |   |  |  |
+| 438 | fixed-length-records-1 | ✓ | 42.09ms | 21.3 MB |
 | 439 | fixed-length-records-2 |   |  |  |
-| 440 | fizzbuzz-1 |   |  |  |
+| 440 | fizzbuzz-1 | ✓ | 54.161ms | 18.7 MB |
 | 441 | fizzbuzz-2 |   |  |  |
-| 442 | fizzbuzz |   |  |  |
-| 443 | flatten-a-list-1 |   |  |  |
-| 444 | flatten-a-list-2 |   |  |  |
-| 445 | flipping-bits-game |   |  |  |
-| 446 | flow-control-structures-1 |   |  |  |
-| 447 | flow-control-structures-2 |   |  |  |
-| 448 | flow-control-structures-3 |   |  |  |
-| 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm | ✓ |  |  |
+| 442 | fizzbuzz | ✓ | 43.935ms | 18.6 MB |
+| 443 | flatten-a-list-1 | ✓ | 60.493ms | 18.1 MB |
+| 444 | flatten-a-list-2 | ✓ | 41.308ms | 17.8 MB |
+| 445 | flipping-bits-game | ✓ | 49.837ms | 25.8 MB |
+| 446 | flow-control-structures-1 | ✓ | 46.964ms | 18.3 MB |
+| 447 | flow-control-structures-2 | ✓ | 54.98ms | 18.3 MB |
+| 448 | flow-control-structures-3 | ✓ | 43.522ms | 18.4 MB |
+| 449 | flow-control-structures-4 | ✓ | 40.816ms | 18.2 MB |
+| 450 | floyd-warshall-algorithm | ✓ | 48.905ms | 22.2 MB |
 | 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle | ✓ |  |  |
+| 452 | floyds-triangle | ✓ | 52.712ms | 19.5 MB |
 | 453 | forest-fire |   |  |  |
-| 454 | fork-2 | ✓ |  |  |
-| 455 | fork | ✓ |  |  |
+| 454 | fork-2 | ✓ | 41.681ms | 18.7 MB |
+| 455 | fork | ✓ | 45.522ms | 18.8 MB |
 | 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output | ✓ |  |  |
-| 458 | forward-difference | ✓ |  |  |
-| 459 | four-bit-adder-1 | ✓ |  |  |
+| 457 | formatted-numeric-output | ✓ | 47.189ms | 19.9 MB |
+| 458 | forward-difference | ✓ | 74.929ms | 19.1 MB |
+| 459 | four-bit-adder-1 | ✓ | 48.316ms | 20.2 MB |
 | 460 | four-is-magic |   |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
-| 462 | fractal-tree | ✓ |  |  |
-| 463 | fractran | ✓ |  |  |
-| 464 | french-republican-calendar | ✓ |  |  |
+| 462 | fractal-tree | ✓ | 119.906ms | 24.6 MB |
+| 463 | fractran | ✓ | 19.489831s | 20.2 MB |
+| 464 | french-republican-calendar | ✓ | 38.67ms | 25.1 MB |
 | 465 | ftp |   |  |  |
 | 466 | function-frequency |   |  |  |
-| 467 | function-prototype | ✓ |  |  |
-| 468 | functional-coverage-tree | ✓ |  |  |
+| 467 | function-prototype | ✓ | 48.973ms | 18.5 MB |
+| 468 | functional-coverage-tree | ✓ | 44.86ms | 25.8 MB |
 | 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function | ✓ |  |  |
-| 471 | general-fizzbuzz | ✓ |  |  |
-| 472 | generic-swap | ✓ |  |  |
-| 473 | get-system-command-output | ✓ |  |  |
-| 474 | giuga-numbers | ✓ |  |  |
-| 475 | globally-replace-text-in-several-files | ✓ |  |  |
-| 476 | goldbachs-comet | ✓ |  |  |
-| 477 | golden-ratio-convergence | ✓ |  |  |
-| 478 | graph-colouring | ✓ |  |  |
+| 470 | gamma-function | ✓ | 56.113ms | 22.4 MB |
+| 471 | general-fizzbuzz | ✓ | 48.972ms | 19.5 MB |
+| 472 | generic-swap | ✓ | 35.754ms | 18.7 MB |
+| 473 | get-system-command-output | ✓ | 39.461ms | 17.9 MB |
+| 474 | giuga-numbers | ✓ | 69.642ms | 20.3 MB |
+| 475 | globally-replace-text-in-several-files | ✓ | 43.302ms | 17.9 MB |
+| 476 | goldbachs-comet | ✓ | 86.666ms | 20.7 MB |
+| 477 | golden-ratio-convergence | ✓ | 43ms | 19.9 MB |
+| 478 | graph-colouring | ✓ | 42.987ms | 18.3 MB |
 | 479 | gray-code |   |  |  |
 | 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls | ✓ |  |  |
-| 482 | gui-maximum-window-dimensions | ✓ |  |  |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 43.953ms | 19.3 MB |
+| 482 | gui-maximum-window-dimensions | ✓ | 47.372ms | 19.1 MB |
 | 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 484 | image-noise | ✓ | 1.531941s | 19.2 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 72.179ms | 20.2 MB |
 | 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
+| 487 | nim-game | ✓ | 52.502ms | 20.1 MB |
+| 488 | plasma-effect | ✓ | 2.071819s | 21.9 MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 60.111ms | 19.3 MB |
+| 490 | window-management | ✓ | 46.827ms | 20.9 MB |
 | 491 | zumkeller-numbers |   |  |  |

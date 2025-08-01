@@ -34,13 +34,24 @@
 (def i 0)
 
 (defn -main []
-  (dotimes [i n] (do (def row []) (dotimes [j n] (if (= i j) (def row (conj row 0)) (def row (conj row INF)))) (def g (conj g row))))
-  (def g (assoc-in g [0 2] (- 2)))
-  (def g (assoc-in g [2 3] 2))
-  (def g (assoc-in g [3 1] (- 1)))
-  (def g (assoc-in g [1 0] 4))
-  (def g (assoc-in g [1 2] 3))
-  (println "pair\tdist\tpath")
-  (while (< i n) (do (def j 0) (while (< j n) (do (when (not= i j) (do (def p (path i j (:next res))) (println (str (str (str (str (str (str (str (+' i 1)) " -> ") (str (+' j 1))) "\t") (str (nth (get (:dist res) i) j))) "\t") (pathStr p))))) (def j (+' j 1)))) (def i (+' i 1)))))
+  (let [rt (Runtime/getRuntime)
+    start-mem (- (.totalMemory rt) (.freeMemory rt))
+    start (System/nanoTime)]
+      (dotimes [i n] (do (def row []) (dotimes [j n] (if (= i j) (def row (conj row 0)) (def row (conj row INF)))) (def g (conj g row))))
+      (def g (assoc-in g [0 2] (- 2)))
+      (def g (assoc-in g [2 3] 2))
+      (def g (assoc-in g [3 1] (- 1)))
+      (def g (assoc-in g [1 0] 4))
+      (def g (assoc-in g [1 2] 3))
+      (println "pair\tdist\tpath")
+      (while (< i n) (do (def j 0) (while (< j n) (do (when (not= i j) (do (def p (path i j (:next res))) (println (str (str (str (str (str (str (str (+' i 1)) " -> ") (str (+' j 1))) "\t") (str (nth (get (:dist res) i) j))) "\t") (pathStr p))))) (def j (+' j 1)))) (def i (+' i 1))))
+      (System/gc)
+      (let [end (System/nanoTime)
+        end-mem (- (.totalMemory rt) (.freeMemory rt))
+        duration-us (quot (- end start) 1000)
+        memory-bytes (Math/abs ^long (- end-mem start-mem))]
+        (println (str "{\n  \"duration_us\": " duration-us ",\n  \"memory_bytes\": " memory-bytes ",\n  \"name\": \"main\"\n}"))
+      )
+    ))
 
 (-main)
