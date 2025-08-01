@@ -2,17 +2,17 @@
 
   | A D F G V X
 ---------------
-A | S 5 3 H R D 
-D | F 6 U W G B 
-F | E 9 N 4 7 A 
-G | 0 8 C Y Q K 
-V | P O 2 V Z J 
-X | M I X 1 L T 
+A | 9 J N K W 6 
+D | 0 T V A X G 
+F | C 1 O 2 Q E 
+G | H 8 3 Y P 4 
+V | L 7 U S F Z 
+X | D B 5 M I R 
 
-The key is 2FIZ6YMXP
+The key is KGFXZ2UB3
 
 Plaintext : ATTACKAT1200AM
 
-Encrypted : FFVA XXG XGF XXG FXF GGX XXX XXA XFA
+Encrypted : DDA FDX GFG DGD GAG DAFG DDD DDA DGD
 
 Decrypted : ATTACKAT1200AM
