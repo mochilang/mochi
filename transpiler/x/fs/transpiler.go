@@ -708,8 +708,28 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "let __bench_start = _now()\n")
 	writeIndent(w)
 	io.WriteString(w, "let __mem_start = System.GC.GetTotalMemory(true)\n")
-	for _, st := range b.Body {
-		st.emit(w)
+	for i := 0; i < len(b.Body); {
+		if fd, ok := b.Body[i].(*FunDef); ok {
+			fd.emitWithPrefix(w, "let rec")
+			i++
+			for i < len(b.Body) {
+				next, ok := b.Body[i].(*FunDef)
+				if !ok {
+					break
+				}
+				w.Write([]byte{'\n'})
+				next.emitWithPrefix(w, "and")
+				i++
+			}
+		} else {
+			b.Body[i].emit(w)
+			i++
+		}
+		if i < len(b.Body) {
+			w.Write([]byte{'\n'})
+		}
+	}
+	if len(b.Body) > 0 {
 		w.Write([]byte{'\n'})
 	}
 	writeIndent(w)
@@ -2714,6 +2734,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			opens = append(opens, &OpenStmt{Name: m})
 		}
 		p.Stmts = append(opens, p.Stmts...)
+	}
+	// Move all function definitions ahead of other statements
+	// while preserving any leading non-function statements so
+	// variable declarations remain before their usage.
+	if len(p.Stmts) > 1 {
+		var prefix, funs, others []Stmt
+		seenFun := false
+		for _, st := range p.Stmts {
+			if _, ok := st.(*FunDef); ok {
+				funs = append(funs, st)
+				seenFun = true
+			} else if !seenFun {
+				prefix = append(prefix, st)
+			} else {
+				others = append(others, st)
+			}
+		}
+		p.Stmts = append(prefix, append(funs, others...)...)
 	}
 	for name, lsts := range letPtrs {
 		if mutatedVars[name] {
