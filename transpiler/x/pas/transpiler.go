@@ -142,6 +142,7 @@ type Program struct {
 	NeedContains  bool
 	NeedShowList  bool
 	NeedShowList2 bool
+	NeedShowMap   bool
 	NeedListStr   bool
 	NeedListStr2  bool
 	NeedIndexOf   bool
@@ -863,6 +864,13 @@ func (p *PrintStmt) emit(w io.Writer) {
 		}
 		return
 	}
+	if len(p.Exprs) == 1 && len(p.Types) == 1 && strings.HasPrefix(p.Types[0], "specialize TFPGMap") {
+		currProg.NeedShowMap = true
+		io.WriteString(w, "show_map(")
+		p.Exprs[0].emit(w)
+		io.WriteString(w, ");")
+		return
+	}
 
 	io.WriteString(w, "writeln(")
 	for i, ex := range p.Exprs {
@@ -1051,6 +1059,9 @@ begin
 end;
 `)
 	}
+	if p.NeedShowMap {
+		buf.WriteString("procedure show_map(m: specialize TFPGMap<string, Variant>);\nvar i: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write(m.Data[i]);\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
+	}
 	for _, r := range p.Records {
 		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
 		for _, f := range r.Fields {
@@ -1209,6 +1220,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							} else {
 								pr.NeedShowList = true
 							}
+						} else if strings.HasPrefix(t, "specialize TFPGMap") {
+							pr.NeedShowMap = true
 						}
 					}
 					pr.Stmts = append(pr.Stmts, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
@@ -2146,6 +2159,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					typesList = append(typesList, t)
 					if t == "boolean" {
 						needSys = true
+					} else if strings.HasPrefix(t, "specialize TFPGMap") {
+						currProg.NeedShowMap = true
 					}
 				}
 				out = append(out, &PrintStmt{Exprs: parts, Types: typesList, NeedSysUtils: needSys})
@@ -3990,23 +4005,23 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "avg" && len(args) == 1 {
 			currProg.NeedAvg = true
 			return &CallExpr{Name: "avg", Args: args}, nil
-               } else if name == "min" && len(args) == 1 {
-                       currProg.NeedMin = true
-                       return &CallExpr{Name: "min", Args: args}, nil
-               } else if name == "max" && len(args) == 1 {
-                       currProg.NeedMax = true
-                       return &CallExpr{Name: "max", Args: args}, nil
-               } else if name == "keys" && len(args) == 1 {
-                       // treat keys(map) as the map itself for iteration purposes
-                       return args[0], nil
-               } else if name == "values" && len(args) == 1 {
-                       if vr, ok := args[0].(*VarRef); ok {
-                               if t, ok := currentVarTypes[vr.Name]; ok {
-                                       for _, r := range currProg.Records {
-                                               if r.Name == t {
-                                                       var elems []Expr
-                                                       for _, f := range r.Fields {
-                                                               elems = append(elems, &SelectorExpr{Root: vr.Name, Tail: []string{f.Name}})
+		} else if name == "min" && len(args) == 1 {
+			currProg.NeedMin = true
+			return &CallExpr{Name: "min", Args: args}, nil
+		} else if name == "max" && len(args) == 1 {
+			currProg.NeedMax = true
+			return &CallExpr{Name: "max", Args: args}, nil
+		} else if name == "keys" && len(args) == 1 {
+			// treat keys(map) as the map itself for iteration purposes
+			return args[0], nil
+		} else if name == "values" && len(args) == 1 {
+			if vr, ok := args[0].(*VarRef); ok {
+				if t, ok := currentVarTypes[vr.Name]; ok {
+					for _, r := range currProg.Records {
+						if r.Name == t {
+							var elems []Expr
+							for _, f := range r.Fields {
+								elems = append(elems, &SelectorExpr{Root: vr.Name, Tail: []string{f.Name}})
 							}
 							return &ValuesExpr{Elems: elems}, nil
 						}
