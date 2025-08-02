@@ -40,7 +40,23 @@ var usesIndexOf bool
 var usesParseIntStr bool
 var useBigRat bool
 var useRepeat bool
-var reserved = map[string]bool{"this": true, "new": true, "double": true, "char": true}
+var reserved = map[string]bool{
+    "this":    true,
+    "new":     true,
+    "double":  true,
+    "char":    true,
+    "and":     true,
+    "and_eq":  true,
+    "bitand":  true,
+    "bitor":   true,
+    "compl":   true,
+    "not":     true,
+    "not_eq":  true,
+    "or":      true,
+    "or_eq":   true,
+    "xor":     true,
+    "xor_eq":  true,
+}
 var currentReturnType string
 var inReturn bool
 var mutatedParams map[string]bool
@@ -1510,17 +1526,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
 	var elem Expr = a.Elem
-	if strings.HasPrefix(valType, "std::vector<auto>") && elemType != "auto" {
-		et := elemType
-		if ll, ok := a.Elem.(*ListLit); ok {
-			ll2 := *ll
-			if ll2.ElemType == "" {
-				ll2.ElemType = et
-			}
-			elem = &ll2
-		}
-		valType = fmt.Sprintf("std::vector<%s>", et)
-	}
+        if ll, ok := a.Elem.(*ListLit); ok && ll.ElemType == "" && elemType != "auto" {
+                et := elementTypeFromListType(elemType)
+                ll2 := *ll
+                ll2.ElemType = et
+                elem = &ll2
+                valType = fmt.Sprintf("std::vector<%s>", et)
+        }
 	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int64_t>" {
 		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
@@ -2625,20 +2637,22 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " = {}")
 		} else {
 			io.WriteString(w, " = ")
-			valType := exprType(s.Value)
-			if valType == "std::any" && typ != "" && typ != "std::any" {
-				if currentProgram != nil {
-					currentProgram.addInclude("<any>")
-				}
-				io.WriteString(w, "std::any_cast<"+typ+">(")
-				s.Value.emit(w)
-				io.WriteString(w, ")")
-			} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
-				if sl, ok := s.Value.(*StructLit); ok {
-					maker := "std::make_unique"
-					if strings.HasPrefix(typ, "std::shared_ptr<") {
-						maker = "std::make_shared"
-					}
+                        valType := exprType(s.Value)
+                        if _, ok := s.Value.(*NullLit); ok && typ != "" && typ != "std::any" {
+                                io.WriteString(w, defaultValueForType(typ))
+                        } else if valType == "std::any" && typ != "" && typ != "std::any" {
+                                if currentProgram != nil {
+                                        currentProgram.addInclude("<any>")
+                                }
+                                io.WriteString(w, "std::any_cast<"+typ+">(")
+                                s.Value.emit(w)
+                                io.WriteString(w, ")")
+                        } else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
+                                if sl, ok := s.Value.(*StructLit); ok {
+                                        maker := "std::make_unique"
+                                        if strings.HasPrefix(typ, "std::shared_ptr<") {
+                                                maker = "std::make_shared"
+                                        }
 					fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
 					for i, f := range sl.Fields {
 						if i > 0 {
@@ -2688,10 +2702,15 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			varType = t
 		}
 	}
-	if valType == "std::any" {
-		if currentProgram != nil {
-			currentProgram.addInclude("<any>")
-		}
+        if _, ok := a.Value.(*NullLit); ok && varType != "std::any" {
+                io.WriteString(w, defaultValueForType(varType))
+                io.WriteString(w, ";\n")
+                return
+        }
+        if valType == "std::any" {
+                if currentProgram != nil {
+                        currentProgram.addInclude("<any>")
+                }
 		castType := varType
 		if castType == "auto" || castType == "" {
 			castType = "decltype(" + safeName(a.Name) + ")"

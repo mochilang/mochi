@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (254/491) - Last updated 2025-08-02 11:41 +0700:
+Checklist of programs that currently transpile and run (261/491) - Last updated 2025-08-02 12:02 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -247,17 +247,17 @@ Checklist of programs that currently transpile and run (254/491) - Last updated 
 | 240 | count-in-factors |   |  |  |
 | 241 | count-in-octal-1 |   |  |  |
 | 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 |   |  |  |
-| 244 | count-in-octal-4 |   |  |  |
-| 245 | count-occurrences-of-a-substring |   |  |  |
-| 246 | count-the-coins-1 |   |  |  |
-| 247 | count-the-coins-2 | ✓ | 579.0µs | 13.13MB |
-| 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 |   |  |  |
-| 250 | crc-32-2 |   |  |  |
-| 251 | create-a-file-on-magnetic-tape | ✓ |  |  |
-| 252 | create-a-file | ✓ |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
+| 243 | count-in-octal-3 | ✓ | 247.0µs | 12.94MB |
+| 244 | count-in-octal-4 | ✓ | 149.0µs | 12.80MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 285.0µs | 12.79MB |
+| 246 | count-the-coins-1 | ✓ | 214.0µs | 12.93MB |
+| 247 | count-the-coins-2 | ✓ | 955.0µs | 12.93MB |
+| 248 | cramers-rule | ✓ | 611.0µs | 12.88MB |
+| 249 | crc-32-1 | ✓ | 167.0µs | 13.25MB |
+| 250 | crc-32-2 | ✓ | 198.0µs | 12.80MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 58.0µs | 12.61MB |
+| 252 | create-a-file | ✓ | 198.0µs | 12.68MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 247.0µs | 13.29MB |
 | 254 | create-an-html-table |   |  |  |
 | 255 | create-an-object-at-a-given-address | ✓ |  |  |
 | 256 | csv-data-manipulation | ✓ |  |  |
