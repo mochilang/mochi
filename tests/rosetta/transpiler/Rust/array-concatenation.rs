@@ -34,44 +34,51 @@ fn _mem() -> i64 {
     }
     0
 }
-static mut g_b: Vec<f64> = Vec::new();
-static mut g_k: i64 = 0;
+static mut g_a: Vec<i64> = Vec::new();
+static mut g_b: Vec<i64> = Vec::new();
+static mut g_i: Vec<String> = Vec::new();
+static mut g_j: Vec<String> = Vec::new();
+static mut g_l: Vec<i64> = Vec::new();
+static mut g_m: Vec<i64> = Vec::new();
 fn main() {
     unsafe {
-        g_b = vec![0.16666667, 0.5, 0.5, 0.16666667];
-        g_k = 0;
+        g_a = vec![1, 2, 3];
+        g_b = vec![7, 12, 60];
+        g_i = vec![1, 2, 3];
+        g_j = vec![String::from("Crosby"), String::from("Stills"), String::from("Nash"), String::from("Young")];
+        g_l = vec![1, 2, 3];
+        g_m = vec![7, 12, 60];
                 let _start_mem: i64 = _mem();
         let _start: i64 = _now();
-        unsafe fn applyFilter(mut input: Vec<f64>, mut a: Vec<f64>, mut b: Vec<f64>) -> Vec<f64> {
-    let mut out: Vec<f64> = vec![];
-    let mut scale: f64 = (1.0 / a[0 as usize]);
-    let mut i: i64 = 0;
-    while (i < (input.len() as i64)) {
-        let mut tmp: f64 = 0.0;
-        let mut j: i64 = 0;
-        while ((j <= i) && (j < (b.len() as i64))) {
-            tmp = (tmp + (b[j as usize] * input[(i - j) as usize]));
-            j = (j + 1);
-        }
-        j = 0;
-        while ((j < i) && ((j + 1) < (a.len() as i64))) {
-            tmp = (tmp - (a[(j + 1) as usize] * out[((i - j) - 1) as usize]));
-            j = (j + 1);
-        }
-        out = { let mut _v = out.clone(); _v.push((tmp * scale)); _v };
-        i = (i + 1);
+        unsafe fn concatInts(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+    let mut out: Vec<i64> = vec![];
+    for v in a.clone() {
+        out = { let mut _v = out.clone(); _v.push(v); _v };
+    }
+    for v in b.clone() {
+        out = { let mut _v = out.clone(); _v.push(v); _v };
     }
     return out
 };
-        let mut a: Vec<f64> = vec![1.0, -0.00000000000000027756, 0.33333333, -0.0000000000000000185];
-        static mut g_b: Vec<f64> = Vec::new();;
-        let mut sig: Vec<f64> = vec![-0.917843918645, 0.141984778794, 1.20536903482, 0.190286794412, -0.662370894973, -1.00700480494, -0.404707073677, 0.800482325044, 0.743500089861, 1.01090520172, 0.741527555207, 0.277841675195, 0.400833448236, -0.2085993586, -0.172842103641, -0.134316096293, 0.0259303398477, 0.490105989562, 0.549391221511, 0.9047198589];
-        let mut res: Vec<f64> = applyFilter(sig.clone(), a.clone(), g_b.clone().clone());
-        static mut g_k: i64 = 0;;
-        while (g_k < (res.len() as i64)) {
-            println!("{}", format!("{:?}", res[g_k as usize]));
-            g_k = (g_k + 1);
-        }
+        unsafe fn concatAny(mut a: Vec<String>, mut b: Vec<String>) -> Vec<String> {
+    let mut out: Vec<String> = vec![];
+    for v in a.clone() {
+        out = { let mut _v = out.clone(); _v.push(v.clone()); _v };
+    }
+    for v in b.clone() {
+        out = { let mut _v = out.clone(); _v.push(v.clone()); _v };
+    }
+    return out
+};
+        static mut g_a: Vec<i64> = Vec::new();;
+        static mut g_b: Vec<i64> = Vec::new();;
+        println!("{}", format!("{:?}", concatInts(g_a.clone().clone(), g_b.clone().clone())));
+        static mut g_i: Vec<String> = Vec::new();;
+        static mut g_j: Vec<String> = Vec::new();;
+        println!("{}", format!("{:?}", concatAny(g_i.clone().clone(), g_j.clone().clone())));
+        static mut g_l: Vec<i64> = Vec::new();;
+        static mut g_m: Vec<i64> = Vec::new();;
+        println!("{}", format!("{:?}", concatInts(g_l.clone().clone(), g_m.clone().clone())));
         let _end: i64 = _now();
         let _end_mem: i64 = _mem();
         let duration_us: i64 = ((_end - _start) / 1000);
