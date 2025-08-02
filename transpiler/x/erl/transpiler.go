@@ -2273,6 +2273,8 @@ func (f *FloatLit) emit(w io.Writer) {
 			parts[0] = parts[0] + ".0"
 		}
 		s = parts[0] + "e" + parts[1]
+	} else if !strings.Contains(s, ".") {
+		s = s + ".0"
 	}
 	io.WriteString(w, s)
 }
