@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/dijkstras-algorithm.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Dijkstras-algorithm" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/dijkstras-algorithm.ml", line 61, characters 16-158:
+61 |   graph := ((u, Obj.repr (((v, Obj.repr (w)) :: List.remove_assoc (v) (Obj.magic ((try List.assoc (u) !graph with Not_found -> [])) : (string * Obj.t) list)))) :: List.remove_assoc (u) (Obj.magic (!graph) : (string * Obj.t) list));
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: This expression has type Obj.t but an expression was expected of type
+         'a list
