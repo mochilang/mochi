@@ -46,6 +46,7 @@ var needsEnviron bool
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
+var funCtxStack []bool
 var assignedVars map[string]bool
 var benchMain bool
 
@@ -565,6 +566,12 @@ func (f *FunStmt) emit(w io.Writer) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer) {
+	if len(funCtxStack) > 0 && funCtxStack[len(funCtxStack)-1] {
+		if r.Value != nil {
+			r.Value.emit(w)
+		}
+		return
+	}
 	fmt.Fprint(w, "return")
 	if r.Value != nil {
 		fmt.Fprint(w, " ")
@@ -3198,6 +3205,13 @@ func convertFunExpr(fe *parser.FunExpr, env *types.Env) (Expr, error) {
 	defer func() { localVarTypes = saved }()
 
 	child := types.NewEnv(env)
+	rt := toScalaType(fe.Return)
+	funCtxStack = append(funCtxStack, true)
+	returnTypeStack = append(returnTypeStack, rt)
+	defer func() {
+		funCtxStack = funCtxStack[:len(funCtxStack)-1]
+		returnTypeStack = returnTypeStack[:len(returnTypeStack)-1]
+	}()
 
 	f := &FunExpr{}
 	for _, p := range fe.Params {
@@ -3233,8 +3247,35 @@ func convertFunExpr(fe *parser.FunExpr, env *types.Env) (Expr, error) {
 		if len(f.Body) == 0 {
 			return nil, fmt.Errorf("unsupported fun expr")
 		}
+		if ex := stmtsToExpr(f.Body); ex != nil {
+			f.Expr = ex
+			f.Body = nil
+		}
 	}
 	return f, nil
+}
+
+func stmtsToExpr(stmts []Stmt) Expr {
+	if len(stmts) == 0 {
+		return nil
+	}
+	rs, ok := stmts[len(stmts)-1].(*ReturnStmt)
+	if !ok || rs.Value == nil {
+		return nil
+	}
+	expr := rs.Value
+	for i := len(stmts) - 2; i >= 0; i-- {
+		ifs, ok := stmts[i].(*IfStmt)
+		if !ok || len(ifs.Then) != 1 || len(ifs.Else) != 0 {
+			return nil
+		}
+		trs, ok := ifs.Then[0].(*ReturnStmt)
+		if !ok || trs.Value == nil {
+			return nil
+		}
+		expr = &IfExpr{Cond: ifs.Cond, Then: trs.Value, Else: expr}
+	}
+	return expr
 }
 
 func convertIfExpr(ie *parser.IfExpr) (Expr, error) {
@@ -3833,6 +3874,8 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	defer func() { localVarTypes = saved }()
 
 	child := types.NewEnv(env)
+	funCtxStack = append(funCtxStack, false)
+	defer func() { funCtxStack = funCtxStack[:len(funCtxStack)-1] }()
 
 	mutated := map[string]bool{}
 	for _, p := range fs.Params {
