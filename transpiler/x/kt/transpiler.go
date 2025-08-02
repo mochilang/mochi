@@ -822,6 +822,14 @@ func (c *CastExpr) emit(w io.Writer) {
 		tll.emit(w)
 		return
 	}
+	if c.Type == "BigInteger" {
+		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+			io.WriteString(w, "(")
+			c.Value.emit(w)
+			io.WriteString(w, " as Int).toBigInteger()")
+			return
+		}
+	}
 	needParens := false
 	switch c.Value.(type) {
 	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -837,9 +845,10 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch c.Type {
 	case "int", "Int":
-		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+		switch t := guessType(c.Value); t {
+		case "Any", "Any?", "":
 			io.WriteString(w, " as Int")
-		} else {
+		default:
 			io.WriteString(w, ".toInt()")
 		}
 	case "float", "Double", "Double?":
@@ -947,10 +956,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if typ == "BigInteger" {
 			io.WriteString(w, "(")
 			e.emit(w)
-			if guessType(e) != "BigInteger" {
-				io.WriteString(w, ").toBigInteger()")
-			} else {
+			switch t := guessType(e); t {
+			case "BigInteger":
 				io.WriteString(w, ")")
+			case "Any", "Any?":
+				io.WriteString(w, " as Int).toBigInteger()")
+			default:
+				io.WriteString(w, ").toBigInteger()")
 			}
 		} else if typ == "Long" {
 			io.WriteString(w, "(")
@@ -1096,96 +1108,27 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		switch b.Op {
 		case "+":
 			io.WriteString(w, ".add(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				if rightType == "Any" || rightType == "Any?" {
-					io.WriteString(w, " as Int")
-				}
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "-":
 			io.WriteString(w, ".subtract(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				if rightType == "Any" || rightType == "Any?" {
-					io.WriteString(w, " as Int")
-				}
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "*":
 			io.WriteString(w, ".multiply(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				if rightType == "Any" || rightType == "Any?" {
-					io.WriteString(w, " as Int")
-				}
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "/":
 			io.WriteString(w, ".divide(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				if rightType == "Any" || rightType == "Any?" {
-					io.WriteString(w, " as Int")
-				}
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "%":
 			io.WriteString(w, ".remainder(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				if rightType == "Any" || rightType == "Any?" {
-					io.WriteString(w, " as Int")
-				}
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ")")
 		case "==", "!=", "<", ">", "<=", ">=":
 			io.WriteString(w, ".compareTo(")
-			if _, ok := b.Right.(*BinaryExpr); ok {
-				io.WriteString(w, "(")
-				b.Right.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Right.emit(w)
-			}
-			if rightType != "BigInteger" {
-				io.WriteString(w, ".toBigInteger()")
-			}
+			cast(b.Right, "BigInteger")
 			io.WriteString(w, ") ")
 			switch b.Op {
 			case "==":

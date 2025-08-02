@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 14:18 +0700
+Last updated: 2025-08-02 14:45 +0700
 
-Completed tasks: **241/491**
+Completed tasks: **244/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -207,10 +207,10 @@ Completed tasks: **241/491**
 | 196 | cheryls-birthday | ✓ | 12.64ms | 131.6 KB |
 | 197 | chinese-remainder-theorem | ✓ | 10.04ms | 134.1 KB |
 | 198 | chinese-zodiac | ✓ | 12.61ms | 124.1 KB |
-| 199 | cholesky-decomposition-1 |  |  |  |
-| 200 | cholesky-decomposition | ✓ | 26.00ms | 113.2 KB |
-| 201 | chowla-numbers |  |  |  |
-| 202 | church-numerals-1 |  |  |  |
+| 199 | cholesky-decomposition-1 | ✓ | 22.15ms | 101.2 KB |
+| 200 | cholesky-decomposition | ✓ | 20.36ms | 113.2 KB |
+| 201 | chowla-numbers | ✓ | 6.77ms | 130.8 KB |
+| 202 | church-numerals-1 | ✓ | 10.17ms | 130.3 KB |
 | 203 | church-numerals-2 |  |  |  |
 | 204 | circles-of-given-radius-through-two-points |  |  |  |
 | 205 | circular-primes |  |  |  |
