@@ -65,7 +65,8 @@ $__start = _now();
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
-  if ($ch == ' ' || $ch == '\t' || $ch == '\n') {
+  if ($ch == ' ' || $ch == '	' || $ch == '
+') {
   if (strlen($cur) > 0) {
   $words = array_merge($words, [$cur]);
   $cur = '';
@@ -87,7 +88,8 @@ $__start = _now();
   if (substr($s, $i, $i + 1 - $i) == '\\' && $i + 1 < strlen($s)) {
   $c = substr($s, $i + 1, $i + 2 - ($i + 1));
   if ($c == 'n') {
-  $out = $out . '\n';
+  $out = $out . '
+';
   $i = $i + 2;
   continue;
 } else {
@@ -104,7 +106,8 @@ $__start = _now();
   return $out;
 };
   function parseProgram($src) {
-  $lines = explode('\n', $src);
+  $lines = explode('
+', $src);
   $header = fields($lines[0]);
   $dataSize = parseIntStr($header[1], 10);
   $nStrings = parseIntStr($header[3], 10);
@@ -211,7 +214,8 @@ $__start = _now();
   if ($op == 'prts') {
   $s = $pool[$stack[count($stack) - 1]];
   $stack = array_slice($stack, 0, count($stack) - 1 - 0);
-  if ($s != '\n') {
+  if ($s != '
+') {
   $line = $line . $s;
 };
   $pc = $pc + 1;
@@ -233,11 +237,11 @@ $__start = _now();
 };
   function mochi_trim($s) {
   $start = 0;
-  while ($start < strlen($s) && (substr($s, $start, $start + 1 - $start) == ' ' || substr($s, $start, $start + 1 - $start) == '\t')) {
+  while ($start < strlen($s) && (substr($s, $start, $start + 1 - $start) == ' ' || substr($s, $start, $start + 1 - $start) == '	')) {
   $start = $start + 1;
 };
   $end = strlen($s);
-  while ($end > $start && (substr($s, $end - 1, $end - ($end - 1)) == ' ' || substr($s, $end - 1, $end - ($end - 1)) == '\t')) {
+  while ($end > $start && (substr($s, $end - 1, $end - ($end - 1)) == ' ' || substr($s, $end - 1, $end - ($end - 1)) == '	')) {
   $end = $end - 1;
 };
   return substr($s, $start, $end - $start);
@@ -260,16 +264,37 @@ $__start = _now();
   return $parts;
 };
   function main() {
-  $programText = 'Datasize: 1 Strings: 2\n' . '"count is: "\n' . '"\\n"\n' . '    0 push  1\n' . '    5 store [0]\n' . '   10 fetch [0]\n' . '   15 push  10\n' . '   20 lt\n' . '   21 jz     (43) 65\n' . '   26 push  0\n' . '   31 prts\n' . '   32 fetch [0]\n' . '   37 prti\n' . '   38 push  1\n' . '   43 prts\n' . '   44 fetch [0]\n' . '   49 push  1\n' . '   54 add\n' . '   55 store [0]\n' . '   60 jmp    (-51) 10\n' . '   65 halt\n';
+  $programText = 'Datasize: 1 Strings: 2
+' . '"count is: "
+' . '"\\n"
+' . '    0 push  1
+' . '    5 store [0]
+' . '   10 fetch [0]
+' . '   15 push  10
+' . '   20 lt
+' . '   21 jz     (43) 65
+' . '   26 push  0
+' . '   31 prts
+' . '   32 fetch [0]
+' . '   37 prti
+' . '   38 push  1
+' . '   43 prts
+' . '   44 fetch [0]
+' . '   49 push  1
+' . '   54 add
+' . '   55 store [0]
+' . '   60 jmp    (-51) 10
+' . '   65 halt
+';
   $prog = parseProgram($programText);
   runVM($prog);
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

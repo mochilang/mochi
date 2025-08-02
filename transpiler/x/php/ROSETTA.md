@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 17:26 +0700
+Last updated: 2025-08-02 17:46 +0700
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -214,37 +214,37 @@ Last updated: 2025-08-02 17:26 +0700
 | 205 | circular-primes | ✓ | 464µs | 17.1 KB |
 | 206 | cistercian-numerals | ✓ | 503µs | 68.9 KB |
 | 207 | comma-quibbling | ✓ | 73µs | 96 B |
-| 208 | compiler-virtual-machine-interpreter | ✓ | 307µs | 144 B |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 1m55.55573s | 96 B |
-| 210 | compound-data-type | ✓ | 1µs | 64 B |
-| 211 | concurrent-computing-1 | ✓ | 60µs | 96 B |
-| 212 | concurrent-computing-2 | ✓ | 70µs | 96 B |
-| 213 | concurrent-computing-3 | ✓ | 81µs | 96 B |
-| 214 | conditional-structures-1 | ✓ |  |  |
-| 215 | conditional-structures-10 | ✓ | 62µs | 96 B |
-| 216 | conditional-structures-2 | ✓ | 1µs | 64 B |
-| 217 | conditional-structures-3 | ✓ | 1µs | 64 B |
-| 218 | conditional-structures-4 | ✓ | 1µs | 64 B |
-| 219 | conditional-structures-5 | ✓ | 1µs | 64 B |
-| 220 | conditional-structures-6 | ✓ | 1µs | 64 B |
-| 221 | conditional-structures-7 | ✓ | 1µs | 64 B |
-| 222 | conditional-structures-8 | ✓ | 1µs | 64 B |
-| 223 | conditional-structures-9 | ✓ | 1µs | 64 B |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 198µs | 72.5 KB |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 53.213674s | 36.6 KB |
+| 210 | compound-data-type | ✓ | 1µs | 35.1 KB |
+| 211 | concurrent-computing-1 | ✓ | 82µs | 38.8 KB |
+| 212 | concurrent-computing-2 | ✓ | 63µs | 38.8 KB |
+| 213 | concurrent-computing-3 | ✓ | 70µs | 38.1 KB |
+| 214 | conditional-structures-1 | ✓ | 1µs | 35.2 KB |
+| 215 | conditional-structures-10 | ✓ | 106µs | 35.4 KB |
+| 216 | conditional-structures-2 | ✓ | 1µs | 35.2 KB |
+| 217 | conditional-structures-3 | ✓ | 1µs | 35.2 KB |
+| 218 | conditional-structures-4 | ✓ | 1µs | 35.3 KB |
+| 219 | conditional-structures-5 | ✓ | 1µs | 35.3 KB |
+| 220 | conditional-structures-6 | ✓ | 1µs | 35.3 KB |
+| 221 | conditional-structures-7 | ✓ | 1µs | 35.4 KB |
+| 222 | conditional-structures-8 | ✓ | 1µs | 35.2 KB |
+| 223 | conditional-structures-9 | ✓ | 1µs | 35.4 KB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 | ✓ | 1µs | 64 B |
-| 226 | constrained-genericity-2 | ✓ | 1µs | 64 B |
-| 227 | constrained-genericity-3 | ✓ | 1µs | 64 B |
-| 228 | constrained-genericity-4 | ✓ | 75µs | 96 B |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 851µs | 52.1 KB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 1.532ms | 149.5 KB |
-| 231 | continued-fraction | ✓ | 138µs | 96 B |
-| 232 | convert-decimal-number-to-rational | ✓ | 119µs | 96 B |
-| 233 | convert-seconds-to-compound-duration | ✓ | 45µs | 96 B |
-| 234 | convex-hull | ✓ | 149µs | 376 B |
-| 235 | conways-game-of-life | ✓ | 765.75ms | 128 B |
-| 236 | copy-a-string-1 | ✓ | 1µs | 64 B |
-| 237 | copy-a-string-2 | ✓ | 69µs | 312 B |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 70µs | 8.1 KB |
+| 225 | constrained-genericity-1 | ✓ | 1µs | 35.1 KB |
+| 226 | constrained-genericity-2 | ✓ | 1µs | 35.1 KB |
+| 227 | constrained-genericity-3 | ✓ | 1µs | 35.3 KB |
+| 228 | constrained-genericity-4 | ✓ | 53µs | 35.4 KB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 1.017ms | 53.9 KB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 1.141ms | 151.1 KB |
+| 231 | continued-fraction | ✓ | 119µs | 35.0 KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 101µs | 36.8 KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 44µs | 39.8 KB |
+| 234 | convex-hull | ✓ | 117µs | 40.4 KB |
+| 235 | conways-game-of-life | ✓ | 527.273ms | 81.6 KB |
+| 236 | copy-a-string-1 | ✓ | 1µs | 35.2 KB |
+| 237 | copy-a-string-2 | ✓ | 55µs | 38.4 KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 53µs | 39.0 KB |
 | 239 | copy-stdin-to-stdout-2 | ✓ | 79µs | 8.1 KB |
 | 240 | count-in-factors | ✓ | 637µs | 96 B |
 | 241 | count-in-octal-1 | ✓ | 425µs | 96 B |

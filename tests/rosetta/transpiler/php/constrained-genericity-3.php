@@ -18,13 +18,14 @@ function _now() {
 $__start_mem = memory_get_usage();
 $__start = _now();
   function PeelFirst_eat($self) {
+  $value = $self['value'];
   echo rtrim('mm, that ' . $value . ' was good!'), PHP_EOL;
 };
 $__end = _now();
-$__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

@@ -1245,7 +1245,11 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "$__start_mem = memory_get_usage();\n")
+        // Capture baseline and peak memory to account for allocations inside
+        // the benchmarked block. `memory_get_peak_usage()` reports the highest
+        // amount of memory used by the script, so subtracting the starting
+        // usage approximates memory consumed by this block.
+        io.WriteString(w, "$__start_mem = memory_get_usage();\n")
 	io.WriteString(w, "$__start = _now();\n")
 	for _, st := range b.Body {
 		io.WriteString(w, "  ")
@@ -1257,10 +1261,10 @@ func (b *BenchStmt) emit(w io.Writer) {
 			io.WriteString(w, ";\n")
 		}
 	}
-	io.WriteString(w, "$__end = _now();\n")
-	io.WriteString(w, "$__end_mem = memory_get_usage();\n")
-	io.WriteString(w, "$__duration = max(1, intdiv($__end - $__start, 1000));\n")
-	io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
+        io.WriteString(w, "$__end = _now();\n")
+        io.WriteString(w, "$__end_mem = memory_get_peak_usage();\n")
+        io.WriteString(w, "$__duration = max(1, intdiv($__end - $__start, 1000));\n")
+        io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
 	fmt.Fprintf(w, "$__bench = [\"duration_us\" => $__duration, \"memory_bytes\" => $__mem_diff, \"name\" => %q];\n", b.Name)
 	io.WriteString(w, "$__j = json_encode($__bench, 128);\n")
 	io.WriteString(w, "$__j = str_replace(\"    \", \"  \", $__j);\n")
