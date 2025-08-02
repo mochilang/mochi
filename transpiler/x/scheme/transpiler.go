@@ -2389,23 +2389,19 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.ListType)
 		return ok
 	}
-	isIntType := func(t types.Type) bool {
-		_, ok := t.(types.IntType)
-		return ok
-	}
-	if op == "/" {
-		if isIntType(lt) && isIntType(rt) && !hasFloat(left) && !hasFloat(right) {
-			return &List{Elems: []Node{Symbol("quotient"), left, right}}
-		}
-		return &List{Elems: []Node{Symbol("/"), left, right}}
-	}
-	if op == "%" {
-		if isIntType(lt) && isIntType(rt) {
-			return &List{Elems: []Node{Symbol("modulo"), left, right}}
-		}
-		needBase = true
-		return &List{Elems: []Node{Symbol("fmod"), left, right}}
-	}
+       if op == "/" {
+               if !hasFloat(left) && !hasFloat(right) {
+                       return &List{Elems: []Node{Symbol("quotient"), left, right}}
+               }
+               return &List{Elems: []Node{Symbol("/"), left, right}}
+       }
+       if op == "%" {
+               if !hasFloat(left) && !hasFloat(right) {
+                       return &List{Elems: []Node{Symbol("modulo"), left, right}}
+               }
+               needBase = true
+               return &List{Elems: []Node{Symbol("fmod"), left, right}}
+       }
 	if isStrType(lt) || isStrType(rt) {
 		if isStrType(lt) {
 			if b, ok := right.(BoolLit); ok {
