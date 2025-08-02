@@ -1,5 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/cantor-set.rb:66:in `<main>': undefined method `start' for {"start"=>0, "len"=>81, "index"=>1}:Hash (NoMethodError)
-
-    start = frame.start
-                 ^^^^^^

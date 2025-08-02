@@ -1945,6 +1945,22 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(e *emitter) {
+	// Heuristic: identifiers starting with a lowercase letter or '$'
+	// represent map/dictionary values, so access them using string keys
+	// instead of Ruby's attribute syntax. This avoids generating
+	// expressions like `frame.start` when `frame` is a Hash.
+	if id, ok := f.Target.(*Ident); ok {
+		if len(id.Name) > 0 {
+			r := rune(id.Name[0])
+			if unicode.IsLower(r) || id.Name[0] == '$' {
+				f.Target.emit(e)
+				io.WriteString(e.w, "[\"")
+				io.WriteString(e.w, f.Name)
+				io.WriteString(e.w, "\"]")
+				return
+			}
+		}
+	}
 	f.Target.emit(e)
 	io.WriteString(e.w, ".")
 	io.WriteString(e.w, f.Name)

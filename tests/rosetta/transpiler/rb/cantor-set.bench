@@ -1,4 +1,5 @@
-{"start"=>0, "len"=>81, "index"=>1}:Hash (NoMethodError)
-
-    start = frame.start
-                 ^^^^^^
+{
+  "duration_us": 1163158019,
+  "memory_bytes": 200440,
+  "name": "main"
+}
