@@ -2203,6 +2203,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			if op == "+" || op == "-" || op == "*" || op == "/" || op == "%" {
 				lt := inferTypeWithEnv(left, env)
 				rt := inferTypeWithEnv(right, env)
+				if (lt == "" || lt == "Any") && isBigIntExpr(left) {
+					left = &CastExpr{Value: left, Type: "BigInt"}
+					lt = "BigInt"
+				}
+				if (rt == "" || rt == "Any") && isBigIntExpr(right) {
+					right = &CastExpr{Value: right, Type: "BigInt"}
+					rt = "BigInt"
+				}
 				if lt == "BigRat" || rt == "BigRat" {
 					needsBigRat = true
 					ex = &BinaryExpr{Left: left, Op: op, Right: right}
