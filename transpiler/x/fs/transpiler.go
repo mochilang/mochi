@@ -3251,7 +3251,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if typ == "array" || typ == "map" {
 			typ = ""
 		}
-		return &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}, nil
+		ls := &LetStmt{Name: st.Var.Name, Expr: e, Type: typ, Mutable: true}
+		letPtrs[st.Var.Name] = append(letPtrs[st.Var.Name], ls)
+		return ls, nil
 	case st.Assign != nil && len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0:
 		e, err := convertExpr(st.Assign.Value)
 		if err != nil {
@@ -3274,6 +3276,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			if cur != "" && cur != t && cur != "obj" {
 				varTypes[st.Assign.Name] = "obj"
+				for _, ls := range letPtrs[st.Assign.Name] {
+					ls.Type = "obj"
+					if ls.Expr != nil {
+						ls.Expr = &CallExpr{Func: "box", Args: []Expr{ls.Expr}}
+					}
+				}
 				e = &CallExpr{Func: "box", Args: []Expr{e}}
 			}
 		} else if vt := varTypes[st.Assign.Name]; vt != "" && vt != "obj" {
