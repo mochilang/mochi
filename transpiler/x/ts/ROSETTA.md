@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-02 10:55 UTC
+Last updated: 2025-08-02 13:32 UTC
 
 ## Rosetta Golden Test Checklist (474/491)
 | Index | Name | Status | Duration | Memory |
@@ -249,36 +249,36 @@ Last updated: 2025-08-02 10:55 UTC
 | 240 | count-in-factors | ✓ | 2.934ms | 385.5 KB |
 | 241 | count-in-octal-1 | ✓ | 2.46ms | 374.6 KB |
 | 242 | count-in-octal-2 | ✓ | 144.125ms | 733.0 KB |
-| 243 | count-in-octal-3 | ✓ | 1.142ms |  |
-| 244 | count-in-octal-4 | ✓ | 1.656ms | 128.0 KB |
-| 245 | count-occurrences-of-a-substring | ✓ | 686µs | 128.0 KB |
-| 246 | count-the-coins-1 | ✓ | 749µs |  |
-| 247 | count-the-coins-2 | ✓ | 2.427ms | 1.4 MB |
-| 248 | cramers-rule | ✓ | 1.544ms | 128.0 KB |
-| 249 | crc-32-1 | ✓ | 644µs | 2.8 MB |
-| 250 | crc-32-2 | ✓ | 618µs | 3.1 MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 61µs |  |
-| 252 | create-a-file | ✓ | 386µs |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 343µs | 128.0 KB |
-| 254 | create-an-html-table | ✓ | 393µs |  |
-| 255 | create-an-object-at-a-given-address | ✓ | 518µs | 128.0 KB |
-| 256 | csv-data-manipulation | ✓ | 496µs | 128.0 KB |
-| 257 | csv-to-html-translation-1 | ✓ | 386µs | 128.0 KB |
-| 258 | csv-to-html-translation-2 | ✓ | 517µs | 128.0 KB |
-| 259 | csv-to-html-translation-3 | ✓ | 416µs | 128.0 KB |
-| 260 | csv-to-html-translation-4 | ✓ | 423µs |  |
-| 261 | csv-to-html-translation-5 | ✓ | 526µs | 128.0 KB |
+| 243 | count-in-octal-3 | ✓ | 674µs | 42.7 KB |
+| 244 | count-in-octal-4 | ✓ | 1.014ms | 57.2 KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 773µs | 18.0 KB |
+| 246 | count-the-coins-1 | ✓ | 484µs | 15.5 KB |
+| 247 | count-the-coins-2 | ✓ | 1.941ms | 51.4 KB |
+| 248 | cramers-rule | ✓ | 1.345ms | 126.5 KB |
+| 249 | crc-32-1 | ✓ | 6.159ms | 568.2 KB |
+| 250 | crc-32-2 | ✓ | 7.401ms | 574.3 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 100µs | 6.0 KB |
+| 252 | create-a-file | ✓ | 547µs | 24.1 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 487µs | 18.3 KB |
+| 254 | create-an-html-table | ✓ | 625µs | 33.6 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 823µs | 54.0 KB |
+| 256 | csv-data-manipulation | ✓ | 813µs | 35.1 KB |
+| 257 | csv-to-html-translation-1 | ✓ | 563µs | 38.3 KB |
+| 258 | csv-to-html-translation-2 | ✓ | 1.211ms | 49.5 KB |
+| 259 | csv-to-html-translation-3 | ✓ | 1.093ms | 45.7 KB |
+| 260 | csv-to-html-translation-4 | ✓ | 524µs | 34.3 KB |
+| 261 | csv-to-html-translation-5 | ✓ | 864µs | 47.3 KB |
 | 262 | cuban-primes | ✓ |  |  |
-| 263 | cullen-and-woodall-numbers | ✓ | 778µs | 256.0 KB |
-| 264 | cumulative-standard-deviation | ✓ | 508µs |  |
-| 265 | currency | ✓ | 574µs | 128.0 KB |
-| 266 | currying | ✓ | 498µs |  |
-| 267 | curzon-numbers | ✓ | 39.401ms | 11.3 MB |
-| 268 | cusip | ✓ | 498µs | 128.0 KB |
-| 269 | cyclops-numbers | ✓ | 2.367764s | 105.5 MB |
-| 270 | damm-algorithm | ✓ | 886µs |  |
-| 271 | date-format | ✓ | 407µs | 128.0 KB |
-| 272 | date-manipulation | ✓ | 898µs | 512.0 KB |
+| 263 | cullen-and-woodall-numbers | ✓ | 1.284ms | 53.7 KB |
+| 264 | cumulative-standard-deviation | ✓ | 750µs | 44.8 KB |
+| 265 | currency | ✓ | 845µs | 27.7 KB |
+| 266 | currying | ✓ | 673µs | 33.2 KB |
+| 267 | curzon-numbers | ✓ | 43.124ms | 833.4 KB |
+| 268 | cusip | ✓ | 874µs | 542.9 KB |
+| 269 | cyclops-numbers | ✓ | 2.754061s | 42.2 MB |
+| 270 | damm-algorithm | ✓ | 654µs | 29.9 KB |
+| 271 | date-format | ✓ | 552µs | 19.6 KB |
+| 272 | date-manipulation | ✓ | 1.054ms | 31.6 KB |
 | 273 | day-of-the-week | ✓ | 681µs | 256.0 KB |
 | 274 | de-bruijn-sequences | ✓ | 23.53ms | 16.8 MB |
 | 275 | deal-cards-for-freecell | ✓ | 1.164ms | 384.0 KB |
