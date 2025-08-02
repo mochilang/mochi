@@ -2241,6 +2241,20 @@ func convertQueryExpr(q *parser.QueryExpr) (Node, error) {
 	}}, nil
 }
 
+func hasFloat(n Node) bool {
+	switch v := n.(type) {
+	case FloatLit:
+		return true
+	case *List:
+		for _, e := range v.Elems {
+			if hasFloat(e) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func makeBinary(op string, left, right Node) Node {
 	isStr := func(n Node) bool {
 		switch n.(type) {
@@ -2263,16 +2277,9 @@ func makeBinary(op string, left, right Node) Node {
 	case "-", "*":
 		return &List{Elems: []Node{Symbol(op), left, right}}
 	case "/":
-		_, lfloat := left.(FloatLit)
-		_, rfloat := right.(FloatLit)
-		if lfloat || rfloat {
-			return &List{Elems: []Node{Symbol("/"), left, right}}
-		}
-		return &List{Elems: []Node{Symbol("quotient"), left, right}}
+		return &List{Elems: []Node{Symbol("/"), left, right}}
 	case "%":
-		_, lfloat := left.(FloatLit)
-		_, rfloat := right.(FloatLit)
-		if lfloat || rfloat {
+		if hasFloat(left) || hasFloat(right) {
 			needBase = true
 			return &List{Elems: []Node{Symbol("fmod"), left, right}}
 		}
@@ -2387,17 +2394,8 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		return ok
 	}
 	if op == "/" {
-		if isIntType(lt) && isIntType(rt) {
+		if isIntType(lt) && isIntType(rt) && !hasFloat(left) && !hasFloat(right) {
 			return &List{Elems: []Node{Symbol("quotient"), left, right}}
-		}
-		if _, ok := lt.(types.FloatType); !ok {
-			if _, ok := rt.(types.FloatType); !ok {
-				if _, ok := left.(FloatLit); !ok {
-					if _, ok := right.(FloatLit); !ok {
-						return &List{Elems: []Node{Symbol("quotient"), left, right}}
-					}
-				}
-			}
 		}
 		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}

@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (397/491)
-Last updated: 2025-08-02 11:21 UTC
+Last updated: 2025-08-02 13:46 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -210,7 +210,7 @@ Last updated: 2025-08-02 11:21 UTC
 | 201 | chowla-numbers | ✓ | 571.223ms | 12.5 MB |
 | 202 | church-numerals-1 | ✓ | 571.223ms | 12.4 MB |
 | 203 | church-numerals-2 | ✓ | 571.223ms | 12.9 MB |
-| 204 | circles-of-given-radius-through-two-points | ✓ | 571.223ms | 13.5 MB |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 571.223ms | 13.4 MB |
 | 205 | circular-primes | ✓ | 571.223ms | 12.7 MB |
 | 206 | cistercian-numerals |   |  |  |
 | 207 | comma-quibbling | ✓ | 571.223ms | 12.3 MB |
