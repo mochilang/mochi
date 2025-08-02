@@ -99,7 +99,7 @@ Fizz
 Fizz
 Buzz
 {
-  "duration_us": 25840,
-  "memory_bytes": 530360,
+  "duration_us": 22141,
+  "memory_bytes": 102240,
   "name": "main"
 }

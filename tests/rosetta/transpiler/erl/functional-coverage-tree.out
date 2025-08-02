@@ -1,0 +1,16 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/functional-coverage-tree.erl:52:1: Warning: function mochi_safe_fmod/2 is unused
+%   52| mochi_safe_fmod(A, B) ->
+%     | ^
+
+TOP COVERAGE = 0.000000
+
+NAME HIERARCHY                 | WEIGHT | COVERAGE |
+cleaning                        |    1   | 0.000000 |
+
+If the coverage of the Cinema node were increased from 0.75 to 1
+the top level coverage would increase by 0.000000 to 0.000000
+{
+  "duration_us": 19999,
+  "memory_bytes": 4034480,
+  "name": "main"
+}
