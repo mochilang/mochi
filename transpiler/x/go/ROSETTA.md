@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 463/491
-Last updated: 2025-08-02 14:36 +0700
+Last updated: 2025-08-02 17:26 +0700
 
 Checklist:
 
@@ -393,7 +393,7 @@ Checklist:
 | 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 383.0µs | 1.74KB |
 | 385 | extend-your-language | ✓ | 316.0µs | 944B |
 | 386 | extensible-prime-generator | ✓ | 5.0ms | 351.82KB |
-| 387 | extreme-floating-point-values | ✓ |  |  |
+| 387 | extreme-floating-point-values | ✓ | 354.0µs | 1.44KB |
 | 388 | faces-from-a-mesh-2 | ✓ |  |  |
 | 389 | faces-from-a-mesh | ✓ |  |  |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ |  |  |

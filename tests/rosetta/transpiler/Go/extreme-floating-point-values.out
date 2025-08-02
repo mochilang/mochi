@@ -1,5 +1,5 @@
-0.0 +Inf -Inf NaN
-0.0 +Inf -Inf NaN
+-0 +Inf -Inf NaN
+-0 +Inf -Inf NaN
 
 -Inf + Inf -> NaN
 0 * Inf -> NaN
