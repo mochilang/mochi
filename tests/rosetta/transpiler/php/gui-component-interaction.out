@@ -7,10 +7,10 @@ i=increment, r=random, s num=set, q=quit:
 Value: 6
 i=increment, r=random, s num=set, q=quit:
 Set random value? (y/n)
-Value: 9953.0
+Value: 4609.0
 i=increment, r=random, s num=set, q=quit:
 {
-  "duration_us": 217,
+  "duration_us": 128,
   "memory_bytes": 8480,
   "name": "main"
 }

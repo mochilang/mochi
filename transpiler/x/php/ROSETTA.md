@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 16:31 +0700
+Last updated: 2025-08-02 16:56 +0700
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -466,35 +466,35 @@ Last updated: 2025-08-02 16:31 +0700
 | 457 | formatted-numeric-output | ✓ | 88µs | 96 B |
 | 458 | forward-difference | ✓ | 127µs | 504 B |
 | 459 | four-bit-adder-1 | ✓ | 66µs | 96 B |
-| 460 | four-is-magic | ✓ | 147µs | 192 B |
+| 460 | four-is-magic | ✓ | 151µs | 192 B |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree | ✓ | 1.524ms | 320 B |
-| 463 | fractran | ✓ | 6.282135s | 96 B |
-| 464 | french-republican-calendar | ✓ | 230µs | 1.1 KB |
-| 465 | ftp | ✓ | 110µs | 160 B |
-| 466 | function-frequency | ✓ | 423µs | 96 B |
+| 462 | fractal-tree | ✓ | 1.481ms | 320 B |
+| 463 | fractran | ✓ | 6.441396s | 96 B |
+| 464 | french-republican-calendar | ✓ | 108µs | 1.1 KB |
+| 465 | ftp | ✓ | 129µs | 160 B |
+| 466 | function-frequency | ✓ | 697µs | 96 B |
 | 467 | function-prototype | ✓ | 1µs | 64 B |
-| 468 | functional-coverage-tree | ✓ | 583µs | 18.7 KB |
-| 469 | fusc-sequence | ✓ | 355µs | 96 B |
-| 470 | gamma-function | ✓ | 116µs | 128 B |
-| 471 | general-fizzbuzz | ✓ | 82µs | 96 B |
-| 472 | generic-swap | ✓ | 148µs | 96 B |
-| 473 | get-system-command-output | ✓ | 51µs | 96 B |
-| 474 | giuga-numbers | ✓ | 110µs | 96 B |
-| 475 | globally-replace-text-in-several-files | ✓ | 41µs | 96 B |
-| 476 | goldbachs-comet | ✓ | 3.099ms | 96 B |
-| 477 | golden-ratio-convergence | ✓ | 68µs | 96 B |
-| 478 | graph-colouring | ✓ | 57µs | 96 B |
-| 479 | gray-code | ✓ | 731µs | 96 B |
-| 480 | gui-component-interaction | ✓ | 217µs | 8.3 KB |
-| 481 | gui-enabling-disabling-of-controls | ✓ | 107µs | 96 B |
-| 482 | gui-maximum-window-dimensions | ✓ | 105µs | 96 B |
-| 483 | http | ✓ | 165.553ms | 536 B |
-| 484 | image-noise | ✓ | 26.699ms | 1.3 KB |
-| 485 | loops-increment-loop-index-within-loop-body | ✓ | 205.874ms | 128 B |
-| 486 | md5 | ✓ | 46µs | 1.6 KB |
-| 487 | nim-game | ✓ | 69µs | 8.1 KB |
-| 488 | plasma-effect | ✓ | 33.831ms | 480 B |
-| 489 | sorting-algorithms-bubble-sort | ✓ | 183µs | 504 B |
-| 490 | window-management | ✓ | 87µs | 96 B |
+| 468 | functional-coverage-tree | ✓ | 688µs | 18.7 KB |
+| 469 | fusc-sequence | ✓ | 289µs | 96 B |
+| 470 | gamma-function | ✓ | 91µs | 128 B |
+| 471 | general-fizzbuzz | ✓ | 83µs | 96 B |
+| 472 | generic-swap | ✓ | 95µs | 96 B |
+| 473 | get-system-command-output | ✓ | 41µs | 96 B |
+| 474 | giuga-numbers | ✓ | 140µs | 96 B |
+| 475 | globally-replace-text-in-several-files | ✓ | 45µs | 96 B |
+| 476 | goldbachs-comet | ✓ | 3.089ms | 96 B |
+| 477 | golden-ratio-convergence | ✓ | 66µs | 96 B |
+| 478 | graph-colouring | ✓ | 87µs | 96 B |
+| 479 | gray-code | ✓ | 940µs | 96 B |
+| 480 | gui-component-interaction | ✓ | 128µs | 8.3 KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 200µs | 96 B |
+| 482 | gui-maximum-window-dimensions | ✓ | 74µs | 96 B |
+| 483 | http | ✓ | 65.554ms | 536 B |
+| 484 | image-noise | ✓ | 36.106ms | 1.3 KB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 216.598ms | 128 B |
+| 486 | md5 | ✓ | 45µs | 1.6 KB |
+| 487 | nim-game | ✓ | 60µs | 8.1 KB |
+| 488 | plasma-effect | ✓ | 35.169ms | 480 B |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 152µs | 504 B |
+| 490 | window-management | ✓ | 102µs | 96 B |
 | 491 | zumkeller-numbers | ✓ | 7.481725s | 96 B |
