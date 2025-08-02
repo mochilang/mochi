@@ -1,0 +1,44 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/b-zier-curves-intersections.pas
+b-zier-curves-intersections.pas(4,28) Error: Identifier not found "Point"
+b-zier-curves-intersections.pas(4,33) Error: Error in type definition
+b-zier-curves-intersections.pas(5,32) Error: Identifier not found "QuadCurve"
+b-zier-curves-intersections.pas(5,41) Error: Error in type definition
+b-zier-curves-intersections.pas(6,33) Error: Identifier not found "QuadSpline"
+b-zier-curves-intersections.pas(6,43) Error: Error in type definition
+b-zier-curves-intersections.pas(80,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(81,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(86,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(87,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(92,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(93,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(98,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(99,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(104,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(105,28) Error: Illegal type conversion: "QuadCurve" to "Variant"
+b-zier-curves-intersections.pas(112,36) Error: Illegal type conversion: "Point" to "Variant"
+b-zier-curves-intersections.pas(190,8) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of QuadSpline" expected "QuadSplineArray"
+b-zier-curves-intersections.pas(201,91) Error: Incompatible type for arg no. 2: Got "<erroneous type>", expected "QuadSpline"
+b-zier-curves-intersections.pas(202,91) Error: Incompatible type for arg no. 2: Got "<erroneous type>", expected "QuadSpline"
+b-zier-curves-intersections.pas(203,8) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of QuadCurve" expected "QuadCurveArray"
+b-zier-curves-intersections.pas(290,30) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA201DD2D" expected "{Dynamic} Array Of TFPGMap$2$crcF6A9413E"
+b-zier-curves-intersections.pas(290,31) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,Main.QuadCurve>"
+b-zier-curves-intersections.pas(315,72) Error: Incompatible type for arg no. 2: Got "LongInt", expected "Point"
+b-zier-curves-intersections.pas(316,80) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of LongInt" expected "{Dynamic} Array Of Point"
+b-zier-curves-intersections.pas(316,59) Error: Incompatible types: got "LongInt" expected "Point"
+b-zier-curves-intersections.pas(326,106) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA201DD2D" expected "{Dynamic} Array Of TFPGMap$2$crcF6A9413E"
+b-zier-curves-intersections.pas(326,63) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,Main.QuadCurve>"
+b-zier-curves-intersections.pas(327,106) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA201DD2D" expected "{Dynamic} Array Of TFPGMap$2$crcF6A9413E"
+b-zier-curves-intersections.pas(327,63) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,Main.QuadCurve>"
+b-zier-curves-intersections.pas(328,106) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA201DD2D" expected "{Dynamic} Array Of TFPGMap$2$crcF6A9413E"
+b-zier-curves-intersections.pas(328,63) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,Main.QuadCurve>"
+b-zier-curves-intersections.pas(329,106) Error: Incompatible types: got "{Array Of Const/Constant Open} Array of TFPGMap$2$crcA201DD2D" expected "{Dynamic} Array Of TFPGMap$2$crcF6A9413E"
+b-zier-curves-intersections.pas(329,63) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,Main.QuadCurve>"
+b-zier-curves-intersections.pas(319,6) Error: Incompatible types: got "LongInt" expected "Boolean"
+b-zier-curves-intersections.pas(333,8) Error: Incompatible types: got "{Dynamic} Array Of Point" expected "PointArray"
+b-zier-curves-intersections.pas(345,28) Error: Identifier not found "c0"
+b-zier-curves-intersections.pas(345,30) Fatal: Syntax error, ")" expected but ":" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
