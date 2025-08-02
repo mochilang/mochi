@@ -13,7 +13,7 @@ October: 31
 November: 28
 December: 26
 {
-  "duration_us": 119,
+  "duration_us": 354,
   "memory_bytes": 8288,
   "name": "main"
 }

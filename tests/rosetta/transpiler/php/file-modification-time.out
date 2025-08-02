@@ -1,7 +1,7 @@
 mod time was: 0
-mod time now: 231036993700
+mod time now: 453339150529
 {
-  "duration_us": 54,
+  "duration_us": 101,
   "memory_bytes": 504,
   "name": "main"
 }

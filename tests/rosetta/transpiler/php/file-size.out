@@ -1,7 +1,7 @@
 123
 stat /input.txt: no such file or directory
 {
-  "duration_us": 54,
+  "duration_us": 92,
   "memory_bytes": 96,
   "name": "main"
 }
