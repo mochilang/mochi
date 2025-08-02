@@ -2381,6 +2381,15 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		if isIntType(lt) && isIntType(rt) {
 			return &List{Elems: []Node{Symbol("quotient"), left, right}}
 		}
+		if _, ok := lt.(types.FloatType); !ok {
+			if _, ok := rt.(types.FloatType); !ok {
+				if _, ok := left.(FloatLit); !ok {
+					if _, ok := right.(FloatLit); !ok {
+						return &List{Elems: []Node{Symbol("quotient"), left, right}}
+					}
+				}
+			}
+		}
 		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}
 	if op == "%" {
