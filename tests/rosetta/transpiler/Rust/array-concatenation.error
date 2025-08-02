@@ -1,0 +1,120 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:62:2
+   |
+62 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:72:2
+   |
+72 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:73:47
+   |
+73 |         static mut g_a: Vec<i64> = Vec::new();;
+   |                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:74:47
+   |
+74 |         static mut g_b: Vec<i64> = Vec::new();;
+   |                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:76:50
+   |
+76 |         static mut g_i: Vec<String> = Vec::new();;
+   |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:77:50
+   |
+77 |         static mut g_j: Vec<String> = Vec::new();;
+   |                                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:79:47
+   |
+79 |         static mut g_l: Vec<i64> = Vec::new();;
+   |                                               ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:80:47
+   |
+80 |         static mut g_m: Vec<i64> = Vec::new();;
+   |                                               ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:84:32
+   |
+84 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+84 -         let duration_us: i64 = ((_end - _start) / 1000);
+84 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:85:33
+   |
+85 |         let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                                 ^                     ^
+   |
+help: remove these parentheses
+   |
+85 -         let memory_bytes: i64 = (_end_mem - _start_mem);
+85 +         let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:47:20
+   |
+47 |         g_i = vec![1, 2, 3];
+   |                    ^- help: try using a conversion method: `.to_string()`
+   |                    |
+   |                    expected `String`, found integer
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:53:30
+   |
+53 |         unsafe fn concatInts(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+   |                              ----^
+   |                              |
+   |                              help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:53:47
+   |
+53 |         unsafe fn concatInts(mut a: Vec<i64>, mut b: Vec<i64>) -> Vec<i64> {
+   |                                               ----^
+   |                                               |
+   |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:63:29
+   |
+63 |         unsafe fn concatAny(mut a: Vec<String>, mut b: Vec<String>) -> Vec<String> {
+   |                             ----^
+   |                             |
+   |                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/array-concatenation.rs:63:49
+   |
+63 |         unsafe fn concatAny(mut a: Vec<String>, mut b: Vec<String>) -> Vec<String> {
+   |                                                 ----^
+   |                                                 |
+   |                                                 help: remove this `mut`
+
+error: aborting due to 1 previous error; 14 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

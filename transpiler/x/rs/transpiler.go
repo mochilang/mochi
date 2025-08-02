@@ -4072,6 +4072,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
+		for i := 0; i < len(args) && i < len(paramTypes); i++ {
+			if fl, ok := args[i].(*FunLit); ok && strings.HasSuffix(paramTypes[i], "-> ()") {
+				fl.Return = ""
+			} else if ue, ok := args[i].(*UnaryExpr); ok {
+				if fl, ok2 := ue.Expr.(*FunLit); ok2 && strings.HasSuffix(paramTypes[i], "-> ()") {
+					fl.Return = ""
+				}
+			}
+		}
 		if cnt, ok := funParams[name]; ok && len(args) < cnt {
 			missing := cnt - len(args)
 			params := make([]Param, missing)

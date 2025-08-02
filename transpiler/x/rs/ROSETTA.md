@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-02 11:21 UTC
+Last updated: 2025-08-02 14:05 UTC
 
-## Rosetta Golden Test Checklist (210/491)
+## Rosetta Golden Test Checklist (211/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -57,36 +57,36 @@ Last updated: 2025-08-02 11:21 UTC
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 87µs |  |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 217µs |  |
 | 50 | animate-a-pendulum | ✓ | 28µs |  |
-| 51 | animation | ✓ | 129µs |  |
-| 52 | anonymous-recursion-1 | ✓ | 71µs |  |
-| 53 | anonymous-recursion-2 | ✓ | 55µs |  |
-| 54 | anonymous-recursion | ✓ | 34µs |  |
-| 55 | anti-primes | ✓ | 41.638ms |  |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 30µs |  |
-| 57 | apply-a-callback-to-an-array-1 | ✓ | 48µs |  |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 41µs |  |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 86µs |  |
-| 60 | approximate-equality | ✓ | 49µs |  |
+| 51 | animation | ✓ | 121µs |  |
+| 52 | anonymous-recursion-1 | ✓ | 37µs |  |
+| 53 | anonymous-recursion-2 | ✓ | 46µs |  |
+| 54 | anonymous-recursion | ✓ | 36µs |  |
+| 55 | anti-primes | ✓ | 35.284ms |  |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 31µs |  |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 51µs |  |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 47µs |  |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 117µs |  |
+| 60 | approximate-equality | ✓ | 81µs |  |
 | 61 | arbitrary-precision-integers-included- |   |  |  |
-| 62 | archimedean-spiral |   |  |  |
-| 63 | arena-storage-pool | ✓ | 65µs |  |
-| 64 | arithmetic-complex | ✓ | 32µs |  |
-| 65 | arithmetic-derivative | ✓ | 372µs |  |
-| 66 | arithmetic-evaluation | ✓ | 21µs |  |
-| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 21µs |  |
-| 68 | arithmetic-geometric-mean | ✓ | 15µs |  |
-| 69 | arithmetic-integer-1 | ✓ | 21µs |  |
-| 70 | arithmetic-integer-2 | ✓ | 26µs |  |
-| 71 | arithmetic-numbers |   |  |  |
-| 72 | arithmetic-rational | ✓ | 164µs |  |
+| 62 | archimedean-spiral | ✓ | 317µs |  |
+| 63 | arena-storage-pool | ✓ | 57µs |  |
+| 64 | arithmetic-complex | ✓ | 51µs |  |
+| 65 | arithmetic-derivative | ✓ | 467µs |  |
+| 66 | arithmetic-evaluation |   | 21µs |  |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 24µs |  |
+| 68 | arithmetic-geometric-mean | ✓ | 21µs |  |
+| 69 | arithmetic-integer-1 | ✓ | 35µs |  |
+| 70 | arithmetic-integer-2 | ✓ | 58µs |  |
+| 71 | arithmetic-numbers | ✓ |  |  |
+| 72 | arithmetic-rational | ✓ | 67µs |  |
 | 73 | array-concatenation |   |  |  |
-| 74 | array-length | ✓ | 17µs |  |
-| 75 | arrays | ✓ | 64µs |  |
-| 76 | ascending-primes | ✓ | 363µs |  |
+| 74 | array-length | ✓ | 38µs |  |
+| 75 | arrays | ✓ | 91µs |  |
+| 76 | ascending-primes | ✓ | 451µs |  |
 | 77 | ascii-art-diagram-converter | ✓ | 32µs |  |
-| 78 | assertions | ✓ | 16µs |  |
-| 79 | associative-array-creation | ✓ | 28µs |  |
-| 80 | associative-array-iteration | ✓ | 21µs |  |
+| 78 | assertions | ✓ | 23µs |  |
+| 79 | associative-array-creation | ✓ | 46µs |  |
+| 80 | associative-array-iteration | ✓ | 101µs |  |
 | 81 | associative-array-merging |   |  |  |
 | 82 | atomic-updates |   |  |  |
 | 83 | attractive-numbers |   |  |  |

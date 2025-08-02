@@ -1,0 +1,726 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:77:2
+   |
+77 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:86:2
+   |
+86 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:100:2
+    |
+100 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:122:2
+    |
+122 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:135:2
+    |
+135 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:153:2
+    |
+153 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:182:2
+    |
+182 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:211:2
+    |
+211 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:216:2
+    |
+216 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:220:2
+    |
+220 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:72:11
+   |
+72 | ...le ((i < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == " ")) {
+   |       ^                                                                                                                                                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+72 -     while ((i < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == " ")) {
+72 +     while (i < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.as_str() == " ") {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:73:13
+   |
+73 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+73 -         i = (i + 1);
+73 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:81:11
+   |
+81 |     while (i < (str.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+81 -     while (i < (str.len() as i64)) {
+81 +     while i < (str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:82:13
+   |
+82 |         n = (((n * 10) + { let n: i64 = str[i as usize..(i + 1) as usize].to_string().parse().unwrap(); n }) - 48);
+   |             ^                                                                                                    ^
+   |
+help: remove these parentheses
+   |
+82 -         n = (((n * 10) + { let n: i64 = str[i as usize..(i + 1) as usize].to_string().parse().unwrap(); n }) - 48);
+82 +         n = ((n * 10) + { let n: i64 = str[i as usize..(i + 1) as usize].to_string().parse().unwrap(); n }) - 48;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:83:13
+   |
+83 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+83 -         i = (i + 1);
+83 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:90:11
+   |
+90 |     while (p.pos < (p.expr.len() as i64)) {
+   |           ^                             ^
+   |
+help: remove these parentheses
+   |
+90 -     while (p.pos < (p.expr.len() as i64)) {
+90 +     while p.pos < (p.expr.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:92:12
+   |
+92 |         if ((ch.as_str() >= "0") && (ch.as_str() <= "9")) {
+   |            ^                                            ^
+   |
+help: remove these parentheses
+   |
+92 -         if ((ch.as_str() >= "0") && (ch.as_str() <= "9")) {
+92 +         if (ch.as_str() >= "0") && (ch.as_str() <= "9") {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:93:21
+   |
+93 |             p.pos = (p.pos + 1);
+   |                     ^         ^
+   |
+help: remove these parentheses
+   |
+93 -             p.pos = (p.pos + 1);
+93 +             p.pos = p.pos + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:103:8
+    |
+103 | ...if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "(")) {
+    |       ^                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+103 -     if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "(")) {
+103 +     if (p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "(") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:104:17
+    |
+104 |         p.pos = (p.pos + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+104 -         p.pos = (p.pos + 1);
+104 +         p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:109:12
+    |
+109 | ...if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == ")")) {
+    |       ^                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+109 -         if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == ")")) {
+109 +         if (p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == ")") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:110:21
+    |
+110 |             p.pos = (p.pos + 1);
+    |                     ^         ^
+    |
+help: remove these parentheses
+    |
+110 -             p.pos = (p.pos + 1);
+110 +             p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:114:8
+    |
+114 | ...if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "-")) {
+    |       ^                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+114 -     if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "-")) {
+114 +     if (p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "-") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:115:17
+    |
+115 |         p.pos = (p.pos + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+115 -         p.pos = (p.pos + 1);
+115 +         p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:127:11
+    |
+127 |     while (e > 0) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+127 -     while (e > 0) {
+127 +     while e > 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:128:12
+    |
+128 |         if ((e % 2) == 1) {
+    |            ^            ^
+    |
+help: remove these parentheses
+    |
+128 -         if ((e % 2) == 1) {
+128 +         if (e % 2) == 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:129:17
+    |
+129 |             r = (r * b);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+129 -             r = (r * b);
+129 +             r = r * b;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:131:13
+    |
+131 |         b = (b * b);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+131 -         b = (b * b);
+131 +         b = b * b;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:132:13
+    |
+132 |         e = (e / 2);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+132 -         e = (e / 2);
+132 +         e = e / 2;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:142:12
+    |
+142 | ...if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "^")) {
+    |       ^                                                                                                                                                                     ^
+    |
+help: remove these parentheses
+    |
+142 -         if ((p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "^")) {
+142 +         if (p.pos < (p.expr.len() as i64)) && ({ let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>() }.as_str() == "^") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:143:21
+    |
+143 |             p.pos = (p.pos + 1);
+    |                     ^         ^
+    |
+help: remove these parentheses
+    |
+143 -             p.pos = (p.pos + 1);
+143 +             p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:160:12
+    |
+160 |         if (p.pos < (p.expr.len() as i64)) {
+    |            ^                             ^
+    |
+help: remove these parentheses
+    |
+160 -         if (p.pos < (p.expr.len() as i64)) {
+160 +         if p.pos < (p.expr.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:162:16
+    |
+162 |             if (op.as_str() == "*") {
+    |                ^                  ^
+    |
+help: remove these parentheses
+    |
+162 -             if (op.as_str() == "*") {
+162 +             if op.as_str() == "*" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:163:25
+    |
+163 |                 p.pos = (p.pos + 1);
+    |                         ^         ^
+    |
+help: remove these parentheses
+    |
+163 -                 p.pos = (p.pos + 1);
+163 +                 p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:167:21
+    |
+167 |                 v = (v * rhs);
+    |                     ^       ^
+    |
+help: remove these parentheses
+    |
+167 -                 v = (v * rhs);
+167 +                 v = v * rhs;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:170:16
+    |
+170 |             if (op.as_str() == "/") {
+    |                ^                  ^
+    |
+help: remove these parentheses
+    |
+170 -             if (op.as_str() == "/") {
+170 +             if op.as_str() == "/" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:171:25
+    |
+171 |                 p.pos = (p.pos + 1);
+    |                         ^         ^
+    |
+help: remove these parentheses
+    |
+171 -                 p.pos = (p.pos + 1);
+171 +                 p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:175:21
+    |
+175 |                 v = (v / rhs);
+    |                     ^       ^
+    |
+help: remove these parentheses
+    |
+175 -                 v = (v / rhs);
+175 +                 v = v / rhs;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:189:12
+    |
+189 |         if (p.pos < (p.expr.len() as i64)) {
+    |            ^                             ^
+    |
+help: remove these parentheses
+    |
+189 -         if (p.pos < (p.expr.len() as i64)) {
+189 +         if p.pos < (p.expr.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:191:16
+    |
+191 |             if (op.as_str() == "+") {
+    |                ^                  ^
+    |
+help: remove these parentheses
+    |
+191 -             if (op.as_str() == "+") {
+191 +             if op.as_str() == "+" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:192:25
+    |
+192 |                 p.pos = (p.pos + 1);
+    |                         ^         ^
+    |
+help: remove these parentheses
+    |
+192 -                 p.pos = (p.pos + 1);
+192 +                 p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:196:21
+    |
+196 |                 v = (v + rhs);
+    |                     ^       ^
+    |
+help: remove these parentheses
+    |
+196 -                 v = (v + rhs);
+196 +                 v = v + rhs;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:199:16
+    |
+199 |             if (op.as_str() == "-") {
+    |                ^                  ^
+    |
+help: remove these parentheses
+    |
+199 -             if (op.as_str() == "-") {
+199 +             if op.as_str() == "-" {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:200:25
+    |
+200 |                 p.pos = (p.pos + 1);
+    |                         ^         ^
+    |
+help: remove these parentheses
+    |
+200 -                 p.pos = (p.pos + 1);
+200 +                 p.pos = p.pos + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:204:21
+    |
+204 |                 v = (v - rhs);
+    |                     ^       ^
+    |
+help: remove these parentheses
+    |
+204 -                 v = (v - rhs);
+204 +                 v = v - rhs;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:224:28
+    |
+224 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+224 -     let duration_us: i64 = ((_end - _start) / 1000);
+224 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:225:29
+    |
+225 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+225 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+225 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:107:26
+    |
+107 |         let mut p: i64 = r.p;
+    |                    ---   ^^^ expected `i64`, found `Parser`
+    |                    |
+    |                    expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:108:36
+    |
+108 |         let mut p: Parser = skipWS(p);
+    |                             ------ ^ expected `Parser`, found `i64`
+    |                             |
+    |                             arguments to this function are incorrect
+    |
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:70:8
+    |
+70  |     fn skipWS(mut p: Parser) -> Parser {
+    |        ^^^^^^ -------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:78:20
+   |
+78 |     fn parseIntStr(mut str: String) -> i64 {
+   |                    ----^^^
+   |                    |
+   |                    help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:89:9
+   |
+89 |     let mut start: i64 = p.pos;
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:91:13
+   |
+91 | ...   let mut ch: String = { let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>()...
+   |           ----^^
+   |           |
+   |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:98:9
+   |
+98 |     let mut token: String = { let tmp = &p.expr; tmp.chars().skip(start as usize).take((p.pos - start) as usize).collect::<String>() }.cl...
+   |         ----^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:123:15
+    |
+123 |     fn powInt(mut base: i64, mut exp: i64) -> i64 {
+    |               ----^^^^
+    |               |
+    |               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:123:30
+    |
+123 |     fn powInt(mut base: i64, mut exp: i64) -> i64 {
+    |                              ----^^^
+    |                              |
+    |                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:137:9
+    |
+137 |     let mut r: Res = parseFactor(p);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:144:17
+    |
+144 |             let mut r2: Res = parseFactor(p);
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:145:17
+    |
+145 |             let mut rhs: i64 = r2.v;
+    |                 ----^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:155:9
+    |
+155 |     let mut r: Res = parsePower(p);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:161:17
+    |
+161 | ...   let mut op: String = { let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>()...
+    |           ----^^
+    |           |
+    |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:164:21
+    |
+164 |                 let mut r2: Res = parsePower(p);
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:165:21
+    |
+165 |                 let mut rhs: i64 = r2.v;
+    |                     ----^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:172:21
+    |
+172 |                 let mut r2: Res = parsePower(p);
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:173:21
+    |
+173 |                 let mut rhs: i64 = r2.v;
+    |                     ----^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:184:9
+    |
+184 |     let mut r: Res = parseTerm(p);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:190:17
+    |
+190 | ...   let mut op: String = { let tmp = &p.expr; tmp.chars().skip(p.pos as usize).take(((p.pos + 1) - p.pos) as usize).collect::<String>()...
+    |           ----^^
+    |           |
+    |           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:193:21
+    |
+193 |                 let mut r2: Res = parseTerm(p);
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:194:21
+    |
+194 |                 let mut rhs: i64 = r2.v;
+    |                     ----^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:201:21
+    |
+201 |                 let mut r2: Res = parseTerm(p);
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:202:21
+    |
+202 |                 let mut rhs: i64 = r2.v;
+    |                     ----^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:213:9
+    |
+213 |     let mut p: Parser = Parser {expr: expr.to_string(), pos: 0};
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:214:9
+    |
+214 |     let mut r: Res = parseExpr(p);
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/arithmetic-evaluation.rs:218:9
+    |
+218 |     let mut expr: String = String::from("2*(3-1)+2*5").clone();
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+error: aborting due to 2 previous errors; 71 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
