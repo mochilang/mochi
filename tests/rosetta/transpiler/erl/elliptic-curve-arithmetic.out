@@ -1,0 +1,12 @@
+a = Zero
+b = Zero
+c = a + b = Zero
+d = -c = Zero
+c + d = Zero
+a + b + d = Zero
+a * 12345 = Zero
+{
+  "duration_us": 20471,
+  "memory_bytes": 223592,
+  "name": "main"
+}

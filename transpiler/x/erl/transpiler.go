@@ -1120,6 +1120,8 @@ func isStringExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *StringLit:
 		return true
+	case *NameRef:
+		return v.IsString
 	case *CallExpr:
 		if v.ReturnsString {
 			return true
@@ -1146,8 +1148,6 @@ func isStringExpr(e Expr) bool {
 			}
 		}
 		return true
-	case *NameRef:
-		return v.IsString
 	case *IndexExpr:
 		return v.IsString
 	default:
@@ -2111,12 +2111,18 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 		i.Index.emit(w)
 		io.WriteString(w, " + 1, 1)")
-	default: // list
-		io.WriteString(w, "lists:nth(")
+	default: // list or map fallback
+		io.WriteString(w, "(case erlang:is_map(")
+		i.Target.emit(w)
+		io.WriteString(w, ") of true -> maps:get(")
+		i.Index.emit(w)
+		io.WriteString(w, ", ")
+		i.Target.emit(w)
+		io.WriteString(w, ", nil); _ -> lists:nth(")
 		i.Index.emit(w)
 		io.WriteString(w, " + 1, ")
 		i.Target.emit(w)
-		io.WriteString(w, ")")
+		io.WriteString(w, ") end)")
 	}
 }
 
@@ -3694,16 +3700,28 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		}
 		loopCtx.setStrFields(st.For.Name, stringFields(src))
 		loopCtx.setBoolFields(st.For.Name, boolFields(src, env, ctx))
-		loopCtx.setStringVar(st.For.Name, isStringExpr(src))
-		loopCtx.setFloatVar(st.For.Name, isFloatExpr(src, env, ctx))
+		keyIsString := false
 		srcIsMap := isMapExpr(src, env, ctx)
 		if !srcIsMap {
 			if t := exprType(src, env, ctx); t != nil {
-				if _, ok := t.(types.MapType); ok {
+				if mt, ok := t.(types.MapType); ok {
 					srcIsMap = true
+					if _, ok := mt.Key.(types.StringType); ok {
+						keyIsString = true
+					}
+				}
+			}
+		} else {
+			if t := exprType(src, env, ctx); t != nil {
+				if mt, ok := t.(types.MapType); ok {
+					if _, ok := mt.Key.(types.StringType); ok {
+						keyIsString = true
+					}
 				}
 			}
 		}
+		loopCtx.setStringVar(st.For.Name, isStringExpr(src) || keyIsString)
+		loopCtx.setFloatVar(st.For.Name, isFloatExpr(src, env, ctx))
 		loopCtx.setMapVar(st.For.Name, srcIsMap)
 		loopCtx.setBoolVar(st.For.Name, isBoolExpr(src, env, ctx))
 		kind := "list"
@@ -4506,6 +4524,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 					if _, ok := tt.Elem.(types.StringType); ok {
 						isStr = true
 					}
+				}
+			}
+			if kind == "list" && ctx != nil {
+				if nr, ok := expr.(*NameRef); ok && ctx.isMapVar(ctx.original(nr.Name)) {
+					kind = "map"
 				}
 			}
 			if kind == "list" {
