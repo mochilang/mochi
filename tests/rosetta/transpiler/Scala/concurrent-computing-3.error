@@ -1,9 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/concurrent-computing-3.scala:25: error: overloaded method value floorMod with alternatives:
-  (x$1: Long,x$2: Long)Long <and>
-  (x$1: Long,x$2: Int)Int <and>
-  (x$1: Int,x$2: Int)Int
- cannot be applied to (Int, scala.math.BigInt)
-    val j = Math.floorMod(_now(), i + BigInt(1))
-                 ^
-one error found
