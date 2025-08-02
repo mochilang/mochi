@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (423/491)
-_Last updated: 2025-08-02 17:53 +0700_
+## Golden Test Checklist (426/491)
+_Last updated: 2025-08-02 18:38 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -216,10 +216,10 @@ _Last updated: 2025-08-02 17:53 +0700_
 | 207 | comma-quibbling | ✓ | 21µs | 8.7 MB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 13µs | 8.7 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 207.25ms | 3.5 MB |
-| 210 | compound-data-type | ✓ |  |  |
-| 211 | concurrent-computing-1 | error |  |  |
-| 212 | concurrent-computing-2 | error |  |  |
-| 213 | concurrent-computing-3 | error |  |  |
+| 210 | compound-data-type | ✓ |  | 8.7 MB |
+| 211 | concurrent-computing-1 | ✓ | 5µs | 8.7 MB |
+| 212 | concurrent-computing-2 | ✓ | 4µs | 8.7 MB |
+| 213 | concurrent-computing-3 | ✓ | 6µs | 8.7 MB |
 | 214 | conditional-structures-1 | ✓ |  |  |
 | 215 | conditional-structures-10 | ✓ |  |  |
 | 216 | conditional-structures-2 | ✓ |  |  |

@@ -2330,6 +2330,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(left) || isBigIntExpr(right) {
 						ex = &BinaryExpr{Left: left, Op: "%", Right: right}
 					} else {
+						if lt != "Int" {
+							left = &FieldExpr{Receiver: left, Name: "toInt"}
+						}
+						if rt != "Int" {
+							right = &FieldExpr{Receiver: right, Name: "toInt"}
+						}
 						ex = &CallExpr{Fn: &Name{Name: "Math.floorMod"}, Args: []Expr{left, right}}
 					}
 				} else {
