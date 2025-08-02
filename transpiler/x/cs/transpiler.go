@@ -331,7 +331,9 @@ func (b *BenchStmt) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprint(w, "    var __end = _now();\n")
-	fmt.Fprint(w, "    var __memEnd = _mem(false);\n")
+	// Force a full collection at the end to ensure memory usage isn't reported
+	// as zero for trivial programs where GC hasn't run yet.
+	fmt.Fprint(w, "    var __memEnd = _mem(true);\n")
 	fmt.Fprint(w, "    var __dur = (__end - __start);\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
