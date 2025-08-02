@@ -4380,6 +4380,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	declStmts = map[string]*DeclStmt{}
 	var params []Param
 	var paramTypes []string
+	origParamCount := len(fn.Params)
 	for _, p := range fn.Params {
 		mochiT := types.ResolveTypeRef(p.Type, env)
 		typ := cTypeFromMochiType(mochiT)
@@ -4483,6 +4484,13 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 			ret = t
 		}
 	}
+	for i := 0; i < origParamCount; i++ {
+		if t, ok := varTypes[params[i].Name]; ok && t != params[i].Type {
+			params[i].Type = t
+			paramTypes[i] = t
+		}
+	}
+	funcParamTypes[name] = paramTypes
 	for name, st := range localEnv.Structs() {
 		prevEnv.SetStruct(name, st)
 	}
