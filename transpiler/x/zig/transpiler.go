@@ -736,7 +736,7 @@ func zigTypeFromExpr(e Expr) string {
 	case *BoolLit:
 		return "bool"
 	case *NullLit:
-		return "i64"
+		return "f64"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -1260,9 +1260,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \"\\n\");\n")
 		buf.WriteString("    while (it.next()) |line| {\n")
 		buf.WriteString("        if (std.mem.startsWith(u8, line, \"VmRSS:\")) {\n")
-		buf.WriteString("            var it2 = std.mem.splitAny(u8, line, \" \t\");\n")
+		buf.WriteString("            var it2 = std.mem.splitAny(u8, line, &[_]u8{' ', '\\t'});\n")
 		buf.WriteString("            _ = it2.next(); // label\n")
-		buf.WriteString("            if (it2.next()) |tok| {\n")
+		buf.WriteString("            while (it2.next()) |tok| {\n")
+		buf.WriteString("                if (tok.len == 0) continue;\n")
 		buf.WriteString("                const kb = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
 		buf.WriteString("                return kb * 1024;\n")
 		buf.WriteString("            }\n")
@@ -1828,7 +1829,7 @@ func (sli *SliceExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "int":
+	case "int", "i64":
 		if zigTypeFromExpr(c.Value) == "[]const u8" {
 			io.WriteString(w, "std.fmt.parseInt(i64, ")
 			c.Value.emit(w)
@@ -1877,7 +1878,7 @@ func (b *BoolLit) emit(w io.Writer) {
 }
 
 func (n *NullLit) emit(w io.Writer) {
-	io.WriteString(w, "null")
+	io.WriteString(w, "0")
 }
 
 func (i *IfStmt) emit(w io.Writer, indent int) {
@@ -4222,6 +4223,8 @@ func collectVarUses(p *Program) map[string]int {
 			walkExpr(t.Index)
 		case *FieldExpr:
 			walkExpr(t.Target)
+		case *CastExpr:
+			walkExpr(t.Value)
 		case *ListLit:
 			for _, e2 := range t.Elems {
 				walkExpr(e2)
