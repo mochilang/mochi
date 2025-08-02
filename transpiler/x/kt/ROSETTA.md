@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 14:45 +0700
+Last updated: 2025-08-02 16:04 +0700
 
-Completed tasks: **244/491**
+Completed tasks: **245/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -213,7 +213,7 @@ Completed tasks: **244/491**
 | 202 | church-numerals-1 | ✓ | 10.17ms | 130.3 KB |
 | 203 | church-numerals-2 |  |  |  |
 | 204 | circles-of-given-radius-through-two-points |  |  |  |
-| 205 | circular-primes |  |  |  |
+| 205 | circular-primes | ✓ | 68.53ms | 119.0 KB |
 | 206 | cistercian-numerals |  |  |  |
 | 207 | comma-quibbling |  |  |  |
 | 208 | compiler-virtual-machine-interpreter |  |  |  |
