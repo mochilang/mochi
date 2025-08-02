@@ -2744,7 +2744,8 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("exception Break\nexception Continue\n\n")
 	}
 	if prog.UseReturn {
-		buf.WriteString("exception Return\n\n")
+		buf.WriteString("exception Return\n")
+		buf.WriteString("let mutable __ret = ()\n\n")
 	}
 	if prog.UseNow {
 		buf.WriteString(helperNow)
@@ -4539,6 +4540,58 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 				&FunDef{Name: "ToUpper", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "ToUpper"}}}},
 				&FunDef{Name: "TrimSpace", Params: []string{"s"}, Body: []Stmt{&ReturnStmt{Expr: &MethodCallExpr{Target: &IdentExpr{Name: "s"}, Name: "Trim"}}}},
 			}}, nil
+		}
+		if path == "os" {
+			usesReturn = true
+			return &ModuleDef{
+				Open: true,
+				Name: alias,
+				Stmts: []Stmt{
+					&FunDef{
+						Name:   "Getenv",
+						Params: []string{"k"},
+						Return: "string",
+						Body: []Stmt{
+							&ReturnStmt{Expr: &CallExpr{Func: "System.Environment.GetEnvironmentVariable", Args: []Expr{&IdentExpr{Name: "k"}}}},
+						},
+					},
+					&FunDef{
+						Name:   "Environ",
+						Return: "string array",
+						Body: []Stmt{
+							&ReturnStmt{
+								Expr: &CallExpr{
+									Func: "Seq.toArray",
+									Args: []Expr{
+										&CallExpr{
+											Func: "Seq.map",
+											Args: []Expr{
+												&LambdaExpr{
+													Params: []string{"de"},
+													Types:  []string{"System.Collections.DictionaryEntry"},
+													Expr: &CallExpr{
+														Func: "sprintf \"%s=%s\"",
+														Args: []Expr{
+															&CallExpr{Func: "string", Args: []Expr{&FieldExpr{Target: &IdentExpr{Name: "de", Type: "System.Collections.DictionaryEntry"}, Name: "Key"}}},
+															&CallExpr{Func: "string", Args: []Expr{&FieldExpr{Target: &IdentExpr{Name: "de", Type: "System.Collections.DictionaryEntry"}, Name: "Value"}}},
+														},
+													},
+												},
+												&CallExpr{
+													Func: "Seq.cast<System.Collections.DictionaryEntry>",
+													Args: []Expr{
+														&CallExpr{Func: "System.Environment.GetEnvironmentVariables"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}, nil
 		}
 		if path == "net" {
 			usesReturn = true

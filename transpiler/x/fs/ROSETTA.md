@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (354/491)
+## Rosetta Golden Test Checklist (358/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -354,12 +354,12 @@ This file is auto-generated from rosetta tests.
 | 347 | entropy-1 | ✓ | 552µs | 40.3 KB |
 | 348 | entropy-2 | ✓ | 503µs | 67.3 KB |
 | 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 | ✓ | 16µs | 25.6 KB |
-| 353 | enumerations-4 | ✓ | 16µs | 15.5 KB |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
+| 350 | enumerations-1 | ✓ | 17µs | 8.6 KB |
+| 351 | enumerations-2 | ✓ | 16µs | 15.7 KB |
+| 352 | enumerations-3 | ✓ | 16µs | 3.9 KB |
+| 353 | enumerations-4 | ✓ | 19µs | 17.7 KB |
+| 354 | environment-variables-1 | ✓ | 249µs | 50.4 KB |
+| 355 | environment-variables-2 | ✓ | 297µs | 63.2 KB |
 | 356 | equal-prime-and-composite-sums |   |  |  |
 | 357 | equilibrium-index |   |  |  |
 | 358 | erd-s-nicolas-numbers |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-02 14:26 +0700
+Last updated: 2025-08-02 17:26 +0700
