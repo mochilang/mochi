@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-02 10:40 UTC
+Last updated: 2025-08-02 10:55 UTC
 
 ## Rosetta Golden Test Checklist (474/491)
 | Index | Name | Status | Duration | Memory |
@@ -219,36 +219,36 @@ Last updated: 2025-08-02 10:40 UTC
 | 210 | compound-data-type | ✓ | 7µs |  |
 | 211 | concurrent-computing-1 | ✓ | 690µs |  |
 | 212 | concurrent-computing-2 | ✓ | 658µs | 128.0 KB |
-| 213 | concurrent-computing-3 | ✓ | 1.743ms |  |
-| 214 | conditional-structures-1 | ✓ | 7µs |  |
-| 215 | conditional-structures-10 | ✓ | 656µs |  |
-| 216 | conditional-structures-2 | ✓ | 7µs |  |
-| 217 | conditional-structures-3 | ✓ | 7µs |  |
-| 218 | conditional-structures-4 | ✓ | 8µs |  |
-| 219 | conditional-structures-5 | ✓ | 8µs |  |
-| 220 | conditional-structures-6 | ✓ | 8µs |  |
-| 221 | conditional-structures-7 | ✓ | 7µs |  |
-| 222 | conditional-structures-8 | ✓ | 9µs |  |
-| 223 | conditional-structures-9 | ✓ | 8µs |  |
-| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 71.422ms | 15.0 MB |
-| 225 | constrained-genericity-1 | ✓ | 9µs |  |
-| 226 | constrained-genericity-2 | ✓ | 7µs |  |
-| 227 | constrained-genericity-3 | ✓ | 7µs |  |
-| 228 | constrained-genericity-4 | ✓ | 802µs | 128.0 KB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 7.293ms | 3.0 MB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 3.945ms | 384.0 KB |
-| 231 | continued-fraction | ✓ | 1.417ms |  |
-| 232 | convert-decimal-number-to-rational | ✓ | 962µs | 128.0 KB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 750µs | 128.0 KB |
-| 234 | convex-hull | ✓ | 1.115ms |  |
-| 235 | conways-game-of-life | ✓ | 69.815ms | 11.6 MB |
-| 236 | copy-a-string-1 | ✓ | 6µs |  |
-| 237 | copy-a-string-2 | ✓ | 744µs |  |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 1.53ms | 512.0 KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 1.743ms | 512.0 KB |
-| 240 | count-in-factors | ✓ | 4.193ms | 2.5 MB |
-| 241 | count-in-octal-1 | ✓ | 3.985ms | 384.0 KB |
-| 242 | count-in-octal-2 | ✓ | 245.928ms | 10.5 MB |
+| 213 | concurrent-computing-3 | ✓ | 1.464ms | 46.4 KB |
+| 214 | conditional-structures-1 | ✓ | 6µs | 3.3 KB |
+| 215 | conditional-structures-10 | ✓ | 424µs | 14.5 KB |
+| 216 | conditional-structures-2 | ✓ | 7µs | 3.3 KB |
+| 217 | conditional-structures-3 | ✓ | 7µs | 3.3 KB |
+| 218 | conditional-structures-4 | ✓ | 6µs | 3.3 KB |
+| 219 | conditional-structures-5 | ✓ | 6µs | 3.3 KB |
+| 220 | conditional-structures-6 | ✓ | 7µs | 3.3 KB |
+| 221 | conditional-structures-7 | ✓ | 6µs | 3.3 KB |
+| 222 | conditional-structures-8 | ✓ | 6µs | 3.3 KB |
+| 223 | conditional-structures-9 | ✓ | 7µs | 3.3 KB |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 170.421ms | 46.1 MB |
+| 225 | constrained-genericity-1 | ✓ | 6µs | 3.3 KB |
+| 226 | constrained-genericity-2 | ✓ | 6µs | 3.3 KB |
+| 227 | constrained-genericity-3 | ✓ | 6µs | 3.3 KB |
+| 228 | constrained-genericity-4 | ✓ | 510µs | 15.3 KB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 3.184ms | 269.6 KB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 2.99ms | 298.9 KB |
+| 231 | continued-fraction | ✓ | 1.324ms | 29.9 KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 1.386ms | 23.1 KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 563µs | 20.9 KB |
+| 234 | convex-hull | ✓ | 1.469ms | 46.5 KB |
+| 235 | conways-game-of-life | ✓ | 48.42ms | 527.0 KB |
+| 236 | copy-a-string-1 | ✓ | 6µs | 3.3 KB |
+| 237 | copy-a-string-2 | ✓ | 497µs | 24.9 KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 1.215ms | 30.1 KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 1.282ms | 30.3 KB |
+| 240 | count-in-factors | ✓ | 2.934ms | 385.5 KB |
+| 241 | count-in-octal-1 | ✓ | 2.46ms | 374.6 KB |
+| 242 | count-in-octal-2 | ✓ | 144.125ms | 733.0 KB |
 | 243 | count-in-octal-3 | ✓ | 1.142ms |  |
 | 244 | count-in-octal-4 | ✓ | 1.656ms | 128.0 KB |
 | 245 | count-occurrences-of-a-substring | ✓ | 686µs | 128.0 KB |
