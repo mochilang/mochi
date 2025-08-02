@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 20:26 +0700
+Last updated: 2025-08-02 20:50 +0700
 
-Completed tasks: **249/491**
+Completed tasks: **256/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -129,13 +129,13 @@ Completed tasks: **249/491**
 | 118 | bitmap-bresenhams-line-algorithm |  |  |  |
 | 119 | bitmap-flood-fill | ✓ | 11.94ms | 130.9 KB |
 | 120 | bitmap-histogram | ✓ | 21.35ms | 113.0 KB |
-| 121 | bitmap-midpoint-circle-algorithm |  |  |  |
-| 122 | bitmap-ppm-conversion-through-a-pipe |  |  |  |
-| 123 | bitmap-read-a-ppm-file |  |  |  |
-| 124 | bitmap-read-an-image-through-a-pipe |  |  |  |
-| 125 | bitmap-write-a-ppm-file |  |  |  |
-| 126 | bitmap |  |  |  |
-| 127 | bitwise-io-1 |  |  |  |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 6.70ms | 133.9 KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 308.18ms | 837.1 KB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 21.04ms | 110.3 KB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 4.95ms | 134.0 KB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 16.14ms | 123.8 KB |
+| 126 | bitmap | ✓ | 211.87ms | 840.1 KB |
+| 127 | bitwise-io-1 | ✓ | 15.50ms | 114.9 KB |
 | 128 | bitwise-io-2 |  |  |  |
 | 129 | bitwise-operations |  |  |  |
 | 130 | blum-integer |  |  |  |
