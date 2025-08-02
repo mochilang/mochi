@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 351/491
-Last updated: 2025-08-02 11:42 +0700
+Completed: 360/491
+Last updated: 2025-08-02 11:45 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -284,16 +284,16 @@ Last updated: 2025-08-02 11:42 +0700
 | 275 | deal-cards-for-freecell | ✓ | 1.584ms | 3.5 MB |
 | 276 | death-star |   |  |  |
 | 277 | deceptive-numbers | ✓ | 1.746783s | 3.0 MB |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 |   |  |  |
-| 280 | deconvolution-1d |   |  |  |
-| 281 | deepcopy-1 |   |  |  |
+| 278 | deconvolution-1d-2 | ✓ | 347µs | 3.3 MB |
+| 279 | deconvolution-1d-3 | ✓ | 381µs | 3.5 MB |
+| 280 | deconvolution-1d | ✓ | 416µs | 3.1 MB |
+| 281 | deepcopy-1 | ✓ | 741µs | 3.3 MB |
 | 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates |   |  |  |
-| 284 | demings-funnel |   |  |  |
-| 285 | department-numbers |   |  |  |
-| 286 | descending-primes |   |  |  |
-| 287 | detect-division-by-zero |   |  |  |
+| 283 | delegates | ✓ | 298µs | 3.4 MB |
+| 284 | demings-funnel | ✓ | 5.669ms | 3.2 MB |
+| 285 | department-numbers | ✓ | 314µs | 3.2 MB |
+| 286 | descending-primes | ✓ | 760µs | 3.2 MB |
+| 287 | detect-division-by-zero | ✓ | 328µs | 3.2 MB |
 | 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
 | 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
 | 290 | determine-if-a-string-is-collapsible |   |  |  |
