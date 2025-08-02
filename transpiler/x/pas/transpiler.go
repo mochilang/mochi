@@ -26,6 +26,7 @@ var currentFunc string
 var funcNames map[string]struct{}
 var funcReturns map[string]string
 var benchMain bool
+var expectedMapType string
 
 // SetBenchMain configures whether the main body of the program is wrapped in a
 // benchmark block when emitting code.
@@ -1383,7 +1384,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						varTypes[vd.Name] = vd.Type
 						continue
 					}
+					prevMap := expectedMapType
+					expectedMapType = vd.Type
 					ex, err := convertExpr(env, st.Var.Value)
+					expectedMapType = prevMap
 					if err != nil {
 						return nil, err
 					}
@@ -1445,10 +1449,26 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 				if ex == nil {
+					prevMap := expectedMapType
+					expectedMapType = varTypes[name]
 					ex, err = convertExpr(env, st.Assign.Value)
+					expectedMapType = prevMap
 					if err != nil {
 						return nil, err
 					}
+				}
+				if idxExpr, ok := ex.(*IndexExpr); ok && strings.HasPrefix(inferType(idxExpr.Target), "specialize TFPGMap") {
+					idxVar := fmt.Sprintf("%s_idx", name)
+					varTypes[idxVar] = "integer"
+					setVarType(idxVar, "integer")
+					mapName := exprToVarRef(idxExpr.Target)
+					idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
+					cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
+					sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
+					thenAssign := &AssignStmt{Name: name, Expr: &IndexExpr{Target: sel, Index: &VarRef{Name: idxVar}}}
+					elseAssign := &AssignStmt{Name: name, Expr: zeroValue(varTypes[name])}
+					pr.Stmts = append(pr.Stmts, idxAssign, &IfStmt{Cond: cond, Then: []Stmt{thenAssign}, Else: []Stmt{elseAssign}})
+					continue
 				}
 				if len(st.Assign.Field) > 0 {
 					target := &SelectorExpr{Root: st.Assign.Name}
@@ -1507,6 +1527,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 				pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: ex})
+				continue
 			case st.For != nil:
 				start, err := convertExpr(env, st.For.Source)
 				if err != nil {
@@ -1871,9 +1892,31 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				vd.Type = typeFromRef(st.Let.Type)
 			}
 			if st.Let.Value != nil {
+				prevMap := expectedMapType
+				expectedMapType = vd.Type
 				ex, err := convertExpr(env, st.Let.Value)
+				expectedMapType = prevMap
 				if err != nil {
 					return nil, err
+				}
+				if idxExpr, ok := ex.(*IndexExpr); ok && strings.HasPrefix(inferType(idxExpr.Target), "specialize TFPGMap") {
+					if !hasVar(vd.Name) {
+						currProg.Vars = append(currProg.Vars, vd)
+					}
+					if vd.Type != "" {
+						varTypes[vd.Name] = vd.Type
+					}
+					idxVar := fmt.Sprintf("%s_idx", name)
+					varTypes[idxVar] = "integer"
+					setVarType(idxVar, "integer")
+					mapName := exprToVarRef(idxExpr.Target)
+					idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
+					cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
+					sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
+					thenAssign := &AssignStmt{Name: name, Expr: &IndexExpr{Target: sel, Index: &VarRef{Name: idxVar}}}
+					elseAssign := &AssignStmt{Name: name, Expr: zeroValue(vd.Type)}
+					out = append(out, idxAssign, &IfStmt{Cond: cond, Then: []Stmt{thenAssign}, Else: []Stmt{elseAssign}})
+					continue
 				}
 				if rec, ok := ex.(*RecordLit); ok {
 					if vd.Type == "" {
@@ -1963,6 +2006,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				return nil, err
 			}
 			startType := inferType(start)
+			if startType == "" {
+				if name, ok := exprToIdent(st.For.Source); ok {
+					if t, ok2 := varTypes[sanitize(name)]; ok2 {
+						startType = t
+					}
+				}
+			}
 			if startType == "" {
 				if mt, ok := types.ExprType(st.For.Source, env).(types.MapType); ok {
 					keyT := pasTypeFromType(mt.Key)
@@ -4018,6 +4068,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		return &RecordLit{Type: p.Struct.Name, Fields: fields}, nil
 	case p.Map != nil:
+		if len(p.Map.Items) == 0 && expectedMapType != "" && strings.HasPrefix(expectedMapType, "specialize TFPGMap") {
+			currProg.UseFGL = true
+			return &CallExpr{Name: expectedMapType + ".Create"}, nil
+		}
 		var items []MapItem
 		keyType := "string"
 		valType := ""

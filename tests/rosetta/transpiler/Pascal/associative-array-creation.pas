@@ -37,27 +37,25 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-function Map2(): specialize TFPGMap<string, integer>; forward;
-function Map1(): specialize TFPGMap<string, Variant>; forward;
+function Map1(): specialize TFPGMap<string, integer>; forward;
 function removeKey(m: specialize TFPGMap<string, integer>; k: string): specialize TFPGMap<string, integer>; forward;
 procedure main(); forward;
-function Map2(): specialize TFPGMap<string, integer>;
+function Map1(): specialize TFPGMap<string, integer>;
 begin
   Result := specialize TFPGMap<string, integer>.Create();
   Result.AddOrSetData('foo', 2);
   Result.AddOrSetData('bar', 42);
   Result.AddOrSetData('baz', -1);
 end;
-function Map1(): specialize TFPGMap<string, Variant>;
-begin
-  Result := specialize TFPGMap<string, Variant>.Create();
-end;
 function removeKey(m: specialize TFPGMap<string, integer>; k: string): specialize TFPGMap<string, integer>;
 var
   removeKey_out: specialize TFPGMap<string, integer>;
-  removeKey_key: integer;
+  removeKey_key: string;
+  removeKey_key_idx: integer;
 begin
-  for removeKey_key in m do begin
+  removeKey_out := specialize TFPGMap<string, integer>.Create();
+  for removeKey_key_idx := 0 to (m.Count - 1) do begin
+  removeKey_key := m.Keys[removeKey_key_idx];
   if removeKey_key <> k then begin
   removeKey_out.AddOrSetData(removeKey_key, m[removeKey_key]);
 end;
@@ -68,17 +66,23 @@ procedure main();
 var
   main_x: specialize TFPGMap<string, integer>;
   main_y1: integer;
+  main_y1_idx: integer;
   main_ok: boolean;
 begin
   main_x := nil;
-  main_x := Map1();
+  main_x := specialize TFPGMap<string, integer>.Create();
   main_x.AddOrSetData('foo', 3);
-  main_y1 := main_x['bar'];
+  main_y1_idx := main_x.IndexOf('bar');
+  if main_y1_idx <> -1 then begin
+  main_y1 := main_x.Data[main_y1_idx];
+end else begin
+  main_y1 := 0;
+end;
   main_ok := main_x.IndexOf('bar') <> -1;
   writeln(main_y1);
   writeln(Ord(main_ok));
   main_x := removeKey(main_x, 'foo');
-  main_x := Map2();
+  main_x := Map1();
   writeln(main_x['foo'], ' ', main_x['bar'], ' ', main_x['baz']);
 end;
 begin
