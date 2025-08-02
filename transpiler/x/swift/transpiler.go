@@ -4517,15 +4517,21 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			child.SetVar(p.Name, pt, false)
 		}
+		ret := toSwiftType(pr.FunExpr.Return)
 		if pr.FunExpr.Return != nil {
 			rt := types.ResolveTypeRef(pr.FunExpr.Return, env)
 			child.SetVar("$retType", rt, false)
+		} else {
+			ret = "Any"
 		}
 		body, err := convertStmts(child, pr.FunExpr.BlockBody)
 		if err != nil {
 			return nil, err
 		}
-		fn := &FunBlock{Ret: toSwiftType(pr.FunExpr.Return)}
+		if pr.FunExpr.Return == nil {
+			body = append(body, &ReturnStmt{Expr: &RawStmt{Code: "nil as Any?"}})
+		}
+		fn := &FunBlock{Ret: ret}
 		for _, p := range pr.FunExpr.Params {
 			var pt types.Type = types.AnyType{}
 			if p.Type != nil {
