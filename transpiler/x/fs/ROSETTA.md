@@ -39,7 +39,7 @@ This file is auto-generated from rosetta tests.
 | 32 | active-object | ✓ | 405µs | 50.4 KB |
 | 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
 | 34 | additive-primes | ✓ | 351µs | 53.5 KB |
-| 35 | address-of-a-variable | ✓ | 808µs | 77.0 KB |
+| 35 | address-of-a-variable | ✓ | 460µs | 52.5 KB |
 | 36 | adfgvx-cipher |   |  |  |
 | 37 | aks-test-for-primes | ✓ |  |  |
 | 38 | algebraic-data-types | ✓ | 393µs | 66.7 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-02 14:06 +0700
+Last updated: 2025-08-02 14:26 +0700
