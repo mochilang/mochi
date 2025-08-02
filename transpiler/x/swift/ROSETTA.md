@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 350/491
-Last updated: 2025-08-02 10:56 +0700
+Completed: 351/491
+Last updated: 2025-08-02 11:42 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -283,7 +283,7 @@ Last updated: 2025-08-02 10:56 +0700
 | 274 | de-bruijn-sequences | ✓ | 9.505861s | 3.4 MB |
 | 275 | deal-cards-for-freecell | ✓ | 1.584ms | 3.5 MB |
 | 276 | death-star |   |  |  |
-| 277 | deceptive-numbers |   |  |  |
+| 277 | deceptive-numbers | ✓ | 1.746783s | 3.0 MB |
 | 278 | deconvolution-1d-2 |   |  |  |
 | 279 | deconvolution-1d-3 |   |  |  |
 | 280 | deconvolution-1d |   |  |  |
