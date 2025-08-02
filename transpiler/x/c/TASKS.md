@@ -1,5 +1,5 @@
-## Progress (2025-08-01 23:10 +0700)
-- Commit bff1ae58c6: kt: support map index assignment and add prog 81
+## Progress (2025-08-02 12:08 +0700)
+- Commit 7ee341a4bd: ctrans: use void return for functions without result
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
