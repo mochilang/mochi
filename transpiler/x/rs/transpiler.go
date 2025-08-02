@@ -2678,6 +2678,17 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 			return &IndexAssignStmt{Target: target, Value: val}, nil
 		}
+		newType := inferType(val)
+		if oldType, ok := varTypes[stmt.Assign.Name]; ok && oldType != "" && newType != "" && oldType != newType {
+			if newType == "String" {
+				stringVars[stmt.Assign.Name] = true
+				if _, ok := val.(*StringLit); ok || inferType(val) != "String" {
+					val = &StringCastExpr{Expr: val}
+				}
+			}
+			varTypes[stmt.Assign.Name] = newType
+			return &VarDecl{Name: stmt.Assign.Name, Expr: val, Type: newType, Mutable: true}, nil
+		}
 		updated := false
 		if app, ok := val.(*AppendExpr); ok {
 			if nref, ok2 := app.List.(*NameRef); ok2 && nref.Name == stmt.Assign.Name {
@@ -3160,6 +3171,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			typ = "f64"
 		}
 		sigType := typ
+		origAny := p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "any"
 		if typ == "fn" && p.Type != nil && p.Type.Fun != nil {
 			var pts []string
 			for _, pa := range p.Type.Fun.Params {
@@ -3186,7 +3198,9 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		} else if typ == "String" {
 			mut := paramMutated(fn.Body, p.Name)
-			if !mut {
+			if origAny {
+				sigType = "String"
+			} else if !mut {
 				sigType = "&str"
 			}
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
