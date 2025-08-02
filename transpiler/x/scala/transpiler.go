@@ -72,6 +72,15 @@ var scalaKeywords = map[string]bool{
 	"Map":    true,
 }
 
+func isPrimitiveType(t string) bool {
+	switch t {
+	case "Int", "BigInt", "Double", "String", "Boolean", "int", "float", "string", "bool":
+		return true
+	default:
+		return false
+	}
+}
+
 func escapeName(name string) string {
 	if scalaKeywords[name] {
 		return "`" + name + "`"
@@ -868,6 +877,7 @@ func (f *FunExpr) emit(w io.Writer) {
 		f.Expr.emit(w)
 	} else {
 		fmt.Fprint(w, "{")
+		funCtxStack = append(funCtxStack, true)
 		for i, st := range f.Body {
 			if i > 0 {
 				fmt.Fprint(w, " ")
@@ -877,6 +887,7 @@ func (f *FunExpr) emit(w io.Writer) {
 				fmt.Fprint(w, ";")
 			}
 		}
+		funCtxStack = funCtxStack[:len(funCtxStack)-1]
 		fmt.Fprint(w, " }")
 	}
 	fmt.Fprint(w, ")")
@@ -3939,7 +3950,7 @@ func convertReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		if rt != "" && rt != "Unit" {
 			et := inferTypeWithEnv(expr, env)
 			if !(strings.Contains(rt, "=>") && et == "") {
-				if et == "" || et != rt {
+				if (et == "" || et != rt) && isPrimitiveType(rt) {
 					expr = &CastExpr{Value: expr, Type: rt}
 				}
 			}
