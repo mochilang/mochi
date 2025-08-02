@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/exponentiation-with-infix-operators-in-or-operating-on-the-base.scala:64: error: illegal start of simple expression
+        println("x = " + if (x < BigInt(0)) "" else " " + String.valueOf(BigInt(x.toInt)) + " e = " + String.valueOf(e.toInt) + " | " + ops((BigInt(0)).toInt) + " = " + padInt(a) + " | " + ops((BigInt(1)).toInt) + " = " + padInt(b) + " | " + ops((BigInt(2)).toInt) + " = " + padInt(c) + " | " + ops((BigInt(3)).toInt) + " = " + padInt(d))
+                         ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/exponentiation-with-infix-operators-in-or-operating-on-the-base.scala:65: error: ')' expected but '}' found.
+      }
+      ^
+two errors found

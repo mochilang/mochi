@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-system-command.scala:32: error: not found: value subprocess
+val out = subprocess.getoutput("ls -l")
+          ^
+one error found

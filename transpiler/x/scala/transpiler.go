@@ -4541,11 +4541,8 @@ func isBigIntExpr(e Expr) bool {
 		if n, ok := v.Fn.(*FieldExpr); ok && n.Name == "BigInt" {
 			return true
 		}
-		for _, a := range v.Args {
-			if isBigIntExpr(a) {
-				return true
-			}
-		}
+		// Do not inspect call arguments as they may be BigInt even when
+		// the function returns a non-BigInt value.
 		return false
 	case *CastExpr:
 		t := strings.ToLower(v.Type)

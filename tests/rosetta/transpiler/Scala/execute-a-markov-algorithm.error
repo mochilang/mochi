@@ -1,0 +1,23 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:89: error: value slice is not a member of Any
+          ln = ln.slice((BigInt(0)).toInt, (hash).toInt)
+                  ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:101: error: value slice is not a member of Any
+              var pre: Boolean = j > BigInt(0) && (ln.slice((j - BigInt(1)).toInt, (j).toInt) == " " || ln.slice((j - BigInt(1)).toInt, (j).toInt) == "\t").asInstanceOf[Boolean]
+                                                      ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:101: error: value slice is not a member of Any
+              var pre: Boolean = j > BigInt(0) && (ln.slice((j - BigInt(1)).toInt, (j).toInt) == " " || ln.slice((j - BigInt(1)).toInt, (j).toInt) == "\t").asInstanceOf[Boolean]
+                                                                                                           ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:102: error: value slice is not a member of Any
+              var post: Boolean = j + BigInt(2) < (ln.toString).size && (ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == " " || ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == "\t").asInstanceOf[Boolean]
+                                                                            ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:102: error: value slice is not a member of Any
+              var post: Boolean = j + BigInt(2) < (ln.toString).size && (ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == " " || ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == "\t").asInstanceOf[Boolean]
+                                                                                                                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:117: error: value slice is not a member of Any
+        var pat: String = trimSpace((ln.slice((BigInt(0)).toInt, (arrow).toInt)).toString)
+                                        ^
+/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:118: error: value slice is not a member of Any
+        var rest: String = trimSpace((ln.slice((arrow + BigInt(2)).toInt, ((ln.toString).size).toInt)).toString)
+                                         ^
+7 errors found
