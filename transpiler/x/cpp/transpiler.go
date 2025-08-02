@@ -40,22 +40,23 @@ var usesIndexOf bool
 var usesParseIntStr bool
 var useBigRat bool
 var useRepeat bool
+var useSplit bool
 var reserved = map[string]bool{
-    "this":    true,
-    "new":     true,
-    "double":  true,
-    "char":    true,
-    "and":     true,
-    "and_eq":  true,
-    "bitand":  true,
-    "bitor":   true,
-    "compl":   true,
-    "not":     true,
-    "not_eq":  true,
-    "or":      true,
-    "or_eq":   true,
-    "xor":     true,
-    "xor_eq":  true,
+	"this":   true,
+	"new":    true,
+	"double": true,
+	"char":   true,
+	"and":    true,
+	"and_eq": true,
+	"bitand": true,
+	"bitor":  true,
+	"compl":  true,
+	"not":    true,
+	"not_eq": true,
+	"or":     true,
+	"or_eq":  true,
+	"xor":    true,
+	"xor_eq": true,
 }
 var currentReturnType string
 var inReturn bool
@@ -128,6 +129,7 @@ type Program struct {
 	UseParseIntStr bool
 	UseBigRat      bool
 	UseRepeat      bool
+	UseSplit       bool
 	UseBenchNow    bool
 }
 
@@ -730,6 +732,14 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "static std::string _repeat(const std::string& s, int64_t n) {")
 		fmt.Fprintln(w, "    std::string out; out.reserve(s.size()*n);")
 		fmt.Fprintln(w, "    for(int64_t i=0;i<n;i++) out += s;")
+		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseSplit {
+		fmt.Fprintln(w, "static std::vector<std::string> _split(const std::string& s, const std::string& sep) {")
+		fmt.Fprintln(w, "    std::vector<std::string> out; size_t pos = 0, prev = 0;")
+		fmt.Fprintln(w, "    while((pos = s.find(sep, prev)) != std::string::npos){ out.push_back(s.substr(prev, pos - prev)); prev = pos + sep.size(); }")
+		fmt.Fprintln(w, "    out.push_back(s.substr(prev));")
 		fmt.Fprintln(w, "    return out;")
 		fmt.Fprintln(w, "}")
 	}
@@ -1526,13 +1536,13 @@ func (a *AppendExpr) emit(w io.Writer) {
 	elemType := elementTypeFromListType(listType)
 	valType := exprType(a.Elem)
 	var elem Expr = a.Elem
-        if ll, ok := a.Elem.(*ListLit); ok && ll.ElemType == "" && elemType != "auto" {
-                et := elementTypeFromListType(elemType)
-                ll2 := *ll
-                ll2.ElemType = et
-                elem = &ll2
-                valType = fmt.Sprintf("std::vector<%s>", et)
-        }
+	if ll, ok := a.Elem.(*ListLit); ok && ll.ElemType == "" && elemType != "auto" {
+		et := elementTypeFromListType(elemType)
+		ll2 := *ll
+		ll2.ElemType = et
+		elem = &ll2
+		valType = fmt.Sprintf("std::vector<%s>", et)
+	}
 	if strings.HasPrefix(valType, "std::vector<") && listType == "std::vector<int64_t>" {
 		listType = fmt.Sprintf("std::vector<%s>", valType)
 		if vr, ok := a.List.(*VarRef); ok && localTypes != nil {
@@ -2637,22 +2647,22 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " = {}")
 		} else {
 			io.WriteString(w, " = ")
-                        valType := exprType(s.Value)
-                        if _, ok := s.Value.(*NullLit); ok && typ != "" && typ != "std::any" {
-                                io.WriteString(w, defaultValueForType(typ))
-                        } else if valType == "std::any" && typ != "" && typ != "std::any" {
-                                if currentProgram != nil {
-                                        currentProgram.addInclude("<any>")
-                                }
-                                io.WriteString(w, "std::any_cast<"+typ+">(")
-                                s.Value.emit(w)
-                                io.WriteString(w, ")")
-                        } else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
-                                if sl, ok := s.Value.(*StructLit); ok {
-                                        maker := "std::make_unique"
-                                        if strings.HasPrefix(typ, "std::shared_ptr<") {
-                                                maker = "std::make_shared"
-                                        }
+			valType := exprType(s.Value)
+			if _, ok := s.Value.(*NullLit); ok && typ != "" && typ != "std::any" {
+				io.WriteString(w, defaultValueForType(typ))
+			} else if valType == "std::any" && typ != "" && typ != "std::any" {
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+				}
+				io.WriteString(w, "std::any_cast<"+typ+">(")
+				s.Value.emit(w)
+				io.WriteString(w, ")")
+			} else if strings.HasPrefix(typ, "std::unique_ptr<") || strings.HasPrefix(typ, "std::shared_ptr<") {
+				if sl, ok := s.Value.(*StructLit); ok {
+					maker := "std::make_unique"
+					if strings.HasPrefix(typ, "std::shared_ptr<") {
+						maker = "std::make_shared"
+					}
 					fmt.Fprintf(w, "%s<%s>(", maker, sl.Name)
 					for i, f := range sl.Fields {
 						if i > 0 {
@@ -2702,15 +2712,15 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			varType = t
 		}
 	}
-        if _, ok := a.Value.(*NullLit); ok && varType != "std::any" {
-                io.WriteString(w, defaultValueForType(varType))
-                io.WriteString(w, ";\n")
-                return
-        }
-        if valType == "std::any" {
-                if currentProgram != nil {
-                        currentProgram.addInclude("<any>")
-                }
+	if _, ok := a.Value.(*NullLit); ok && varType != "std::any" {
+		io.WriteString(w, defaultValueForType(varType))
+		io.WriteString(w, ";\n")
+		return
+	}
+	if valType == "std::any" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
 		castType := varType
 		if castType == "auto" || castType == "" {
 			castType = "decltype(" + safeName(a.Name) + ")"
@@ -3527,6 +3537,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 				fs.IsMap = true
 			}
 			varType := elementTypeFromListType(gtyp)
+			if varType == "auto" {
+				varType = gtyp
+			}
 			if isIndexExpr(stmt.For.Source) {
 				varType = elementTypeFromListType(varType)
 			}
@@ -3580,6 +3593,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseParseIntStr = usesParseIntStr
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
+	cp.UseSplit = useSplit
 	cp.UseBenchNow = benchMain
 	hasMain := false
 	for _, fn := range cp.Functions {
@@ -3930,7 +3944,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		varType := elementTypeFromListType(guessType(s.For.Source))
+		gtyp := guessType(s.For.Source)
+		varType := elementTypeFromListType(gtyp)
+		if varType == "auto" {
+			varType = gtyp
+		}
 		if isIndexExpr(s.For.Source) {
 			varType = elementTypeFromListType(varType)
 		}
@@ -4763,6 +4781,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 				useRepeat = true
 				return &CallExpr{Name: "_repeat", Args: []Expr{s0, s1}}, nil
+			}
+		case "split":
+			if len(p.Call.Args) == 2 {
+				s0, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				s1, err := convertExpr(p.Call.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				useSplit = true
+				return &CallExpr{Name: "_split", Args: []Expr{s0, s1}}, nil
 			}
 		case "contains":
 			if len(p.Call.Args) == 2 {

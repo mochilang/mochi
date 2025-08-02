@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (261/491) - Last updated 2025-08-02 12:02 +0700:
+Checklist of programs that currently transpile and run (264/491) - Last updated 2025-08-02 14:01 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -258,14 +258,14 @@ Checklist of programs that currently transpile and run (261/491) - Last updated 
 | 251 | create-a-file-on-magnetic-tape | ✓ | 58.0µs | 12.61MB |
 | 252 | create-a-file | ✓ | 198.0µs | 12.68MB |
 | 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 247.0µs | 13.29MB |
-| 254 | create-an-html-table |   |  |  |
-| 255 | create-an-object-at-a-given-address | ✓ |  |  |
-| 256 | csv-data-manipulation | ✓ |  |  |
-| 257 | csv-to-html-translation-1 |   |  |  |
-| 258 | csv-to-html-translation-2 |   |  |  |
-| 259 | csv-to-html-translation-3 | ✓ |  |  |
-| 260 | csv-to-html-translation-4 | ✓ |  |  |
-| 261 | csv-to-html-translation-5 | ✓ |  |  |
+| 254 | create-an-html-table | ✓ | 215.0µs | 12.80MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 229.0µs | 12.89MB |
+| 256 | csv-data-manipulation | ✓ | 221.0µs | 13.04MB |
+| 257 | csv-to-html-translation-1 | ✓ | 182.0µs | 12.99MB |
+| 258 | csv-to-html-translation-2 | ✓ | 202.0µs | 12.86MB |
+| 259 | csv-to-html-translation-3 | ✓ | 145.0µs | 12.85MB |
+| 260 | csv-to-html-translation-4 | ✓ | 141.0µs | 12.99MB |
+| 261 | csv-to-html-translation-5 | ✓ | 429.0µs | 13.38MB |
 | 262 | cuban-primes |   |  |  |
 | 263 | cullen-and-woodall-numbers |   |  |  |
 | 264 | cumulative-standard-deviation | ✓ |  |  |
