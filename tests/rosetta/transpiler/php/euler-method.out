@@ -91,7 +91,7 @@ Step size = 10.0
 100.0  20.000  20.073
 
 {
-  "duration_us": 476,
+  "duration_us": 347,
   "memory_bytes": 96,
   "name": "main"
 }

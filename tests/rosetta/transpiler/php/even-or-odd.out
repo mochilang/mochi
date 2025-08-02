@@ -9,7 +9,7 @@ Testing big integer 0:  even
 Testing big integer 1:  odd
 Testing big integer 222222222222222222222222222222222222:  even
 {
-  "duration_us": 223,
+  "duration_us": 181,
   "memory_bytes": 96,
   "name": "main"
 }
