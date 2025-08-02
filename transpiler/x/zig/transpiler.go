@@ -36,6 +36,7 @@ var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
 var funcReturns map[string]string
+var funcParamTypes map[string][]string
 var builtinAliases map[string]string
 var transEnv *types.Env
 var loopCounter int
@@ -1258,6 +1259,11 @@ func (f *Func) emit(w io.Writer) {
 	}
 	fmt.Fprintf(w, ") %s {\n", ret)
 	aliasStack = append(aliasStack, f.Aliases)
+	for _, p := range f.Params {
+		if varUses[p.Name] == 0 {
+			fmt.Fprintf(w, "    _ = %s;\n", p.Name)
+		}
+	}
 	for _, st := range f.Body {
 		st.emit(w, 1)
 	}
@@ -1501,6 +1507,9 @@ func (j *JSONStmt) emit(w io.Writer, indent int) {
 func (e *ExprStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	if e.Expr != nil {
+		if zigTypeFromExpr(e.Expr) != "void" {
+			io.WriteString(w, "_ = ")
+		}
 		e.Expr.emit(w)
 		io.WriteString(w, ";")
 	}
@@ -2095,7 +2104,28 @@ func (c *CallExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			a.emit(w)
+			if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
+				exp := params[i]
+				at := zigTypeFromExpr(a)
+				if exp != at {
+					switch {
+					case exp == "i64" && at == "f64":
+						io.WriteString(w, "@as(i64, @intFromFloat(")
+						a.emit(w)
+						io.WriteString(w, "))")
+					case exp == "f64" && at == "i64":
+						io.WriteString(w, "@as(f64, @floatFromInt(")
+						a.emit(w)
+						io.WriteString(w, "))")
+					default:
+						a.emit(w)
+					}
+				} else {
+					a.emit(w)
+				}
+			} else {
+				a.emit(w)
+			}
 		}
 		io.WriteString(w, ")")
 	}
@@ -2121,6 +2151,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	funParamsStack = nil
 	nestedFunArgs = map[string][]string{}
 	funcReturns = map[string]string{}
+	funcParamTypes = map[string][]string{}
 	builtinAliases = map[string]string{}
 	mainFuncName = ""
 	useNow = false
@@ -2796,9 +2827,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if len(elems) > 0 {
 			elemType = zigTypeFromExpr(elems[0])
 			for _, e := range elems[1:] {
-				if zigTypeFromExpr(e) != elemType {
-					elemType = ""
-					break
+				t := zigTypeFromExpr(e)
+				if t != elemType {
+					if (elemType == "i64" && t == "f64") || (elemType == "f64" && t == "i64") {
+						elemType = "f64"
+					} else {
+						elemType = ""
+						break
+					}
 				}
 			}
 		}
@@ -3347,6 +3383,8 @@ func toZigType(t *parser.TypeRef) string {
 			return "bool"
 		case "string":
 			return "[]const u8"
+		case "any":
+			return "f64"
 		}
 	}
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
@@ -3367,6 +3405,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	aliases := aliasStack[len(aliasStack)-1]
 	defer popAliasScope()
 	preStmts := []Stmt{}
+	paramTypes := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := toZigType(p.Type)
 		name := p.Name
@@ -3390,6 +3429,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		names[i] = aliasName
 		varTypes[aliasName] = typ
 		varTypes[name] = typ
+		paramTypes[i] = typ
 		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
 			mapVars[aliasName] = true
 		}
@@ -3426,6 +3466,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	funcReturns[name] = ret
+	funcParamTypes[name] = paramTypes
 	if funDepth > 1 {
 		capturedMap := map[string]bool{}
 		captured := []string{}
