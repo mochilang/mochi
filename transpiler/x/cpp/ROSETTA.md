@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (264/491) - Last updated 2025-08-02 14:01 +0700:
+Checklist of programs that currently transpile and run (264/491) - Last updated 2025-08-02 17:26 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -214,25 +214,25 @@ Checklist of programs that currently transpile and run (264/491) - Last updated 
 | 207 | comma-quibbling | ✓ | 172.0µs | 12.96MB |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 27.29s | 14.12MB |
-| 210 | compound-data-type | ✓ |  |  |
-| 211 | concurrent-computing-1 | ✓ |  |  |
-| 212 | concurrent-computing-2 | ✓ |  |  |
-| 213 | concurrent-computing-3 | ✓ |  |  |
-| 214 | conditional-structures-1 | ✓ |  |  |
-| 215 | conditional-structures-10 | ✓ |  |  |
-| 216 | conditional-structures-2 | ✓ |  |  |
-| 217 | conditional-structures-3 | ✓ |  |  |
-| 218 | conditional-structures-4 | ✓ |  |  |
-| 219 | conditional-structures-5 | ✓ |  |  |
-| 220 | conditional-structures-6 | ✓ |  |  |
-| 221 | conditional-structures-7 | ✓ |  |  |
-| 222 | conditional-structures-8 | ✓ |  |  |
-| 223 | conditional-structures-9 | ✓ |  |  |
-| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 225 | constrained-genericity-1 | ✓ |  |  |
-| 226 | constrained-genericity-2 | ✓ |  |  |
-| 227 | constrained-genericity-3 | ✓ |  |  |
-| 228 | constrained-genericity-4 | ✓ |  |  |
+| 210 | compound-data-type | ✓ | 4.0µs | 11.86MB |
+| 211 | concurrent-computing-1 | ✓ | 196.0µs | 12.61MB |
+| 212 | concurrent-computing-2 | ✓ | 195.0µs | 12.71MB |
+| 213 | concurrent-computing-3 | ✓ | 207.0µs | 12.87MB |
+| 214 | conditional-structures-1 | ✓ | 22.0µs | 12.65MB |
+| 215 | conditional-structures-10 | ✓ | 296.0µs | 12.88MB |
+| 216 | conditional-structures-2 | ✓ | 23.0µs | 12.71MB |
+| 217 | conditional-structures-3 | ✓ | 16.0µs | 12.83MB |
+| 218 | conditional-structures-4 | ✓ | 5.0µs | 13.15MB |
+| 219 | conditional-structures-5 | ✓ | 4.0µs | 12.74MB |
+| 220 | conditional-structures-6 | ✓ | 17.0µs | 13.06MB |
+| 221 | conditional-structures-7 | ✓ | 4.0µs | 12.61MB |
+| 222 | conditional-structures-8 | ✓ | 4.0µs | 12.70MB |
+| 223 | conditional-structures-9 | ✓ | 4.0µs | 12.79MB |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 87.0ms | 13.77MB |
+| 225 | constrained-genericity-1 | ✓ | 4.0µs | 12.74MB |
+| 226 | constrained-genericity-2 | ✓ | 4.0µs | 12.41MB |
+| 227 | constrained-genericity-3 | ✓ | 5.0µs | 12.73MB |
+| 228 | constrained-genericity-4 | ✓ | 150.0µs | 12.96MB |
 | 229 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 230 | constrained-random-points-on-a-circle-2 |   |  |  |
 | 231 | continued-fraction |   |  |  |

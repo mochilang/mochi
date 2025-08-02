@@ -90,6 +90,18 @@ func safeName(n string) string {
 	return n
 }
 
+func emitIndex(w io.Writer, e Expr) {
+	t := exprType(e)
+	switch t {
+	case "int64_t", "size_t", "double", "bool", "char", "std::string":
+		e.emit(w)
+	default:
+		io.WriteString(w, "static_cast<size_t>(")
+		e.emit(w)
+		io.WriteString(w, ")")
+	}
+}
+
 func init() {
 	_, file, _, _ := runtime.Caller(0)
 	root := filepath.Join(filepath.Dir(file), "../../..")
@@ -1382,7 +1394,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, "std::string(1, ")
 		i.Target.emit(w)
 		io.WriteString(w, "[")
-		i.Index.emit(w)
+		emitIndex(w, i.Index)
 		io.WriteString(w, "])")
 		return
 	}
@@ -1402,7 +1414,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int64_t>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
-			i.Index.emit(w)
+			emitIndex(w, i.Index)
 			io.WriteString(w, "])")
 			return
 		}
@@ -1417,7 +1429,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::map<std::string, std::any>>(")
 			i.Target.emit(w)
 			io.WriteString(w, ")[")
-			i.Index.emit(w)
+			emitIndex(w, i.Index)
 			io.WriteString(w, "])")
 			return
 		}
@@ -1447,7 +1459,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 					io.WriteString(w, "std::any_cast<"+resType+">(")
 					i.Target.emit(w)
 					io.WriteString(w, ".at(")
-					i.Index.emit(w)
+					emitIndex(w, i.Index)
 					io.WriteString(w, ")")
 					io.WriteString(w, ")")
 					return
@@ -1458,13 +1470,13 @@ func (i *IndexExpr) emit(w io.Writer) {
 	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
 		i.Target.emit(w)
 		io.WriteString(w, ".at(")
-		i.Index.emit(w)
+		emitIndex(w, i.Index)
 		io.WriteString(w, ")")
 		return
 	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
-	i.Index.emit(w)
+	emitIndex(w, i.Index)
 	io.WriteString(w, "]")
 }
 
