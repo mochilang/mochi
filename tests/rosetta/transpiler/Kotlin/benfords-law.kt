@@ -27,7 +27,7 @@ fun toJson(v: Any?): String = when (v) {
 }
 
 fun floorf(x: Double): Double {
-    val y: Int = x.toInt()
+    var y: Int = x.toInt()
     return y.toDouble()
 }
 
@@ -45,17 +45,17 @@ fun indexOf(s: String, ch: String): Int {
 fun fmtF3(x: Double): String {
     var y: Double = floorf((x * 1000.0) + 0.5) / 1000.0
     var s: String = y.toString()
-    var dot: Int = indexOf(s, ".")
+    var dot: Int = s.indexOf(".")
     if (dot == (0 - 1)) {
         s = s + ".000"
     } else {
         var decs: BigInteger = ((s.length - dot) - 1).toBigInteger()
-        if (decs.compareTo(3.toBigInteger()) > 0) {
-            s = s.substring(0, dot + 4) as String
+        if (decs.compareTo((3).toBigInteger()) > 0) {
+            s = s.substring(0, dot + 4)
         } else {
-            while (decs.compareTo(3.toBigInteger()) < 0) {
+            while (decs.compareTo((3).toBigInteger()) < 0) {
                 s = s + "0"
-                decs = decs.add(1.toBigInteger())
+                decs = decs.add((1).toBigInteger())
             }
         }
     }
@@ -102,19 +102,19 @@ fun leadingDigit(x: Double): Int {
 fun show(nums: MutableList<Double>, title: String): Unit {
     var counts: MutableList<Int> = mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
     for (n in nums) {
-        val d: Int = leadingDigit(n)
+        var d: Int = leadingDigit(n)
         if ((d >= 1) && (d <= 9)) {
-            counts[d - 1] = counts[d - 1] + 1
+            counts[d - 1] = counts[d - 1]!! + 1
         }
     }
-    val preds: MutableList<Double> = mutableListOf(0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046)
-    val total: Int = nums.size
+    var preds: MutableList<Double> = mutableListOf(0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046)
+    var total: Int = nums.size
     println(title)
     println("Digit  Observed  Predicted")
     var i: Int = 0
     while (i < 9) {
-        val obs: Double = (counts[i]).toDouble() / total.toDouble()
-        var line: String = (((("  " + (i + 1).toString()) + "  ") + padFloat3(obs, 9)) + "  ") + padFloat3(preds[i], 8)
+        var obs: Double = ((counts[i]!!).toDouble()) / (total.toDouble())
+        var line: String = (((("  " + (i + 1).toString()) + "  ") + padFloat3(obs, 9)) + "  ") + padFloat3(preds[i]!!, 8)
         println(line)
         i = i + 1
     }

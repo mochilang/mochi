@@ -830,6 +830,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	io.WriteString(w, "(")
 	needParens := false
 	switch c.Value.(type) {
 	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -872,6 +873,7 @@ func (c *CastExpr) emit(w io.Writer) {
 	default:
 		io.WriteString(w, " as "+c.Type)
 	}
+	io.WriteString(w, ")")
 }
 
 type UnionExpr struct{ Left, Right Expr }
@@ -2604,6 +2606,12 @@ func guessType(e Expr) string {
 		return guessType(v.Value)
 	case *SubstringExpr:
 		return "String"
+	case *AppendExpr:
+		t := guessType(v.List)
+		if t == "" {
+			return "MutableList<Any?>"
+		}
+		return t
 	case *BinaryExpr:
 		if v.Op == "+" {
 			lt := guessType(v.Left)
@@ -2701,6 +2709,13 @@ func guessType(e Expr) string {
 			return "Int"
 		}
 		return ""
+	case *InvokeExpr:
+		if f, ok := v.Callee.(*FieldExpr); ok {
+			if ret, ok := funcRets[f.Name]; ok {
+				return ret
+			}
+		}
+		return "Any?"
 	case *CastExpr:
 		if v.Type != "" {
 			switch v.Type {
@@ -2974,6 +2989,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "" {
 					if t := types.CheckExprType(st.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
+						if typ == "Any?" || typ == "MutableList<Any?>" || typ == "MutableMap<Any?, Any?>" {
+							if gt := guessType(val); gt != "" && gt != "Any?" && gt != "MutableList<Any?>" && gt != "MutableMap<Any?, Any?>" {
+								typ = gt
+							}
+						}
 					}
 				}
 				if typ == "" {

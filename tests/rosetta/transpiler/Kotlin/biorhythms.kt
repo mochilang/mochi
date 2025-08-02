@@ -1,5 +1,31 @@
 import java.math.BigInteger
 
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Long {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed)
+    } else {
+        kotlin.math.abs(System.nanoTime())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 var PI: Double = 3.141592653589793
 var TWO_PI: Double = 6.283185307179586
 fun sinApprox(x: Double): Double {
@@ -17,7 +43,7 @@ fun sinApprox(x: Double): Double {
 
 fun floor(x: Double): Double {
     var i: Int = x.toInt()
-    if (i.toDouble() > x) {
+    if ((i.toDouble()) > x) {
         i = i - 1
     }
     return i.toDouble()
@@ -128,9 +154,9 @@ fun dateString(y: Int, m: Int, d: Int): String {
 
 fun day(y: Int, m: Int, d: Int): Int {
     var part1: BigInteger = (367 * y).toBigInteger()
-    var part2: Int = ((7 * (y + ((m + 9) / 12)).toInt()) / 4).toInt()
+    var part2: Int = ((7 * ((y + ((m + 9) / 12)).toInt())) / 4).toInt()
     var part3: Int = ((275 * m) / 9).toInt()
-    return ((((part1.subtract(part2.toBigInteger())).add(part3.toBigInteger())).add(d.toBigInteger())).subtract(730530.toBigInteger())).toInt()
+    return ((((part1.subtract((part2).toBigInteger())).add((part3).toBigInteger())).add((d).toBigInteger())).subtract((730530).toBigInteger())).toInt()
 }
 
 fun biorhythms(birth: String, target: String): Unit {
@@ -153,8 +179,8 @@ fun biorhythms(birth: String, target: String): Unit {
         var length: Int = lengths[i]!!
         var cycle: String = cycles[i]!!
         var position: BigInteger = (Math.floorMod(diff, length)).toBigInteger()
-        var quadrant: BigInteger = (position.multiply(4.toBigInteger())).divide(length.toBigInteger())
-        var percent: Double = sinApprox(((2.0 * PI) * position.toDouble()) / length.toDouble())
+        var quadrant: BigInteger = (position.multiply((4).toBigInteger())).divide((length).toBigInteger())
+        var percent: Double = sinApprox(((2.0 * PI) * (position.toDouble())) / (length.toDouble()))
         percent = floor(percent * 1000.0) / 10.0
         var description: String = ""
         if (percent > 95.0) {
@@ -166,14 +192,14 @@ fun biorhythms(birth: String, target: String): Unit {
                 if (absFloat(percent) < 5.0) {
                     description = " critical transition"
                 } else {
-                    var daysToAdd: BigInteger = (((quadrant.add(1.toBigInteger())).multiply(length.toBigInteger())).divide(4.toBigInteger())).subtract(position)
+                    var daysToAdd: BigInteger = (((quadrant.add((1).toBigInteger())).multiply((length).toBigInteger())).divide((4).toBigInteger())).subtract((position))
                     var res: MutableList<Int> = addDays(ty, tm, td, daysToAdd.toInt())
                     var ny: Int = res[0]!!
                     var nm: Int = res[1]!!
                     var nd: Int = res[2]!!
                     var transition: String = dateString(ny, nm, nd)
-                    var trend: String = quadrants[(quadrant).toInt()]!![0]!!
-                    var next: String = quadrants[(quadrant).toInt()]!![1]!!
+                    var trend: String = ((quadrants[(quadrant).toInt()]!!) as MutableList<String>)[0]!!
+                    var next: String = ((quadrants[(quadrant).toInt()]!!) as MutableList<String>)[1]!!
                     var pct: String = percent.toString()
                     if (!((pct.contains(".")) as Boolean)) {
                         pct = pct + ".0"
@@ -183,7 +209,7 @@ fun biorhythms(birth: String, target: String): Unit {
             }
         }
         var posStr: String = position.toString()
-        if (position.compareTo(10.toBigInteger()) < 0) {
+        if (position.compareTo((10).toBigInteger()) < 0) {
             posStr = " " + posStr
         }
         println(((cycle + posStr) + " : ") + description)
@@ -203,5 +229,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

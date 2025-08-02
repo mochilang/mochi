@@ -39,6 +39,32 @@ fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)
 
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Long {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed)
+    } else {
+        kotlin.math.abs(System.nanoTime())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun bernoulli(n: Int): BigRat {
     var a: MutableList<BigRat> = mutableListOf<BigRat>()
     var m: Int = 0
@@ -46,12 +72,12 @@ fun bernoulli(n: Int): BigRat {
         a = run { val _tmp = a.toMutableList(); _tmp.add(_bigrat(_div(_bigrat(1), _bigrat(m + 1)))); _tmp } as MutableList<BigRat>
         var j: Int = m
         while (j >= 1) {
-            a[j - 1] = _bigrat(_mul(_bigrat(j), (_sub(a[j - 1], a[j]))))
+            a[j - 1] = _bigrat(_mul(_bigrat(j), (_bigrat(_sub(a[j - 1]!!, a[j]!!)))))
             j = j - 1
         }
         m = m + 1
     }
-    return a[0]
+    return a[0]!!
 }
 
 fun padStart(s: String, width: Int, pad: String): String {
@@ -63,12 +89,24 @@ fun padStart(s: String, width: Int, pad: String): String {
 }
 
 fun main() {
-    for (i in 0 until 61) {
-        val b: BigRat = bernoulli(i)
-        if (_num(b).compareTo(0.toBigInteger()) != 0) {
-            val numStr: String = _num(b).toString()
-            val denStr: String = _denom(b).toString()
-            println((((("B(" + (i.toString().padStart(2, " "[0])).toString()) + ") =") + (numStr.padStart(45, " "[0])).toString()) + "/") + denStr)
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        for (i in 0 until 61) {
+            var b: BigRat = bernoulli(i)
+            if (_num(b).compareTo((0).toBigInteger()) != 0) {
+                var numStr: String = _num(b).toString()
+                var denStr: String = _denom(b).toString()
+                println((((("B(" + (i.toString().padStart(2, " "[0])).toString()) + ") =") + (numStr.padStart(45, " "[0])).toString()) + "/") + denStr)
+            }
         }
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
     }
 }
