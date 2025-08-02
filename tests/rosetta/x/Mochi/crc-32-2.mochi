@@ -17,7 +17,10 @@ fun xor(a: int, b: int): int {
 fun rshift(x: int, n: int): int {
   var v = x
   var i = 0
-  while i < n { v = v / 2; i = i + 1 }
+  while i < n {
+    v = v / 2
+    i = i + 1
+  }
   return v
 }
 

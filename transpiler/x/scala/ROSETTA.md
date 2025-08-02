@@ -256,7 +256,7 @@ _Last updated: 2025-08-02 14:25 +0700_
 | 247 | count-the-coins-2 | ✓ | 33µs | 8.7 MB |
 | 248 | cramers-rule | ✓ |  |  |
 | 249 | crc-32-1 | error |  |  |
-| 250 | crc-32-2 | error |  |  |
+| 250 | crc-32-2 | ✓ | 7µs | 8.8 MB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 2µs | 8.7 MB |
 | 252 | create-a-file | ✓ | 2µs | 8.7 MB |
 | 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 4µs | 8.7 MB |
