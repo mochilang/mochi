@@ -386,7 +386,7 @@ Warning: Undefined array key "" in /workspace/mochi/tests/rosetta/transpiler/php
 Warning: Undefined array key "" in /workspace/mochi/tests/rosetta/transpiler/php/find-chess960-starting-position-identifier-2.php on line 73
 ♖♘♕♗♗♔♖♘ or  has SP-ID of -1
 {
-  "duration_us": 407,
+  "duration_us": 233,
   "memory_bytes": 240,
   "name": "main"
 }

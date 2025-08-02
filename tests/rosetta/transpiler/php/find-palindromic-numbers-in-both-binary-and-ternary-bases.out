@@ -24,7 +24,7 @@ Binary  : 1010100001100000100010000011000010101
 Ternary : 22122022220102222022122
 
 {
-  "duration_us": 1932537,
+  "duration_us": 1040206,
   "memory_bytes": 96,
   "name": "main"
 }

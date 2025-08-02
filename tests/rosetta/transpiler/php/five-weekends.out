@@ -247,7 +247,7 @@ Years with no months with five weekends:
   2096
 29 total
 {
-  "duration_us": 5949,
+  "duration_us": 1468,
   "memory_bytes": 96,
   "name": "main"
 }

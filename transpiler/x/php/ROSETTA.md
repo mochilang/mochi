@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 16:56 +0700
+Last updated: 2025-08-02 17:26 +0700
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -414,33 +414,33 @@ Last updated: 2025-08-02 16:56 +0700
 | 405 | fibonacci-sequence-1 | ✓ | 1µs | 64 B |
 | 406 | fibonacci-sequence-2 | ✓ | 1µs | 64 B |
 | 407 | fibonacci-sequence-3 | ✓ | 1µs | 64 B |
-| 408 | fibonacci-sequence-4 | ✓ | 208µs | 96 B |
-| 409 | fibonacci-sequence-5 | ✓ | 170µs | 824 B |
-| 410 | fibonacci-word-fractal | ✓ | 633µs | 96 B |
-| 411 | fibonacci-word | ✓ | 7.958545s | 2.0 KB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 244µs | 128 B |
-| 413 | file-input-output-1 | ✓ | 491µs | 504 B |
-| 414 | file-input-output-2 | ✓ | 144µs | 504 B |
-| 415 | file-input-output-3 | ✓ | 145µs | 536 B |
-| 416 | file-modification-time | ✓ | 101µs | 504 B |
-| 417 | file-size-distribution | ✓ | 194µs | 96 B |
-| 418 | file-size | ✓ | 92µs | 96 B |
-| 419 | filter | ✓ | 225µs | 96 B |
-| 420 | find-chess960-starting-position-identifier-2 | ✓ | 407µs | 240 B |
-| 421 | find-chess960-starting-position-identifier | ✓ | 380µs | 272 B |
-| 422 | find-common-directory-path | ✓ | 226µs | 96 B |
-| 423 | find-duplicate-files | ✓ | 177µs | 96 B |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 42.217ms | 96 B |
-| 425 | find-limit-of-recursion | ✓ | 3.994ms | 96 B |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.932537s | 96 B |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 76µs | 96 B |
-| 428 | find-the-intersection-of-two-lines | ✓ | 252µs | 96 B |
-| 429 | find-the-last-sunday-of-each-month | ✓ | 354µs | 8.1 KB |
-| 430 | find-the-missing-permutation | ✓ | 188µs | 128 B |
-| 431 | first-class-environments | ✓ | 338µs | 128 B |
-| 432 | first-class-functions-use-numbers-analogously | ✓ | 130µs | 96 B |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 7.193ms | 224 B |
-| 434 | five-weekends | ✓ | 5.949ms | 96 B |
+| 408 | fibonacci-sequence-4 | ✓ | 67µs | 96 B |
+| 409 | fibonacci-sequence-5 | ✓ | 78µs | 824 B |
+| 410 | fibonacci-word-fractal | ✓ | 386µs | 96 B |
+| 411 | fibonacci-word | ✓ | 3.454784s | 2.0 KB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 146µs | 128 B |
+| 413 | file-input-output-1 | ✓ | 64µs | 504 B |
+| 414 | file-input-output-2 | ✓ | 59µs | 504 B |
+| 415 | file-input-output-3 | ✓ | 66µs | 536 B |
+| 416 | file-modification-time | ✓ | 59µs | 504 B |
+| 417 | file-size-distribution | ✓ | 128µs | 96 B |
+| 418 | file-size | ✓ | 58µs | 96 B |
+| 419 | filter | ✓ | 83µs | 96 B |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 233µs | 240 B |
+| 421 | find-chess960-starting-position-identifier | ✓ | 258µs | 272 B |
+| 422 | find-common-directory-path | ✓ | 137µs | 96 B |
+| 423 | find-duplicate-files | ✓ | 62µs | 96 B |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 14.361ms | 96 B |
+| 425 | find-limit-of-recursion | ✓ | 977µs | 96 B |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.040206s | 96 B |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 51µs | 96 B |
+| 428 | find-the-intersection-of-two-lines | ✓ | 74µs | 96 B |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 136µs | 8.1 KB |
+| 430 | find-the-missing-permutation | ✓ | 153µs | 128 B |
+| 431 | first-class-environments | ✓ | 238µs | 128 B |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 108µs | 96 B |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 3.833ms | 224 B |
+| 434 | five-weekends | ✓ | 1.468ms | 96 B |
 | 435 | fivenum-1 | ✓ | 139µs | 192 B |
 | 436 | fivenum-2 | ✓ | 237µs | 288 B |
 | 437 | fivenum-3 | ✓ | 174µs | 192 B |
