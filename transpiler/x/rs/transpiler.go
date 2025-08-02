@@ -505,6 +505,10 @@ func (s *StructLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		fmt.Fprintf(w, "%s: ", rustIdent(s.Names[i]))
+		if f == nil {
+			io.WriteString(w, "Default::default()")
+			continue
+		}
 		f.emit(w)
 		if nr, ok := f.(*NameRef); ok {
 			if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
@@ -1061,6 +1065,11 @@ type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
 	typ := inferType(s.Arg)
+	if strings.HasPrefix(typ, "&mut ") {
+		typ = strings.TrimPrefix(typ, "&mut ")
+	} else if strings.HasPrefix(typ, "&") {
+		typ = strings.TrimPrefix(typ, "&")
+	}
 	if strings.HasPrefix(typ, "Vec<") || strings.HasPrefix(typ, "HashMap<") {
 		io.WriteString(w, "format!(\"{:?}\", ")
 		s.Arg.emit(w)
@@ -1311,6 +1320,17 @@ func (s *StringCastExpr) emit(w io.Writer) {
 		}
 		s.Expr.emit(w)
 		io.WriteString(w, ".clone()")
+		return
+	}
+	if strings.HasPrefix(t, "&mut ") {
+		t = strings.TrimPrefix(t, "&mut ")
+	} else if strings.HasPrefix(t, "&") {
+		t = strings.TrimPrefix(t, "&")
+	}
+	if strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") {
+		io.WriteString(w, "format!(\"{:?}\", ")
+		s.Expr.emit(w)
+		io.WriteString(w, ")")
 		return
 	}
 	s.Expr.emit(w)
@@ -3092,7 +3112,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 				stringVars[n.Name] = true
 				byRef = false
 			} else if byRef {
-				varTypes[n.Name] = "&" + typ
+				varTypes[n.Name] = "&mut " + typ
 			} else {
 				varTypes[n.Name] = typ
 			}
@@ -3130,7 +3150,7 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 				stringVars[n.Name] = true
 				byRef = false
 			} else if byRef {
-				varTypes[n.Name] = "&" + typ
+				varTypes[n.Name] = "&mut " + typ
 			} else {
 				varTypes[n.Name] = typ
 			}
@@ -3162,8 +3182,7 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
 	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
 	stmts := []Stmt{startMem, startDecl}
@@ -3180,8 +3199,7 @@ func wrapBench(name string, body []Stmt) Stmt {
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
 	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
 	stmts := []Stmt{startMem, startDecl}
 	stmts = append(stmts, body...)
@@ -4016,6 +4034,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 						if nr, ok := args[i].(*NameRef); ok {
 							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
 								// already a reference
+							} else if vt, ok3 := varTypes[nr.Name]; ok3 && strings.HasPrefix(vt, "&") {
+								// already a reference
 							} else {
 								args[i] = &UnaryExpr{Op: "&mut", Expr: args[i]}
 							}
@@ -4027,6 +4047,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					if _, isUnary := args[i].(*UnaryExpr); !isUnary {
 						if nr, ok := args[i].(*NameRef); ok {
 							if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+								// already reference
+							} else if vt, ok3 := varTypes[nr.Name]; ok3 && strings.HasPrefix(vt, "&") {
 								// already reference
 							} else {
 								args[i] = &UnaryExpr{Op: "&", Expr: args[i]}
@@ -4816,9 +4838,14 @@ func inferType(e Expr) string {
 		return "String"
 	case *ListLit:
 		if len(ex.Elems) > 0 {
-			t := inferType(ex.Elems[0])
-			if t != "" {
-				return fmt.Sprintf("Vec<%s>", t)
+			for _, el := range ex.Elems {
+				if ll, ok := el.(*ListLit); ok && len(ll.Elems) == 0 {
+					continue
+				}
+				t := inferType(el)
+				if t != "" {
+					return fmt.Sprintf("Vec<%s>", t)
+				}
 			}
 		}
 		return "Vec<i64>"
@@ -5451,8 +5478,13 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 		s.End.emit(buf)
 	} else {
 		if s.ByRef {
-			buf.WriteString("&")
-			s.Iter.emit(buf)
+			if strings.HasPrefix(s.IterType, "Vec<") {
+				s.Iter.emit(buf)
+				buf.WriteString(".iter_mut()")
+			} else {
+				buf.WriteString("&")
+				s.Iter.emit(buf)
+			}
 		} else {
 			if _, ok := s.Iter.(*NameRef); ok && strings.HasPrefix(s.IterType, "Vec<") {
 				s.Iter.emit(buf)
@@ -5536,8 +5568,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        let mut s = String::new();\n")
 		buf.WriteString("        use std::io::Read;\n")
 		buf.WriteString("        if f.read_to_string(&mut s).is_ok() {\n")
-		buf.WriteString("            if let Some(p) = s.split_whitespace().next() {\n")
-		buf.WriteString("                if let Ok(v) = p.parse::<i64>() {\n")
+		buf.WriteString("            let mut parts = s.split_whitespace();\n")
+		buf.WriteString("            parts.next();\n")
+		buf.WriteString("            if let Some(rss) = parts.next() {\n")
+		buf.WriteString("                if let Ok(v) = rss.parse::<i64>() {\n")
 		buf.WriteString("                    return v * 4096;\n")
 		buf.WriteString("                }\n")
 		buf.WriteString("            }\n")
