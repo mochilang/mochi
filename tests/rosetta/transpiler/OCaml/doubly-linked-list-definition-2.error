@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-definition-2.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Doubly-linked-list-definition-2" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-definition-2.ml", line 65, characters 13-15:
+65 |   nodes := ((id, Obj.repr (!n)) :: List.remove_assoc (id) (Obj.magic (!nodes) : (int * Obj.t) list));
+                  ^^
+Error: This expression has type int but an expression was expected of type
+         string

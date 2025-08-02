@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 292/491
+Completed programs: 313/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -306,36 +306,36 @@ Completed programs: 292/491
 | 298 | dice-game-probabilities-2 | ✓ | 12.0ms | 845.03KB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 13.0ms | 1.30MB |
 | 300 | dijkstras-algorithm | ✓ | 295.0µs | 8.29KB |
-| 301 | dinesmans-multiple-dwelling-problem |   |  |  |
-| 302 | dining-philosophers-1 |   |  |  |
-| 303 | dining-philosophers-2 |   |  |  |
-| 304 | disarium-numbers |   |  |  |
-| 305 | discordian-date |   |  |  |
-| 306 | display-a-linear-combination |   |  |  |
-| 307 | display-an-outline-as-a-nested-table |   |  |  |
-| 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem |   |  |  |
-| 311 | dns-query |   |  |  |
-| 312 | documentation |   |  |  |
-| 313 | doomsday-rule |   |  |  |
-| 314 | dot-product |   |  |  |
-| 315 | doubly-linked-list-definition-1 |   |  |  |
-| 316 | doubly-linked-list-definition-2 |   |  |  |
-| 317 | doubly-linked-list-element-definition |   |  |  |
-| 318 | doubly-linked-list-traversal |   |  |  |
-| 319 | dragon-curve |   |  |  |
-| 320 | draw-a-clock |   |  |  |
-| 321 | draw-a-cuboid |   |  |  |
-| 322 | draw-a-pixel-1 |   |  |  |
-| 323 | draw-a-rotating-cube |   |  |  |
-| 324 | draw-a-sphere |   |  |  |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example |   |  |  |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 166.0µs | 824B |
+| 302 | dining-philosophers-1 | ✓ | 62.0µs | 1.95KB |
+| 303 | dining-philosophers-2 | ✓ | 66.0µs | 1.95KB |
+| 304 | disarium-numbers | ✓ | 5.89s | 1.87GB |
+| 305 | discordian-date | ✓ | 155.0µs | 5.81KB |
+| 306 | display-a-linear-combination | ✓ | 226.0µs | 8.67KB |
+| 307 | display-an-outline-as-a-nested-table | error |  |  |
+| 308 | distance-and-bearing | error |  |  |
+| 309 | distributed-programming | error |  |  |
+| 310 | diversity-prediction-theorem | ✓ | 125.0µs | 4.12KB |
+| 311 | dns-query | ✓ | 21.0µs | 288B |
+| 312 | documentation | ✓ | 2.0µs | 208B |
+| 313 | doomsday-rule | ✓ | 66.0µs | 2.52KB |
+| 314 | dot-product | ✓ | 106.0µs | 416B |
+| 315 | doubly-linked-list-definition-1 | ✓ | 1.0µs | 208B |
+| 316 | doubly-linked-list-definition-2 | error |  |  |
+| 317 | doubly-linked-list-element-definition | error |  |  |
+| 318 | doubly-linked-list-traversal | error |  |  |
+| 319 | dragon-curve | ✓ | 3.0ms | 744.77KB |
+| 320 | draw-a-clock | ✓ | 50.0µs | 912B |
+| 321 | draw-a-cuboid | ✓ | 648.0µs | 50.09KB |
+| 322 | draw-a-pixel-1 | ✓ | 287.0ms | 281.05MB |
+| 323 | draw-a-rotating-cube | error |  |  |
+| 324 | draw-a-sphere | ✓ | 20.0ms | 8.86MB |
+| 325 | duffinian-numbers | ✓ | 92.0ms | 38.13MB |
+| 326 | dutch-national-flag-problem | ✓ | 227.0µs | 10.61KB |
+| 327 | dynamic-variable-names | ✓ | 143.0µs | 968B |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 320.0µs | 14.66KB |
+| 329 | eban-numbers | error |  |  |
+| 330 | ecdsa-example | error |  |  |
 | 331 | echo-server |   |  |  |
 | 332 | eertree |   |  |  |
 | 333 | egyptian-division |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 292/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-02 17:44 +0700
+Last updated 2025-08-02 18:27 +0700

@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-traversal.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Doubly-linked-list-traversal" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-traversal.ml", line 61, characters 136-137:
+61 |   let r = ref (("[" ^ __show ((try List.assoc ("value") (Obj.obj (List.assoc (!head) !nodes) : (string * Obj.t) list) with Not_found -> 0)))) in
+                                                                                                                                             ^
+Error: This expression has type int but an expression was expected of type
+         Obj.t
