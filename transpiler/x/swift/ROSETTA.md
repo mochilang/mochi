@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 360/491
-Last updated: 2025-08-02 11:45 +0700
+Completed: 380/491
+Last updated: 2025-08-02 12:06 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -294,15 +294,15 @@ Last updated: 2025-08-02 11:45 +0700
 | 285 | department-numbers | ✓ | 314µs | 3.2 MB |
 | 286 | descending-primes | ✓ | 760µs | 3.2 MB |
 | 287 | detect-division-by-zero | ✓ | 328µs | 3.2 MB |
-| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable |   |  |  |
-| 294 | determine-if-only-one-instance-is-running |   |  |  |
-| 295 | determine-if-two-triangles-overlap |   |  |  |
-| 296 | determine-sentence-type |   |  |  |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 740µs | 3.2 MB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 1.702ms | 3.4 MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 1.679ms | 3.0 MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 439µs | 3.0 MB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 386µs | 3.2 MB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 2.01ms | 3.2 MB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 240µs | 3.0 MB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 625µs | 3.2 MB |
+| 296 | determine-sentence-type | ✓ | 1.176ms | 3.2 MB |
 | 297 | dice-game-probabilities-1 | ✓ | 21.637ms | 3.2 MB |
 | 298 | dice-game-probabilities-2 | ✓ | 1.818456s | 3.4 MB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 224.251ms | 3.9 MB |
@@ -313,13 +313,13 @@ Last updated: 2025-08-02 11:45 +0700
 | 304 | disarium-numbers | ✓ | 3.942421s | 3.0 MB |
 | 305 | discordian-date | ✓ | 451µs | 2.9 MB |
 | 306 | display-a-linear-combination | ✓ | 442µs | 3.3 MB |
-| 307 | display-an-outline-as-a-nested-table |   |  |  |
+| 307 | display-an-outline-as-a-nested-table | ✓ | 2.234ms | 3.6 MB |
 | 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming |   |  |  |
+| 309 | distributed-programming | ✓ | 427µs | 2.9 MB |
 | 310 | diversity-prediction-theorem | ✓ | 493µs | 3.3 MB |
-| 311 | dns-query |   |  |  |
+| 311 | dns-query | ✓ | 911µs | 3.6 MB |
 | 312 | documentation | ✓ | 102µs | 3.1 MB |
-| 313 | doomsday-rule |   |  |  |
+| 313 | doomsday-rule | ✓ | 424µs | 2.9 MB |
 | 314 | dot-product | ✓ | 488µs | 3.4 MB |
 | 315 | doubly-linked-list-definition-1 |   |  |  |
 | 316 | doubly-linked-list-definition-2 | ✓ | 534µs | 3.1 MB |
@@ -331,15 +331,15 @@ Last updated: 2025-08-02 11:45 +0700
 | 322 | draw-a-pixel-1 | ✓ | 163.224ms | 5.0 MB |
 | 323 | draw-a-rotating-cube | ✓ | 5.998ms | 3.4 MB |
 | 324 | draw-a-sphere | ✓ | 5.74ms | 3.3 MB |
-| 325 | duffinian-numbers |   |  |  |
+| 325 | duffinian-numbers | ✓ | 62.207ms | 2.9 MB |
 | 326 | dutch-national-flag-problem | ✓ | 2.304ms | 3.4 MB |
-| 327 | dynamic-variable-names |   |  |  |
+| 327 | dynamic-variable-names | ✓ | 632µs | 3.2 MB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 882µs | 3.1 MB |
 | 329 | eban-numbers | ✓ | 20.48ms | 3.0 MB |
 | 330 | ecdsa-example |   |  |  |
 | 331 | echo-server | ✓ | 411µs | 3.4 MB |
 | 332 | eertree | ✓ | 978µs | 3.3 MB |
-| 333 | egyptian-division |   |  |  |
+| 333 | egyptian-division | ✓ | 395µs | 2.9 MB |
 | 334 | ekg-sequence-convergence | ✓ | 67.896ms | 3.0 MB |
 | 335 | element-wise-operations | ✓ | 769µs | 3.4 MB |
 | 336 | elementary-cellular-automaton-infinite-length | ✓ | 7.223ms | 3.3 MB |
@@ -362,7 +362,7 @@ Last updated: 2025-08-02 11:45 +0700
 | 353 | enumerations-4 |   |  |  |
 | 354 | environment-variables-1 |   |  |  |
 | 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
+| 356 | equal-prime-and-composite-sums | ✓ | 26.33764s | 3.4 MB |
 | 357 | equilibrium-index | ✓ | 55.333ms | 3.3 MB |
 | 358 | erd-s-nicolas-numbers | ✓ |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 2.76064s | 3.4 MB |
@@ -383,7 +383,7 @@ Last updated: 2025-08-02 11:45 +0700
 | 374 | execute-a-markov-algorithm | ✓ | 25.614ms | 3.2 MB |
 | 375 | execute-a-system-command |   |  |  |
 | 376 | execute-brain- | ✓ | 7.201ms | 3.1 MB |
-| 377 | execute-computer-zero-1 |   |  |  |
+| 377 | execute-computer-zero-1 | ✓ | 3.329ms | 3.4 MB |
 | 378 | execute-computer-zero | ✓ | 195µs | 3.1 MB |
 | 379 | execute-hq9+ | ✓ | 574µs | 3.1 MB |
 | 380 | execute-snusp | ✓ | 86µs | 2.8 MB |
@@ -394,8 +394,8 @@ Last updated: 2025-08-02 11:45 +0700
 | 385 | extend-your-language |   |  |  |
 | 386 | extensible-prime-generator | ✓ | 71.127ms | 3.3 MB |
 | 387 | extreme-floating-point-values | ✓ | 149µs | 3.0 MB |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
+| 388 | faces-from-a-mesh-2 | ✓ | 945µs | 3.1 MB |
+| 389 | faces-from-a-mesh | ✓ | 957µs | 3.5 MB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
 | 391 | factorial-primes | ✓ | 664µs | 3.3 MB |
 | 392 | factorial | ✓ | 12.15ms | 3.8 MB |

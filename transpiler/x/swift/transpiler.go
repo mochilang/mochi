@@ -1048,22 +1048,29 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, " as! Int)")
 				return
 			}
-                        if force {
-                                if c.FromString {
-                                        fmt.Fprint(w, "Int(")
-                                        c.Expr.emit(w)
-                                        fmt.Fprint(w, ")!")
-                                } else {
-                                        // Use Int(...) constructor rather than force casting to
-                                        // avoid runtime crashes when converting numeric types.
-                                        // Previous code generated `(expr as! Int)` which can
-                                        // produce illegal instructions when `expr` is a Double.
-                                        fmt.Fprint(w, "Int(")
-                                        c.Expr.emit(w)
-                                        fmt.Fprint(w, ")")
-                                }
-                                return
-                        }
+			if force {
+				switch c.Expr.(type) {
+				case *NameExpr, *IndexExpr, *FieldExpr:
+					fmt.Fprint(w, "(")
+					c.Expr.emit(w)
+					fmt.Fprint(w, " as! Int)")
+				default:
+					if c.FromString {
+						fmt.Fprint(w, "Int(")
+						c.Expr.emit(w)
+						fmt.Fprint(w, ")!")
+					} else {
+						// Use Int(...) constructor rather than force casting to
+						// avoid runtime crashes when converting numeric types.
+						// Previous code generated `(expr as! Int)` which can
+						// produce illegal instructions when `expr` is a Double.
+						fmt.Fprint(w, "Int(")
+						c.Expr.emit(w)
+						fmt.Fprint(w, ")")
+					}
+				}
+				return
+			}
 		}
 		if t == "Double" {
 			if inner, ok := c.Expr.(*CastExpr); ok && (inner.Type == "Any" || strings.Contains(inner.Type, "Any")) {
@@ -1161,30 +1168,30 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	b.Left.emit(w)
 	var op string
-        switch b.Op {
-        case "+":
-                if b.IntOp {
-                        op = "&+"
-                } else {
-                        op = "+"
-                }
-        case "-":
-                if b.IntOp {
-                        op = "&-"
-                } else {
-                        op = "-"
-                }
-        case "*":
-                if b.IntOp {
-                        op = "&*"
-                } else {
-                        op = "*"
-                }
-        case "union":
-                op = "+"
-        default:
-                op = b.Op
-        }
+	switch b.Op {
+	case "+":
+		if b.IntOp {
+			op = "&+"
+		} else {
+			op = "+"
+		}
+	case "-":
+		if b.IntOp {
+			op = "&-"
+		} else {
+			op = "-"
+		}
+	case "*":
+		if b.IntOp {
+			op = "&*"
+		} else {
+			op = "*"
+		}
+	case "union":
+		op = "+"
+	default:
+		op = b.Op
+	}
 	fmt.Fprintf(w, " %s ", op)
 	b.Right.emit(w)
 	fmt.Fprint(w, ")")
@@ -1694,24 +1701,24 @@ func structForField(env *types.Env, field string) (types.StructType, bool) {
 }
 
 func structForMethod(env *types.Env, method string) (types.StructType, bool) {
-        if env == nil {
-                return types.StructType{}, false
-        }
-        var found types.StructType
-        count := 0
-        for _, st := range env.Structs() {
-                if _, ok := st.Methods[method]; ok {
-                        found = st
-                        count++
-                        if count > 1 {
-                                return types.StructType{}, false
-                        }
-                }
-        }
-        if count == 1 {
-                return found, true
-        }
-        return types.StructType{}, false
+	if env == nil {
+		return types.StructType{}, false
+	}
+	var found types.StructType
+	count := 0
+	for _, st := range env.Structs() {
+		if _, ok := st.Methods[method]; ok {
+			found = st
+			count++
+			if count > 1 {
+				return types.StructType{}, false
+			}
+		}
+	}
+	if count == 1 {
+		return found, true
+	}
+	return types.StructType{}, false
 }
 
 // Emit returns the Swift source for the program.
@@ -2277,6 +2284,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				} else if env != nil {
 					t := types.TypeOfExpr(st.Var.Value, env)
 					typ = swiftTypeOf(t)
+					if typ == "Any?" || typ == "Any" {
+						if isMapLiteral(st.Var.Value) {
+							typ = "[String: Any?]"
+						}
+					}
 				}
 			}
 			if typ == "" {
@@ -2299,6 +2311,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				varT = types.ResolveTypeRef(st.Var.Type, env)
 			} else if st.Var.Value != nil {
 				varT = types.TypeOfExpr(st.Var.Value, env)
+				if typ == "[String: Any?]" {
+					varT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+				}
 			}
 			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
 			if okU {
@@ -3591,6 +3606,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			isStr := false
 			force := false
 			skipUpdate := false
+			origBaseType := baseType
 			if env != nil {
 				if types.IsStringType(baseType) {
 					isStr = true
@@ -3626,7 +3642,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
 			} else {
 				keyStr := false
-				if mt, ok := baseType.(types.MapType); ok {
+				if mt, ok := origBaseType.(types.MapType); ok {
 					if types.IsStringType(mt.Key) {
 						idx = &CastExpr{Expr: idx, Type: "String"}
 						keyStr = true
@@ -3649,17 +3665,17 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			}
 			continue
 		}
-                if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" {
-                        arg, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
-                        if err != nil {
-                                return nil, err
-                        }
-                        expr = &BinaryExpr{Left: arg, Op: "in", Right: expr}
-                        i++
-                        continue
-                }
-                if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "padStart" {
-                        a1, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
+		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "contains" {
+			arg, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			expr = &BinaryExpr{Left: arg, Op: "in", Right: expr}
+			i++
+			continue
+		}
+		if op.Field != nil && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && op.Field.Name == "padStart" {
+			a1, err := convertExpr(env, p.Ops[i+1].Call.Args[0])
 			if err != nil {
 				return nil, err
 			}
@@ -3668,125 +3684,125 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				return nil, err
 			}
 			usesPad = true
-                        expr = &CallExpr{Func: "_padStart", Args: []Expr{&CallExpr{Func: "_p", Args: []Expr{expr}}, a1, a2}}
-                        i++
-                        continue
-                }
-                if op.Field != nil {
-                        // Accessing a field after previous operations (e.g. foo().bar)
-                        if env != nil {
-                                if st, ok := baseType.(types.StructType); ok {
-                                        if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
-                                                baseType = ft
-                                        } else {
-                                                baseType = types.AnyType{}
-                                        }
-                                        expr = &FieldExpr{Target: expr, Name: op.Field.Name}
-                                } else if isAnyType(baseType) {
-                                        if st, ok := structForField(env, op.Field.Name); ok {
-                                                expr = &FieldExpr{Target: &CastExpr{Expr: expr, Type: st.Name}, Name: op.Field.Name}
-                                                baseType = st.Fields[op.Field.Name]
-                                        } else {
-                                                expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
-                                                baseType = types.AnyType{}
-                                        }
-                                } else {
-                                        expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
-                                        if mt, ok := baseType.(types.MapType); ok {
-                                                baseType = mt.Value
-                                        } else {
-                                                baseType = types.AnyType{}
-                                        }
-                                }
-                        } else {
-                                expr = &FieldExpr{Target: expr, Name: op.Field.Name}
-                        }
-                        continue
-                }
-                if op.Call != nil {
-                        var ce *CallExpr
-                        var fnName string
-                        if fe, ok := expr.(*FieldExpr); ok {
-                                if n, ok2 := fe.Target.(*NameExpr); ok2 && env != nil {
-                                        if vt, err := env.GetVar(n.Name); err == nil {
-                                                if st, ok3 := vt.(types.StructType); ok3 {
-                                                        fnName = fmt.Sprintf("%s_%s", st.Name, fe.Name)
-                                                        ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: n.Name}}}
-                                                }
-                                        }
-                                }
-                        }
-                        usedSelf := false
-                        if ce == nil {
-                                if ne, ok := expr.(*NameExpr); ok && env != nil {
-                                        if st, ok2 := structForMethod(env, ne.Name); ok2 {
-                                                fnName = fmt.Sprintf("%s_%s", st.Name, ne.Name)
-                                                ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: "self"}}}
-                                                usedSelf = true
-                                        } else if vt, err := env.GetVar("self"); err == nil {
-                                                if st, ok2 := vt.(types.StructType); ok2 {
-                                                        if _, ok3 := st.Methods[ne.Name]; ok3 {
-                                                                fnName = fmt.Sprintf("%s_%s", st.Name, ne.Name)
-                                                                ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: "self"}}}
-                                                                usedSelf = true
-                                                        } else {
-                                                                fnName = ne.Name
-                                                                ce = &CallExpr{Func: fnName}
-                                                        }
-                                                } else {
-                                                        fnName = ne.Name
-                                                        ce = &CallExpr{Func: fnName}
-                                                }
-                                        } else {
-                                                fnName = ne.Name
-                                                ce = &CallExpr{Func: fnName}
-                                        }
-                                } else {
-                                        fnName = exprString(expr)
-                                        ce = &CallExpr{Func: fnName}
-                                }
-                        }
-                        if ce.Func == "now" && len(op.Call.Args) == 0 {
-                                usesNow = true
-                                ce.Func = "_now"
-                        }
-                        var paramTypes []types.Type
-                        var mutInfo []bool
-                        if env != nil {
-                                if t, err := env.GetVar(fnName); err == nil {
-                                        if ft, ok := t.(types.FuncType); ok {
-                                                paramTypes = ft.Params
-                                                baseType = ft.Return
-                                        }
-                                }
-                        }
-                        if usedSelf && len(paramTypes) > 0 {
-                                paramTypes = paramTypes[1:]
-                        }
-                        if flags, ok := funcMutParams[fnName]; ok {
-                                mutInfo = flags
-                        }
-                        for j, a := range op.Call.Args {
-                                ae, err := convertExpr(env, a)
-                                if err != nil {
-                                        return nil, err
-                                }
-                                if env != nil && j < len(paramTypes) {
-                                        pt := swiftTypeOf(paramTypes[j])
-                                        if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
-                                                ae = &RawStmt{Code: "nil as Any?"}
-                                        } else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
-                                                srcT := swiftTypeOf(types.TypeOfExpr(a, env))
-                                                if srcT != pt {
-                                                        ae = &CastExpr{Expr: ae, Type: pt + "!"}
-                                                }
-                                        }
-                                }
-                                ce.Args = append(ce.Args, ae)
-                        }
-                        expr = ce
-                        continue
-                }
+			expr = &CallExpr{Func: "_padStart", Args: []Expr{&CallExpr{Func: "_p", Args: []Expr{expr}}, a1, a2}}
+			i++
+			continue
+		}
+		if op.Field != nil {
+			// Accessing a field after previous operations (e.g. foo().bar)
+			if env != nil {
+				if st, ok := baseType.(types.StructType); ok {
+					if ft, ok2 := st.Fields[op.Field.Name]; ok2 {
+						baseType = ft
+					} else {
+						baseType = types.AnyType{}
+					}
+					expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+				} else if isAnyType(baseType) {
+					if st, ok := structForField(env, op.Field.Name); ok {
+						expr = &FieldExpr{Target: &CastExpr{Expr: expr, Type: st.Name}, Name: op.Field.Name}
+						baseType = st.Fields[op.Field.Name]
+					} else {
+						expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
+						baseType = types.AnyType{}
+					}
+				} else {
+					expr = &IndexExpr{Base: expr, Index: &LitExpr{Value: op.Field.Name, IsString: true}, Force: true}
+					if mt, ok := baseType.(types.MapType); ok {
+						baseType = mt.Value
+					} else {
+						baseType = types.AnyType{}
+					}
+				}
+			} else {
+				expr = &FieldExpr{Target: expr, Name: op.Field.Name}
+			}
+			continue
+		}
+		if op.Call != nil {
+			var ce *CallExpr
+			var fnName string
+			if fe, ok := expr.(*FieldExpr); ok {
+				if n, ok2 := fe.Target.(*NameExpr); ok2 && env != nil {
+					if vt, err := env.GetVar(n.Name); err == nil {
+						if st, ok3 := vt.(types.StructType); ok3 {
+							fnName = fmt.Sprintf("%s_%s", st.Name, fe.Name)
+							ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: n.Name}}}
+						}
+					}
+				}
+			}
+			usedSelf := false
+			if ce == nil {
+				if ne, ok := expr.(*NameExpr); ok && env != nil {
+					if st, ok2 := structForMethod(env, ne.Name); ok2 {
+						fnName = fmt.Sprintf("%s_%s", st.Name, ne.Name)
+						ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: "self"}}}
+						usedSelf = true
+					} else if vt, err := env.GetVar("self"); err == nil {
+						if st, ok2 := vt.(types.StructType); ok2 {
+							if _, ok3 := st.Methods[ne.Name]; ok3 {
+								fnName = fmt.Sprintf("%s_%s", st.Name, ne.Name)
+								ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: "self"}}}
+								usedSelf = true
+							} else {
+								fnName = ne.Name
+								ce = &CallExpr{Func: fnName}
+							}
+						} else {
+							fnName = ne.Name
+							ce = &CallExpr{Func: fnName}
+						}
+					} else {
+						fnName = ne.Name
+						ce = &CallExpr{Func: fnName}
+					}
+				} else {
+					fnName = exprString(expr)
+					ce = &CallExpr{Func: fnName}
+				}
+			}
+			if ce.Func == "now" && len(op.Call.Args) == 0 {
+				usesNow = true
+				ce.Func = "_now"
+			}
+			var paramTypes []types.Type
+			var mutInfo []bool
+			if env != nil {
+				if t, err := env.GetVar(fnName); err == nil {
+					if ft, ok := t.(types.FuncType); ok {
+						paramTypes = ft.Params
+						baseType = ft.Return
+					}
+				}
+			}
+			if usedSelf && len(paramTypes) > 0 {
+				paramTypes = paramTypes[1:]
+			}
+			if flags, ok := funcMutParams[fnName]; ok {
+				mutInfo = flags
+			}
+			for j, a := range op.Call.Args {
+				ae, err := convertExpr(env, a)
+				if err != nil {
+					return nil, err
+				}
+				if env != nil && j < len(paramTypes) {
+					pt := swiftTypeOf(paramTypes[j])
+					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
+						ae = &RawStmt{Code: "nil as Any?"}
+					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
+						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+						if srcT != pt {
+							ae = &CastExpr{Expr: ae, Type: pt + "!"}
+						}
+					}
+				}
+				ce.Args = append(ce.Args, ae)
+			}
+			expr = ce
+			continue
+		}
 		if op.Cast != nil {
 			typ := toSwiftType(op.Cast.Type)
 			if env != nil {
@@ -4380,6 +4396,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			usesRepeat = true
 			return &CallExpr{Func: "_repeat", Args: []Expr{a0, a1}}, nil
 		}
+		if pr.Call.Func == "panic" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
+		}
 		if pr.Call.Func == "num" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
@@ -4629,6 +4652,13 @@ func isEmptyMapLiteral(e *parser.Expr) bool {
 		return len(ml.Items) == 0
 	}
 	return false
+}
+
+func isMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	return e.Binary.Left.Value.Target.Map != nil
 }
 
 func isNullLiteral(e *parser.Expr) bool {
