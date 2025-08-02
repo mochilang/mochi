@@ -1245,11 +1245,11 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
-        // Capture baseline and peak memory to account for allocations inside
-        // the benchmarked block. `memory_get_peak_usage()` reports the highest
-        // amount of memory used by the script, so subtracting the starting
-        // usage approximates memory consumed by this block.
-        io.WriteString(w, "$__start_mem = memory_get_usage();\n")
+	// Capture baseline and peak memory to account for allocations inside
+	// the benchmarked block. `memory_get_peak_usage()` reports the highest
+	// amount of memory used by the script, so subtracting the starting
+	// usage approximates memory consumed by this block.
+	io.WriteString(w, "$__start_mem = memory_get_usage();\n")
 	io.WriteString(w, "$__start = _now();\n")
 	for _, st := range b.Body {
 		io.WriteString(w, "  ")
@@ -1261,10 +1261,10 @@ func (b *BenchStmt) emit(w io.Writer) {
 			io.WriteString(w, ";\n")
 		}
 	}
-        io.WriteString(w, "$__end = _now();\n")
-        io.WriteString(w, "$__end_mem = memory_get_peak_usage();\n")
-        io.WriteString(w, "$__duration = max(1, intdiv($__end - $__start, 1000));\n")
-        io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
+	io.WriteString(w, "$__end = _now();\n")
+	io.WriteString(w, "$__end_mem = memory_get_peak_usage();\n")
+	io.WriteString(w, "$__duration = max(1, intdiv($__end - $__start, 1000));\n")
+	io.WriteString(w, "$__mem_diff = max(0, $__end_mem - $__start_mem);\n")
 	fmt.Fprintf(w, "$__bench = [\"duration_us\" => $__duration, \"memory_bytes\" => $__mem_diff, \"name\" => %q];\n", b.Name)
 	io.WriteString(w, "$__j = json_encode($__bench, 128);\n")
 	io.WriteString(w, "$__j = str_replace(\"    \", \"  \", $__j);\n")
@@ -3134,6 +3134,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 				}
 			}
+			args[1] = replaceStringNamesWithVars(args[1])
 			tmp := &ListLit{Elems: []Expr{args[1]}}
 			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
 		} else if name == "json" {
@@ -4440,6 +4441,72 @@ func groupItemsExpr(e Expr) Expr {
 			if n == v.Name {
 				return &IndexExpr{X: e, Index: &StringLit{Value: "items"}}
 			}
+		}
+	}
+	return e
+}
+
+func isVarInScope(name string) bool {
+	for i := len(funcStack) - 1; i >= 0; i-- {
+		for _, v := range funcStack[i] {
+			if v == name {
+				return true
+			}
+		}
+	}
+	if transpileEnv != nil {
+		if _, err := transpileEnv.GetVar(name); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func replaceStringNamesWithVars(e Expr) Expr {
+	switch v := e.(type) {
+	case *StringLit:
+		if isVarInScope(v.Value) {
+			return &Var{Name: v.Value}
+		}
+	case *Name:
+		if isVarInScope(v.Value) {
+			return &Var{Name: v.Value}
+		}
+	case *IndexExpr:
+		v.X = replaceStringNamesWithVars(v.X)
+		v.Index = replaceStringNamesWithVars(v.Index)
+	case *SliceExpr:
+		v.X = replaceStringNamesWithVars(v.X)
+		v.Start = replaceStringNamesWithVars(v.Start)
+		if v.End != nil {
+			v.End = replaceStringNamesWithVars(v.End)
+		}
+	case *SubstringExpr:
+		v.Str = replaceStringNamesWithVars(v.Str)
+		v.Start = replaceStringNamesWithVars(v.Start)
+		if v.End != nil {
+			v.End = replaceStringNamesWithVars(v.End)
+		}
+		if _, ok := v.Str.(*Var); ok {
+			return &IndexExpr{X: v.Str, Index: v.Start}
+		}
+	case *CallExpr:
+		for i := range v.Args {
+			v.Args[i] = replaceStringNamesWithVars(v.Args[i])
+		}
+	case *BinaryExpr:
+		v.Left = replaceStringNamesWithVars(v.Left)
+		v.Right = replaceStringNamesWithVars(v.Right)
+	case *UnaryExpr:
+		v.X = replaceStringNamesWithVars(v.X)
+	case *ListLit:
+		for i := range v.Elems {
+			v.Elems[i] = replaceStringNamesWithVars(v.Elems[i])
+		}
+	case *MapLit:
+		for i := range v.Items {
+			v.Items[i].Key = replaceStringNamesWithVars(v.Items[i].Key)
+			v.Items[i].Value = replaceStringNamesWithVars(v.Items[i].Value)
 		}
 	}
 	return e

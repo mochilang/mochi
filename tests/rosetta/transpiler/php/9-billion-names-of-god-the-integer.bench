@@ -1,2 +1,5 @@
-{main}
-  thrown in /workspace/mochi/tests/rosetta/transpiler/php/9-billion-names-of-god-the-integer.php on line 137
+{
+  "duration_us": 10473974,
+  "memory_bytes": 668579144,
+  "name": "main"
+}

@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 18:31 +0700
+Last updated: 2025-08-02 20:47 +0700
 
-## Checklist (484/491)
+## Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 97µs | 136 B |
@@ -18,7 +18,7 @@ Last updated: 2025-08-02 18:31 +0700
 | 9 | 24-game-solve | ✓ | 5.126ms | 320 B |
 | 10 | 24-game | ✓ | 49µs | 8.1 KB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 16.314ms | 675.6 KB |
-| 12 | 9-billion-names-of-god-the-integer |   |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 10.473974s | 637.6 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 4.852ms | 96 B |
 | 14 | 99-bottles-of-beer | ✓ | 412µs | 96 B |
 | 15 | a+b | ✓ | 39µs | 8.1 KB |
@@ -230,7 +230,7 @@ Last updated: 2025-08-02 18:31 +0700
 | 221 | conditional-structures-7 | ✓ | 1µs | 35.4 KB |
 | 222 | conditional-structures-8 | ✓ | 1µs | 35.2 KB |
 | 223 | conditional-structures-9 | ✓ | 1µs | 35.4 KB |
-| 224 | consecutive-primes-with-ascending-or-descending-differences | ✗ (timeout) |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
 | 225 | constrained-genericity-1 | ✓ | 1µs | 35.1 KB |
 | 226 | constrained-genericity-2 | ✓ | 1µs | 35.1 KB |
 | 227 | constrained-genericity-3 | ✓ | 1µs | 35.3 KB |
