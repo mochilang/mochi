@@ -38,9 +38,15 @@ type UnionDef struct {
 	Cases []UnionCase
 }
 
+type AliasDef struct {
+	Name string
+	Type string
+}
+
 type Program struct {
 	Structs        []StructDef
 	Unions         []UnionDef
+	Aliases        []AliasDef
 	Stmts          []Stmt
 	UseNow         bool
 	UseBreak       bool
@@ -58,6 +64,8 @@ var (
 	varTypes       map[string]string
 	structDefs     []StructDef
 	unionDefs      []UnionDef
+	aliasDefs      []AliasDef
+	aliasSet       map[string]bool
 	structCount    int
 	transpileEnv   *types.Env
 	neededOpens    map[string]bool
@@ -278,6 +286,9 @@ func fsTypeFromString(s string) string {
 func typeRefString(t *parser.TypeRef) string {
 	if t == nil || transpileEnv == nil {
 		return ""
+	}
+	if t.Simple != nil {
+		return fsTypeFromString(*t.Simple)
 	}
 	ft := types.ResolveTypeRef(t, transpileEnv)
 	return fsType(ft)
@@ -2719,6 +2730,9 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperDictCreate)
 		buf.WriteString("\n")
 	}
+	for _, a := range prog.Aliases {
+		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(a.Name), a.Type)
+	}
 	for _, st := range prog.Structs {
 		if len(st.Fields) == 0 {
 			fmt.Fprintf(&buf, "type %s() = class end\n", fsIdent(st.Name))
@@ -2799,6 +2813,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	varTypes = map[string]string{}
 	structDefs = nil
 	unionDefs = nil
+	aliasDefs = nil
+	aliasSet = map[string]bool{}
 	structCount = 0
 	neededOpens = map[string]bool{}
 	definedFuncs = map[string]bool{}
@@ -2829,6 +2845,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	p.Structs = structDefs
 	p.Unions = unionDefs
+	p.Aliases = aliasDefs
 	if len(neededOpens) > 0 {
 		opens := make([]Stmt, 0, len(neededOpens))
 		for m := range neededOpens {
@@ -3629,7 +3646,10 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &InvokeExpr{Target: expr, Args: args}
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
-			expr = &CastExpr{Expr: expr, Type: typeRefString(op.Cast.Type)}
+			ct := typeRefString(op.Cast.Type)
+			if !aliasSet[ct] {
+				expr = &CastExpr{Expr: expr, Type: ct}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -4339,6 +4359,24 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 }
 
 func convertTypeDecl(td *parser.TypeDecl) error {
+	if td.Alias != nil {
+		ft := types.ResolveTypeRef(td.Alias, transpileEnv)
+		aliasDefs = append(aliasDefs, AliasDef{Name: td.Name, Type: fsType(ft)})
+		if aliasSet == nil {
+			aliasSet = map[string]bool{}
+		}
+		aliasSet[td.Name] = true
+		return nil
+	}
+	if len(td.Variants) == 1 && len(td.Variants[0].Fields) == 0 {
+		alias := fsTypeFromString(td.Variants[0].Name)
+		aliasDefs = append(aliasDefs, AliasDef{Name: td.Name, Type: alias})
+		if aliasSet == nil {
+			aliasSet = map[string]bool{}
+		}
+		aliasSet[td.Name] = true
+		return nil
+	}
 	if len(td.Variants) > 0 {
 		u := UnionDef{Name: td.Name}
 		for _, v := range td.Variants {
