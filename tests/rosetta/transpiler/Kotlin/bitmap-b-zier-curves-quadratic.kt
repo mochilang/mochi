@@ -27,12 +27,12 @@ fun toJson(v: Any?): String = when (v) {
 }
 
 data class Pixel(var r: Int = 0, var g: Int = 0, var b: Int = 0)
-var b3Seg: Int = 30
+var b2Seg: Int = 20
 var b: MutableMap<String, Any?> = newBitmap(400, 300)
 fun pixelFromRgb(rgb: Int): Pixel {
-    var r: Int = (Math.floorMod((rgb / 65536), 256)).toInt()
-    var g: Int = (Math.floorMod((rgb / 256), 256)).toInt()
-    var b: Int = (Math.floorMod(rgb, 256)).toInt()
+    var r: Int = ((Math.floorMod((rgb / 65536), 256)).toInt())
+    var g: Int = ((Math.floorMod((rgb / 256), 256)).toInt())
+    var b: Int = ((Math.floorMod(rgb, 256)).toInt())
     return Pixel(r = r, g = g, b = b)
 }
 
@@ -43,10 +43,10 @@ fun newBitmap(cols: Int, rows: Int): MutableMap<String, Any?> {
         var row: MutableList<Pixel> = mutableListOf<Pixel>()
         var x: Int = 0
         while (x < cols) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(Pixel(r = 0, g = 0, b = 0)); _tmp } as MutableList<Pixel>
+            row = run { val _tmp = row.toMutableList(); _tmp.add(Pixel(r = 0, g = 0, b = 0)); _tmp }
             x = x + 1
         }
-        d = run { val _tmp = d.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<Pixel>>
+        d = run { val _tmp = d.toMutableList(); _tmp.add(row); _tmp }
         y = y + 1
     }
     return mutableMapOf<String, Any?>("cols" to (cols), "rows" to (rows), "data" to (d))
@@ -115,41 +115,36 @@ fun line(b: MutableMap<String, Any?>, x0: Int, y0: Int, x1: Int, y1: Int, p: Pix
     }
 }
 
-fun bezier3(b: MutableMap<String, Any?>, x1: Int, y1: Int, x2: Int, y2: Int, x3: Int, y3: Int, x4: Int, y4: Int, p: Pixel): Unit {
+fun bezier2(b: MutableMap<String, Any?>, x1: Int, y1: Int, x2: Int, y2: Int, x3: Int, y3: Int, p: Pixel): Unit {
     var px: MutableList<Int> = mutableListOf<Int>()
     var py: MutableList<Int> = mutableListOf<Int>()
     var i: Int = 0
-    while (i <= b3Seg) {
-        px = run { val _tmp = px.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
-        py = run { val _tmp = py.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
+    while (i <= b2Seg) {
+        px = run { val _tmp = px.toMutableList(); _tmp.add(0); _tmp }
+        py = run { val _tmp = py.toMutableList(); _tmp.add(0); _tmp }
         i = i + 1
     }
-    var fx1: Double = x1.toDouble()
-    var fy1: Double = y1.toDouble()
-    var fx2: Double = x2.toDouble()
-    var fy2: Double = y2.toDouble()
-    var fx3: Double = x3.toDouble()
-    var fy3: Double = y3.toDouble()
-    var fx4: Double = x4.toDouble()
-    var fy4: Double = y4.toDouble()
+    var fx1: Double = (x1.toDouble())
+    var fy1: Double = (y1.toDouble())
+    var fx2: Double = (x2.toDouble())
+    var fy2: Double = (y2.toDouble())
+    var fx3: Double = (x3.toDouble())
+    var fy3: Double = (y3.toDouble())
     i = 0
-    while (i <= b3Seg) {
-        var d: Double = (i.toDouble()) / (b3Seg.toDouble())
-        var a: Double = 1.0 - d
-        var bcoef: Double = a * a
-        var ccoef: Double = d * d
-        var a2: Double = a * bcoef
-        var b2: Double = (3.0 * bcoef) * d
-        var c2: Double = (3.0 * a) * ccoef
-        var d2: Double = ccoef * d
-        px[i] = ((((a2 * fx1) + (b2 * fx2)) + (c2 * fx3)) + (d2 * fx4)).toInt()
-        py[i] = ((((a2 * fy1) + (b2 * fy2)) + (c2 * fy3)) + (d2 * fy4)).toInt()
+    while (i <= b2Seg) {
+        var c: Double = ((i.toDouble())) / ((b2Seg.toDouble()))
+        var a: Double = 1.0 - c
+        var a2: Double = a * a
+        var b2: Double = (2.0 * c) * a
+        var c2: Double = c * c
+        px[i] = ((((a2 * fx1) + (b2 * fx2)) + (c2 * fx3)).toInt())
+        py[i] = ((((a2 * fy1) + (b2 * fy2)) + (c2 * fy3)).toInt())
         i = i + 1
     }
     var x0: Int = px[0]!!
     var y0: Int = py[0]!!
     i = 1
-    while (i <= b3Seg) {
+    while (i <= b2Seg) {
         var x: Int = px[i]!!
         var y: Int = py[i]!!
         line(b, x0, y0, x, y, p)
@@ -164,8 +159,8 @@ fun main() {
         System.gc()
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
-        fillRgb(b, 16773055)
-        bezier3(b, 20, 200, 700, 50, 0 - 300, 50, 380, 150, pixelFromRgb(4165615))
+        fillRgb(b, 14614575)
+        bezier2(b, 20, 150, 500, 0 - 100, 300, 280, pixelFromRgb(4165615))
         System.gc()
         val _end = _now()
         val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()

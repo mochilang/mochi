@@ -1,16 +1,42 @@
 import java.math.BigInteger
 
+var _nowSeed = 0L
+var _nowSeeded = false
+fun _now(): Long {
+    if (!_nowSeeded) {
+        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
+            _nowSeed = it
+            _nowSeeded = true
+        }
+    }
+    return if (_nowSeeded) {
+        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
+        kotlin.math.abs(_nowSeed)
+    } else {
+        kotlin.math.abs(System.nanoTime())
+    }
+}
+
+fun toJson(v: Any?): String = when (v) {
+    null -> "null"
+    is String -> "\"" + v.replace("\"", "\\\"") + "\""
+    is Boolean, is Number -> v.toString()
+    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
+    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
+    else -> toJson(v.toString())
+}
+
 fun randInt(s: Int, n: Int): MutableList<Int> {
     var next: BigInteger = (Math.floorMod(((s * 1664525) + 1013904223), 2147483647)).toBigInteger()
-    return mutableListOf<Int>(next.toInt(), (next.remainder(n.toBigInteger())).toInt())
+    return mutableListOf<Int>(next.toInt(), (next.remainder((n).toBigInteger())).toInt())
 }
 
 fun padLeft(s: String, w: Int): String {
     var res: String = ""
     var n: BigInteger = (w - s.length).toBigInteger()
-    while (n.compareTo(0.toBigInteger()) > 0) {
+    while (n.compareTo((0).toBigInteger()) > 0) {
         res = res + " "
-        n = n.subtract(1.toBigInteger())
+        n = n.subtract((1).toBigInteger())
     }
     return res + s
 }
@@ -24,7 +50,7 @@ fun makeSeq(s: Int, le: Int): MutableList<Any?> {
         var r: MutableList<Int> = randInt(s, 4)
         s = r[0]!!
         var idx: Int = (r[1]!!).toInt()
-        out = out + (bases.substring(idx, idx + 1)).toString()
+        out = out + bases.substring(idx, idx + 1)
         i = i + 1
     }
     return mutableListOf<Any?>(s as Any?, out as Any?)
@@ -43,7 +69,7 @@ fun mutate(s: Int, dna: String, w: MutableList<Int>): MutableList<Any?> {
     var arr: MutableList<String> = mutableListOf<String>()
     var i: Int = 0
     while (i < le) {
-        arr = run { val _tmp = arr.toMutableList(); _tmp.add(dna.substring(i, i + 1) as String); _tmp } as MutableList<String>
+        arr = run { val _tmp = arr.toMutableList(); _tmp.add(dna.substring(i, i + 1)); _tmp } as MutableList<String>
         i = i + 1
     }
     if (x < w[0]!!) {
@@ -69,9 +95,9 @@ fun mutate(s: Int, dna: String, w: MutableList<Int>): MutableList<Any?> {
             var b: String = bases.substring(idx2, idx2 + 1)
             arr = run { val _tmp = arr.toMutableList(); _tmp.add(""); _tmp } as MutableList<String>
             var j: BigInteger = (arr.size - 1).toBigInteger()
-            while (j.compareTo(p.toBigInteger()) > 0) {
-                arr[(j).toInt()] = arr[(j.subtract(1.toBigInteger())).toInt()]!!
-                j = j.subtract(1.toBigInteger())
+            while (j.compareTo((p).toBigInteger()) > 0) {
+                arr[(j).toInt()] = arr[(j.subtract((1).toBigInteger())).toInt()]!!
+                j = j.subtract((1).toBigInteger())
             }
             println(((("  Insert @" + padLeft(p.toString(), 3)) + " '") + b) + "'")
             arr[p] = b
@@ -92,7 +118,7 @@ fun prettyPrint(dna: String, rowLen: Int): Unit {
     var i: Int = 0
     while (i < le) {
         var k: BigInteger = (i + rowLen).toBigInteger()
-        if (k.compareTo(le.toBigInteger()) > 0) {
+        if (k.compareTo((le).toBigInteger()) > 0) {
             k = le.toBigInteger()
         }
         println((padLeft(i.toString(), 5) + ": ") + dna.substring(i, (k).toInt()))
@@ -160,5 +186,17 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    user_main()
+    run {
+        System.gc()
+        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _start = _now()
+        user_main()
+        System.gc()
+        val _end = _now()
+        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
+        val _durationUs = (_end - _start) / 1000
+        val _memDiff = kotlin.math.abs(_endMem - _startMem)
+        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
+        println(toJson(_res))
+    }
 }

@@ -26,9 +26,7 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-val msg: String = "Rosetta Code Base64 decode data task"
-val enc: String = base64Encode(msg)
-val dec: String = base64Decode(enc)
+var msg: String = "Rosetta Code Base64 decode data task"
 fun indexOf(s: String, ch: String): Int {
     var i: Int = 0
     while (i < s.length) {
@@ -48,25 +46,25 @@ fun parseIntStr(str: String): Int {
         i = 1
     }
     var n: Int = 0
-    val digits: MutableMap<String, Int> = mutableMapOf<String, Int>("0" to (0), "1" to (1), "2" to (2), "3" to (3), "4" to (4), "5" to (5), "6" to (6), "7" to (7), "8" to (8), "9" to (9))
+    var digits: MutableMap<String, Int> = mutableMapOf<String, Int>("0" to (0), "1" to (1), "2" to (2), "3" to (3), "4" to (4), "5" to (5), "6" to (6), "7" to (7), "8" to (8), "9" to (9))
     while (i < str.length) {
         n = (n * 10) + (digits)[str[i].toString()] as Int
         i = i + 1
     }
-    if (neg as Boolean) {
+    if ((neg as Boolean)) {
         n = 0 - n
     }
     return n
 }
 
 fun ord(ch: String): Int {
-    val upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    val lower: String = "abcdefghijklmnopqrstuvwxyz"
-    var idx: Int = indexOf(upper, ch)
+    var upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var lower: String = "abcdefghijklmnopqrstuvwxyz"
+    var idx: Int = upper.indexOf(ch)
     if (idx >= 0) {
         return 65 + idx
     }
-    idx = indexOf(lower, ch)
+    idx = lower.indexOf(ch)
     if (idx >= 0) {
         return 97 + idx
     }
@@ -89,8 +87,8 @@ fun ord(ch: String): Int {
 }
 
 fun chr(n: Int): String {
-    val upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    val lower: String = "abcdefghijklmnopqrstuvwxyz"
+    var upper: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    var lower: String = "abcdefghijklmnopqrstuvwxyz"
     if ((n >= 65) && (n < 91)) {
         return upper.substring(n - 65, n - 64)
     }
@@ -98,7 +96,7 @@ fun chr(n: Int): String {
         return lower.substring(n - 97, n - 96)
     }
     if ((n >= 48) && (n < 58)) {
-        val digits: String = "0123456789"
+        var digits: String = "0123456789"
         return digits.substring(n - 48, n - 47)
     }
     if (n == 43) {
@@ -122,7 +120,7 @@ fun toBinary(n: Int, bits: Int): String {
     var i: Int = 0
     while (i < bits) {
         b = (Math.floorMod(_val, 2)).toString() + b
-        _val = (_val / 2).toInt()
+        _val = ((_val / 2).toInt())
         i = i + 1
     }
     return b
@@ -139,7 +137,7 @@ fun binToInt(bits: String): Int {
 }
 
 fun base64Encode(text: String): String {
-    val alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    var alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     var bin: String = ""
     for (_ch in text) {
         val ch = _ch.toString()
@@ -151,39 +149,39 @@ fun base64Encode(text: String): String {
     var out: String = ""
     var i: Int = 0
     while (i < bin.length) {
-        val chunk: String = bin.substring(i, i + 6)
-        val _val: Int = binToInt(chunk)
+        var chunk: String = bin.substring(i, i + 6)
+        var _val: Int = binToInt(chunk)
         out = out + alphabet.substring(_val, _val + 1)
         i = i + 6
     }
-    val pad: Int = Math.floorMod((3 - (Math.floorMod(text.length, 3))), 3)
-    if (pad == 1) {
+    var pad: BigInteger = (Math.floorMod((3 - (Math.floorMod(text.length, 3))), 3)).toBigInteger()
+    if (pad.compareTo((1).toBigInteger()) == 0) {
         out = out.substring(0, out.length - 1) + "="
     }
-    if (pad == 2) {
+    if (pad.compareTo((2).toBigInteger()) == 0) {
         out = out.substring(0, out.length - 2) + "=="
     }
     return out
 }
 
 fun base64Decode(enc: String): String {
-    val alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+    var alphabet: String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
     var bin: String = ""
     var i: Int = 0
     while (i < enc.length) {
-        val ch: String = enc[i].toString()
+        var ch: String = enc[i].toString()
         if (ch == "=") {
             break
         }
-        val idx: Int = indexOf(alphabet, ch)
+        var idx: Int = alphabet.indexOf(ch)
         bin = bin + toBinary(idx, 6)
         i = i + 1
     }
     var out: String = ""
     i = 0
     while ((i + 8) <= bin.length) {
-        val chunk: String = bin.substring(i, i + 8)
-        val _val: Int = binToInt(chunk)
+        var chunk: String = bin.substring(i, i + 8)
+        var _val: Int = binToInt(chunk)
         out = out + chr(_val)
         i = i + 8
     }
@@ -196,7 +194,9 @@ fun main() {
         val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
         val _start = _now()
         println("Original : " + msg)
+        var enc: String = base64Encode(msg)
         println("\nEncoded  : " + enc)
+        var dec: String = base64Decode(enc)
         println("\nDecoded  : " + dec)
         System.gc()
         val _end = _now()

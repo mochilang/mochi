@@ -33,7 +33,7 @@ fun prng(max: Int): Int {
 }
 
 fun gen(n: Int): String {
-    var arr: MutableList<String> = mutableListOf()
+    var arr: MutableList<String> = mutableListOf<String>()
     var i: Int = 0
     while (i < n) {
         arr = run { val _tmp = arr.toMutableList(); _tmp.add("["); _tmp } as MutableList<String>
@@ -41,12 +41,12 @@ fun gen(n: Int): String {
         i = i + 1
     }
     var j: BigInteger = (arr.size - 1).toBigInteger()
-    while (j.compareTo(0.toBigInteger()) > 0) {
-        val k: Int = prng((j.add(1.toBigInteger())).toInt())
-        val tmp: String = arr[(j).toInt()]
-        arr[(j).toInt()] = arr[k]
+    while (j.compareTo((0).toBigInteger()) > 0) {
+        var k: Int = prng((j.add((1).toBigInteger())).toInt())
+        var tmp: String = arr[(j).toInt()]!!
+        arr[(j).toInt()] = arr[k]!!
         arr[k] = tmp
-        j = j.subtract(1.toBigInteger())
+        j = j.subtract((1).toBigInteger())
     }
     var out: String = ""
     for (ch in arr) {
@@ -59,7 +59,7 @@ fun testBalanced(s: String): Unit {
     var open: Int = 0
     var i: Int = 0
     while (i < s.length) {
-        val c: String = s.substring(i, i + 1)
+        var c: String = s.substring(i, i + 1)
         if (c == "[") {
             open = open + 1
         } else {

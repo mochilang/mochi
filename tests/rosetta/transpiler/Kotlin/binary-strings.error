@@ -1,0 +1,7 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/binary-strings.kt:39:32: error: type inference failed. Expected type mismatch: inferred type is MutableList<Int> but MutableList<Any?> was expected
+    var z: MutableList<Any?> = run { val _tmp = b.toMutableList(); _tmp.add(122); _tmp }
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/binary-strings.kt:39:83: error: type mismatch: inferred type is MutableList<Int> but MutableList<Any?> was expected
+    var z: MutableList<Any?> = run { val _tmp = b.toMutableList(); _tmp.add(122); _tmp }
+                                                                                  ^

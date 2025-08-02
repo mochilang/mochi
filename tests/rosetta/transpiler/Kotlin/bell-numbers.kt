@@ -39,13 +39,13 @@ fun bellTriangle(n: Int): MutableList<MutableList<BigInteger>> {
         tri = run { val _tmp = tri.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<BigInteger>>
         i = i + 1
     }
-    tri[1][0] = 1.toBigInteger()
+    (tri[1]!!)[0] = 1.toBigInteger()
     i = 2
     while (i < n) {
-        tri[i][0] = tri[i - 1][i - 2]
+        (tri[i]!!)[0] = ((tri[i - 1]!!) as MutableList<BigInteger>)[i - 2]!!
         var j: Int = 1
         while (j < i) {
-            tri[i][j] = tri[i][j - 1].add(tri[i - 1][j - 1])
+            (tri[i]!!)[j] = ((tri[i]!!) as MutableList<BigInteger>)[j - 1]!!.add((((tri[i - 1]!!) as MutableList<BigInteger>)[j - 1]!!))
             j = j + 1
         }
         i = i + 1
@@ -54,16 +54,16 @@ fun bellTriangle(n: Int): MutableList<MutableList<BigInteger>> {
 }
 
 fun user_main(): Unit {
-    val bt: MutableList<MutableList<BigInteger>> = bellTriangle(51)
+    var bt: MutableList<MutableList<BigInteger>> = bellTriangle(51)
     println("First fifteen and fiftieth Bell numbers:")
     for (i in 1 until 16) {
-        println((("" + (i.toString().padStart(2, " "[0])).toString()) + ": ") + (bt[i][0]).toString())
+        println((("" + (i.toString().padStart(2, " "[0])).toString()) + ": ") + (((bt[i]!!) as MutableList<BigInteger>)[0]!!).toString())
     }
-    println("50: " + (bt[50][0]).toString())
+    println("50: " + (((bt[50]!!) as MutableList<BigInteger>)[0]!!).toString())
     println("")
     println("The first ten rows of Bell's triangle:")
     for (i in 1 until 11) {
-        println(bt[i])
+        println(bt[i]!!)
     }
 }
 

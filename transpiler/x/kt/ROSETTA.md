@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 16:16 +0700
+Last updated: 2025-08-02 17:26 +0700
 
-Completed tasks: **246/491**
+Completed tasks: **248/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -96,36 +96,36 @@ Completed tasks: **246/491**
 | 85 | averages-arithmetic-mean | ✓ | 12.80ms | 110.5 KB |
 | 86 | averages-mean-time-of-day | ✓ | 23.52ms | 124.8 KB |
 | 87 | averages-median-1 | ✓ | 10.06ms | 113.8 KB |
-| 88 | averages-median-2 | ✓ |  |  |
-| 89 | averages-median-3 | ✓ |  |  |
-| 90 | averages-mode | ✓ |  |  |
-| 91 | averages-pythagorean-means | ✓ |  |  |
-| 92 | averages-root-mean-square | ✓ |  |  |
-| 93 | averages-simple-moving-average | ✓ |  |  |
+| 88 | averages-median-2 | ✓ | 25.11ms | 105.0 KB |
+| 89 | averages-median-3 | ✓ | 23.36ms | 105.0 KB |
+| 90 | averages-mode | ✓ | 9.41ms | 131.8 KB |
+| 91 | averages-pythagorean-means | ✓ | 9.38ms | 124.1 KB |
+| 92 | averages-root-mean-square | ✓ | 7.09ms | 134.2 KB |
+| 93 | averages-simple-moving-average | ✓ | 34.78ms | 99.0 KB |
 | 94 | avl-tree |  |  |  |
-| 95 | b-zier-curves-intersections | ✓ |  |  |
-| 96 | babbage-problem | ✓ |  |  |
-| 97 | babylonian-spiral | ✓ |  |  |
-| 98 | balanced-brackets | ✓ | 11.75ms | 115.2 KB |
-| 99 | balanced-ternary | ✓ | 13.76ms | 111.5 KB |
-| 100 | barnsley-fern | ✓ | 28.58ms | 44.6 KB |
-| 101 | base64-decode-data | ✓ | 7.03ms | 93.1 KB |
-| 102 | bell-numbers | ✓ | 20.23ms | 109.4 KB |
-| 103 | benfords-law | ✓ | 15.94ms | 65.9 KB |
-| 104 | bernoulli-numbers | ✓ | 88.28ms | 835.6 KB |
-| 105 | best-shuffle | ✓ | 16.53ms | 114.1 KB |
-| 106 | bifid-cipher | ✓ | 59.19ms | 118.3 KB |
-| 107 | bin-given-limits | ✓ |  |  |
-| 108 | binary-digits | ✓ |  |  |
-| 109 | binary-search | ✓ |  |  |
+| 95 | b-zier-curves-intersections | ✓ | 42.37ms | 100.1 KB |
+| 96 | babbage-problem | ✓ | 48.54ms | 41.6 KB |
+| 97 | babylonian-spiral | ✓ | 38.74ms | 111.0 KB |
+| 98 | balanced-brackets | ✓ | 25.66ms | 115.3 KB |
+| 99 | balanced-ternary | ✓ | 27.24ms | 111.5 KB |
+| 100 | barnsley-fern | ✓ | 72.71ms | 23.5 KB |
+| 101 | base64-decode-data | ✓ | 38.76ms | 112.1 KB |
+| 102 | bell-numbers | ✓ | 39.34ms | 109.3 KB |
+| 103 | benfords-law | ✓ | 52.16ms | 80.4 KB |
+| 104 | bernoulli-numbers | ✓ | 303.52ms | 835.6 KB |
+| 105 | best-shuffle | ✓ | 24.13ms | 114.2 KB |
+| 106 | bifid-cipher | ✓ | 39.32ms | 118.2 KB |
+| 107 | bin-given-limits | ✓ | 26.17ms | 114.1 KB |
+| 108 | binary-digits | ✓ | 7.60ms | 134.1 KB |
+| 109 | binary-search | ✓ | 23.57ms | 114.4 KB |
 | 110 | binary-strings |  |  |  |
-| 111 | bioinformatics-base-count | ✓ |  |  |
-| 112 | bioinformatics-global-alignment | ✓ |  |  |
-| 113 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 114 | biorhythms | ✓ |  |  |
-| 115 | bitcoin-address-validation | ✓ |  |  |
-| 116 | bitmap-b-zier-curves-cubic |  |  |  |
-| 117 | bitmap-b-zier-curves-quadratic |  |  |  |
+| 111 | bioinformatics-base-count | ✓ | 15.73ms | 40.0 KB |
+| 112 | bioinformatics-global-alignment | ✓ | 876.87ms | 843.1 KB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 52.70ms | 74.9 KB |
+| 114 | biorhythms | ✓ | 40.26ms | 94.5 KB |
+| 115 | bitcoin-address-validation | ✓ | 81.81ms | 122.6 KB |
+| 116 | bitmap-b-zier-curves-cubic | ✓ | 46.64ms | 3.4 MB |
+| 117 | bitmap-b-zier-curves-quadratic | ✓ | 56.42ms | 3.4 MB |
 | 118 | bitmap-bresenhams-line-algorithm |  |  |  |
 | 119 | bitmap-flood-fill |  |  |  |
 | 120 | bitmap-histogram | ✓ | 30.05ms | 112.4 KB |
