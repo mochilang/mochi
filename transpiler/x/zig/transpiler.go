@@ -1184,7 +1184,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            } else |_| {}\n")
 		buf.WriteString("        } else |_| {}\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    return @as(i64, @intCast(std.time.nanoTimestamp()));\n")
+		buf.WriteString("    return @intCast(i64, std.time.nanoTimestamp());\n")
 		buf.WriteString("}\n")
 	}
 	if useStr {
@@ -1228,8 +1228,7 @@ func (p *Program) Emit() []byte {
 	}
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
-		buf.WriteString("    const usage = std.posix.getrusage(0);\n")
-		buf.WriteString("    return @as(i64, usage.maxrss) * 1024;\n")
+		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
 	}
 	if usePrint {
@@ -1596,6 +1595,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if lt == "f64" && isIntType(rt) {
+		if _, ok := b.Right.(*IntLit); ok {
+			b.Left.emit(w)
+			fmt.Fprintf(w, " %s ", b.Op)
+			io.WriteString(w, "@intToFloat(f64, ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
+	}
+	if isIntType(lt) && rt == "f64" {
+		if _, ok := b.Left.(*IntLit); ok {
+			io.WriteString(w, "@intToFloat(f64, ")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+			fmt.Fprintf(w, " %s ", b.Op)
+			b.Right.emit(w)
+			return
+		}
+	}
 	if b.Op == "in" {
 		if _, ok := b.Right.(*StringLit); ok {
 			io.WriteString(w, "std.mem.indexOf(u8, ")
@@ -1737,16 +1756,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 	t := zigTypeFromExpr(i.Target)
 	if t == "[]const u8" {
 		i.Target.emit(w)
-		io.WriteString(w, "[@as(usize, @intCast(")
+		io.WriteString(w, "[@intCast(usize, ")
 		i.Index.emit(w)
-		io.WriteString(w, "))..@as(usize, @intCast(")
+		io.WriteString(w, ")..@intCast(usize, ")
 		i.Index.emit(w)
-		io.WriteString(w, ")) + 1]")
+		io.WriteString(w, ") + 1]")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[@as(usize, @intCast(")
+		io.WriteString(w, "[@intCast(usize, ")
 		i.Index.emit(w)
-		io.WriteString(w, "))]")
+		io.WriteString(w, ")]")
 	}
 }
 
@@ -1780,9 +1799,20 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		}
 	case "float", "f64":
-		io.WriteString(w, "@as(f64, @floatFromInt(")
-		c.Value.emit(w)
-		io.WriteString(w, "))")
+		vt := zigTypeFromExpr(c.Value)
+		if vt == "f64" {
+			io.WriteString(w, "@as(f64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else if isIntType(vt) {
+			io.WriteString(w, "@intToFloat(f64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "@as(f64, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 	default:
 		c.Value.emit(w)
 	}
@@ -1927,7 +1957,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
+	io.WriteString(w, "const __duration_us = @divTrunc(@intCast(i64, __end - __start), 1000);\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "const __memory_bytes = _mem();\n")
 	writeIndent(w, indent)
@@ -1962,7 +1992,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
-			io.WriteString(w, "@as(i64, @intCast(")
+			io.WriteString(w, "@intCast(i64, ")
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
@@ -1987,7 +2017,7 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".len")
 			}
-			io.WriteString(w, "))")
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -2116,9 +2146,9 @@ func (c *CallExpr) emit(w io.Writer) {
 								break
 							}
 						}
-						io.WriteString(w, "@as(f64, @floatFromInt(")
+						io.WriteString(w, "@intToFloat(f64, ")
 						a.emit(w)
-						io.WriteString(w, "))")
+						io.WriteString(w, ")")
 					case strings.HasPrefix(exp, "[]") && strings.HasPrefix(at, "["):
 						a.emit(w)
 						io.WriteString(w, "[0..]")
