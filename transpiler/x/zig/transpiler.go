@@ -328,7 +328,8 @@ type CopySliceExpr struct {
 }
 
 func (e *CopySliceExpr) emit(w io.Writer) {
-	fmt.Fprintf(w, "blk: { const tmp = std.heap.page_allocator.alloc(%s, %s.len) catch unreachable; @memcpy(tmp, %s); break :blk tmp; }", e.Elem, e.Src, e.Src)
+	elem := strings.TrimPrefix(e.Elem, "const ")
+	fmt.Fprintf(w, "blk: { const tmp = std.heap.page_allocator.alloc(%s, %s.len) catch unreachable; @memcpy(tmp, %s); break :blk tmp; }", elem, e.Src, e.Src)
 }
 
 // NotExpr represents logical negation.
@@ -1251,16 +1252,21 @@ func (p *Program) Emit() []byte {
 	}
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
-		buf.WriteString("    const path = \"/proc/self/statm\";\n")
+		buf.WriteString("    const path = \"/proc/self/status\";\n")
 		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
 		buf.WriteString("    defer f.close();\n")
-		buf.WriteString("    var buf: [64]u8 = undefined;\n")
+		buf.WriteString("    var buf: [4096]u8 = undefined;\n")
 		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
-		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \" \" );\n")
-		buf.WriteString("    _ = it.next(); // skip total program size\n")
-		buf.WriteString("    if (it.next()) |tok| {\n")
-		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * 4096;\n")
+		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \"\\n\");\n")
+		buf.WriteString("    while (it.next()) |line| {\n")
+		buf.WriteString("        if (std.mem.startsWith(u8, line, \"VmRSS:\")) {\n")
+		buf.WriteString("            var it2 = std.mem.splitAny(u8, line, \" \t\");\n")
+		buf.WriteString("            _ = it2.next(); // label\n")
+		buf.WriteString("            if (it2.next()) |tok| {\n")
+		buf.WriteString("                const kb = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
+		buf.WriteString("                return kb * 1024;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -3723,7 +3729,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		} else {
 			expr = &IntLit{Value: 0}
 		}
-		mutable := true
+		mutable := funDepth <= 1
 		if funDepth > 0 && len(localMutablesStack) > 0 {
 			m := localMutablesStack[len(localMutablesStack)-1]
 			mutable = m[s.Var.Name]
