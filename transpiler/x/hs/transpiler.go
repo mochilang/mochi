@@ -2635,7 +2635,9 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	groupItemType = map[string]string{}
 	structDefs = map[string]*TypeDecl{}
 	structCount = 0
-	preludeHide = map[string]bool{}
+	preludeHide = map[string]bool{
+		"repeat": true,
+	}
 	mutatedGlobal = map[string]bool{}
 	mutated = mutatedGlobal
 	locals = nil

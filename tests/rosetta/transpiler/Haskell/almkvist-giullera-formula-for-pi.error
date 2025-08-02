@@ -1,0 +1,485 @@
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:411:13: error:
+    • Couldn't match expected type: [Int] -> IO (Map.Map String Int)
+                  with actual type: IO ()
+    • The function ‘loop’ is applied to one value argument,
+        but its type ‘IO ()’ has none
+      In a stmt of a 'do' block: loop xs
+      In the expression:
+        do if p > n then do return () else return ()
+           t <- newIORef (n)
+           e <- newIORef (0 :: Int)
+           let loop = ...
+           ....
+    |
+411 |             loop xs
+    |             ^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:435:13: error:
+    • Couldn't match expected type: [a] -> IO ()
+                  with actual type: IO ()
+    • The function ‘loop’ is applied to one value argument,
+        but its type ‘IO ()’ has none
+      In a stmt of a 'do' block: loop xs
+      In the expression:
+        do c <- newIORef (0 :: Int)
+           let loop = ...
+           loop
+           if (deref c) > 0 then
+               do writeIORef f $! (Map.insert (show p) (deref c) (deref f))
+           else
+               return ()
+           ....
+    • Relevant bindings include
+        xs :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:420:17)
+        p :: a
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:420:15)
+        n :: IORef a
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:417:5)
+        primes :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:415:15)
+        x :: a
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:415:13)
+        factorSmall :: a -> [a] -> IO (Map.Map String Int)
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:415:1)
+    |
+435 |             loop xs
+    |             ^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:438:71: error:
+    • Couldn't match expected type: String -> t0 -> String
+                  with actual type: [Char]
+    • The function ‘"get"’ is applied to two value arguments,
+        but its type ‘[Char]’ has none
+      In the second argument of ‘(Map.!)’, namely
+        ‘"get" (show (deref n)) 0’
+      In the first argument of ‘(+)’, namely
+        ‘(deref f) Map.! "get" (show (deref n)) 0’
+    |
+438 |         writeIORef f $! (Map.insert (show (deref n)) ((deref f) Map.! "get" (show (deref n)) 0 + 1) (deref f))
+    |                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:448:29: error:
+    • Couldn't match expected type: Map.Map String Int
+                  with actual type: [a7]
+    • In the second argument of ‘($!)’, namely
+        ‘(take k (deref exps)
+            ++
+              [(deref exps).get k 0 - 6 * (fn !! k)]
+                ++ drop (k + 1) (deref exps))’
+      In a stmt of a 'do' block:
+        writeIORef exps
+          $!
+            (take k (deref exps)
+               ++
+                 [(deref exps).get k 0 - 6 * (fn !! k)]
+                   ++ drop (k + 1) (deref exps))
+      In the expression:
+        do writeIORef exps
+             $!
+               (take k (deref exps)
+                  ++
+                    [(deref exps).get k 0 - 6 * (fn !! k)]
+                      ++ drop (k + 1) (deref exps))
+    |
+448 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 - 6 * (fn !! k)] ++ drop (k + 1) (deref exps))
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:448:43: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘take’, namely ‘(deref exps)’
+      In the first argument of ‘(++)’, namely ‘take k (deref exps)’
+    |
+448 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 - 6 * (fn !! k)] ++ drop (k + 1) (deref exps))
+    |                                           ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:448:81: error:
+    • Couldn't match expected type: [a7]
+                  with actual type: Map.Map String Int
+    • In the first argument of ‘(!!)’, namely ‘fn’
+      In the second argument of ‘(*)’, namely ‘(fn !! k)’
+      In the second argument of ‘(-)’, namely ‘6 * (fn !! k)’
+    |
+448 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 - 6 * (fn !! k)] ++ drop (k + 1) (deref exps))
+    |                                                                                 ^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:448:114: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘drop’, namely ‘(deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘drop (k + 1) (deref exps)’
+    |
+448 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 - 6 * (fn !! k)] ++ drop (k + 1) (deref exps))
+    |                                                                                                                  ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:450:25: error:
+    • Couldn't match expected type: Map.Map String Int
+                  with actual type: [a7]
+    • In the second argument of ‘($!)’, namely
+        ‘(take "2" (deref exps)
+            ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))’
+      In a stmt of a 'do' block:
+        writeIORef exps
+          $!
+            (take "2" (deref exps)
+               ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+      In the expression:
+        do exps <- newIORef (unsafePerformIO (factorialExp (6 * n) primes))
+           let fn = unsafePerformIO (factorialExp n primes)
+           mapM_
+             (\ k
+                -> do writeIORef exps
+                        $! (take k (deref exps) ++ ... ++ drop (k + 1) (deref exps)))
+             fn
+           writeIORef exps
+             $!
+               (take "2" (deref exps)
+                  ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+           ....
+    |
+450 |     writeIORef exps $! (take "2" (deref exps) ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:450:30: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the first argument of ‘take’, namely ‘"2"’
+      In the first argument of ‘(++)’, namely ‘take "2" (deref exps)’
+      In the second argument of ‘($!)’, namely
+        ‘(take "2" (deref exps)
+            ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))’
+    |
+450 |     writeIORef exps $! (take "2" (deref exps) ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+    |                              ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:450:41: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘take’, namely ‘(deref exps)’
+      In the first argument of ‘(++)’, namely ‘take "2" (deref exps)’
+    |
+450 |     writeIORef exps $! (take "2" (deref exps) ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+    |                                         ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:450:88: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘[Char]’
+    • In the first argument of ‘drop’, namely ‘("2" ++ 1)’
+      In the second argument of ‘(++)’, namely
+        ‘drop ("2" ++ 1) (deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘[(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps)’
+    |
+450 |     writeIORef exps $! (take "2" (deref exps) ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+    |                                                                                        ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:450:105: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘drop’, namely ‘(deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘drop ("2" ++ 1) (deref exps)’
+    |
+450 |     writeIORef exps $! (take "2" (deref exps) ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+    |                                                                                                         ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:454:29: error:
+    • Couldn't match expected type: Map.Map String Int
+                  with actual type: [a7]
+    • In the second argument of ‘($!)’, namely
+        ‘(take k (deref exps)
+            ++
+              [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))’
+      In a stmt of a 'do' block:
+        writeIORef exps
+          $!
+            (take k (deref exps)
+               ++
+                 [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+      In the expression:
+        do writeIORef exps
+             $!
+               (take k (deref exps)
+                  ++
+                    [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+    |
+454 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:454:43: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘take’, namely ‘(deref exps)’
+      In the first argument of ‘(++)’, namely ‘take k (deref exps)’
+    |
+454 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+    |                                           ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:454:77: error:
+    • Couldn't match expected type: [a7]
+                  with actual type: Map.Map String Int
+    • In the first argument of ‘(!!)’, namely ‘ft2’
+      In the second argument of ‘(+)’, namely ‘(ft2 !! k)’
+      In the expression: (deref exps).get k 0 + (ft2 !! k)
+    |
+454 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+    |                                                                             ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:454:111: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘drop’, namely ‘(deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘drop (k + 1) (deref exps)’
+    |
+454 |         writeIORef exps $! (take k (deref exps) ++ [(deref exps).get k 0 + (ft2 !! k)] ++ drop (k + 1) (deref exps))
+    |                                                                                                               ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:456:25: error:
+    • Couldn't match expected type: Map.Map String Int
+                  with actual type: [a7]
+    • In the second argument of ‘($!)’, namely
+        ‘(take "3" (deref exps)
+            ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))’
+      In a stmt of a 'do' block:
+        writeIORef exps
+          $!
+            (take "3" (deref exps)
+               ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+      In the expression:
+        do exps <- newIORef (unsafePerformIO (factorialExp (6 * n) primes))
+           let fn = unsafePerformIO (factorialExp n primes)
+           mapM_
+             (\ k
+                -> do writeIORef exps
+                        $! (take k (deref exps) ++ ... ++ drop (k + 1) (deref exps)))
+             fn
+           writeIORef exps
+             $!
+               (take "2" (deref exps)
+                  ++ [(deref exps).get "2" 0 + 5] ++ drop ("2" ++ 1) (deref exps))
+           ....
+    |
+456 |     writeIORef exps $! (take "3" (deref exps) ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:456:30: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the first argument of ‘take’, namely ‘"3"’
+      In the first argument of ‘(++)’, namely ‘take "3" (deref exps)’
+      In the second argument of ‘($!)’, namely
+        ‘(take "3" (deref exps)
+            ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))’
+    |
+456 |     writeIORef exps $! (take "3" (deref exps) ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+    |                              ^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:456:41: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘take’, namely ‘(deref exps)’
+      In the first argument of ‘(++)’, namely ‘take "3" (deref exps)’
+    |
+456 |     writeIORef exps $! (take "3" (deref exps) ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+    |                                         ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:456:88: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘[Char]’
+    • In the first argument of ‘drop’, namely ‘("3" ++ 1)’
+      In the second argument of ‘(++)’, namely
+        ‘drop ("3" ++ 1) (deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘[(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps)’
+    |
+456 |     writeIORef exps $! (take "3" (deref exps) ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+    |                                                                                        ^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:456:105: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a7]
+      Expected: IORef [a7]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘drop’, namely ‘(deref exps)’
+      In the second argument of ‘(++)’, namely
+        ‘drop ("3" ++ 1) (deref exps)’
+    |
+456 |     writeIORef exps $! (take "3" (deref exps) ++ [(deref exps).get "3" 0 - 1] ++ drop ("3" ++ 1) (deref exps))
+    |                                                                                                         ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:459:63: error:
+    • Couldn't match expected type ‘IO Int’ with actual type ‘Int’
+    • In the first argument of ‘unsafePerformIO’, namely ‘(int k)’
+      In the expression: unsafePerformIO (int k)
+      In the second argument of ‘(++)’, namely
+        ‘[unsafePerformIO (int k)]’
+    |
+459 |         writeIORef keys $! ((deref keys) ++ [unsafePerformIO (int k)])
+    |                                                               ^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:460:18: error:
+    • Couldn't match type ‘Int’ with ‘[Char]’
+      Expected: IORef (Map.Map String String)
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the second argument of ‘mapM_’, namely ‘(deref exps)’
+      In a stmt of a 'do' block:
+        mapM_
+          (\ k
+             -> do writeIORef keys
+                     $! ((deref keys) ++ [unsafePerformIO (int k)]))
+          (deref exps)
+    |
+460 |         ) (deref exps)
+    |                  ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:466:29: error:
+    • Couldn't match type: Map.Map String Int
+                     with: [a]
+      Expected: IORef [a]
+        Actual: IORef (Map.Map String Int)
+    • In the first argument of ‘deref’, namely ‘exps’
+      In the first argument of ‘(!!)’, namely ‘(deref exps)’
+      In the expression: (deref exps) !! show p
+    • Relevant bindings include
+        e :: a
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:466:17)
+    |
+466 |             let e = ((deref exps) !! show p)
+    |                             ^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:466:38: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the second argument of ‘(!!)’, namely ‘show p’
+      In the expression: (deref exps) !! show p
+      In an equation for ‘e’: e = ((deref exps) !! show p)
+    |
+466 |             let e = ((deref exps) !! show p)
+    |                                      ^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:476:13: error:
+    • Couldn't match expected type: [Int] -> IO [Int]
+                  with actual type: IO ()
+    • The function ‘loop’ is applied to one value argument,
+        but its type ‘IO ()’ has none
+      In a stmt of a 'do' block: loop xs
+      In the expression:
+        do let e = ((deref exps) !! show p)
+           i <- newIORef (0 :: Int)
+           let loop = ...
+           loop
+           ....
+    |
+476 |             loop xs
+    |             ^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:491:44: error:
+    • Couldn't match expected type: IO [Char]
+                  with actual type: [Char]
+    • In the first argument of ‘unsafePerformIO’, namely
+        ‘(take (length s - length s - pw) (drop (length s - pw) s))’
+      In the first argument of ‘newIORef’, namely
+        ‘(unsafePerformIO
+            (take (length s - length s - pw) (drop (length s - pw) s)))’
+      In a stmt of a 'do' block:
+        frac <- newIORef
+                  (unsafePerformIO
+                     (take (length s - length s - pw) (drop (length s - pw) s)))
+    |
+491 |         frac <- newIORef (unsafePerformIO (take (length s - length s - pw) (drop (length s - pw) s)))
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:538:57: error:
+    • Couldn't match type: [Char]
+                     with: IO [Char]
+      Expected: IO [Char]
+        Actual: String
+    • In the first argument of ‘unsafePerformIO’, namely
+        ‘(show (- pw))’
+      In the first argument of ‘newIORef’, namely
+        ‘(unsafePerformIO (show (- pw)))’
+      In a stmt of a 'do' block:
+        pwStr <- newIORef (unsafePerformIO (show (- pw)))
+    |
+538 |                     pwStr <- newIORef (unsafePerformIO (show (-pw)))
+    |                                                         ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:559:123: error:
+    • Couldn't match type: [a9]
+                     with: IORef [Int]
+      Expected: IO (IORef [Int])
+        Actual: IO [a9]
+    • In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigFromInt 1)’
+      In the first argument of ‘bigMulPow10’, namely
+        ‘(unsafePerformIO (bigFromInt 1))’
+      In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigMulPow10
+            (unsafePerformIO (bigFromInt 1)) ((deref denomPow) - 70))’
+    |
+559 |                 if (deref denomPow) >= 70 && unsafePerformIO (bigCmp diff (unsafePerformIO (bigMulPow10 (unsafePerformIO (bigFromInt 1)) ((deref denomPow) - 70)))) < 0 then do
+    |                                                                                                                           ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:569:65: error:
+    • Couldn't match type: [a11]
+                     with: IORef [a]
+      Expected: IO (IORef [a])
+        Actual: IO [a11]
+    • In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigFromInt 1)’
+      In the first argument of ‘bigMulPow10’, namely
+        ‘(unsafePerformIO (bigFromInt 1))’
+      In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigMulPow10
+            (unsafePerformIO (bigFromInt 1))
+            ((deref denomPow) + 2 * precision))’
+    • Relevant bindings include
+        target :: [a]
+          (bound at /workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:569:9)
+    |
+569 |     let target = unsafePerformIO (bigMulPow10 (unsafePerformIO (bigFromInt 1)) ((deref denomPow) + 2 * precision))
+    |                                                                 ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/almkvist-giullera-formula-for-pi.hs:571:70: error:
+    • Couldn't match type: [a8]
+                     with: IORef [Int]
+      Expected: IO (IORef [Int])
+        Actual: IO [a8]
+    • In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigFromInt 1)’
+      In the first argument of ‘bigMulPow10’, namely
+        ‘(unsafePerformIO (bigFromInt 1))’
+      In the first argument of ‘unsafePerformIO’, namely
+        ‘(bigMulPow10 (unsafePerformIO (bigFromInt 1)) (precision + 1))’
+    |
+571 |     high <- newIORef (unsafePerformIO (bigMulPow10 (unsafePerformIO (bigFromInt 1)) (precision + 1)))
+    |                                                                      ^^^^^^^^^^^^
