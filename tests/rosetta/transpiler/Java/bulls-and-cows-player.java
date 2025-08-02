@@ -4,8 +4,8 @@ public class Main {
 
     static int indexOf(String s, String ch) {
         int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
+        while (i < _runeLen(s)) {
+            if ((_substr(s, i, i + 1).equals(ch))) {
                 return i;
             }
             i = i + 1;
@@ -16,20 +16,20 @@ public class Main {
     static String[] fields(String s) {
         String[] words = new String[]{};
         String cur = "";
-        int i = 0;
-        while (i < s.length()) {
-            String ch = s.substring(i, i + 1);
+        int i_1 = 0;
+        while (i_1 < _runeLen(s)) {
+            String ch = _substr(s, i_1, i_1 + 1);
             if ((ch.equals(" ")) || (ch.equals("\t")) || (ch.equals("\n"))) {
-                if (cur.length() > 0) {
+                if (_runeLen(cur) > 0) {
                     words = java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new);
                     cur = "";
                 }
             } else {
                 cur = cur + ch;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        if (cur.length() > 0) {
+        if (_runeLen(cur) > 0) {
             words = java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new);
         }
         return words;
@@ -38,18 +38,18 @@ public class Main {
     static String[] makePatterns() {
         String[] digits = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9"};
         String[] pats = new String[]{};
-        int i = 0;
-        while (i < digits.length) {
+        int i_2 = 0;
+        while (i_2 < digits.length) {
             int j = 0;
             while (j < digits.length) {
-                if (j != i) {
+                if (j != i_2) {
                     int k = 0;
                     while (k < digits.length) {
-                        if (k != i && k != j) {
+                        if (k != i_2 && k != j) {
                             int l = 0;
                             while (l < digits.length) {
-                                if (l != i && l != j && l != k) {
-                                    pats = java.util.stream.Stream.concat(java.util.Arrays.stream(pats), java.util.stream.Stream.of(digits[i] + digits[j] + digits[k] + digits[l])).toArray(String[]::new);
+                                if (l != i_2 && l != j && l != k) {
+                                    pats = java.util.stream.Stream.concat(java.util.Arrays.stream(pats), java.util.stream.Stream.of(digits[i_2] + digits[j] + digits[k] + digits[l])).toArray(String[]::new);
                                 }
                                 l = l + 1;
                             }
@@ -59,7 +59,7 @@ public class Main {
                 }
                 j = j + 1;
             }
-            i = i + 1;
+            i_2 = i_2 + 1;
         }
         return pats;
     }
@@ -72,7 +72,7 @@ public class Main {
                 System.out.println("Oops, check scoring.");
                 return;
             }
-            String guess = String.valueOf(patterns[0]);
+            String guess = patterns[0];
             patterns = java.util.Arrays.copyOfRange(patterns, 1, patterns.length);
             int cows = 0;
             int bulls = 0;
@@ -98,21 +98,21 @@ public class Main {
             String[] next = new String[]{};
             int idx = 0;
             while (idx < patterns.length) {
-                String pat = String.valueOf(patterns[idx]);
-                int c = 0;
-                int b = 0;
-                int i = 0;
-                while (i < 4) {
-                    String cg = guess.substring(i, i + 1);
-                    String cp = pat.substring(i, i + 1);
+                String pat = patterns[idx];
+                int c_1 = 0;
+                int b_1 = 0;
+                int i_3 = 0;
+                while (i_3 < 4) {
+                    String cg = _substr(guess, i_3, i_3 + 1);
+                    String cp = _substr(pat, i_3, i_3 + 1);
                     if ((cg.equals(cp))) {
-                        b = b + 1;
+                        b_1 = b_1 + 1;
                     } else                     if (((Number)(pat.indexOf(cg))).intValue() >= 0) {
-                        c = c + 1;
+                        c_1 = c_1 + 1;
                     }
-                    i = i + 1;
+                    i_3 = i_3 + 1;
                 }
-                if (c == cows && b == bulls) {
+                if (c_1 == cows && b_1 == bulls) {
                     next = java.util.stream.Stream.concat(java.util.Arrays.stream(next), java.util.stream.Stream.of(pat)).toArray(String[]::new);
                 }
                 idx = idx + 1;
@@ -156,5 +156,15 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
     }
 }

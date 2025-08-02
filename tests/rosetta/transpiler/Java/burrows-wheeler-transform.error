@@ -1,0 +1,33 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:104: error: illegal escape character
+        String[] examples = new String[]{"banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"};
+                                                                                                                                                                        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:104: error: illegal escape character
+        String[] examples = new String[]{"banana", "appellee", "dogwood", "TO BE OR NOT TO BE OR WANT TO BE OR NOT?", "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES", "\x02ABC\x03"};
+                                                                                                                                                                               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:105: error: illegal start of type
+        for (String t : examples) {
+        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:105: error: ';' expected
+        for (String t : examples) {
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:105: error: <identifier> expected
+        for (String t : examples) {
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:124: error: illegal escape character
+            stx = "\x02";
+                    ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:125: error: illegal escape character
+            etx = "\x03";
+                    ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:120: error: unnamed classes are a preview feature and are disabled by default.
+    public static void main(String[] args) {
+                  ^
+  (use --enable-preview to enable unnamed classes)
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:125: error: illegal start of expression
+            etx = "\x03";
+                  ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenburrows-wheeler-transform3382042359/001/Main.java:169: error: class, interface, enum, or record expected
+}
+^
+10 errors

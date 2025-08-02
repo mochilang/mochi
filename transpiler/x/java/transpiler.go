@@ -1521,17 +1521,28 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		}
 		dims := strings.Count(raw, "[]")
 		base := strings.TrimSuffix(raw, strings.Repeat("[]", dims))
-		fmt.Fprintf(w, "%s[] %s", jt, sanitize(s.Name))
+		fmt.Fprintf(w, "%s[] %s = new %s[1]%s;\n", jt, sanitize(s.Name), base, strings.Repeat("[]", dims))
 		if s.Expr != nil {
-			fmt.Fprintf(w, " = new %s[1]%s;\n", base, strings.Repeat("[]", dims))
-			fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
-			emitCastExpr(w, s.Expr, typ)
-			fmt.Fprint(w, ";\n")
-		} else {
-			fmt.Fprintf(w, " = new %s[1]%s;\n", base, strings.Repeat("[]", dims))
+			if indent == "    " {
+				fmt.Fprint(w, "    static {\n")
+				fmt.Fprint(w, "        "+sanitize(s.Name)+"[0] = ")
+				emitCastExpr(w, s.Expr, typ)
+				fmt.Fprint(w, ";\n    }\n")
+			} else {
+				fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
+				emitCastExpr(w, s.Expr, typ)
+				fmt.Fprint(w, ";\n")
+			}
+		} else if indent != "    " {
 			fmt.Fprint(w, indent+sanitize(s.Name)+"[0] = ")
 			fmt.Fprint(w, defaultValue(jt))
 			fmt.Fprint(w, ";\n")
+		}
+		if varDecls != nil {
+			varDecls[s.Name] = s
+		}
+		if varTypes != nil {
+			varTypes[s.Name] = typ
 		}
 		return
 	}

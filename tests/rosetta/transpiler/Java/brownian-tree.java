@@ -1,11 +1,11 @@
 public class Main {
-    static int w = 400;
-    static int h = 300;
-    static int n = 15000;
-    static int frost = 255;
-    static int[][] grid = new int[][]{};
-    static int y = 0;
-    static int a = 0;
+    static int w;
+    static int h;
+    static int n;
+    static int frost;
+    static int[][] grid;
+    static int y;
+    static int a;
 
     static boolean inBounds(int x, int y) {
         return x >= 0 && x < w && y >= 0 && y < h;
@@ -19,7 +19,7 @@ public class Main {
                 if (!(dx == 0 && dy == 0)) {
                     int nx = x + dx;
                     int ny = y + dy;
-                    if (inBounds(nx, ny) && grid[ny][nx] == frost) {
+                    if (((Boolean)(inBounds(nx, ny))) && grid[ny][nx] == frost) {
                         return true;
                     }
                 }
@@ -33,6 +33,12 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            w = 400;
+            h = 300;
+            n = 15000;
+            frost = 255;
+            grid = new int[][]{};
+            y = 0;
             while (y < h) {
                 int[] row = new int[]{};
                 int x = 0;
@@ -44,6 +50,7 @@ public class Main {
                 y = y + 1;
             }
 grid[h / 3][w / 3] = frost;
+            a = 0;
             while (a < n) {
                 int px = Math.floorMod(_now(), w);
                 int py = Math.floorMod(_now(), h);
@@ -64,16 +71,16 @@ grid[h / 3][w / 3] = frost;
                         continue;
                     }
                 } else {
-                    boolean lost = false;
+                    boolean lost_1 = false;
                     while (!(Boolean)hasNeighbor(px, py)) {
                         px = px + (Math.floorMod(_now(), 3)) - 1;
                         py = py + (Math.floorMod(_now(), 3)) - 1;
                         if (!(Boolean)inBounds(px, py)) {
-                            lost = true;
+                            lost_1 = true;
                             break;
                         }
                     }
-                    if (lost) {
+                    if (lost_1) {
                         continue;
                     }
                 }

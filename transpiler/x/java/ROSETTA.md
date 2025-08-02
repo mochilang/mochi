@@ -1,12 +1,12 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 16:42 GMT+7
+Last updated: 2025-08-02 17:49 GMT+7
 
-## Rosetta Checklist (387/491)
+## Rosetta Checklist (395/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 46.0ms | 71.64KB |
+| 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
 | 2 | 100-doors-3 | ✓ | 10.0ms | 0B |
 | 3 | 100-doors | ✓ | 11.0ms | 0B |
 | 4 | 100-prisoners | ✓ | 684.0ms | 43.51MB |
@@ -124,36 +124,36 @@ Last updated: 2025-08-02 16:42 GMT+7
 | 116 | bitmap-b-zier-curves-cubic | ✓ | 23.0ms | -2878472B |
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 40.0ms | -2878472B |
 | 118 | bitmap-bresenhams-line-algorithm | ✓ | 22.0ms | 92.34KB |
-| 119 | bitmap-flood-fill |   |  |  |
-| 120 | bitmap-histogram |   |  |  |
-| 121 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 122 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 123 | bitmap-read-a-ppm-file |   |  |  |
-| 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 125 | bitmap-write-a-ppm-file |   |  |  |
-| 126 | bitmap | ✓ | 341.0ms | 115.98KB |
-| 127 | bitwise-io-1 | ✓ | 36.0ms | 55.18KB |
-| 128 | bitwise-io-2 | ✓ | 60.0ms | 125.30KB |
-| 129 | bitwise-operations | ✓ | 36.0ms | 40.73KB |
-| 130 | blum-integer | ✓ | 50.0ms | 94.55KB |
-| 131 | boolean-values | ✓ | 30.0ms | 39.56KB |
-| 132 | box-the-compass | ✓ | 46.0ms | 97.79KB |
-| 133 | boyer-moore-string-search | ✓ | 57.0ms | 113.94KB |
-| 134 | brazilian-numbers | ✓ | 3.49s | 72.62KB |
-| 135 | break-oo-privacy | ✓ | 50.0ms | 98.93KB |
+| 119 | bitmap-flood-fill | ✓ | 24.0ms | 45.24KB |
+| 120 | bitmap-histogram | ✓ | 27.0ms | 54.98KB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 31.0ms | 53.35KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 316.0ms | 46.08KB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 53.0ms | 134.12KB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 37.0ms | 95.67KB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 45.0ms | 121.02KB |
+| 126 | bitmap | ✓ | 248.0ms | 115.98KB |
+| 127 | bitwise-io-1 | ✓ | 28.0ms | 55.18KB |
+| 128 | bitwise-io-2 | ✓ | 50.0ms | 125.30KB |
+| 129 | bitwise-operations | ✓ | 25.0ms | 40.73KB |
+| 130 | blum-integer | ✓ | 40.0ms | 94.66KB |
+| 131 | boolean-values | ✓ | 24.0ms | 39.56KB |
+| 132 | box-the-compass | ✓ | 37.0ms | 99.98KB |
+| 133 | boyer-moore-string-search | ✓ | 45.0ms | 113.94KB |
+| 134 | brazilian-numbers | ✓ | 2.50s | 72.78KB |
+| 135 | break-oo-privacy | ✓ | 44.0ms | 99.40KB |
 | 136 | brilliant-numbers |   |  |  |
-| 137 | brownian-tree | ✓ | 64.12s | 520.70KB |
-| 138 | bulls-and-cows-player | ✓ | 144.0ms | 67.21KB |
-| 139 | bulls-and-cows |   |  |  |
-| 140 | burrows-wheeler-transform | ✓ | 70.0ms | 104.86KB |
-| 141 | caesar-cipher-1 | ✓ | 51.0ms | 73.05KB |
-| 142 | caesar-cipher-2 | ✓ | 41.0ms | 73.05KB |
-| 143 | calculating-the-value-of-e |   |  |  |
-| 144 | calendar---for-real-programmers-1 | ✓ | 34.0ms | 80.95KB |
-| 145 | calendar---for-real-programmers-2 | ✓ | 30.0ms | 80.95KB |
-| 146 | calendar | ✓ | 40.0ms | 80.95KB |
+| 137 | brownian-tree | ✓ | 38.25s | 520.72KB |
+| 138 | bulls-and-cows-player | ✓ | 93.0ms | 67.32KB |
+| 139 | bulls-and-cows | ✓ |  |  |
+| 140 | burrows-wheeler-transform |   | 70.0ms | 104.86KB |
+| 141 | caesar-cipher-1 | ✓ | 35.0ms | 73.05KB |
+| 142 | caesar-cipher-2 | ✓ | 32.0ms | 73.05KB |
+| 143 | calculating-the-value-of-e | ✓ |  |  |
+| 144 | calendar---for-real-programmers-1 | ✓ | 51.0ms | 82.28KB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 55.0ms | 82.28KB |
+| 146 | calendar | ✓ | 57.0ms | 82.33KB |
 | 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function | ✓ | 24.0ms | 25.62KB |
+| 148 | call-a-foreign-language-function | ✓ | 19.0ms | 25.62KB |
 | 149 | call-a-function-1 | ✓ | 21.0ms | 0B |
 | 150 | call-a-function-10 | ✓ | 46.0ms | 45.60KB |
 | 151 | call-a-function-11 | ✓ | 32.0ms | 37.83KB |

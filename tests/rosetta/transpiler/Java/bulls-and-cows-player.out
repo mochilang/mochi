@@ -1,0 +1,8 @@
+Cows and bulls/player
+You think of four digit number of unique digits in the range 1 to 9.
+I guess.  You score my guess:
+    A correct digit but not in the correct place is a cow.
+    A correct digit in the correct place is a bull.
+You give my score as two numbers separated with a space.
+My guess: 1234.  Score? (c b) 
+I did it. :)

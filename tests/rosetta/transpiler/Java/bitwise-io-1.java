@@ -54,8 +54,8 @@ w.nbits = w.nbits - 8;
 w.bits = w.bits + lshift(c, 32 - width - w.nbits);
 w.nbits = w.nbits + width;
         while (w.nbits >= 8) {
-            int b = Math.floorMod(rshift(w.bits, 24), 256);
-w.data = java.util.stream.IntStream.concat(java.util.Arrays.stream(w.data), java.util.stream.IntStream.of(b)).toArray();
+            int b_1 = Math.floorMod(rshift(w.bits, 24), 256);
+w.data = java.util.stream.IntStream.concat(java.util.Arrays.stream(w.data), java.util.stream.IntStream.of(b_1)).toArray();
 w.bits = ((Number)((_modPow2(w.bits, 24)))).intValue() * 256;
 w.nbits = w.nbits - 8;
         }
@@ -82,26 +82,26 @@ w.nbits = 0;
     }
 
     static String toBinary(int n, int bits) {
-        String b = "";
+        String b_2 = "";
         int val = n;
-        int i = 0;
-        while (i < bits) {
-            b = String.valueOf(Math.floorMod(val, 2)) + b;
+        int i_1 = 0;
+        while (i_1 < bits) {
+            b_2 = _p(Math.floorMod(val, 2)) + b_2;
             val = val / 2;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return b;
+        return b_2;
     }
 
     static String bytesToBits(int[] bs) {
         String out = "[";
-        int i = 0;
-        while (i < bs.length) {
-            out = out + String.valueOf(toBinary(bs[i], 8));
-            if (i + 1 < bs.length) {
+        int i_2 = 0;
+        while (i_2 < bs.length) {
+            out = out + String.valueOf(toBinary(bs[i_2], 8));
+            if (i_2 + 1 < bs.length) {
                 out = out + " ";
             }
-            i = i + 1;
+            i_2 = i_2 + 1;
         }
         out = out + "]";
         return out;
@@ -156,5 +156,9 @@ w.nbits = 0;
     static int _modPow2(int v, int n) {
         long mask = (1L << n) - 1L;
         return (int)(((long)v) & mask);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }
