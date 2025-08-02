@@ -1174,9 +1174,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        return _now_seed;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    if (! _now_seeded) {\n")
-		buf.WriteString("        if (std.process.getEnvVarOwned(std.heap.page_allocator, \"MOCHI_NOW_SEED\")) |s| {\n")
-		buf.WriteString("            defer std.heap.page_allocator.free(s);\n")
-		buf.WriteString("            if (std.fmt.parseInt(i64, s, 10)) |v| {\n")
+		buf.WriteString("        if (std.process.getEnvVarOwned(std.heap.page_allocator, \"MOCHI_NOW_SEED\")) |env_seed| {\n")
+		buf.WriteString("            defer std.heap.page_allocator.free(env_seed);\n")
+		buf.WriteString("            if (std.fmt.parseInt(i64, env_seed, 10)) |v| {\n")
 		buf.WriteString("                _now_seed = v;\n")
 		buf.WriteString("                _now_seeded = true;\n")
 		buf.WriteString("                _now_seed = @mod(_now_seed * 1664525 + 1013904223, 2147483647);\n")
@@ -2107,6 +2107,11 @@ func (c *CallExpr) emit(w io.Writer) {
 			if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
 				exp := params[i]
 				at := zigTypeFromExpr(a)
+				if v, ok := a.(*VarRef); ok {
+					if vd, ok2 := varDecls[v.Name]; ok2 && strings.HasPrefix(vd.Type, "[") {
+						at = vd.Type
+					}
+				}
 				if exp != at {
 					switch {
 					case exp == "i64" && at == "f64":
@@ -2117,6 +2122,9 @@ func (c *CallExpr) emit(w io.Writer) {
 						io.WriteString(w, "@as(f64, @floatFromInt(")
 						a.emit(w)
 						io.WriteString(w, "))")
+					case strings.HasPrefix(exp, "[]") && strings.HasPrefix(at, "["):
+						a.emit(w)
+						io.WriteString(w, "[0..]")
 					default:
 						a.emit(w)
 					}
@@ -3540,15 +3548,28 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			expr = &IntLit{Value: 0}
 		}
 		name := s.Let.Name
+		if funDepth > 0 && globalNames[name] {
+			name = name + "_var"
+		}
 		alias := uniqueName(name)
-		aliasStack[len(aliasStack)-1][name] = alias
+		aliasStack[len(aliasStack)-1][s.Let.Name] = alias
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		vd := &VarDecl{Name: alias, Value: expr}
-		varDecls[name] = vd
+		varDecls[s.Let.Name] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Let.Name] = "[]" + lst.ElemType
+			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
+				elem := lst.ElemType
+				if elem == "" {
+					elem = "i64"
+				}
+				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
+				lst.ElemType = ""
+				varTypes[s.Let.Name] = vd.Type
+			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
+				lst.ElemType = vd.Type[2:]
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -3592,11 +3613,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			mutable = m[s.Var.Name]
 		}
 		name := s.Var.Name
+		if funDepth > 0 && globalNames[name] {
+			name = name + "_var"
+		}
 		alias := uniqueName(name)
-		aliasStack[len(aliasStack)-1][name] = alias
+		aliasStack[len(aliasStack)-1][s.Var.Name] = alias
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
-		varDecls[name] = vd
+		varDecls[s.Var.Name] = vd
 		if s.Var.Type != nil {
 			vd.Type = toZigType(s.Var.Type)
 			varTypes[s.Var.Name] = vd.Type
@@ -3605,6 +3629,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			if inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Var.Name] = "[]" + lst.ElemType
+			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
+				elem := lst.ElemType
+				if elem == "" {
+					elem = "i64"
+				}
+				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), elem)
+				lst.ElemType = ""
+				varTypes[s.Var.Name] = vd.Type
 			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
 				lst.ElemType = vd.Type[2:]
 			}
