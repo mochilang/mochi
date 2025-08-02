@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-02 07:17 UTC
+Last updated: 2025-08-02 07:30 UTC
 
-## Rosetta Golden Test Checklist (207/491)
+## Rosetta Golden Test Checklist (204/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -43,13 +43,13 @@ Last updated: 2025-08-02 07:17 UTC
 | 34 | additive-primes | ✓ | 71µs |  |
 | 35 | address-of-a-variable | ✓ | 35µs |  |
 | 36 | adfgvx-cipher |   |  |  |
-| 37 | aks-test-for-primes | ✓ | 47µs |  |
+| 37 | aks-test-for-primes | ✓ | 128µs |  |
 | 38 | algebraic-data-types |   |  |  |
 | 39 | align-columns |   |  |  |
-| 40 | aliquot-sequence-classifications | ✓ | 43.475ms |  |
-| 41 | almkvist-giullera-formula-for-pi |   |  |  |
+| 40 | aliquot-sequence-classifications |   | 43.475ms |  |
+| 41 | almkvist-giullera-formula-for-pi |   | 120.186ms | 260.0 KB |
 | 42 | almost-prime | ✓ | 111µs |  |
-| 43 | amb | ✓ | 69µs |  |
+| 43 | amb |   | 69µs |  |
 | 44 | amicable-pairs | ✓ | 2.322012s | 344.0 KB |
 | 45 | anagrams-deranged-anagrams | ✓ | 181µs |  |
 | 46 | anagrams | ✓ | 368µs |  |
@@ -64,15 +64,15 @@ Last updated: 2025-08-02 07:17 UTC
 | 55 | anti-primes | ✓ | 41.638ms |  |
 | 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 30µs |  |
 | 57 | apply-a-callback-to-an-array-1 | ✓ | 48µs |  |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 41µs |  |
+| 58 | apply-a-callback-to-an-array-2 |   | 41µs |  |
 | 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 86µs |  |
 | 60 | approximate-equality | ✓ | 49µs |  |
 | 61 | arbitrary-precision-integers-included- |   |  |  |
-| 62 | archimedean-spiral |   |  |  |
+| 62 | archimedean-spiral | ✓ | 443µs |  |
 | 63 | arena-storage-pool | ✓ | 65µs |  |
 | 64 | arithmetic-complex | ✓ | 32µs |  |
 | 65 | arithmetic-derivative | ✓ | 372µs |  |
-| 66 | arithmetic-evaluation | ✓ | 21µs |  |
+| 66 | arithmetic-evaluation |   | 21µs |  |
 | 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 21µs |  |
 | 68 | arithmetic-geometric-mean | ✓ | 15µs |  |
 | 69 | arithmetic-integer-1 | ✓ | 21µs |  |
