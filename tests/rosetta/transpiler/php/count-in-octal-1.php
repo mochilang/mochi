@@ -17,8 +17,8 @@ function _now() {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -47,9 +47,9 @@ $__start = _now();
   main();
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

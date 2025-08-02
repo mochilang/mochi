@@ -1,7 +1,7 @@
 foo
 bar
 {
-  "duration_us": 69,
+  "duration_us": 79,
   "memory_bytes": 8288,
   "name": "main"
 }
