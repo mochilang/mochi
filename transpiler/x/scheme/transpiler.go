@@ -811,11 +811,20 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		if _, ok := typ.(types.MapType); ok {
+		switch typ.(type) {
+		case types.MapType:
+			needHash = true
+			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
+		case types.ListType:
+			return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
+		default:
+			// Fallback to hash-table semantics when the container type
+			// is unknown. This avoids treating maps as lists when type
+			// information is lost, which previously resulted in
+			// runtime errors for string keys.
 			needHash = true
 			return &List{Elems: []Node{Symbol("hash-table-set!"), target, idxNode, val}}, nil
 		}
-		return &List{Elems: []Node{Symbol("list-set!"), target, idxNode, val}}, nil
 	case st.Assign != nil && len(st.Assign.Field) > 0:
 		var target Node = Symbol(st.Assign.Name)
 		for i := 0; i < len(st.Assign.Field)-1; i++ {

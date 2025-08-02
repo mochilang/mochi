@@ -1,0 +1,15 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+
+Test case base = 10, begin = 1, end = 100:
+Subset:  
+Kaprekar:[1, 9, 45, 55, 99]
+Fail:1 not in subset
+
+Test case base = 17, begin = 10, end = gg:
+Subset:  
+Kaprekar:[3d, d4, gg]
+Fail:3d not in subset

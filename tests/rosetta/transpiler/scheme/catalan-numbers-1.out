@@ -1,0 +1,20 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+1
+1
+2
+5
+14
+42
+132
+429
+1430
+4862
+16796
+58786
+208012
+742900
+2674440

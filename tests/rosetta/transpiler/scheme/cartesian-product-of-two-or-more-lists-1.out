@@ -1,0 +1,9 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+[[1 3] [1 4] [2 3] [2 4]]
+[[3 1] [3 2] [4 1] [4 2]]
+[]
+[]
