@@ -40,8 +40,8 @@ fun user_main(): Unit {
     var a: Any? = ab[0] as Any?
     var b: Any? = ab[1] as Any?
     var cb: Any? = (f())[1] as Any?
-    var d: Int = g(a as Int, cb.toDouble())
-    var e: Int = g(d, b.toDouble())
+    var d: Int = g(a as Int, cb as Double)
+    var e: Int = g(d, b as Double)
     var i: Int = g(d, 2.0)
     var list: MutableList<Int> = mutableListOf<Int>()
     list = run { val _tmp = list.toMutableList(); _tmp.add(a as Int); _tmp } as MutableList<Int>

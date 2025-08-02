@@ -327,6 +327,7 @@ type DataClass struct {
 	Fields   []ParamDecl
 	Extends  string
 	IsObject bool
+	Methods  []*FuncDef
 }
 
 // SumType represents a simple sealed interface with variants.
@@ -352,8 +353,9 @@ func (u *SumType) emit(w io.Writer, indentLevel int) {
 }
 
 type ParamDecl struct {
-	Name string
-	Type string
+	Name    string
+	Type    string
+	Default string
 }
 
 // StructLit represents instantiation of a data class.
@@ -384,24 +386,38 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 		}
 		return
 	}
-	if len(d.Fields) == 0 && d.Extends != "" {
-		io.WriteString(w, "class "+d.Name+" : "+d.Extends+"()")
-		return
-	}
-	io.WriteString(w, "data class "+d.Name+"(")
-	for i, f := range d.Fields {
-		if i > 0 {
-			io.WriteString(w, ", ")
+	if len(d.Fields) == 0 {
+		io.WriteString(w, "class "+d.Name)
+		if d.Extends != "" {
+			io.WriteString(w, " : "+d.Extends+"()")
 		}
-		typ := f.Type
-		if typ == "" {
-			typ = "Any"
+	} else {
+		io.WriteString(w, "data class "+d.Name+"(")
+		for i, f := range d.Fields {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			typ := f.Type
+			if typ == "" {
+				typ = "Any"
+			}
+			io.WriteString(w, "var "+f.Name+": "+typ)
+			if f.Default != "" {
+				io.WriteString(w, " = "+f.Default)
+			}
 		}
-		io.WriteString(w, "var "+f.Name+": "+typ)
+		io.WriteString(w, ")")
+		if d.Extends != "" {
+			io.WriteString(w, " : "+d.Extends+"()")
+		}
 	}
-	io.WriteString(w, ")")
-	if d.Extends != "" {
-		io.WriteString(w, " : "+d.Extends+"()")
+	if len(d.Methods) > 0 {
+		io.WriteString(w, " {\n")
+		for _, m := range d.Methods {
+			m.emit(w, indentLevel+1)
+		}
+		indent(w, indentLevel)
+		io.WriteString(w, "}")
 	}
 }
 
@@ -2470,6 +2486,45 @@ func kotlinTypeFromType(t types.Type) string {
 	return ""
 }
 
+func kotlinZeroValue(t types.Type) string {
+	switch tt := t.(type) {
+	case types.IntType, *types.IntType, types.Int64Type, *types.Int64Type:
+		return "0"
+	case types.FloatType, *types.FloatType:
+		return "0.0"
+	case types.StringType, *types.StringType:
+		return "\"\""
+	case types.BoolType, *types.BoolType:
+		return "false"
+	case types.ListType:
+		elem := kotlinTypeFromType(tt.Elem)
+		if elem == "" {
+			elem = "Any?"
+		}
+		return fmt.Sprintf("mutableListOf<%s>()", elem)
+	case types.MapType:
+		k := kotlinTypeFromType(tt.Key)
+		v := kotlinTypeFromType(tt.Value)
+		if k == "" {
+			k = "Any?"
+		}
+		if v == "" {
+			v = "Any?"
+		}
+		return fmt.Sprintf("mutableMapOf<%s, %s>()", k, v)
+	case types.OptionType:
+		return "null"
+	case types.StructType:
+		fields := make([]string, len(tt.Order))
+		for i, f := range tt.Order {
+			fields[i] = fmt.Sprintf("%s = %s", f, kotlinZeroValue(tt.Fields[f]))
+		}
+		return fmt.Sprintf("%s(%s)", tt.Name, strings.Join(fields, ", "))
+	default:
+		return "null"
+	}
+}
+
 func guessType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
@@ -2735,9 +2790,7 @@ func newVarRef(env *types.Env, name string) *VarRef {
 		if t, err := env.GetVar(name); err == nil {
 			typ = kotlinTypeFromType(t)
 			hasVar = true
-		}
-		if !hasVar {
-			if _, ok := env.GetFunc(name); ok {
+			if _, ok := t.(types.FuncType); ok && localFuncs[name] {
 				isFunc = true
 			}
 		}
@@ -3161,16 +3214,38 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				var fields []ParamDecl
 				fieldMap := map[string]types.Type{}
 				var order []string
+				var methods []*FuncDef
 				for _, m := range st.Type.Members {
-					if m.Field == nil {
-						continue
+					if m.Field != nil {
+						ft := types.ResolveTypeRef(m.Field.Type, env)
+						fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft), Default: kotlinZeroValue(ft)})
+						fieldMap[m.Field.Name] = ft
+						order = append(order, m.Field.Name)
+					} else if m.Method != nil {
+						ms := m.Method
+						mEnv := types.NewEnv(env)
+						params := make([]string, len(ms.Params))
+						for i, p0 := range ms.Params {
+							pt := types.ResolveTypeRef(p0.Type, env)
+							mEnv.SetVar(p0.Name, pt, true)
+							typ := kotlinType(p0.Type)
+							if typ == "" {
+								typ = "Any"
+							}
+							params[i] = fmt.Sprintf("%s: %s", p0.Name, typ)
+						}
+						prevRet := currentRetType
+						ret := kotlinType(ms.Return)
+						currentRetType = ret
+						body, err := convertStmts(mEnv, ms.Body)
+						currentRetType = prevRet
+						if err != nil {
+							return nil, err
+						}
+						methods = append(methods, &FuncDef{Name: ms.Name, Params: params, Ret: ret, Body: body})
 					}
-					ft := types.ResolveTypeRef(m.Field.Type, env)
-					fields = append(fields, ParamDecl{Name: m.Field.Name, Type: kotlinTypeFromType(ft)})
-					fieldMap[m.Field.Name] = ft
-					order = append(order, m.Field.Name)
 				}
-				extraDecls = append(extraDecls, &DataClass{Name: st.Type.Name, Fields: fields})
+				extraDecls = append(extraDecls, &DataClass{Name: st.Type.Name, Fields: fields, Methods: methods})
 				if env != nil {
 					env.SetStruct(st.Type.Name, types.StructType{Name: st.Type.Name, Fields: fieldMap, Order: order})
 				}
