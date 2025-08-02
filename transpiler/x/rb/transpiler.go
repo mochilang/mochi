@@ -2244,10 +2244,11 @@ func (m *MethodCallExpr) emit(e *emitter) {
 }
 
 func (a *AppendExpr) emit(e *emitter) {
-	a.List.emit(e)
-	io.WriteString(e.w, " + [")
-	a.Elem.emit(e)
-	io.WriteString(e.w, "]")
+       io.WriteString(e.w, "(")
+       a.List.emit(e)
+       io.WriteString(e.w, " << ")
+       a.Elem.emit(e)
+       io.WriteString(e.w, ")")
 }
 
 func (s *SliceExpr) emit(e *emitter) {
