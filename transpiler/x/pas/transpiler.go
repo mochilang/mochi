@@ -1920,13 +1920,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			if st.Var.Value != nil {
 				if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
-					vd.Init = &CallExpr{Name: vd.Type + ".Create"}
 					if !hasVar(vd.Name) {
 						currProg.Vars = append(currProg.Vars, vd)
 					}
 					if vd.Type != "" {
 						varTypes[vd.Name] = vd.Type
 					}
+					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: vd.Type + ".Create"}})
 					continue
 				}
 				ex, err := convertExpr(env, st.Var.Value)
@@ -1962,18 +1962,26 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			if err != nil {
 				return nil, err
 			}
+			startType := inferType(start)
+			if startType == "" {
+				if mt, ok := types.ExprType(st.For.Source, env).(types.MapType); ok {
+					keyT := pasTypeFromType(mt.Key)
+					valT := pasTypeFromType(mt.Value)
+					startType = fmt.Sprintf("specialize TFPGMap<%s, %s>", keyT, valT)
+				}
+			}
 			typ := "integer"
 			if st.For.RangeEnd == nil {
-				if t := inferType(start); strings.HasPrefix(t, "array of ") {
-					elem := strings.TrimPrefix(t, "array of ")
+				if strings.HasPrefix(startType, "array of ") {
+					elem := strings.TrimPrefix(startType, "array of ")
 					switch elem {
 					case "string":
 						typ = "string"
 					case "boolean":
 						typ = "boolean"
 					}
-				} else if strings.HasPrefix(t, "specialize TFPGMap") {
-					parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+				} else if strings.HasPrefix(startType, "specialize TFPGMap") {
+					parts := strings.TrimPrefix(startType, "specialize TFPGMap<")
 					parts = strings.TrimSuffix(parts, ">")
 					kv := strings.Split(parts, ",")
 					if len(kv) == 2 {
@@ -2005,7 +2013,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					return nil, err
 				}
 				out = append(out, &ForRangeStmt{Name: name, Start: start, End: end, Body: body})
-			} else if strings.HasPrefix(inferType(start), "specialize TFPGMap") {
+			} else if strings.HasPrefix(startType, "specialize TFPGMap") {
 				idxVar := fmt.Sprintf("%s_idx", name)
 				varTypes[idxVar] = "integer"
 				setVarType(idxVar, "integer")
