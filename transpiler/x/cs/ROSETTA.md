@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 468/491
-Last updated: 2025-08-02 17:53 +0700
+Last updated: 2025-08-02 20:23 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -221,7 +221,7 @@ Last updated: 2025-08-02 17:53 +0700
 | 213 | concurrent-computing-3 | ✓ | 13.992ms | 1.0MB |
 | 214 | conditional-structures-1 | ✓ |  | 5.3MB |
 | 215 | conditional-structures-10 | ✓ | 874µs | 16.0KB |
-| 216 | conditional-structures-2 | ✓ | 1µs |  |
+| 216 | conditional-structures-2 | ✓ | 1µs | 59.3KB |
 | 217 | conditional-structures-3 | ✓ | 1µs |  |
 | 218 | conditional-structures-4 | ✓ |  |  |
 | 219 | conditional-structures-5 | ✓ | 1µs |  |
