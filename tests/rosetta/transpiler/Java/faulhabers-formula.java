@@ -47,15 +47,15 @@ a[j - 1] = _mul((_bigrat(j, null)), (_sub(a[j - 1], a[j])));
     static void main() {
         int p = 0;
         while (p < 10) {
-            String line = String.valueOf(p) + " :";
+            String line = _p(p) + " :";
             int j_1 = 0;
             while (j_1 <= p) {
                 BigRat c_1 = coeff(p, j_1);
-                if (!(String.valueOf(c_1).equals("0/1"))) {
-                    line = line + " " + String.valueOf(c_1) + "×n";
+                if (!(_p(c_1).equals("0/1"))) {
+                    line = line + " " + _p(c_1) + "×n";
                     int exp = p + 1 - j_1;
                     if (exp > 1) {
-                        line = line + "^" + String.valueOf(exp);
+                        line = line + "^" + _p(exp);
                     }
                 }
                 j_1 = j_1 + 1;
@@ -149,4 +149,8 @@ a[j - 1] = _mul((_bigrat(j, null)), (_sub(a[j - 1], a[j])));
     }
     static java.math.BigInteger _num(Object x) { return (x instanceof BigRat) ? ((BigRat)x).num : _toBigInt(x); }
     static java.math.BigInteger _denom(Object x) { return (x instanceof BigRat) ? ((BigRat)x).den : java.math.BigInteger.ONE; }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
 }

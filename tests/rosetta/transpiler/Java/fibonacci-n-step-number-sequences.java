@@ -4,7 +4,7 @@ public class Main {
         String s = "";
         int i = 0;
         while (i < xs.length) {
-            s = s + String.valueOf(xs[i]);
+            s = s + _p(_geti(xs, i));
             if (i < xs.length - 1) {
                 s = s + " ";
             }
@@ -73,5 +73,13 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

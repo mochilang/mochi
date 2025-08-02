@@ -1,4 +1,88 @@
-## Progress (2025-08-02 14:21 +0700)
+## Progress (2025-08-02 14:42 +0700)
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
+- java: add missing factorial permutations file (f364fd9069)
+
 - scala: cast map lookups and handle length of Any (56d6eb3ab9)
 
 - scala: cast map lookups and handle length of Any (56d6eb3ab9)

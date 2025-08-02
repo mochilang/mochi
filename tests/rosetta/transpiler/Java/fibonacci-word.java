@@ -5,7 +5,7 @@ public class Main {
         int i = 0;
         while (i < _runeLen(s)) {
             String ch = _substr(s, i, i + 1);
-            if (counts.containsKey(ch)) {
+            if (((Boolean)(counts.containsKey(ch)))) {
 counts.put(ch, (int)(((int)(counts).getOrDefault(ch, 0))) + 1);
             } else {
 counts.put(ch, 1);
@@ -39,12 +39,12 @@ counts.put(ch, 1);
         int n = 1;
         while (n < 10) {
             String s = String.valueOf(fibonacciWord(n));
-            System.out.println(String.valueOf(String.valueOf(pad(String.valueOf(n), 3)) + String.valueOf(pad(String.valueOf(_runeLen(s)), 9))) + "  " + String.valueOf(fmt(entropy(s))) + "  " + s);
+            System.out.println(String.valueOf(String.valueOf(pad(_p(n), 3)) + String.valueOf(pad(_p(_runeLen(s)), 9))) + "  " + String.valueOf(fmt(entropy(s))) + "  " + s);
             n = n + 1;
         }
         while (n <= 37) {
             String s_1 = String.valueOf(fibonacciWord(n));
-            System.out.println(String.valueOf(String.valueOf(pad(String.valueOf(n), 3)) + String.valueOf(pad(String.valueOf(_runeLen(s_1)), 9))) + "  " + String.valueOf(fmt(entropy(s_1))));
+            System.out.println(String.valueOf(String.valueOf(pad(_p(n), 3)) + String.valueOf(pad(_p(_runeLen(s_1)), 9))) + "  " + String.valueOf(fmt(entropy(s_1))));
             n = n + 1;
         }
     }
@@ -59,7 +59,7 @@ counts.put(ch, 1);
 
     static String fmt(double x) {
         double y = floorf(x * 100000000.0 + 0.5) / 100000000.0;
-        String s_2 = String.valueOf(y);
+        String s_2 = _p(y);
         int dot = ((Number)(s_2.indexOf("."))).intValue();
         if (dot == 0 - 1) {
             s_2 = s_2 + ".00000000";
@@ -134,5 +134,9 @@ counts.put(ch, 1);
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

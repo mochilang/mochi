@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 14:39 GMT+7
+Last updated: 2025-08-02 14:55 GMT+7
 
-## Rosetta Checklist (374/491)
+## Rosetta Checklist (377/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -401,26 +401,26 @@ Last updated: 2025-08-02 14:39 GMT+7
 | 393 | factorions | ✓ | 282.0ms | 101.88KB |
 | 394 | factors-of-a-mersenne-number | ✓ | 2.48s | 69.59KB |
 | 395 | factors-of-an-integer | ✓ | 51.0ms | 91.18KB |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 69.0ms | 94.59KB |
-| 400 | faulhabers-formula | ✓ | 59.0ms | 104.95KB |
-| 401 | faulhabers-triangle | ✓ | 62.0ms | 63.96KB |
-| 402 | feigenbaum-constant-calculation | ✓ | 34.0ms | 90.30KB |
-| 403 | fermat-numbers | ✓ | 44.0ms | 104.59KB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 30.0ms | 55.80KB |
-| 405 | fibonacci-sequence-1 | ✓ | 14.0ms | 0B |
-| 406 | fibonacci-sequence-2 | ✓ | 15.0ms | 0B |
-| 407 | fibonacci-sequence-3 | ✓ | 16.0ms | 0B |
-| 408 | fibonacci-sequence-4 | ✓ | 27.0ms | 46.04KB |
-| 409 | fibonacci-sequence-5 | ✓ | 15.0ms | 2.60KB |
-| 410 | fibonacci-word-fractal | ✓ | 20.0ms | 32.72KB |
-| 411 | fibonacci-word | ✓ | 2.93s | 108.74KB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 37.0ms | 90.41KB |
-| 413 | file-input-output-1 | ✓ | 16.0ms | 1008B |
-| 414 | file-input-output-2 | ✓ | 14.0ms | 1008B |
-| 415 | file-input-output-3 | ✓ | 26.0ms | 33.31KB |
+| 396 | fairshare-between-two-and-more | ✓ | 7.73s | 103.43KB |
+| 397 | farey-sequence | ✓ | 63.0ms | 94.10KB |
+| 398 | fast-fourier-transform | ✓ | 53.0ms | 104.90KB |
+| 399 | fasta-format | ✓ | 56.0ms | 94.74KB |
+| 400 | faulhabers-formula | ✓ | 82.0ms | 104.95KB |
+| 401 | faulhabers-triangle | ✓ | 86.0ms | 64.51KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 51.0ms | 90.06KB |
+| 403 | fermat-numbers | ✓ | 58.0ms | 104.52KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 38.0ms | 55.91KB |
+| 405 | fibonacci-sequence-1 | ✓ | 21.0ms | 0B |
+| 406 | fibonacci-sequence-2 | ✓ | 19.0ms | 0B |
+| 407 | fibonacci-sequence-3 | ✓ | 20.0ms | 0B |
+| 408 | fibonacci-sequence-4 | ✓ | 34.0ms | 46.15KB |
+| 409 | fibonacci-sequence-5 | ✓ | 25.0ms | 2.71KB |
+| 410 | fibonacci-word-fractal | ✓ | 29.0ms | 32.83KB |
+| 411 | fibonacci-word | ✓ | 4.17s | 108.90KB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 52.0ms | 90.41KB |
+| 413 | file-input-output-1 | ✓ | 19.0ms | 1008B |
+| 414 | file-input-output-2 | ✓ | 20.0ms | 1008B |
+| 415 | file-input-output-3 | ✓ | 30.0ms | 33.31KB |
 | 416 | file-modification-time | ✓ | 23.0ms | 37.96KB |
 | 417 | file-size-distribution | ✓ | 40.0ms | 113.43KB |
 | 418 | file-size | ✓ | 29.0ms | 69.33KB |

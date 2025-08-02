@@ -760,6 +760,8 @@ func inferType(e Expr) string {
 			return "bigrat"
 		case "_padStart":
 			return "String"
+		case "_p":
+			return "String"
 		case "_sha256":
 			return "int[]"
 		case "Math.floorMod":
@@ -3099,7 +3101,7 @@ func isStringExpr(e Expr) bool {
 			}
 		}
 	case *CallExpr:
-		if ex.Func == "String.valueOf" {
+		if ex.Func == "String.valueOf" || ex.Func == "_p" {
 			return true
 		}
 	case *SubstringExpr:

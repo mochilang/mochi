@@ -24,7 +24,7 @@ public class Main {
         String fl = filename.toLowerCase();
         for (String ext : extensions) {
             String ext2 = "." + ext.toLowerCase();
-            if (endsWith(fl, ext2)) {
+            if (((Boolean)(endsWith(fl, ext2)))) {
                 return new Object[]{true, ext};
             }
         }
@@ -53,9 +53,9 @@ public class Main {
         String[] tests = new String[]{"MyData.a##", "MyData.tar.Gz", "MyData.gzip", "MyData.7z.backup", "MyData...", "MyData", "MyData_v1.0.tar.bz2", "MyData_v1.0.bz2"};
         for (String t : tests) {
             Object[] res = fileExtInList(t);
-            boolean ok = ((boolean)(res[0]));
+            boolean ok = ((Boolean)(((boolean)(res[0]))));
             String ext = ((String)(res[1]));
-            System.out.println(String.valueOf(pad(t, 20)) + " => " + String.valueOf(ok) + "  (extension = " + ext + ")");
+            System.out.println(String.valueOf(pad(t, 20)) + " => " + _p(ok) + "  (extension = " + ext + ")");
         }
     }
     public static void main(String[] args) {
@@ -105,5 +105,9 @@ public class Main {
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }
