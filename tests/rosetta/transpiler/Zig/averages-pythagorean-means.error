@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/averages-pythagorean-means.zig:39:9: error: variable of type 'comptime_float' must be const or comptime
-/tmp/averages-pythagorean-means.zig:39:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
