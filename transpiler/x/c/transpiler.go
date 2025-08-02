@@ -1905,9 +1905,23 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 	if (exprIsString(b.Left) || exprIsString(b.Right) || inferExprType(currentEnv, b.Left) == "const char*" || inferExprType(currentEnv, b.Right) == "const char*") &&
 		(b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		io.WriteString(w, "strcmp(")
-		b.Left.emitExpr(w)
+		if exprIsBool(b.Left) {
+			needStrBool = true
+			io.WriteString(w, "str_bool(")
+			b.Left.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emitExpr(w)
+		}
 		io.WriteString(w, ", ")
-		b.Right.emitExpr(w)
+		if exprIsBool(b.Right) {
+			needStrBool = true
+			io.WriteString(w, "str_bool(")
+			b.Right.emitExpr(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emitExpr(w)
+		}
 		io.WriteString(w, ") ")
 		switch b.Op {
 		case "==":
