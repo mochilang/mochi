@@ -538,7 +538,7 @@ type LitExpr struct {
 
 func (l *LitExpr) emit(w io.Writer) {
 	if l.IsString {
-		fmt.Fprintf(w, "%q", l.Value)
+		io.WriteString(w, swiftQuote(l.Value))
 	} else {
 		fmt.Fprint(w, l.Value)
 	}
@@ -555,6 +555,33 @@ func (n *NameExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprint(w, esc(n.Name))
 	}
+}
+
+func swiftQuote(s string) string {
+	var buf bytes.Buffer
+	buf.WriteByte('"')
+	for _, r := range s {
+		switch r {
+		case '\n':
+			buf.WriteString("\\n")
+		case '\r':
+			buf.WriteString("\\r")
+		case '\t':
+			buf.WriteString("\\t")
+		case '\\':
+			buf.WriteString("\\\\")
+		case '"':
+			buf.WriteString("\\\"")
+		default:
+			if r < 0x20 || r == 0x7f {
+				fmt.Fprintf(&buf, "\\u{%04X}", r)
+			} else {
+				buf.WriteRune(r)
+			}
+		}
+	}
+	buf.WriteByte('"')
+	return buf.String()
 }
 
 type ArrayLit struct{ Elems []Expr }
@@ -1198,9 +1225,25 @@ type UnaryExpr struct {
 
 func (u *UnaryExpr) emit(w io.Writer) {
 	if u.Op == "!" {
-		fmt.Fprint(w, "(!")
-		u.Expr.emit(w)
-		fmt.Fprint(w, ")")
+		if ie, ok := u.Expr.(*IndexExpr); ok && !ie.Force {
+			fmt.Fprint(w, "!(")
+			ie.emit(w)
+			fmt.Fprint(w, " ?? false)")
+		} else if ce, ok := u.Expr.(*CastExpr); ok {
+			if ie, ok2 := ce.Expr.(*IndexExpr); ok2 && !ie.Force {
+				fmt.Fprint(w, "!(")
+				ie.emit(w)
+				fmt.Fprint(w, " ?? false)")
+			} else {
+				fmt.Fprint(w, "(!")
+				u.Expr.emit(w)
+				fmt.Fprint(w, ")")
+			}
+		} else {
+			fmt.Fprint(w, "(!")
+			u.Expr.emit(w)
+			fmt.Fprint(w, ")")
+		}
 		return
 	}
 	fmt.Fprint(w, u.Op)
@@ -2158,6 +2201,14 @@ func rootNamePostfix(pe *parser.PostfixExpr) string {
 }
 
 func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
+	// pre-scan function declarations to collect mutating parameter info
+	for _, st := range list {
+		if st.Fun != nil {
+			if _, err := convertStmt(env, st); err != nil {
+				return nil, err
+			}
+		}
+	}
 	updated := map[string]bool{}
 	findUpdatedVars(env, list, updated)
 	var out []Stmt
@@ -3635,7 +3686,7 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				if m, ok := baseType.(types.MapType); ok {
 					baseType = types.OptionType{Elem: m.Value}
-					force = true
+					// Map lookups return optionals; avoid force unwrap
 				} else if l, ok := baseType.(types.ListType); ok {
 					baseType = l.Elem
 					if i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
@@ -4392,7 +4443,7 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &CallExpr{Func: "_p", Args: []Expr{arg}}, nil
+			return &CallExpr{Func: "str", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "keys" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
