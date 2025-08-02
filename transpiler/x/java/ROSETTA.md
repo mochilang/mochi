@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 15:39 GMT+7
+Last updated: 2025-08-02 16:19 GMT+7
 
-## Rosetta Checklist (379/491)
+## Rosetta Checklist (387/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -430,7 +430,7 @@ Last updated: 2025-08-02 15:39 GMT+7
 | 422 | find-common-directory-path | ✓ | 46.0ms | 95.39KB |
 | 423 | find-duplicate-files | ✓ | 44.0ms | 78.67KB |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 54.0ms | 77.91KB |
-| 425 | find-limit-of-recursion | ✓ | 43.0ms | 712B |
+| 425 | find-limit-of-recursion | ✓ | 35.0ms | 552B |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 48.0ms | 94.14KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 45.0ms | 87.87KB |
@@ -446,16 +446,16 @@ Last updated: 2025-08-02 15:39 GMT+7
 | 438 | fixed-length-records-1 | ✓ | 18.0ms | 33.36KB |
 | 439 | fixed-length-records-2 | ✓ | 29.0ms | 53.98KB |
 | 440 | fizzbuzz-1 | ✓ | 17.0ms | 696B |
-| 441 | fizzbuzz-2 |   |  |  |
-| 442 | fizzbuzz |   |  |  |
-| 443 | flatten-a-list-1 |   |  |  |
-| 444 | flatten-a-list-2 |   |  |  |
-| 445 | flipping-bits-game |   |  |  |
-| 446 | flow-control-structures-1 |   |  |  |
-| 447 | flow-control-structures-2 |   |  |  |
-| 448 | flow-control-structures-3 |   |  |  |
-| 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm | ✓ | 56.0ms | 108.69KB |
+| 441 | fizzbuzz-2 | ✓ | 18.0ms | 1.12KB |
+| 442 | fizzbuzz | ✓ | 14.0ms | 808B |
+| 443 | flatten-a-list-1 | ✓ | 20.0ms | 1.27KB |
+| 444 | flatten-a-list-2 | ✓ | 13.0ms | 512B |
+| 445 | flipping-bits-game | ✓ | 33.0ms | 55.88KB |
+| 446 | flow-control-structures-1 | ✓ | 16.0ms | 448B |
+| 447 | flow-control-structures-2 | ✓ | 14.0ms | 496B |
+| 448 | flow-control-structures-3 | ✓ | 16.0ms | 448B |
+| 449 | flow-control-structures-4 | ✓ | 12.0ms | 512B |
+| 450 | floyd-warshall-algorithm |   | 56.0ms | 108.69KB |
 | 451 | floyd-warshall-algorithm2 |   |  |  |
 | 452 | floyds-triangle |   |  |  |
 | 453 | forest-fire |   |  |  |

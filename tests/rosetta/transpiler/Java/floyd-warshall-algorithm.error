@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenfloyd-warshall-algorithm677755867/001/Main.java:58: error: local variables referenced from a lambda expression must be final or effectively final
+        if (next[ui][vi] == 0 - 1) {
+            ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenfloyd-warshall-algorithm677755867/001/Main.java:64: error: local variables referenced from a lambda expression must be final or effectively final
+            cur = next[cur][vi];
+                  ^
+2 errors
