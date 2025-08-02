@@ -38,7 +38,7 @@ fun histogram(g: MutableList<MutableList<Int>>, bins: Int): MutableList<Int> {
     var h: MutableList<Int> = mutableListOf<Int>()
     var i: Int = 0
     while (i < bins) {
-        h = run { val _tmp = h.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
+        h = run { val _tmp = h.toMutableList(); _tmp.add(0); _tmp }
         i = i + 1
     }
     var y: Int = 0
@@ -47,8 +47,8 @@ fun histogram(g: MutableList<MutableList<Int>>, bins: Int): MutableList<Int> {
         var x: Int = 0
         while (x < row.size) {
             var p: Int = row[x]!!
-            var idx: Int = ((p * (bins - 1)) / 65535).toInt()
-            (h[idx]) = h[idx]!! + 1
+            var idx: Int = (((p * (bins - 1)) / 65535).toInt())
+            h[idx] = h[idx]!! + 1
             x = x + 1
         }
         y = y + 1
@@ -61,16 +61,16 @@ fun medianThreshold(h: MutableList<Int>): Int {
     var ub: BigInteger = (h.size - 1).toBigInteger()
     var lSum: Int = 0
     var uSum: Int = 0
-    while ((lb).toBigInteger().compareTo(ub) <= 0) {
+    while ((lb).toBigInteger().compareTo((ub)) <= 0) {
         if ((lSum + h[lb]!!) < (uSum + h[(ub).toInt()]!!)) {
             lSum = lSum + h[lb]!!
             lb = lb + 1
         } else {
             uSum = uSum + h[(ub).toInt()]!!
-            ub = ub.subtract(1.toBigInteger())
+            ub = ub.subtract((1).toBigInteger())
         }
     }
-    return ((ub.multiply(65535.toBigInteger())).divide(h.size.toBigInteger())).toInt()
+    return (((ub.multiply((65535).toBigInteger())).divide((h.size).toBigInteger())).toInt())
 }
 
 fun threshold(g: MutableList<MutableList<Int>>, t: Int): MutableList<MutableList<Int>> {
@@ -82,13 +82,13 @@ fun threshold(g: MutableList<MutableList<Int>>, t: Int): MutableList<MutableList
         var x: Int = 0
         while (x < row.size) {
             if (row[x]!! < t) {
-                newRow = run { val _tmp = newRow.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
+                newRow = run { val _tmp = newRow.toMutableList(); _tmp.add(0); _tmp }
             } else {
-                newRow = run { val _tmp = newRow.toMutableList(); _tmp.add(65535); _tmp } as MutableList<Int>
+                newRow = run { val _tmp = newRow.toMutableList(); _tmp.add(65535); _tmp }
             }
             x = x + 1
         }
-        out = run { val _tmp = out.toMutableList(); _tmp.add(newRow); _tmp } as MutableList<MutableList<Int>>
+        out = run { val _tmp = out.toMutableList(); _tmp.add(newRow); _tmp }
         y = y + 1
     }
     return out

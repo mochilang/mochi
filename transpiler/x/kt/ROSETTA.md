@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 17:54 +0700
+Last updated: 2025-08-02 20:26 +0700
 
 Completed tasks: **249/491**
 
@@ -128,7 +128,7 @@ Completed tasks: **249/491**
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 56.42ms | 3.4 MB |
 | 118 | bitmap-bresenhams-line-algorithm |  |  |  |
 | 119 | bitmap-flood-fill | ✓ | 11.94ms | 130.9 KB |
-| 120 | bitmap-histogram | ✓ | 30.05ms | 112.4 KB |
+| 120 | bitmap-histogram | ✓ | 21.35ms | 113.0 KB |
 | 121 | bitmap-midpoint-circle-algorithm |  |  |  |
 | 122 | bitmap-ppm-conversion-through-a-pipe |  |  |  |
 | 123 | bitmap-read-a-ppm-file |  |  |  |
