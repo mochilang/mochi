@@ -3295,8 +3295,8 @@ func dartType(t types.Type) string {
 		return "int"
 	case types.BigIntType:
 		return "BigInt"
-	case types.FloatType:
-		return "num"
+       case types.FloatType:
+               return "double"
 	case types.BigRatType:
 		useBigRat = true
 		return "BigRat"

@@ -434,7 +434,7 @@ Compiled and ran: 477/491
 | 425 | find-limit-of-recursion | ✓ | 29.661ms | 9.9 MB |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 641.594ms | 8.0 MB |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 11.548ms | 3.1 MB |
-| 428 | find-the-intersection-of-two-lines | ✓ | 16.314ms | 10.3 MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 19.654ms | 9.6 MB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 30.495ms | 6.6 MB |
 | 430 | find-the-missing-permutation | ✓ | 15.511ms | 10.7 MB |
 | 431 | first-class-environments | ✓ | 18.039ms | 11.0 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 477/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 17:53 +0700_
+_Last updated: 2025-08-02 13:31 +0000_

@@ -35,24 +35,24 @@ String _substr(String s, int start, int end) {
 }
 
 class Point {
-  num x;
-  num y;
+  double x;
+  double y;
   Point({required this.x, required this.y});
 }
 
 class Line {
-  num slope;
-  num yint;
+  double slope;
+  double yint;
   Line({required this.slope, required this.yint});
 }
 
 Line createLine(Point a, Point b) {
-  num slope = (b.y - a.y) / (b.x - a.x);
-  num yint = a.y - slope * a.x;
+  double slope = (b.y - a.y) / (b.x - a.x);
+  double yint = a.y - slope * a.x;
   return Line(slope: slope, yint: yint);
 }
 
-num evalX(Line l, num x) {
+double evalX(Line l, double x) {
   return l.slope * x + l.yint;
 }
 
@@ -60,8 +60,8 @@ Point intersection(Line l1, Line l2) {
   if (l1.slope == l2.slope) {
     return Point(x: 0.0, y: 0.0);
   }
-  num x = (l2.yint - l1.yint) / (l1.slope - l2.slope);
-  num y = evalX(l1, x);
+  double x = (l2.yint - l1.yint) / (l1.slope - l2.slope);
+  double y = evalX(l1, x);
   return Point(x: x, y: y);
 }
 
