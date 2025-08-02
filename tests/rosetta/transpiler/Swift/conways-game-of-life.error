@@ -1,438 +1,287 @@
 exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:126:20: error: invalid escape sequence in literal
-124 |     while (i < 300) {
-125 |         _ = step(&l)
-126 |         print(_p("\f"))
-    |                    `- error: invalid escape sequence in literal
-127 |         print(_p(String(describing: lifeString((l as! Life)))))
-128 |         i = ((i + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:174:24: error: invalid escape sequence in literal
+172 |         while (i < 300) {
+173 |             _ = step(&l)
+174 |             print(_p("\f"))
+    |                        `- error: invalid escape sequence in literal
+175 |             print(_p(String(describing: lifeString((l as! Life)))))
+176 |             i = Int((i &+ 1))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:131:1: warning: using '_' to ignore the result of a Void-returning function is redundant
-129 |     }
-130 | }
-131 | _ = main()
-    | `- warning: using '_' to ignore the result of a Void-returning function is redundant
-132 | 
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:95:36: warning: forced cast of '[Bool]' to same type has no effect
+ 93 |     func setCell(_ f: inout Field, _ x: Int, _ y: Int, _ b: Bool) {
+ 94 |         var rows: [[Bool]] = f.s
+ 95 |         var row: [Bool] = (rows[y] as! [Bool])
+    |                                    `- warning: forced cast of '[Bool]' to same type has no effect
+ 96 |         row[x] = (b as! Bool)
+ 97 |         rows[y] = (row as! [Bool])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:27:65: warning: forced cast of 'Int' to same type has no effect
- 25 | var seed: Int = 1
- 26 | func randN(_ n: Int) -> Int {
- 27 |     seed = ((Int(((seed * 1664525) + 1013904223)) % 2147483647) as! Int)
-    |                                                                 `- warning: forced cast of 'Int' to same type has no effect
- 28 |     return (seed % n)
- 29 | }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:96:21: warning: forced cast of 'Bool' to same type has no effect
+ 94 |         var rows: [[Bool]] = f.s
+ 95 |         var row: [Bool] = (rows[y] as! [Bool])
+ 96 |         row[x] = (b as! Bool)
+    |                     `- warning: forced cast of 'Bool' to same type has no effect
+ 97 |         rows[y] = (row as! [Bool])
+ 98 |         f.s = (rows as! [[Bool]])
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:38:26: warning: forced cast of 'Int' to same type has no effect
- 36 |         while (x < w) {
- 37 |             row = (_append(row, false) as! [Bool])
- 38 |             x = ((x + 1) as! Int)
-    |                          `- warning: forced cast of 'Int' to same type has no effect
- 39 |         }
- 40 |         rows = (_append(rows, row) as! [[Bool]])
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:97:24: warning: forced cast of '[Bool]' to same type has no effect
+ 95 |         var row: [Bool] = (rows[y] as! [Bool])
+ 96 |         row[x] = (b as! Bool)
+ 97 |         rows[y] = (row as! [Bool])
+    |                        `- warning: forced cast of '[Bool]' to same type has no effect
+ 98 |         f.s = (rows as! [[Bool]])
+ 99 |     }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:41:22: warning: forced cast of 'Int' to same type has no effect
- 39 |         }
- 40 |         rows = (_append(rows, row) as! [[Bool]])
- 41 |         y = ((y + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 42 |     }
- 43 |     return Field(s: rows, w: w, h: h)
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:98:21: warning: forced cast of '[[Bool]]' to same type has no effect
+ 96 |         row[x] = (b as! Bool)
+ 97 |         rows[y] = (row as! [Bool])
+ 98 |         f.s = (rows as! [[Bool]])
+    |                     `- warning: forced cast of '[[Bool]]' to same type has no effect
+ 99 |     }
+100 |     func state(_ f: Field, _ x: Int, _ y: Int) -> Bool {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:47:32: warning: forced cast of '[Bool]' to same type has no effect
- 45 | func setCell(_ f: inout Field, _ x: Int, _ y: Int, _ b: Bool) {
- 46 |     var rows: [[Bool]] = f.s
- 47 |     var row: [Bool] = (rows[y] as! [Bool])
-    |                                `- warning: forced cast of '[Bool]' to same type has no effect
- 48 |     row[x] = (b as! Bool)
- 49 |     rows[y] = (row as! [Bool])
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:109:43: warning: forced cast of 'Bool' to same type has no effect
+107 |             x = Int((x &+ f.w))
+108 |         }
+109 |         return (f.s[(y % f.h)][(x % f.w)] as! Bool)
+    |                                           `- warning: forced cast of 'Bool' to same type has no effect
+110 |     }
+111 |     func nextState(_ f: Field, _ x: Int, _ y: Int) -> Bool {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:48:17: warning: forced cast of 'Bool' to same type has no effect
- 46 |     var rows: [[Bool]] = f.s
- 47 |     var row: [Bool] = (rows[y] as! [Bool])
- 48 |     row[x] = (b as! Bool)
-    |                 `- warning: forced cast of 'Bool' to same type has no effect
- 49 |     rows[y] = (row as! [Bool])
- 50 |     f.s = (rows as! [[Bool]])
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:119:61: warning: forced cast of 'Field' to same type has no effect
+117 |             var dx: Int = -1
+118 |             while (dx <= 1) {
+119 |                 if ((!((dx == 0) && (dy == 0))) && state((f as! Field), Int((x &+ dx)), Int((y &+ dy)))) {
+    |                                                             `- warning: forced cast of 'Field' to same type has no effect
+120 |                     count = Int((count &+ 1))
+121 |                 }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:49:20: warning: forced cast of '[Bool]' to same type has no effect
- 47 |     var row: [Bool] = (rows[y] as! [Bool])
- 48 |     row[x] = (b as! Bool)
- 49 |     rows[y] = (row as! [Bool])
-    |                    `- warning: forced cast of '[Bool]' to same type has no effect
- 50 |     f.s = (rows as! [[Bool]])
- 51 | }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:126:59: warning: forced cast of 'Field' to same type has no effect
+124 |             dy = Int((dy &+ 1))
+125 |         }
+126 |         return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
+    |                                                           `- warning: forced cast of 'Field' to same type has no effect
+127 |     }
+128 |     func newLife(_ w: Int, _ h: Int) -> Life {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:50:17: warning: forced cast of '[[Bool]]' to same type has no effect
- 48 |     row[x] = (b as! Bool)
- 49 |     rows[y] = (row as! [Bool])
- 50 |     f.s = (rows as! [[Bool]])
-    |                 `- warning: forced cast of '[[Bool]]' to same type has no effect
- 51 | }
- 52 | func state(_ f: Field, _ x: Int, _ y: Int) -> Bool {
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:126:74: warning: forced cast of 'Int' to same type has no effect
+124 |             dy = Int((dy &+ 1))
+125 |         }
+126 |         return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
+    |                                                                          `- warning: forced cast of 'Int' to same type has no effect
+127 |     }
+128 |     func newLife(_ w: Int, _ h: Int) -> Life {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:56:24: warning: forced cast of 'Int' to same type has no effect
- 54 |     var y = y
- 55 |     while (y < 0) {
- 56 |         y = ((y + f.h) as! Int)
-    |                        `- warning: forced cast of 'Int' to same type has no effect
- 57 |     }
- 58 |     while (x < 0) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:59:24: warning: forced cast of 'Int' to same type has no effect
- 57 |     }
- 58 |     while (x < 0) {
- 59 |         x = ((x + f.w) as! Int)
-    |                        `- warning: forced cast of 'Int' to same type has no effect
- 60 |     }
- 61 |     return (f.s[(y % f.h)][(x % f.w)] as! Bool)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:61:39: warning: forced cast of 'Bool' to same type has no effect
- 59 |         x = ((x + f.w) as! Int)
- 60 |     }
- 61 |     return (f.s[(y % f.h)][(x % f.w)] as! Bool)
-    |                                       `- warning: forced cast of 'Bool' to same type has no effect
- 62 | }
- 63 | func nextState(_ f: Field, _ x: Int, _ y: Int) -> Bool {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:71:57: warning: forced cast of 'Field' to same type has no effect
- 69 |         var dx: Int = -1
- 70 |         while (dx <= 1) {
- 71 |             if ((!((dx == 0) && (dy == 0))) && state((f as! Field), ((x + dx) as! Int), ((y + dy) as! Int))) {
-    |                                                         `- warning: forced cast of 'Field' to same type has no effect
- 72 |                 count = ((count + 1) as! Int)
- 73 |             }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:71:79: warning: forced cast of 'Int' to same type has no effect
- 69 |         var dx: Int = -1
- 70 |         while (dx <= 1) {
- 71 |             if ((!((dx == 0) && (dy == 0))) && state((f as! Field), ((x + dx) as! Int), ((y + dy) as! Int))) {
-    |                                                                               `- warning: forced cast of 'Int' to same type has no effect
- 72 |                 count = ((count + 1) as! Int)
- 73 |             }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:71:99: warning: forced cast of 'Int' to same type has no effect
- 69 |         var dx: Int = -1
- 70 |         while (dx <= 1) {
- 71 |             if ((!((dx == 0) && (dy == 0))) && state((f as! Field), ((x + dx) as! Int), ((y + dy) as! Int))) {
-    |                                                                                                   `- warning: forced cast of 'Int' to same type has no effect
- 72 |                 count = ((count + 1) as! Int)
- 73 |             }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:72:38: warning: forced cast of 'Int' to same type has no effect
- 70 |         while (dx <= 1) {
- 71 |             if ((!((dx == 0) && (dy == 0))) && state((f as! Field), ((x + dx) as! Int), ((y + dy) as! Int))) {
- 72 |                 count = ((count + 1) as! Int)
-    |                                      `- warning: forced cast of 'Int' to same type has no effect
- 73 |             }
- 74 |             dx = ((dx + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:74:28: warning: forced cast of 'Int' to same type has no effect
- 72 |                 count = ((count + 1) as! Int)
- 73 |             }
- 74 |             dx = ((dx + 1) as! Int)
-    |                            `- warning: forced cast of 'Int' to same type has no effect
- 75 |         }
- 76 |         dy = ((dy + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:76:24: warning: forced cast of 'Int' to same type has no effect
- 74 |             dx = ((dx + 1) as! Int)
- 75 |         }
- 76 |         dy = ((dy + 1) as! Int)
-    |                        `- warning: forced cast of 'Int' to same type has no effect
- 77 |     }
- 78 |     return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:78:55: warning: forced cast of 'Field' to same type has no effect
- 76 |         dy = ((dy + 1) as! Int)
- 77 |     }
- 78 |     return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
-    |                                                       `- warning: forced cast of 'Field' to same type has no effect
- 79 | }
- 80 | func newLife(_ w: Int, _ h: Int) -> Life {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:78:70: warning: forced cast of 'Int' to same type has no effect
- 76 |         dy = ((dy + 1) as! Int)
- 77 |     }
- 78 |     return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
-    |                                                                      `- warning: forced cast of 'Int' to same type has no effect
- 79 | }
- 80 | func newLife(_ w: Int, _ h: Int) -> Life {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:78:83: warning: forced cast of 'Int' to same type has no effect
- 76 |         dy = ((dy + 1) as! Int)
- 77 |     }
- 78 |     return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
-    |                                                                                   `- warning: forced cast of 'Int' to same type has no effect
- 79 | }
- 80 | func newLife(_ w: Int, _ h: Int) -> Life {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:64:9: warning: variable 'x' was never mutated; consider changing to 'let' constant
- 62 | }
- 63 | func nextState(_ f: Field, _ x: Int, _ y: Int) -> Bool {
- 64 |     var x = x
-    |         `- warning: variable 'x' was never mutated; consider changing to 'let' constant
- 65 |     var y = y
- 66 |     var count: Int = 0
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:65:9: warning: variable 'y' was never mutated; consider changing to 'let' constant
- 63 | func nextState(_ f: Field, _ x: Int, _ y: Int) -> Bool {
- 64 |     var x = x
- 65 |     var y = y
-    |         `- warning: variable 'y' was never mutated; consider changing to 'let' constant
- 66 |     var count: Int = 0
- 67 |     var dy: Int = -1
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:81:32: warning: forced cast of 'Int' to same type has no effect
- 79 | }
- 80 | func newLife(_ w: Int, _ h: Int) -> Life {
- 81 |     var a: Field = newField((w as! Int), (h as! Int))
-    |                                `- warning: forced cast of 'Int' to same type has no effect
- 82 |     var i: Int = 0
- 83 |     while (i < Int(((w * h) / 2))) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:81:45: warning: forced cast of 'Int' to same type has no effect
- 79 | }
- 80 | func newLife(_ w: Int, _ h: Int) -> Life {
- 81 |     var a: Field = newField((w as! Int), (h as! Int))
-    |                                             `- warning: forced cast of 'Int' to same type has no effect
- 82 |     var i: Int = 0
- 83 |     while (i < Int(((w * h) / 2))) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:84:38: warning: forced cast of 'Int' to same type has no effect
- 82 |     var i: Int = 0
- 83 |     while (i < Int(((w * h) / 2))) {
- 84 |         _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
-    |                                      `- warning: forced cast of 'Int' to same type has no effect
- 85 |         i = ((i + 1) as! Int)
- 86 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:84:63: warning: forced cast of 'Int' to same type has no effect
- 82 |     var i: Int = 0
- 83 |     while (i < Int(((w * h) / 2))) {
- 84 |         _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
-    |                                                               `- warning: forced cast of 'Int' to same type has no effect
- 85 |         i = ((i + 1) as! Int)
- 86 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:84:9: warning: using '_' to ignore the result of a Void-returning function is redundant
- 82 |     var i: Int = 0
- 83 |     while (i < Int(((w * h) / 2))) {
- 84 |         _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
-    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
- 85 |         i = ((i + 1) as! Int)
- 86 |     }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:85:22: warning: forced cast of 'Int' to same type has no effect
- 83 |     while (i < Int(((w * h) / 2))) {
- 84 |         _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
- 85 |         i = ((i + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 86 |     }
- 87 |     return Life(a: a, b: newField((w as! Int), (h as! Int)), w: w, h: h)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:87:38: warning: forced cast of 'Int' to same type has no effect
- 85 |         i = ((i + 1) as! Int)
- 86 |     }
- 87 |     return Life(a: a, b: newField((w as! Int), (h as! Int)), w: w, h: h)
-    |                                      `- warning: forced cast of 'Int' to same type has no effect
- 88 | }
- 89 | func step(_ l: inout Life) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:87:51: warning: forced cast of 'Int' to same type has no effect
- 85 |         i = ((i + 1) as! Int)
- 86 |     }
- 87 |     return Life(a: a, b: newField((w as! Int), (h as! Int)), w: w, h: h)
-    |                                                   `- warning: forced cast of 'Int' to same type has no effect
- 88 | }
- 89 | func step(_ l: inout Life) {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:34: warning: forced cast of 'Int' to same type has no effect
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
-    |                                  `- warning: forced cast of 'Int' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:47: warning: forced cast of 'Int' to same type has no effect
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
-    |                                               `- warning: forced cast of 'Int' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:72: warning: forced cast of 'Field' to same type has no effect
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
-    |                                                                        `- warning: forced cast of 'Field' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:87: warning: forced cast of 'Int' to same type has no effect
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:126:87: warning: forced cast of 'Int' to same type has no effect
+124 |             dy = Int((dy &+ 1))
+125 |         }
+126 |         return ((count == 3) || ((count == 2) && state((f as! Field), (x as! Int), (y as! Int))))
     |                                                                                       `- warning: forced cast of 'Int' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
+127 |     }
+128 |     func newLife(_ w: Int, _ h: Int) -> Life {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:100: warning: forced cast of 'Int' to same type has no effect
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
-    |                                                                                                    `- warning: forced cast of 'Int' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:129:36: warning: forced cast of 'Int' to same type has no effect
+127 |     }
+128 |     func newLife(_ w: Int, _ h: Int) -> Life {
+129 |         var a: Field = newField((w as! Int), (h as! Int))
+    |                                    `- warning: forced cast of 'Int' to same type has no effect
+130 |         var i: Int = 0
+131 |         while (i < Int(((w &* h) / 2))) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:94:13: warning: using '_' to ignore the result of a Void-returning function is redundant
- 92 |         var x: Int = 0
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
-    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:129:49: warning: forced cast of 'Int' to same type has no effect
+127 |     }
+128 |     func newLife(_ w: Int, _ h: Int) -> Life {
+129 |         var a: Field = newField((w as! Int), (h as! Int))
+    |                                                 `- warning: forced cast of 'Int' to same type has no effect
+130 |         var i: Int = 0
+131 |         while (i < Int(((w &* h) / 2))) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:95:26: warning: forced cast of 'Int' to same type has no effect
- 93 |         while (x < l.w) {
- 94 |             _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
- 95 |             x = ((x + 1) as! Int)
-    |                          `- warning: forced cast of 'Int' to same type has no effect
- 96 |         }
- 97 |         y = ((y + 1) as! Int)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:97:22: warning: forced cast of 'Int' to same type has no effect
- 95 |             x = ((x + 1) as! Int)
- 96 |         }
- 97 |         y = ((y + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
- 98 |     }
- 99 |     var tmp: Field = l.a
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:100:16: warning: forced cast of 'Field' to same type has no effect
- 98 |     }
- 99 |     var tmp: Field = l.a
-100 |     l.a = (l.b as! Field)
-    |                `- warning: forced cast of 'Field' to same type has no effect
-101 |     l.b = (tmp as! Field)
-102 | }
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:101:16: warning: forced cast of 'Field' to same type has no effect
- 99 |     var tmp: Field = l.a
-100 |     l.a = (l.b as! Field)
-101 |     l.b = (tmp as! Field)
-    |                `- warning: forced cast of 'Field' to same type has no effect
-102 | }
-103 | func lifeString(_ l: Life) -> String {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:99:9: warning: variable 'tmp' was never mutated; consider changing to 'let' constant
- 97 |         y = ((y + 1) as! Int)
- 98 |     }
- 99 |     var tmp: Field = l.a
-    |         `- warning: variable 'tmp' was never mutated; consider changing to 'let' constant
-100 |     l.a = (l.b as! Field)
-101 |     l.b = (tmp as! Field)
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:109:27: warning: forced cast of 'Field' to same type has no effect
-107 |         var x: Int = 0
-108 |         while (x < l.w) {
-109 |             if state((l.a as! Field), (x as! Int), (y as! Int)) {
-    |                           `- warning: forced cast of 'Field' to same type has no effect
-110 |                 out = ((out + "*") as! String)
-111 |             } else {
-
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:109:42: warning: forced cast of 'Int' to same type has no effect
-107 |         var x: Int = 0
-108 |         while (x < l.w) {
-109 |             if state((l.a as! Field), (x as! Int), (y as! Int)) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:132:42: warning: forced cast of 'Int' to same type has no effect
+130 |         var i: Int = 0
+131 |         while (i < Int(((w &* h) / 2))) {
+132 |             _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
     |                                          `- warning: forced cast of 'Int' to same type has no effect
-110 |                 out = ((out + "*") as! String)
-111 |             } else {
+133 |             i = Int((i &+ 1))
+134 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:109:55: warning: forced cast of 'Int' to same type has no effect
-107 |         var x: Int = 0
-108 |         while (x < l.w) {
-109 |             if state((l.a as! Field), (x as! Int), (y as! Int)) {
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:132:67: warning: forced cast of 'Int' to same type has no effect
+130 |         var i: Int = 0
+131 |         while (i < Int(((w &* h) / 2))) {
+132 |             _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
+    |                                                                   `- warning: forced cast of 'Int' to same type has no effect
+133 |             i = Int((i &+ 1))
+134 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:132:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+130 |         var i: Int = 0
+131 |         while (i < Int(((w &* h) / 2))) {
+132 |             _ = setCell(&a, Int(randN((w as! Int))), Int(randN((h as! Int))), true)
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+133 |             i = Int((i &+ 1))
+134 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:135:42: warning: forced cast of 'Int' to same type has no effect
+133 |             i = Int((i &+ 1))
+134 |         }
+135 |         return Life(a: a, b: newField((w as! Int), (h as! Int)), w: w, h: h)
+    |                                          `- warning: forced cast of 'Int' to same type has no effect
+136 |     }
+137 |     func step(_ l: inout Life) {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:135:55: warning: forced cast of 'Int' to same type has no effect
+133 |             i = Int((i &+ 1))
+134 |         }
+135 |         return Life(a: a, b: newField((w as! Int), (h as! Int)), w: w, h: h)
     |                                                       `- warning: forced cast of 'Int' to same type has no effect
-110 |                 out = ((out + "*") as! String)
-111 |             } else {
+136 |     }
+137 |     func step(_ l: inout Life) {
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:110:36: warning: forced cast of 'String' to same type has no effect
-108 |         while (x < l.w) {
-109 |             if state((l.a as! Field), (x as! Int), (y as! Int)) {
-110 |                 out = ((out + "*") as! String)
-    |                                    `- warning: forced cast of 'String' to same type has no effect
-111 |             } else {
-112 |                 out = ((out + " ") as! String)
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:38: warning: forced cast of 'Int' to same type has no effect
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                                      `- warning: forced cast of 'Int' to same type has no effect
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:112:36: warning: forced cast of 'String' to same type has no effect
-110 |                 out = ((out + "*") as! String)
-111 |             } else {
-112 |                 out = ((out + " ") as! String)
-    |                                    `- warning: forced cast of 'String' to same type has no effect
-113 |             }
-114 |             x = ((x + 1) as! Int)
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:51: warning: forced cast of 'Int' to same type has no effect
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                                                   `- warning: forced cast of 'Int' to same type has no effect
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:114:26: warning: forced cast of 'Int' to same type has no effect
-112 |                 out = ((out + " ") as! String)
-113 |             }
-114 |             x = ((x + 1) as! Int)
-    |                          `- warning: forced cast of 'Int' to same type has no effect
-115 |         }
-116 |         out = ((out + "\n") as! String)
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:76: warning: forced cast of 'Field' to same type has no effect
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                                                                            `- warning: forced cast of 'Field' to same type has no effect
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:116:29: warning: forced cast of 'String' to same type has no effect
-114 |             x = ((x + 1) as! Int)
-115 |         }
-116 |         out = ((out + "\n") as! String)
-    |                             `- warning: forced cast of 'String' to same type has no effect
-117 |         y = ((y + 1) as! Int)
-118 |     }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:91: warning: forced cast of 'Int' to same type has no effect
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                                                                                           `- warning: forced cast of 'Int' to same type has no effect
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:117:22: warning: forced cast of 'Int' to same type has no effect
-115 |         }
-116 |         out = ((out + "\n") as! String)
-117 |         y = ((y + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
-118 |     }
-119 |     return out
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:104: warning: forced cast of 'Int' to same type has no effect
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                                                                                                        `- warning: forced cast of 'Int' to same type has no effect
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:125:9: warning: using '_' to ignore the result of a Void-returning function is redundant
-123 |     var i: Int = 0
-124 |     while (i < 300) {
-125 |         _ = step(&l)
-    |         `- warning: using '_' to ignore the result of a Void-returning function is redundant
-126 |         print(_p("\f"))
-127 |         print(_p(String(describing: lifeString((l as! Life)))))
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:142:17: warning: using '_' to ignore the result of a Void-returning function is redundant
+140 |             var x: Int = 0
+141 |             while (x < l.w) {
+142 |                 _ = setCell(&l.b, (x as! Int), (y as! Int), nextState((l.a as! Field), (x as! Int), (y as! Int)))
+    |                 `- warning: using '_' to ignore the result of a Void-returning function is redundant
+143 |                 x = Int((x &+ 1))
+144 |             }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:126:22: error: missing argument for parameter #1 in call
-  2 | import Foundation
-  3 | 
-  4 | func _p(_ v: Any?) -> String {
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:148:20: warning: forced cast of 'Field' to same type has no effect
+146 |         }
+147 |         var tmp: Field = l.a
+148 |         l.a = (l.b as! Field)
+    |                    `- warning: forced cast of 'Field' to same type has no effect
+149 |         l.b = (tmp as! Field)
+150 |     }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:149:20: warning: forced cast of 'Field' to same type has no effect
+147 |         var tmp: Field = l.a
+148 |         l.a = (l.b as! Field)
+149 |         l.b = (tmp as! Field)
+    |                    `- warning: forced cast of 'Field' to same type has no effect
+150 |     }
+151 |     func lifeString(_ l: Life) -> String {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:157:31: warning: forced cast of 'Field' to same type has no effect
+155 |             var x: Int = 0
+156 |             while (x < l.w) {
+157 |                 if state((l.a as! Field), (x as! Int), (y as! Int)) {
+    |                               `- warning: forced cast of 'Field' to same type has no effect
+158 |                     out = ((out + "*") as! String)
+159 |                 } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:157:46: warning: forced cast of 'Int' to same type has no effect
+155 |             var x: Int = 0
+156 |             while (x < l.w) {
+157 |                 if state((l.a as! Field), (x as! Int), (y as! Int)) {
+    |                                              `- warning: forced cast of 'Int' to same type has no effect
+158 |                     out = ((out + "*") as! String)
+159 |                 } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:157:59: warning: forced cast of 'Int' to same type has no effect
+155 |             var x: Int = 0
+156 |             while (x < l.w) {
+157 |                 if state((l.a as! Field), (x as! Int), (y as! Int)) {
+    |                                                           `- warning: forced cast of 'Int' to same type has no effect
+158 |                     out = ((out + "*") as! String)
+159 |                 } else {
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:158:40: warning: forced cast of 'String' to same type has no effect
+156 |             while (x < l.w) {
+157 |                 if state((l.a as! Field), (x as! Int), (y as! Int)) {
+158 |                     out = ((out + "*") as! String)
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+159 |                 } else {
+160 |                     out = ((out + " ") as! String)
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:160:40: warning: forced cast of 'String' to same type has no effect
+158 |                     out = ((out + "*") as! String)
+159 |                 } else {
+160 |                     out = ((out + " ") as! String)
+    |                                        `- warning: forced cast of 'String' to same type has no effect
+161 |                 }
+162 |                 x = Int((x &+ 1))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:164:33: warning: forced cast of 'String' to same type has no effect
+162 |                 x = Int((x &+ 1))
+163 |             }
+164 |             out = ((out + "\n") as! String)
+    |                                 `- warning: forced cast of 'String' to same type has no effect
+165 |             y = Int((y &+ 1))
+166 |         }
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:173:13: warning: using '_' to ignore the result of a Void-returning function is redundant
+171 |         var i: Int = 0
+172 |         while (i < 300) {
+173 |             _ = step(&l)
+    |             `- warning: using '_' to ignore the result of a Void-returning function is redundant
+174 |             print(_p("\f"))
+175 |             print(_p(String(describing: lifeString((l as! Life)))))
+
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:174:26: error: missing argument for parameter #1 in call
+ 11 | }
+ 12 | 
+ 13 | func _p(_ v: Any?) -> String {
     |      `- note: '_p' declared here
-  5 |     if let val = v { return String(describing: val) }
-  6 |     return "<nil>"
+ 14 |     if let val = v {
+ 15 |         if let d = val as? Double {
     :
-124 |     while (i < 300) {
-125 |         _ = step(&l)
-126 |         print(_p("\f"))
-    |                      `- error: missing argument for parameter #1 in call
-127 |         print(_p(String(describing: lifeString((l as! Life)))))
-128 |         i = ((i + 1) as! Int)
+172 |         while (i < 300) {
+173 |             _ = step(&l)
+174 |             print(_p("\f"))
+    |                          `- error: missing argument for parameter #1 in call
+175 |             print(_p(String(describing: lifeString((l as! Life)))))
+176 |             i = Int((i &+ 1))
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:127:51: warning: forced cast of 'Life' to same type has no effect
-125 |         _ = step(&l)
-126 |         print(_p("\f"))
-127 |         print(_p(String(describing: lifeString((l as! Life)))))
-    |                                                   `- warning: forced cast of 'Life' to same type has no effect
-128 |         i = ((i + 1) as! Int)
-129 |     }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:175:55: warning: forced cast of 'Life' to same type has no effect
+173 |             _ = step(&l)
+174 |             print(_p("\f"))
+175 |             print(_p(String(describing: lifeString((l as! Life)))))
+    |                                                       `- warning: forced cast of 'Life' to same type has no effect
+176 |             i = Int((i &+ 1))
+177 |         }
 
-/tmp/TestSwiftTranspiler_Rosetta_Golden38752097/001/main.swift:128:22: warning: forced cast of 'Int' to same type has no effect
-126 |         print(_p("\f"))
-127 |         print(_p(String(describing: lifeString((l as! Life)))))
-128 |         i = ((i + 1) as! Int)
-    |                      `- warning: forced cast of 'Int' to same type has no effect
-129 |     }
-130 | }
+/tmp/TestSwiftTranspiler_Rosetta_Golden603721494/001/main.swift:179:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+177 |         }
+178 |     }
+179 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+180 |     let _benchEnd = _now()
+181 |     let _benchMemEnd = _mem()

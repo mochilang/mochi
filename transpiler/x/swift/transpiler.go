@@ -371,6 +371,10 @@ func (e *ExprStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "\n")
 }
 
+type EmptyStmt struct{}
+
+func (EmptyStmt) emit(w io.Writer) {}
+
 type VarDecl struct {
 	Name  string
 	Const bool
@@ -1398,12 +1402,11 @@ func (c *CallExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "(")
 			fmt.Fprint(w, "String(describing: ")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ").firstIndex(of: Character(String(describing: ")
+			fmt.Fprint(w, ").range(of: String(describing: ")
 			c.Args[1].emit(w)
-			fmt.Fprint(w, ")))?.utf16Offset(in: String(describing: ")
+			fmt.Fprint(w, "))?.lowerBound.utf16Offset(in: String(describing: ")
 			c.Args[0].emit(w)
-			fmt.Fprint(w, ") ) ?? -1")
-			fmt.Fprint(w, ")")
+			fmt.Fprint(w, ")) ?? -1)")
 			return
 		}
 	case "parseIntStr":
@@ -2181,6 +2184,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 	case st.ExternFun != nil:
 		return convertExternFun(st.ExternFun), nil
 	case st.Expr != nil:
+		if isNullLiteral(st.Expr.Expr) {
+			return EmptyStmt{}, nil
+		}
 		call := st.Expr.Expr.Binary.Left.Value.Target.Call
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
 			return convertSaveStmt(env, se)
@@ -2214,6 +2220,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		ex, err := convertExpr(env, st.Expr.Expr)
 		if err != nil {
 			return nil, err
+		}
+		if isNilExpr(ex) {
+			return EmptyStmt{}, nil
 		}
 		return &ExprStmt{Expr: ex}, nil
 	case st.Let != nil:
@@ -4683,6 +4692,17 @@ func isEmptyMapLiteral(e *parser.Expr) bool {
 		return len(ml.Items) == 0
 	}
 	return false
+}
+
+func isNilExpr(e Expr) bool {
+	switch x := e.(type) {
+	case *LitExpr:
+		return !x.IsString && x.Value == "nil"
+	case *CondExpr:
+		return isNilExpr(x.Then) && isNilExpr(x.Else)
+	default:
+		return false
+	}
 }
 
 func isMapLiteral(e *parser.Expr) bool {
