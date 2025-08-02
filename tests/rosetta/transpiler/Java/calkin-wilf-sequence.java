@@ -12,8 +12,8 @@ public class Main {
             BigRat prev = seq[i - 1];
             java.math.BigInteger a = new java.math.BigInteger(String.valueOf(_num(prev)));
             java.math.BigInteger b = new java.math.BigInteger(String.valueOf(_denom(prev)));
-            java.math.BigInteger f = new java.math.BigInteger(String.valueOf(a / b));
-            BigRat t = bigrat(f, 1);
+            java.math.BigInteger f = a.divide(b);
+            BigRat t = bigrat(((java.math.BigInteger)(f)).intValue(), 1);
             t = _mul(t, (_bigrat(2, null)));
             t = _sub(t, prev);
             t = _add(t, (_bigrat(1, null)));
@@ -29,11 +29,11 @@ public class Main {
         java.math.BigInteger b_1 = new java.math.BigInteger(String.valueOf(_denom(r)));
         int[] res = new int[]{};
         while (true) {
-            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(((Number)((a_1 / b_1))).intValue())).toArray();
-            int t_1 = Math.floorMod(a_1, b_1);
+            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(((Number)((a_1.divide(b_1)))).intValue())).toArray();
+            java.math.BigInteger t_1 = a_1.remainder(b_1);
             a_1 = new java.math.BigInteger(String.valueOf(b_1));
-            b_1 = new java.math.BigInteger(String.valueOf(t_1));
-            if (a_1 == 1) {
+            b_1 = t_1;
+            if (a_1.compareTo(java.math.BigInteger.valueOf(1)) == 0) {
                 break;
             }
         }
@@ -48,7 +48,7 @@ res[res.length - 1] = res[res.length - 1] - 1;
         String b_2 = "";
         String d = "1";
         for (int n : cf) {
-            b_2 = (String)(repeat(d, n)) + b_2;
+            b_2 = (String)(_repeat(d, n)) + b_2;
             if ((d.equals("1"))) {
                 d = "0";
             } else {
@@ -94,7 +94,7 @@ res[res.length - 1] = res[res.length - 1] - 1;
             if (((Number)(_denom(r))).intValue() != 1) {
                 s_1 = s_1 + "/" + _p(_denom(r));
             }
-            System.out.println((String)(_padStart((i_2 + ((Number)(1)).intValue()), 2, " ")) + ": " + s_1);
+            System.out.println((String)(_padStart(String.valueOf((i_2 + ((Number)(1)).intValue())), 2, " ")) + ": " + s_1);
             i_2 = i_2 + 1;
         }
         BigRat r_1 = bigrat(83116, 51639);
@@ -146,6 +146,12 @@ res[res.length - 1] = res[res.length - 1] - 1;
         return out;
     }
 
+    static String _repeat(String s, int n) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) sb.append(s);
+        return sb.toString();
+    }
+
     static class BigRat {
         java.math.BigInteger num;
         java.math.BigInteger den;
@@ -189,6 +195,7 @@ res[res.length - 1] = res[res.length - 1] - 1;
     }
     static BigRat _div(Object a, Object b) {
         BigRat x = _bigrat(a); BigRat y = _bigrat(b);
+        if (y.num.equals(java.math.BigInteger.ZERO)) return _bigrat(java.math.BigInteger.ZERO, java.math.BigInteger.ONE);
         return _bigrat(x.num.multiply(y.den), x.den.multiply(y.num));
     }
     static java.math.BigInteger _num(Object x) { return (x instanceof BigRat) ? ((BigRat)x).num : _toBigInt(x); }

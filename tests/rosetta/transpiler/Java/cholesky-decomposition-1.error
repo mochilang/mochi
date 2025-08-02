@@ -1,11 +1,15 @@
 compile: exit status 1
-/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:27: error: array required, but Object found
-                row = java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(((Number)(ele[idx])).doubleValue())).toArray();
-                                                                                                                                       ^
-/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:81: error: array required, but Object found
-                row = java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(((Number)(ele[idx])).doubleValue())).toArray();
-                                                                                                                                       ^
-/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-12080796224/001/Main.java:110: error: array required, but Object found
-            Object e = ae[i];
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-1282592996/001/Main.java:27: error: array required, but Object found
+                row = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row), java.util.stream.DoubleStream.of(((Number)(ele[idx])).doubleValue())).toArray()));
+                                                                                                                                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-1282592996/001/Main.java:56: error: incompatible types: double[] cannot be converted to Object[]
+                line = line + _p(_geto(m[i_1], j));
+                                        ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-1282592996/001/Main.java:81: error: array required, but Object found
+                row_1 = ((double[])(java.util.stream.DoubleStream.concat(java.util.Arrays.stream(row_1), java.util.stream.DoubleStream.of(((Number)(ele_1[idx_1])).doubleValue())).toArray()));
+                                                                                                                                                         ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencholesky-decomposition-1282592996/001/Main.java:110: error: array required, but Object found
+            Object e = ae[i_2];
                          ^
-3 errors
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

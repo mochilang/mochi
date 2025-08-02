@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 17:49 GMT+7
+Last updated: 2025-08-02 18:17 GMT+7
 
-## Rosetta Checklist (395/491)
+## Rosetta Checklist (413/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -152,7 +152,7 @@ Last updated: 2025-08-02 17:49 GMT+7
 | 144 | calendar---for-real-programmers-1 | ✓ | 51.0ms | 82.28KB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 55.0ms | 82.28KB |
 | 146 | calendar | ✓ | 57.0ms | 82.33KB |
-| 147 | calkin-wilf-sequence |   |  |  |
+| 147 | calkin-wilf-sequence | ✓ | 50.0ms | 125.52KB |
 | 148 | call-a-foreign-language-function | ✓ | 19.0ms | 25.62KB |
 | 149 | call-a-function-1 | ✓ | 21.0ms | 0B |
 | 150 | call-a-function-10 | ✓ | 46.0ms | 45.60KB |
@@ -168,37 +168,37 @@ Last updated: 2025-08-02 17:49 GMT+7
 | 160 | call-a-function-9 | ✓ | 18.0ms | 45.91KB |
 | 161 | call-an-object-method-1 | ✓ | 7.0ms | 0B |
 | 162 | call-an-object-method-2 | ✓ | 16.0ms | -320B |
-| 163 | call-an-object-method-3 |   |  |  |
-| 164 | call-an-object-method |   |  |  |
-| 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector |   |  |  |
-| 167 | canonicalize-cidr |   |  |  |
+| 163 | call-an-object-method-3 | ✓ | 15.0ms | 400B |
+| 164 | call-an-object-method | ✓ | 14.0ms | 400B |
+| 165 | camel-case-and-snake-case | ✓ | 36.0ms | 113.89KB |
+| 166 | canny-edge-detector | ✓ | 28.0ms | 57.27KB |
+| 167 | canonicalize-cidr | ✓ | 43.0ms | 102.45KB |
 | 168 | cantor-set | ✓ | 46.0ms | 101.48KB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 54.0ms | 89.27KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 32.0ms | 38.78KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 44.0ms | 55.77KB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 41.0ms | 55.77KB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 43.0ms | 55.77KB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 57.0ms | 106.52KB |
-| 175 | casting-out-nines | ✓ | 68.0ms | 102.78KB |
-| 176 | catalan-numbers-1 | ✓ | 19.0ms | 448B |
-| 177 | catalan-numbers-2 | ✓ | 20.0ms | 448B |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 50.0ms | 93.13KB |
-| 179 | catamorphism | ✓ | 37.0ms | 39.63KB |
-| 180 | catmull-clark-subdivision-surface |   |  |  |
-| 181 | chaocipher |   |  |  |
-| 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 |   |  |  |
-| 184 | character-codes-2 |   |  |  |
-| 185 | character-codes-3 |   |  |  |
-| 186 | character-codes-4 |   |  |  |
-| 187 | character-codes-5 |   |  |  |
-| 188 | chat-server |   |  |  |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 42.0ms | 89.38KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 20.0ms | 38.89KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 37.0ms | 55.88KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 32.0ms | 55.88KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 35.0ms | 55.88KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 41.0ms | 106.63KB |
+| 175 | casting-out-nines | ✓ | 52.0ms | 103.87KB |
+| 176 | catalan-numbers-1 | ✓ | 14.0ms | 448B |
+| 177 | catalan-numbers-2 | ✓ | 17.0ms | 448B |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 37.0ms | 93.15KB |
+| 179 | catamorphism | ✓ | 26.0ms | 39.67KB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 55.0ms | 133.35KB |
+| 181 | chaocipher | ✓ | 41.0ms | 109.98KB |
+| 182 | chaos-game | ✓ | 40.0ms | 64.32KB |
+| 183 | character-codes-1 | ✓ | 12.0ms | 608B |
+| 184 | character-codes-2 | ✓ | 15.0ms | 656B |
+| 185 | character-codes-3 | ✓ | 44.0ms | 97.10KB |
+| 186 | character-codes-4 | ✓ | 32.0ms | 77.67KB |
+| 187 | character-codes-5 | ✓ | 18.0ms | 32.77KB |
+| 188 | chat-server | ✓ | 45.0ms | 110.55KB |
 | 189 | check-machin-like-formulas |   |  |  |
-| 190 | check-that-file-exists |   |  |  |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 |   |  |  |
-| 193 | checkpoint-synchronization-3 | ✓ | 42.0ms | 83.76KB |
+| 190 | check-that-file-exists | ✓ | 27.0ms | 71.81KB |
+| 191 | checkpoint-synchronization-1 | ✓ | 33.0ms | 72.74KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 33.0ms | 83.59KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 35.0ms | 84.04KB |
 | 194 | checkpoint-synchronization-4 | ✓ | 48.0ms | 88.00KB |
 | 195 | chernicks-carmichael-numbers | ✓ | 406.0ms | 93.80KB |
 | 196 | cheryls-birthday | ✓ | 45.0ms | 96.05KB |

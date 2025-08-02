@@ -1,0 +1,30 @@
+begin assembly cycle 1
+A worker begins part
+A worker completed a
+B worker begins part
+B worker completed b
+C worker begins part
+C worker completed c
+D worker begins part
+D worker completed d
+abcd assembled.  cycle 1 complete
+begin assembly cycle 2
+A worker begins part
+A worker completed a
+B worker begins part
+B worker completed b
+C worker begins part
+C worker completed c
+D worker begins part
+D worker completed d
+abcd assembled.  cycle 2 complete
+begin assembly cycle 3
+A worker begins part
+A worker completed a
+B worker begins part
+B worker completed b
+C worker begins part
+C worker completed c
+D worker begins part
+D worker completed d
+abcd assembled.  cycle 3 complete

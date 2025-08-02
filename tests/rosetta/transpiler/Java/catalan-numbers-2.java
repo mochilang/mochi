@@ -13,7 +13,7 @@ public class Main {
 
     static void main() {
         for (int i = 1; i < 16; i++) {
-            System.out.println(String.valueOf(catalanRec(i)));
+            System.out.println(_p(catalanRec(i)));
         }
     }
     public static void main(String[] args) {
@@ -52,5 +52,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

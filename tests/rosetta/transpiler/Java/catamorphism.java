@@ -1,5 +1,5 @@
 public class Main {
-    static int[] n = new int[]{1, 2, 3, 4, 5};
+    static int[] n;
 
     static int add(int a, int b) {
         return a + b;
@@ -26,9 +26,10 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            n = new int[]{1, 2, 3, 4, 5};
             System.out.println(fold((a, b) -> add(a, b), n));
-            System.out.println(fold((a, b) -> sub(a, b), n));
-            System.out.println(fold((a, b) -> mul(a, b), n));
+            System.out.println(fold((a_1, b_1) -> sub(a_1, b_1), n));
+            System.out.println(fold((a_2, b_2) -> mul(a_2, b_2), n));
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");

@@ -1,1 +1,188 @@
-transpile: unsupported call
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:3: error: > or ',' expected
+    static java.util.Map<Integer,fn():void> draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:3: error: ';' expected
+    static java.util.Map<Integer,fn():void> draw;
+                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:3: error: <identifier> expected
+    static java.util.Map<Integer,fn():void> draw;
+                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:3: error: <identifier> expected
+    static java.util.Map<Integer,fn():void> draw;
+                                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:62: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_0 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:62: error: not a statement
+        java.util.Map<Integer,fn():void> draw_0 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:62: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_0 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:68: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_1 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:68: error: not a statement
+        java.util.Map<Integer,fn():void> draw_1 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:68: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_1 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:73: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_2 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:73: error: not a statement
+        java.util.Map<Integer,fn():void> draw_2 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:73: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_2 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:78: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_3 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:78: error: not a statement
+        java.util.Map<Integer,fn():void> draw_3 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:78: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_3 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:87: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_4 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:87: error: not a statement
+        java.util.Map<Integer,fn():void> draw_4 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:87: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_4 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:93: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_5 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:93: error: not a statement
+        java.util.Map<Integer,fn():void> draw_5 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:93: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_5 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:98: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_6 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:98: error: not a statement
+        java.util.Map<Integer,fn():void> draw_6 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:98: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_6 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:103: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_7 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:103: error: not a statement
+        java.util.Map<Integer,fn():void> draw_7 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:103: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_7 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:112: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_8 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:112: error: not a statement
+        java.util.Map<Integer,fn():void> draw_8 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:112: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_8 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:118: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_9 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:118: error: not a statement
+        java.util.Map<Integer,fn():void> draw_9 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:118: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_9 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:123: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_10 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:123: error: not a statement
+        java.util.Map<Integer,fn():void> draw_10 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:123: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_10 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:128: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_11 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:128: error: not a statement
+        java.util.Map<Integer,fn():void> draw_11 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:128: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_11 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:137: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_12 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:137: error: not a statement
+        java.util.Map<Integer,fn():void> draw_12 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:137: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_12 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:143: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_13 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:143: error: not a statement
+        java.util.Map<Integer,fn():void> draw_13 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:143: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_13 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:148: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_14 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:148: error: not a statement
+        java.util.Map<Integer,fn():void> draw_14 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:148: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_14 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:153: error: > or ',' expected
+        java.util.Map<Integer,fn():void> draw_15 = draw;
+                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:153: error: not a statement
+        java.util.Map<Integer,fn():void> draw_15 = draw;
+                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:153: error: illegal start of expression
+        java.util.Map<Integer,fn():void> draw_15 = draw;
+                                   ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: ')' expected
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: ';' expected
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                           ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: illegal start of expression
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                            ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: illegal start of expression
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                 ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: not a statement
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: > or ',' expected
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: ';' expected
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                                                            ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: illegal start of expression
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                                                             ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: -> expected
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                                                                    ^
+/tmp/TestJavaTranspiler_Rosetta_Goldencistercian-numerals2815956927/001/Main.java:172: error: not a statement
+        draw = ((java.util.Map<Integer,fn():void>)(new java.util.LinkedHashMap<Integer, fn():void>()));
+                                                                                                 ^
+62 errors

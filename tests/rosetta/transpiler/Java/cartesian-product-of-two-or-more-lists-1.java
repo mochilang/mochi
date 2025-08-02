@@ -18,7 +18,7 @@ public class Main {
             s = s + "[";
             int j = 0;
             while (j < row.length) {
-                s = s + String.valueOf(row[j]);
+                s = s + _p(_geti(row, j));
                 if (j < row.length - 1) {
                     s = s + " ";
                 }
@@ -82,5 +82,13 @@ public class Main {
         T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

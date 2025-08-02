@@ -4,7 +4,7 @@ public class Main {
         String s = "[";
         int i = 0;
         while (i < xs.length) {
-            s = s + String.valueOf(xs[i]);
+            s = s + _p(_geti(xs, i));
             if (i < xs.length - 1) {
                 s = s + " ";
             }
@@ -15,17 +15,17 @@ public class Main {
     }
 
     static String llStr(int[][] lst) {
-        String s = "[";
-        int i = 0;
-        while (i < lst.length) {
-            s = s + String.valueOf(listStr(lst[i]));
-            if (i < lst.length - 1) {
-                s = s + " ";
+        String s_1 = "[";
+        int i_1 = 0;
+        while (i_1 < lst.length) {
+            s_1 = s_1 + String.valueOf(listStr(lst[i_1]));
+            if (i_1 < lst.length - 1) {
+                s_1 = s_1 + " ";
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        s = s + "]";
-        return s;
+        s_1 = s_1 + "]";
+        return s_1;
     }
 
     static int[][] cartN(Object lists) {
@@ -79,7 +79,7 @@ idx[k] = 0;
         System.out.println(llStr(cartN(new int[][]{new int[]{}, new int[]{1, 2}})));
         System.out.println("");
         System.out.println("[");
-        for (var p : cartN(new int[][]{new int[]{1776, 1789}, new int[]{7, 12}, new int[]{4, 14, 23}, new int[]{0, 1}})) {
+        for (int[] p : cartN(new int[][]{new int[]{1776, 1789}, new int[]{7, 12}, new int[]{4, 14, 23}, new int[]{0, 1}})) {
             System.out.println(" " + String.valueOf(listStr(p)));
         }
         System.out.println("]");
@@ -157,5 +157,13 @@ idx[k] = 0;
             return out;
         }
         return new int[][]{};
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

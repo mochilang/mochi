@@ -38,6 +38,7 @@ var needNetLookupHost bool
 var needEnviron bool
 var needMem bool
 var needPadStart bool
+var needRepeat bool
 var needSHA256 bool
 var needRuneLen bool
 var needSubstr bool
@@ -398,6 +399,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
+		if typ == "int" && it == "java.math.BigInteger" {
+			fmt.Fprint(w, "((java.math.BigInteger)(")
+			e.emit(w)
+			fmt.Fprint(w, ")).intValue()")
+			return
+		}
 		if typ == "int" {
 			if it == "double" {
 				typ = "double"
@@ -476,6 +483,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 			return
 		}
 		fmt.Fprint(w, "new java.math.BigInteger(String.valueOf(")
+		e.emit(w)
+		fmt.Fprint(w, "))")
+		return
+	}
+	if strings.HasSuffix(jt, "[]") {
+		fmt.Fprintf(w, "((%s)(", jt)
 		e.emit(w)
 		fmt.Fprint(w, "))")
 		return
@@ -670,7 +683,7 @@ func inferType(e Expr) string {
 			if lt == "bigrat" || rt == "bigrat" {
 				return "bigrat"
 			}
-			if lt == "bigint" || rt == "bigint" {
+			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
 				return "bigint"
 			}
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
@@ -683,7 +696,7 @@ func inferType(e Expr) string {
 			if lt == "bigrat" || rt == "bigrat" {
 				return "bigrat"
 			}
-			if lt == "bigint" || rt == "bigint" {
+			if lt == "bigint" || rt == "bigint" || lt == "java.math.BigInteger" || rt == "java.math.BigInteger" {
 				return "bigint"
 			}
 			if lt == "double" || rt == "double" || lt == "float" || rt == "float" {
@@ -1968,6 +1981,11 @@ func (m *MapLit) emit(w io.Writer) {
 		if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
 			valType += ">"
 		}
+	} else if len(m.Values) > 0 {
+		vt := javaBoxType(inferType(m.Values[0]))
+		if vt != "" {
+			valType = vt
+		}
 	}
 	keyType := "String"
 	if m.KeyType != "" {
@@ -1992,6 +2010,8 @@ func (m *MapLit) emit(w io.Writer) {
 				fmt.Fprint(w, ", ")
 				if m.ValueType != "" {
 					emitCastExpr(w, m.Values[i], m.ValueType)
+				} else if valType != "Object" {
+					emitCastExpr(w, m.Values[i], valType)
 				} else {
 					fmt.Fprint(w, "(Object)(")
 					m.Values[i].emit(w)
@@ -2110,7 +2130,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "" && guessIntExpr(b.Right) {
 			rt = "int"
 		}
-		big := lt == "bigint" || rt == "bigint"
+		big := lt == "bigint" || lt == "java.math.BigInteger" || rt == "bigint" || rt == "java.math.BigInteger"
 		if lt == "bigrat" || rt == "bigrat" {
 			needBigRat = true
 			switch b.Op {
@@ -2155,7 +2175,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if big {
 			emitBigIntOperand := func(e Expr, t string) {
-				if inferType(e) == "bigint" {
+				if it := inferType(e); it == "bigint" || it == "java.math.BigInteger" {
 					e.emit(w)
 				} else if _, ok := e.(*IntLit); ok {
 					fmt.Fprint(w, "java.math.BigInteger.valueOf(")
@@ -2894,7 +2914,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	if m.Name == "padStart" && len(m.Args) == 2 {
 		needPadStart = true
 		fmt.Fprint(w, "_padStart(")
-		m.Target.emit(w)
+		emitCastExpr(w, m.Target, "String")
 		fmt.Fprint(w, ", ")
 		m.Args[0].emit(w)
 		fmt.Fprint(w, ", ")
@@ -4527,7 +4547,7 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 		if op.Op == "%" {
 			lt := inferType(left)
 			rt := inferType(right)
-			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" {
+			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
 				if ce, ok := right.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
 					needModPow2 = true
 					return &CallExpr{Func: "_modPow2", Args: []Expr{left, ce.Args[0]}}, nil
@@ -5075,7 +5095,8 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &SliceExpr{Value: args[0], Start: args[1], End: args[2]}, nil
 		}
 		if name == "split" && len(args) == 2 {
-			return &MethodCallExpr{Target: args[0], Name: "split", Args: []Expr{args[1]}}, nil
+			quoted := &CallExpr{Func: "java.util.regex.Pattern.quote", Args: []Expr{args[1]}}
+			return &MethodCallExpr{Target: args[0], Name: "split", Args: []Expr{quoted}}, nil
 		}
 		if name == "upper" && len(args) == 1 {
 			return &MethodCallExpr{Target: args[0], Name: "toUpperCase", Args: nil}, nil
@@ -5095,6 +5116,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "padStart" && len(args) == 3 {
 			needPadStart = true
 			return &CallExpr{Func: "_padStart", Args: args}, nil
+		}
+		if name == "repeat" && len(args) == 2 {
+			needRepeat = true
+			return &CallExpr{Func: "_repeat", Args: args}, nil
 		}
 		if name == "sha256" && len(args) == 1 {
 			needSHA256 = true
@@ -6054,6 +6079,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
+	if needRepeat {
+		buf.WriteString("\n    static String _repeat(String s, int n) {\n")
+		buf.WriteString("        StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("        for (int i = 0; i < n; i++) sb.append(s);\n")
+		buf.WriteString("        return sb.toString();\n")
+		buf.WriteString("    }\n")
+	}
 	if needSHA256 {
 		buf.WriteString("\n    static int[] _sha256(int[] bs) {\n")
 		buf.WriteString("        try {\n")
@@ -6141,6 +6173,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("    }\n")
 		buf.WriteString("    static BigRat _div(Object a, Object b) {\n")
 		buf.WriteString("        BigRat x = _bigrat(a); BigRat y = _bigrat(b);\n")
+		buf.WriteString("        if (y.num.equals(java.math.BigInteger.ZERO)) return _bigrat(java.math.BigInteger.ZERO, java.math.BigInteger.ONE);\n")
 		buf.WriteString("        return _bigrat(x.num.multiply(y.den), x.den.multiply(y.num));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    static java.math.BigInteger _num(Object x) { return (x instanceof BigRat) ? ((BigRat)x).num : _toBigInt(x); }\n")
