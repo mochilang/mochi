@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.54] – 2025-08-02T10:23:53+07:00
+
+### Added
+
+* F# transpiler support for array strings, typed maps and dictionaries
+* Swift, Scala and OCaml transpilers gain large integer support, dynamic struct indexing and a `split` builtin
+* Rust function prototypes and Clojure catamorphism generation
+
+### Changed
+
+* Rosetta benchmark outputs refreshed across languages including Dart and Go
+* Improved float literal emission and parameter casts
+
+### Fixed
+
+* Base64 decode and return handling bugs
+* Dart transpiler map index null issue
+
 ## [0.10.53] – 2025-08-01T14:33:11+07:00
 
 ### Added
