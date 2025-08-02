@@ -4438,7 +4438,11 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		body = append(body, &ReturnStmt{Expr: expr})
 	}
 	if ret == "int" || inferRetFromBody {
-		if t := detectReturnType(body, localEnv); t != "" && t != "int" {
+		if t := detectReturnType(body, localEnv); t == "" {
+			if fn.Return == nil {
+				ret = "void"
+			}
+		} else if t != "int" {
 			ret = t
 		}
 	}
