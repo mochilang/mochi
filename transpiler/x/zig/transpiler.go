@@ -1228,8 +1228,7 @@ func (p *Program) Emit() []byte {
 	}
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
-		buf.WriteString("    var usage: std.os.linux.rusage = undefined;\n")
-		buf.WriteString("    if (std.os.linux.getrusage(std.os.linux.rusage.SELF, &usage) != 0) return 0;\n")
+		buf.WriteString("    const usage = std.posix.getrusage(0);\n")
 		buf.WriteString("    return @as(i64, usage.maxrss) * 1024;\n")
 		buf.WriteString("}\n")
 	}
@@ -2111,6 +2110,12 @@ func (c *CallExpr) emit(w io.Writer) {
 						a.emit(w)
 						io.WriteString(w, "))")
 					case exp == "f64" && at == "i64":
+						if v, ok3 := a.(*VarRef); ok3 {
+							if vt, ok4 := varTypes[v.Name]; ok4 && vt == "f64" {
+								a.emit(w)
+								break
+							}
+						}
 						io.WriteString(w, "@as(f64, @floatFromInt(")
 						a.emit(w)
 						io.WriteString(w, "))")

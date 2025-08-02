@@ -2,7 +2,7 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-02 14:46 +0700
+Last updated: 2025-08-02 16:31 +0700
 
 ## Program Checklist (76/491)
 | Index | Name | Status | Duration | Memory |
@@ -88,7 +88,7 @@ Last updated: 2025-08-02 14:46 +0700
 | 79 | associative-array-creation |   |  |  |
 | 80 | associative-array-iteration | ✓ | 177µs |  |
 | 81 | associative-array-merging |   |  |  |
-| 82 | atomic-updates | ✓ | 1.056ms |  |
+| 82 | atomic-updates | ✓ | 1.593ms | 197.2 MB |
 | 83 | attractive-numbers | ✓ | 3.401ms |  |
 | 84 | average-loop-length |   |  |  |
 | 85 | averages-arithmetic-mean |   |  |  |
