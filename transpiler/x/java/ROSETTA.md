@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-01 21:02 GMT+7
+Last updated: 2025-08-02 02:32 GMT+7
 
-## Rosetta Checklist (327/491)
+## Rosetta Checklist (338/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -355,19 +355,19 @@ Last updated: 2025-08-01 21:02 GMT+7
 | 347 | entropy-1 |   |  |  |
 | 348 | entropy-2 |   |  |  |
 | 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
-| 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 350 | enumerations-1 | ✓ | 13.0ms | 0B |
+| 351 | enumerations-2 | ✓ | 14.0ms | 0B |
+| 352 | enumerations-3 | ✓ | 13.0ms | 0B |
+| 353 | enumerations-4 | ✓ | 13.0ms | 0B |
+| 354 | environment-variables-1 | ✓ | 16.0ms | 496B |
+| 355 | environment-variables-2 | ✓ | 35.0ms | 80.77KB |
+| 356 | equal-prime-and-composite-sums | ✓ | 2.54s | 111.33KB |
+| 357 | equilibrium-index | ✓ | 293.0ms | 46.18KB |
+| 358 | erd-s-nicolas-numbers | ✓ |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 99.0ms | 175.45KB |
 | 360 | esthetic-numbers |   |  |  |
 | 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
+| 362 | euclid-mullin-sequence | ✓ |  |  |
 | 363 | euler-method |   |  |  |
 | 364 | eulers-constant-0.5772... |   |  |  |
 | 365 | eulers-identity |   |  |  |

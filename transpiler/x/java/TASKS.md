@@ -1,4 +1,86 @@
-## Progress (2025-08-01 20:47 +0700)
+## Progress (2025-08-01 19:23 UTC)
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: support os env (78a5bd41d4)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: handle enum alias (f53375cba0)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-2 (91d8f79466)
+
+- transpiler/java: add enumerations-1 (59f2068a4e)
+
+- transpiler/java: add enumerations-1 (59f2068a4e)
+
+- Attempt fix for base64 decode transpiler (0fca613c0a)
+
+- Attempt fix for base64 decode transpiler (0fca613c0a)
+
+- Attempt fix for base64 decode transpiler (0fca613c0a)
+
+- Attempt fix for base64 decode transpiler (0fca613c0a)
+
 - rkt: update zumkeller-numbers benchmark (2351d9c1ff)
 
 - rkt: update zumkeller-numbers benchmark (2351d9c1ff)
