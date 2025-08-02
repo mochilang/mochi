@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (415/491)
-_Last updated: 2025-08-02 10:48 +0700_
+## Golden Test Checklist (416/491)
+_Last updated: 2025-08-02 11:08 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -451,7 +451,7 @@ _Last updated: 2025-08-02 10:48 +0700_
 | 442 | fizzbuzz | ✓ | 21µs | 8.8 MB |
 | 443 | flatten-a-list-1 | ✓ | 4µs | 8.7 MB |
 | 444 | flatten-a-list-2 | ✓ | 2µs | 8.7 MB |
-| 445 | flipping-bits-game | error |  |  |
+| 445 | flipping-bits-game | ✓ | 8µs | 8.7 MB |
 | 446 | flow-control-structures-1 | ✓ | 3µs | 8.7 MB |
 | 447 | flow-control-structures-2 | ✓ | 2µs | 8.7 MB |
 | 448 | flow-control-structures-3 | ✓ | 17µs | 8.7 MB |
