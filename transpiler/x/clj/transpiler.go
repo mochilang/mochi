@@ -1310,6 +1310,15 @@ func applyBinOp(op string, left, right Node) Node {
 	case "intersect":
 		inter := &List{Elems: []Node{Symbol("clojure.set/intersection"), &List{Elems: []Node{Symbol("set"), left}}, &List{Elems: []Node{Symbol("set"), right}}}}
 		return &List{Elems: []Node{Symbol("vec"), inter}}
+	case "/":
+		// Prefer integer division when the divisor is a literal to match
+		// Mochi's semantics. Clojure's `quot` performs truncating
+		// division on integers, avoiding unintended ratios for
+		// expressions like `coef / 2` in Rosetta tasks.
+		if _, ok := right.(IntLit); ok {
+			return &List{Elems: []Node{Symbol("quot"), left, right}}
+		}
+		fallthrough
 	default:
 		if sym == "<" || sym == "<=" || sym == ">" || sym == ">=" {
 			if isStringNode(left) || isStringNode(right) {
@@ -2767,9 +2776,15 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 	case "bigint":
 		return &List{Elems: []Node{Symbol("bigint"), n}}, nil
 	case "bigrat":
-		// force ratio by converting to BigInteger before division
-		n = &List{Elems: []Node{Symbol("bigint"), n}}
-		return &List{Elems: []Node{Symbol("/"), n, IntLit(1)}}, nil
+		// Clojure represents rational numbers natively using ratios of
+		// arbitrary precision integers. Casting to bigrat from Mochi
+		// therefore requires no transformation and, importantly, we
+		// must not coerce the value through BigInteger division as that
+		// truncates non-integral values to zero. Such truncation led to
+		// "divide by zero" errors in rational arithmetic (e.g. Rosetta
+		// task *check-machin-like-formulas*). Simply emit the original
+		// expression so subsequent operations use exact ratio semantics.
+		return n, nil
 	default:
 		return nil, fmt.Errorf("cast to %s not supported", *t.Simple)
 	}
