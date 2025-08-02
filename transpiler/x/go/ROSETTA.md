@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 463/491
-Last updated: 2025-08-02 14:26 +0700
+Last updated: 2025-08-02 14:36 +0700
 
 Checklist:
 
@@ -211,56 +211,56 @@ Checklist:
 | 202 | church-numerals-1 | ✓ | 71.0µs | 6.12KB |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 556.0µs | 4.21KB |
-| 205 | circular-primes | ✓ | 97.0µs | 9.05KB |
-| 206 | cistercian-numerals | ✓ | 438.0µs | 88.75KB |
-| 207 | comma-quibbling | ✓ | 59.0µs | 1.11KB |
-| 208 | compiler-virtual-machine-interpreter | ✓ | 1.0ms | 734.23KB |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 14.22s | 3.60MB |
-| 210 | compound-data-type | ✓ | 31.0µs | 0B |
-| 211 | concurrent-computing-1 | ✓ | 43.0µs | 984B |
-| 212 | concurrent-computing-2 | ✓ | 107.0µs | 984B |
-| 213 | concurrent-computing-3 | ✓ | 95.0µs | 1.05KB |
-| 214 | conditional-structures-1 | ✓ | 138.0µs | 0B |
-| 215 | conditional-structures-10 | ✓ | 305.0µs | 952B |
-| 216 | conditional-structures-2 | ✓ | 26.0µs | 0B |
-| 217 | conditional-structures-3 | ✓ | 142.0µs | 0B |
-| 218 | conditional-structures-4 | ✓ | 237.0µs | 0B |
-| 219 | conditional-structures-5 | ✓ | 251.0µs | 0B |
-| 220 | conditional-structures-6 | ✓ | 153.0µs | 0B |
-| 221 | conditional-structures-7 | ✓ | 232.0µs | 0B |
-| 222 | conditional-structures-8 | ✓ | 172.0µs | 0B |
-| 223 | conditional-structures-9 | ✓ | 131.0µs | 0B |
-| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 39.0ms | 3.57MB |
-| 225 | constrained-genericity-1 | ✓ | 161.0µs | 0B |
-| 226 | constrained-genericity-2 | ✓ | 224.0µs | 0B |
-| 227 | constrained-genericity-3 | ✓ | 159.0µs | 0B |
-| 228 | constrained-genericity-4 | ✓ | 304.0µs | 1000B |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 828.0µs | 396.15KB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 689.0µs | 365.91KB |
-| 231 | continued-fraction | ✓ | 85.0µs | 17.68KB |
-| 232 | convert-decimal-number-to-rational | ✓ | 62.0µs | 1.86KB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 63.0µs | 1.13KB |
-| 234 | convex-hull | ✓ | 62.0µs | 2.52KB |
-| 235 | conways-game-of-life | ✓ | 119.0ms | 1.38MB |
-| 236 | copy-a-string-1 | ✓ | 9.0µs | 0B |
-| 237 | copy-a-string-2 | ✓ | 61.0µs | 1.10KB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 153.0µs | 4.96KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 60.0µs | 4.96KB |
-| 240 | count-in-factors | ✓ | 215.0µs | 3.44KB |
-| 241 | count-in-octal-1 | ✓ | 172.0µs | 3.54KB |
-| 242 | count-in-octal-2 | ✓ | 65.0ms | 2.32MB |
-| 243 | count-in-octal-3 | ✓ | 67.0µs | 1.89KB |
-| 244 | count-in-octal-4 | ✓ | 57.0µs | 1.20KB |
-| 245 | count-occurrences-of-a-substring | ✓ | 60.0µs | 968B |
-| 246 | count-the-coins-1 | ✓ | 63.0µs | 1.27KB |
-| 247 | count-the-coins-2 | ✓ | 293.0µs | 25.66KB |
-| 248 | cramers-rule | ✓ | 82.0µs | 20.26KB |
-| 249 | crc-32-1 | ✓ | 173.0µs | 12.37KB |
-| 250 | crc-32-2 | ✓ | 332.0µs | 12.37KB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 36.0µs | 32B |
-| 252 | create-a-file | ✓ | 302.0µs | 1.12KB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 54.0µs | 1.31KB |
-| 254 | create-an-html-table | ✓ | 58.0µs | 1.55KB |
+| 205 | circular-primes | ✓ | 487.0µs | 9.05KB |
+| 206 | cistercian-numerals | ✓ | 1.0ms | 88.73KB |
+| 207 | comma-quibbling | ✓ | 452.0µs | 1.11KB |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 601.0µs | 12.30KB |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 14.22s | 48.71KB |
+| 210 | compound-data-type | ✓ | 119.0µs | 0B |
+| 211 | concurrent-computing-1 | ✓ | 441.0µs | 984B |
+| 212 | concurrent-computing-2 | ✓ | 225.0µs | 984B |
+| 213 | concurrent-computing-3 | ✓ | 191.0µs | 1.05KB |
+| 214 | conditional-structures-1 | ✓ | 161.0µs | 0B |
+| 215 | conditional-structures-10 | ✓ | 150.0µs | 952B |
+| 216 | conditional-structures-2 | ✓ | 77.0µs | 0B |
+| 217 | conditional-structures-3 | ✓ | 102.0µs | 0B |
+| 218 | conditional-structures-4 | ✓ | 22.0µs | 0B |
+| 219 | conditional-structures-5 | ✓ | 89.0µs | 0B |
+| 220 | conditional-structures-6 | ✓ | 11.0µs | 0B |
+| 221 | conditional-structures-7 | ✓ | 9.0µs | 0B |
+| 222 | conditional-structures-8 | ✓ | 96.0µs | 0B |
+| 223 | conditional-structures-9 | ✓ | 264.0µs | 0B |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 25.0ms | 1.00MB |
+| 225 | constrained-genericity-1 | ✓ | 162.0µs | 0B |
+| 226 | constrained-genericity-2 | ✓ | 158.0µs | 0B |
+| 227 | constrained-genericity-3 | ✓ | 107.0µs | 0B |
+| 228 | constrained-genericity-4 | ✓ | 259.0µs | 1000B |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 2.0ms | 393.02KB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 2.0ms | 365.88KB |
+| 231 | continued-fraction | ✓ | 549.0µs | 17.68KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 364.0µs | 1.86KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 329.0µs | 1.13KB |
+| 234 | convex-hull | ✓ | 353.0µs | 2.52KB |
+| 235 | conways-game-of-life | ✓ | 145.0ms | 2.94MB |
+| 236 | copy-a-string-1 | ✓ | 19.0µs | 0B |
+| 237 | copy-a-string-2 | ✓ | 151.0µs | 1.10KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 261.0µs | 4.96KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 499.0µs | 4.96KB |
+| 240 | count-in-factors | ✓ | 369.0µs | 3.44KB |
+| 241 | count-in-octal-1 | ✓ | 381.0µs | 3.54KB |
+| 242 | count-in-octal-2 | ✓ | 104.0ms | 2.32MB |
+| 243 | count-in-octal-3 | ✓ | 319.0µs | 1.89KB |
+| 244 | count-in-octal-4 | ✓ | 315.0µs | 1.20KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 236.0µs | 968B |
+| 246 | count-the-coins-1 | ✓ | 338.0µs | 1.27KB |
+| 247 | count-the-coins-2 | ✓ | 536.0µs | 25.66KB |
+| 248 | cramers-rule | ✓ | 226.0µs | 20.26KB |
+| 249 | crc-32-1 | ✓ | 482.0µs | 12.37KB |
+| 250 | crc-32-2 | ✓ | 641.0µs | 12.37KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 28.0µs | 32B |
+| 252 | create-a-file | ✓ | 327.0µs | 1.12KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 578.0µs | 1.31KB |
+| 254 | create-an-html-table | ✓ | 562.0µs | 1.55KB |
 | 255 | create-an-object-at-a-given-address | ✓ | 93.0µs | 3.68KB |
 | 256 | csv-data-manipulation | ✓ | 158.0µs | 1.79KB |
 | 257 | csv-to-html-translation-1 | ✓ | 79.0µs | 3.03KB |
