@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 07:07 UTC
+Last updated: 2025-08-02 07:30 UTC
 
 ## Checklist (481/491)
 | Index | Name | Status | Duration | Memory |
@@ -406,56 +406,56 @@ Last updated: 2025-08-02 07:07 UTC
 | 397 | farey-sequence | ✓ | 1.243ms | 213.6 KB |
 | 398 | fast-fourier-transform | ✓ | 344µs | 43.8 KB |
 | 399 | fasta-format | ✓ | 97µs | 30.9 KB |
-| 400 | faulhabers-formula | ✓ | 517µs | 159.1 KB |
-| 401 | faulhabers-triangle | ✓ | 680µs | 345.1 KB |
-| 402 | feigenbaum-constant-calculation | ✓ | 18.005ms | 13.8 KB |
-| 403 | fermat-numbers | ✓ | 228µs | 20.1 KB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 58µs | 26.6 KB |
+| 400 | faulhabers-formula | ✓ | 473µs | 159.1 KB |
+| 401 | faulhabers-triangle | ✓ | 1.328ms | 345.1 KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 29.155ms | 13.8 KB |
+| 403 | fermat-numbers | ✓ | 422µs | 20.1 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 82µs | 26.6 KB |
 | 405 | fibonacci-sequence-1 | ✓ | 2µs | 472 B |
-| 406 | fibonacci-sequence-2 | ✓ | 2µs | 472 B |
-| 407 | fibonacci-sequence-3 | ✓ | 1µs | 472 B |
-| 408 | fibonacci-sequence-4 | ✓ | 24µs | 10.7 KB |
-| 409 | fibonacci-sequence-5 | ✓ | 56µs | 11.2 KB |
-| 410 | fibonacci-word-fractal | ✓ | 74µs | 129.0 KB |
-| 411 | fibonacci-word | ✓ |  |  |
-| 412 | file-extension-is-in-extensions-list | ✓ | 115µs | 38.2 KB |
-| 413 | file-input-output-1 | ✓ | 31µs | 9.0 KB |
-| 414 | file-input-output-2 | ✓ | 31µs | 9.1 KB |
-| 415 | file-input-output-3 | ✓ |  |  |
-| 416 | file-modification-time | ✓ | 27µs | 9.3 KB |
-| 417 | file-size-distribution | ✓ | 57µs | 19.7 KB |
-| 418 | file-size | ✓ | 37µs | 9.6 KB |
-| 419 | filter | ✓ | 58µs | 11.9 KB |
-| 420 | find-chess960-starting-position-identifier-2 | ✓ |  |  |
-| 421 | find-chess960-starting-position-identifier | ✓ |  |  |
-| 422 | find-common-directory-path | ✓ | 280µs | 105.4 KB |
-| 423 | find-duplicate-files | ✓ | 26µs | 10.5 KB |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 3.527ms | 10.9 KB |
-| 425 | find-limit-of-recursion | ✓ | 4.17ms | 28.9 KB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 25.123303s | 404.7 KB |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 71µs | 13.2 KB |
-| 428 | find-the-intersection-of-two-lines | ✓ | 73µs | 13.6 KB |
-| 429 | find-the-last-sunday-of-each-month | ✓ |  |  |
-| 430 | find-the-missing-permutation | ✓ | 84µs | 26.2 KB |
-| 431 | first-class-environments | ✓ |  |  |
-| 432 | first-class-functions-use-numbers-analogously | ✓ |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ |  |  |
-| 434 | five-weekends | ✓ |  |  |
-| 435 | fivenum-1 | ✓ | 216µs | 11.1 KB |
-| 436 | fivenum-2 | ✓ | 140µs | 15.5 KB |
-| 437 | fivenum-3 | ✓ |  |  |
-| 438 | fixed-length-records-1 | ✓ | 57µs | 11.9 KB |
-| 439 | fixed-length-records-2 | ✓ | 20µs | 8.9 KB |
-| 440 | fizzbuzz-1 | ✓ | 77µs | 12.8 KB |
-| 441 | fizzbuzz-2 | ✓ | 107µs | 73.7 KB |
-| 442 | fizzbuzz | ✓ | 103µs | 12.8 KB |
+| 406 | fibonacci-sequence-2 | ✓ | 4µs | 472 B |
+| 407 | fibonacci-sequence-3 | ✓ | 3µs | 472 B |
+| 408 | fibonacci-sequence-4 | ✓ | 32µs | 10.7 KB |
+| 409 | fibonacci-sequence-5 | ✓ | 59µs | 11.2 KB |
+| 410 | fibonacci-word-fractal | ✓ | 350µs | 129.0 KB |
+| 411 | fibonacci-word | ✓ | 45.911071s | 23.1 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 142µs | 38.2 KB |
+| 413 | file-input-output-1 | ✓ | 22µs | 9.0 KB |
+| 414 | file-input-output-2 | ✓ | 24µs | 9.1 KB |
+| 415 | file-input-output-3 | ✓ | 32µs | 10.0 KB |
+| 416 | file-modification-time | ✓ | 30µs | 9.3 KB |
+| 417 | file-size-distribution | ✓ | 79µs | 19.7 KB |
+| 418 | file-size | ✓ | 30µs | 9.6 KB |
+| 419 | filter | ✓ | 110µs | 26.9 KB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 260µs | 49.4 KB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 293µs | 56.3 KB |
+| 422 | find-common-directory-path | ✓ | 391µs | 105.4 KB |
+| 423 | find-duplicate-files | ✓ | 81µs | 10.5 KB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 156.663ms | 12.2 KB |
+| 425 | find-limit-of-recursion | ✓ | 6.987ms | 28.9 KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 2.93179s | 557.1 KB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 135µs | 13.2 KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 77µs | 13.6 KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 129µs | 28.3 KB |
+| 430 | find-the-missing-permutation | ✓ | 92µs | 26.2 KB |
+| 431 | first-class-environments | ✓ | 576µs | 139.5 KB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 40µs | 10.0 KB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 1.976ms | 26.9 KB |
+| 434 | five-weekends | ✓ | 1.373ms | 73.4 KB |
+| 435 | fivenum-1 | ✓ | 193µs | 11.1 KB |
+| 436 | fivenum-2 | ✓ | 121µs | 15.2 KB |
+| 437 | fivenum-3 | ✓ | 234µs | 12.8 KB |
+| 438 | fixed-length-records-1 | ✓ | 197µs | 51.6 KB |
+| 439 | fixed-length-records-2 | ✓ | 440µs | 138.6 KB |
+| 440 | fizzbuzz-1 | ✓ | 61µs | 12.8 KB |
+| 441 | fizzbuzz-2 | ✓ | 111µs | 73.7 KB |
+| 442 | fizzbuzz | ✓ | 63µs | 12.8 KB |
 | 443 | flatten-a-list-1 | ✓ | 33µs | 10.3 KB |
-| 444 | flatten-a-list-2 | ✓ | 18µs | 8.8 KB |
-| 445 | flipping-bits-game | ✓ | 91µs | 18.7 KB |
-| 446 | flow-control-structures-1 | ✓ | 19µs | 8.9 KB |
-| 447 | flow-control-structures-2 | ✓ | 42µs | 8.8 KB |
-| 448 | flow-control-structures-3 | ✓ | 36µs | 9.0 KB |
-| 449 | flow-control-structures-4 | ✓ | 24µs | 8.8 KB |
+| 444 | flatten-a-list-2 | ✓ | 16µs | 8.8 KB |
+| 445 | flipping-bits-game | ✓ | 92µs | 18.7 KB |
+| 446 | flow-control-structures-1 | ✓ | 21µs | 8.9 KB |
+| 447 | flow-control-structures-2 | ✓ | 22µs | 8.8 KB |
+| 448 | flow-control-structures-3 | ✓ | 21µs | 9.0 KB |
+| 449 | flow-control-structures-4 | ✓ | 19µs | 8.8 KB |
 | 450 | floyd-warshall-algorithm | ✓ | 177µs | 26.8 KB |
 | 451 | floyd-warshall-algorithm2 | ✓ |  |  |
 | 452 | floyds-triangle | ✓ | 124µs | 32.2 KB |
