@@ -2,12 +2,12 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 20:47 +0700
+Last updated: 2025-08-02 22:48 +0700
 
-## Checklist (485/491)
+## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 97µs | 136 B |
+| 1 | 100-doors-2 |   | 97µs | 136 B |
 | 2 | 100-doors-3 | ✓ | 44µs | 224 B |
 | 3 | 100-doors | ✓ | 91µs | 2.7 KB |
 | 4 | 100-prisoners | ✓ | 176.587ms | 96 B |
@@ -246,7 +246,7 @@ Last updated: 2025-08-02 20:47 +0700
 | 237 | copy-a-string-2 | ✓ | 55µs | 38.4 KB |
 | 238 | copy-stdin-to-stdout-1 | ✓ | 53µs | 39.0 KB |
 | 239 | copy-stdin-to-stdout-2 | ✓ | 79µs | 8.1 KB |
-| 240 | count-in-factors | ✓ | 637µs | 96 B |
+| 240 | count-in-factors | ✓ | 511µs | 39.5 KB |
 | 241 | count-in-octal-1 | ✓ | 425µs | 96 B |
 | 242 | count-in-octal-2 | ✓ | 241.854ms | 96 B |
 | 243 | count-in-octal-3 | ✓ | 133µs | 96 B |

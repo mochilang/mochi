@@ -34,7 +34,7 @@
 9998: 2×4999
 9999: 3×3×11×101
 {
-  "duration_us": 637,
-  "memory_bytes": 96,
+  "duration_us": 511,
+  "memory_bytes": 40488,
   "name": "main"
 }
