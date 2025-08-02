@@ -240,9 +240,49 @@ type CallExpr struct {
 func (c *CallExpr) emit(w io.Writer) {
 	io.WriteString(w, rustIdent(c.Func))
 	io.WriteString(w, "(")
+	pts, hasPts := funParamTypes[c.Func]
 	for i, a := range c.Args {
 		if i > 0 {
 			io.WriteString(w, ", ")
+		}
+		if hasPts && i < len(pts) {
+			pt := pts[i]
+			if strings.HasPrefix(pt, "&mut ") {
+				if nr, ok := a.(*NameRef); ok {
+					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
+						a.emit(w)
+					} else {
+						io.WriteString(w, "&mut ")
+						a.emit(w)
+					}
+				} else if _, ok := a.(*UnaryExpr); ok {
+					a.emit(w)
+				} else {
+					io.WriteString(w, "&mut ")
+					a.emit(w)
+				}
+				continue
+			}
+			if strings.HasPrefix(pt, "&") {
+				if nr, ok := a.(*NameRef); ok {
+					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
+						a.emit(w)
+					} else {
+						io.WriteString(w, "&")
+						a.emit(w)
+					}
+				} else if _, ok := a.(*UnaryExpr); ok {
+					a.emit(w)
+				} else {
+					io.WriteString(w, "&")
+					a.emit(w)
+				}
+				continue
+			}
+			if _, ok := a.(*NameRef); ok && (pt == "String" || strings.HasPrefix(pt, "Vec<") || strings.HasPrefix(pt, "HashMap<")) {
+				(&MethodCallExpr{Receiver: a, Name: "clone"}).emit(w)
+				continue
+			}
 		}
 		if nr, ok := a.(*NameRef); ok {
 			if vt, ok2 := varTypes[nr.Name]; ok2 && !strings.HasPrefix(vt, "&") && (vt == "String" || strings.HasPrefix(vt, "Vec<") || strings.HasPrefix(vt, "HashMap<")) {
