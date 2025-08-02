@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 175/491
-Last updated: 2025-08-02 10:47 +0700
+Completed: 176/491
+Last updated: 2025-08-02 17:33 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -131,7 +131,7 @@ Last updated: 2025-08-02 10:47 +0700
 | 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
 | 125 | bitmap-write-a-ppm-file | ✓ | 46.038ms | 22.2 MB |
 | 126 | bitmap |   |  |  |
-| 127 | bitwise-io-1 |   |  |  |
+| 127 | bitwise-io-1 | ✓ | 43.356ms | 22.9 MB |
 | 128 | bitwise-io-2 |   |  |  |
 | 129 | bitwise-operations |   |  |  |
 | 130 | blum-integer |   |  |  |
