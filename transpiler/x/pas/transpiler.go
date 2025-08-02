@@ -3990,20 +3990,23 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "avg" && len(args) == 1 {
 			currProg.NeedAvg = true
 			return &CallExpr{Name: "avg", Args: args}, nil
-		} else if name == "min" && len(args) == 1 {
-			currProg.NeedMin = true
-			return &CallExpr{Name: "min", Args: args}, nil
-		} else if name == "max" && len(args) == 1 {
-			currProg.NeedMax = true
-			return &CallExpr{Name: "max", Args: args}, nil
-		} else if name == "values" && len(args) == 1 {
-			if vr, ok := args[0].(*VarRef); ok {
-				if t, ok := currentVarTypes[vr.Name]; ok {
-					for _, r := range currProg.Records {
-						if r.Name == t {
-							var elems []Expr
-							for _, f := range r.Fields {
-								elems = append(elems, &SelectorExpr{Root: vr.Name, Tail: []string{f.Name}})
+               } else if name == "min" && len(args) == 1 {
+                       currProg.NeedMin = true
+                       return &CallExpr{Name: "min", Args: args}, nil
+               } else if name == "max" && len(args) == 1 {
+                       currProg.NeedMax = true
+                       return &CallExpr{Name: "max", Args: args}, nil
+               } else if name == "keys" && len(args) == 1 {
+                       // treat keys(map) as the map itself for iteration purposes
+                       return args[0], nil
+               } else if name == "values" && len(args) == 1 {
+                       if vr, ok := args[0].(*VarRef); ok {
+                               if t, ok := currentVarTypes[vr.Name]; ok {
+                                       for _, r := range currProg.Records {
+                                               if r.Name == t {
+                                                       var elems []Expr
+                                                       for _, f := range r.Fields {
+                                                               elems = append(elems, &SelectorExpr{Root: vr.Name, Tail: []string{f.Name}})
 							}
 							return &ValuesExpr{Elems: elems}, nil
 						}
