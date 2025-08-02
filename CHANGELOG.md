@@ -1,5 +1,23 @@
 # 📦 CHANGELOG.md
 
+## [0.10.55] – 2025-08-02T16:16:26+07:00
+
+### Added
+
+* Kotlin circular primes and call-a-function examples with struct method support
+* Pascal, Racket and Zig transpilers extend map handling, dynamic indexing and multi-argument features
+* New Rosetta benchmarks such as Floyd–Warshall, Cholesky decomposition and bubble sort
+
+### Changed
+
+* Rosetta outputs regenerated across PHP, Go, Scala, Ruby and more
+* Improved map, list and index handling in Pascal, Kotlin, Scala, Swift and C transpilers
+
+### Fixed
+
+* Java list literal typing, Kotlin map assignment and Scala lambda returns
+* Swift BigInt modulo overflow, Ruby fetch helper JSON dependency and PHP benchmark timing
+
 ## [0.10.54] – 2025-08-02T10:23:53+07:00
 
 ### Added
