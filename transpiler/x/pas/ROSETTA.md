@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (62/491) - updated 2025-07-30 18:22 UTC
+## Rosetta Checklist (60/491) - updated 2025-08-02 04:47 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -79,10 +79,10 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 72 | arithmetic-rational | ✓ | 2µs |  |
 | 73 | array-concatenation |   |  |  |
 | 74 | array-length | ✓ | 1µs |  |
-| 75 | arrays | ✓ |  |  |
+| 75 | arrays |   |  |  |
 | 76 | ascending-primes | ✓ |  |  |
-| 77 | ascii-art-diagram-converter | ✓ |  |  |
-| 78 | assertions | ✓ |  |  |
+| 77 | ascii-art-diagram-converter |   |  |  |
+| 78 | assertions |   |  |  |
 | 79 | associative-array-creation |   |  |  |
 | 80 | associative-array-iteration |   |  |  |
 | 81 | associative-array-merging |   |  |  |
@@ -157,7 +157,7 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 150 | call-a-function-10 |   |  |  |
 | 151 | call-a-function-11 |   |  |  |
 | 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 |   |  |  |
+| 153 | call-a-function-2 | ✓ | 1µs |  |
 | 154 | call-a-function-3 |   |  |  |
 | 155 | call-a-function-4 |   |  |  |
 | 156 | call-a-function-5 |   |  |  |
