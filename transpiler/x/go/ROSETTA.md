@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 459/491
-Last updated: 2025-08-02 01:16 +0700
+Completed programs: 462/491
+Last updated: 2025-08-02 11:33 +0700
 
 Checklist:
 
@@ -135,7 +135,7 @@ Checklist:
 | 126 | bitmap | ✓ | 17.0ms | 2.86MB |
 | 127 | bitwise-io-1 | ✓ | 407.0µs | 1.12KB |
 | 128 | bitwise-io-2 |   |  |  |
-| 129 | bitwise-operations | ✓ |  |  |
+| 129 | bitwise-operations |   |  |  |
 | 130 | blum-integer | ✓ | 449.0µs | 4.83KB |
 | 131 | boolean-values |   |  |  |
 | 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
@@ -153,7 +153,7 @@ Checklist:
 | 144 | calendar---for-real-programmers-1 | ✓ | 595.0µs | 11.21KB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 1.0ms | 11.21KB |
 | 146 | calendar | ✓ | 518.0µs | 11.21KB |
-| 147 | calkin-wilf-sequence |   | 1.0ms | 34.42KB |
+| 147 | calkin-wilf-sequence | ✓ | 1.0ms | 34.42KB |
 | 148 | call-a-foreign-language-function | ✓ | 203.0µs | 952B |
 | 149 | call-a-function-1 | ✓ | 26.0µs | 0B |
 | 150 | call-a-function-10 | ✓ | 125.0µs | 64B |
@@ -168,47 +168,47 @@ Checklist:
 | 159 | call-a-function-8 | ✓ | 202.0µs | 176B |
 | 160 | call-a-function-9 | ✓ | 29.0µs | 64B |
 | 161 | call-an-object-method-1 | ✓ | 275.0µs | 0B |
-| 162 | call-an-object-method-2 |   | 43.0µs | 96B |
+| 162 | call-an-object-method-2 | ✓ | 43.0µs | 96B |
 | 163 | call-an-object-method-3 | ✓ | 200.0µs | 0B |
 | 164 | call-an-object-method | ✓ | 206.0µs | 0B |
-| 165 | camel-case-and-snake-case | ✓ |  |  |
-| 166 | canny-edge-detector | ✓ |  |  |
-| 167 | canonicalize-cidr | ✓ |  |  |
-| 168 | cantor-set | ✓ | 338.0µs | 195.69KB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 545.0µs | 7.96KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 60.0µs | 2.23KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   | 539.0µs | 10.30KB |
-| 172 | cartesian-product-of-two-or-more-lists-3 |   | 165.0µs | 12.81KB |
-| 173 | cartesian-product-of-two-or-more-lists-4 |   | 134.0µs | 12.91KB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 816.0µs | 2.51KB |
-| 175 | casting-out-nines |   | 14.0ms | 2.64MB |
-| 176 | catalan-numbers-1 | ✓ | 293.0µs | 1.27KB |
-| 177 | catalan-numbers-2 | ✓ | 579.0µs | 1.29KB |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 472.0µs | 1.98KB |
-| 179 | catamorphism | ✓ | 773.0µs | 1000B |
+| 165 | camel-case-and-snake-case |   |  |  |
+| 166 | canny-edge-detector | ✓ | 1.0ms | 5.01KB |
+| 167 | canonicalize-cidr | ✓ | 680.0µs | 5.51KB |
+| 168 | cantor-set | ✓ | 1.0ms | 195.69KB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.0ms | 7.96KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 638.0µs | 2.24KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 624.0µs | 10.34KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 885.0µs | 13.12KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 916.0µs | 13.22KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 745.0µs | 2.51KB |
+| 175 | casting-out-nines | ✓ | 15.0ms | 2.64MB |
+| 176 | catalan-numbers-1 | ✓ | 458.0µs | 1.27KB |
+| 177 | catalan-numbers-2 | ✓ | 357.0µs | 1.29KB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 607.0µs | 1.98KB |
+| 179 | catamorphism | ✓ | 505.0µs | 984B |
 | 180 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 38.61KB |
-| 181 | chaocipher | ✓ | 164.0µs | 8.95KB |
-| 182 | chaos-game | ✓ | 434.0µs | 219.61KB |
-| 183 | character-codes-1 | ✓ | 545.0µs | 984B |
-| 184 | character-codes-2 | ✓ | 366.0µs | 968B |
-| 185 | character-codes-3 | ✓ | 343.0µs | 1.20KB |
-| 186 | character-codes-4 | ✓ | 492.0µs | 984B |
-| 187 | character-codes-5 | ✓ | 371.0µs | 1000B |
-| 188 | chat-server | ✓ | 281.0µs | 1.26KB |
+| 181 | chaocipher | ✓ | 623.0µs | 8.93KB |
+| 182 | chaos-game | ✓ | 3.0ms | 219.61KB |
+| 183 | character-codes-1 | ✓ | 594.0µs | 984B |
+| 184 | character-codes-2 | ✓ | 822.0µs | 968B |
+| 185 | character-codes-3 | ✓ | 434.0µs | 1.20KB |
+| 186 | character-codes-4 | ✓ | 574.0µs | 984B |
+| 187 | character-codes-5 | ✓ | 433.0µs | 984B |
+| 188 | chat-server | ✓ | 427.0µs | 1.26KB |
 | 189 | check-machin-like-formulas | ✓ | 12.0ms | 1.22MB |
-| 190 | check-that-file-exists | ✓ | 69.0µs | 1.17KB |
-| 191 | checkpoint-synchronization-1 | ✓ | 79.0µs | 2.24KB |
-| 192 | checkpoint-synchronization-2 | ✓ | 78.0µs | 2.54KB |
-| 193 | checkpoint-synchronization-3 | ✓ | 114.0µs | 2.83KB |
-| 194 | checkpoint-synchronization-4 | ✓ | 115.0µs | 3.58KB |
-| 195 | chernicks-carmichael-numbers | ✓ | 114.0ms | 3.02MB |
-| 196 | cheryls-birthday | ✓ | 79.0µs | 2.01KB |
-| 197 | chinese-remainder-theorem | ✓ | 101.0µs | 1.17KB |
-| 198 | chinese-zodiac | ✓ | 137.0µs | 1.99KB |
-| 199 | cholesky-decomposition-1 | ✓ | 120.0µs | 6.08KB |
-| 200 | cholesky-decomposition | ✓ | 72.0µs | 4.12KB |
-| 201 | chowla-numbers | ✓ | 64.0µs | 1.90KB |
-| 202 | church-numerals-1 | ✓ | 71.0µs | 6.12KB |
+| 190 | check-that-file-exists | ✓ | 544.0µs | 1.17KB |
+| 191 | checkpoint-synchronization-1 | ✓ | 402.0µs | 2.24KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 339.0µs | 2.54KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 607.0µs | 2.83KB |
+| 194 | checkpoint-synchronization-4 | ✓ | 454.0µs | 3.58KB |
+| 195 | chernicks-carmichael-numbers | ✓ | 163.0ms | 3.06MB |
+| 196 | cheryls-birthday | ✓ | 475.0µs | 2.01KB |
+| 197 | chinese-remainder-theorem | ✓ | 407.0µs | 1.17KB |
+| 198 | chinese-zodiac | ✓ | 897.0µs | 1.99KB |
+| 199 | cholesky-decomposition-1 | ✓ | 1.0ms | 6.08KB |
+| 200 | cholesky-decomposition | ✓ | 507.0µs | 4.12KB |
+| 201 | chowla-numbers | ✓ | 536.0µs | 1.90KB |
+| 202 | church-numerals-1 |   | 71.0µs | 6.12KB |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 108.0µs | 3.65KB |
 | 205 | circular-primes | ✓ | 97.0µs | 9.05KB |
