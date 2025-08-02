@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 381/491
-Last updated: 2025-08-02 17:26 +0700
+Completed: 382/491
+Last updated: 2025-08-02 17:56 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -214,7 +214,7 @@ Last updated: 2025-08-02 17:26 +0700
 | 205 | circular-primes | ✓ | 620µs | 3.2 MB |
 | 206 | cistercian-numerals | ✓ | 1.187ms | 3.3 MB |
 | 207 | comma-quibbling | ✓ | 226µs | 3.2 MB |
-| 208 | compiler-virtual-machine-interpreter |   |  |  |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 1.348ms | 3.5 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 210 | compound-data-type | ✓ |  |  |
 | 211 | concurrent-computing-1 | ✓ |  |  |
