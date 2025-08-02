@@ -1,5 +1,6 @@
+Warning: Undefined variable $strtolower in /workspace/mochi/tests/rosetta/transpiler/php/call-a-function-8.php on line 35
 {
-  "duration_us": 13,
-  "memory_bytes": 64,
+  "duration_us": 97,
+  "memory_bytes": 152,
   "name": "main"
 }

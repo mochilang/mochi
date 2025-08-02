@@ -26,7 +26,7 @@
  c://my-docs/happy_Flag-Day/12.doc => c://myDocs/happyFlagDay/12Doc
                            spaces  => spaces
 {
-  "duration_us": 129,
+  "duration_us": 127,
   "memory_bytes": 96,
   "name": "main"
 }

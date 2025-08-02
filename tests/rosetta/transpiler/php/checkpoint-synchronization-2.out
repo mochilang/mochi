@@ -29,7 +29,7 @@ D worker begins part
 D worker completed d
 abcd assembled.  cycle 3 complete
 {
-  "duration_us": 86,
+  "duration_us": 63,
   "memory_bytes": 128,
   "name": "main"
 }
