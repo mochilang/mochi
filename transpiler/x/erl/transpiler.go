@@ -1336,7 +1336,11 @@ func isBoolExpr(e Expr, env *types.Env, ctx *context) bool {
 			return true
 		}
 		if env != nil {
-			if t, err := env.GetVar(v.Func); err == nil {
+			name := v.Func
+			if ctx != nil {
+				name = ctx.original(name)
+			}
+			if t, err := env.GetVar(name); err == nil {
 				if ft, ok := t.(types.FuncType); ok {
 					if _, ok := ft.Return.(types.BoolType); ok {
 						return true
@@ -3827,7 +3831,9 @@ func convertIfStmt(n *parser.IfStmt, env *types.Env, ctx *context) (*IfStmt, err
 		return nil, err
 	}
 	if !isBoolExpr(cond, env, ctx) {
-		if _, ok := cond.(*IndexExpr); !ok {
+		if _, ok := cond.(*CallExpr); ok {
+			// assume boolean
+		} else if _, ok := cond.(*IndexExpr); !ok {
 			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
 		}
 	}
@@ -4386,6 +4392,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			useLookupHost = true
 			return &CallExpr{Func: "mochi_lookup_host", Args: []Expr{arg}}, nil
+		}
+		if mod, ok := ctx.autoModule(pf.Target.Selector.Root); ok && mod == "os" && len(pf.Target.Selector.Tail) == 1 {
+			f := pf.Target.Selector.Tail[0]
+			switch f {
+			case "Getenv":
+				if len(pf.Ops[0].Call.Args) != 1 {
+					return nil, fmt.Errorf("Getenv expects 1 arg")
+				}
+				arg, err := convertExpr(pf.Ops[0].Call.Args[0], env, ctx)
+				if err != nil {
+					return nil, err
+				}
+				return &CallExpr{Func: "os:getenv", Args: []Expr{arg}, ReturnsString: true}, nil
+			case "Environ":
+				if len(pf.Ops[0].Call.Args) != 0 {
+					return nil, fmt.Errorf("Environ expects 0 args")
+				}
+				return &CallExpr{Func: "os:getenv"}, nil
+			}
 		}
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "contains" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
@@ -5102,18 +5127,9 @@ func convertIf(ifx *parser.IfExpr, env *types.Env, ctx *context) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
-	// The type checker does not always infer boolean type for expressions like
-	// list indexing. Adding an explicit `!= nil` check causes values such as
-	// `false` to be treated as true in Erlang. Instead, rely on pattern matching
-	// against the literal `true` value which works for booleans and treats all
-	// other terms as false.
-	if _, ok := types.ExprType(ifx.Cond, env).(types.BoolType); !ok {
-		if ce, ok := cond.(*CallExpr); ok {
-			if ce.Func == "maps:is_key" || ce.Func == "mochi_member" || ce.Func == "string:str" {
-				// these return boolean values
-			} else {
-				cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
-			}
+	if !isBoolExpr(cond, env, ctx) {
+		if _, ok := cond.(*CallExpr); ok {
+			// assume boolean
 		} else if _, ok := cond.(*IndexExpr); !ok {
 			cond = &BinaryExpr{Left: cond, Op: "!=", Right: &AtomLit{Name: "nil"}}
 		}
