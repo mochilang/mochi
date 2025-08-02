@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 08:46 UTC
+Last updated: 2025-08-02 09:13 UTC
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -107,7 +107,7 @@ Last updated: 2025-08-02 08:46 UTC
 | 98 | balanced-brackets | ✓ | 137µs | 37.2 KB |
 | 99 | balanced-ternary | ✓ | 78µs | 25.0 KB |
 | 100 | barnsley-fern | ✓ | 16.778ms | 1.0 MB |
-| 101 | base64-decode-data | ✓ | 862µs | 515.7 KB |
+| 101 | base64-decode-data | ✓ | 1.752ms | 515.7 KB |
 | 102 | bell-numbers | ✓ | 581µs | 399.4 KB |
 | 103 | benfords-law | ✓ | 6.517ms | -16519 B |
 | 104 | bernoulli-numbers | ✓ | 29.533ms | 80.1 KB |
