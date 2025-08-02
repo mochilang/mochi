@@ -1,0 +1,11 @@
+Connected to localhost:21
+Logged in as anonymous
+"pub"
+somefile.bin 35
+readme.txt 15
+Wrote 35 bytes to somefile.bin
+{
+  "duration_us": 26307,
+  "memory_bytes": 68248,
+  "name": "main"
+}
