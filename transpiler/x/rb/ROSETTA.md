@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 09:51 UTC
+Last updated: 2025-08-02 10:04 UTC
 
 ## Checklist (483/491)
 | Index | Name | Status | Duration | Memory |
@@ -214,7 +214,7 @@ Last updated: 2025-08-02 09:51 UTC
 | 205 | circular-primes | ✓ | 383µs | 214.3 KB |
 | 206 | cistercian-numerals | ✓ | 1.317ms | 515.7 KB |
 | 207 | comma-quibbling | ✓ | 36µs | 10.9 KB |
-| 208 | compiler-virtual-machine-interpreter | ✓ | 451µs | 154.0 KB |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 372µs | 154.0 KB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
 | 210 | compound-data-type | ✓ | 25µs | 1.2 KB |
 | 211 | concurrent-computing-1 | ✓ | 25µs | 9.0 KB |
