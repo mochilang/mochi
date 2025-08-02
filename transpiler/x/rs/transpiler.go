@@ -299,8 +299,14 @@ func (p *PrintExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ").trim_end())")
 	} else {
+		fmtStr := p.Fmt
+		if len(p.Args) == 1 {
+			if t := inferType(p.Args[0]); strings.HasPrefix(t, "HashMap<") {
+				fmtStr = "{:?}"
+			}
+		}
 		io.WriteString(w, "println!(")
-		fmt.Fprintf(w, "%q", p.Fmt)
+		fmt.Fprintf(w, "%q", fmtStr)
 		for _, a := range p.Args {
 			io.WriteString(w, ", ")
 			emitArg(a)
@@ -623,6 +629,10 @@ type MapEntry struct {
 type MapLit struct{ Items []MapEntry }
 
 func (m *MapLit) emit(w io.Writer) {
+	if len(m.Items) == 0 {
+		io.WriteString(w, "HashMap::new()")
+		return
+	}
 	io.WriteString(w, "HashMap::from([")
 	mapT := inferType(m)
 	expectStr := strings.HasSuffix(mapT, ", String>")
@@ -699,7 +709,11 @@ type IndexExpr struct {
 func (i *IndexExpr) emit(w io.Writer) {
 	switch t := i.Target.(type) {
 	case *NameRef:
-		if mapVars[t.Name] || strings.HasPrefix(inferType(i.Target), "HashMap") {
+		ttype := inferType(i.Target)
+		if strings.HasPrefix(ttype, "&") {
+			ttype = ttype[1:]
+		}
+		if mapVars[t.Name] || strings.HasPrefix(ttype, "HashMap") {
 			if lockedMap != "" && lockedMap == t.Name {
 				io.WriteString(w, "_map")
 			} else if globalVars[t.Name] {
@@ -712,11 +726,31 @@ func (i *IndexExpr) emit(w io.Writer) {
 			} else {
 				t.emit(w)
 			}
-			io.WriteString(w, "[")
 			idxT := inferType(i.Index)
-			if idxT == "" && strings.HasPrefix(inferType(i.Target), "HashMap<String") {
+			if idxT == "" && strings.HasPrefix(ttype, "HashMap<String") {
 				idxT = "String"
 			}
+			if !indexLHS {
+				io.WriteString(w, ".get(")
+				switch idxT {
+				case "String":
+					if _, ok := i.Index.(*StringLit); ok {
+						i.Index.emit(w)
+					} else {
+						i.Index.emit(w)
+						io.WriteString(w, ".as_str()")
+					}
+				case "&str":
+					i.Index.emit(w)
+				default:
+					io.WriteString(w, "&")
+					i.Index.emit(w)
+				}
+				io.WriteString(w, ")")
+				io.WriteString(w, ".cloned().unwrap_or_default()")
+				return
+			}
+			io.WriteString(w, "[")
 			switch idxT {
 			case "String":
 				if _, ok := i.Index.(*StringLit); ok {
@@ -732,12 +766,6 @@ func (i *IndexExpr) emit(w io.Writer) {
 				i.Index.emit(w)
 			}
 			io.WriteString(w, "]")
-			if !indexLHS {
-				vt := inferType(i)
-				if vt != "" && vt != "i64" && vt != "bool" && vt != "f64" {
-					io.WriteString(w, ".clone()")
-				}
-			}
 			return
 		}
 		if key, ok := literalStringExpr(i.Index); ok {
@@ -1738,7 +1766,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				}
 				io.WriteString(w, name)
 				io.WriteString(w, ".lock().unwrap().contains_key(")
-				if inferType(b.Left) == "&str" {
+				if t := inferType(b.Left); t == "&str" || t == "String" {
 					b.Left.emit(w)
 				} else {
 					io.WriteString(w, "&")
@@ -1748,7 +1776,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				b.Right.emit(w)
 				io.WriteString(w, ".contains_key(")
-				if inferType(b.Left) == "&str" {
+				if t := inferType(b.Left); t == "&str" || t == "String" {
 					b.Left.emit(w)
 				} else {
 					io.WriteString(w, "&")
@@ -1761,7 +1789,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if nr, ok := b.Right.(*NameRef); ok && mapVars[nr.Name] {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains_key(")
-			if inferType(b.Left) == "&str" {
+			if t := inferType(b.Left); t == "&str" || t == "String" {
 				b.Left.emit(w)
 			} else {
 				io.WriteString(w, "&")
@@ -1773,7 +1801,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if _, ok := b.Right.(*MapLit); ok {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains_key(")
-			if inferType(b.Left) == "&str" {
+			if t := inferType(b.Left); t == "&str" || t == "String" {
 				b.Left.emit(w)
 			} else {
 				io.WriteString(w, "&")
@@ -2435,11 +2463,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				} else {
 					e = &FetchExpr{URL: urlExpr}
 				}
-			} else if ml := mapLiteralExpr(stmt.Let.Value); ml != nil && curEnv != nil {
-				if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
-					rt := rustTypeFromType(t)
+			} else if ml := mapLiteralExpr(stmt.Let.Value); ml != nil {
+				if stmt.Let.Type != nil {
+					rt := rustTypeRef(stmt.Let.Type)
 					if strings.HasPrefix(rt, "HashMap") {
 						forceMap[ml] = true
+					}
+				} else if curEnv != nil {
+					if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
+						rt := rustTypeFromType(t)
+						if strings.HasPrefix(rt, "HashMap") {
+							forceMap[ml] = true
+						}
 					}
 				}
 			} else if ll := listLiteral(stmt.Let.Value); ll != nil {
@@ -2557,6 +2592,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 			varTypes[stmt.Let.Name] = typ
+			if stmt.Let.Type != nil {
+				curEnv.SetVar(stmt.Let.Name, types.ResolveTypeRef(stmt.Let.Type, curEnv), true)
+			}
 			if q, ok := e.(*QueryExpr); ok {
 				if st, ok := structTypes[q.ItemType]; ok {
 					curEnv.SetVar(stmt.Let.Name, types.ListType{Elem: st}, true)
@@ -2597,11 +2635,18 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Var.Value != nil {
-			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil && curEnv != nil {
-				if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
-					rt := rustTypeFromType(t)
+			if ml := mapLiteralExpr(stmt.Var.Value); ml != nil {
+				if stmt.Var.Type != nil {
+					rt := rustTypeRef(stmt.Var.Type)
 					if strings.HasPrefix(rt, "HashMap") {
 						forceMap[ml] = true
+					}
+				} else if curEnv != nil {
+					if t, err := curEnv.GetVar(stmt.Var.Name); err == nil {
+						rt := rustTypeFromType(t)
+						if strings.HasPrefix(rt, "HashMap") {
+							forceMap[ml] = true
+						}
 					}
 				}
 			}
@@ -2687,6 +2732,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 			varTypes[stmt.Var.Name] = typ
+			if stmt.Var.Type != nil {
+				curEnv.SetVar(stmt.Var.Name, types.ResolveTypeRef(stmt.Var.Type, curEnv), true)
+			}
 			if q, ok := e.(*QueryExpr); ok {
 				if st, ok := structTypes[q.ItemType]; ok {
 					curEnv.SetVar(stmt.Var.Name, types.ListType{Elem: st}, true)
@@ -3764,6 +3812,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "float" && len(args) == 1 {
 			funReturns[name] = "f64"
 			return &FloatCastExpr{Expr: args[0]}, nil
+		}
+		if name == "keys" && len(args) == 1 {
+			return &MethodCallExpr{Receiver: args[0], Name: "keys"}, nil
 		}
 		if name == "abs" && len(args) == 1 {
 			if _, ok := funReturns["abs"]; ok {
@@ -4846,9 +4897,7 @@ func inferType(e Expr) string {
 		if len(ex.Items) > 0 {
 			kt := inferType(ex.Items[0].Key)
 			vt := inferType(ex.Items[0].Value)
-			if kt == "String" {
-				kt = "&str"
-			} else if kt == "" {
+			if kt == "" {
 				kt = "String"
 			}
 			if vt == "" {
@@ -4869,6 +4918,8 @@ func inferType(e Expr) string {
 			return "bool"
 		case "to_string":
 			return "String"
+		case "keys":
+			return "Vec<String>"
 		}
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
