@@ -335,6 +335,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	// as zero for trivial programs where GC hasn't run yet.
 	fmt.Fprint(w, "    var __memEnd = _mem(true);\n")
 	fmt.Fprint(w, "    var __dur = (__end - __start);\n")
+	fmt.Fprint(w, "    if (__dur <= 0) __dur = 1;\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
 	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
@@ -4498,6 +4499,9 @@ func Emit(prog *Program) []byte {
 	if usesSHA256 {
 		buf.WriteString("using System.Security.Cryptography;\n")
 	}
+	if usesMem {
+		buf.WriteString("using System.Diagnostics;\n")
+	}
 	if usesInput {
 		buf.WriteString("using System.IO;\n")
 	}
@@ -4566,7 +4570,8 @@ func Emit(prog *Program) []byte {
 	}
 	if usesMem {
 		buf.WriteString("\tstatic long _mem(bool force) {\n")
-		buf.WriteString("\t\treturn GC.GetTotalMemory(force);\n")
+		buf.WriteString("\t\tif (force) GC.Collect();\n")
+		buf.WriteString("\t\treturn Process.GetCurrentProcess().WorkingSet64;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
