@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-01 19:00 UTC
+Last updated: 2025-08-02 03:29 UTC
 
-## Rosetta Golden Test Checklist (187/491)
+## Rosetta Golden Test Checklist (188/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -476,7 +476,7 @@ Last updated: 2025-08-01 19:00 UTC
 | 467 | function-prototype | ✓ |  |  |
 | 468 | functional-coverage-tree |   |  |  |
 | 469 | fusc-sequence | ✓ | 183µs |  |
-| 470 | gamma-function |   |  |  |
+| 470 | gamma-function | ✓ | 25µs |  |
 | 471 | general-fizzbuzz |   |  |  |
 | 472 | generic-swap |   |  |  |
 | 473 | get-system-command-output |   |  |  |
