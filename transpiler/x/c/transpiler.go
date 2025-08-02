@@ -78,6 +78,8 @@ var (
 	needListAppendDoubleNew bool
 	needListAppendStrNew    bool
 	needListAppendIntNew    bool
+	needListAppendStruct    map[string]bool
+	needListAppendStructNew map[string]bool
 	needListAppendSizeT     bool
 	needSHA256              bool
 	needMD5Hex              bool
@@ -776,6 +778,20 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				io.WriteString(w, ");\n")
 				return
 			default:
+				if strings.HasSuffix(base, "*") || (base != "" && !strings.HasSuffix(base, "[]")) {
+					typ := strings.TrimSuffix(base, "*")
+					if typ == "" {
+						typ = base
+					}
+					if needListAppendStruct == nil {
+						needListAppendStruct = make(map[string]bool)
+					}
+					needListAppendStruct[typ] = true
+					fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", a.Name, typ, a.Name, a.Name)
+					call.Args[1].emitExpr(w)
+					io.WriteString(w, ");\n")
+					return
+				}
 				if base == "" {
 					needListAppendInt = true
 					fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
@@ -1450,8 +1466,23 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				needListAppendDoubleNew = true
 				fmt.Fprintf(w, "list_append_double_new(%s, %s_len, ", vr.Name, vr.Name)
 			default:
-				needListAppendIntNew = true
-				fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
+				if strings.HasSuffix(base, "*") {
+					typ := strings.TrimSuffix(base, "*")
+					if needListAppendStructNew == nil {
+						needListAppendStructNew = make(map[string]bool)
+					}
+					needListAppendStructNew[typ] = true
+					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", typ, vr.Name, vr.Name)
+				} else if base != "" {
+					if needListAppendStructNew == nil {
+						needListAppendStructNew = make(map[string]bool)
+					}
+					needListAppendStructNew[base] = true
+					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", base, vr.Name, vr.Name)
+				} else {
+					needListAppendIntNew = true
+					fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
+				}
 			}
 			c.Args[1].emitExpr(w)
 			io.WriteString(w, ")")
@@ -2096,7 +2127,7 @@ func (p *Program) Emit() []byte {
 	if needSHA256 || needMD5Hex {
 		buf.WriteString("#include <unistd.h>\n")
 	}
-	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || needSHA256 || needMD5Hex {
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
 	if needMem {
@@ -2686,6 +2717,26 @@ func (p *Program) Emit() []byte {
 		}
 		fmt.Fprintf(&buf, "};\n\n")
 	}
+	if len(needListAppendStruct) > 0 {
+		for typ := range needListAppendStruct {
+			fmt.Fprintf(&buf, "static %s* list_append_%s(%s *arr, size_t *len, %s val) {\n", typ, typ, typ, typ)
+			fmt.Fprintf(&buf, "    arr = realloc(arr, (*len + 1) * sizeof(%s));\n", typ)
+			buf.WriteString("    arr[*len] = val;\n")
+			buf.WriteString("    (*len)++;\n")
+			buf.WriteString("    return arr;\n")
+			buf.WriteString("}\n\n")
+		}
+	}
+	if len(needListAppendStructNew) > 0 {
+		for typ := range needListAppendStructNew {
+			fmt.Fprintf(&buf, "static %s* list_append_%s_new(const %s *arr, size_t len, %s val) {\n", typ, typ, typ, typ)
+			fmt.Fprintf(&buf, "    %s *res = malloc((len + 1) * sizeof(%s));\n", typ, typ)
+			fmt.Fprintf(&buf, "    if (arr && len) memcpy(res, arr, len * sizeof(%s));\n", typ)
+			buf.WriteString("    res[len] = val;\n")
+			buf.WriteString("    return res;\n")
+			buf.WriteString("}\n\n")
+		}
+	}
 	for _, g := range p.Globals {
 		g.emit(&buf, 0)
 	}
@@ -2885,6 +2936,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendDoubleNew = false
 	needListAppendStrNew = false
 	needListAppendIntNew = false
+	needListAppendStruct = map[string]bool{}
+	needListAppendStructNew = map[string]bool{}
 	needSHA256 = false
 	needMD5Hex = false
 	needNow = false
