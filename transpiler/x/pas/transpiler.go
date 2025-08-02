@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
@@ -3992,19 +3993,12 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 			default:
 				expr = expr
 			}
-		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
-			g := op.Cast.Type.Generic
-			if g.Name == "list" && len(g.Args) == 1 && g.Args[0].Simple != nil {
-				elem := typeFromSimple(*g.Args[0].Simple)
-				expr = &CastExpr{Expr: expr, Type: "array of " + elem}
-			} else if g.Name == "map" && len(g.Args) == 2 && g.Args[0].Simple != nil && g.Args[1].Simple != nil {
-				key := typeFromSimple(*g.Args[0].Simple)
-				val := typeFromSimple(*g.Args[1].Simple)
-				currProg.UseFGL = true
-				expr = &CastExpr{Expr: expr, Type: fmt.Sprintf("specialize TFPGMap<%s, %s>", key, val)}
-			} else {
+		case op.Cast != nil && op.Cast.Type != nil:
+			t := typeFromRef(op.Cast.Type)
+			if t == "" {
 				return nil, fmt.Errorf("unsupported postfix")
 			}
+			expr = &CastExpr{Expr: expr, Type: t}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -4964,6 +4958,13 @@ func (p *Program) addArrayAlias(elem string) string {
 		} else {
 			alias = strings.Title(elem) + "Array"
 		}
+		var b strings.Builder
+		for _, r := range alias {
+			if unicode.IsLetter(r) || unicode.IsDigit(r) {
+				b.WriteRune(r)
+			}
+		}
+		alias = b.String()
 	}
 	switch elem {
 	case "integer", "string", "boolean", "real", "Variant":
