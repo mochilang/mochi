@@ -27,7 +27,7 @@ Aliquot classifications - periods for Sociable/Cyclic in square brackets:
 
 15355717786080: Non-Terminating [15355717786080, 44534663601120, 144940087464480]
 {
-  "duration_us": 48328,
-  "memory_bytes": 2765768,
+  "duration_us": 64019,
+  "memory_bytes": 182432,
   "name": "main"
 }

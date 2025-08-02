@@ -15,7 +15,7 @@ Create two fields at runtime:
 Which field do you want to inspect ? 
 Its value is ''
 {
-  "duration_us": 25888,
-  "memory_bytes": 395600,
+  "duration_us": 16956,
+  "memory_bytes": 493104,
   "name": "main"
 }

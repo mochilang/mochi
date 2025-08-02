@@ -1,0 +1,39 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/adfgvx-cipher.erl:306:2: Warning: variable 'ColLen_3' exported from 'case' (line 278, column 9)
+%  306| {ColLen_3, I_14, Key_4, Labels_4, Li_4, PlainText, Polybius, RIdx_2, Table_2, Temp_3} = Fun_17(ColLen_3, I_14, Key_4, Labels_4, Li_4, PlainText, Polybius, RIdx, Table, Temp_3),
+%     |  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/adfgvx-cipher.erl:321:2: Warning: variable 'ColLen_3' exported from 'case' (line 278, column 9)
+%  321| {ColLen_3, I_14, Idx_3, Key_4, Labels_4, Li_4, PlainText, Polybius, RIdx_2, Table_3, Temp_3} = Fun_18(ColLen_3, I_14, Idx_2, Key_4, Labels_4, Li_4, PlainText, Polybius, RIdx_2, Table_2, Temp_3),
+%     |  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/adfgvx-cipher.erl:346:8: Warning: variable 'ColLen_3' exported from 'case' (line 278, column 9)
+%  346| {Ci_2, ColLen_3, Cols_2, I_14, Idx_3, Key_4, Labels_4, Li_4, Order, PlainText, Polybius, RIdx_2, Table_3, Temp_3} = Fun_20(Ci, ColLen_3, Cols, I_14, Idx_3, Key_4, Labels_4, Li_4, Order, PlainText, Polybius, RIdx_2, Table_3, Temp_3),
+%     |        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/adfgvx-cipher.erl:363:8: Warning: variable 'ColLen_3' exported from 'case' (line 278, column 9)
+%  363| {Ci_4, ColLen_3, Cols_2, I_14, Idx_3, Key_4, Labels_4, Li_4, Order, PlainText, Polybius, RIdx_2, Result_4, Table_3, Temp_3} = Fun_21(Ci_3, ColLen_3, Cols_2, I_14, Idx_3, Key_4, Labels_4, Li_4, Order, PlainText, Polybius, RIdx_2, Result, Table_3, Temp_3),
+%     |        ^
+
+6 x 6 Polybius square:
+
+  | A D F G V X
+---------------
+A | A J W 8 0 7 
+D | O T E 1 2 U 
+F | B D H 3 9 M 
+G | 4 5 K R C 6 
+V | P N Q S X F 
+X | I Y L Z G V 
+
+The key is N7B8IXR6H
+
+Plaintext : ATTACKAT1200AM
+
+Encrypted : ADA AGV DAV DFA GGF DAA AVDX ADA DDV
+
+Decrypted : ATTACKAT1200AM
+{
+  "duration_us": 20760,
+  "memory_bytes": 9743024,
+  "name": "main"
+}

@@ -1,9 +1,17 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/ackermann-function-2.erl:32:1: Warning: function mochi_safe_div/2 is unused
+%   32| mochi_safe_div(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/ackermann-function-2.erl:35:1: Warning: function mochi_safe_fmod/2 is unused
+%   35| mochi_safe_fmod(A, B) ->
+%     | ^
+
 A(0, 0) = 1
 A(1, 2) = 4
 A(2, 4) = 11
 A(3, 4) = 125
 {
-  "duration_us": 6863,
-  "memory_bytes": 114208,
+  "duration_us": 16591,
+  "memory_bytes": 279664,
   "name": "main"
 }

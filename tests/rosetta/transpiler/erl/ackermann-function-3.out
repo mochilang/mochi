@@ -7,7 +7,7 @@ A(4, 1) = 65533
 A(4, 2) = 19729 digits starting/ending with: 20035299304068464649...45587895905719156733
 A(4, 3) = Error: A(m,n) had n of 65536 bits; too large
 {
-  "duration_us": 66453447,
-  "memory_bytes": 741429384,
+  "duration_us": 133901580,
+  "memory_bytes": 757775656,
   "name": "main"
 }

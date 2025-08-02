@@ -7,7 +7,7 @@ Additive primes less than 500:
 461  463  467  487
 54 additive primes found.
 {
-  "duration_us": 25787,
-  "memory_bytes": 186080,
+  "duration_us": 18809,
+  "memory_bytes": 80920,
   "name": "main"
 }

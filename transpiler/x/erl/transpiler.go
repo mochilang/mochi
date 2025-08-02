@@ -97,7 +97,8 @@ mochi_sha256(Bs) ->
 const helperIndexOf = `
 mochi_index_of(S, Ch) when is_list(S) ->
     Char = case Ch of
-        [C|_] -> C;
+        [C|_] when is_integer(C) -> C;
+        [C|_] -> hd(C);
         <<C,_/binary>> -> C;
         C when is_integer(C) -> C;
         _ -> $\0
