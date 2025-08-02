@@ -4499,9 +4499,6 @@ func Emit(prog *Program) []byte {
 	if usesSHA256 {
 		buf.WriteString("using System.Security.Cryptography;\n")
 	}
-	if usesMem {
-		buf.WriteString("using System.Diagnostics;\n")
-	}
 	if usesInput {
 		buf.WriteString("using System.IO;\n")
 	}
@@ -4570,8 +4567,7 @@ func Emit(prog *Program) []byte {
 	}
 	if usesMem {
 		buf.WriteString("\tstatic long _mem(bool force) {\n")
-		buf.WriteString("\t\tif (force) GC.Collect();\n")
-		buf.WriteString("\t\treturn Process.GetCurrentProcess().WorkingSet64;\n")
+		buf.WriteString("\t\treturn GC.GetTotalMemory(force);\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
