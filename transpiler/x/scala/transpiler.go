@@ -1067,8 +1067,14 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	}
 	if (strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[")) && container != "Any" {
 		idx.Value.emit(w)
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, ".getOrElse(")
 		emitIndex()
+		fmt.Fprint(w, ", ")
+		if def := defaultExpr(idx.Type); def != nil {
+			def.emit(w)
+		} else {
+			fmt.Fprint(w, "null")
+		}
 		fmt.Fprint(w, ")")
 		if idx.Type != "" && idx.Type != "Any" {
 			fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
@@ -2272,9 +2278,9 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					left = &CastExpr{Value: left, Type: rt}
 				}
 				if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
-					// fallback to floating point arithmetic when both operand types are unknown
-					left = &CastExpr{Value: left, Type: "Double"}
-					right = &CastExpr{Value: right, Type: "Double"}
+					// fallback to BigInt arithmetic when both operand types are unknown
+					left = &CastExpr{Value: left, Type: "BigInt"}
+					right = &CastExpr{Value: right, Type: "BigInt"}
 				}
 				if lt == "BigInt" && (rt == "Double" || rt == "Float") {
 					left = &CastExpr{Value: left, Type: "Double"}
@@ -2304,6 +2310,10 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "BigInt"}
 				} else if rt == "BigInt" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "BigInt"}
+				} else if lt == "Int" && rt == "BigInt" {
+					left = &CastExpr{Value: left, Type: "BigInt"}
+				} else if rt == "Int" && lt == "BigInt" {
+					right = &CastExpr{Value: right, Type: "BigInt"}
 				} else if lt == "BigInt" && (rt == "Double" || rt == "Float") {
 					left = &CastExpr{Value: left, Type: "Double"}
 				} else if rt == "BigInt" && (lt == "Double" || lt == "Float") {

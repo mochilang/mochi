@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (422/491)
-_Last updated: 2025-08-02 17:38 +0700_
+## Golden Test Checklist (423/491)
+_Last updated: 2025-08-02 17:53 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -235,7 +235,7 @@ _Last updated: 2025-08-02 17:38 +0700_
 | 226 | constrained-genericity-2 | error |  |  |
 | 227 | constrained-genericity-3 | ✓ |  | 8.7 MB |
 | 228 | constrained-genericity-4 | ✓ | 3µs | 8.7 MB |
-| 229 | constrained-random-points-on-a-circle-1 | error |  |  |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 68µs | 8.7 MB |
 | 230 | constrained-random-points-on-a-circle-2 | error |  |  |
 | 231 | continued-fraction | ✓ | 10µs | 8.7 MB |
 | 232 | convert-decimal-number-to-rational | error |  |  |
