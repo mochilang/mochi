@@ -120,6 +120,7 @@ type MapLitDef struct {
 	KeyType string
 	ValType string
 	Items   []MapItem
+	Params  []string
 }
 
 func ctorName(name string) string { return "make" + name }
@@ -127,33 +128,69 @@ func ctorName(name string) string { return "make" + name }
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs          []FunDecl
-	Vars          []VarDecl
-	Records       []RecordDef
-	ArrayAliases  map[string]string
-	LateAliases   map[string]string
-	UseFGL        bool
-	Stmts         []Stmt
-	UseSysUtils   bool
-	UseMath       bool
-	NeedAvg       bool
-	NeedMin       bool
-	NeedMax       bool
-	NeedContains  bool
-	NeedShowList  bool
-	NeedShowList2 bool
-	NeedShowMap   bool
-	NeedListStr   bool
-	NeedListStr2  bool
-	NeedIndexOf   bool
-	UseLookupHost bool
-	UseNow        bool
-	UseMem        bool
-	NeedBenchNow  bool
-	UseInput      bool
-	UseBigRat     bool
-	Maps          []MapLitDef
-	VarTypes      map[string]string
+	Funs            []FunDecl
+	Vars            []VarDecl
+	Records         []RecordDef
+	ArrayAliases    map[string]string
+	LateAliases     map[string]string
+	UseFGL          bool
+	Stmts           []Stmt
+	UseSysUtils     bool
+	UseMath         bool
+	NeedAvg         bool
+	NeedMin         bool
+	NeedMax         bool
+	NeedContains    bool
+	NeedShowList    bool
+	NeedShowList2   bool
+	NeedShowMap     bool
+	NeedListStr     bool
+	NeedListStr2    bool
+	NeedListStrReal bool
+	NeedIndexOf     bool
+	UseLookupHost   bool
+	UseNow          bool
+	UseMem          bool
+	NeedBenchNow    bool
+	UseInput        bool
+	UseBigRat       bool
+	Maps            []MapLitDef
+	VarTypes        map[string]string
+}
+
+func collectVarNames(e Expr, set map[string]struct{}) {
+	switch v := e.(type) {
+	case *VarRef:
+		set[v.Name] = struct{}{}
+	case *BinaryExpr:
+		collectVarNames(v.Left, set)
+		if v.Right != nil {
+			collectVarNames(v.Right, set)
+		}
+	case *CallExpr:
+		for _, a := range v.Args {
+			collectVarNames(a, set)
+		}
+	case *IndexExpr:
+		collectVarNames(v.Target, set)
+		collectVarNames(v.Index, set)
+	case *SliceExpr:
+		collectVarNames(v.Target, set)
+		if v.Start != nil {
+			collectVarNames(v.Start, set)
+		}
+		if v.End != nil {
+			collectVarNames(v.End, set)
+		}
+	case *ListLit:
+		for _, el := range v.Elems {
+			collectVarNames(el, set)
+		}
+	case *RecordLit:
+		for _, f := range v.Fields {
+			collectVarNames(f.Expr, set)
+		}
+	}
 }
 
 // Stmt represents a Pascal statement.
@@ -1053,6 +1090,19 @@ begin
   Result := '[';
   for i := 0 to High(xs) do begin
     Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+	}
+	if p.NeedListStrReal {
+		buf.WriteString(`function list_real_to_str(xs: array of real): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + FloatToStr(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -3501,30 +3551,32 @@ func ensureRecord(fields []Field) string {
 	return name
 }
 
-func ensureMap(keyType, valType string, items []MapItem) string {
+func ensureMap(keyType, valType string, items []MapItem, params []string) string {
 	if valType == "" {
 		valType = "Variant"
 	}
-	for _, m := range currProg.Maps {
-		if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
-			match := true
-			for i := range items {
-				// naive comparison only works for string keys and IntLits etc
-				lk, ok1 := items[i].Key.(*StringLit)
-				rk, ok2 := m.Items[i].Key.(*StringLit)
-				if !ok1 || !ok2 || lk.Value != rk.Value {
-					match = false
-					break
+	if len(params) == 0 {
+		for _, m := range currProg.Maps {
+			if m.KeyType == keyType && m.ValType == valType && len(m.Items) == len(items) {
+				match := true
+				for i := range items {
+					// naive comparison only works for string keys and IntLits etc
+					lk, ok1 := items[i].Key.(*StringLit)
+					rk, ok2 := m.Items[i].Key.(*StringLit)
+					if !ok1 || !ok2 || lk.Value != rk.Value {
+						match = false
+						break
+					}
 				}
-			}
-			if match {
-				return m.Name
+				if match {
+					return m.Name
+				}
 			}
 		}
 	}
 	anonCounter++
 	name := fmt.Sprintf("Map%d", anonCounter)
-	currProg.Maps = append(currProg.Maps, MapLitDef{Name: name, KeyType: keyType, ValType: valType, Items: items})
+	currProg.Maps = append(currProg.Maps, MapLitDef{Name: name, KeyType: keyType, ValType: valType, Items: items, Params: params})
 	if funcReturns != nil {
 		funcReturns[name] = fmt.Sprintf("specialize TFPGMap<%s, %s>", keyType, valType)
 	}
@@ -3960,6 +4012,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.NeedListStr = true
 				return &CallExpr{Name: "list_to_str", Args: args}, nil
 			}
+			if strings.HasPrefix(t, "array of real") {
+				currProg.NeedListStrReal = true
+				currProg.UseSysUtils = true
+				return &CallExpr{Name: "list_real_to_str", Args: args}, nil
+			}
 			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
 				currProg.NeedListStr2 = true
 				return &CallExpr{Name: "list_int_to_str", Args: args}, nil
@@ -4072,7 +4129,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					if mt, ok2 := ft.(types.MapType); ok2 {
 						keyT := pasTypeFromType(mt.Key)
 						valT := pasTypeFromType(mt.Value)
-						mapName := ensureMap(keyT, valT, nil)
+						mapName := ensureMap(keyT, valT, nil, nil)
 						fields = append(fields, FieldExpr{Name: it.Name, Expr: &CallExpr{Name: mapName}})
 						continue
 					}
@@ -4092,7 +4149,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		}
 		var items []MapItem
 		keyType := "string"
-		valType := ""
+		valType := "Variant"
+		varsSet := map[string]struct{}{}
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -4106,20 +4164,27 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("unsupported map key")
 			}
 			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val})
-			vt := inferType(val)
-			if valType == "" {
-				valType = vt
-			} else if vt != valType {
-				valType = "Variant"
-			}
+			collectVarNames(val, varsSet)
 		}
-		if strings.HasPrefix(valType, "array of ") {
-			elem := strings.TrimPrefix(valType, "array of ")
-			valType = currProg.addArrayAlias(elem)
+		names := make([]string, 0, len(varsSet))
+		for name := range varsSet {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		params := []string{}
+		args := []Expr{}
+		for _, n := range names {
+			typ := inferType(&VarRef{Name: n})
+			if strings.HasPrefix(typ, "array of ") {
+				elem := strings.TrimPrefix(typ, "array of ")
+				typ = currProg.addArrayAlias(elem)
+			}
+			params = append(params, formatParam(n, typ))
+			args = append(args, &VarRef{Name: n})
 		}
 		currProg.UseFGL = true
-		mapName := ensureMap(keyType, valType, items)
-		return &CallExpr{Name: mapName}, nil
+		mapName := ensureMap(keyType, valType, items, params)
+		return &CallExpr{Name: mapName, Args: args}, nil
 	case p.Load != nil:
 		if p.Load.Path == nil || p.Load.Type == nil || p.Load.Type.Simple == nil {
 			return nil, fmt.Errorf("unsupported load")
@@ -4428,12 +4493,15 @@ func inferType(e Expr) string {
 		}
 		return elseT
 	case *ListLit:
-		if len(v.Elems) == 0 {
-			return ""
-		}
-		t := inferType(v.Elems[0])
-		for _, el := range v.Elems[1:] {
-			if inferType(el) != t {
+		t := ""
+		for _, el := range v.Elems {
+			et := inferType(el)
+			if et == "" {
+				continue
+			}
+			if t == "" {
+				t = et
+			} else if et != t {
 				return ""
 			}
 		}
@@ -4695,7 +4763,7 @@ func addMapConstructors(p *Program) {
 		for _, it := range m.Items {
 			body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value})
 		}
-		fn := FunDecl{Name: m.Name, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Body: body}
+		fn := FunDecl{Name: m.Name, Params: m.Params, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Body: body}
 		p.Funs = append([]FunDecl{fn}, p.Funs...)
 		if funcReturns != nil {
 			funcReturns[fn.Name] = fn.ReturnType
