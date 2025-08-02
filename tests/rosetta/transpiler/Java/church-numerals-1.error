@@ -1,1 +1,37 @@
-transpile: unsupported call
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:23: error: incompatible types: Function<Object,Integer> cannot be converted to int
+        int di = toInt(d);
+                      ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:38: error: cannot find symbol
+        return ((Number)(c.apply(incr).apply(0))).intValue();
+                                 ^
+  symbol:   variable incr
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:38: error: incompatible types: int cannot be converted to Function<Object,Integer>
+        return ((Number)(c.apply(incr).apply(0))).intValue();
+                                                          ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:42: error: bad operand types for binary operator '=='
+        if (i == 0) {
+              ^
+  first type:  Function<Object,Integer>
+  second type: int
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:43: error: cannot find symbol
+            return zero;
+                   ^
+  symbol:   variable zero
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:45: error: bad operand types for binary operator '-'
+        return succ(intToChurch(i - 1));
+                                  ^
+  first type:  Function<Object,Integer>
+  second type: int
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:51: error: cannot find symbol
+            z = zero;
+                ^
+  symbol:   variable zero
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenchurch-numerals-13412736213/001/Main.java:60: error: incompatible types: int cannot be converted to Function<Object,Integer>
+            System.out.println("5 -> five    -> " + _p(toInt(intToChurch(5))));
+                                                                         ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+8 errors
