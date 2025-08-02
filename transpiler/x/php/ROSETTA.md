@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 12:10 +0700
+Last updated: 2025-08-02 14:02 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -226,7 +226,7 @@ Last updated: 2025-08-02 12:10 +0700
 | 217 | conditional-structures-3 | ✓ | 1µs | 64 B |
 | 218 | conditional-structures-4 | ✓ | 1µs | 64 B |
 | 219 | conditional-structures-5 | ✓ |  |  |
-| 220 | conditional-structures-6 | ✓ |  |  |
+| 220 | conditional-structures-6 | ✓ | 1µs | 64 B |
 | 221 | conditional-structures-7 | ✓ | 1µs | 64 B |
 | 222 | conditional-structures-8 | ✓ |  |  |
 | 223 | conditional-structures-9 | ✓ | 1µs | 64 B |
