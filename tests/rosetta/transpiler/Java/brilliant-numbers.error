@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenbrilliant-numbers2490064854/001/Main.java:133: error: cannot find symbol
+            Object limit = pow(10, k_1);
+                           ^
+  symbol:   method pow(int,int)
+  location: class Main
+/tmp/TestJavaTranspiler_Rosetta_Goldenbrilliant-numbers2490064854/001/Main.java:138: error: bad operand types for binary operator '+'
+            String ctotal = String.valueOf(commatize(total + 1));
+                                                           ^
+  first type:  int[]
+  second type: int
+2 errors

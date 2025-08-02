@@ -43,13 +43,13 @@ public class Main {
         Pixel[][] data = new Pixel[][]{};
         int row = 0;
         while (row < y) {
-            Pixel[] r = new Pixel[]{};
+            Pixel[] r_1 = new Pixel[]{};
             int col = 0;
             while (col < x) {
-                r = java.util.stream.Stream.concat(java.util.Arrays.stream(r), java.util.stream.Stream.of(new Pixel(0, 0, 0))).toArray(Pixel[]::new);
+                r_1 = java.util.stream.Stream.concat(java.util.Arrays.stream(r_1), java.util.stream.Stream.of(new Pixel(0, 0, 0))).toArray(Pixel[]::new);
                 col = col + 1;
             }
-            data = appendObj(data, r);
+            data = appendObj(data, r_1);
             row = row + 1;
         }
         return new Bitmap(x, y, data);
@@ -65,9 +65,9 @@ public class Main {
             int x = 0;
             while (x < b.cols) {
                 Pixel[][] px = b.px;
-                Pixel[] row = px[y];
-row[x] = p;
-px[y] = row;
+                Pixel[] row_1 = px[y];
+row_1[x] = p;
+px[y] = row_1;
 b.px = px;
                 x = x + 1;
             }
@@ -83,11 +83,11 @@ b.px = px;
         if (x < 0 || x >= b.cols || y < 0 || y >= b.rows) {
             return false;
         }
-        Pixel[][] px = b.px;
-        Pixel[] row = px[y];
-row[x] = p;
-px[y] = row;
-b.px = px;
+        Pixel[][] px_1 = b.px;
+        Pixel[] row_2 = px_1[y];
+row_2[x] = p;
+px_1[y] = row_2;
+b.px = px_1;
         return true;
     }
 
@@ -99,25 +99,25 @@ b.px = px;
         if (x < 0 || x >= b.cols || y < 0 || y >= b.rows) {
             return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", false)));
         }
-        Pixel[] row = b.px[y];
-        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", true), java.util.Map.entry("pixel", row[x])));
+        Pixel[] row_3 = b.px[y];
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", true), java.util.Map.entry("pixel", row_3[x])));
     }
 
     static java.util.Map<String,Object> GetPxRgb(Bitmap b, int x, int y) {
-        java.util.Map<String,Object> r = GetPx(b, x, y);
-        if (!((boolean) (r.get("ok")))) {
+        java.util.Map<String,Object> r_2 = GetPx(b, x, y);
+        if (!((boolean) (r_2.get("ok")))) {
             return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", false)));
         }
-        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", true), java.util.Map.entry("rgb", rgbFromPixel((Pixel)(((Pixel) (r.get("pixel"))))))));
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("ok", true), java.util.Map.entry("rgb", rgbFromPixel((Pixel)(((Pixel) (r_2.get("pixel"))))))));
     }
 
     static int ppmSize(Bitmap b) {
-        String header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + String.valueOf(b.cols) + " " + String.valueOf(b.rows) + "\n255\n";
-        return header.length() + 3 * b.cols * b.rows;
+        String header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + _p(b.cols) + " " + _p(b.rows) + "\n255\n";
+        return _runeLen(header) + 3 * b.cols * b.rows;
     }
 
     static String pixelStr(Pixel p) {
-        return "{" + String.valueOf(p.R) + " " + String.valueOf(p.G) + " " + String.valueOf(p.B) + "}";
+        return "{" + _p(p.R) + " " + _p(p.G) + " " + _p(p.B) + "}";
     }
 
     static void main() {
@@ -129,8 +129,8 @@ b.px = px;
         java.util.Map<String,Object> c1 = GetPx(bm, 0, 0);
         java.util.Map<String,Object> c2 = GetPx(bm, 10, 20);
         java.util.Map<String,Object> c3 = GetPx(bm, 30, 40);
-        System.out.println("Image size: " + String.valueOf(bm.cols) + " × " + String.valueOf(bm.rows));
-        System.out.println(String.valueOf(ppmSize(bm)) + " bytes when encoded as PPM.");
+        System.out.println("Image size: " + _p(bm.cols) + " × " + _p(bm.rows));
+        System.out.println(_p(ppmSize(bm)) + " bytes when encoded as PPM.");
         if (((boolean) (c1.get("ok")))) {
             System.out.println("Pixel at (0,0) is " + String.valueOf(pixelStr((Pixel)(((Pixel) (c1.get("pixel")))))));
         }
@@ -142,7 +142,7 @@ b.px = px;
             int r16 = p.R * 257;
             int g16 = p.G * 257;
             int b16 = p.B * 257;
-            System.out.println("Pixel at (30,40) has R=" + String.valueOf(r16) + ", G=" + String.valueOf(g16) + ", B=" + String.valueOf(b16));
+            System.out.println("Pixel at (30,40) has R=" + _p(r16) + ", G=" + _p(g16) + ", B=" + _p(b16));
         }
     }
     public static void main(String[] args) {
@@ -187,5 +187,13 @@ b.px = px;
         T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

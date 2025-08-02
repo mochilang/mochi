@@ -21,7 +21,7 @@ public class Main {
         }
         int b = 2;
         while (b < n - 1) {
-            if (sameDigits(n, b)) {
+            if (((Boolean)(sameDigits(n, b)))) {
                 return true;
             }
             b = b + 1;
@@ -60,8 +60,8 @@ public class Main {
             int c = 0;
             int n = 7;
             while (true) {
-                if (isBrazilian(n)) {
-                    System.out.println(String.valueOf(n) + " ");
+                if (((Boolean)(isBrazilian(n)))) {
+                    System.out.println(_p(n) + " ");
                     c = c + 1;
                     if (c == 20) {
                         System.out.println("\n");
@@ -75,24 +75,62 @@ public class Main {
                 } else {
                     while (true) {
                         n = n + 2;
-                        if (isPrime(n)) {
+                        if (((Boolean)(isPrime(n)))) {
                             break;
                         }
                     }
                 }
             }
         }
-        int n = 7;
-        int c = 0;
-        while (c < 100000) {
-            if (isBrazilian(n)) {
-                c = c + 1;
+        int n_1 = 7;
+        int c_1 = 0;
+        while (c_1 < 100000) {
+            if (((Boolean)(isBrazilian(n_1)))) {
+                c_1 = c_1 + 1;
             }
-            n = n + 1;
+            n_1 = n_1 + 1;
         }
-        System.out.println("The 100,000th Brazilian number: " + String.valueOf(n - 1));
+        System.out.println("The 100,000th Brazilian number: " + _p(n_1 - 1));
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

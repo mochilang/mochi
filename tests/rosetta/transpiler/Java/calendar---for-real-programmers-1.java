@@ -1,16 +1,21 @@
 public class Main {
-    static int[] daysInMonth = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    static int[] start = new int[]{3, 6, 6, 2, 4, 0, 2, 5, 1, 3, 6, 1};
-    static String[] months = new String[]{" January ", " February", "  March  ", "  April  ", "   May   ", "   June  ", "   July  ", "  August ", "September", " October ", " November", " December"};
-    static String[] days = new String[]{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
-    static int qtr = 0;
+    static int[] daysInMonth;
+    static int[] start;
+    static String[] months;
+    static String[] days;
+    static int qtr;
 
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            daysInMonth = new int[]{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            start = new int[]{3, 6, 6, 2, 4, 0, 2, 5, 1, 3, 6, 1};
+            months = new String[]{" January ", " February", "  March  ", "  April  ", "   May   ", "   June  ", "   July  ", "  August ", "September", " October ", " November", " December"};
+            days = new String[]{"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"};
             System.out.println("                                [SNOOPY]\n");
             System.out.println("                                  1969\n");
+            qtr = 0;
             while (qtr < 4) {
                 int mi = 0;
                 while (mi < 3) {
@@ -38,8 +43,8 @@ public class Main {
                             int m = qtr * 3 + mi;
                             int val = week * 7 + day - start[m] + 1;
                             if (val >= 1 && val <= daysInMonth[m]) {
-                                String s = String.valueOf(val);
-                                if (s.length() == 1) {
+                                String s = _p(val);
+                                if (_runeLen(s) == 1) {
                                     s = " " + s;
                                 }
                                 System.out.println(" " + s + " " + String.valueOf(false ? "True" : "False"));
@@ -88,5 +93,13 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

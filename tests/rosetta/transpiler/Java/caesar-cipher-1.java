@@ -2,8 +2,8 @@ public class Main {
 
     static int indexOf(String s, String ch) {
         int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
+        while (i < _runeLen(s)) {
+            if ((_substr(s, i, i + 1).equals(ch))) {
                 return i;
             }
             i = i + 1;
@@ -26,13 +26,13 @@ public class Main {
     }
 
     static String chr(int n) {
-        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String upper_1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower_1 = "abcdefghijklmnopqrstuvwxyz";
         if (n >= 65 && n < 91) {
-            return upper.substring(n - 65, n - 64);
+            return upper_1.substring(n - 65, n - 64);
         }
         if (n >= 97 && n < 123) {
-            return lower.substring(n - 97, n - 96);
+            return lower_1.substring(n - 97, n - 96);
         }
         return "?";
     }
@@ -49,10 +49,10 @@ public class Main {
 
     static String encipher(String s, int k) {
         String out = "";
-        int i = 0;
-        while (i < s.length()) {
-            out = out + String.valueOf(shiftRune(s.substring(i, i + 1), k));
-            i = i + 1;
+        int i_1 = 0;
+        while (i_1 < _runeLen(s)) {
+            out = out + String.valueOf(shiftRune(s.substring(i_1, i_1 + 1), k));
+            i_1 = i_1 + 1;
         }
         return out;
     }
@@ -66,11 +66,11 @@ public class Main {
         System.out.println("Plaintext: " + pt);
         for (int key : new int[]{0, 1, 7, 25, 26}) {
             if (key < 1 || key > 25) {
-                System.out.println("Key " + String.valueOf(key) + " invalid");
+                System.out.println("Key " + _p(key) + " invalid");
                 continue;
             }
             String ct = String.valueOf(encipher(pt, key));
-            System.out.println("Key " + String.valueOf(key));
+            System.out.println("Key " + _p(key));
             System.out.println("  Enciphered: " + ct);
             System.out.println("  Deciphered: " + String.valueOf(decipher(ct, key)));
         }
@@ -111,5 +111,19 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

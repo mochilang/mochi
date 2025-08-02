@@ -72,8 +72,8 @@ w.nbits = w.nbits - 8;
 w.bits = w.bits + lshift(c, 32 - width - w.nbits);
 w.nbits = w.nbits + width;
         while (w.nbits >= 8) {
-            int b = Math.floorMod(rshift(w.bits, 24), 256);
-w.data = java.util.stream.IntStream.concat(java.util.Arrays.stream(w.data), java.util.stream.IntStream.of(b)).toArray();
+            int b_1 = Math.floorMod(rshift(w.bits, 24), 256);
+w.data = java.util.stream.IntStream.concat(java.util.Arrays.stream(w.data), java.util.stream.IntStream.of(b_1)).toArray();
 w.bits = ((Number)((_modPow2(w.bits, 24)))).intValue() * 256;
 w.nbits = w.nbits - 8;
         }
@@ -108,9 +108,9 @@ w.nbits = 0;
             if (r.idx >= r.data.length) {
                 return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("val", 0), java.util.Map.entry("eof", true)));
             }
-            int b = r.data[r.idx];
+            int b_2 = r.data[r.idx];
 r.idx = r.idx + 1;
-r.bits = r.bits + lshift(b, r.nbits);
+r.bits = r.bits + lshift(b_2, r.nbits);
 r.nbits = r.nbits + 8;
         }
         int mask = pow2(width) - 1;
@@ -125,15 +125,15 @@ r.nbits = r.nbits - width;
             if (r.idx >= r.data.length) {
                 return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("val", 0), java.util.Map.entry("eof", true)));
             }
-            int b = r.data[r.idx];
+            int b_3 = r.data[r.idx];
 r.idx = r.idx + 1;
-r.bits = r.bits + lshift(b, 24 - r.nbits);
+r.bits = r.bits + lshift(b_3, 24 - r.nbits);
 r.nbits = r.nbits + 8;
         }
-        int out = rshift(r.bits, 32 - width);
+        int out_1 = rshift(r.bits, 32 - width);
 r.bits = _modPow2((r.bits * pow2(width)), 32);
 r.nbits = r.nbits - width;
-        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("val", out), java.util.Map.entry("eof", false)));
+        return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("val", out_1), java.util.Map.entry("eof", false)));
     }
 
     static java.util.Map<String,Object> ReadBits(Reader r, int width) {
@@ -144,46 +144,46 @@ r.nbits = r.nbits - width;
     }
 
     static String toBinary(int n, int bits) {
-        String b = "";
+        String b_4 = "";
         int val = n;
-        int i = 0;
-        while (i < bits) {
-            b = String.valueOf(Math.floorMod(val, 2)) + b;
+        int i_1 = 0;
+        while (i_1 < bits) {
+            b_4 = _p(Math.floorMod(val, 2)) + b_4;
             val = val / 2;
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        return b;
+        return b_4;
     }
 
     static String bytesToBits(int[] bs) {
-        String out = "[";
-        int i = 0;
-        while (i < bs.length) {
-            out = out + String.valueOf(toBinary(bs[i], 8));
-            if (i + 1 < bs.length) {
-                out = out + " ";
+        String out_2 = "[";
+        int i_2 = 0;
+        while (i_2 < bs.length) {
+            out_2 = out_2 + String.valueOf(toBinary(bs[i_2], 8));
+            if (i_2 + 1 < bs.length) {
+                out_2 = out_2 + " ";
             }
-            i = i + 1;
+            i_2 = i_2 + 1;
         }
-        out = out + "]";
-        return out;
+        out_2 = out_2 + "]";
+        return out_2;
     }
 
     static String bytesToHex(int[] bs) {
         String digits = "0123456789ABCDEF";
-        String out = "";
-        int i = 0;
-        while (i < bs.length) {
-            int b = bs[i];
-            int hi = b / 16;
-            int lo = Math.floorMod(b, 16);
-            out = out + digits.substring(hi, hi + 1) + digits.substring(lo, lo + 1);
-            if (i + 1 < bs.length) {
-                out = out + " ";
+        String out_3 = "";
+        int i_3 = 0;
+        while (i_3 < bs.length) {
+            int b_5 = bs[i_3];
+            int hi = b_5 / 16;
+            int lo = Math.floorMod(b_5, 16);
+            out_3 = out_3 + digits.substring(hi, hi + 1) + digits.substring(lo, lo + 1);
+            if (i_3 + 1 < bs.length) {
+                out_3 = out_3 + " ";
             }
-            i = i + 1;
+            i_3 = i_3 + 1;
         }
-        return out;
+        return out_3;
     }
 
     static int ord(String ch) {
@@ -197,7 +197,7 @@ r.nbits = r.nbits - width;
         if (idx >= 0) {
             return 97 + idx;
         }
-        if (((ch.compareTo("0") >= 0) && ch.compareTo("9") <= 0)) {
+        if ((ch.compareTo("0") >= 0) && (ch.compareTo("9") <= 0)) {
             return 48 + Integer.parseInt(ch);
         }
         if ((ch.equals(" "))) {
@@ -210,17 +210,17 @@ r.nbits = r.nbits - width;
     }
 
     static String chr(int n) {
-        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String upper_1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower_1 = "abcdefghijklmnopqrstuvwxyz";
         if (n >= 65 && n < 91) {
-            return upper.substring(n - 65, n - 64);
+            return upper_1.substring(n - 65, n - 64);
         }
         if (n >= 97 && n < 123) {
-            return lower.substring(n - 97, n - 96);
+            return lower_1.substring(n - 97, n - 96);
         }
         if (n >= 48 && n < 58) {
-            String digits = "0123456789";
-            return digits.substring(n - 48, n - 47);
+            String digits_1 = "0123456789";
+            return digits_1.substring(n - 48, n - 47);
         }
         if (n == 32) {
             return " ";
@@ -233,25 +233,25 @@ r.nbits = r.nbits - width;
 
     static int[] bytesOfStr(String s) {
         int[] bs = new int[]{};
-        int i = 0;
-        while (i < s.length()) {
-            bs = java.util.stream.IntStream.concat(java.util.Arrays.stream(bs), java.util.stream.IntStream.of(ord(s.substring(i, i + 1)))).toArray();
-            i = i + 1;
+        int i_4 = 0;
+        while (i_4 < _runeLen(s)) {
+            bs = java.util.stream.IntStream.concat(java.util.Arrays.stream(bs), java.util.stream.IntStream.of(ord(s.substring(i_4, i_4 + 1)))).toArray();
+            i_4 = i_4 + 1;
         }
         return bs;
     }
 
     static String bytesToDec(int[] bs) {
-        String out = "";
-        int i = 0;
-        while (i < bs.length) {
-            out = out + String.valueOf(bs[i]);
-            if (i + 1 < bs.length) {
-                out = out + " ";
+        String out_4 = "";
+        int i_5 = 0;
+        while (i_5 < bs.length) {
+            out_4 = out_4 + _p(_geti(bs, i_5));
+            if (i_5 + 1 < bs.length) {
+                out_4 = out_4 + " ";
             }
-            i = i + 1;
+            i_5 = i_5 + 1;
         }
-        return out;
+        return out_4;
     }
 
     static void Example() {
@@ -260,10 +260,10 @@ r.nbits = r.nbits - width;
         System.out.println("\"" + message + "\" as bytes: " + String.valueOf(bytesToDec(msgBytes)));
         System.out.println("    original bits: " + String.valueOf(bytesToBits(msgBytes)));
         Writer bw = NewWriter("MSB");
-        int i = 0;
-        while (i < msgBytes.length) {
-            bw = WriteBits(bw, msgBytes[i], 7);
-            i = i + 1;
+        int i_6 = 0;
+        while (i_6 < msgBytes.length) {
+            bw = WriteBits(bw, msgBytes[i_6], 7);
+            i_6 = i_6 + 1;
         }
         bw = CloseWriter(bw);
         System.out.println("Written bitstream: " + String.valueOf(bytesToBits(bw.data)));
@@ -272,12 +272,12 @@ r.nbits = r.nbits - width;
         String result = "";
         while (true) {
             java.util.Map<String,Object> r = ReadBits(br, 7);
-            if (((boolean)r.getOrDefault("eof", false))) {
+            if (((boolean) (r.get("eof")))) {
                 break;
             }
-            int v = (int)(((int)r.getOrDefault("val", 0)));
-            if (v != 0) {
-                result = result + String.valueOf(chr(v));
+            int v_1 = ((Number)(((int) (r.get("val"))))).intValue();
+            if (v_1 != 0) {
+                result = result + String.valueOf(chr(v_1));
             }
         }
         System.out.println("Read back as \"" + result + "\"");
@@ -323,5 +323,17 @@ r.nbits = r.nbits - width;
     static int _modPow2(int v, int n) {
         long mask = (1L << n) - 1L;
         return (int)(((long)v) & mask);
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }
