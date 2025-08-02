@@ -648,16 +648,16 @@ func (s *SliceExpr) emit(w io.Writer) {
 	}
 	if s.Start != nil {
 		s.Start.emit(w)
-		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
-			io.WriteString(w, " as usize")
-		}
 	} else {
 		io.WriteString(w, "0")
+	}
+	if tgt == "String" || strings.HasPrefix(tgt, "Vec<") || tgt == "" {
+		io.WriteString(w, " as usize")
 	}
 	io.WriteString(w, "..")
 	if s.End != nil {
 		s.End.emit(w)
-		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") {
+		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") || tgt == "" {
 			io.WriteString(w, " as usize")
 		}
 	}
@@ -1266,13 +1266,26 @@ func (n *NameRef) emit(w io.Writer) {
 		if typ == "" {
 			typ = varTypes[n.Name]
 		}
-		switch typ {
-		case "i64", "bool", "f64":
-			io.WriteString(w, "*")
-			io.WriteString(w, name)
-		default:
-			io.WriteString(w, name)
-			io.WriteString(w, ".clone()")
+		if strings.HasPrefix(typ, "&") {
+			base := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(typ, "&mut"), "&"))
+			switch base {
+			case "i64", "bool", "f64":
+				io.WriteString(w, "*")
+				io.WriteString(w, name)
+			default:
+				io.WriteString(w, "(*")
+				io.WriteString(w, name)
+				io.WriteString(w, ").clone()")
+			}
+		} else {
+			switch typ {
+			case "i64", "bool", "f64":
+				io.WriteString(w, "*")
+				io.WriteString(w, name)
+			default:
+				io.WriteString(w, name)
+				io.WriteString(w, ".clone()")
+			}
 		}
 		return
 	}
@@ -2727,6 +2740,20 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					val = &StringCastExpr{Expr: val}
 				}
 			}
+			if nr, ok := val.(*NameRef); ok {
+				typ := nr.Type
+				if typ == "" {
+					if pt, ok := currentParamTypes[nr.Name]; ok {
+						typ = pt
+					} else {
+						typ = varTypes[nr.Name]
+					}
+				}
+				if strings.HasPrefix(typ, "&") {
+					cloneVars[nr.Name] = true
+					nr.Type = typ
+				}
+			}
 			return &ReturnStmt{Value: val}, nil
 		}
 		return &ReturnStmt{}, nil
@@ -3206,7 +3233,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
 			mut := paramMutated(fn.Body, p.Name)
 			if mut {
-				sigType = "&mut " + typ
+				sigType = typ
 			} else {
 				sigType = "&" + typ
 			}
