@@ -1,3 +1,8 @@
+## Progress (2025-08-02 16:31 +0700)
+- Commit bc8a7dc719: php: update rosetta outputs for indices 350-381
+- Generated Zig for 98/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-02 14:46 +0700)
 - Commit f24c9eae6e: zig: handle const discards and update bench output
 - Generated Zig for 98/105 programs
