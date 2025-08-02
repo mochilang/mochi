@@ -2103,14 +2103,9 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	}
 	for _, a := range c.Args {
-		io.WriteString(w, " ")
-		if needsParen(a) {
-			io.WriteString(w, "(")
-			a.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			a.emit(w)
-		}
+		io.WriteString(w, " (")
+		a.emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -2149,28 +2144,18 @@ func (i *IndexExpr) emit(w io.Writer) {
 	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
-		if needsParen(i.Index) {
-			io.WriteString(w, "(string ")
-			i.Index.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			io.WriteString(w, "string ")
-			i.Index.emit(w)
-		}
+		io.WriteString(w, "(string (")
+		i.Index.emit(w)
+		io.WriteString(w, "))")
 		io.WriteString(w, "]")
 		return
 	}
 	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
-		if needsParen(i.Index) {
-			io.WriteString(w, "(string ")
-			i.Index.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			io.WriteString(w, "string ")
-			i.Index.emit(w)
-		}
+		io.WriteString(w, "(string (")
+		i.Index.emit(w)
+		io.WriteString(w, "))")
 		io.WriteString(w, "]")
 		return
 	}
