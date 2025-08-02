@@ -1378,13 +1378,15 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	} else {
 		v.Value.emit(w)
 	}
-	io.WriteString(w, ";")
-	if varUses[v.Name] == 0 && !v.Mutable {
-		io.WriteString(w, " _ = ")
-		io.WriteString(w, v.Name)
-		io.WriteString(w, ";")
-	}
-	io.WriteString(w, "\n")
+        io.WriteString(w, ";")
+        if varUses[v.Name] == 0 {
+                if v.Mutable {
+                        io.WriteString(w, " _ = ")
+                        io.WriteString(w, v.Name)
+                        io.WriteString(w, ";")
+                }
+        }
+        io.WriteString(w, "\n")
 }
 
 func (a *AssignStmt) emit(w io.Writer, indent int) {
@@ -1933,17 +1935,11 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "const __memory_bytes = __end_mem - __start_mem;\n")
-	writeIndent(w, indent)
-	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
-	writeIndent(w, indent)
-	io.WriteString(w, "const __bj = std.json.stringifyAlloc(std.heap.page_allocator, __bench, .{ .whitespace = .indent_2 }) catch unreachable;\n")
-	writeIndent(w, indent)
-	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
-	writeIndent(w, indent)
-	io.WriteString(w, "std.heap.page_allocator.free(__bj);\n")
-	indent--
-	writeIndent(w, indent)
-	io.WriteString(w, "}\n")
+        writeIndent(w, indent)
+        fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
+        indent--
+        writeIndent(w, indent)
+        io.WriteString(w, "}\n")
 }
 
 func (i *IfExpr) emit(w io.Writer) {
