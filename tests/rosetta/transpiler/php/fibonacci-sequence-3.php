@@ -20,7 +20,7 @@ $__start = _now();
   function fibNumber() {
   $a = 0;
   $b = 1;
-  return function() use ($a, $b) {
+  return function() use (&$a, &$b) {
   $tmp = $a + $b;
   $a = $b;
   $b = $tmp;
@@ -39,9 +39,9 @@ $__start = _now();
 };
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

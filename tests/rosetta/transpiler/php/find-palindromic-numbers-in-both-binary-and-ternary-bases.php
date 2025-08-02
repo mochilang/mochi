@@ -55,8 +55,8 @@ $__start = _now();
   $x = intval((_intdiv($x, $b)));
 };
   return $s;
-  $mochi_parseIntStr = null;
-$mochi_parseIntStr = function($str) use (&$parseIntStr, $n, $b, $s, $x) {
+};
+  function mochi_parseIntStr($str) {
   $i = 0;
   $neg = false;
   if (strlen($str) > 0 && substr($str, 0, 0 + 1 - 0) == '-') {
@@ -72,7 +72,6 @@ $mochi_parseIntStr = function($str) use (&$parseIntStr, $n, $b, $s, $x) {
   $n = -$n;
 }
   return $n;
-};
 };
   function parseIntBase($s, $b) {
   $n = 0;
@@ -178,9 +177,9 @@ $mochi_parseIntStr = function($str) use (&$parseIntStr, $n, $b, $s, $x) {
   main();
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;
