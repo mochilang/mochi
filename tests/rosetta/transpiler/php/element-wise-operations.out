@@ -38,7 +38,7 @@ m1 ^ s:
 [ 1.000  1.000  1.000]
 [ 1.000  1.000  1.000]
 {
-  "duration_us": 277,
+  "duration_us": 172,
   "memory_bytes": 96,
   "name": "main"
 }

@@ -1,5 +1,21 @@
 <?php
 ini_set('memory_limit', '-1');
+function _lookup_host($host) {
+    $res = dns_get_record($host, DNS_A + DNS_AAAA);
+    if ($res === false) {
+        $fallback = gethostbynamel($host);
+        if ($fallback === false) {
+            return [[], "lookup failed"];
+        }
+        return [$fallback, null];
+    }
+    $ips = [];
+    foreach ($res as $r) {
+        if (isset($r['ip'])) { $ips[] = $r['ip']; }
+        if (isset($r['ipv6'])) { $ips[] = $r['ipv6']; }
+    }
+    return [$ips, null];
+}
 $now_seed = 0;
 $now_seeded = false;
 $s = getenv('MOCHI_NOW_SEED');
@@ -33,29 +49,15 @@ function _str($x) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  $testpkg = ['Add' => function($a, $b) {
-  return $a + $b;
-}, 'Pi' => 3.14, 'Answer' => 42, 'FifteenPuzzleExample' => function() {
-  return 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd';
-}, 'MD5Hex' => 'md5', 'ECDSAExample' => function() {
-  return ['D' => '1234567890', 'X' => '43162711582587979080031819627904423023685561091192625653251495188141318209988', 'Y' => '86807430002474105664458509423764867536342689150582922106807036347047552480521', 'Hash' => '0xe6f9ed0d', 'R' => '43162711582587979080031819627904423023685561091192625653251495188141318209988', 'S' => '94150071556658883365738746782965214584303361499725266605620843043083873122499', 'Valid' => true];
-}];
-  $res = $testpkg['ECDSAExample']();
-  echo rtrim('Private key:
-D: ' . $res['D']), PHP_EOL;
-  echo rtrim('
-Public key:'), PHP_EOL;
-  echo rtrim('X: ' . $res['X']), PHP_EOL;
-  echo rtrim('Y: ' . $res['Y']), PHP_EOL;
-  echo rtrim('
-Message: Rosetta Code'), PHP_EOL;
-  echo rtrim('Hash   : ' . $res['Hash']), PHP_EOL;
-  echo rtrim('
-Signature:'), PHP_EOL;
-  echo rtrim('R: ' . $res['R']), PHP_EOL;
-  echo rtrim('S: ' . $res['S']), PHP_EOL;
-  echo rtrim('
-Signature verified: ' . _str($res['Valid'])), PHP_EOL;
+  $net = ['LookupHost' => '_lookup_host'];
+  $res = $net['LookupHost']('www.kame.net');
+  $addrs = $res[0];
+  $err = $res[1];
+  if ($err == null) {
+  echo rtrim(_str($addrs)), PHP_EOL;
+} else {
+  echo rtrim(json_encode($err, 1344)), PHP_EOL;
+}
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

@@ -1,11 +1,11 @@
-Deprecated: Implicit conversion from float 802.661840388 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/draw-a-clock.php on line 58
+Deprecated: Implicit conversion from float 260.491425981 to int loses precision in /workspace/mochi/tests/rosetta/transpiler/php/draw-a-clock.php on line 58
  | | | | | | |
 
- | | | |x|x| |x
+ | | | | |x| |
 
-xxxxx|xxxxx|xxxxx|xxxxx|xx
+xxxxx|xxxxx|xxxxx|xxxxx
 {
-  "duration_us": 134,
-  "memory_bytes": 552,
+  "duration_us": 101,
+  "memory_bytes": 544,
   "name": "main"
 }

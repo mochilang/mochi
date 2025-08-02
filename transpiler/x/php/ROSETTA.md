@@ -2,9 +2,9 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 15:23 +0700
+Last updated: 2025-08-02 16:06 +0700
 
-## Checklist (482/491)
+## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 97µs | 136 B |
@@ -317,36 +317,36 @@ Last updated: 2025-08-02 15:23 +0700
 | 308 | distance-and-bearing | ✓ | 291µs | 160 B |
 | 309 | distributed-programming | ✓ | 57µs | 160 B |
 | 310 | diversity-prediction-theorem | ✓ | 109µs | 96 B |
-| 311 | dns-query |   |  |  |
-| 312 | documentation | ✓ |  |  |
-| 313 | doomsday-rule | ✓ | 127µs | 192 B |
-| 314 | dot-product | ✓ | 95µs | 96 B |
+| 311 | dns-query | ✓ | 826.603ms | 568 B |
+| 312 | documentation | ✓ | 1µs | 64 B |
+| 313 | doomsday-rule | ✓ | 75µs | 192 B |
+| 314 | dot-product | ✓ | 100µs | 96 B |
 | 315 | doubly-linked-list-definition-1 | ✓ | 1µs | 64 B |
-| 316 | doubly-linked-list-definition-2 | ✓ | 110µs | 96 B |
-| 317 | doubly-linked-list-element-definition | ✓ | 110µs | 96 B |
-| 318 | doubly-linked-list-traversal | ✓ | 155µs | 1.2 KB |
-| 319 | dragon-curve | ✓ | 255µs | 3.8 KB |
-| 320 | draw-a-clock | ✓ | 134µs | 552 B |
-| 321 | draw-a-cuboid | ✓ | 142µs | 96 B |
-| 322 | draw-a-pixel-1 | ✓ | 84.918ms | 2.8 MB |
-| 323 | draw-a-rotating-cube | ✓ | 1.982ms | 352 B |
-| 324 | draw-a-sphere | ✓ | 7.066ms | 96 B |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem | ✓ | 181µs | 96 B |
-| 327 | dynamic-variable-names | ✓ | 133µs | 8.1 KB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 171µs | 96 B |
-| 329 | eban-numbers | ✓ | 11.469ms | 160 B |
-| 330 | ecdsa-example | ✓ | 178µs | 1.6 KB |
-| 331 | echo-server | ✓ | 50µs | 96 B |
-| 332 | eertree | ✓ | 192µs | 160 B |
-| 333 | egyptian-division | ✓ | 119µs | 96 B |
-| 334 | ekg-sequence-convergence | ✓ | 3.082ms | 96 B |
-| 335 | element-wise-operations | ✓ | 277µs | 96 B |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 841µs | 96 B |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 5.482ms | 1.9 KB |
-| 338 | elementary-cellular-automaton | ✓ | 507µs | 96 B |
-| 339 | elliptic-curve-arithmetic | ✓ | 149µs | 128 B |
-| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 49µs | 96 B |
+| 316 | doubly-linked-list-definition-2 | ✓ | 116µs | 96 B |
+| 317 | doubly-linked-list-element-definition | ✓ | 103µs | 96 B |
+| 318 | doubly-linked-list-traversal | ✓ | 342µs | 1.2 KB |
+| 319 | dragon-curve | ✓ | 157µs | 3.8 KB |
+| 320 | draw-a-clock | ✓ | 101µs | 544 B |
+| 321 | draw-a-cuboid | ✓ | 138µs | 96 B |
+| 322 | draw-a-pixel-1 | ✓ | 60.852ms | 2.8 MB |
+| 323 | draw-a-rotating-cube | ✓ | 1.362ms | 352 B |
+| 324 | draw-a-sphere | ✓ | 4.351ms | 96 B |
+| 325 | duffinian-numbers | ✓ | 53.412ms | 96 B |
+| 326 | dutch-national-flag-problem | ✓ | 85µs | 96 B |
+| 327 | dynamic-variable-names | ✓ | 98µs | 8.1 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 105µs | 96 B |
+| 329 | eban-numbers | ✓ | 7.578ms | 160 B |
+| 330 | ecdsa-example | ✓ | 69µs | 1.6 KB |
+| 331 | echo-server | ✓ | 36µs | 96 B |
+| 332 | eertree | ✓ | 144µs | 160 B |
+| 333 | egyptian-division | ✓ | 126µs | 96 B |
+| 334 | ekg-sequence-convergence | ✓ | 2.314ms | 96 B |
+| 335 | element-wise-operations | ✓ | 172µs | 96 B |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 623µs | 96 B |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 3.825ms | 1.9 KB |
+| 338 | elementary-cellular-automaton | ✓ | 379µs | 96 B |
+| 339 | elliptic-curve-arithmetic | ✓ | 114µs | 128 B |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 50µs | 96 B |
 | 341 | emirp-primes | ✓ | 776.84ms | 96 B |
 | 342 | empty-directory | ✓ | 112µs | 96 B |
 | 343 | empty-program | ✓ | 1µs | 64 B |

@@ -21,7 +21,7 @@ Random intial state, rule 30:
 ###  ##  ###   ##  #
    ### ###  # ## ###
 {
-  "duration_us": 507,
+  "duration_us": 379,
   "memory_bytes": 96,
   "name": "main"
 }

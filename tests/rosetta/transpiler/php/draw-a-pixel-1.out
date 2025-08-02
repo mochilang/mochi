@@ -1,7 +1,7 @@
 The color of the pixel at (  0,   0) is green.
 The color of the pixel at (100, 100) is red.
 {
-  "duration_us": 84918,
+  "duration_us": 60852,
   "memory_bytes": 2970904,
   "name": "main"
 }
