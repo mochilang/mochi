@@ -1,4 +1,4 @@
-// Generated 2025-07-26 19:29 +0700
+// Generated 2025-08-02 14:26 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -21,8 +21,8 @@ _initNow()
 let __bench_start = _now()
 let __mem_start = System.GC.GetTotalMemory(true)
 let mutable myVar: float = 3.14
-printfn "%s" (String.concat " " [|sprintf "%A" "value as float:"; sprintf "%.1f" myVar|])
-printfn "%s" "address: <not available>"
+printfn "%s" (String.concat (" ") ([|sprintf "%s" ("value as float:"); sprintf "%g" (myVar)|]))
+printfn "%s" ("address: <not available>")
 let __bench_end = _now()
 let __mem_end = System.GC.GetTotalMemory(true)
 printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

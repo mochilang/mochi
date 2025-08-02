@@ -3739,7 +3739,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
-					return &CallExpr{Func: "printfn \"%.1f\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: "printfn \"%g\"", Args: []Expr{args[0]}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
@@ -3759,7 +3759,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}
+				case "string":
+					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
 					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
@@ -3779,7 +3781,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					return &CallExpr{Func: "printf \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
-					return &CallExpr{Func: "printf \"%.1f\"", Args: []Expr{args[0]}}, nil
+					return &CallExpr{Func: "printf \"%g\"", Args: []Expr{args[0]}}, nil
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
 					concat := &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
@@ -3799,7 +3801,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				case "int":
 					elems[i] = &CallExpr{Func: "sprintf \"%d\"", Args: []Expr{a}}
 				case "float":
-					elems[i] = &CallExpr{Func: "sprintf \"%.1f\"", Args: []Expr{a}}
+					elems[i] = &CallExpr{Func: "sprintf \"%g\"", Args: []Expr{a}}
+				case "string":
+					elems[i] = &CallExpr{Func: "sprintf \"%s\"", Args: []Expr{a}}
 				case "array":
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{a}}
 					elems[i] = &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: &CallExpr{Func: "String.concat", Args: []Expr{&StringLit{Value: " "}, &CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}}, Op: "+", Right: &StringLit{Value: "]"}}
