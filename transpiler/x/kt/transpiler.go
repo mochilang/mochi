@@ -3117,22 +3117,25 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, stmt)
 			seenStmt = true
-		case st.Return != nil:
-			var val Expr
-			if st.Return.Value != nil {
-				var err error
-				val, err = convertExpr(env, st.Return.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			if currentRetType != "" && currentRetType != "Any" && val != nil {
-				if guessType(val) != currentRetType {
-					val = &CastExpr{Value: val, Type: currentRetType}
-				}
-			}
-			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
-			seenStmt = true
+               case st.Return != nil:
+                       var val Expr
+                       if st.Return.Value != nil {
+                               var err error
+                               val, err = convertExpr(env, st.Return.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                       }
+                       if _, ok := val.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
+                               val = nil
+                       }
+                       if currentRetType != "" && currentRetType != "Any" && val != nil {
+                               if guessType(val) != currentRetType {
+                                       val = &CastExpr{Value: val, Type: currentRetType}
+                               }
+                       }
+                       p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
+                       seenStmt = true
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
 			ftParams := make([]types.Type, 0, len(st.Fun.Params))
@@ -3713,21 +3716,24 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				fname = "user_main"
 			}
 			out = append(out, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
-		case s.Return != nil:
-			var v Expr
-			if s.Return.Value != nil {
-				var err error
-				v, err = convertExpr(env, s.Return.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			if currentRetType != "" && currentRetType != "Any" && v != nil {
-				if guessType(v) != currentRetType {
-					v = &CastExpr{Value: v, Type: currentRetType}
-				}
-			}
-			out = append(out, &ReturnStmt{Value: v})
+               case s.Return != nil:
+                       var v Expr
+                       if s.Return.Value != nil {
+                               var err error
+                               v, err = convertExpr(env, s.Return.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                       }
+                       if _, ok := v.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
+                               v = nil
+                       }
+                       if currentRetType != "" && currentRetType != "Any" && v != nil {
+                               if guessType(v) != currentRetType {
+                                       v = &CastExpr{Value: v, Type: currentRetType}
+                               }
+                       }
+                       out = append(out, &ReturnStmt{Value: v})
 		case s.If != nil:
 			st, err := convertIfStmt(env, s.If)
 			if err != nil {
