@@ -1288,9 +1288,12 @@ func (se *StructJSONExpr) emit(w io.Writer) {
 type FloatStringExpr struct{ Value Expr }
 
 func (fs *FloatStringExpr) emit(w io.Writer) {
+	if imports != nil {
+		imports["math"] = "math"
+	}
 	io.WriteString(w, "func() string { f := float64(")
 	fs.Value.emit(w)
-	io.WriteString(w, "); if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
+	io.WriteString(w, "); if f == 0 && math.Signbit(f) { return \"-0\" }; if f == float64(int(f)) { return fmt.Sprintf(\"%.1f\", f) }; return fmt.Sprint(f) }()")
 }
 
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
@@ -4665,7 +4668,12 @@ func compileUnary(u *parser.Unary, env *types.Env, base string) (Expr, error) {
 		op := u.Ops[i]
 		switch op {
 		case "-":
-			if isBigRatType(types.TypeOfPostfix(u.Value, env)) {
+			if fl, ok := expr.(*FloatLit); ok && fl.Value == 0 {
+				if imports != nil {
+					imports["math"] = "math"
+				}
+				expr = &CallExpr{Func: "math.Copysign", Args: []Expr{&FloatLit{Value: 0}, &FloatLit{Value: -1}}}
+			} else if isBigRatType(types.TypeOfPostfix(u.Value, env)) {
 				usesBigRat = true
 				zero := &CallExpr{Func: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
 				expr = ensureBigRatExpr(expr, types.TypeOfPostfix(u.Value, env))
