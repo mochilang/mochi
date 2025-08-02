@@ -319,7 +319,7 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "{\n")
-	fmt.Fprint(w, "    var __memStart = _mem();\n")
+	fmt.Fprint(w, "    var __memStart = _mem(true);\n")
 	fmt.Fprint(w, "    var __start = _now();\n")
 	for _, st := range b.Body {
 		fmt.Fprint(w, "    ")
@@ -331,9 +331,10 @@ func (b *BenchStmt) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprint(w, "    var __end = _now();\n")
-	fmt.Fprint(w, "    var __memEnd = _mem();\n")
+	fmt.Fprint(w, "    var __memEnd = _mem(false);\n")
 	fmt.Fprint(w, "    var __dur = (__end - __start);\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
+	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
 	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
 	fmt.Fprint(w, "}")
 }
@@ -4562,8 +4563,8 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t}\n")
 	}
 	if usesMem {
-		buf.WriteString("\tstatic long _mem() {\n")
-		buf.WriteString("\t\treturn System.Environment.WorkingSet;\n")
+		buf.WriteString("\tstatic long _mem(bool force) {\n")
+		buf.WriteString("\t\treturn GC.GetTotalMemory(force);\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
