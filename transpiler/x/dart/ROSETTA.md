@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 420/491
+Compiled and ran: 450/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -374,36 +374,36 @@ Compiled and ran: 420/491
 | 365 | eulers-identity | ✓ | 8.163ms | 3.5 MB |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
 | 367 | evaluate-binomial-coefficients | ✓ | 23.023ms | 8.4 MB |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
+| 368 | even-or-odd | ✓ | 31.89ms | 8.3 MB |
+| 369 | events | ✓ | 17.766ms | 10.0 MB |
+| 370 | evolutionary-algorithm | ✓ | 61.506ms | 236.0 KB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 20.42ms | 9.6 MB |
+| 372 | exceptions | ✓ | 9.862ms | 2.5 MB |
+| 373 | executable-library | ✓ | 2.24741s | 7.5 MB |
+| 374 | execute-a-markov-algorithm | ✓ | 22.611ms | 7.1 MB |
+| 375 | execute-a-system-command | ✓ | 79.618ms | 3.6 MB |
+| 376 | execute-brain- | ✓ | 20.513ms | 9.9 MB |
+| 377 | execute-computer-zero-1 | ✓ | 20.25ms | 5.1 MB |
+| 378 | execute-computer-zero | ✓ | 12.15ms | 2.9 MB |
+| 379 | execute-hq9+ | ✓ | 47.046ms | 5.9 MB |
+| 380 | execute-snusp | ✓ | 21.172ms | 10.9 MB |
+| 381 | exponentiation-operator-2 | ✓ | 27.544ms | 9.8 MB |
+| 382 | exponentiation-operator | ✓ | 13.611ms | 3.3 MB |
+| 383 | exponentiation-order | ✓ | 20.562ms | 10.0 MB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 11.761ms | 3.2 MB |
+| 385 | extend-your-language | ✓ | 17.298ms | 1.7 MB |
+| 386 | extensible-prime-generator | ✓ | 249.655ms | 7.1 MB |
+| 387 | extreme-floating-point-values | ✓ | 12.171ms | 3.1 MB |
+| 388 | faces-from-a-mesh-2 | ✓ | 16.678ms | 3.2 MB |
+| 389 | faces-from-a-mesh | ✓ | 16.53ms | 4.2 MB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 48.747ms | 10.4 MB |
+| 391 | factorial-primes | ✓ | 29.627ms | 10.0 MB |
+| 392 | factorial | ✓ | 39.309ms | 5.6 MB |
+| 393 | factorions | ✓ | 306.049ms | 10.3 MB |
+| 394 | factors-of-a-mersenne-number | ✓ | 2m26.324181s | 4.6 MB |
+| 395 | factors-of-an-integer | ✓ | 2.168887s | 832.0 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 3m52.132887s | 4.4 MB |
+| 397 | farey-sequence | ✓ | 26.428ms | 9.7 MB |
 | 398 | fast-fourier-transform |   |  |  |
 | 399 | fasta-format |   |  |  |
 | 400 | faulhabers-formula |   |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 10:56 +0700_
+_Last updated: 2025-08-02 17:26 +0700_
