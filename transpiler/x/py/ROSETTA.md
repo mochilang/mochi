@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-02 17:44 GMT+7
+Last updated: 2025-08-02 17:56 GMT+7
 
 ## Rosetta Golden Test Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
@@ -16,7 +16,7 @@ Last updated: 2025-08-02 17:44 GMT+7
 | 7 | 2048 | ✓ | 1.0ms | 14.71MB |
 | 8 | 21-game | ✓ | 69.0µs | 13.80MB |
 | 9 | 24-game-solve | ✓ | 33.0ms | 13.94MB |
-| 10 | 24-game | ✓ |  |  |
+| 10 | 24-game | ✓ | 90.0µs | 13.21MB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 45.0ms | 13.05MB |
 | 12 | 9-billion-names-of-god-the-integer | ✓ | 14.73s | 234.16MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 15.0ms | 13.32MB |
