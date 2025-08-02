@@ -1,0 +1,8 @@
+exit status 2
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-element-definition.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Doubly-linked-list-element-definition" is not a valid module name.
+File "/workspace/mochi/tests/rosetta/transpiler/OCaml/doubly-linked-list-element-definition.ml", line 62, characters 33-37:
+62 |   let b = ref (_node ("B") (nil) (!a)) in
+                                      ^^^^
+Error: This expression has type (string * Obj.t) list
+       but an expression was expected of type Obj.t

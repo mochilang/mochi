@@ -5196,23 +5196,25 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		return &FuncCall{Name: name, Args: []Expr{arg}, Ret: "string"}, "string", nil
 	}
 	if c.Func == "pow" && len(c.Args) == 2 {
-		a1, t1, err := convertExpr(c.Args[0], env, vars)
-		if err != nil {
-			return nil, "", err
+		if _, ok := env.GetFunc("pow"); !ok {
+			a1, t1, err := convertExpr(c.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			a2, t2, err := convertExpr(c.Args[1], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if t1 != "int" && t1 != "float" {
+				t1 = t1
+			}
+			_ = t1
+			if t2 != "int" && t2 != "float" {
+				t2 = t2
+			}
+			_ = t2
+			return &FuncCall{Name: "Float.pow", Args: []Expr{a1, a2}, Ret: "float"}, "float", nil
 		}
-		a2, t2, err := convertExpr(c.Args[1], env, vars)
-		if err != nil {
-			return nil, "", err
-		}
-		if t1 != "int" && t1 != "float" {
-			t1 = t1
-		}
-		_ = t1
-		if t2 != "int" && t2 != "float" {
-			t2 = t2
-		}
-		_ = t2
-		return &FuncCall{Name: "Float.pow", Args: []Expr{a1, a2}, Ret: "float"}, "float", nil
 	}
 	if c.Func == "str" && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
