@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 14:25 +0700
+Last updated: 2025-08-02 14:38 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -245,16 +245,16 @@ Last updated: 2025-08-02 14:25 +0700
 | 236 | copy-a-string-1 | ✓ | 1µs | 64 B |
 | 237 | copy-a-string-2 | ✓ | 69µs | 312 B |
 | 238 | copy-stdin-to-stdout-1 | ✓ | 70µs | 8.1 KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 69µs | 8.1 KB |
-| 240 | count-in-factors | ✓ | 732µs | 96 B |
-| 241 | count-in-octal-1 | ✓ | 566µs | 96 B |
-| 242 | count-in-octal-2 | ✓ | 224.512ms | 96 B |
-| 243 | count-in-octal-3 | ✓ | 263µs | 96 B |
-| 244 | count-in-octal-4 | ✓ | 94µs | 96 B |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 79µs | 8.1 KB |
+| 240 | count-in-factors | ✓ | 637µs | 96 B |
+| 241 | count-in-octal-1 | ✓ | 425µs | 96 B |
+| 242 | count-in-octal-2 | ✓ | 241.854ms | 96 B |
+| 243 | count-in-octal-3 | ✓ | 133µs | 96 B |
+| 244 | count-in-octal-4 | ✓ | 104µs | 96 B |
 | 245 | count-occurrences-of-a-substring | ✓ | 64µs | 96 B |
-| 246 | count-the-coins-1 | ✓ | 122µs | 96 B |
-| 247 | count-the-coins-2 | ✓ | 1.265ms | 96 B |
-| 248 | cramers-rule | ✓ | 240µs | 1.6 KB |
+| 246 | count-the-coins-1 | ✓ | 113µs | 96 B |
+| 247 | count-the-coins-2 | ✓ | 1.361ms | 96 B |
+| 248 | cramers-rule | ✓ | 318µs | 1.6 KB |
 | 249 | crc-32-1 | ✓ | 25.4ms | 8.2 KB |
 | 250 | crc-32-2 | ✓ | 23.058ms | 8.2 KB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 38µs | 64 B |
