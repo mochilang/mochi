@@ -9,7 +9,7 @@ There are 87 descending primes, namely:
      643     6421      641      631       61     5431      541       53      521        5
      431       43      421       41       31        3        2
 {
-  "duration_us": 1120,
+  "duration_us": 617,
   "memory_bytes": 2936,
   "name": "main"
 }

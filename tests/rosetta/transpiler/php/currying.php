@@ -63,11 +63,11 @@ $__start = _now();
   echo rtrim('4³ = ' . _str($cube(4.0))), PHP_EOL;
   $a = ['value' => 2];
   $fn1 = null;
-$fn1 = function($b) use ($a, $fn1, $pow2, $cube) {
+$fn1 = function($b) use ($a, $pow2, $cube, $fn1) {
   return Foo_Method($a, $b);
 };
   $fn2 = null;
-$fn2 = function($f, $b) use ($fn1, $fn2, $pow2, $cube, $a) {
+$fn2 = function($f, $b) use ($pow2, $cube, $a, $fn1, $fn2) {
   return Foo_Method($f, $b);
 };
   echo rtrim('2 + 2 = ' . _str(Foo_Method($a, 2))), PHP_EOL;
@@ -78,9 +78,9 @@ $fn2 = function($f, $b) use ($fn1, $fn2, $pow2, $cube, $a) {
   main();
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

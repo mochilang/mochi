@@ -17,7 +17,7 @@ collapsed: length = 7, string = «««ardvark»»»
 original : length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
 collapsed: length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
 {
-  "duration_us": 131,
+  "duration_us": 105,
   "memory_bytes": 96,
   "name": "main"
 }

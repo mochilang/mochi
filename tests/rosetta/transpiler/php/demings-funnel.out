@@ -15,7 +15,7 @@ Mean    :  3.13412, 5.42102
 Std Dev :  1.5873932989653, 3.9303625939091
 
 {
-  "duration_us": 688,
+  "duration_us": 356,
   "memory_bytes": 160,
   "name": "main"
 }

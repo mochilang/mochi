@@ -19,7 +19,7 @@ Validating the overlaid de Bruijn sequence:
     PIN number 5814 missing
     PIN number 8145 missing
 {
-  "duration_us": 403959,
+  "duration_us": 305865,
   "memory_bytes": 96,
   "name": "main"
 }
