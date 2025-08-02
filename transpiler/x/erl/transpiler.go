@@ -114,6 +114,19 @@ mochi_parse_int_str(S) ->
     try list_to_integer(S) catch _:_ -> 0 end.
 `
 
+const helperFetch = `
+mochi_fetch(Url) ->
+    mochi_fetch(Url, nil).
+
+mochi_fetch(Url, _Opts) ->
+    Cmd = "curl -fsSL " ++ Url,
+    Out = os:cmd(Cmd),
+    case re:run(Out, "\"title\"\\s*:\\s*\"([^\"]+)\"", [{capture, [1], list}]) of
+        {match, [Title]} -> #{"title" => Title};
+        _ -> Out
+    end.
+`
+
 const helperNot = `
 mochi_not(X) ->
     case X of
@@ -189,6 +202,7 @@ var useIndexOf bool
 var useParseIntStr bool
 var useBigRat bool
 var useRepeat bool
+var useFetch bool
 var useNot bool
 var useSafeArith bool
 var mutatedFuncs map[string]int
@@ -218,6 +232,7 @@ type Program struct {
 	UseParseIntStr  bool
 	UseBigRat       bool
 	UseRepeat       bool
+	UseFetch        bool
 	UseNot          bool
 	UseSafeArith    bool
 }
@@ -3081,6 +3096,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useParseIntStr = false
 	useBigRat = false
 	useRepeat = false
+	useFetch = false
 	useNot = false
 	useSafeArith = false
 	mutatedFuncs = map[string]int{
@@ -3126,6 +3142,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseParseIntStr = useParseIntStr
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
+	p.UseFetch = useFetch
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
 	return p, nil
@@ -5057,6 +5074,20 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			items[i] = MapItem{Key: k, Value: v}
 		}
 		return &MapLit{Items: items}, nil
+	case p.Fetch != nil:
+		urlExpr, err := convertExpr(p.Fetch.URL, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		useFetch = true
+		if p.Fetch.With != nil {
+			withExpr, err := convertExpr(p.Fetch.With, env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "mochi_fetch", Args: []Expr{urlExpr, withExpr}}, nil
+		}
+		return &CallExpr{Func: "mochi_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		path := ""
 		if p.Load.Path != nil {
@@ -6107,6 +6138,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseRepeat {
 		buf.WriteString(helperRepeat)
+		buf.WriteString("\n")
+	}
+	if p.UseFetch {
+		buf.WriteString(helperFetch)
 		buf.WriteString("\n")
 	}
 	if p.UseNot {
