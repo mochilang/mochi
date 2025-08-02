@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (369/491)
-Last updated: 2025-08-01 12:43 UTC
+## Checklist (370/491)
+Last updated: 2025-08-02 10:43 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -175,7 +175,7 @@ Last updated: 2025-08-01 12:43 UTC
 | 166 | canny-edge-detector | ✓ | 571.223ms | 13.5 MB |
 | 167 | canonicalize-cidr | ✓ | 571.223ms | 13.6 MB |
 | 168 | cantor-set | ✓ |  |  |
-| 169 | carmichael-3-strong-pseudoprimes |   |  |  |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 571.223ms | 12.1 MB |
 | 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
 | 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
@@ -263,7 +263,7 @@ Last updated: 2025-08-01 12:43 UTC
 | 254 | create-an-html-table | ✓ | 571.223ms | 12.0 MB |
 | 255 | create-an-object-at-a-given-address | ✓ | 571.223ms | 12.9 MB |
 | 256 | csv-data-manipulation | ✓ | 571.223ms | 12.2 MB |
-| 257 | csv-to-html-translation-1 | ✓ | 571.223ms | 12.3 MB |
+| 257 | csv-to-html-translation-1 | ✓ | 571.223ms | 12.2 MB |
 | 258 | csv-to-html-translation-2 | ✓ | 571.223ms | 11.9 MB |
 | 259 | csv-to-html-translation-3 | ✓ | 571.223ms | 12.2 MB |
 | 260 | csv-to-html-translation-4 | ✓ |  |  |
