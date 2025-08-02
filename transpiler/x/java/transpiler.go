@@ -223,10 +223,6 @@ func javaType(t string) string {
 		if t == "" {
 			return ""
 		}
-		if strings.HasSuffix(t, "[]") {
-			elem := strings.TrimSuffix(t, "[]")
-			return javaType(elem) + "[]"
-		}
 		if strings.HasPrefix(t, "fn(") {
 			start := strings.Index(t, "(") + 1
 			end := strings.Index(t, ")")
@@ -3146,6 +3142,9 @@ func isMapExpr(e Expr) bool {
 		return true
 	case *IndexExpr:
 		if ex.IsMap {
+			if ex.ResultType != "" && strings.HasSuffix(ex.ResultType, "[]") {
+				return false
+			}
 			return true
 		}
 		return isMapExpr(ex.Target)
@@ -3759,6 +3758,20 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				if ml.KeyType == "" {
 					if kt := mapKeyType(t); kt != "" {
 						ml.KeyType = kt
+					}
+				}
+				if strings.Contains(ml.ValueType, "Map<") {
+					innerKey := mapKeyType(ml.ValueType)
+					innerVal := mapValueType(ml.ValueType)
+					for _, v := range ml.Values {
+						if iml, ok := v.(*MapLit); ok {
+							if iml.KeyType == "" && innerKey != "" {
+								iml.KeyType = innerKey
+							}
+							if iml.ValueType == "" && innerVal != "" {
+								iml.ValueType = innerVal
+							}
+						}
 					}
 				}
 			} else if ce, ok := e.(*CallExpr); ok {
@@ -4407,10 +4420,18 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 		if st != nil {
 			if _, ok := st.(*ReturnStmt); ok {
 				out = append(out, st)
+				if len(extraDecls) > 0 {
+					out = append(out, extraDecls...)
+					extraDecls = nil
+				}
 				break
 			} else {
 				out = append(out, st)
 			}
+		}
+		if len(extraDecls) > 0 {
+			out = append(out, extraDecls...)
+			extraDecls = nil
 		}
 	}
 	// preserve explicit return statements even after infinite loops
@@ -5379,8 +5400,18 @@ func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 			}
 		}
 		for name := range outer {
-			if exprUsesVar(lam, name) && bodyModifiesVar(body, name) {
-				refVars[name] = true
+			if exprUsesVar(lam, name) {
+				if bodyModifiesVar(body, name) {
+					refVars[name] = true
+				} else {
+					alias := fmt.Sprintf("%s_%d", name, aliasCounts[name])
+					aliasCounts[name]++
+					typ := varTypes[name]
+					extraDecls = append(extraDecls, &LetStmt{Name: alias, Type: typ, Expr: &VarExpr{Name: name}})
+					if nl, ok := renameVar(lam, name, alias).(*LambdaExpr); ok {
+						lam = nl
+					}
+				}
 			}
 		}
 	}
