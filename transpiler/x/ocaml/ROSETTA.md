@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 281/491
+Completed programs: 291/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -292,19 +292,19 @@ Completed programs: 281/491
 | 284 | demings-funnel | ✓ | 12.0ms | 1.10MB |
 | 285 | department-numbers | ✓ | 197.0µs | 2.66KB |
 | 286 | descending-primes | ✓ | 496.0µs | 20.91KB |
-| 287 | detect-division-by-zero |   |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |   |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |   |  |  |
-| 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |   |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable |   |  |  |
-| 294 | determine-if-only-one-instance-is-running |   |  |  |
-| 295 | determine-if-two-triangles-overlap |   |  |  |
-| 296 | determine-sentence-type |   |  |  |
-| 297 | dice-game-probabilities-1 | ✓ | 1.38s | 602.52MB |
-| 298 | dice-game-probabilities-2 | ✓ | 19.0ms | 845.03KB |
-| 299 | digital-root-multiplicative-digital-root | ✓ | 23.0ms | 1.30MB |
+| 287 | detect-division-by-zero | ✓ | 91.0µs | 416B |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 144.0µs | 5.06KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 258.0µs | 17.93KB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 194.0µs | 26.16KB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 19.0µs | 1.20KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 15.0µs | 1.54KB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 353.0µs | 39.98KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 17.0µs | 208B |
+| 295 | determine-if-two-triangles-overlap | ✓ | 719.0µs | 70.47KB |
+| 296 | determine-sentence-type | ✓ | 50.0µs | 3.09KB |
+| 297 | dice-game-probabilities-1 | ✓ | 905.0ms | 602.52MB |
+| 298 | dice-game-probabilities-2 | ✓ | 12.0ms | 845.03KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 13.0ms | 1.30MB |
 | 300 | dijkstras-algorithm |   |  |  |
 | 301 | dinesmans-multiple-dwelling-problem |   |  |  |
 | 302 | dining-philosophers-1 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 281/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-02 00:57 +0700
+Last updated 2025-08-01 19:06 UTC
