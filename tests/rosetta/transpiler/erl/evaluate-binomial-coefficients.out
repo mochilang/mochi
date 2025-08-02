@@ -1,0 +1,11 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/evaluate-binomial-coefficients.erl:52:10: Warning: variable 'Kk_3' exported from 'case' (line 35, column 9)
+%   52| {I_2, K, Kk_3, N, Res_3} = Fun(I, K, Kk_3, N, Res),
+%     |          ^
+
+10
+118264581564861424
+{
+  "duration_us": 19955,
+  "memory_bytes": 136512,
+  "name": "main"
+}
