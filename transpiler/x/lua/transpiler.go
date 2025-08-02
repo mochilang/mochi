@@ -1115,7 +1115,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "do\n")
 	io.WriteString(w, "  collectgarbage()\n")
 	io.WriteString(w, "  local _bench_start_mem = collectgarbage('count') * 1024\n")
-	io.WriteString(w, "  local _bench_start = _now()\n")
+	io.WriteString(w, "  local _bench_start = os.clock()\n")
 	var funs []Stmt
 	var rest []Stmt
 	for _, st := range b.Body {
@@ -1130,10 +1130,10 @@ func (b *BenchStmt) emit(w io.Writer) {
 		st.emit(w)
 		io.WriteString(w, "\n")
 	}
-	io.WriteString(w, "  local _bench_end = _now()\n")
+	io.WriteString(w, "  local _bench_end = os.clock()\n")
 	io.WriteString(w, "  collectgarbage()\n")
 	io.WriteString(w, "  local _bench_end_mem = collectgarbage('count') * 1024\n")
-	io.WriteString(w, "  local _bench_duration_us = math.floor((_bench_end - _bench_start) / 1000)\n")
+	io.WriteString(w, "  local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)\n")
 	io.WriteString(w, "  local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))\n")
 	io.WriteString(w, "  print('{\\n  \"duration_us\": ' .. _bench_duration_us .. ',\\n  \"memory_bytes\": ' .. _bench_mem .. ',\\n  \"name\": \"")
 	io.WriteString(w, b.Name)
