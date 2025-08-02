@@ -321,6 +321,16 @@ type CastExpr struct {
 	Type  string
 }
 
+// CopySliceExpr allocates a mutable copy of a slice.
+type CopySliceExpr struct {
+	Src  string
+	Elem string
+}
+
+func (e *CopySliceExpr) emit(w io.Writer) {
+	fmt.Fprintf(w, "blk: { const tmp = std.heap.page_allocator.alloc(%s, %s.len) catch unreachable; @memcpy(tmp, %s); break :blk tmp; }", e.Elem, e.Src, e.Src)
+}
+
 // NotExpr represents logical negation.
 type NotExpr struct{ Expr Expr }
 
@@ -449,6 +459,8 @@ func collectVarsExpr(e Expr, m map[string]bool) {
 		collectVarsExpr(ex.Key, m)
 		collectVarsExpr(ex.SelectExpr, m)
 		collectVarsExpr(ex.Sort, m)
+	case *CopySliceExpr:
+		m[ex.Src] = true
 	}
 }
 
@@ -590,7 +602,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "var start: usize = 0;\n")
 		if qc.Skip != nil {
 			writeIndent(w, 1)
-			io.WriteString(w, "start = @intCast(usize, ")
+			io.WriteString(w, "start = @intCast(")
 			qc.Skip.emit(w)
 			io.WriteString(w, ");\n")
 		}
@@ -598,7 +610,7 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "var end: usize = tmp.len;\n")
 		if qc.Take != nil {
 			writeIndent(w, 1)
-			io.WriteString(w, "end = @min(tmp.len, start + @intCast(usize, ")
+			io.WriteString(w, "end = @min(tmp.len, start + @intCast(")
 			qc.Take.emit(w)
 			io.WriteString(w, "));\n")
 		}
@@ -1184,7 +1196,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            } else |_| {}\n")
 		buf.WriteString("        } else |_| {}\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    return @intCast(i64, std.time.nanoTimestamp());\n")
+		buf.WriteString("    return @as(i64, @intCast(std.time.nanoTimestamp()));\n")
 		buf.WriteString("}\n")
 	}
 	if useStr {
@@ -1756,14 +1768,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 	t := zigTypeFromExpr(i.Target)
 	if t == "[]const u8" {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(usize, ")
+		io.WriteString(w, "[@intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ")..@intCast(usize, ")
+		io.WriteString(w, ")..@intCast(")
 		i.Index.emit(w)
 		io.WriteString(w, ") + 1]")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(usize, ")
+		io.WriteString(w, "[@intCast(")
 		i.Index.emit(w)
 		io.WriteString(w, ")]")
 	}
@@ -1912,7 +1924,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, tmp)
 			io.WriteString(w, "| {\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "const %s: i64 = @intCast(%s);\n", f.Name, tmp)
+			fmt.Fprintf(w, "const %s: i64 = @as(i64, @intCast(%s));\n", f.Name, tmp)
 		} else {
 			io.WriteString(w, "_|")
 			io.WriteString(w, " {\n")
@@ -1957,7 +1969,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __duration_us = @divTrunc(@intCast(i64, __end - __start), 1000);\n")
+	io.WriteString(w, "const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "const __memory_bytes = _mem();\n")
 	writeIndent(w, indent)
@@ -1992,7 +2004,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
-			io.WriteString(w, "@intCast(i64, ")
+			io.WriteString(w, "@as(i64, @intCast(")
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
@@ -2017,7 +2029,7 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".len")
 			}
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		} else {
 			io.WriteString(w, "0")
 		}
@@ -2295,7 +2307,9 @@ func collectMutables(sts []*parser.Statement, m map[string]bool) {
 	for _, st := range sts {
 		switch {
 		case st.Assign != nil:
-			m[st.Assign.Name] = true
+			if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
+				m[st.Assign.Name] = true
+			}
 		case st.If != nil:
 			collectMutablesIf(st.If, m)
 		case st.While != nil:
@@ -3676,6 +3690,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				mapVars[s.Var.Name] = true
 			}
 		}
+		if vr, ok := expr.(*VarRef); ok {
+			if t, ok := varTypes[vr.Name]; ok && strings.HasPrefix(t, "[]") {
+				elem := t[2:]
+				vd.Value = &CopySliceExpr{Src: vr.Name, Elem: elem}
+			}
+		}
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
@@ -4125,6 +4145,8 @@ func collectVarUses(p *Program) map[string]int {
 			walkExpr(t.Target)
 			walkExpr(t.Start)
 			walkExpr(t.End)
+		case *CopySliceExpr:
+			uses[t.Src]++
 		}
 	}
 	var walkStmt func(s Stmt)
