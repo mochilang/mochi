@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 23:09 +0700
+Last updated: 2025-08-02 23:37 +0700
 
-Completed tasks: **258/491**
+Completed tasks: **264/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -138,12 +138,12 @@ Completed tasks: **258/491**
 | 127 | bitwise-io-1 | ✓ | 15.50ms | 114.9 KB |
 | 128 | bitwise-io-2 | ✓ | 28.11ms | 106.3 KB |
 | 129 | bitwise-operations | ✓ | 10.07ms | 121.2 KB |
-| 130 | blum-integer |  |  |  |
-| 131 | boolean-values |  |  |  |
-| 132 | box-the-compass |  |  |  |
-| 133 | boyer-moore-string-search |  |  |  |
-| 134 | brazilian-numbers |  |  |  |
-| 135 | break-oo-privacy |  |  |  |
+| 130 | blum-integer | ✓ | 18.63ms | 115.0 KB |
+| 131 | boolean-values | ✓ | 34.63ms | 115.3 KB |
+| 132 | box-the-compass | ✓ | 21.41ms | 109.0 KB |
+| 133 | boyer-moore-string-search | ✓ | 16.95ms | 121.4 KB |
+| 134 | brazilian-numbers | ✓ | 8.87s | 828.5 KB |
+| 135 | break-oo-privacy | ✓ | 7.21ms | 129.9 KB |
 | 136 | brilliant-numbers |  |  |  |
 | 137 | brownian-tree |  |  |  |
 | 138 | bulls-and-cows-player |  |  |  |
