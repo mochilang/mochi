@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (418/491)
-_Last updated: 2025-08-02 14:25 +0700_
+## Golden Test Checklist (420/491)
+_Last updated: 2025-08-02 14:38 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -255,7 +255,7 @@ _Last updated: 2025-08-02 14:25 +0700_
 | 246 | count-the-coins-1 | ✓ | 3µs | 8.7 MB |
 | 247 | count-the-coins-2 | ✓ | 33µs | 8.7 MB |
 | 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 | error |  |  |
+| 249 | crc-32-1 | ✓ | 2µs | 3.5 MB |
 | 250 | crc-32-2 | ✓ | 7µs | 8.8 MB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 2µs | 8.7 MB |
 | 252 | create-a-file | ✓ | 2µs | 8.7 MB |

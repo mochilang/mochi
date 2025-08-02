@@ -920,12 +920,11 @@ type IntLit struct {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	needsBigInt = true
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
-	} else {
-		fmt.Fprintf(w, "BigInt(%d)", i.Value)
-	}
+        needsBigInt = true
+        // Always emit literals with a long suffix so Scala does not attempt to
+        // interpret large values as Int, which would overflow. Using a long
+        // literal works for both small and large numbers.
+        fmt.Fprintf(w, "BigInt(%dL)", i.Value)
 }
 
 type BoolLit struct{ Value bool }
