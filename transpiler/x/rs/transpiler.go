@@ -238,7 +238,7 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
+	io.WriteString(w, rustIdent(c.Func))
 	io.WriteString(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -454,6 +454,17 @@ func (s *StructLit) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "%s: ", rustIdent(s.Names[i]))
 		f.emit(w)
+		if nr, ok := f.(*NameRef); ok {
+			if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+				if st, ok3 := structTypes[s.Name]; ok3 {
+					if ft, ok4 := st.Fields[s.Names[i]]; ok4 {
+						if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+							io.WriteString(w, ".clone()")
+						}
+					}
+				}
+			}
+		}
 	}
 	io.WriteString(w, "}")
 }
@@ -496,19 +507,22 @@ type FuncDecl struct {
 	VarTypes   map[string]string
 	StringVars map[string]bool
 	MapVars    map[string]bool
+	ParamTypes map[string]string
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
 	oldVarTypes := varTypes
 	oldStringVars := stringVars
 	oldMapVars := mapVars
+	oldParamTypes := currentParamTypes
 	varTypes = f.VarTypes
 	stringVars = f.StringVars
 	mapVars = f.MapVars
+	currentParamTypes = f.ParamTypes
 	if f.Unsafe {
-		fmt.Fprintf(w, "unsafe fn %s(", f.Name)
+		fmt.Fprintf(w, "unsafe fn %s(", rustIdent(f.Name))
 	} else {
-		fmt.Fprintf(w, "fn %s(", f.Name)
+		fmt.Fprintf(w, "fn %s(", rustIdent(f.Name))
 	}
 	for i, p := range f.Params {
 		if i > 0 {
@@ -516,12 +530,12 @@ func (f *FuncDecl) emit(w io.Writer) {
 		}
 		if p.Type != "" {
 			if strings.HasPrefix(p.Type, "&") {
-				fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+				fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
 			} else {
-				fmt.Fprintf(w, "mut %s: %s", p.Name, p.Type)
+				fmt.Fprintf(w, "mut %s: %s", rustIdent(p.Name), p.Type)
 			}
 		} else {
-			fmt.Fprintf(w, "mut %s", p.Name)
+			fmt.Fprintf(w, "mut %s", rustIdent(p.Name))
 		}
 	}
 	io.WriteString(w, ")")
@@ -538,6 +552,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 	varTypes = oldVarTypes
 	stringVars = oldStringVars
 	mapVars = oldMapVars
+	currentParamTypes = oldParamTypes
 }
 
 type FunLit struct {
@@ -554,9 +569,9 @@ func (f *FunLit) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 		}
 		if p.Type != "" {
-			fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+			fmt.Fprintf(w, "%s: %s", rustIdent(p.Name), p.Type)
 		} else {
-			io.WriteString(w, p.Name)
+			io.WriteString(w, rustIdent(p.Name))
 		}
 	}
 	io.WriteString(w, "|")
@@ -888,8 +903,19 @@ func (f *FieldExpr) emit(w io.Writer) {
 		rt = rt[1:]
 		if st, ok := structTypes[rt]; ok {
 			if ft, ok2 := st.Fields[f.Name]; ok2 {
-				if types.IsStructType(ft) {
+				if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
 					io.WriteString(w, ".clone()")
+				}
+			}
+		}
+	} else if nr, ok := f.Receiver.(*NameRef); ok {
+		if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+			rt = pt[1:]
+			if st, ok3 := structTypes[rt]; ok3 {
+				if ft, ok4 := st.Fields[f.Name]; ok4 {
+					if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+						io.WriteString(w, ".clone()")
+					}
 				}
 			}
 		}
@@ -3426,7 +3452,8 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		return vd, nil
 	}
 	currentFuncLocals = nil
-	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy, MapVars: mvCopy}, nil
+	ptCopy := copyStringMap(currentParamTypes)
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy, MapVars: mvCopy, ParamTypes: ptCopy}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -3827,7 +3854,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &LenExpr{Arg: args[0]}, nil
 		}
 		if name == "sum" && len(args) == 1 {
-			return &SumExpr{Arg: args[0]}, nil
+			if curEnv == nil {
+				return &SumExpr{Arg: args[0]}, nil
+			}
+			if _, ok := curEnv.GetFunc("sum"); !ok {
+				return &SumExpr{Arg: args[0]}, nil
+			}
 		}
 		if name == "str" && len(args) == 1 {
 			return &StrExpr{Arg: args[0]}, nil

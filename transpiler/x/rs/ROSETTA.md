@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-02 05:13 UTC
+Last updated: 2025-08-02 07:02 UTC
 
-## Rosetta Golden Test Checklist (206/491)
+## Rosetta Golden Test Checklist (209/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -13,7 +13,7 @@ Last updated: 2025-08-02 05:13 UTC
 | 4 | 100-prisoners | ✓ | 138.514ms | 3.3 MB |
 | 5 | 15-puzzle-game | ✓ | 45µs | 3.2 MB |
 | 6 | 15-puzzle-solver | ✓ | 17µs | 3.2 MB |
-| 7 | 2048 |   |  |  |
+| 7 | 2048 | ✓ | 280µs |  |
 | 8 | 21-game | ✓ | 72µs | 3.2 MB |
 | 9 | 24-game-solve | ✓ | 3.207ms | 3.2 MB |
 | 10 | 24-game | ✓ | 59µs | 3.2 MB |
@@ -496,5 +496,5 @@ Last updated: 2025-08-02 05:13 UTC
 | 487 | nim-game | ✓ | 68µs |  |
 | 488 | plasma-effect | ✓ | 461µs |  |
 | 489 | sorting-algorithms-bubble-sort | ✓ | 89µs |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 490 | window-management | ✓ | 158µs |  |
+| 491 | zumkeller-numbers | ✓ | 1.371814s | 256.0 KB |
