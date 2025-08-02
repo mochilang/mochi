@@ -4594,6 +4594,27 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					}
 				}
 			}
+		case *BinaryExpr:
+			lt := inferTypeWithEnv(ex.Left, env)
+			rt := inferTypeWithEnv(ex.Right, env)
+			switch ex.Op {
+			case "+", "-", "*", "/", "%":
+				if lt == "String" || rt == "String" {
+					return "String"
+				}
+				if lt == "Double" || rt == "Double" || lt == "Float" || rt == "Float" {
+					return "Double"
+				}
+				if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(ex.Left) || isBigIntExpr(ex.Right) {
+					return "BigInt"
+				}
+				if lt == "" || rt == "" {
+					return ""
+				}
+				return "Int"
+			case "==", "!=", ">", "<", ">=", "<=":
+				return "Boolean"
+			}
 		case *CallExpr:
 			if n, ok := ex.Fn.(*Name); ok {
 				if typ, err := env.GetVar(n.Name); err == nil {

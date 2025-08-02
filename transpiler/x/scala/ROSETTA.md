@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (424/491)
-_Last updated: 2025-08-02 21:10 +0700_
+## Golden Test Checklist (425/491)
+_Last updated: 2025-08-02 23:15 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -345,7 +345,7 @@ _Last updated: 2025-08-02 21:10 +0700_
 | 336 | elementary-cellular-automaton-infinite-length | ✓ | 45µs | 8.7 MB |
 | 337 | elementary-cellular-automaton-random-number-generator | ✓ | 57µs | 8.7 MB |
 | 338 | elementary-cellular-automaton | ✓ | 30µs | 8.7 MB |
-| 339 | elliptic-curve-arithmetic | error | 7µs | 8.7 MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 6µs | 8.7 MB |
 | 340 | elliptic-curve-digital-signature-algorithm | ✓ | 3µs | 8.7 MB |
 | 341 | emirp-primes | ✓ | 2.81ms | 8.8 MB |
 | 342 | empty-directory | ✓ | 3µs | 8.8 MB |
