@@ -273,9 +273,16 @@ type IndexAssignStmt struct {
 
 func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 	indent(w, indentLevel)
-	if ix, ok := s.Target.(*IndexExpr); ok {
-		ix.emitTarget(w)
-	} else {
+	switch tgt := s.Target.(type) {
+	case *IndexExpr:
+		tgt.emitTarget(w)
+	case *CastExpr:
+		if ix, ok := tgt.Value.(*IndexExpr); ok {
+			ix.emitTarget(w)
+		} else {
+			tgt.emit(w)
+		}
+	default:
 		s.Target.emit(w)
 	}
 	io.WriteString(w, " = ")
@@ -1292,6 +1299,17 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) {
 		io.WriteString(w, "mutableListOf<"+elem+">()")
 		return
 	}
+	if ce, ok := s.Value.(*CastExpr); ok {
+		if ml, ok := ce.Value.(*MapLit); ok && len(ml.Items) == 0 && strings.HasPrefix(ce.Type, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(ce.Type, "MutableMap<"), ">")
+			if idx := strings.Index(part, ","); idx >= 0 {
+				k := strings.TrimSpace(part[:idx])
+				v := strings.TrimSpace(part[idx+1:])
+				io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+				return
+			}
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -1338,6 +1356,17 @@ func (s *VarStmt) emit(w io.Writer, indentLevel int) {
 		elem := strings.TrimSuffix(strings.TrimPrefix(s.Type, "MutableList<"), ">")
 		io.WriteString(w, "mutableListOf<"+elem+">()")
 		return
+	}
+	if ce, ok := s.Value.(*CastExpr); ok {
+		if ml, ok := ce.Value.(*MapLit); ok && len(ml.Items) == 0 && strings.HasPrefix(ce.Type, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(ce.Type, "MutableMap<"), ">")
+			if idx := strings.Index(part, ","); idx >= 0 {
+				k := strings.TrimSpace(part[:idx])
+				v := strings.TrimSpace(part[idx+1:])
+				io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+				return
+			}
+		}
 	}
 	s.Value.emit(w)
 }
