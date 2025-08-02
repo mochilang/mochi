@@ -1,5 +1,5 @@
 public class Main {
-    static String FASTA = ">Rosetta_Example_1\n" + "THERECANBENOSPACE\n" + ">Rosetta_Example_2\n" + "THERECANBESEVERAL\n" + "LINESBUTTHEYALLMUST\n" + "BECONCATENATED";
+    static String FASTA;
 
     static String[] splitLines(String s) {
         String[] lines = new String[]{};
@@ -58,7 +58,42 @@ public class Main {
         }
     }
     public static void main(String[] args) {
-        main();
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            FASTA = ">Rosetta_Example_1\n" + "THERECANBENOSPACE\n" + ">Rosetta_Example_2\n" + "THERECANBESEVERAL\n" + "LINESBUTTHEYALLMUST\n" + "BECONCATENATED";
+            main();
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
+        }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static int _runeLen(String s) {

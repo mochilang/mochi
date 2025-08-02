@@ -18,7 +18,7 @@ public class Main {
 
     static String fmt8(double x) {
         double y_1 = floorf(x * 100000000.0 + 0.5) / 100000000.0;
-        String s = String.valueOf(y_1);
+        String s = _p(y_1);
         int dot = ((Number)(s.indexOf("."))).intValue();
         if (dot == 0 - 1) {
             s = s + ".00000000";
@@ -33,7 +33,7 @@ public class Main {
     }
 
     static String pad2(int x) {
-        String s_1 = String.valueOf(x);
+        String s_1 = _p(x);
         if (_runeLen(s_1) < 2) {
             s_1 = " " + s_1;
         }
@@ -132,5 +132,9 @@ public class Main {
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

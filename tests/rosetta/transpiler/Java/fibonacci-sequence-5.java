@@ -2,7 +2,7 @@ public class Main {
     static java.util.Map<Integer,Integer> memo;
 
     static int fib(int n) {
-        if (memo.containsKey(n)) {
+        if (((Boolean)(memo.containsKey(n)))) {
             return ((int)(memo).getOrDefault(n, 0));
         }
         int v = fib(n - 1) + fib(n - 2);
@@ -13,7 +13,7 @@ memo.put(n, v);
     static void main() {
         int i = 1;
         while (i <= 30) {
-            System.out.println(String.valueOf(fib(i)));
+            System.out.println(_p(fib(i)));
             i = i + 1;
         }
     }
@@ -54,5 +54,9 @@ memo.put(n, v);
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

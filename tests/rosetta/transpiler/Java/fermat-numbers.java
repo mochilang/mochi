@@ -79,7 +79,7 @@ public class Main {
         String line = "";
         int i_1 = 0;
         while (i_1 < xs.length) {
-            line = line + String.valueOf(xs[i_1]);
+            line = line + _p(_geto(xs, i_1));
             if (i_1 < xs.length - 1) {
                 line = line + " ";
             }
@@ -95,7 +95,7 @@ public class Main {
         }
         System.out.println("First 8 Fermat numbers:");
         for (java.math.BigInteger n : nums) {
-            System.out.println(String.valueOf(n));
+            System.out.println(_p(n));
         }
         java.util.Map<Integer,java.math.BigInteger[]> extra = ((java.util.Map<Integer,java.math.BigInteger[]>)(new java.util.LinkedHashMap<Integer, java.math.BigInteger[]>(java.util.Map.ofEntries(java.util.Map.entry(6, new java.math.BigInteger[]{java.math.BigInteger.valueOf(274177), java.math.BigInteger.valueOf((int)67280421310721L)}), java.util.Map.entry(7, new java.math.BigInteger[]{parseBigInt("59649589127497217"), parseBigInt("5704689200685129054721")})))));
         System.out.println("\nFactors:");
@@ -107,7 +107,7 @@ public class Main {
             } else {
                 facs = (java.math.BigInteger[])(((java.math.BigInteger[])(extra).get(i_2)));
             }
-            System.out.println("F" + String.valueOf(i_2) + " = " + String.valueOf(show_list(facs)));
+            System.out.println("F" + _p(i_2) + " = " + String.valueOf(show_list(facs)));
             i_2 = i_2 + 1;
         }
     }
@@ -157,5 +157,13 @@ public class Main {
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Object _geto(Object[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

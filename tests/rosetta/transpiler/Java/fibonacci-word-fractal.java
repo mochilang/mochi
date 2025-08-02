@@ -15,7 +15,7 @@ public class Main {
 
     static void main() {
         String wf = String.valueOf(fibonacciWord(23));
-        System.out.println(String.valueOf(_runeLen(wf)));
+        System.out.println(_p(_runeLen(wf)));
     }
     public static void main(String[] args) {
         {
@@ -57,5 +57,9 @@ public class Main {
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

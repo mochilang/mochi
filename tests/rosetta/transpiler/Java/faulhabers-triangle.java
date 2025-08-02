@@ -60,8 +60,8 @@ coeffs[p - j_1] = c;
     }
 
     static String ratStr(BigRat r) {
-        String s = String.valueOf(r);
-        if (endsWith(s, "/1")) {
+        String s = _p(r);
+        if (((Boolean)(endsWith(s, "/1")))) {
             return _substr(s, 0, _runeLen(s) - 2);
         }
         return s;
@@ -204,5 +204,9 @@ coeffs[p - j_1] = c;
         int start = s.offsetByCodePoints(0, i);
         int end = s.offsetByCodePoints(0, j);
         return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

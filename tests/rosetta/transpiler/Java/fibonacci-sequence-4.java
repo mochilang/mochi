@@ -18,7 +18,7 @@ public class Main {
     static void main() {
         int[] seq = fib(10);
         for (int v : seq) {
-            System.out.println(String.valueOf(v));
+            System.out.println(_p(v));
         }
     }
     public static void main(String[] args) {
@@ -57,5 +57,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }
