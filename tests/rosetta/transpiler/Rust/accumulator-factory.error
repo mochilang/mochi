@@ -1,0 +1,82 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:47:2
+   |
+47 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:53:2
+   |
+53 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:57:28
+   |
+57 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+57 -     let duration_us: i64 = ((_end - _start) / 1000);
+57 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:58:29
+   |
+58 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+   |                             ^                     ^
+   |
+help: remove these parentheses
+   |
+58 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+58 +     let memory_bytes: i64 = _end_mem - _start_mem;
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:40:20
+   |
+40 |     fn accumulator(mut sum: String) -> impl FnMut(String) -> String {
+   |                    ----^^^
+   |                    |
+   |                    help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:50:7
+   |
+50 |     x(5);
+   |     - ^- help: try using a conversion method: `.to_string()`
+   |     | |
+   |     | expected `String`, found integer
+   |     arguments to this function are incorrect
+   |
+note: opaque type defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:40:40
+   |
+40 |     fn accumulator(mut sum: String) -> impl FnMut(String) -> String {
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:52:22
+   |
+52 |     println!("{}", x(2.3).to_string());
+   |                    - ^^^- help: try using a conversion method: `.to_string()`
+   |                    | |
+   |                    | expected `String`, found floating-point number
+   |                    arguments to this function are incorrect
+   |
+note: opaque type defined here
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/accumulator-factory.rs:40:40
+   |
+40 |     fn accumulator(mut sum: String) -> impl FnMut(String) -> String {
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: aborting due to 2 previous errors; 5 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

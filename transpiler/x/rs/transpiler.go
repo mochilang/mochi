@@ -244,6 +244,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
+		if nr, ok := a.(*NameRef); ok {
+			if vt, ok2 := varTypes[nr.Name]; ok2 && !strings.HasPrefix(vt, "&") && (vt == "String" || strings.HasPrefix(vt, "Vec<") || strings.HasPrefix(vt, "HashMap<")) {
+				(&MethodCallExpr{Receiver: a, Name: "clone"}).emit(w)
+				continue
+			}
+		}
 		a.emit(w)
 	}
 	io.WriteString(w, ")")

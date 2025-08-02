@@ -1,0 +1,669 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:61:2
+   |
+61 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:70:2
+   |
+70 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:82:2
+   |
+82 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:100:2
+    |
+100 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:114:2
+    |
+114 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:135:2
+    |
+135 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:163:2
+    |
+163 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:185:2
+    |
+185 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:45:11
+   |
+45 |     while (i < (s.len() as i64)) {
+   |           ^                    ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+45 -     while (i < (s.len() as i64)) {
+45 +     while i < (s.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:47:12
+   |
+47 |         if (((ch.as_str() == " ") || (ch.as_str() == "\n")) || (ch.as_str() == "\t")) {
+   |            ^                                                                        ^
+   |
+help: remove these parentheses
+   |
+47 -         if (((ch.as_str() == " ") || (ch.as_str() == "\n")) || (ch.as_str() == "\t")) {
+47 +         if ((ch.as_str() == " ") || (ch.as_str() == "\n")) || (ch.as_str() == "\t") {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:48:16
+   |
+48 |             if ((cur.len() as i64) > 0) {
+   |                ^                      ^
+   |
+help: remove these parentheses
+   |
+48 -             if ((cur.len() as i64) > 0) {
+48 +             if (cur.len() as i64) > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:55:13
+   |
+55 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+55 -         i = (i + 1);
+55 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:57:8
+   |
+57 |     if ((cur.len() as i64) > 0) {
+   |        ^                      ^
+   |
+help: remove these parentheses
+   |
+57 -     if ((cur.len() as i64) > 0) {
+57 +     if (cur.len() as i64) > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:64:17
+   |
+64 |     let mut i = (s.len() as i64);
+   |                 ^              ^
+   |
+help: remove these parentheses
+   |
+64 -     let mut i = (s.len() as i64);
+64 +     let mut i = s.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:65:11
+   |
+65 |     while (i < width) {
+   |           ^         ^
+   |
+help: remove these parentheses
+   |
+65 -     while (i < width) {
+65 +     while i < width {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:67:13
+   |
+67 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+67 -         i = (i + 1);
+67 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:74:11
+   |
+74 |     while (i < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+help: remove these parentheses
+   |
+74 -     while (i < (xs.len() as i64)) {
+74 +     while i < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:75:12
+   |
+75 |         if (i > 0) {
+   |            ^     ^
+   |
+help: remove these parentheses
+   |
+75 -         if (i > 0) {
+75 +         if i > 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:79:13
+   |
+79 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+79 -         i = (i + 1);
+79 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:86:8
+   |
+86 |     if (((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-")) {
+   |        ^                                                                                     ^
+   |
+help: remove these parentheses
+   |
+86 -     if (((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-")) {
+86 +     if ((str.len() as i64) > 0) && (str[0 as usize..1 as usize].to_string().as_str() == "-") {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:92:11
+   |
+92 |     while (i < (str.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+92 -     while (i < (str.len() as i64)) {
+92 +     while i < (str.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:93:13
+   |
+93 |         n = ((n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()]);
+   |             ^                                                                         ^
+   |
+help: remove these parentheses
+   |
+93 -         n = ((n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()]);
+93 +         n = (n * 10) + digits[str[i as usize..(i + 1) as usize].to_string().as_str()];
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:94:13
+   |
+94 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+94 -         i = (i + 1);
+94 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:102:8
+    |
+102 |     if ((s.len() as i64) == 0) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+102 -     if ((s.len() as i64) == 0) {
+102 +     if (s.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:106:11
+    |
+106 |     while (i < (s.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+106 -     while (i < (s.len() as i64)) {
+106 +     while i < (s.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:108:12
+    |
+108 |         if ((ch.as_str() < "0") || (ch.as_str() > "9")) {
+    |            ^                                          ^
+    |
+help: remove these parentheses
+    |
+108 -         if ((ch.as_str() < "0") || (ch.as_str() > "9")) {
+108 +         if (ch.as_str() < "0") || (ch.as_str() > "9") {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:111:13
+    |
+111 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+111 -         i = (i + 1);
+111 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:120:11
+    |
+120 |     while (i < (toks.len() as i64)) {
+    |           ^                       ^
+    |
+help: remove these parentheses
+    |
+120 -     while (i < (toks.len() as i64)) {
+120 +     while i < (toks.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:122:26
+    |
+122 |         let mut minlen = (cmd.len() as i64);
+    |                          ^                ^
+    |
+help: remove these parentheses
+    |
+122 -         let mut minlen = (cmd.len() as i64);
+122 +         let mut minlen = cmd.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:123:13
+    |
+123 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+123 -         i = (i + 1);
+123 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:124:12
+    |
+124 |         if ((i < (toks.len() as i64)) && isDigits(toks[i as usize].clone())) {
+    |            ^                                                               ^
+    |
+help: remove these parentheses
+    |
+124 -         if ((i < (toks.len() as i64)) && isDigits(toks[i as usize].clone())) {
+124 +         if (i < (toks.len() as i64)) && isDigits(toks[i as usize].clone()) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:126:16
+    |
+126 |             if ((num >= 1) && (num < (cmd.len() as i64))) {
+    |                ^                                        ^
+    |
+help: remove these parentheses
+    |
+126 -             if ((num >= 1) && (num < (cmd.len() as i64))) {
+126 +             if (num >= 1) && (num < (cmd.len() as i64)) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:128:21
+    |
+128 |                 i = (i + 1);
+    |                     ^     ^
+    |
+help: remove these parentheses
+    |
+128 -                 i = (i + 1);
+128 +                 i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:139:11
+    |
+139 |     while (wi < (words.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+139 -     while (wi < (words.len() as i64)) {
+139 +     while wi < (words.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:142:24
+    |
+142 |         let mut wlen = (w.len() as i64);
+    |                        ^              ^
+    |
+help: remove these parentheses
+    |
+142 -         let mut wlen = (w.len() as i64);
+142 +         let mut wlen = w.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:144:15
+    |
+144 |         while (ci < (commands.len() as i64)) {
+    |               ^                            ^
+    |
+help: remove these parentheses
+    |
+144 -         while (ci < (commands.len() as i64)) {
+144 +         while ci < (commands.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:146:16
+    |
+146 |             if (((mins[ci as usize] != 0) && (wlen >= mins[ci as usize])) && (wlen <= (cmd.len() as i64))) {
+    |                ^                                                                                         ^
+    |
+help: remove these parentheses
+    |
+146 -             if (((mins[ci as usize] != 0) && (wlen >= mins[ci as usize])) && (wlen <= (cmd.len() as i64))) {
+146 +             if ((mins[ci as usize] != 0) && (wlen >= mins[ci as usize])) && (wlen <= (cmd.len() as i64)) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:149:20
+    |
+149 |                 if ({ let tmp = &c; tmp.chars().skip(0 as usize).take((wlen - 0) as usize).collect::<String>() }.as_str() == ww.as_str()) {
+    |                    ^                                                                                                                    ^
+    |
+help: remove these parentheses
+    |
+149 -                 if ({ let tmp = &c; tmp.chars().skip(0 as usize).take((wlen - 0) as usize).collect::<String>() }.as_str() == ww.as_str()) {
+149 +                 if { let tmp = &c; tmp.chars().skip(0 as usize).take((wlen - 0) as usize).collect::<String>() }.as_str() == ww.as_str() {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:155:18
+    |
+155 |             ci = (ci + 1);
+    |                  ^      ^
+    |
+help: remove these parentheses
+    |
+155 -             ci = (ci + 1);
+155 +             ci = ci + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:160:14
+    |
+160 |         wi = (wi + 1);
+    |              ^      ^
+    |
+help: remove these parentheses
+    |
+160 -         wi = (wi + 1);
+160 +         wi = wi + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:174:11
+    |
+174 |     while (k < (words.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+174 -     while (k < (words.len() as i64)) {
+174 +     while k < (words.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:176:12
+    |
+176 |         if (k < ((words.len() as i64) - 1)) {
+    |            ^                              ^
+    |
+help: remove these parentheses
+    |
+176 -         if (k < ((words.len() as i64) - 1)) {
+176 +         if k < ((words.len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:177:79
+    |
+177 |             out1 = format!("{}{}", out1, padRight(&words[k as usize].clone(), (results[k as usize].clone().len() as i64)));
+    |                                                                               ^                                        ^
+    |
+help: remove these parentheses
+    |
+177 -             out1 = format!("{}{}", out1, padRight(&words[k as usize].clone(), (results[k as usize].clone().len() as i64)));
+177 +             out1 = format!("{}{}", out1, padRight(&words[k as usize].clone(), results[k as usize].clone().len() as i64));
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:181:13
+    |
+181 |         k = (k + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+181 -         k = (k + 1);
+181 +         k = k + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:189:28
+    |
+189 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+189 -     let duration_us: i64 = ((_end - _start) / 1000);
+189 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:190:29
+    |
+190 |     let memory_bytes: i64 = (_end_mem - _start_mem);
+    |                             ^                     ^
+    |
+help: remove these parentheses
+    |
+190 -     let memory_bytes: i64 = (_end_mem - _start_mem);
+190 +     let memory_bytes: i64 = _end_mem - _start_mem;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:134:84
+    |
+134 |     return HashMap::from([(String::from("commands"), cmds), (String::from("mins"), mins)])
+    |                                                                                    ^^^^ expected `Vec<String>`, found `Vec<i64>`
+    |
+    = note: expected struct `Vec<String>`
+               found struct `Vec<i64>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:134:12
+    |
+115 |     fn readTable(table: &str) -> HashMap<&str, Vec<String>> {
+    |                                  -------------------------- expected `HashMap<&str, Vec<String>>` because of return type
+...
+134 |     return HashMap::from([(String::from("commands"), cmds), (String::from("mins"), mins)])
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<&str, Vec<String>>`, found `HashMap<String, Vec<String>>`
+    |
+    = note: expected struct `HashMap<&str, _>`
+               found struct `HashMap<String, _>`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:171:63
+    |
+171 |     let mut results: Vec<String> = validate(commands.clone(), mins.clone(), words.clone());
+    |                                    --------                   ^^^^^^^^^^^^ expected `Vec<i64>`, found `Vec<String>`
+    |                                    |
+    |                                    arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<i64>`
+               found struct `Vec<String>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:136:8
+    |
+136 |     fn validate(mut commands: Vec<String>, mut mins: Vec<i64>, mut words: Vec<String>) -> Vec<String> {
+    |        ^^^^^^^^                            ------------------
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:41:15
+   |
+41 |     fn fields(mut s: String) -> Vec<String> {
+   |               ----^
+   |               |
+   |               help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:46:13
+   |
+46 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:62:26
+   |
+62 |     fn padRight(s: &str, mut width: i64) -> String {
+   |                          ----^^^^^
+   |                          |
+   |                          help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:83:20
+   |
+83 |     fn parseIntStr(mut str: String) -> i64 {
+   |                    ----^^^
+   |                    |
+   |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:91:9
+   |
+91 |     let mut digits = HashMap::from([(String::from("0"), 0), (String::from("1"), 1), (String::from("2"), 2), (String::from("3"), 3), (Stri...
+   |         ----^^^^^^
+   |         |
+   |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:101:17
+    |
+101 |     fn isDigits(mut s: String) -> bool {
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:107:13
+    |
+107 |         let mut ch: String = { let tmp = &s; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }.clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:136:17
+    |
+136 |     fn validate(mut commands: Vec<String>, mut mins: Vec<i64>, mut words: Vec<String>) -> Vec<String> {
+    |                 ----^^^^^^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:136:44
+    |
+136 |     fn validate(mut commands: Vec<String>, mut mins: Vec<i64>, mut words: Vec<String>) -> Vec<String> {
+    |                                            ----^^^^
+    |                                            |
+    |                                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:136:64
+    |
+136 |     fn validate(mut commands: Vec<String>, mut mins: Vec<i64>, mut words: Vec<String>) -> Vec<String> {
+    |                                                                ----^^^^^
+    |                                                                |
+    |                                                                help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:140:13
+    |
+140 |         let mut w: String = words[wi as usize].clone().clone();
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:142:13
+    |
+142 |         let mut wlen = (w.len() as i64);
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:145:17
+    |
+145 |             let mut cmd: String = commands[ci as usize].clone().clone();
+    |                 ----^^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:147:21
+    |
+147 |                 let mut c: String = (cmd.to_uppercase()).clone();
+    |                     ----^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/abbreviations-simple.rs:148:21
+    |
+148 |                 let mut ww: String = (w.to_uppercase()).clone();
+    |                     ----^^
+    |                     |
+    |                     help: remove this `mut`
+
+error: aborting due to 3 previous errors; 61 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.
