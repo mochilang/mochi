@@ -1577,6 +1577,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					varTypes[idxVar] = "integer"
 					setVarType(idxVar, "integer")
 					mapName := exprToVarRef(idxExpr.Target)
+					varTypes[name] = "array of integer"
+					setVarType(name, "array of integer")
 					idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
 					cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
 					sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
@@ -2857,14 +2859,16 @@ func replaceVar(e Expr, name string, repl Expr) Expr {
 }
 
 func zeroValue(typ string) Expr {
-	switch typ {
-	case "integer":
+	switch {
+	case typ == "integer":
 		return &IntLit{Value: 0}
-	case "string":
+	case typ == "string":
 		return &StringLit{Value: ""}
-	case "BigRat":
+	case typ == "BigRat":
 		currProg.UseBigRat = true
 		return &CallExpr{Name: "_bigrat", Args: []Expr{&IntLit{Value: 0}}}
+	case strings.HasPrefix(typ, "array of"):
+		return &ListLit{}
 	default:
 		for _, r := range currProg.Records {
 			if r.Name == typ {
