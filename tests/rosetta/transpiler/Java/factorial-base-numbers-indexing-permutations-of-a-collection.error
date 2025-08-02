@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenfactorial-base-numbers-indexing-permutations-of-a-collection3166649968/001/Main.java:158: error: incompatible types: Object cannot be converted to int[][]
+        int[][] perms_1 = mapToPerms(factNums);
+                                     ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenfactorial-base-numbers-indexing-permutations-of-a-collection3166649968/001/Main.java:161: error: array required, but Object found
+            System.out.println(String.valueOf(joinInts(factNums[i_5], ".")) + " -> " + String.valueOf(joinInts(perms_1[i_5], "")));
+                                                               ^
+/tmp/TestJavaTranspiler_Rosetta_Goldenfactorial-base-numbers-indexing-permutations-of-a-collection3166649968/001/Main.java:170: error: incompatible types: Object cannot be converted to int[][]
+        perms_1 = mapToPerms(factNums);
+                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

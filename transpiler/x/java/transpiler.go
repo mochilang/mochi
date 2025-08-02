@@ -391,7 +391,13 @@ func mapKeyType(t string) string {
 func emitCastExpr(w io.Writer, e Expr, typ string) {
 	// Cast map lookups to the destination type when needed.
 	if typ == "boolean" {
-		e.emit(w)
+		if inferType(e) == "boolean" {
+			e.emit(w)
+		} else {
+			fmt.Fprint(w, "((Boolean)(")
+			e.emit(w)
+			fmt.Fprint(w, "))")
+		}
 		return
 	}
 	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
@@ -1416,7 +1422,7 @@ type IfStmt struct {
 
 func (s *IfStmt) emit(w io.Writer, indent string) {
 	fmt.Fprint(w, indent+"if (")
-	s.Cond.emit(w)
+	emitCastExpr(w, s.Cond, "boolean")
 	fmt.Fprint(w, ") {\n")
 	for _, st := range s.Then {
 		st.emit(w, indent+"    ")
@@ -1953,28 +1959,13 @@ func (m *MapLit) emit(w io.Writer) {
 		if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
 			valType += ">"
 		}
-	} else if len(m.Values) > 0 {
-		t := inferType(m.Values[0])
-		same := true
-		for _, v := range m.Values[1:] {
-			if inferType(v) != t {
-				same = false
-				break
-			}
-		}
-		if same {
-			valType = javaBoxType(t)
-			if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
-				valType += ">"
-			}
-		}
 	}
 	keyType := "String"
 	if m.KeyType != "" {
 		keyType = javaBoxType(m.KeyType)
 	}
 	if len(m.Keys) > 0 {
-		useEntries := valType != "Object"
+		useEntries := true
 		for _, v := range m.Values {
 			if _, ok := v.(*NullLit); ok {
 				useEntries = false
@@ -1993,7 +1984,9 @@ func (m *MapLit) emit(w io.Writer) {
 				if m.ValueType != "" {
 					emitCastExpr(w, m.Values[i], m.ValueType)
 				} else {
+					fmt.Fprint(w, "(Object)(")
 					m.Values[i].emit(w)
+					fmt.Fprint(w, ")")
 				}
 				fmt.Fprint(w, ")")
 			}
@@ -3887,6 +3880,9 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 					l.ElemType = strings.TrimSuffix(t, "[]")
 				}
 			}
+			if ix, ok := e.(*IndexExpr); ok && t != "" {
+				ix.ResultType = t
+			}
 			vs := &VarStmt{Name: alias, Type: t, Expr: e}
 			varDecls[alias] = vs
 			scopeStack[len(scopeStack)-1][alias] = vs
@@ -4894,7 +4890,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if strings.HasPrefix(t, "fn") {
 				method := "apply"
 				if strings.HasSuffix(t, ":void") {
-					method = "accept"
+					if strings.HasPrefix(t, "fn():") {
+						method = "run"
+					} else {
+						method = "accept"
+					}
 				}
 				return &MethodCallExpr{Target: &VarExpr{Name: aliasName}, Name: method, Args: args}, nil
 			}
