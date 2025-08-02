@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 05:09 UTC
+Last updated: 2025-08-02 07:01 UTC
 
 ## Checklist (481/491)
 | Index | Name | Status | Duration | Memory |
@@ -306,7 +306,7 @@ Last updated: 2025-08-02 05:09 UTC
 | 297 | dice-game-probabilities-1 | ✓ | 141.908ms | 74.3 KB |
 | 298 | dice-game-probabilities-2 | ✓ | 7.141ms | 9.3 KB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 10.32ms | 261.3 KB |
-| 300 | dijkstras-algorithm | ✓ | 71µs | 15.6 KB |
+| 300 | dijkstras-algorithm | ✓ | 100µs | 15.6 KB |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ | 61µs | 10.5 KB |
 | 302 | dining-philosophers-1 | ✓ | 48µs | 14.8 KB |
 | 303 | dining-philosophers-2 | ✓ | 51µs | 14.8 KB |
