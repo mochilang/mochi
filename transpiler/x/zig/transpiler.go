@@ -590,17 +590,17 @@ func (qc *QueryComp) emit(w io.Writer) {
 		io.WriteString(w, "var start: usize = 0;\n")
 		if qc.Skip != nil {
 			writeIndent(w, 1)
-			io.WriteString(w, "start = @intCast(usize, ")
+			io.WriteString(w, "start = @as(usize, @intCast(")
 			qc.Skip.emit(w)
-			io.WriteString(w, ");\n")
+			io.WriteString(w, "));\n")
 		}
 		writeIndent(w, 1)
 		io.WriteString(w, "var end: usize = tmp.len;\n")
 		if qc.Take != nil {
 			writeIndent(w, 1)
-			io.WriteString(w, "end = @min(tmp.len, start + @intCast(usize, ")
+			io.WriteString(w, "end = @min(tmp.len, start + @as(usize, @intCast(")
 			qc.Take.emit(w)
-			io.WriteString(w, "));\n")
+			io.WriteString(w, "))));\n")
 		}
 		writeIndent(w, 1)
 		io.WriteString(w, "tmp = tmp[start..end];\n")
@@ -1184,7 +1184,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("            } else |_| {}\n")
 		buf.WriteString("        } else |_| {}\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    return @intCast(i64, std.time.nanoTimestamp());\n")
+		buf.WriteString("    return @as(i64, @intCast(std.time.nanoTimestamp()));\n")
 		buf.WriteString("}\n")
 	}
 	if useStr {
@@ -1756,16 +1756,16 @@ func (i *IndexExpr) emit(w io.Writer) {
 	t := zigTypeFromExpr(i.Target)
 	if t == "[]const u8" {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(usize, ")
+		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ")..@intCast(usize, ")
+		io.WriteString(w, ")..@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ") + 1]")
+		io.WriteString(w, ")) + 1]")
 	} else {
 		i.Target.emit(w)
-		io.WriteString(w, "[@intCast(usize, ")
+		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)
-		io.WriteString(w, ")]")
+		io.WriteString(w, "))]")
 	}
 }
 
@@ -1773,11 +1773,15 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
 	if sli.Start != nil {
+		io.WriteString(w, "@as(usize, @intCast(")
 		sli.Start.emit(w)
+		io.WriteString(w, "))")
 	}
 	io.WriteString(w, "..")
 	if sli.End != nil {
+		io.WriteString(w, "@as(usize, @intCast(")
 		sli.End.emit(w)
+		io.WriteString(w, "))")
 	}
 	io.WriteString(w, "]")
 }
@@ -1912,7 +1916,7 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, tmp)
 			io.WriteString(w, "| {\n")
 			writeIndent(w, indent+1)
-			fmt.Fprintf(w, "const %s: i64 = @intCast(%s);\n", f.Name, tmp)
+			fmt.Fprintf(w, "const %s: i64 = @as(i64, @intCast(%s));\n", f.Name, tmp)
 		} else {
 			io.WriteString(w, "_|")
 			io.WriteString(w, " {\n")
@@ -1957,7 +1961,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __duration_us = @divTrunc(@intCast(i64, __end - __start), 1000);\n")
+	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
 	io.WriteString(w, "const __memory_bytes = _mem();\n")
 	writeIndent(w, indent)
@@ -1992,7 +1996,7 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "len", "count":
 		if len(c.Args) > 0 {
-			io.WriteString(w, "@intCast(i64, ")
+			io.WriteString(w, "@as(i64, @intCast(")
 			if s, ok := c.Args[0].(*StringLit); ok {
 				fmt.Fprintf(w, "%q.len", s.Value)
 			} else if l, ok := c.Args[0].(*ListLit); ok {
@@ -2017,7 +2021,7 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[0].emit(w)
 				io.WriteString(w, ".len")
 			}
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		} else {
 			io.WriteString(w, "0")
 		}
