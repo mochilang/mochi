@@ -764,12 +764,17 @@ func (i *IndexExpr) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "(if ")
 		i.Target.emit(w)
-		io.WriteString(w, " (list-ref ")
+		io.WriteString(w, " (if (hash? ")
+		i.Target.emit(w)
+		io.WriteString(w, ") (hash-ref ")
+		i.Target.emit(w)
+		io.WriteString(w, " ")
+		i.Index.emit(w)
+		io.WriteString(w, " #f) (list-ref ")
 		i.Target.emit(w)
 		io.WriteString(w, " (int ")
 		i.Index.emit(w)
-		io.WriteString(w, ")")
-		io.WriteString(w, ") #f)")
+		io.WriteString(w, "))) #f)")
 	}
 }
 
