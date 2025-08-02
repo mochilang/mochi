@@ -1,4 +1,100 @@
-## Progress (2025-08-01 19:23 UTC)
+## Progress (2025-08-02 14:21 +0700)
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
+- scala: cast map lookups and handle length of Any (56d6eb3ab9)
+
 - transpiler/java: support os env (78a5bd41d4)
 
 - transpiler/java: support os env (78a5bd41d4)

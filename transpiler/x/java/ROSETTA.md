@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 12:12 GMT+7
+Last updated: 2025-08-02 14:39 GMT+7
 
-## Rosetta Checklist (354/491)
+## Rosetta Checklist (374/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -379,28 +379,28 @@ Last updated: 2025-08-02 12:12 GMT+7
 | 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
 | 372 | exceptions |   |  |  |
 | 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
+| 374 | execute-a-markov-algorithm | ✓ | 81.0ms | 98.12KB |
 | 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
+| 376 | execute-brain- | ✓ | 42.0ms | 51.77KB |
+| 377 | execute-computer-zero-1 | ✓ | 56.0ms | 57.01KB |
+| 378 | execute-computer-zero | ✓ | 20.0ms | 664B |
+| 379 | execute-hq9+ | ✓ | 40.0ms | 5.88KB |
+| 380 | execute-snusp | ✓ | 19.0ms | 504B |
+| 381 | exponentiation-operator-2 | ✓ | 59.0ms | 109.64KB |
+| 382 | exponentiation-operator | ✓ | 56.0ms | 107.60KB |
+| 383 | exponentiation-order | ✓ | 30.0ms | 37.88KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 66.0ms | 118.62KB |
+| 385 | extend-your-language | ✓ | 34.0ms | 42.62KB |
+| 386 | extensible-prime-generator | ✓ | 377.0ms | 95.33KB |
+| 387 | extreme-floating-point-values | ✓ | 58.0ms | 90.22KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 63.0ms | 108.28KB |
+| 389 | faces-from-a-mesh | ✓ | 74.0ms | 108.91KB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
+| 391 | factorial-primes | ✓ | 56.0ms | 87.61KB |
+| 392 | factorial | ✓ | 59.0ms | 95.24KB |
+| 393 | factorions | ✓ | 282.0ms | 101.88KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 2.48s | 69.59KB |
+| 395 | factors-of-an-integer | ✓ | 51.0ms | 91.18KB |
 | 396 | fairshare-between-two-and-more |   |  |  |
 | 397 | farey-sequence |   |  |  |
 | 398 | fast-fourier-transform |   |  |  |
