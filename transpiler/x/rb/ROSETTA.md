@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 09:13 UTC
+Last updated: 2025-08-02 09:35 UTC
 
-## Checklist (482/491)
+## Checklist (483/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -132,16 +132,16 @@ Last updated: 2025-08-02 09:13 UTC
 | 123 | bitmap-read-a-ppm-file | ✓ | 406µs | 171.0 KB |
 | 124 | bitmap-read-an-image-through-a-pipe | ✓ | 64µs | 31.1 KB |
 | 125 | bitmap-write-a-ppm-file | ✓ | 117µs | 35.1 KB |
-| 126 | bitmap | ✓ | 90.471ms | 3.6 MB |
-| 127 | bitwise-io-1 | ✓ | 105µs | 14.1 KB |
-| 128 | bitwise-io-2 | ✓ | 415µs | 74.8 KB |
-| 129 | bitwise-operations | ✓ | 101µs | 27.9 KB |
-| 130 | blum-integer | ✓ | 274µs | 46.7 KB |
-| 131 | boolean-values | ✓ | 32µs | 10.6 KB |
-| 132 | box-the-compass | ✓ | 191µs | 60.5 KB |
-| 133 | boyer-moore-string-search | ✓ | 122µs | 39.9 KB |
-| 134 | brazilian-numbers | ✓ | 2m22.978749s | 52.9 KB |
-| 135 | break-oo-privacy | ✓ | 66µs | 12.6 KB |
+| 126 | bitmap | ✓ | 183.944ms | 3.6 MB |
+| 127 | bitwise-io-1 | ✓ | 132µs | 14.1 KB |
+| 128 | bitwise-io-2 | ✓ | 656µs | 74.8 KB |
+| 129 | bitwise-operations | ✓ | 141µs | 27.9 KB |
+| 130 | blum-integer | ✓ | 366µs | 46.7 KB |
+| 131 | boolean-values | ✓ | 86µs | 10.6 KB |
+| 132 | box-the-compass | ✓ | 329µs | 60.5 KB |
+| 133 | boyer-moore-string-search | ✓ | 180µs | 39.9 KB |
+| 134 | brazilian-numbers | ✓ | 2m15.373447s | 52.9 KB |
+| 135 | break-oo-privacy | ✓ | 114µs | 12.6 KB |
 | 136 | brilliant-numbers | ✓ |  |  |
 | 137 | brownian-tree | ✓ |  |  |
 | 138 | bulls-and-cows-player | ✓ | 14.329ms | 22.7 MB |
@@ -174,7 +174,7 @@ Last updated: 2025-08-02 09:13 UTC
 | 165 | camel-case-and-snake-case | ✓ | 491µs | 204.0 KB |
 | 166 | canny-edge-detector | ✓ | 266µs | 29.7 KB |
 | 167 | canonicalize-cidr | ✓ | 667µs | 211.2 KB |
-| 168 | cantor-set |   |  |  |
+| 168 | cantor-set | ✓ | 19m23.158019s | 195.7 KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 4.524ms | 88.3 KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 39µs | 15.6 KB |
 | 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 180µs | 57.8 KB |
