@@ -4,7 +4,7 @@ Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `
 
 Transpiled programs: 484/491
 
-Last updated: 2025-08-02 01:52 GMT+7
+Last updated: 2025-08-02 17:26 GMT+7
 
 Checklist:
 
@@ -45,36 +45,36 @@ Checklist:
 | 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 255µs | 168 B |
 | 34 | additive-primes | ✓ | 568.6ms | 2.9 KB |
 | 35 | address-of-a-variable | ✓ | 568.6ms |  |
-| 36 | adfgvx-cipher | ✓ |  | 1.3 KB |
-| 37 | aks-test-for-primes | ✓ | 568.6ms | 2.9 KB |
-| 38 | algebraic-data-types | ✓ | 568.6ms | 8.3 KB |
-| 39 | align-columns | ✓ | 568.6ms | 5.0 KB |
-| 40 | aliquot-sequence-classifications | ✓ | 568.6ms | 1.2 KB |
-| 41 | almkvist-giullera-formula-for-pi | ✓ | 568.6ms | 40.4 KB |
-| 42 | almost-prime | ✓ | 568.6ms | 944 B |
-| 43 | amb | ✓ | 568.6ms | 1.2 KB |
-| 44 | amicable-pairs | ✓ | 568.6ms | 321.7 KB |
-| 45 | anagrams-deranged-anagrams | ✓ | 568.6ms | 952 B |
-| 46 | anagrams | ✓ | 568.6ms | 952 B |
-| 47 | angle-difference-between-two-bearings-1 | ✓ | 568.6ms | 1.5 KB |
-| 48 | angle-difference-between-two-bearings-2 | ✓ | 568.6ms | 1.9 KB |
-| 49 | angles-geometric-normalization-and-conversion | ✓ | 337µs | 3.4 KB |
-| 50 | animate-a-pendulum | ✓ | 46µs | 2.8 KB |
-| 51 | animation | ✓ | 657µs | 2.1 KB |
-| 52 | anonymous-recursion-1 | ✓ | 54µs | 2.8 KB |
-| 53 | anonymous-recursion-2 | ✓ | 118µs | 2.8 KB |
-| 54 | anonymous-recursion | ✓ | 94µs | 3.3 KB |
-| 55 | anti-primes | ✓ | 206.419ms | 2.9 KB |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 30µs | 880 B |
-| 57 | apply-a-callback-to-an-array-1 | ✓ | 45µs | 704 B |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 49µs | 952 B |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 104µs | 3.9 KB |
-| 60 | approximate-equality | ✓ | 76µs | 2.9 KB |
-| 61 | arbitrary-precision-integers-included- | ✓ | 37µs | 828 B |
-| 62 | archimedean-spiral | ✓ | 5.434ms | 2.1 KB |
-| 63 | arena-storage-pool | ✓ | 49µs | 984 B |
-| 64 | arithmetic-complex | ✓ | 87µs | 3.1 KB |
-| 65 | arithmetic-derivative | ✓ | 1.175ms | 5.1 KB |
+| 36 | adfgvx-cipher | ✓ | 554µs | 1.3 KB |
+| 37 | aks-test-for-primes | ✓ | 194µs | 2.9 KB |
+| 38 | algebraic-data-types | ✓ | 198µs | 8.3 KB |
+| 39 | align-columns | ✓ | 445µs | 5.0 KB |
+| 40 | aliquot-sequence-classifications | ✓ | 127.829ms | 1.2 KB |
+| 41 | almkvist-giullera-formula-for-pi | ✓ | 3.743039s | 40.4 KB |
+| 42 | almost-prime | ✓ | 417µs | 944 B |
+| 43 | amb | ✓ | 59µs | 1.2 KB |
+| 44 | amicable-pairs | ✓ | 3.147877s | 321.7 KB |
+| 45 | anagrams-deranged-anagrams | ✓ | 155µs | 952 B |
+| 46 | anagrams | ✓ | 554µs | 952 B |
+| 47 | angle-difference-between-two-bearings-1 | ✓ | 69µs | 1.5 KB |
+| 48 | angle-difference-between-two-bearings-2 | ✓ | 92µs | 1.9 KB |
+| 49 | angles-geometric-normalization-and-conversion | ✓ | 419µs | 3.4 KB |
+| 50 | animate-a-pendulum | ✓ | 137µs | 2.7 KB |
+| 51 | animation | ✓ | 967µs | 2.1 KB |
+| 52 | anonymous-recursion-1 | ✓ | 119µs | 2.8 KB |
+| 53 | anonymous-recursion-2 | ✓ | 162µs | 2.8 KB |
+| 54 | anonymous-recursion | ✓ | 139µs | 3.3 KB |
+| 55 | anti-primes | ✓ | 209.834ms | 2.9 KB |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 31µs | 880 B |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 80µs | 640 B |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 73µs | 952 B |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 168µs | 3.9 KB |
+| 60 | approximate-equality | ✓ | 144µs | 2.9 KB |
+| 61 | arbitrary-precision-integers-included- | ✓ | 129µs | 828 B |
+| 62 | archimedean-spiral | ✓ | 5.599ms | 2.1 KB |
+| 63 | arena-storage-pool | ✓ | 79µs | 984 B |
+| 64 | arithmetic-complex | ✓ | 113µs | 3.1 KB |
+| 65 | arithmetic-derivative | ✓ | 1.331ms | 5.1 KB |
 | 66 | arithmetic-evaluation | ✓ | 100µs | 1.9 KB |
 | 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 36µs | 272 B |
 | 68 | arithmetic-geometric-mean | ✓ | 44µs | 272 B |
