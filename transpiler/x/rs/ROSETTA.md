@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-02 14:05 UTC
+Last updated: 2025-08-02 15:05 UTC
 
 ## Rosetta Golden Test Checklist (211/491)
 | Index | Name | Status | Duration | Memory |
@@ -77,7 +77,7 @@ Last updated: 2025-08-02 14:05 UTC
 | 68 | arithmetic-geometric-mean | ✓ | 21µs |  |
 | 69 | arithmetic-integer-1 | ✓ | 35µs |  |
 | 70 | arithmetic-integer-2 | ✓ | 58µs |  |
-| 71 | arithmetic-numbers | ✓ |  |  |
+| 71 | arithmetic-numbers |   |  |  |
 | 72 | arithmetic-rational | ✓ | 67µs |  |
 | 73 | array-concatenation |   |  |  |
 | 74 | array-length | ✓ | 38µs |  |
@@ -87,7 +87,7 @@ Last updated: 2025-08-02 14:05 UTC
 | 78 | assertions | ✓ | 23µs |  |
 | 79 | associative-array-creation | ✓ | 46µs |  |
 | 80 | associative-array-iteration | ✓ | 101µs |  |
-| 81 | associative-array-merging |   |  |  |
+| 81 | associative-array-merging | ✓ | 47µs |  |
 | 82 | atomic-updates |   |  |  |
 | 83 | attractive-numbers |   |  |  |
 | 84 | average-loop-length |   |  |  |
