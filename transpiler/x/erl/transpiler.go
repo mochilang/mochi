@@ -3121,16 +3121,19 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if err != nil {
 				return nil, err
 			}
-			if len(ctx.mutated) == 1 && isZeroExpr(val) {
+			if len(ctx.mutated) == 1 {
 				for n := range ctx.mutated {
-					val = &NameRef{Name: ctx.current(n)}
+					alias := ctx.current(n)
+					val = &TupleExpr{A: val, B: &NameRef{Name: alias}}
 				}
 			}
 			return []Stmt{&ReturnStmt{Expr: val}}, nil
 		}
 		if len(ctx.mutated) == 1 {
 			for n := range ctx.mutated {
-				return []Stmt{&ReturnStmt{Expr: &NameRef{Name: ctx.current(n)}}}, nil
+				alias := ctx.current(n)
+				tup := &TupleExpr{A: &AtomLit{Name: "nil"}, B: &NameRef{Name: alias}}
+				return []Stmt{&ReturnStmt{Expr: tup}}, nil
 			}
 		}
 		return []Stmt{&ReturnStmt{}}, nil
@@ -4008,18 +4011,7 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 			mname = n
 		}
 		alias := fctx.alias[mname]
-		if isZeroExpr(ret) {
-			ret = &NameRef{Name: alias}
-		} else if nr, ok := ret.(*NameRef); ok && nr.Name == alias {
-			// already returning mutated variable
-		} else {
-			ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
-		}
-		for _, st := range stmts {
-			if rs, ok := st.(*ReturnStmt); ok && isZeroExpr(rs.Expr) {
-				rs.Expr = &NameRef{Name: alias}
-			}
-		}
+		ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
 		for idx, p := range fn.Params {
 			if p.Name == mname {
 				mutatedFuncs[fn.Name] = idx
