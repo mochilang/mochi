@@ -1370,7 +1370,10 @@ func fieldName(n string) string {
 	case "nil", "true", "false":
 		return name
 	default:
-		return safeName(name)
+		if reserved[name] || builtinConsts[name] {
+			return name + "_"
+		}
+		return name
 	}
 }
 
@@ -2187,6 +2190,20 @@ func (m *MethodRefExpr) emit(e *emitter) {
 }
 
 func (m *MethodCallExpr) emit(e *emitter) {
+	if fe, ok := m.Target.(*FieldExpr); ok && m.Method == "call" && fe.Name != "" && unicode.IsUpper(rune(fe.Name[0])) {
+		fe.Target.emit(e)
+		io.WriteString(e.w, ".")
+		io.WriteString(e.w, fe.Name)
+		io.WriteString(e.w, "(")
+		for i, a := range m.Args {
+			if i > 0 {
+				io.WriteString(e.w, ", ")
+			}
+			a.emit(e)
+		}
+		io.WriteString(e.w, ")")
+		return
+	}
 	if m.Method == "padStart" && len(m.Args) == 2 {
 		io.WriteString(e.w, "_padStart(")
 		m.Target.emit(e)
@@ -2481,9 +2498,13 @@ func fieldAccess(expr Expr, t types.Type, name string) (Expr, types.Type) {
 			}
 		}
 	}
-	// When type information is unavailable assume map style access
-	// using the raw field name. This avoids issues with reserved
-	// words when the value is actually a map encoded as a struct.
+	// When type information is unavailable assume map style access.
+	// If the field name starts with an uppercase letter, treat it as
+	// a method/constant reference instead of map indexing so that
+	// calls like `pkg.Name()` preserve the original casing.
+	if name != "" && unicode.IsUpper(rune(name[0])) {
+		return &FieldExpr{Target: expr, Name: fieldName(name)}, nil
+	}
 	return &IndexExpr{Target: expr, Index: &StringLit{Value: fieldName(name)}}, nil
 }
 
@@ -3849,6 +3870,13 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 				args[j] = ex
+			}
+			if f, ok := expr.(*FieldExpr); ok {
+				if _, ok := curType.(types.FuncType); ok || (f.Name != "" && unicode.IsUpper(rune(f.Name[0]))) {
+					expr = &MethodCallExpr{Target: f.Target, Method: f.Name, Args: args}
+					curType = nil
+					continue
+				}
 			}
 			expr = &MethodCallExpr{Target: expr, Method: "call", Args: args}
 			curType = nil

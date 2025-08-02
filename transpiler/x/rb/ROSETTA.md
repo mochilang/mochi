@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 07:53 UTC
+Last updated: 2025-08-02 08:46 UTC
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -468,33 +468,33 @@ Last updated: 2025-08-02 07:53 UTC
 | 459 | four-bit-adder-1 | ✓ | 99µs | 15.4 KB |
 | 460 | four-is-magic | ✓ | 145µs | 53.8 KB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree | ✓ |  |  |
-| 463 | fractran | ✓ |  |  |
-| 464 | french-republican-calendar | ✓ |  |  |
-| 465 | ftp | ✓ | 80µs | 14.3 KB |
-| 466 | function-frequency | ✓ |  |  |
-| 467 | function-prototype | ✓ |  |  |
-| 468 | functional-coverage-tree | ✓ |  |  |
-| 469 | fusc-sequence | ✓ |  |  |
-| 470 | gamma-function | ✓ | 253µs | 12.2 KB |
-| 471 | general-fizzbuzz | ✓ | 45µs | 11.6 KB |
-| 472 | generic-swap | ✓ | 41µs | 9.5 KB |
-| 473 | get-system-command-output | ✓ | 31µs | 8.8 KB |
-| 474 | giuga-numbers | ✓ | 61µs | 12.0 KB |
-| 475 | globally-replace-text-in-several-files | ✓ | 31µs | 8.9 KB |
-| 476 | goldbachs-comet | ✓ | 14.471ms | 3.9 MB |
-| 477 | golden-ratio-convergence | ✓ | 55µs | 10.1 KB |
-| 478 | graph-colouring | ✓ | 36µs | 8.8 KB |
-| 479 | gray-code | ✓ | 433µs | 70.5 KB |
-| 480 | gui-component-interaction | ✓ | 90µs | 21.4 KB |
-| 481 | gui-enabling-disabling-of-controls | ✓ | 192µs | 33.2 KB |
-| 482 | gui-maximum-window-dimensions | ✓ | 75µs | 13.0 KB |
-| 483 | http | ✓ | 133.07ms | 409.9 KB |
-| 484 | image-noise | ✓ | 115.461ms | 2.2 MB |
-| 485 | loops-increment-loop-index-within-loop-body | ✓ | 2.094468s | 82.1 KB |
-| 486 | md5 | ✓ | 3.818ms | 73.3 KB |
-| 487 | nim-game | ✓ | 64µs | 22.5 KB |
-| 488 | plasma-effect | ✓ | 243.777ms | 86.6 KB |
-| 489 | sorting-algorithms-bubble-sort | ✓ | 76µs | 10.4 KB |
-| 490 | window-management | ✓ | 106µs | 26.6 KB |
-| 491 | zumkeller-numbers | ✓ | 50.183716s | 477.5 KB |
+| 462 | fractal-tree | ✓ | 7.138ms | 2.1 MB |
+| 463 | fractran | ✓ | 9.169676s | 188.7 KB |
+| 464 | french-republican-calendar | ✓ | 50µs | 12.3 KB |
+| 465 | ftp | ✓ | 89µs | 14.3 KB |
+| 466 | function-frequency | ✓ | 2.284ms | 18.8 KB |
+| 467 | function-prototype | ✓ | 4µs | 600 B |
+| 468 | functional-coverage-tree | ✓ | 490µs | 97.3 KB |
+| 469 | fusc-sequence | ✓ | 154µs | 45.6 KB |
+| 470 | gamma-function | ✓ | 235µs | 12.2 KB |
+| 471 | general-fizzbuzz | ✓ | 49µs | 11.6 KB |
+| 472 | generic-swap | ✓ | 29µs | 9.5 KB |
+| 473 | get-system-command-output | ✓ | 15µs | 8.8 KB |
+| 474 | giuga-numbers | ✓ | 47µs | 12.0 KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 19µs | 8.9 KB |
+| 476 | goldbachs-comet | ✓ | 15.281ms | 3.9 MB |
+| 477 | golden-ratio-convergence | ✓ | 57µs | 10.1 KB |
+| 478 | graph-colouring | ✓ | 17µs | 8.8 KB |
+| 479 | gray-code | ✓ | 386µs | 70.5 KB |
+| 480 | gui-component-interaction | ✓ | 80µs | 21.4 KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 134µs | 33.2 KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 123µs | 13.0 KB |
+| 483 | http | ✓ | 260.296ms | 408.9 KB |
+| 484 | image-noise | ✓ | 109.103ms | 2.3 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 1.915835s | 82.1 KB |
+| 486 | md5 | ✓ | 2.645ms | 73.3 KB |
+| 487 | nim-game | ✓ | 68µs | 22.5 KB |
+| 488 | plasma-effect | ✓ | 219.299ms | 86.7 KB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 51µs | 10.4 KB |
+| 490 | window-management | ✓ | 111µs | 26.6 KB |
+| 491 | zumkeller-numbers | ✓ | 50.226245s | 601.2 KB |
