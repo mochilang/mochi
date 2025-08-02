@@ -1,5 +1,12 @@
 import java.math.BigInteger
 
+fun _len(v: Any?): Int = when (v) {
+    is String -> v.length
+    is Collection<*> -> v.size
+    is Map<*, *> -> v.size
+    else -> v.toString().length
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -64,9 +71,9 @@ fun unpackSym(m: MutableMap<String, Any?>): MutableList<MutableList<Double>> {
     r = 0
     while ((r).toInt() < (n as Number).toDouble()) {
         var c: BigInteger = (r + 1).toBigInteger()
-        while (c.compareTo(n.toBigInteger()) < 0) {
-            ((mat[r]!!)[(c).toInt()]) = ((mat[(c).toInt()]!!) as MutableList<Double>)[r]!!
-            c = c.add(1.toBigInteger())
+        while (c.compareTo((n as Int).toBigInteger()) < 0) {
+            (mat[r]!!)[(c).toInt()] = ((mat[(c).toInt()]!!) as MutableList<Double>)[r]!!
+            c = c.add((1).toBigInteger())
         }
         r = r + 1
     }
@@ -123,7 +130,7 @@ fun choleskyLower(a: MutableMap<String, Any?>): MutableMap<String, Any?> {
     var ae: Any? = (a)["ele"] as Any?
     var le: MutableList<Double> = mutableListOf<Double>()
     var idx: Int = 0
-    while (idx < ae.toString().length) {
+    while (idx < _len(ae)) {
         le = run { val _tmp = le.toMutableList(); _tmp.add(0.0); _tmp } as MutableList<Double>
         idx = idx + 1
     }
@@ -132,24 +139,24 @@ fun choleskyLower(a: MutableMap<String, Any?>): MutableMap<String, Any?> {
     var dr: Int = 0
     var dc: Int = 0
     var i: Int = 0
-    while (i < ae.toString().length) {
+    while (i < _len(ae)) {
         var e = (ae as MutableList<Any?>)[i]
         if (i < dr) {
             var d: Double = ((e as Number).toDouble() - le[i]!!) / le[dc]!!
-            (le[i]) = d
+            le[i] = d
             var ci: Int = col
             var cx: Int = dc
             var j: BigInteger = (i + 1).toBigInteger()
-            while (j.compareTo(dr.toBigInteger()) <= 0) {
+            while (j.compareTo((dr).toBigInteger()) <= 0) {
                 cx = cx + ci
                 ci = ci + 1
-                (le[(j).toInt()]) = le[(j).toInt()]!! + (d * le[cx]!!)
-                j = j.add(1.toBigInteger())
+                le[(j).toInt()] = le[(j).toInt()]!! + (d * le[cx]!!)
+                j = j.add((1).toBigInteger())
             }
             col = col + 1
             dc = dc + col
         } else {
-            (le[i]) = sqrtApprox((e as Number).toDouble() - le[i]!!)
+            le[i] = sqrtApprox((e as Number).toDouble() - le[i]!!)
             row = row + 1
             dr = dr + row
             col = 1

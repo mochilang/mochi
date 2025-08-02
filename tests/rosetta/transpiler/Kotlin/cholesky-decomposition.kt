@@ -59,9 +59,9 @@ fun cholesky(a: MutableList<MutableList<Double>>): MutableList<MutableList<Doubl
                 k = k + 1
             }
             if (i == j) {
-                ((l[i]!!)[j]) = sqrtApprox(sum)
+                (l[i]!!)[j] = sqrtApprox(sum)
             } else {
-                ((l[i]!!)[j]) = sum / ((l[j]!!) as MutableList<Double>)[j]!!
+                (l[i]!!)[j] = sum / ((l[j]!!) as MutableList<Double>)[j]!!
             }
             j = j + 1
         }
