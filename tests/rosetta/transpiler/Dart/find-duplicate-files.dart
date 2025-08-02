@@ -36,13 +36,26 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+List<List<String>> findDuplicates(Map<String, String> fs, List<String> paths) {
+  Map<String, String> seen = <String, String>{};
+  List<List<String>> dups = <List<String>>[];
+  for (String path in paths) {
+    String content = fs[path]!;
+    if (seen.containsKey(content)) {
+    dups = [...dups, [seen[content]!, path]];
+  } else {
+    seen[content] = path;
   }
-    n = n + 1;
+  }
+  return dups;
+}
+
+void _main() {
+  Map<String, String> fs = {"a.txt": "hello", "b.txt": "world", "c.txt": "hello", "d.txt": "foo", "e.txt": "world"};
+  List<String> paths = ["a.txt", "b.txt", "c.txt", "d.txt", "e.txt"];
+  List<List<String>> dups = findDuplicates(fs, paths);
+  for (List<String> pair in dups) {
+    print(pair[0] + " <==> " + pair[1]);
   }
 }
 

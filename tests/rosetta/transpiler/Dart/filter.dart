@@ -36,14 +36,72 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+List<int> randPerm(int n) {
+  List<int> arr = <int>[];
+  int i = 0;
+  while (i < n) {
+    arr = [...arr, i];
+    i = i + 1;
+  }
+  int idx = n - 1;
+  while (idx > 0) {
+    int j = _now() % (idx + 1);
+    int tmp = arr[idx];
+    arr[idx] = arr[j];
+    arr[j] = tmp;
+    idx = idx - 1;
+  }
+  return arr;
+}
+
+List<int> even(List<int> xs) {
+  List<int> r = <int>[];
+  for (int x in xs) {
+    if (x % 2 == 0) {
+    r = [...r, x];
+  }
+  }
+  return r;
+}
+
+List<int> reduceToEven(List<int> xs) {
+  List<int> arr = xs;
+  int last = 0;
+  int i = 0;
+  while (i < arr.length) {
+    int e = arr[i];
+    if (e % 2 == 0) {
+    arr[last] = e;
+    last = last + 1;
+  }
+    i = i + 1;
+  }
+  return arr.sublist(0, last);
+}
+
+String listStr(List<int> xs) {
+  String s = "[";
+  int i = 0;
+  while (i < xs.length) {
+    s = s + (xs[i]).toString();
+    if (i + 1 < xs.length) {
+    s = s + " ";
+  }
+    i = i + 1;
+  }
+  s = s + "]";
+  return s;
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  List<int> a = randPerm(20);
+  int cap_a = 20;
+  print(listStr(a));
+  print(listStr(even(a)));
+  print(listStr(a));
+  a = reduceToEven(a);
+  print(listStr(a));
+  print("a len: " + (a.length).toString() + " cap: " + (cap_a).toString());
 }
 
 void _start() {

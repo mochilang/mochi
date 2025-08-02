@@ -36,14 +36,19 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+void printSize(Map<String, int> fs, String path) {
+  if (fs.containsKey(path)) {
+    print((fs[path]).toString());
+  } else {
+    print("stat " + path + ": no such file or directory");
+  }
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  Map<String, int> fs = <String, int>{};
+  fs["input.txt"] = 123;
+  printSize(fs, "input.txt");
+  printSize(fs, "/input.txt");
 }
 
 void _start() {

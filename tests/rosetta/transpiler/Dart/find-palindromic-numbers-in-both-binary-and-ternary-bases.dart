@@ -22,16 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, int start, int end) {
+String _substr(String s, num start, num end) {
   var n = s.length;
-  if (start < 0) start += n;
-  if (end < 0) end += n;
-  if (start < 0) start = 0;
-  if (start > n) start = n;
-  if (end < 0) end = 0;
-  if (end > n) end = n;
-  if (start > end) start = end;
-  return s.substring(start, end);
+  int s0 = start.toInt();
+  int e0 = end.toInt();
+  if (s0 < 0) s0 += n;
+  if (e0 < 0) e0 += n;
+  if (s0 < 0) s0 = 0;
+  if (s0 > n) s0 = n;
+  if (e0 < 0) e0 = 0;
+  if (e0 > n) e0 = n;
+  if (s0 > e0) s0 = e0;
+  return s.substring(s0, e0);
 }
 
 String toBase(int n, int b) {

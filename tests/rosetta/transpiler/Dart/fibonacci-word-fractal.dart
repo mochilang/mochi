@@ -36,14 +36,22 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String fibonacciWord(int n) {
+  String a = "1";
+  String b = "0";
+  int i = 1;
+  while (i < n) {
+    String tmp = b;
+    b = b + a;
+    a = tmp;
+    i = i + 1;
+  }
+  return a;
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  String wf = fibonacciWord(23);
+  print((wf.length).toString());
 }
 
 void _start() {

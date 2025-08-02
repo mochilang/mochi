@@ -36,14 +36,14 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+Map<String, int> fs = {"input.txt": 0};
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  int old = fs["input.txt"]!;
+  print("mod time was: " + (old).toString());
+  int mtime = _now();
+  mtime = _now();
+  fs["input.txt"] = mtime as int;
+  print("mod time now: " + (mtime).toString());
 }
 
 void _start() {

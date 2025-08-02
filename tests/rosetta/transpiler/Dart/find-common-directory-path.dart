@@ -36,13 +36,71 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+List<String> splitPath(String p) {
+  List<String> parts = <String>[];
+  String cur = "";
+  int i = 0;
+  while (i < p.length) {
+    if (_substr(p, i, i + 1) == "/") {
+    if (cur != "") {
+    parts = [...parts, cur];
+    cur = "";
+  };
+  } else {
+    cur = cur + _substr(p, i, i + 1);
   }
-    n = n + 1;
+    i = i + 1;
+  }
+  if (cur != "") {
+    parts = [...parts, cur];
+  }
+  return parts;
+}
+
+String joinPath(List<String> parts) {
+  String s = "";
+  int i = 0;
+  while (i < parts.length) {
+    s = s + "/" + parts[i];
+    i = i + 1;
+  }
+  return s;
+}
+
+String commonPrefix(List<String> paths) {
+  if (paths.length == 0) {
+    return "";
+  }
+  List<String> base = splitPath(paths[0]);
+  int i = 0;
+  List<String> prefix = <String>[];
+  while (i < base.length) {
+    String comp = base[i];
+    bool ok = true;
+    for (String p in paths) {
+    List<String> parts = splitPath(p);
+    if (i >= parts.length || parts[i] != comp) {
+    ok = false;
+    break;
+  }
+  }
+    if (ok) {
+    prefix = [...prefix, comp];
+  } else {
+    break;
+  }
+    i = i + 1;
+  }
+  return joinPath(prefix);
+}
+
+void _main() {
+  List<String> paths = ["/home/user1/tmp/coverage/test", "/home/user1/tmp/covert/operator", "/home/user1/tmp/coven/members", "/home//user1/tmp/coventry", "/home/user1/././tmp/covertly/foo", "/home/bob/../user1/tmp/coved/bar"];
+  String c = commonPrefix(paths);
+  if (c == "") {
+    print("No common path");
+  } else {
+    print("Common path: " + c);
   }
 }
 

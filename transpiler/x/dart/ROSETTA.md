@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each program has a `.dart` file and `.out` output. Compilation or runtime failures are captured in a `.error` file.
 
-Compiled and ran: 450/491
+Compiled and ran: 477/491
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -404,36 +404,36 @@ Compiled and ran: 450/491
 | 395 | factors-of-an-integer | ✓ | 2.168887s | 832.0 KB |
 | 396 | fairshare-between-two-and-more | ✓ | 3m52.132887s | 4.4 MB |
 | 397 | farey-sequence | ✓ | 26.428ms | 9.7 MB |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format |   |  |  |
-| 400 | faulhabers-formula |   |  |  |
-| 401 | faulhabers-triangle |   |  |  |
-| 402 | feigenbaum-constant-calculation |   |  |  |
-| 403 | fermat-numbers |   |  |  |
-| 404 | fibonacci-n-step-number-sequences |   |  |  |
-| 405 | fibonacci-sequence-1 |   |  |  |
-| 406 | fibonacci-sequence-2 |   |  |  |
-| 407 | fibonacci-sequence-3 |   |  |  |
-| 408 | fibonacci-sequence-4 |   |  |  |
-| 409 | fibonacci-sequence-5 |   |  |  |
-| 410 | fibonacci-word-fractal |   |  |  |
-| 411 | fibonacci-word |   |  |  |
-| 412 | file-extension-is-in-extensions-list |   |  |  |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
-| 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time |   |  |  |
-| 417 | file-size-distribution |   |  |  |
-| 418 | file-size |   |  |  |
-| 419 | filter |   |  |  |
-| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 421 | find-chess960-starting-position-identifier |   |  |  |
-| 422 | find-common-directory-path |   |  |  |
-| 423 | find-duplicate-files |   |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion | ✓ | 9.523ms | 2.8 MB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 434.339ms | 3.1 MB |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 8.322ms | 3.2 MB |
+| 398 | fast-fourier-transform | ✓ | 15.78ms | 4.1 MB |
+| 399 | fasta-format | ✓ | 22.901ms | 10.5 MB |
+| 400 | faulhabers-formula | ✓ | 87.069ms | 1.1 MB |
+| 401 | faulhabers-triangle | ✓ | 102.171ms | 9.5 MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 22.307ms | 7.2 MB |
+| 403 | fermat-numbers | ✓ | 60.597ms | 13.5 MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 24.74ms | 10.1 MB |
+| 405 | fibonacci-sequence-1 | ✓ | 20.556ms | 11.2 MB |
+| 406 | fibonacci-sequence-2 | ✓ | 16.564ms | 10.1 MB |
+| 407 | fibonacci-sequence-3 | ✓ | 17.065ms | 10.2 MB |
+| 408 | fibonacci-sequence-4 | ✓ | 11.785ms | 3.2 MB |
+| 409 | fibonacci-sequence-5 | ✓ | 15.939ms | 5.0 MB |
+| 410 | fibonacci-word-fractal | ✓ | 18.254ms | 9.8 MB |
+| 411 | fibonacci-word | ✓ | 4.367689s | 93.4 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 32.683ms | 10.2 MB |
+| 413 | file-input-output-1 | ✓ | 10.9ms | 2.5 MB |
+| 414 | file-input-output-2 | ✓ | 21.68ms | 10.6 MB |
+| 415 | file-input-output-3 | ✓ | 15.613ms | 1.9 MB |
+| 416 | file-modification-time | ✓ | 22.671ms | 10.1 MB |
+| 417 | file-size-distribution | ✓ | 12.291ms | 3.4 MB |
+| 418 | file-size | ✓ | 15.058ms | 2.0 MB |
+| 419 | filter | ✓ | 24.801ms | 10.1 MB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 27.234ms | 10.2 MB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 12.579ms | 3.5 MB |
+| 422 | find-common-directory-path | ✓ | 17.025ms | 1.8 MB |
+| 423 | find-duplicate-files | ✓ | 25.13ms | 10.1 MB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 23.166ms | 9.1 MB |
+| 425 | find-limit-of-recursion | ✓ | 29.661ms | 9.9 MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 641.594ms | 8.0 MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 11.548ms | 3.1 MB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 16.314ms | 10.3 MB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 30.495ms | 6.6 MB |
 | 430 | find-the-missing-permutation | ✓ | 15.511ms | 10.7 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 450/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 17:26 +0700_
+_Last updated: 2025-08-02 17:53 +0700_

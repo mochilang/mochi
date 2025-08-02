@@ -36,13 +36,61 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+String FASTA = ">Rosetta_Example_1\n" + "THERECANBENOSPACE\n" + ">Rosetta_Example_2\n" + "THERECANBESEVERAL\n" + "LINESBUTTHEYALLMUST\n" + "BECONCATENATED";
+List<String> splitLines(String s) {
+  List<String> lines = <String>[];
+  int start = 0;
+  int i = 0;
+  while (i < s.length) {
+    if (_substr(s, i, i + 1) == "\n") {
+    lines = [...lines, _substr(s, start, i)];
+    i = i + 1;
+    start = i;
+  } else {
+    i = i + 1;
   }
-    n = n + 1;
+  }
+  lines = [...lines, _substr(s, start, s.length)];
+  return lines;
+}
+
+List<String> parseFasta(String text) {
+  String key = "";
+  String val = "";
+  List<String> out = <String>[];
+  for (String line in splitLines(text)) {
+    if (line == "") {
+    continue;
+  }
+    if (_substr(line, 0, 1) == ">") {
+    if (key != "") {
+    out = [...out, key + ": " + val];
+  };
+    String hdr = _substr(line, 1, line.length);
+    int idx = 0;
+    while (idx < hdr.length && _substr(hdr, idx, idx + 1) != " ") {
+    idx = idx + 1;
+  };
+    key = _substr(hdr, 0, idx);
+    val = "";
+  } else {
+    if (key == "") {
+    print("missing header");
+    return List<String>.from([]);
+  };
+    val = val + line;
+  }
+  }
+  if (key != "") {
+    out = [...out, key + ": " + val];
+  }
+  return out;
+}
+
+void _main() {
+  List<String> res = parseFasta(FASTA);
+  for (String line in res) {
+    print(line);
   }
 }
 

@@ -36,14 +36,91 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+num floorf(num x) {
+  int y = (x).toInt();
+  return (y).toDouble();
+}
+
+int indexOf(String s, String ch) {
+  int i = 0;
+  while (i < s.length) {
+    if (_substr(s, i, i + 1) == ch) {
+    return i;
+  }
+    i = i + 1;
+  }
+  return 0 - 1;
+}
+
+String fmt8(num x) {
+  num y = floorf(x * 100000000.0 + 0.5) / 100000000.0;
+  String s = (y).toString();
+  int dot = s.indexOf(".");
+  if (dot == 0 - 1) {
+    s = s + ".00000000";
+  } else {
+    int decs = s.length - dot - 1;
+    while (decs < 8) {
+    s = s + "0";
+    decs = decs + 1;
+  };
+  }
+  return s;
+}
+
+String pad2(int x) {
+  String s = (x).toString();
+  if (s.length < 2) {
+    s = " " + s;
+  }
+  return s;
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+  int maxIt = 13;
+  int maxItJ = 10;
+  num a1 = 1.0;
+  num a2 = 0.0;
+  num d1 = 3.2;
+  print(" i       d");
+  int i = 2;
+  while (i <= maxIt) {
+    num a = a1 + (a1 - a2) / d1;
+    int j = 1;
+    while (j <= maxItJ) {
+    num x = 0.0;
+    num y = 0.0;
+    int k = 1;
+    int limit = pow_int(2, i);
+    while (k <= limit) {
+    y = 1.0 - 2.0 * y * x;
+    x = a - x * x;
+    k = k + 1;
   }
-    n = n + 1;
+    a = a - x / y;
+    j = j + 1;
   }
+    num d = (a1 - a2) / (a - a1);
+    print(pad2(i) + "    " + fmt8(d));
+    d1 = d;
+    a2 = a1;
+    a1 = a;
+    i = i + 1;
+  }
+}
+
+int pow_int(int base, int exp) {
+  int r = 1;
+  int b = base;
+  int e = exp;
+  while (e > 0) {
+    if (e % 2 == 1) {
+    r = r * b;
+  }
+    b = b * b;
+    e = e ~/ 2 as int;
+  }
+  return r;
 }
 
 void _start() {

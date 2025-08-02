@@ -36,14 +36,18 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+Map<String, String> fs = {"input.txt": "example"};
+void copyFile(String out, String inp) {
+  String s = "";
+  for (var ch in fs[inp]!.split('')) {
+    s = s + ch;
+  }
+  fs[out] = s;
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  copyFile("output.txt", "input.txt");
+  print(fs["output.txt"]!);
 }
 
 void _start() {

@@ -36,13 +36,25 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+List<int> fib(int n) {
+  int a = 0;
+  int b = 1;
+  List<int> res = <int>[];
+  int i = 0;
+  while (i < n) {
+    res = [...res, a];
+    int tmp = a + b;
+    a = b;
+    i = i + 1;
+    b = tmp;
   }
-    n = n + 1;
+  return res;
+}
+
+void _main() {
+  List<int> seq = fib(10);
+  for (int v in seq) {
+    print((v).toString());
   }
 }
 

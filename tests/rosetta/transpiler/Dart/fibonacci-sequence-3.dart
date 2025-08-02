@@ -36,31 +36,40 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+dynamic fibNumber() {
+  int a = 0;
+  int b = 1;
+  return (() {
+  int tmp = a + b;
+  a = b;
+  b = tmp;
+  return a;
+});
 }
 
-void _start() {
+int fibSequence(int n) {
+  dynamic f = fibNumber();
+  int r = 0;
+  int i = 0;
+  while (i < n) {
+    r = f();
+    i = i + 1;
+  }
+  return r;
+}
+
+void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   _initNow();
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-
-void main() => _start();
