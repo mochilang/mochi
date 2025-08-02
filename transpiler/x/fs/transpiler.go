@@ -2082,6 +2082,9 @@ func inferType(e Expr) string {
 		if strings.HasSuffix(v.Func, "FifteenPuzzleExample") {
 			return "string"
 		}
+		if t, ok := varTypes[v.Func]; ok && t != "" {
+			return t
+		}
 		if transpileEnv != nil {
 			if fv, err := transpileEnv.GetVar(v.Func); err == nil {
 				if ft, ok := fv.(types.FuncType); ok {
@@ -3488,6 +3491,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			usesNow = true
 			body = []Stmt{&BenchStmt{Name: "main", Body: body}}
 		}
+		varTypes[st.Fun.Name] = retType
 		definedFuncs[st.Fun.Name] = true
 		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
@@ -3701,7 +3705,15 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 				args[i] = ae
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+				if fe.Name == "padStart" {
+					if len(args) != 2 {
+						return nil, fmt.Errorf("padStart expects 2 args")
+					}
+					usesPadStart = true
+					expr = &CallExpr{Func: "_padStart", Args: append([]Expr{fe.Target}, args...)}
+				} else {
+					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+				}
 			} else if id, ok := expr.(*IdentExpr); ok {
 				expr = &CallExpr{Func: id.Name, Args: args}
 			} else {
