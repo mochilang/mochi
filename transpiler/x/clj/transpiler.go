@@ -1376,13 +1376,18 @@ func isStringNode(n Node) bool {
 			}
 		}
 	case Symbol:
+		name := string(t)
+		alt := name
+		if renameVars != nil {
+			alt = originalVar(name)
+		}
 		if stringVars != nil {
-			if stringVars[string(t)] {
+			if stringVars[name] || stringVars[alt] {
 				return true
 			}
 		}
 		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+			if typ, err := transpileEnv.GetVar(name); err == nil {
 				if _, ok := typ.(types.StringType); ok {
 					return true
 				}
@@ -1424,13 +1429,18 @@ func isStringListNode(n Node) bool {
 			}
 		}
 	case Symbol:
+		name := string(t)
+		alt := name
+		if renameVars != nil {
+			alt = originalVar(name)
+		}
 		if stringListVars != nil {
-			if stringListVars[string(t)] {
+			if stringListVars[name] || stringListVars[alt] {
 				return true
 			}
 		}
 		if transpileEnv != nil {
-			if typ, err := transpileEnv.GetVar(string(t)); err == nil {
+			if typ, err := transpileEnv.GetVar(name); err == nil {
 				if lt, ok := typ.(types.ListType); ok {
 					if _, ok := lt.Elem.(types.StringType); ok {
 						return true
