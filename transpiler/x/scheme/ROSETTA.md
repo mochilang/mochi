@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (397/491)
-Last updated: 2025-08-02 13:46 UTC
+Last updated: 2025-08-02 14:00 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -235,7 +235,7 @@ Last updated: 2025-08-02 13:46 UTC
 | 226 | constrained-genericity-2 | ✓ | 571.223ms | 11.8 MB |
 | 227 | constrained-genericity-3 | ✓ | 571.223ms | 11.9 MB |
 | 228 | constrained-genericity-4 | ✓ | 571.223ms | 12.3 MB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 16ms | 12.2 MB |
 | 230 | constrained-random-points-on-a-circle-2 | ✓ | 362.979ms | 12.2 MB |
 | 231 | continued-fraction | ✓ | 571.223ms | 12.4 MB |
 | 232 | convert-decimal-number-to-rational | ✓ | 571.223ms | 12.7 MB |
