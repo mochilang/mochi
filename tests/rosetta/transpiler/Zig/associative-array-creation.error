@@ -1,3 +1,5 @@
-zig build: exit status 1
-/tmp/associative-array-creation.zig:21:37: error: expected type 'hash_map.HashMap([]const u8,i32,hash_map.StringContext,80)', found 'comptime_int'
-/tmp/zig-0.12.0/lib/std/hash_map.zig:366:12: note: struct declared here
+run: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Zig/associative-array-creation.zig:5:31: error: local variable 'm' shadows function parameter from outer scope
+/workspace/mochi/tests/rosetta/transpiler/Zig/associative-array-creation.zig:4:14: note: previous declaration here
+/workspace/mochi/tests/rosetta/transpiler/Zig/associative-array-creation.zig:17:20: error: local variable is never mutated
+/workspace/mochi/tests/rosetta/transpiler/Zig/associative-array-creation.zig:17:20: note: consider using 'const'
