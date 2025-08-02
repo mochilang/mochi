@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (425/491)
-_Last updated: 2025-08-02 20:42 +0700_
+## Golden Test Checklist (424/491)
+_Last updated: 2025-08-02 21:10 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -336,16 +336,16 @@ _Last updated: 2025-08-02 20:42 +0700_
 | 327 | dynamic-variable-names | ✓ | 19µs | 8.7 MB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 11µs | 8.7 MB |
 | 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example | ✓ | 3µs | 8.7 MB |
-| 331 | echo-server | ✓ | 3µs | 8.7 MB |
-| 332 | eertree | ✓ | 11µs | 8.7 MB |
-| 333 | egyptian-division | ✓ | 4µs | 8.7 MB |
-| 334 | ekg-sequence-convergence | ✓ | 33µs | 8.7 MB |
-| 335 | element-wise-operations | ✓ | 16µs | 8.7 MB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 29µs | 8.7 MB |
-| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 29µs | 8.7 MB |
-| 338 | elementary-cellular-automaton | ✓ | 13µs | 8.7 MB |
-| 339 | elliptic-curve-arithmetic | ✓ | 7µs | 8.7 MB |
+| 330 | ecdsa-example | ✓ | 10µs | 8.7 MB |
+| 331 | echo-server | ✓ | 7µs | 8.7 MB |
+| 332 | eertree | ✓ | 28µs | 8.7 MB |
+| 333 | egyptian-division | ✓ | 10µs | 8.7 MB |
+| 334 | ekg-sequence-convergence | ✓ | 85µs | 8.7 MB |
+| 335 | element-wise-operations | ✓ | 30µs | 8.7 MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 45µs | 8.7 MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 57µs | 8.7 MB |
+| 338 | elementary-cellular-automaton | ✓ | 30µs | 8.7 MB |
+| 339 | elliptic-curve-arithmetic | error | 7µs | 8.7 MB |
 | 340 | elliptic-curve-digital-signature-algorithm | ✓ | 3µs | 8.7 MB |
 | 341 | emirp-primes | ✓ | 2.81ms | 8.8 MB |
 | 342 | empty-directory | ✓ | 3µs | 8.8 MB |

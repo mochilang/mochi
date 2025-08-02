@@ -1,3 +1,87 @@
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-02 20:55 +0700)
+- transpiler/java: support nested list literals
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-02 01:59 +0700)
 - scala: add transpiled euler-method
 - Regenerated golden files - 93/105 vm valid programs passing

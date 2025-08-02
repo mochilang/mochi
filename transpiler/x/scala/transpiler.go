@@ -1174,7 +1174,9 @@ func (c *CastExpr) emit(w io.Writer) {
 				if typ == "String" {
 					fmt.Fprint(w, ".charAt(0).toInt")
 				} else if typ == "Any" || typ == "" {
-					fmt.Fprint(w, ".toString")
+					// Fallback for unknown types: convert to string, then to Double before Int.
+					// This avoids runtime errors when the value is a floating point like "2.0".
+					fmt.Fprint(w, ".toString.toDouble.toInt")
 				} else {
 					fmt.Fprint(w, ".toInt")
 				}
@@ -1965,8 +1967,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if assignedVars != nil && assignedVars[st.Let.Name] {
 			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
-		g := env == nil || env.Parent() == nil
-		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e, Global: g}, nil
+		// Defer global-hoisting decision to a later pass.
+		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e, Global: false}, nil
 	case st.Var != nil:
 		if st.Var.Type != nil && env != nil {
 			env.SetVar(st.Var.Name, types.ResolveTypeRef(st.Var.Type, env), true)
@@ -2074,8 +2076,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			mapEntryTypes[st.Var.Name] = mt
 		}
-		g := env == nil || env.Parent() == nil
-		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: g}, nil
+		// Variables default to local; a later pass may mark them global if safe.
+		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: false}, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
 			if len(st.Type.Variants) == 1 && st.Type.Variants[0].Name == "int" && len(st.Type.Variants[0].Fields) == 0 {
@@ -3968,6 +3970,12 @@ func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	saved := localVarTypes
 	localVarTypes = copyMap(localVarTypes)
 	defer func() { localVarTypes = saved }()
+
+	// Track assignments within this function to decide between `val` and `var` for locals.
+	assignedSaved := assignedVars
+	assignedVars = make(map[string]bool)
+	gatherAssigned(fs.Body, assignedVars)
+	defer func() { assignedVars = assignedSaved }()
 
 	child := types.NewEnv(env)
 	funCtxStack = append(funCtxStack, false)
