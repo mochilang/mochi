@@ -1055,18 +1055,24 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		if _, err := io.WriteString(w, indent+"_bench_start = _now()\n"); err != nil {
 			return err
 		}
+		if _, err := io.WriteString(w, indent+"try:\n"); err != nil {
+			return err
+		}
 		for _, bs := range st.Body {
-			if err := emitStmtIndent(w, bs, indent); err != nil {
+			if err := emitStmtIndent(w, bs, indent+"    "); err != nil {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, indent+"_bench_end = _now()\n"); err != nil {
+		if _, err := io.WriteString(w, indent+"finally:\n"); err != nil {
 			return err
 		}
-		if _, err := io.WriteString(w, indent+"_bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+		if _, err := io.WriteString(w, indent+"    _bench_end = _now()\n"); err != nil {
 			return err
 		}
-		line := fmt.Sprintf("%sprint(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", indent, st.Name)
+		if _, err := io.WriteString(w, indent+"    _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+			return err
+		}
+		line := fmt.Sprintf("%s    print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", indent, st.Name)
 		if _, err := io.WriteString(w, line); err != nil {
 			return err
 		}
@@ -3006,18 +3012,24 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			if _, err := io.WriteString(w, "_bench_start = _now()\n"); err != nil {
 				return err
 			}
+			if _, err := io.WriteString(w, "try:\n"); err != nil {
+				return err
+			}
 			for _, bs := range st.Body {
-				if err := emitStmtIndent(w, bs, ""); err != nil {
+				if err := emitStmtIndent(w, bs, "    "); err != nil {
 					return err
 				}
 			}
-			if _, err := io.WriteString(w, "_bench_end = _now()\n"); err != nil {
+			if _, err := io.WriteString(w, "finally:\n"); err != nil {
 				return err
 			}
-			if _, err := io.WriteString(w, "_bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+			if _, err := io.WriteString(w, "    _bench_end = _now()\n"); err != nil {
 				return err
 			}
-			line := fmt.Sprintf("print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", st.Name)
+			if _, err := io.WriteString(w, "    _bench_mem_end = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss\n"); err != nil {
+				return err
+			}
+			line := fmt.Sprintf("    print(json.dumps({\"duration_us\": (_bench_end - _bench_start)//1000, \"memory_bytes\": _bench_mem_end*1024, \"name\": %q}, indent=2))\n", st.Name)
 			if _, err := io.WriteString(w, line); err != nil {
 				return err
 			}
@@ -4361,10 +4373,10 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 			}
 		}
 		if op == "+" {
-			if s, ok := left.(*SliceExpr); ok {
+			if s, ok := left.(*SliceExpr); ok && sliceOfStringList(s) {
 				left = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
 			}
-			if s, ok := right.(*SliceExpr); ok {
+			if s, ok := right.(*SliceExpr); ok && sliceOfStringList(s) {
 				right = &CallExpr{Func: &FieldExpr{Target: &StringLit{Value: ""}, Name: "join"}, Args: []Expr{s}}
 			}
 			if lt, ok := inferPyType(left, currentEnv).(types.ListType); ok && types.IsStringType(lt.Elem) && types.IsStringType(inferPyType(right, currentEnv)) {
