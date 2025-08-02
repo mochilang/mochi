@@ -3,14 +3,14 @@ public class Main {
     static int parseIntStr(String str) {
         int i = 0;
         boolean neg = false;
-        if (str.length() > 0 && (str.substring(0, 1).equals("-"))) {
+        if (_runeLen(str) > 0 && (str.substring(0, 1).equals("-"))) {
             neg = true;
             i = 1;
         }
         int n = 0;
-        java.util.Map<String,Integer> digits = new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)));
-        while (i < str.length()) {
-            n = n * 10 + (int)(((int)digits.getOrDefault(str.substring(i, i + 1), 0)));
+        java.util.Map<String,Integer> digits = ((java.util.Map<String,Integer>)(new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("0", 0), java.util.Map.entry("1", 1), java.util.Map.entry("2", 2), java.util.Map.entry("3", 3), java.util.Map.entry("4", 4), java.util.Map.entry("5", 5), java.util.Map.entry("6", 6), java.util.Map.entry("7", 7), java.util.Map.entry("8", 8), java.util.Map.entry("9", 9)))));
+        while (i < _runeLen(str)) {
+            n = n * 10 + (int)(((int)(digits).get(str.substring(i, i + 1))));
             i = i + 1;
         }
         if (neg) {
@@ -20,71 +20,71 @@ public class Main {
     }
 
     static String[] fields(String s) {
-        String[] words = new String[]{};
+        String[] words = ((String[])(new String[]{}));
         String cur = "";
-        int i = 0;
-        while (i < s.length()) {
-            String ch = s.substring(i, i + 1);
+        int i_1 = 0;
+        while (i_1 < _runeLen(s)) {
+            String ch = _substr(s, i_1, i_1 + 1);
             if ((ch.equals(" ")) || (ch.equals("\t")) || (ch.equals("\n"))) {
-                if (cur.length() > 0) {
-                    words = java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new);
+                if (_runeLen(cur) > 0) {
+                    words = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new)));
                     cur = "";
                 }
             } else {
                 cur = cur + ch;
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        if (cur.length() > 0) {
-            words = java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new);
+        if (_runeLen(cur) > 0) {
+            words = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(words), java.util.stream.Stream.of(cur)).toArray(String[]::new)));
         }
         return words;
     }
 
     static String unescape(String s) {
         String out = "";
-        int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals("\\")) && i + 1 < s.length()) {
-                String c = s.substring(i + 1, i + 2);
+        int i_2 = 0;
+        while (i_2 < _runeLen(s)) {
+            if ((s.substring(i_2, i_2 + 1).equals("\\")) && i_2 + 1 < _runeLen(s)) {
+                String c = s.substring(i_2 + 1, i_2 + 2);
                 if ((c.equals("n"))) {
                     out = out + "\n";
-                    i = i + 2;
+                    i_2 = i_2 + 2;
                     continue;
                 } else                 if ((c.equals("\\"))) {
                     out = out + "\\";
-                    i = i + 2;
+                    i_2 = i_2 + 2;
                     continue;
                 }
             }
-            out = out + s.substring(i, i + 1);
-            i = i + 1;
+            out = out + s.substring(i_2, i_2 + 1);
+            i_2 = i_2 + 1;
         }
         return out;
     }
 
     static java.util.Map<String,Object> parseProgram(String src) {
-        String[] lines = split(src, "\n");
-        String[] header = fields(lines[0]);
+        String[] lines = ((String[])(src.split(java.util.regex.Pattern.quote("\n"))));
+        String[] header = ((String[])(fields(lines[0])));
         int dataSize = Integer.parseInt(header[1]);
         int nStrings = Integer.parseInt(header[3]);
-        String[] stringPool = new String[]{};
-        int i = 1;
-        while (i <= nStrings) {
-            String s = lines[i];
-            if (s.length() > 0) {
-                stringPool = java.util.stream.Stream.concat(java.util.Arrays.stream(stringPool), java.util.stream.Stream.of(unescape(s.substring(1, s.length() - 1)))).toArray(String[]::new);
+        String[] stringPool = ((String[])(new String[]{}));
+        int i_3 = 1;
+        while (i_3 <= nStrings) {
+            String s = lines[i_3];
+            if (_runeLen(s) > 0) {
+                stringPool = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(stringPool), java.util.stream.Stream.of(unescape(s.substring(1, _runeLen(s) - 1)))).toArray(String[]::new)));
             }
-            i = i + 1;
+            i_3 = i_3 + 1;
         }
-        java.util.Map<String,Object>[] code = (java.util.Map<String,Object>[])new java.util.Map[]{};
-        java.util.Map<Integer,Integer> addrMap = new java.util.LinkedHashMap<Integer, Integer>();
-        while (i < lines.length) {
-            String line = String.valueOf(trim(lines[i]));
-            if (line.length() == 0) {
+        java.util.Map<String,Object>[] code = ((java.util.Map<String,Object>[])((java.util.Map<String,Object>[])new java.util.Map[]{}));
+        java.util.Map<Integer,Integer> addrMap = ((java.util.Map<Integer,Integer>)(new java.util.LinkedHashMap<Integer, Integer>()));
+        while (i_3 < lines.length) {
+            String line = String.valueOf(trim(lines[i_3]));
+            if (_runeLen(line) == 0) {
                 break;
             }
-            String[] parts = fields(line);
+            String[] parts = ((String[])(fields(line)));
             int addr = Integer.parseInt(parts[0]);
             String op = parts[1];
             int arg = 0;
@@ -95,94 +95,94 @@ public class Main {
             } else             if ((op.equals("jmp")) || (op.equals("jz"))) {
                 arg = Integer.parseInt(parts[3]);
             }
-            code = appendObj(code, new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("addr", addr), java.util.Map.entry("op", op), java.util.Map.entry("arg", arg))));
+            code = ((java.util.Map<String,Object>[])(appendObj(code, new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("addr", addr), java.util.Map.entry("op", op), java.util.Map.entry("arg", arg))))));
 addrMap.put(addr, code.length - 1);
-            i = i + 1;
+            i_3 = i_3 + 1;
         }
         return new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("dataSize", dataSize), java.util.Map.entry("strings", stringPool), java.util.Map.entry("code", code), java.util.Map.entry("addrMap", addrMap)));
     }
 
     static void runVM(java.util.Map<String,Object> prog) {
-        int[] data = new int[]{};
-        int i = 0;
-        while (i < ((Number)(((Object)prog.get("dataSize")))).intValue()) {
-            data = java.util.stream.IntStream.concat(java.util.Arrays.stream(data), java.util.stream.IntStream.of(0)).toArray();
-            i = i + 1;
+        int[] data = ((int[])(new int[]{}));
+        int i_4 = 0;
+        while (i_4 < ((Number)(((Object)(prog).get("dataSize")))).intValue()) {
+            data = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(data), java.util.stream.IntStream.of(0)).toArray()));
+            i_4 = i_4 + 1;
         }
-        int[] stack = new int[]{};
+        int[] stack = ((int[])(new int[]{}));
         int pc = 0;
-        Object code = (Object)(((Object)prog.get("code")));
-        Object addrMap = (Object)(((Object)prog.get("addrMap")));
-        Object pool = (Object)(((Object)prog.get("strings")));
-        String line = "";
-        while (pc < String.valueOf(code).length()) {
-            Object inst = code[pc];
-            Object op = (Object)(((Object)((java.util.Map)inst).get("op")));
-            Object arg = (Object)(((Object)((java.util.Map)inst).get("arg")));
-            if (((Number)(op)).intValue() == "push") {
-                stack = java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(((Number)(arg)).intValue())).toArray();
+        Object code_1 = (Object)(((Object)(prog).get("code")));
+        Object addrMap_1 = (Object)(((Object)(prog).get("addrMap")));
+        Object pool = (Object)(((Object)(prog).get("strings")));
+        String line_1 = "";
+        while (pc < String.valueOf(code_1).length()) {
+            Object inst = code_1[pc];
+            Object op_1 = (Object)(((Object)(((java.util.Map)inst)).get("op")));
+            Object arg_1 = (Object)(((Object)(((java.util.Map)inst)).get("arg")));
+            if (((Number)(op_1)).intValue() == "push") {
+                stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(((Number)(arg_1)).intValue())).toArray()));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "store") {
-data[arg] = stack[stack.length - 1];
-                stack = slice(stack, 0, stack.length - 1);
+            if (((Number)(op_1)).intValue() == "store") {
+data[arg_1] = stack[stack.length - 1];
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "fetch") {
-                stack = java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(data[arg])).toArray();
+            if (((Number)(op_1)).intValue() == "fetch") {
+                stack = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(stack), java.util.stream.IntStream.of(data[arg_1])).toArray()));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "add") {
+            if (((Number)(op_1)).intValue() == "add") {
 stack[stack.length - 2] = stack[stack.length - 2] + stack[stack.length - 1];
-                stack = slice(stack, 0, stack.length - 1);
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "lt") {
+            if (((Number)(op_1)).intValue() == "lt") {
                 int v = 0;
                 if (stack[stack.length - 2] < stack[stack.length - 1]) {
                     v = 1;
                 }
 stack[stack.length - 2] = v;
-                stack = slice(stack, 0, stack.length - 1);
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "jz") {
-                int v = stack[stack.length - 1];
-                stack = slice(stack, 0, stack.length - 1);
-                if (v == 0) {
-                    pc = ((Number)(addrMap[arg])).intValue();
+            if (((Number)(op_1)).intValue() == "jz") {
+                int v_1 = stack[stack.length - 1];
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
+                if (v_1 == 0) {
+                    pc = ((Number)(addrMap_1[arg_1])).intValue();
                 } else {
                     pc = pc + 1;
                 }
                 continue;
             }
-            if (((Number)(op)).intValue() == "jmp") {
-                pc = ((Number)(addrMap[arg])).intValue();
+            if (((Number)(op_1)).intValue() == "jmp") {
+                pc = ((Number)(addrMap_1[arg_1])).intValue();
                 continue;
             }
-            if (((Number)(op)).intValue() == "prts") {
-                Object s = pool[stack[stack.length - 1]];
-                stack = slice(stack, 0, stack.length - 1);
-                if (((Number)(s)).intValue() != "\n") {
-                    line = line + (String)(s);
+            if (((Number)(op_1)).intValue() == "prts") {
+                Object s_1 = pool[stack[stack.length - 1]];
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
+                if (((Number)(s_1)).intValue() != "\n") {
+                    line_1 = line_1 + (String)(s_1);
                 }
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "prti") {
-                line = line + String.valueOf(stack[stack.length - 1]);
-                System.out.println(line);
-                line = "";
-                stack = slice(stack, 0, stack.length - 1);
+            if (((Number)(op_1)).intValue() == "prti") {
+                line_1 = line_1 + _p(_geti(stack, stack.length - 1));
+                System.out.println(line_1);
+                line_1 = "";
+                stack = ((int[])(java.util.Arrays.copyOfRange(stack, 0, stack.length - 1)));
                 pc = pc + 1;
                 continue;
             }
-            if (((Number)(op)).intValue() == "halt") {
+            if (((Number)(op_1)).intValue() == "halt") {
                 break;
             }
             pc = pc + 1;
@@ -191,32 +191,32 @@ stack[stack.length - 2] = v;
 
     static String trim(String s) {
         int start = 0;
-        while (start < s.length() && ((s.substring(start, start + 1).equals(" ")) || (s.substring(start, start + 1).equals("\t")))) {
+        while (start < _runeLen(s) && ((s.substring(start, start + 1).equals(" ")) || (s.substring(start, start + 1).equals("\t")))) {
             start = start + 1;
         }
-        int end = s.length();
+        int end = _runeLen(s);
         while (end > start && ((s.substring(end - 1, end).equals(" ")) || (s.substring(end - 1, end).equals("\t")))) {
             end = end - 1;
         }
-        return s.substring(start, end);
+        return _substr(s, start, end);
     }
 
     static String[] split(String s, String sep) {
-        String[] parts = new String[]{};
-        String cur = "";
-        int i = 0;
-        while (i < s.length()) {
-            if (sep.length() > 0 && i + sep.length() <= s.length() && (s.substring(i, i + sep.length()).equals(sep))) {
-                parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
-                cur = "";
-                i = i + sep.length();
+        String[] parts_1 = ((String[])(new String[]{}));
+        String cur_1 = "";
+        int i_5 = 0;
+        while (i_5 < _runeLen(s)) {
+            if (_runeLen(sep) > 0 && i_5 + _runeLen(sep) <= _runeLen(s) && (_substr(s, i_5, i_5 + _runeLen(sep)).equals(sep))) {
+                parts_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(parts_1), java.util.stream.Stream.of(cur_1)).toArray(String[]::new)));
+                cur_1 = "";
+                i_5 = i_5 + _runeLen(sep);
             } else {
-                cur = cur + s.substring(i, i + 1);
-                i = i + 1;
+                cur_1 = cur_1 + _substr(s, i_5, i_5 + 1);
+                i_5 = i_5 + 1;
             }
         }
-        parts = java.util.stream.Stream.concat(java.util.Arrays.stream(parts), java.util.stream.Stream.of(cur)).toArray(String[]::new);
-        return parts;
+        parts_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(parts_1), java.util.stream.Stream.of(cur_1)).toArray(String[]::new)));
+        return parts_1;
     }
 
     static void main() {
@@ -232,5 +232,23 @@ stack[stack.length - 2] = v;
         T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

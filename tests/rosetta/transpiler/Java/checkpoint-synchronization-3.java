@@ -1,14 +1,14 @@
 public class Main {
-    static String[] partList = new String[]{"A", "B", "C", "D"};
-    static int nAssemblies = 3;
+    static String[] partList;
+    static int nAssemblies;
 
     static String lower(String ch) {
         String up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String low = "abcdefghijklmnopqrstuvwxyz";
         int i = 0;
-        while (i < up.length()) {
-            if ((ch.equals(up.substring(i, i + 1)))) {
-                return low.substring(i, i + 1);
+        while (i < _runeLen(up)) {
+            if ((ch.equals(_substr(up, i, i + 1)))) {
+                return _substr(low, i, i + 1);
             }
             i = i + 1;
         }
@@ -18,18 +18,20 @@ public class Main {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            partList = ((String[])(new String[]{"A", "B", "C", "D"}));
+            nAssemblies = 3;
             for (String p : partList) {
                 System.out.println(p + " worker running");
             }
             for (int cycle = 1; cycle < (nAssemblies + 1); cycle++) {
-                System.out.println("begin assembly cycle " + String.valueOf(cycle));
+                System.out.println("begin assembly cycle " + _p(cycle));
                 String a = "";
                 for (String p : partList) {
                     System.out.println(p + " worker begins part");
                     System.out.println(p + " worker completed " + p.toLowerCase());
                     a = a + p.toLowerCase();
                 }
-                System.out.println(a + " assembled.  cycle " + String.valueOf(cycle) + " complete");
+                System.out.println(a + " assembled.  cycle " + _p(cycle) + " complete");
             }
             for (String p : partList) {
                 System.out.println(p + " worker stopped");
@@ -65,5 +67,19 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
+    }
+
+    static String _substr(String s, int i, int j) {
+        int start = s.offsetByCodePoints(0, i);
+        int end = s.offsetByCodePoints(0, j);
+        return s.substring(start, end);
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

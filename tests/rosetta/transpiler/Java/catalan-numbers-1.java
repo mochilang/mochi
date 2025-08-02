@@ -24,7 +24,7 @@ public class Main {
 
     static void main() {
         for (int i = 0; i < 15; i++) {
-            System.out.println(String.valueOf(catalan(i)));
+            System.out.println(_p(catalan(i)));
         }
     }
     public static void main(String[] args) {
@@ -63,5 +63,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

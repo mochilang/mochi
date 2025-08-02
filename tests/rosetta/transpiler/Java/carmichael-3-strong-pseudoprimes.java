@@ -29,7 +29,7 @@ public class Main {
     }
 
     static String pad(int n, int width) {
-        String s = String.valueOf(n);
+        String s = _p(n);
         while (_runeLen(s) < width) {
             s = " " + s;
         }
@@ -52,7 +52,7 @@ public class Main {
                         continue;
                     }
                     int c = p1 * p2 * p3;
-                    System.out.println(String.valueOf(pad(p1, 2)) + "   " + String.valueOf(pad(p2, 4)) + "   " + String.valueOf(pad(p3, 5)) + "     " + String.valueOf(c));
+                    System.out.println(String.valueOf(pad(p1, 2)) + "   " + String.valueOf(pad(p2, 4)) + "   " + String.valueOf(pad(p3, 5)) + "     " + _p(c));
                 }
             }
         }
@@ -65,7 +65,7 @@ public class Main {
             System.out.println("p1     p2      p3     product");
             System.out.println("==     ==      ==     =======");
             for (int p1 = 2; p1 < 62; p1++) {
-                if (isPrime(p1)) {
+                if (((Boolean)(isPrime(p1)))) {
                     carmichael(p1);
                 }
             }
@@ -104,5 +104,9 @@ public class Main {
 
     static int _runeLen(String s) {
         return s.codePointCount(0, s.length());
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

@@ -1,11 +1,13 @@
 public class Main {
-    static int n = 15;
-    static int[] t = new int[]{};
+    static int n;
+    static int[] t;
 
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
+            n = 15;
+            t = new int[]{};
             for (int _v = 0; _v < (n + 2); _v++) {
                 t = java.util.stream.IntStream.concat(java.util.Arrays.stream(t), java.util.stream.IntStream.of(0)).toArray();
             }
@@ -24,9 +26,9 @@ t[j] = t[j] + t[j - 1];
                 }
                 int cat = t[i + 1] - t[i];
                 if (i < 10) {
-                    System.out.println(" " + String.valueOf(i) + " : " + String.valueOf(cat));
+                    System.out.println(" " + _p(i) + " : " + _p(cat));
                 } else {
-                    System.out.println(String.valueOf(i) + " : " + String.valueOf(cat));
+                    System.out.println(_p(i) + " : " + _p(cat));
                 }
             }
             long _benchDuration = _now() - _benchStart;
@@ -60,5 +62,9 @@ t[j] = t[j] + t[j - 1];
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

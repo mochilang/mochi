@@ -4,7 +4,7 @@ public class Main {
         String s = "[";
         int i = 0;
         while (i < xs.length) {
-            s = s + String.valueOf(xs[i]);
+            s = s + _p(_geti(xs, i));
             if (i < xs.length - 1) {
                 s = s + " ";
             }
@@ -15,17 +15,17 @@ public class Main {
     }
 
     static String llStr(int[][] lst) {
-        String s = "[";
-        int i = 0;
-        while (i < lst.length) {
-            s = s + String.valueOf(listStr(lst[i]));
-            if (i < lst.length - 1) {
-                s = s + " ";
+        String s_1 = "[";
+        int i_1 = 0;
+        while (i_1 < lst.length) {
+            s_1 = s_1 + String.valueOf(listStr(lst[i_1]));
+            if (i_1 < lst.length - 1) {
+                s_1 = s_1 + " ";
             }
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
-        s = s + "]";
-        return s;
+        s_1 = s_1 + "]";
+        return s_1;
     }
 
     static int[] copy(int[] xs) {
@@ -44,17 +44,17 @@ public class Main {
         if (a.length == 0) {
             return new int[][]{new int[]{}};
         }
-        int[][] out = new int[][]{};
+        int[][] out_1 = new int[][]{};
         int last = a.length - 1;
         int[][] left = cartN(java.util.Arrays.copyOfRange(a, 0, last));
         for (int[] p : left) {
             for (int x : a[last]) {
                 int[] row = copy(p);
                 row = java.util.stream.IntStream.concat(java.util.Arrays.stream(row), java.util.stream.IntStream.of(x)).toArray();
-                out = appendObj(out, row);
+                out_1 = appendObj(out_1, row);
             }
         }
-        return out;
+        return out_1;
     }
 
     static void main() {
@@ -64,7 +64,7 @@ public class Main {
         System.out.println(llStr(cartN(new int[][]{new int[]{}, new int[]{1, 2}})));
         System.out.println("");
         System.out.println("[");
-        for (var p : cartN(new int[][]{new int[]{1776, 1789}, new int[]{7, 12}, new int[]{4, 14, 23}, new int[]{0, 1}})) {
+        for (int[] p : cartN(new int[][]{new int[]{1776, 1789}, new int[]{7, 12}, new int[]{4, 14, 23}, new int[]{0, 1}})) {
             System.out.println(" " + String.valueOf(listStr(p)));
         }
         System.out.println("]");
@@ -142,5 +142,13 @@ public class Main {
             return out;
         }
         return new int[][]{};
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
+
+    static Integer _geti(int[] a, int i) {
+        return (i >= 0 && i < a.length) ? a[i] : null;
     }
 }

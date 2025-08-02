@@ -9,21 +9,21 @@ public class Main {
         return new java.util.LinkedHashMap<String, Boolean>(java.util.Map.ofEntries(java.util.Map.entry("pkg_dog", true), java.util.Map.entry("Dog", true), java.util.Map.entry("pkg_DOG", true)));
 };
         java.util.Map<String,Boolean> d = packageSees.apply(pkg_dog, Dog, pkg_DOG);
-        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+        System.out.println("There are " + _p(d.size()) + " dogs.\n");
         String dog = "Benjamin";
         d = packageSees.apply(pkg_dog, Dog, pkg_DOG);
         System.out.println("Main sees:   " + dog + " " + Dog + " " + pkg_DOG);
 d.put("dog", true);
 d.put("Dog", true);
 d.put("pkg_DOG", true);
-        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+        System.out.println("There are " + _p(d.size()) + " dogs.\n");
         Dog = "Samba";
         d = packageSees.apply(pkg_dog, Dog, pkg_DOG);
         System.out.println("Main sees:   " + dog + " " + Dog + " " + pkg_DOG);
 d.put("dog", true);
 d.put("Dog", true);
 d.put("pkg_DOG", true);
-        System.out.println("There are " + String.valueOf(d.size()) + " dogs.\n");
+        System.out.println("There are " + _p(d.size()) + " dogs.\n");
         String DOG = "Bernie";
         d = packageSees.apply(pkg_dog, Dog, pkg_DOG);
         System.out.println("Main sees:   " + dog + " " + Dog + " " + DOG);
@@ -31,7 +31,7 @@ d.put("dog", true);
 d.put("Dog", true);
 d.put("pkg_DOG", true);
 d.put("DOG", true);
-        System.out.println("There are " + String.valueOf(d.size()) + " dogs.");
+        System.out.println("There are " + _p(d.size()) + " dogs.");
     }
     public static void main(String[] args) {
         {
@@ -72,4 +72,8 @@ d.put("DOG", true);
     }
 
     interface Fn3<A,B,C,R> { R apply(A a, B b, C c); }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
+    }
 }
