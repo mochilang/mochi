@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 380/491
-Last updated: 2025-08-02 12:06 +0700
+Completed: 381/491
+Last updated: 2025-08-02 14:01 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -314,31 +314,31 @@ Last updated: 2025-08-02 12:06 +0700
 | 305 | discordian-date | ✓ | 451µs | 2.9 MB |
 | 306 | display-a-linear-combination | ✓ | 442µs | 3.3 MB |
 | 307 | display-an-outline-as-a-nested-table | ✓ | 2.234ms | 3.6 MB |
-| 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming | ✓ | 427µs | 2.9 MB |
-| 310 | diversity-prediction-theorem | ✓ | 493µs | 3.3 MB |
-| 311 | dns-query | ✓ | 911µs | 3.6 MB |
-| 312 | documentation | ✓ | 102µs | 3.1 MB |
-| 313 | doomsday-rule | ✓ | 424µs | 2.9 MB |
-| 314 | dot-product | ✓ | 488µs | 3.4 MB |
-| 315 | doubly-linked-list-definition-1 |   |  |  |
-| 316 | doubly-linked-list-definition-2 | ✓ | 534µs | 3.1 MB |
+| 308 | distance-and-bearing | ✓ | 788µs | 3.4 MB |
+| 309 | distributed-programming | ✓ | 381µs | 3.3 MB |
+| 310 | diversity-prediction-theorem | ✓ | 609µs | 3.2 MB |
+| 311 | dns-query | ✓ | 1.018ms | 3.4 MB |
+| 312 | documentation | ✓ | 104µs | 3.1 MB |
+| 313 | doomsday-rule | ✓ | 462µs | 3.1 MB |
+| 314 | dot-product | ✓ | 357µs | 3.1 MB |
+| 315 | doubly-linked-list-definition-1 | ✓ | 106µs | 3.0 MB |
+| 316 | doubly-linked-list-definition-2 | ✓ | 807µs | 3.0 MB |
 | 317 | doubly-linked-list-element-definition |   |  |  |
-| 318 | doubly-linked-list-traversal | ✓ | 444µs | 3.5 MB |
-| 319 | dragon-curve | ✓ | 32.149ms | 3.2 MB |
-| 320 | draw-a-clock | ✓ | 357µs | 3.3 MB |
-| 321 | draw-a-cuboid | ✓ | 1.059ms | 2.8 MB |
-| 322 | draw-a-pixel-1 | ✓ | 163.224ms | 5.0 MB |
-| 323 | draw-a-rotating-cube | ✓ | 5.998ms | 3.4 MB |
-| 324 | draw-a-sphere | ✓ | 5.74ms | 3.3 MB |
-| 325 | duffinian-numbers | ✓ | 62.207ms | 2.9 MB |
-| 326 | dutch-national-flag-problem | ✓ | 2.304ms | 3.4 MB |
-| 327 | dynamic-variable-names | ✓ | 632µs | 3.2 MB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 882µs | 3.1 MB |
-| 329 | eban-numbers | ✓ | 20.48ms | 3.0 MB |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server | ✓ | 411µs | 3.4 MB |
-| 332 | eertree | ✓ | 978µs | 3.3 MB |
+| 318 | doubly-linked-list-traversal | ✓ | 739µs | 3.3 MB |
+| 319 | dragon-curve | ✓ | 43.269ms | 2.8 MB |
+| 320 | draw-a-clock | ✓ | 483µs | 3.1 MB |
+| 321 | draw-a-cuboid | ✓ | 1.151ms | 3.4 MB |
+| 322 | draw-a-pixel-1 | ✓ | 174.727ms | 5.0 MB |
+| 323 | draw-a-rotating-cube | ✓ | 6.014ms | 3.4 MB |
+| 324 | draw-a-sphere | ✓ | 6.465ms | 3.0 MB |
+| 325 | duffinian-numbers | ✓ | 75.658ms | 3.0 MB |
+| 326 | dutch-national-flag-problem | ✓ | 1.471ms | 3.2 MB |
+| 327 | dynamic-variable-names | ✓ | 1.009ms | 3.4 MB |
+| 328 | earliest-difference-between-prime-gaps |   | 882µs | 3.1 MB |
+| 329 | eban-numbers | ✓ | 19.393ms | 3.3 MB |
+| 330 | ecdsa-example | ✓ | 477µs | 3.2 MB |
+| 331 | echo-server | ✓ | 424µs | 3.1 MB |
+| 332 | eertree |   | 978µs | 3.3 MB |
 | 333 | egyptian-division | ✓ | 395µs | 2.9 MB |
 | 334 | ekg-sequence-convergence | ✓ | 67.896ms | 3.0 MB |
 | 335 | element-wise-operations | ✓ | 769µs | 3.4 MB |

@@ -921,6 +921,7 @@ type IndexExpr struct {
 	AsString  bool
 	Force     bool
 	KeyString bool
+	KeyAny    bool
 }
 
 // SliceExpr represents a[start:end] slicing for lists or strings.
@@ -951,6 +952,10 @@ func (ie *IndexExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "[")
 	if ie.KeyString {
 		fmt.Fprint(w, "String(")
+		ie.Index.emit(w)
+		fmt.Fprint(w, ")")
+	} else if ie.KeyAny {
+		fmt.Fprint(w, "AnyHashable(")
 		ie.Index.emit(w)
 		fmt.Fprint(w, ")")
 	} else {
@@ -1069,21 +1074,6 @@ func (c *CastExpr) emit(w io.Writer) {
 						fmt.Fprint(w, ")")
 					}
 				}
-				return
-			}
-		}
-		if t == "Double" {
-			if inner, ok := c.Expr.(*CastExpr); ok && (inner.Type == "Any" || strings.Contains(inner.Type, "Any")) {
-				fmt.Fprint(w, "(")
-				inner.Expr.emit(w)
-				fmt.Fprint(w, " as! Double)")
-				return
-			}
-			switch c.Expr.(type) {
-			case *NameExpr, *IndexExpr, *FieldExpr:
-				fmt.Fprint(w, "(")
-				c.Expr.emit(w)
-				fmt.Fprint(w, " as! Double)")
 				return
 			}
 		}
@@ -1725,6 +1715,7 @@ func structForMethod(env *types.Env, method string) (types.StructType, bool) {
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(header())
+	buf.WriteString("extension Double { init(_ v: Any) { if let d = v as? Double { self = d } else if let i = v as? Int { self = Double(i) } else if let i = v as? Int64 { self = Double(i) } else if let s = v as? String { self = Double(s) ?? 0 } else { self = 0 } } }\n")
 	if p.UseNow {
 		buf.WriteString("var _nowSeed = 0\n")
 		buf.WriteString("var _nowSeeded = false\n")
@@ -2404,15 +2395,18 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				return nil, err
 			}
 			keyStr := false
+			keyAny := false
 			isLast := j == len(st.Assign.Index)-1 && len(st.Assign.Field) == 0
 			if mt, ok := cur.(types.MapType); ok {
 				if types.IsStringType(mt.Key) {
 					ix = &CastExpr{Expr: ix, Type: "String"}
 					keyStr = true
+				} else if types.IsAnyType(mt.Key) {
+					keyAny = true
 				}
 				cur = mt.Value
 				force := !isLast
-				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr}
+				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny}
 			} else if lt, ok := cur.(types.ListType); ok {
 				cur = lt.Elem
 				lhs = &IndexExpr{Base: lhs, Index: ix}
@@ -2632,7 +2626,7 @@ func convertImport(im *parser.ImportStmt) Stmt {
 		lang = *im.Lang
 	}
 	if lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg" {
-		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n    static func FifteenPuzzleExample() -> String { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\" }\n}\n", alias)}
+		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n    static func FifteenPuzzleExample() -> String { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\" }\n    static func ECDSAExample() -> (D: Any?, X: Any?, Y: Any?, Hash: Any?, R: Any?, S: Any?, Valid: Any?) { return (nil, nil, nil, nil, nil, nil, nil) }\n}\n", alias)}
 	}
 	if lang == "python" && im.Path == "math" {
 		if im.Auto {
@@ -3642,13 +3636,16 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
 			} else {
 				keyStr := false
+				keyAny := false
 				if mt, ok := origBaseType.(types.MapType); ok {
 					if types.IsStringType(mt.Key) {
 						idx = &CastExpr{Expr: idx, Type: "String"}
 						keyStr = true
+					} else if types.IsAnyType(mt.Key) {
+						keyAny = true
 					}
 				}
-				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr}
+				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny}
 			}
 			if env != nil && !skipUpdate {
 				// update baseType after indexing
@@ -4715,7 +4712,11 @@ func toSwiftType(t *parser.TypeRef) string {
 		case "list":
 			return "[" + toSwiftType(t.Generic.Args[0]) + "]"
 		case "map":
-			return "[" + toSwiftType(t.Generic.Args[0]) + ": " + toSwiftType(t.Generic.Args[1]) + "]"
+			key := toSwiftType(t.Generic.Args[0])
+			if key == "Any?" || key == "Any" {
+				key = "AnyHashable"
+			}
+			return "[" + key + ": " + toSwiftType(t.Generic.Args[1]) + "]"
 		}
 	}
 	if t.Simple == nil {
@@ -4823,7 +4824,11 @@ func swiftTypeOf(t types.Type) string {
 	case types.ListType:
 		return "[" + swiftTypeOf(tt.Elem) + "]"
 	case types.MapType:
-		return "[" + swiftTypeOf(tt.Key) + ": " + swiftTypeOf(tt.Value) + "]"
+		key := swiftTypeOf(tt.Key)
+		if key == "Any?" || key == "Any" {
+			key = "AnyHashable"
+		}
+		return "[" + key + ": " + swiftTypeOf(tt.Value) + "]"
 	case types.OptionType:
 		return swiftTypeOf(tt.Elem) + "?"
 	case types.StructType:
