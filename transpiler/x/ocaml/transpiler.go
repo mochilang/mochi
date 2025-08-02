@@ -806,6 +806,18 @@ type ForEachStmt struct {
 }
 
 func (fe *ForEachStmt) emit(w io.Writer) {
+	if fe.Typ == "string" {
+		io.WriteString(w, "  (try List.iter (fun ")
+		io.WriteString(w, sanitizeIdent(fe.Name))
+		io.WriteString(w, " ->\n    try\n")
+		for _, st := range fe.Body {
+			st.emit(w)
+		}
+		io.WriteString(w, "    with Continue -> ()) (List.of_seq (Seq.map (fun c -> String.make 1 c) (String.to_seq ")
+		fe.Iterable.emit(w)
+		io.WriteString(w, "))) with Break -> ());\n")
+		return
+	}
 	if strings.HasPrefix(fe.Typ, "map") {
 		io.WriteString(w, "  (try List.iter (fun (")
 		io.WriteString(w, sanitizeIdent(fe.Name))
@@ -2949,7 +2961,11 @@ let rec __show v =
       if rest = "" then __show (obj hd) else __show (obj hd) ^ "; " ^ rest
   in
   let r = repr v in
-  if is_int r then string_of_int (magic v) else
+  if is_int r then
+    let i = (magic v : int) in
+    if i = 0 || i = 1 then string_of_bool (i <> 0)
+    else string_of_int i
+  else
   match tag r with
   | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
   | 252 -> (magic v : string)
