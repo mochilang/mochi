@@ -3298,35 +3298,6 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return &MapLit{Keys: keys, Values: values}, nil
 			}
 		}
-		if len(p.Map.Items) >= 1 {
-			allConst := true
-			fields := make([]string, len(p.Map.Items))
-			typestr := make([]string, len(p.Map.Items))
-			vals := make([]Expr, len(p.Map.Items))
-			for i, it := range p.Map.Items {
-				key, ok := types.SimpleStringKey(it.Key)
-				if !ok {
-					allConst = false
-					break
-				}
-				fields[i] = safeName(key)
-				ve, err := convertExpr(it.Value)
-				if err != nil {
-					return nil, err
-				}
-				vals[i] = ve
-				typestr[i] = guessHsType(ve)
-			}
-			if allConst {
-				structCount++
-				name := fmt.Sprintf("GenType%d", structCount)
-				structDefs[name] = &TypeDecl{Name: name, Fields: fields, Types: typestr}
-				for _, f := range fields {
-					preludeHide[f] = true
-				}
-				return &RecordLit{Name: name, Names: fields, Fields: vals}, nil
-			}
-		}
 		needDataMap = true
 		var keys []Expr
 		var values []Expr
@@ -4186,13 +4157,21 @@ func convertWhileStmt(w *parser.WhileStmt) (Stmt, error) {
 	ws := &WhileStmt{Cond: cond, Body: body}
 	if len(w.Body) > 0 {
 		if as := w.Body[len(w.Body)-1].Assign; as != nil && len(as.Index) == 0 {
-			ex, err := convertExpr(as.Value)
-			if err != nil {
-				return nil, err
+			// Only treat the last statement as the loop update when
+			// the converted body also ends with a matching simple
+			// assignment. This avoids dropping assignments that were
+			// moved into an if/else by early return detection.
+			if last, ok := ws.Body[len(ws.Body)-1].(*AssignStmt); ok {
+				ex, err := convertExpr(as.Value)
+				if err != nil {
+					return nil, err
+				}
+				if last.Name == safeName(as.Name) {
+					ws.Var = safeName(as.Name)
+					ws.Next = ex
+					ws.Body = ws.Body[:len(ws.Body)-1]
+				}
 			}
-			ws.Var = safeName(as.Name)
-			ws.Next = ex
-			ws.Body = ws.Body[:len(ws.Body)-1]
 		}
 	}
 	return ws, nil

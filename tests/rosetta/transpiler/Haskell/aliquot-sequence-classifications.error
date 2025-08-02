@@ -1,6 +1,17 @@
 run: exit status 1
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:133:84: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:32:21: error:
+    • Couldn't match type ‘()’ with ‘Int’
+      Expected: Int -> IO Int
+        Actual: Int -> IO ()
+    • In the first argument of ‘($!)’, namely ‘writeIORef i’
+      In a stmt of a 'do' block: writeIORef i $! ((deref i) + 1)
+      In the expression: do writeIORef i $! ((deref i) + 1)
+   |
+32 |                     writeIORef i $! ((deref i) + 1)
+   |                     ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:130:84: error:
     • Couldn't match type ‘Char’ with ‘Int’
       Expected: IORef [Int]
         Actual: IORef String
@@ -8,10 +19,10 @@ run: exit status 1
       In the expression: deref aliquot
       In the expression: ("aliquot", (deref aliquot))
     |
-133 |                     return (Map.fromList [("seq", (deref seq)), ("aliquot", (deref aliquot))])
+130 |                     return (Map.fromList [("seq", (deref seq)), ("aliquot", (deref aliquot))])
     |                                                                                    ^^^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:134:29: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:131:29: error:
     • Couldn't match expected type ‘Map.Map String [Int]’
                   with actual type ‘()’
     • In the first argument of ‘return’, namely ‘()’
@@ -22,22 +33,22 @@ run: exit status 1
         else
             return ()
     |
-134 |                 else return ()
+131 |                 else return ()
     |                             ^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:139:36: error:
-    • Couldn't match type ‘Int’ with ‘[Char]’
-      Expected: IORef [String]
-        Actual: IORef [Int]
-    • In the first argument of ‘deref’, namely ‘seq’
-      In the ‘seq’ field of a record
-      In the first argument of ‘return’, namely
-        ‘(GenType1 {seq = (deref seq), aliquot = ""})’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:136:61: error:
+    • Couldn't match type ‘Char’ with ‘Int’
+      Expected: [Int]
+        Actual: String
+    • In the expression: ""
+      In the expression: ("aliquot", "")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("seq", (deref seq)), ("aliquot", "")]’
     |
-139 |     return (GenType1 {seq = (deref seq), aliquot = ""})
-    |                                    ^^^
+136 |     return (Map.fromList [("seq", (deref seq)), ("aliquot", "")])
+    |                                                             ^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:143:37: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:140:37: error:
     • Couldn't match type: [Char]
                      with: IO [Char]
       Expected: IO [Char]
@@ -47,22 +58,22 @@ run: exit status 1
         ‘(unsafePerformIO (show n))’
       In a stmt of a 'do' block: s <- newIORef (unsafePerformIO (show n))
     |
-143 |     s <- newIORef (unsafePerformIO (show n))
+140 |     s <- newIORef (unsafePerformIO (show n))
     |                                     ^^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:192:105: error:
-    • Couldn't match expected type ‘[String]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:189:105: error:
+    • Couldn't match expected type: [String]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘res’
       In the first argument of ‘padRight’, namely
         ‘(((res !! "aliquot") :: String))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((res !! "aliquot") :: String)) 15)’
     |
-192 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+189 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                         ^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:192:112: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:189:112: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -72,22 +83,22 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((res !! "aliquot") :: String)) 15)’
     |
-192 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+189 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                                ^^^^^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:192:184: error:
-    • Couldn't match expected type ‘[[Int]]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:189:184: error:
+    • Couldn't match expected type: [[Int]]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘res’
       In the first argument of ‘joinWithCommas’, namely
         ‘(((res !! "seq") :: [Int]))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((res !! "seq") :: [Int])))’
     |
-192 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+189 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                                                                                                        ^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:192:191: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:189:191: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -97,22 +108,22 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((res !! "seq") :: [Int])))’
     |
-192 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+189 |                 putStrLn (unsafePerformIO (padLeft (deref k) 2) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                                                                                                               ^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:205:99: error:
-    • Couldn't match expected type ‘[String]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:202:99: error:
+    • Couldn't match expected type: [String]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘res’
       In the first argument of ‘padRight’, namely
         ‘(((res !! "aliquot") :: String))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((res !! "aliquot") :: String)) 15)’
     |
-205 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+202 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                   ^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:205:106: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:202:106: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -122,22 +133,22 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((res !! "aliquot") :: String)) 15)’
     |
-205 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+202 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                          ^^^^^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:205:178: error:
-    • Couldn't match expected type ‘[[Int]]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:202:178: error:
+    • Couldn't match expected type: [[Int]]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘res’
       In the first argument of ‘joinWithCommas’, namely
         ‘(((res !! "seq") :: [Int]))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((res !! "seq") :: [Int])))’
     |
-205 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+202 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                                                                                                  ^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:205:185: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:202:185: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -147,22 +158,22 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((res !! "seq") :: [Int])))’
     |
-205 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
+202 |                 putStrLn (unsafePerformIO (padLeft val 7) ++ ": " ++ unsafePerformIO (padRight (((res !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((res !! "seq") :: [Int]))))
     |                                                                                                                                                                                         ^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:213:64: error:
-    • Couldn't match expected type ‘[String]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:210:64: error:
+    • Couldn't match expected type: [String]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘r’
       In the first argument of ‘padRight’, namely
         ‘(((r !! "aliquot") :: String))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((r !! "aliquot") :: String)) 15)’
     |
-213 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
+210 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
     |                                                                ^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:213:69: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:210:69: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -172,22 +183,22 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(padRight (((r !! "aliquot") :: String)) 15)’
     |
-213 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
+210 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
     |                                                                     ^^^^^^^^^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:213:141: error:
-    • Couldn't match expected type ‘[[Int]]’
-                  with actual type ‘GenType1’
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:210:141: error:
+    • Couldn't match expected type: [[Int]]
+                  with actual type: Map.Map String [Int]
     • In the first argument of ‘(!!)’, namely ‘r’
       In the first argument of ‘joinWithCommas’, namely
         ‘(((r !! "seq") :: [Int]))’
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((r !! "seq") :: [Int])))’
     |
-213 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
+210 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
     |                                                                                                                                             ^
 
-/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:213:146: error:
+/workspace/mochi/tests/rosetta/transpiler/Haskell/aliquot-sequence-classifications.hs:210:146: error:
     • Couldn't match type ‘[Char]’ with ‘Int’
       Expected: Int
         Actual: String
@@ -197,5 +208,5 @@ run: exit status 1
       In the first argument of ‘unsafePerformIO’, namely
         ‘(joinWithCommas (((r !! "seq") :: [Int])))’
     |
-213 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
+210 |     putStrLn (show big ++ ": " ++ unsafePerformIO (padRight (((r !! "aliquot") :: String)) 15) ++ " " ++ unsafePerformIO (joinWithCommas (((r !! "seq") :: [Int]))))
     |                                                                                                                                                  ^^^^^
