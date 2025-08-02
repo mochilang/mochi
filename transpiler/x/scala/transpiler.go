@@ -1224,6 +1224,10 @@ func (f *FieldExpr) emit(w io.Writer) {
 		}
 	}
 	f.Receiver.emit(w)
+	if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
+		fmt.Fprint(w, ".toInt")
+		return
+	}
 	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
 		fmt.Fprintf(w, "(\"%s\")", f.Name)
 	} else {
