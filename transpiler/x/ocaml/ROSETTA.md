@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 291/491
+Completed programs: 292/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -305,7 +305,7 @@ Completed programs: 291/491
 | 297 | dice-game-probabilities-1 | ✓ | 905.0ms | 602.52MB |
 | 298 | dice-game-probabilities-2 | ✓ | 12.0ms | 845.03KB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 13.0ms | 1.30MB |
-| 300 | dijkstras-algorithm | error |  |  |
+| 300 | dijkstras-algorithm | ✓ | 295.0µs | 8.29KB |
 | 301 | dinesmans-multiple-dwelling-problem |   |  |  |
 | 302 | dining-philosophers-1 |   |  |  |
 | 303 | dining-philosophers-2 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 291/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-02 17:26 +0700
+Last updated 2025-08-02 17:44 +0700

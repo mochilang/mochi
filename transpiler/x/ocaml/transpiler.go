@@ -497,6 +497,15 @@ func isDynamicMapType(typ string) bool {
 	if strings.HasPrefix(typ, "map-dyn") || typ == "map" {
 		return true
 	}
+	if strings.HasPrefix(typ, "map-") {
+		val := strings.TrimPrefix(typ, "map-")
+		// A map whose value is itself a map or another dynamic type
+		// (e.g. a struct) should also be treated as dynamic because the
+		// values are stored using Obj.t.
+		if strings.HasPrefix(val, "map") || isDynamicMapType(val) {
+			return true
+		}
+	}
 	if _, ok := structFields[typ]; ok {
 		return true
 	}
@@ -2056,19 +2065,24 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	mu.Key.emit(w)
 	io.WriteString(w, ") ")
 	if mu.Dyn {
-		io.WriteString(w, "(Obj.magic (")
-		mu.Map.emit(w)
-		keyIsString := false
-		switch k := mu.Key.(type) {
-		case *StringLit:
-			keyIsString = true
-		case *Name:
-			keyIsString = k.Typ == "string"
-		}
-		if keyIsString {
-			io.WriteString(w, ") : (string * Obj.t) list)")
+		if mi, ok := mu.Map.(*MapIndexExpr); ok && mi.Dyn {
+			// Map expression already yields a properly typed list.
+			mu.Map.emit(w)
 		} else {
-			io.WriteString(w, ") : (int * Obj.t) list)")
+			io.WriteString(w, "(Obj.magic (")
+			mu.Map.emit(w)
+			keyIsString := false
+			switch k := mu.Key.(type) {
+			case *StringLit:
+				keyIsString = true
+			case *Name:
+				keyIsString = k.Typ == "string"
+			}
+			if keyIsString {
+				io.WriteString(w, ") : (string * Obj.t) list)")
+			} else {
+				io.WriteString(w, ") : (int * Obj.t) list)")
+			}
 		}
 	} else {
 		mu.Map.emit(w)
@@ -3365,7 +3379,7 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					keys[i] = k
 				}
 				mapExpr := Expr(&Name{Ident: st.Assign.Name, Typ: info.typ, Ref: true})
-				upd := buildMapUpdate(mapExpr, keys, valExpr)
+				upd := buildMapUpdate(mapExpr, keys, valExpr, info.typ)
 				return &AssignStmt{Name: st.Assign.Name, Expr: upd}, nil
 			}
 			indices := make([]Expr, len(st.Assign.Index))
@@ -3491,6 +3505,9 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		vtyp := "int"
 		if strings.HasPrefix(iterTyp, "list-") {
 			vtyp = strings.TrimPrefix(iterTyp, "list-")
+		} else if iterTyp == "list" {
+			// Dynamic list; element type unknown
+			vtyp = ""
 		} else if strings.HasPrefix(iterTyp, "list") {
 			vtyp = "int"
 		}
@@ -4333,11 +4350,7 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 					typ = "int"
 				}
 			} else if strings.HasPrefix(typ, "map-") {
-				parts := strings.Split(typ, "-")
-				valTyp := "int"
-				if len(parts) >= 2 {
-					valTyp = parts[len(parts)-1]
-				}
+				valTyp := strings.TrimPrefix(typ, "map-")
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn}
 				typ = valTyp
 			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
@@ -4551,6 +4564,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &CastExpr{Expr: expr, Type: "obj_to_int"}
 			} else if target == "float" && typ != "float" && typ != "int" {
 				expr = &CastExpr{Expr: expr, Type: "obj_to_float"}
+			} else if target == "bool" && typ != "bool" {
+				expr = &CastExpr{Expr: expr, Type: "obj_to_bool"}
 			} else if typ == "int" && target == "float" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_float"}
 			} else if typ == "float" && target == "int" {
@@ -5699,13 +5714,14 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 }
 
-func buildMapUpdate(mp Expr, keys []Expr, val Expr) Expr {
+func buildMapUpdate(mp Expr, keys []Expr, val Expr, typ string) Expr {
 	key := keys[0]
+	valTyp := strings.TrimPrefix(typ, "map-")
 	if len(keys) == 1 {
-		return &MapUpdateExpr{Map: mp, Key: key, Value: val, Dyn: true}
+		return &MapUpdateExpr{Map: mp, Key: key, Value: val, Dyn: isDynamicMapType(typ)}
 	}
-	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: "map", Dyn: false}, keys[1:], val)
-	return &MapUpdateExpr{Map: mp, Key: key, Value: inner, Dyn: true}
+	inner := buildMapUpdate(&MapIndexExpr{Map: mp, Key: key, Typ: valTyp, Dyn: true}, keys[1:], val, valTyp)
+	return &MapUpdateExpr{Map: mp, Key: key, Value: inner, Dyn: isDynamicMapType(typ)}
 }
 
 func substituteFieldVars(e Expr, fields map[string]bool) Expr {
