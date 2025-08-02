@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-02 07:02 UTC
+Last updated: 2025-08-02 07:17 UTC
 
-## Rosetta Golden Test Checklist (209/491)
+## Rosetta Golden Test Checklist (207/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -13,35 +13,35 @@ Last updated: 2025-08-02 07:02 UTC
 | 4 | 100-prisoners | ✓ | 138.514ms | 3.3 MB |
 | 5 | 15-puzzle-game | ✓ | 45µs | 3.2 MB |
 | 6 | 15-puzzle-solver | ✓ | 17µs | 3.2 MB |
-| 7 | 2048 | ✓ | 280µs |  |
-| 8 | 21-game | ✓ | 72µs | 3.2 MB |
-| 9 | 24-game-solve | ✓ | 3.207ms | 3.2 MB |
-| 10 | 24-game | ✓ | 59µs | 3.2 MB |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 210µs | 4.1 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 1m2.820075s | 351.4 MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 8.329ms | 3.2 MB |
-| 14 | 99-bottles-of-beer | ✓ | 227µs | 3.2 MB |
-| 15 | a+b | ✓ | 22µs | 3.2 MB |
-| 16 | abbreviations-automatic | ✓ | 2.964ms | 3.2 MB |
-| 17 | abbreviations-easy | ✓ | 478µs | 3.2 MB |
-| 18 | abbreviations-simple | ✓ | 1.004ms | 3.2 MB |
-| 19 | abc-problem | ✓ | 356µs | 3.2 MB |
-| 20 | abelian-sandpile-model-identity | ✓ | 86µs | 3.2 MB |
-| 21 | abelian-sandpile-model | ✓ | 96µs | 3.2 MB |
-| 22 | abstract-type | ✓ | 20µs |  |
-| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 178.424ms |  |
-| 24 | abundant-odd-numbers | ✓ | 313.603ms | 128.0 KB |
-| 25 | accumulator-factory | ✓ | 30µs |  |
-| 26 | achilles-numbers | ✓ | 7.958ms | 252.0 KB |
-| 27 | ackermann-function-2 | ✓ | 89µs |  |
-| 28 | ackermann-function-3 | ✓ | 34µs |  |
+| 7 | 2048 | ✓ | 210µs |  |
+| 8 | 21-game | ✓ | 37µs |  |
+| 9 | 24-game-solve | ✓ | 4.399ms |  |
+| 10 | 24-game | ✓ | 75µs |  |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 223.117ms | 824.0 KB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 59.309485s | 362.8 MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 7.592ms |  |
+| 14 | 99-bottles-of-beer | ✓ | 191µs |  |
+| 15 | a+b | ✓ | 42µs |  |
+| 16 | abbreviations-automatic | ✓ | 2.886ms |  |
+| 17 | abbreviations-easy | ✓ | 773µs |  |
+| 18 | abbreviations-simple |   | 1.004ms | 3.2 MB |
+| 19 | abc-problem | ✓ | 599µs |  |
+| 20 | abelian-sandpile-model-identity | ✓ | 109µs |  |
+| 21 | abelian-sandpile-model | ✓ | 249µs |  |
+| 22 | abstract-type | ✓ | 22µs |  |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 177.66ms |  |
+| 24 | abundant-odd-numbers | ✓ | 330.761ms | 132.0 KB |
+| 25 | accumulator-factory |   | 30µs |  |
+| 26 | achilles-numbers | ✓ | 4.485ms | 252.0 KB |
+| 27 | ackermann-function-2 | ✓ | 18µs |  |
+| 28 | ackermann-function-3 | ✓ | 36µs |  |
 | 29 | ackermann-function | ✓ | 82µs |  |
-| 30 | active-directory-connect | ✓ | 23µs |  |
-| 31 | active-directory-search-for-a-user | ✓ | 32µs |  |
-| 32 | active-object | ✓ | 43µs |  |
-| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 75µs |  |
-| 34 | additive-primes | ✓ | 83µs |  |
-| 35 | address-of-a-variable | ✓ | 32µs |  |
+| 30 | active-directory-connect | ✓ | 13µs |  |
+| 31 | active-directory-search-for-a-user | ✓ | 24µs |  |
+| 32 | active-object | ✓ | 32µs |  |
+| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 44µs |  |
+| 34 | additive-primes | ✓ | 71µs |  |
+| 35 | address-of-a-variable | ✓ | 35µs |  |
 | 36 | adfgvx-cipher |   |  |  |
 | 37 | aks-test-for-primes | ✓ | 47µs |  |
 | 38 | algebraic-data-types |   |  |  |
