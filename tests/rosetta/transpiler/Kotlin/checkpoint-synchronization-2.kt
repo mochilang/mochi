@@ -32,7 +32,7 @@ fun lower(ch: String): String {
     var i: Int = 0
     while (i < upper.length) {
         if (ch == upper.substring(i, i + 1)) {
-            return ::lower.substring(i, i + 1)
+            return lower.substring(i, i + 1)
         }
         i = i + 1
     }

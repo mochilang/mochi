@@ -24,7 +24,7 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Birthday(var month: Int, var day: Int)
+data class Birthday(var month: Int = 0, var day: Int = 0)
 var choices: MutableList<Birthday> = mutableListOf(Birthday(month = 5, day = 15), Birthday(month = 5, day = 16), Birthday(month = 5, day = 19), Birthday(month = 6, day = 17), Birthday(month = 6, day = 18), Birthday(month = 7, day = 14), Birthday(month = 7, day = 16), Birthday(month = 8, day = 14), Birthday(month = 8, day = 15), Birthday(month = 8, day = 17))
 var filtered: MutableList<Birthday> = mutableListOf<Birthday>()
 var filtered2: MutableList<Birthday> = mutableListOf<Birthday>()

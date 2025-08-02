@@ -26,6 +26,7 @@ var (
 	reserved       map[string]bool
 	currentRetType string
 	benchMain      bool
+	unusedCounter  int
 )
 
 func init() {
@@ -124,6 +125,12 @@ func init() {
     is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
+}`,
+		"_len": `fun _len(v: Any?): Int = when (v) {
+    is String -> v.length
+    is Collection<*> -> v.size
+    is Map<*, *> -> v.size
+    else -> v.toString().length
 }`,
 		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
@@ -259,6 +266,17 @@ func SetBenchMain(v bool) { benchMain = v }
 func safeName(n string) string {
 	if reserved[n] {
 		return "_" + n
+	}
+	allUnderscore := true
+	for _, r := range n {
+		if r != '_' {
+			allUnderscore = false
+			break
+		}
+	}
+	if allUnderscore {
+		unusedCounter++
+		return fmt.Sprintf("_u%d", unusedCounter)
 	}
 	return n
 }
@@ -1749,6 +1767,13 @@ type LenExpr struct {
 }
 
 func (l *LenExpr) emit(w io.Writer) {
+	typ := guessType(l.Value)
+	if typ == "Any" || typ == "Any?" {
+		io.WriteString(w, "_len(")
+		l.Value.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	needParens := false
 	switch l.Value.(type) {
 	case *CastExpr, *BinaryExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -1765,12 +1790,7 @@ func (l *LenExpr) emit(w io.Writer) {
 	if l.IsString {
 		io.WriteString(w, ".length")
 	} else {
-		typ := guessType(l.Value)
-		if typ == "Any" || typ == "Any?" {
-			io.WriteString(w, ".toString().length")
-		} else {
-			io.WriteString(w, ".size")
-		}
+		io.WriteString(w, ".size")
 	}
 }
 
@@ -4957,8 +4977,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &AvgExpr{Value: arg}, nil
 			case "len":
 				isStr := types.IsStringExpr(p.Call.Args[0], env)
-				if !isStr && guessType(arg) == "String" {
+				typ := guessType(arg)
+				if !isStr && typ == "String" {
 					isStr = true
+				}
+				if typ == "Any" || typ == "Any?" {
+					useHelper("_len")
 				}
 				return &LenExpr{Value: arg, IsString: isStr}, nil
 			case "str":

@@ -26,7 +26,7 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Info(var animal: String, var yinYang: String, var element: String, var stemBranch: String, var cycle: Int)
+data class Info(var animal: String = "", var yinYang: String = "", var element: String = "", var stemBranch: String = "", var cycle: Int = 0)
 var animal: MutableList<String> = mutableListOf("Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig")
 var yinYang: MutableList<String> = mutableListOf("Yang", "Yin")
 var element: MutableList<String> = mutableListOf("Wood", "Fire", "Earth", "Metal", "Water")

@@ -37,8 +37,8 @@ fun printStat(fs: MutableMap<String, Boolean>, path: String): Unit {
 }
 
 fun user_main(): Unit {
-    var fs: MutableMap<String, Boolean> = mutableMapOf<Any?, Any?>() as MutableMap<String, Boolean>
-    ((fs)["docs"] as Boolean) = true
+    var fs: MutableMap<String, Boolean> = mutableMapOf<String, Boolean>()
+    (fs)["docs"] = true
     for (p in mutableListOf("input.txt", "/input.txt", "docs", "/docs")) {
         printStat(fs, p)
     }

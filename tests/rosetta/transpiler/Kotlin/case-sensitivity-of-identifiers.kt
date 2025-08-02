@@ -38,24 +38,24 @@ fun user_main(): Unit {
     var dog: String = "Benjamin"
     d = (packageSees(pkg_dog, Dog, pkg_DOG)) as MutableMap<String, Boolean>
     println((((("Main sees:   " + dog) + " ") + Dog) + " ") + pkg_DOG)
-    ((d)["dog"] as Boolean) = true
-    ((d)["Dog"] as Boolean) = true
-    ((d)["pkg_DOG"] as Boolean) = true
+    (d)["dog"] = true
+    (d)["Dog"] = true
+    (d)["pkg_DOG"] = true
     println(("There are " + d.size.toString()) + " dogs.\n")
     Dog = "Samba"
     d = (packageSees(pkg_dog, Dog, pkg_DOG)) as MutableMap<String, Boolean>
     println((((("Main sees:   " + dog) + " ") + Dog) + " ") + pkg_DOG)
-    ((d)["dog"] as Boolean) = true
-    ((d)["Dog"] as Boolean) = true
-    ((d)["pkg_DOG"] as Boolean) = true
+    (d)["dog"] = true
+    (d)["Dog"] = true
+    (d)["pkg_DOG"] = true
     println(("There are " + d.size.toString()) + " dogs.\n")
     var DOG: String = "Bernie"
     d = (packageSees(pkg_dog, Dog, pkg_DOG)) as MutableMap<String, Boolean>
     println((((("Main sees:   " + dog) + " ") + Dog) + " ") + DOG)
-    ((d)["dog"] as Boolean) = true
-    ((d)["Dog"] as Boolean) = true
-    ((d)["pkg_DOG"] as Boolean) = true
-    ((d)["DOG"] as Boolean) = true
+    (d)["dog"] = true
+    (d)["Dog"] = true
+    (d)["pkg_DOG"] = true
+    (d)["DOG"] = true
     println(("There are " + d.size.toString()) + " dogs.")
 }
 
