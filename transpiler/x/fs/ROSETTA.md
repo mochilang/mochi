@@ -360,7 +360,7 @@ This file is auto-generated from rosetta tests.
 | 353 | enumerations-4 | ✓ | 16µs | 15.5 KB |
 | 354 | environment-variables-1 | ✓ | 249µs | 50.4 KB |
 | 355 | environment-variables-2 | ✓ | 297µs | 63.2 KB |
-| 356 | equal-prime-and-composite-sums | ✓ | 182.638ms | 270.8 KB |
+| 356 | equal-prime-and-composite-sums | ✓ | 110.86ms | 263.0 KB |
 | 357 | equilibrium-index | ✓ | 10.144ms | 116.6 KB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-02 17:52 +0700
+Last updated: 2025-08-02 20:24 +0700
