@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-01 10:42 UTC
+Last updated: 2025-08-02 10:40 UTC
 
 ## Rosetta Golden Test Checklist (474/491)
 | Index | Name | Status | Duration | Memory |
@@ -216,7 +216,7 @@ Last updated: 2025-08-01 10:42 UTC
 | 207 | comma-quibbling | ✓ | 755µs | 128.0 KB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 3.237ms | 384.0 KB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 13.929961s | 42.8 MB |
-| 210 | compound-data-type | ✓ | 8µs |  |
+| 210 | compound-data-type | ✓ | 7µs |  |
 | 211 | concurrent-computing-1 | ✓ | 690µs |  |
 | 212 | concurrent-computing-2 | ✓ | 658µs | 128.0 KB |
 | 213 | concurrent-computing-3 | ✓ | 1.743ms |  |
@@ -456,7 +456,7 @@ Last updated: 2025-08-01 10:42 UTC
 | 447 | flow-control-structures-2 | ✓ | 337µs |  |
 | 448 | flow-control-structures-3 | ✓ | 383µs | 128.0 KB |
 | 449 | flow-control-structures-4 | ✓ | 632µs | 128.0 KB |
-| 450 | floyd-warshall-algorithm | ✓ | 1.18ms | 512.0 KB |
+| 450 | floyd-warshall-algorithm | ✓ | 2.402ms | 128.0 KB |
 | 451 | floyd-warshall-algorithm2 | ✓ | 2.401ms | 128.0 KB |
 | 452 | floyds-triangle | ✓ | 1.333ms |  |
 | 453 | forest-fire | ✓ | 6.989ms | 3.5 MB |
