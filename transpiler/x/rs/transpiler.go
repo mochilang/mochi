@@ -1618,6 +1618,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				io.WriteString(w, name)
 				io.WriteString(w, ".lock().unwrap(); let _val = ")
 				lockedMap = nr.Name
+				indexLHS = old
 				s.Value.emit(w)
 				lockedMap = ""
 				io.WriteString(w, "; _map.insert(")
@@ -1663,6 +1664,7 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 				io.WriteString(w, ".clone()")
 			}
 			io.WriteString(w, ", ")
+			indexLHS = old
 			s.Value.emit(w)
 			io.WriteString(w, ")")
 			indexLHS = old
@@ -4946,8 +4948,20 @@ func inferType(e Expr) string {
 		if len(ex.Items) > 0 {
 			kt := inferType(ex.Items[0].Key)
 			vt := inferType(ex.Items[0].Value)
+			same := true
+			for _, it := range ex.Items[1:] {
+				if t := inferType(it.Key); t != kt {
+					kt = "String"
+				}
+				if t := inferType(it.Value); t != vt {
+					same = false
+				}
+			}
 			if kt == "" {
 				kt = "String"
+			}
+			if !same {
+				vt = "String"
 			}
 			if vt == "" {
 				vt = "i64"
