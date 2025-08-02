@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 14:55 GMT+7
+Last updated: 2025-08-02 15:39 GMT+7
 
-## Rosetta Checklist (377/491)
+## Rosetta Checklist (379/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -428,9 +428,9 @@ Last updated: 2025-08-02 14:55 GMT+7
 | 420 | find-chess960-starting-position-identifier-2 | ✓ | 37.0ms | 89.59KB |
 | 421 | find-chess960-starting-position-identifier | ✓ | 35.0ms | 89.77KB |
 | 422 | find-common-directory-path | ✓ | 46.0ms | 95.39KB |
-| 423 | find-duplicate-files |   |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion | ✓ | 35.0ms | 552B |
+| 423 | find-duplicate-files | ✓ | 44.0ms | 78.67KB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 54.0ms | 77.91KB |
+| 425 | find-limit-of-recursion | ✓ | 43.0ms | 712B |
 | 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 48.0ms | 94.14KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 45.0ms | 87.87KB |

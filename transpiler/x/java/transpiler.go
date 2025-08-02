@@ -2547,7 +2547,7 @@ func (a *AppendExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "appendObj(")
 		a.List.emit(w)
 		fmt.Fprint(w, ", ")
-		if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
+		if ll, ok := a.Value.(*ListLit); ok && (ll.ElemType == "" || ll.ElemType == "Object") {
 			et := elem
 			if strings.HasSuffix(et, "[]") {
 				et = strings.TrimSuffix(et, "[]")
