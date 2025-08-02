@@ -1,0 +1,39 @@
+compile failed: exit status 1: /tmp/ctranspile4243019293/call-an-object-method-2.mochi.c: In function ‘_mem’:
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:31:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   31 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c: At top level:
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:42:6: error: expected identifier or ‘(’ before ‘)’ token
+   42 | int(*)() *funcs = NULL;
+      |      ^
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:44:6: error: expected identifier or ‘(’ before ‘)’ token
+   44 | int(*)() New = 0;
+      |      ^
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:45:6: error: expected identifier or ‘(’ before ‘)’ token
+   45 | int(*)() Count = 0;
+      |      ^
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:47:6: error: expected identifier or ‘(’ before ‘)’ token
+   47 | int(*)() * newFactory();
+      |      ^
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:50:6: error: expected identifier or ‘(’ before ‘)’ token
+   50 | int(*)() * newFactory() {
+      |      ^
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c: In function ‘main’:
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:59:9: error: ‘funcs’ undeclared (first use in this function)
+   59 |         funcs = newFactory();
+      |         ^~~~~
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:59:9: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:59:17: warning: implicit declaration of function ‘newFactory’ [-Wimplicit-function-declaration]
+   59 |         funcs = newFactory();
+      |                 ^~~~~~~~~~
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:61:9: error: ‘New’ undeclared (first use in this function)
+   61 |         New = funcs[(int)(0LL)];
+      |         ^~~
+/tmp/ctranspile4243019293/call-an-object-method-2.mochi.c:62:9: error: ‘Count’ undeclared (first use in this function)
+   62 |         Count = funcs[(int)(1LL)];
+      |         ^~~~~
+

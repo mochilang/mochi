@@ -1,0 +1,114 @@
+compile failed: exit status 1: /tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:108:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+  108 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: At top level:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:123:8: error: ‘bigrat’ redeclared as different kind of symbol
+  123 | bigrat bigrat(long long a, long long b);
+      |        ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:7:16: note: previous declaration of ‘bigrat’ with type ‘bigrat’ {aka ‘__mpq_struct (*)[1]’}
+    7 | typedef mpq_t* bigrat;
+      |                ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:124:1: error: unknown type name ‘bigrat’
+  124 | bigrat * calkinWilf(long long n);
+      | ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:125:25: error: expected declaration specifiers or ‘...’ before ‘bigrat’
+  125 | long long * toContinued(bigrat r);
+      |                         ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:131:1: error: unknown type name ‘bigrat’
+  131 | bigrat bigrat(long long a, long long b) {
+      | ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:131:8: error: conflicting types for ‘bigrat’; have ‘int(long long int,  long long int)’
+  131 | bigrat bigrat(long long a, long long b) {
+      |        ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:123:8: note: previous declaration of ‘bigrat’ with type ‘__mpq_struct (*(long long int,  long long int))[1]’
+  123 | bigrat bigrat(long long a, long long b);
+      |        ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: In function ‘bigrat’:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:132:12: warning: returning ‘bigrat’ {aka ‘__mpq_struct (*)[1]’} from a function with return type ‘int’ makes integer from pointer without a cast [-Wint-conversion]
+  132 |     return _div(_bigrat(a, 1LL), _bigrat(b, 1LL));
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: At top level:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:135:1: error: unknown type name ‘bigrat’
+  135 | bigrat * calkinWilf(long long n) {
+      | ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: In function ‘calkinWilf’:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:136:13: error: ‘seq’ undeclared (first use in this function)
+  136 |     bigrat *seq = NULL;
+      |             ^~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:136:13: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:138:45: warning: passing argument 3 of ‘list_append_bigrat’ makes pointer from integer without a cast [-Wint-conversion]
+  138 |     seq = list_append_bigrat(seq, &seq_len, bigrat(1LL, 1LL));
+      |                                             ^~~~~~~~~~~~~~~~
+      |                                             |
+      |                                             int
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:79:68: note: expected ‘bigrat’ {aka ‘__mpq_struct (*)[1]’} but argument is of type ‘int’
+   79 | static bigrat* list_append_bigrat(bigrat *arr, size_t *len, bigrat val) {
+      |                                                             ~~~~~~~^~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:141:15: error: expected ‘;’ before ‘prev’
+  141 |         bigrat prev = seq[(int)(i - 1LL)];
+      |               ^~~~~
+      |               ;
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:142:24: error: ‘prev’ undeclared (first use in this function)
+  142 |         bigint a = num(prev);
+      |                        ^~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:144:19: error: invalid operands to binary / (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘bigint’ {aka ‘__mpz_struct (*)[1]’})
+  144 |         int f = a / b;
+      |                   ^
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:145:15: error: expected ‘;’ before ‘t’
+  145 |         bigrat t = bigrat(f, 1LL);
+      |               ^~
+      |               ;
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:146:9: error: ‘t’ undeclared (first use in this function)
+  146 |         t = _mul(t, _bigrat(2LL, 1LL));
+      |         ^
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: At top level:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:156:25: error: expected declaration specifiers or ‘...’ before ‘bigrat’
+  156 | long long * toContinued(bigrat r) {
+      |                         ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: In function ‘termNumber’:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:182:24: warning: implicit declaration of function ‘repeat’ [-Wimplicit-function-declaration]
+  182 |         b = str_concat(repeat(d, n), b);
+      |                        ^~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:182:24: warning: passing argument 1 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+  182 |         b = str_concat(repeat(d, n), b);
+      |                        ^~~~~~~~~~~~
+      |                        |
+      |                        int
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:13:37: note: expected ‘const char *’ but argument is of type ‘int’
+   13 | static char* str_concat(const char *a, const char *b) {
+      |                         ~~~~~~~~~~~~^
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:189:12: warning: implicit declaration of function ‘parseIntStr’ [-Wimplicit-function-declaration]
+  189 |     return parseIntStr(b, 2LL);
+      |            ^~~~~~~~~~~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c: In function ‘user_main’:
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:219:13: error: ‘cw’ undeclared (first use in this function)
+  219 |     bigrat *cw = calkinWilf(20LL);
+      |             ^~
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:224:15: error: expected ‘;’ before ‘r’
+  224 |         bigrat r = cw[(int)(i)];
+      |               ^~
+      |               ;
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:225:40: error: ‘r’ undeclared (first use in this function)
+  225 |         const char* s = str_bigint(num(r));
+      |                                        ^
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:229:38: warning: passing argument 1 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+  229 |         puts(str_concat(str_concat(i + (int)(1LL), ": "), s));
+      |                                    ~~^~~~~~~~~~~~
+      |                                      |
+      |                                      int
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:13:37: note: expected ‘const char *’ but argument is of type ‘int’
+   13 | static char* str_concat(const char *a, const char *b) {
+      |                         ~~~~~~~~~~~~^
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:232:11: error: expected ‘;’ before ‘r’
+  232 |     bigrat r = bigrat(83116LL, 51639LL);
+      |           ^~
+      |           ;
+/tmp/ctranspile3490701374/calkin-wilf-sequence.mochi.c:233:21: warning: implicit declaration of function ‘toContinued’ [-Wimplicit-function-declaration]
+  233 |     long long *cf = toContinued(r);
+      |                     ^~~~~~~~~~~
+

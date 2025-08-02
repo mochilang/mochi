@@ -1,0 +1,35 @@
+compile failed: exit status 1: /tmp/ctranspile2054490862/call-a-function-3.mochi.c: In function ‘_mem’:
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:32:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   32 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile2054490862/call-a-function-3.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c: In function ‘f’:
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:43:21: warning: returning ‘long long int *’ from a function with incompatible return type ‘int *’ [-Wincompatible-pointer-types]
+   43 |     return f_len = 2, (long long[]){ 0LL, 0.0 };
+      |                     ^
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c: In function ‘user_main’:
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:59:12: warning: implicit declaration of function ‘list_append_int’ [-Wimplicit-function-declaration]
+   59 |     list = list_append_int(list, &list_len, 1LL);
+      |            ^~~~~~~~~~~~~~~
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:59:10: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   59 |     list = list_append_int(list, &list_len, 1LL);
+      |          ^
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:60:10: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   60 |     list = list_append_int(list, &list_len, 2LL);
+      |          ^
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:61:10: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   61 |     list = list_append_int(list, &list_len, 3LL);
+      |          ^
+/tmp/ctranspile2054490862/call-a-function-3.mochi.c:62:10: warning: assignment to ‘long long int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   62 |     list = list_append_int(list, &list_len, 4LL);
+      |          ^
+/usr/bin/ld: /tmp/ccri7Nep.o: in function `user_main':
+call-a-function-3.mochi.c:(.text+0x285): undefined reference to `list_append_int'
+/usr/bin/ld: call-a-function-3.mochi.c:(.text+0x2a8): undefined reference to `list_append_int'
+/usr/bin/ld: call-a-function-3.mochi.c:(.text+0x2cb): undefined reference to `list_append_int'
+/usr/bin/ld: call-a-function-3.mochi.c:(.text+0x2ee): undefined reference to `list_append_int'
+collect2: error: ld returned 1 exit status
+

@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (136/491) - Last updated 2025-08-02 17:56 +0700:
+Checklist of programs that currently transpile and run (128/491) - Last updated 2025-08-02 20:52 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -144,34 +144,34 @@ Checklist of programs that currently transpile and run (136/491) - Last updated 
 | 137 | brownian-tree | ✓ | 19.39s | 682.6 KB |
 | 138 | bulls-and-cows-player |  |  |  |
 | 139 | bulls-and-cows |  |  |  |
-| 140 | burrows-wheeler-transform | ✓ | 2.67ms | 348.0 KB |
-| 141 | caesar-cipher-1 | ✓ | 993us | 248.2 KB |
-| 142 | caesar-cipher-2 | ✓ | 1.17ms | 248.2 KB |
+| 140 | burrows-wheeler-transform | ✓ | 3.51ms | 348.1 KB |
+| 141 | caesar-cipher-1 | ✓ | 1.44ms | 248.2 KB |
+| 142 | caesar-cipher-2 | ✓ | 1.47ms | 248.2 KB |
 | 143 | calculating-the-value-of-e |  |  |  |
-| 144 | calendar---for-real-programmers-1 | ✓ | 475us | 34.4 KB |
-| 145 | calendar---for-real-programmers-2 | ✓ | 422us | 34.4 KB |
-| 146 | calendar | ✓ | 428us | 34.4 KB |
+| 144 | calendar---for-real-programmers-1 | ✓ | 819us | 34.4 KB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 587us | 34.4 KB |
+| 146 | calendar | ✓ | 982us | 34.4 KB |
 | 147 | calkin-wilf-sequence |  |  |  |
-| 148 | call-a-foreign-language-function |  |  |  |
-| 149 | call-a-function-1 | ✓ | 20us | 0 B |
-| 150 | call-a-function-10 | ✓ | 43us | 688 B |
-| 151 | call-a-function-11 | ✓ | 248us | 4.9 KB |
-| 152 | call-a-function-12 | ✓ | 240us | 4.8 KB |
-| 153 | call-a-function-2 | ✓ | 20us | 0 B |
-| 154 | call-a-function-3 | ✓ | 100us | 688 B |
-| 155 | call-a-function-4 | ✓ | 16us | 0 B |
-| 156 | call-a-function-5 | ✓ | 714us | 4.7 KB |
-| 157 | call-a-function-6 | ✓ | 274us | 4.9 KB |
-| 158 | call-a-function-7 | ✓ | 21us | 0 B |
-| 159 | call-a-function-8 | ✓ | 69us | 2.2 KB |
-| 160 | call-a-function-9 | ✓ | 76us | 688 B |
-| 161 | call-an-object-method-1 | ✓ | 20us | 0 B |
-| 162 | call-an-object-method-2 | ✓ | 43us | 0 B |
-| 163 | call-an-object-method-3 | ✓ | 23us | 0 B |
-| 164 | call-an-object-method | ✓ | 35us | 0 B |
-| 165 | camel-case-and-snake-case | ✓ | 594us | 62.7 KB |
+| 148 | call-a-foreign-language-function | ✓ | 190us | 4.7 KB |
+| 149 | call-a-function-1 | ✓ | 58us | 0 B |
+| 150 | call-a-function-10 | ✓ | 129us | 784 B |
+| 151 | call-a-function-11 |  |  |  |
+| 152 | call-a-function-12 | ✓ | 418us | 4.8 KB |
+| 153 | call-a-function-2 | ✓ | 17us | 0 B |
+| 154 | call-a-function-3 |  |  |  |
+| 155 | call-a-function-4 |  |  |  |
+| 156 | call-a-function-5 |  |  |  |
+| 157 | call-a-function-6 |  |  |  |
+| 158 | call-a-function-7 | ✓ | 41us | 0 B |
+| 159 | call-a-function-8 | ✓ | 227us | 2.2 KB |
+| 160 | call-a-function-9 | ✓ | 134us | 784 B |
+| 161 | call-an-object-method-1 | ✓ | 25us | 0 B |
+| 162 | call-an-object-method-2 |  |  |  |
+| 163 | call-an-object-method-3 |  |  |  |
+| 164 | call-an-object-method |  |  |  |
+| 165 | camel-case-and-snake-case | ✓ | 674us | 62.8 KB |
 | 166 | canny-edge-detector |  |  |  |
-| 167 | canonicalize-cidr | ✓ | 679us | 62.4 KB |
+| 167 | canonicalize-cidr |  |  |  |
 | 168 | cantor-set |  |  |  |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.26ms | 34.0 KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 330us | 7.2 KB |

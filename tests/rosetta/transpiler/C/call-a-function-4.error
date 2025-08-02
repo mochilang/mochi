@@ -1,0 +1,34 @@
+compile failed: exit status 1: /tmp/ctranspile2978830745/call-a-function-4.mochi.c: In function ‘_mem’:
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:30:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   30 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile2978830745/call-a-function-4.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c: At top level:
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:34:34: error: unknown type name ‘MapSI’
+   34 | void gifEncode(int out, int img, MapSI opts);
+      |                                  ^~~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:38:34: error: unknown type name ‘MapSI’
+   38 | void gifEncode(int out, int img, MapSI opts) {
+      |                                  ^~~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c: In function ‘user_main’:
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:45:5: error: ‘opts’ undeclared (first use in this function)
+   45 |     opts[(int)("NumColors")] = 16LL;
+      |     ^~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:45:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:45:10: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   45 |     opts[(int)("NumColors")] = 16LL;
+      |          ^
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:46:5: warning: implicit declaration of function ‘gifEncode’ [-Wimplicit-function-declaration]
+   46 |     gifEncode(NULL, NULL, (MapSI)opts);
+      |     ^~~~~~~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:46:28: error: ‘MapSI’ undeclared (first use in this function)
+   46 |     gifEncode(NULL, NULL, (MapSI)opts);
+      |                            ^~~~~
+/tmp/ctranspile2978830745/call-a-function-4.mochi.c:46:34: error: expected ‘)’ before ‘opts’
+   46 |     gifEncode(NULL, NULL, (MapSI)opts);
+      |              ~                   ^~~~
+      |                                  )
+

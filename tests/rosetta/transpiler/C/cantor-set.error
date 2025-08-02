@@ -1,0 +1,55 @@
+compile failed: exit status 1: /tmp/ctranspile3129633817/cantor-set.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3129633817/cantor-set.mochi.c:47:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   47 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3129633817/cantor-set.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3129633817/cantor-set.mochi.c: At top level:
+/tmp/ctranspile3129633817/cantor-set.mochi.c:96:1: error: unknown type name ‘MapSI’
+   96 | MapSI *stack = NULL;
+      | ^~~~~
+/tmp/ctranspile3129633817/cantor-set.mochi.c: In function ‘main’:
+/tmp/ctranspile3129633817/cantor-set.mochi.c:119:15: warning: assignment to ‘int *’ from incompatible pointer type ‘Stack *’ [-Wincompatible-pointer-types]
+  119 |         stack = (Stack[]){ (Stack){.start = 0LL, .len = width, .index = 1LL} };
+      |               ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:121:13: error: unknown type name ‘MapSI’
+  121 |             MapSI frame = stack[(int)(0LL)];
+      |             ^~~~~
+/tmp/ctranspile3129633817/cantor-set.mochi.c:122:32: warning: passing argument 1 of ‘_substring’ from incompatible pointer type [-Wincompatible-pointer-types]
+  122 |             stack = _substring(stack, 0, 0LL);
+      |                                ^~~~~
+      |                                |
+      |                                int *
+/tmp/ctranspile3129633817/cantor-set.mochi.c:51:43: note: expected ‘const char *’ but argument is of type ‘int *’
+   51 | static const char* _substring(const char *s, int start, int end) {
+      |                               ~~~~~~~~~~~~^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:122:19: warning: assignment to ‘int *’ from incompatible pointer type ‘const char *’ [-Wincompatible-pointer-types]
+  122 |             stack = _substring(stack, 0, 0LL);
+      |                   ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:123:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  123 |             long long start = frame[(int)("start")];
+      |                                     ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:123:36: error: subscripted value is neither array nor pointer nor vector
+  123 |             long long start = frame[(int)("start")];
+      |                                    ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:124:38: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  124 |             long long lenSeg = frame[(int)("len")];
+      |                                      ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:124:37: error: subscripted value is neither array nor pointer nor vector
+  124 |             long long lenSeg = frame[(int)("len")];
+      |                                     ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:125:37: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  125 |             long long index = frame[(int)("index")];
+      |                                     ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:125:36: error: subscripted value is neither array nor pointer nor vector
+  125 |             long long index = frame[(int)("index")];
+      |                                    ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:139:82: error: incompatible types when initializing type ‘int’ using type ‘Anon4’
+  139 |             stack = (Anon3[]){ (Anon3){.index = 1LL, .len = 81LL, .start = 0LL}, (Anon4){.start = start, .len = seg, .index = index + 1LL} };
+      |                                                                                  ^
+/tmp/ctranspile3129633817/cantor-set.mochi.c:140:82: error: incompatible types when initializing type ‘int’ using type ‘Anon4’
+  140 |             stack = (Anon3[]){ (Anon3){.index = 1LL, .len = 81LL, .start = 0LL}, (Anon4){.start = start + (seg * 2LL), .len = seg, .index = index + 1LL} };
+      |                                                                                  ^
+

@@ -1696,6 +1696,10 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			}
 			continue
 		}
+		if a == nil {
+			io.WriteString(w, "0")
+			continue
+		}
 		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
 			io.WriteString(w, "&")
 		}
@@ -2968,6 +2972,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "div" { // avoid conflict with stdlib
 				funcAliases[name] = "user_div"
 				name = "user_div"
+			}
+			if name == "strdup" { // avoid conflict with stdlib
+				funcAliases[name] = "user_strdup"
+				name = "user_strdup"
 			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {

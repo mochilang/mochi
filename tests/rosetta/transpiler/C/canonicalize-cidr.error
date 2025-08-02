@@ -1,0 +1,17 @@
+compile failed: exit status 1: /tmp/ctranspile1365420853/canonicalize-cidr.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1365420853/canonicalize-cidr.mochi.c:54:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   54 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1365420853/canonicalize-cidr.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1365420853/canonicalize-cidr.mochi.c: In function ‘parseIntStr’:
+/tmp/ctranspile1365420853/canonicalize-cidr.mochi.c:137:26: error: ‘digits’ undeclared (first use in this function)
+  137 |         n = (n * 10LL) + digits[(int)(_substring(str, i, i + 1LL))];
+      |                          ^~~~~~
+/tmp/ctranspile1365420853/canonicalize-cidr.mochi.c:137:26: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1365420853/canonicalize-cidr.mochi.c:137:33: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+  137 |         n = (n * 10LL) + digits[(int)(_substring(str, i, i + 1LL))];
+      |                                 ^
+

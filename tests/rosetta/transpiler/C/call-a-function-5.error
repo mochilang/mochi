@@ -1,0 +1,30 @@
+compile failed: exit status 1: /tmp/ctranspile2129693606/call-a-function-5.mochi.c: In function ‘_mem’:
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:43:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   43 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile2129693606/call-a-function-5.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c: At top level:
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:47:16: error: unknown type name ‘MapSI’
+   47 | long long doIt(MapSI p);
+      |                ^~~~~
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:51:16: error: unknown type name ‘MapSI’
+   51 | long long doIt(MapSI p) {
+      |                ^~~~~
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c: In function ‘user_main’:
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:63:5: error: ‘p’ undeclared (first use in this function)
+   63 |     p[(int)("a")] = 1LL;
+      |     ^
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:63:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:63:7: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   63 |     p[(int)("a")] = 1LL;
+      |       ^
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:64:7: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   64 |     p[(int)("c")] = 9LL;
+      |       ^
+/tmp/ctranspile2129693606/call-a-function-5.mochi.c:65:18: warning: implicit declaration of function ‘doIt’ [-Wimplicit-function-declaration]
+   65 |     puts(str_int(doIt(p)));
+      |                  ^~~~
+

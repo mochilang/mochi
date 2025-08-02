@@ -1,0 +1,32 @@
+compile failed: exit status 1: /tmp/ctranspile3348555098/call-a-function-6.mochi.c: In function ‘_mem’:
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:46:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   46 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile3348555098/call-a-function-6.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c: In function ‘user_main’:
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:62:5: error: ‘args’ undeclared (first use in this function)
+   62 |     args[(int)("a")] = 3LL;
+      |     ^~~~
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:62:5: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:62:10: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   62 |     args[(int)("a")] = 3LL;
+      |          ^
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:63:10: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   63 |     args[(int)("b")] = 2LL;
+      |          ^
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:64:10: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   64 |     args[(int)("c")] = 1LL;
+      |          ^
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:65:14: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   65 |     bar(args[(int)("a")], args[(int)("b")], args[(int)("c")]);
+      |              ^
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:65:32: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   65 |     bar(args[(int)("a")], args[(int)("b")], args[(int)("c")]);
+      |                                ^
+/tmp/ctranspile3348555098/call-a-function-6.mochi.c:65:50: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+   65 |     bar(args[(int)("a")], args[(int)("b")], args[(int)("c")]);
+      |                                                  ^
+

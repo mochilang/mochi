@@ -1,0 +1,13 @@
+compile failed: exit status 1: /tmp/ctranspile1752729115/call-an-object-method-3.mochi.c: In function ‘_mem’:
+/tmp/ctranspile1752729115/call-an-object-method-3.mochi.c:30:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
+   30 |     struct mallinfo mi = mallinfo();
+      |            ^~~~~~~~
+In file included from /tmp/ctranspile1752729115/call-an-object-method-3.mochi.c:5:
+/usr/include/malloc.h:114:24: note: declared here
+  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
+      |                        ^~~~~~~~
+/tmp/ctranspile1752729115/call-an-object-method-3.mochi.c: At top level:
+/tmp/ctranspile1752729115/call-an-object-method-3.mochi.c:41:11: error: invalid initializer
+   41 | Box box = 0;
+      |           ^
+
