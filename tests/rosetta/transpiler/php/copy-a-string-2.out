@@ -4,7 +4,7 @@ pointer = 0
 *pointer = jellyfish
 creature = jellyfish
 {
-  "duration_us": 69,
-  "memory_bytes": 312,
+  "duration_us": 55,
+  "memory_bytes": 39360,
   "name": "main"
 }

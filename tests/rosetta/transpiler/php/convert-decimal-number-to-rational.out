@@ -2,7 +2,7 @@
 0.518518 = 259259/500000
 0.75 = 3/4
 {
-  "duration_us": 119,
-  "memory_bytes": 96,
+  "duration_us": 101,
+  "memory_bytes": 37728,
   "name": "main"
 }

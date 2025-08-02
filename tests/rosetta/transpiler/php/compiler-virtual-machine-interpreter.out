@@ -1,4 +1,3 @@
-Warning: Undefined array key 1 in /workspace/mochi/tests/rosetta/transpiler/php/compiler-virtual-machine-interpreter.php on line 129
 count is: 1
 count is: 2
 count is: 3
@@ -9,7 +8,7 @@ count is: 7
 count is: 8
 count is: 9
 {
-  "duration_us": 307,
-  "memory_bytes": 144,
+  "duration_us": 198,
+  "memory_bytes": 74256,
   "name": "main"
 }

@@ -1,7 +1,7 @@
 hello
 world
 {
-  "duration_us": 70,
-  "memory_bytes": 8288,
+  "duration_us": 53,
+  "memory_bytes": 39960,
   "name": "main"
 }
