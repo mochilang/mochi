@@ -208,15 +208,10 @@ func gatherAssigned(stmts []*parser.Statement, m map[string]bool) {
 		if st.For != nil {
 			gatherAssigned(st.For.Body, m)
 		}
-		if st.Fun != nil {
-			gatherAssigned(st.Fun.Body, m)
-		}
-		if st.Bench != nil {
-			gatherAssigned(st.Bench.Body, m)
-		}
-		if st.Test != nil {
-			gatherAssigned(st.Test.Body, m)
-		}
+		// Only track assignments at the top level. Assignments within
+		// functions, benchmarks, or test blocks should not mark the
+		// variables as globally mutable, so we deliberately avoid
+		// recursing into those constructs here.
 	}
 }
 func containsReturn(stmts []Stmt) bool {
