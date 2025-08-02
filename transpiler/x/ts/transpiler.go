@@ -564,7 +564,7 @@ func (l *LenExpr) emit(w io.Writer) {
 		io.WriteString(w, "0")
 		return
 	}
-	io.WriteString(w, "(")
+	io.WriteString(w, "Number(")
 	io.WriteString(w, "Array.isArray(")
 	l.Value.emit(w)
 	io.WriteString(w, ") || typeof ")
@@ -1569,20 +1569,38 @@ func (s *SaveStmt) emit(w io.Writer) {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
+	// hoist variable declarations so other top-level functions can access them
+	for _, st := range b.Body {
+		if v, ok := st.(*VarDecl); ok {
+			fmt.Fprintf(w, "let %s", v.Name)
+			if v.Type != "" {
+				fmt.Fprintf(w, ": %s", v.Type)
+			}
+			io.WriteString(w, "\n")
+		}
+	}
 	if useFetch {
 		io.WriteString(w, "(async () => {\n")
 	} else {
 		io.WriteString(w, "(() => {\n")
 	}
+	io.WriteString(w, "  globalThis.gc?.()\n")
 	io.WriteString(w, "  const _startMem = _mem()\n")
 	io.WriteString(w, "  const _start = _now()\n")
 	iw := &indentWriter{w: w, indent: "  "}
 	for _, st := range b.Body {
+		if v, ok := st.(*VarDecl); ok {
+			fmt.Fprintf(iw, "%s = ", v.Name)
+			v.Expr.emit(iw)
+			io.WriteString(iw, "\n")
+			continue
+		}
 		emitStmt(iw, st, 1)
 	}
 	io.WriteString(w, "  const _end = _now()\n")
 	io.WriteString(w, "  const _duration = _end - _start\n")
 	io.WriteString(w, "  const _duration_us = Math.trunc(_duration / 1000)\n")
+	io.WriteString(w, "  globalThis.gc?.()\n")
 	io.WriteString(w, "  const _endMem = _mem()\n")
 	io.WriteString(w, "  const _memory_bytes = Math.max(0, _endMem - _startMem)\n")
 	fmt.Fprintf(w, "  console.log(JSON.stringify({\n    \"duration_us\": _duration_us,\n    \"memory_bytes\": _memory_bytes,\n    \"name\": %q\n  }, null, \"  \"))\n", b.Name)
@@ -2181,10 +2199,10 @@ function _now(): number {
 	if useBench {
 		prelude = append(prelude, &RawStmt{Code: `function _mem(): number {
   if (typeof Deno !== 'undefined') {
-    return (Deno.memoryUsage?.().rss ?? 0);
+    return (Deno.memoryUsage?.().heapUsed ?? 0);
   }
   if (typeof process !== 'undefined') {
-    return process.memoryUsage().rss;
+    return process.memoryUsage().heapUsed;
   }
   return 0;
 }`})
@@ -4237,10 +4255,8 @@ func literalType(l *parser.Literal) types.Type {
 
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
+	case types.IntType, types.Int64Type, types.BigIntType, types.FloatType, types.BigRatType:
 		return "number"
-	case types.BigIntType:
-		return "bigint"
 	case types.BoolType:
 		return "boolean"
 	case types.StringType:
@@ -4489,8 +4505,6 @@ func isBoolExpr(e *parser.Expr) bool {
 
 func isBigIntType(t types.Type) bool {
 	switch t.(type) {
-	case types.BigIntType:
-		return true
 	case types.OptionType:
 		return isBigIntType(t.(types.OptionType).Elem)
 	default:
