@@ -1902,6 +1902,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
 				if sl, ok2 := ll.Elems[0].(*StructLit); ok2 {
 					t = types.ListType{Elem: types.StructType{Name: sl.Name}}
+				} else if st.Let.Value != nil {
+					t = types.ExprType(st.Let.Value, env)
 				}
 			} else if sl, ok := e.(*StructLit); ok {
 				t = types.StructType{Name: sl.Name}
@@ -1994,6 +1996,8 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			if ll, ok := e.(*ListLit); ok && len(ll.Elems) > 0 {
 				if sl, ok2 := ll.Elems[0].(*StructLit); ok2 {
 					t = types.ListType{Elem: types.StructType{Name: sl.Name}}
+				} else if st.Var.Value != nil {
+					t = types.ExprType(st.Var.Value, env)
 				}
 			} else if sl, ok := e.(*StructLit); ok {
 				t = types.StructType{Name: sl.Name}

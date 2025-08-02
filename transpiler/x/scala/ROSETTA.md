@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (415/491)
-_Last updated: 2025-08-02 02:09 +0700_
+_Last updated: 2025-08-02 10:48 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -444,7 +444,7 @@ _Last updated: 2025-08-02 02:09 +0700_
 | 435 | fivenum-1 | ✓ | 6µs | 8.8 MB |
 | 436 | fivenum-2 | ✓ | 11µs | 8.7 MB |
 | 437 | fivenum-3 | ✓ | 9µs | 8.7 MB |
-| 438 | fixed-length-records-1 | ✓ | 7µs | 8.7 MB |
+| 438 | fixed-length-records-1 | ✓ | 5µs | 8.7 MB |
 | 439 | fixed-length-records-2 | ✓ | 11µs | 8.7 MB |
 | 440 | fizzbuzz-1 | ✓ | 23µs | 8.8 MB |
 | 441 | fizzbuzz-2 | ✓ | 26µs | 8.8 MB |
