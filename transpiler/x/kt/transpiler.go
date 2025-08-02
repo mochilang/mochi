@@ -189,16 +189,31 @@ fun _add(a: BigRat, b: BigRat): BigRat = a.add(b)
 fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
-		"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
-    val md = java.security.MessageDigest.getInstance("SHA-256")
-    val arr = ByteArray(bs.size)
-    for (i in bs.indices) arr[i] = bs[i].toByte()
-    val hash = md.digest(arr)
-    val res = mutableListOf<Int>()
-    for (b in hash) res.add((b.toInt() and 0xff))
-    return res
+"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
+val md = java.security.MessageDigest.getInstance("SHA-256")
+val arr = ByteArray(bs.size)
+for (i in bs.indices) arr[i] = bs[i].toByte()
+val hash = md.digest(arr)
+val res = mutableListOf<Int>()
+for (b in hash) res.add((b.toInt() and 0xff))
+return res
 }`,
-	}
+"pow2": `fun pow2(n: Int): Long {
+var v = 1L
+var i = 0
+while (i < n) {
+v *= 2
+i++
+}
+return v
+}`,
+"lshift": `fun lshift(x: Int, n: Int): Int {
+return (x.toLong() * pow2(n)).toInt()
+}`,
+"rshift": `fun rshift(x: Int, n: Int): Int {
+return (x.toLong() / pow2(n)).toInt()
+}`,
+}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
 		"this": true, "super": true, "val": true, "var": true,
@@ -1001,18 +1016,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				cast(e, "String")
 				return
 			}
-		} else if numOp {
-			t := guessType(e)
-			if t == "Any" || t == "Any?" {
-				ot := guessType(other)
-				if ot == "Int" {
-					cast(e, "Int")
-				} else {
-					cast(e, "Double")
-				}
-				return
-			}
-		}
+               } else if numOp {
+                       t := guessType(e)
+                       if t == "Int" && guessType(other) == "Long" {
+                               cast(e, "Long")
+                               return
+                       }
+                       if t == "Any" || t == "Any?" {
+                               ot := guessType(other)
+                               if ot == "Int" {
+                                       cast(e, "Int")
+                               } else {
+                                       cast(e, "Double")
+                               }
+                               return
+                       }
+               }
 		if boolOp {
 			t := guessType(e)
 			if t != "Boolean" {
@@ -3126,11 +3145,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if st.Fun.Return != nil {
 				retType = types.ResolveTypeRef(st.Fun.Return, env)
 			}
-			env.SetVar(st.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
-			env.SetFunc(st.Fun.Name, st.Fun)
-			localFuncs[st.Fun.Name] = true
-			prevRet := currentRetType
-			ret := kotlinType(st.Fun.Return)
+                       env.SetVar(st.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
+                       env.SetFunc(st.Fun.Name, st.Fun)
+                       localFuncs[st.Fun.Name] = true
+                       if st.Fun.Name == "pow2" || st.Fun.Name == "lshift" || st.Fun.Name == "rshift" {
+                               switch st.Fun.Name {
+                               case "pow2":
+                                       funcRets[st.Fun.Name] = "Long"
+                               default:
+                                       funcRets[st.Fun.Name] = "Int"
+                               }
+                               useHelper(st.Fun.Name)
+                               continue
+                       }
+                       prevRet := currentRetType
+                       ret := kotlinType(st.Fun.Return)
 			if ret == "" {
 				if t, ok := env.Types()[st.Fun.Name]; ok {
 					if ft, ok := t.(types.FuncType); ok {
