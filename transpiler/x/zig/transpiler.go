@@ -1921,8 +1921,6 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "{\n")
 	indent++
 	writeIndent(w, indent)
-	io.WriteString(w, "const __start_mem = _mem();\n")
-	writeIndent(w, indent)
 	io.WriteString(w, "const __start = _now();\n")
 	for _, st := range b.Body {
 		st.emit(w, indent)
@@ -1930,11 +1928,9 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __end_mem = _mem();\n")
-	writeIndent(w, indent)
 	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __memory_bytes = __end_mem - __start_mem;\n")
+	io.WriteString(w, "const __memory_bytes = _mem();\n")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
 	indent--
