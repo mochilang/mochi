@@ -87,40 +87,42 @@ type StructField struct {
 }
 
 var (
-	structSeq        int
-	structSig        map[string]string
-	structFields     map[string][]StructField
-	mapLitStructName map[*MapLit]string
-	structOrder      []string
-	compVarTypes     map[string]string
-	localVarTypes    map[string]string
-	funcReturnTypes  map[string]string
-	structNameCount  map[string]int
-	nextStructHint   string
-	usesJSON         bool
-	benchMain        bool
-	renameMain       bool
-	useNow           bool
-	useInput         bool
-	useLookupHost    bool
-	useBigRat        bool
-	useSHA256        bool
-	useMD5           bool
-	useFetch         bool
-	useEnv           bool
-	useSubstrClamp   bool
-	useRepeat        bool
-	useParseIntStr   bool
-	imports          []string
-	testpkgAliases   map[string]struct{}
-	netAliases       map[string]struct{}
-	osAliases        map[string]struct{}
-	structMutable    map[string]bool
-	currentRetType   string
-	inFunc           bool
-	convInFunc       bool
-	methodDefs       []Stmt
-	structMethods    map[string]map[string]bool
+	structSeq         int
+	structSig         map[string]string
+	structFields      map[string][]StructField
+	mapLitStructName  map[*MapLit]string
+	structOrder       []string
+	compVarTypes      map[string]string
+	localVarTypes     map[string]string
+	funcReturnTypes   map[string]string
+	structNameCount   map[string]int
+	nextStructHint    string
+	usesJSON          bool
+	benchMain         bool
+	renameMain        bool
+	useNow            bool
+	useInput          bool
+	useLookupHost     bool
+	useBigRat         bool
+	useSHA256         bool
+	useMD5            bool
+	useFetch          bool
+	useEnv            bool
+	useSubprocess     bool
+	useSubstrClamp    bool
+	useRepeat         bool
+	useParseIntStr    bool
+	imports           []string
+	testpkgAliases    map[string]struct{}
+	netAliases        map[string]struct{}
+	osAliases         map[string]struct{}
+	subprocessAliases map[string]struct{}
+	structMutable     map[string]bool
+	currentRetType    string
+	inFunc            bool
+	convInFunc        bool
+	methodDefs        []Stmt
+	structMethods     map[string]map[string]bool
 )
 
 // GetStructOrder returns the generated struct names (for testing).
@@ -1376,6 +1378,9 @@ type CondExpr struct {
 }
 
 func (c *CondExpr) emit(w io.Writer) error {
+	if _, err := io.WriteString(w, "("); err != nil {
+		return err
+	}
 	if err := c.Cond.emit(w); err != nil {
 		return err
 	}
@@ -1388,7 +1393,11 @@ func (c *CondExpr) emit(w io.Writer) error {
 	if _, err := io.WriteString(w, " : "); err != nil {
 		return err
 	}
-	return c.Else.emit(w)
+	if err := c.Else.emit(w); err != nil {
+		return err
+	}
+	_, err := io.WriteString(w, ")")
+	return err
 }
 
 type CallExpr struct {
@@ -3367,11 +3376,7 @@ func inferType(e Expr) string {
 					valid = false
 				}
 			case *StringLit:
-				if validIdent(k.Value) {
-					field = k.Value
-				} else {
-					valid = false
-				}
+				valid = false
 			default:
 				valid = false
 			}
@@ -4047,7 +4052,25 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, "String _substr(String s, int start, int end) {\n  var n = s.length;\n  if (start < 0) start += n;\n  if (end < 0) end += n;\n  if (start < 0) start = 0;\n  if (start > n) start = n;\n  if (end < 0) end = 0;\n  if (end > n) end = n;\n  if (start > end) start = end;\n  return s.substring(start, end);\n}\n\n"); err != nil {
+	if useSubprocess {
+		if _, err := io.WriteString(w, "class _Subprocess {\n  String getoutput(String cmd) {\n    final r = Process.runSync('sh', ['-c', cmd]);\n    if (r.stdout is String) {\n      return (r.stdout as String).trim();\n    }\n    return '';\n  }\n}\n"); err != nil {
+			return err
+		}
+		keys := make([]string, 0, len(subprocessAliases))
+		for k := range subprocessAliases {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			if _, err := fmt.Fprintf(w, "final %s = _Subprocess();\n", k); err != nil {
+				return err
+			}
+		}
+		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+	if _, err := io.WriteString(w, "String _substr(String s, num start, num end) {\n  var n = s.length;\n  int s0 = start.toInt();\n  int e0 = end.toInt();\n  if (s0 < 0) s0 += n;\n  if (e0 < 0) e0 += n;\n  if (s0 < 0) s0 = 0;\n  if (s0 > n) s0 = n;\n  if (e0 < 0) e0 = 0;\n  if (e0 > n) e0 = n;\n  if (s0 > e0) s0 = e0;\n  return s.substring(s0, e0);\n}\n\n"); err != nil {
 		return err
 	}
 	if useRepeat {
@@ -4276,6 +4299,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	useMD5 = false
 	useFetch = false
 	useEnv = false
+	useSubprocess = false
 	useSubstrClamp = false
 	useRepeat = false
 	useParseIntStr = false
@@ -4283,6 +4307,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	testpkgAliases = map[string]struct{}{}
 	netAliases = map[string]struct{}{}
 	osAliases = map[string]struct{}{}
+	subprocessAliases = map[string]struct{}{}
 	structMutable = map[string]bool{}
 	methodDefs = nil
 	structMethods = map[string]map[string]bool{}
@@ -4595,6 +4620,12 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 		}
 		if st.Import.Lang != nil && *st.Import.Lang == "python" && strings.Trim(st.Import.Path, "\"") == "math" {
 			imports = append(imports, fmt.Sprintf("import 'dart:math' as %s;", alias))
+			return nil, nil
+		}
+		if st.Import.Lang != nil && *st.Import.Lang == "python" && strings.Trim(st.Import.Path, "\"") == "subprocess" {
+			subprocessAliases[alias] = struct{}{}
+			useSubprocess = true
+			imports = append(imports, "import 'dart:io';")
 			return nil, nil
 		}
 		if st.Import.Lang != nil && *st.Import.Lang == "go" && strings.Trim(st.Import.Path, "\"") == "mochi/runtime/ffi/go/testpkg" {
