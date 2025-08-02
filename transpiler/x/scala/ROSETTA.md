@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (385/491)
-_Last updated: 2025-08-02 01:29 +0700_
+## Golden Test Checklist (415/491)
+_Last updated: 2025-08-02 02:09 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -370,56 +370,56 @@ _Last updated: 2025-08-02 01:29 +0700_
 | 361 | ethiopian-multiplication | ✓ |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 65µs | 8.7 MB |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 7µs | 8.7 MB |
-| 400 | faulhabers-formula | ✓ | 28µs | 8.7 MB |
-| 401 | faulhabers-triangle | ✓ | 39µs | 8.7 MB |
-| 402 | feigenbaum-constant-calculation | ✓ | 280µs | 8.7 MB |
-| 403 | fermat-numbers | ✓ | 33µs | 8.7 MB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 7µs | 8.7 MB |
+| 364 | eulers-constant-0.5772... | ✓ | 85µs | 8.7 MB |
+| 365 | eulers-identity | ✓ | 7µs | 8.7 MB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 554µs | 8.7 MB |
+| 367 | evaluate-binomial-coefficients | ✓ | 4µs | 8.7 MB |
+| 368 | even-or-odd | ✓ | 5µs | 8.7 MB |
+| 369 | events | ✓ | 3µs | 8.7 MB |
+| 370 | evolutionary-algorithm | ✓ | 240µs | 8.7 MB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 4µs | 8.7 MB |
+| 372 | exceptions | ✓ | 4µs | 8.7 MB |
+| 373 | executable-library | ✓ | 1.789ms | 8.8 MB |
+| 374 | execute-a-markov-algorithm | error |  |  |
+| 375 | execute-a-system-command | error |  |  |
+| 376 | execute-brain- | ✓ | 24µs | 8.7 MB |
+| 377 | execute-computer-zero-1 | ✓ | 17µs | 8.7 MB |
+| 378 | execute-computer-zero | ✓ | 7µs | 8.7 MB |
+| 379 | execute-hq9+ | ✓ | 18µs | 8.7 MB |
+| 380 | execute-snusp | ✓ | 2µs | 8.7 MB |
+| 381 | exponentiation-operator-2 | ✓ | 8µs | 8.7 MB |
+| 382 | exponentiation-operator | ✓ | 7µs | 8.7 MB |
+| 383 | exponentiation-order | ✓ | 3µs | 8.7 MB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | error |  |  |
+| 385 | extend-your-language | ✓ | 3µs | 8.7 MB |
+| 386 | extensible-prime-generator | ✓ | 414µs | 8.8 MB |
+| 387 | extreme-floating-point-values | ✓ | 13µs | 8.7 MB |
+| 388 | faces-from-a-mesh-2 | ✓ | 10µs | 8.7 MB |
+| 389 | faces-from-a-mesh | ✓ | 7µs | 8.7 MB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | error |  |  |
+| 391 | factorial-primes | ✓ | 67µs | 8.7 MB |
+| 392 | factorial | ✓ | 25µs | 8.8 MB |
+| 393 | factorions | ✓ | 3.637ms | 8.8 MB |
+| 394 | factors-of-a-mersenne-number | ✓ | 2.354ms | 8.8 MB |
+| 395 | factors-of-an-integer | ✓ | 29.049ms | 8.7 MB |
+| 396 | fairshare-between-two-and-more | ✓ | 3.432ms | 8.7 MB |
+| 397 | farey-sequence | ✓ | 20µs | 8.7 MB |
+| 398 | fast-fourier-transform | error |  |  |
+| 399 | fasta-format | ✓ | 6µs | 8.7 MB |
+| 400 | faulhabers-formula | ✓ | 20µs | 8.7 MB |
+| 401 | faulhabers-triangle | ✓ | 29µs | 8.7 MB |
+| 402 | feigenbaum-constant-calculation | ✓ | 220µs | 8.7 MB |
+| 403 | fermat-numbers | ✓ | 27µs | 8.7 MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 5µs | 8.7 MB |
 | 405 | fibonacci-sequence-1 | ✓ |  | 8.7 MB |
 | 406 | fibonacci-sequence-2 | ✓ |  | 8.7 MB |
 | 407 | fibonacci-sequence-3 | ✓ |  | 8.7 MB |
-| 408 | fibonacci-sequence-4 | ✓ | 5µs | 8.7 MB |
-| 409 | fibonacci-sequence-5 | ✓ | 8µs | 8.7 MB |
-| 410 | fibonacci-word-fractal | ✓ | 5µs | 8.7 MB |
-| 411 | fibonacci-word | ✓ | 8.398ms | 8.7 MB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 10µs | 8.7 MB |
-| 413 | file-input-output-1 | ✓ | 4µs | 8.7 MB |
+| 408 | fibonacci-sequence-4 | ✓ | 4µs | 8.7 MB |
+| 409 | fibonacci-sequence-5 | ✓ | 6µs | 8.7 MB |
+| 410 | fibonacci-word-fractal | ✓ | 4µs | 8.7 MB |
+| 411 | fibonacci-word | ✓ | 6.583ms | 8.7 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 7µs | 8.7 MB |
+| 413 | file-input-output-1 | ✓ | 2µs | 8.7 MB |
 | 414 | file-input-output-2 | ✓ | 4µs | 8.7 MB |
 | 415 | file-input-output-3 | ✓ | 6µs | 8.7 MB |
 | 416 | file-modification-time | ✓ | 5µs | 8.7 MB |
