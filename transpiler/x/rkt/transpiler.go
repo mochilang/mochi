@@ -1856,6 +1856,12 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		var stmts []Stmt
+		methodParams := map[string]int{}
+		for _, mem := range st.Type.Members {
+			if mem.Method != nil {
+				methodParams[mem.Method.Name] = len(mem.Method.Params) + 1
+			}
+		}
 		for _, mem := range st.Type.Members {
 			if mem.Method != nil {
 				child := types.NewEnv(env)
@@ -1870,6 +1876,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						}
 						child.SetVar(p.Name, pt, true)
 					}
+				}
+				for name, cnt := range methodParams {
+					child.SetVar(name, types.FuncType{Params: make([]types.Type, cnt)}, true)
 				}
 				for _, f := range fields {
 					child.SetVar(f, types.AnyType{}, true)
@@ -2234,6 +2243,18 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			return nil, err
 		}
 		op := part.Op
+		if op == "union" {
+			left := exprs[len(exprs)-1]
+			var u Expr
+			if part.All {
+				u = &CallExpr{Func: "append", Args: []Expr{left, right}}
+			} else {
+				u = &CallExpr{Func: "remove-duplicates", Args: []Expr{&CallExpr{Func: "append", Args: []Expr{left, right}}}}
+			}
+			exprs[len(exprs)-1] = u
+			leftType = types.AnyType{}
+			continue
+		}
 		currLeft := exprs[len(exprs)-1]
 		if (op == "==" || op == "!=") && (types.IsStringType(leftType) || types.IsStringPostfix(part.Right, env)) {
 			if op == "==" {
@@ -2581,6 +2602,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					} else if pf.Target != nil && pf.Target.Selector != nil && env != nil {
 						if rt, err := env.GetVar(pf.Target.Selector.Root); err == nil {
 							if st, ok := rt.(types.StructType); ok {
+								if m, ok := st.Methods[lit.Value]; ok {
+									var margs []Expr
+									margs = append(margs, n.Target)
+									for _, a := range op.Call.Args {
+										arg, err := convertExpr(a, env)
+										if err != nil {
+											return nil, err
+										}
+										margs = append(margs, arg)
+									}
+									expr = &CallExpr{Func: lit.Value, Args: margs}
+									t = m.Type.Return
+									break
+								}
+							}
+						}
+					} else if types.IsStructType(types.TypeOfPrimaryBasic(pf.Target, env)) {
+						if st, ok := types.TypeOfPrimaryBasic(pf.Target, env).(types.StructType); ok {
+							if m, ok := st.Methods[lit.Value]; ok {
 								var margs []Expr
 								margs = append(margs, n.Target)
 								for _, a := range op.Call.Args {
@@ -2591,35 +2631,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 									margs = append(margs, arg)
 								}
 								expr = &CallExpr{Func: lit.Value, Args: margs}
-								if m, ok := st.Methods[lit.Value]; ok {
-									t = m.Type.Return
-								} else {
-									t = types.AnyType{}
-								}
+								t = m.Type.Return
 								break
 							}
 						}
-					} else if types.IsStructType(types.TypeOfPrimaryBasic(pf.Target, env)) {
-						var margs []Expr
-						margs = append(margs, n.Target)
-						for _, a := range op.Call.Args {
-							arg, err := convertExpr(a, env)
-							if err != nil {
-								return nil, err
-							}
-							margs = append(margs, arg)
-						}
-						expr = &CallExpr{Func: lit.Value, Args: margs}
-						if st, ok := types.TypeOfPrimaryBasic(pf.Target, env).(types.StructType); ok {
-							if m, ok := st.Methods[lit.Value]; ok {
-								t = m.Type.Return
-							} else {
-								t = types.AnyType{}
-							}
-						} else {
-							t = types.AnyType{}
-						}
-						break
 					}
 					// call the function stored in the field
 					var args []Expr
@@ -2902,6 +2917,15 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		return &CallExpr{Func: fn, Args: args}, nil
 	}
 	if env != nil {
+		if _, err := env.GetVar("self"); err == nil {
+			if ftv, err := env.GetVar(c.Func); err == nil {
+				if ft, ok := ftv.(types.FuncType); ok {
+					if len(ft.Params) == len(args)+1 {
+						args = append([]Expr{&Name{Name: "self"}}, args...)
+					}
+				}
+			}
+		}
 		if ut, ok := env.FindUnionByVariant(c.Func); ok {
 			st := ut.Variants[c.Func]
 			if len(args) == len(st.Order) {
