@@ -1,229 +1,5 @@
 public class Main {
-    static Object[] testCases;
-    static class Data1 {
-        int a;
-        int n;
-        int d;
-        Data1(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data2 {
-        int a;
-        int n;
-        int d;
-        Data2(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data3 {
-        int a;
-        int n;
-        int d;
-        Data3(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data4 {
-        int a;
-        int n;
-        int d;
-        Data4(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data5 {
-        int a;
-        int n;
-        int d;
-        Data5(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data6 {
-        int a;
-        int n;
-        int d;
-        Data6(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data7 {
-        int a;
-        int n;
-        int d;
-        Data7(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data8 {
-        int a;
-        int n;
-        int d;
-        Data8(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data9 {
-        int a;
-        int n;
-        int d;
-        Data9(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data10 {
-        int a;
-        int n;
-        int d;
-        Data10(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data11 {
-        int a;
-        int n;
-        int d;
-        Data11(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data12 {
-        int a;
-        int n;
-        int d;
-        Data12(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data13 {
-        int a;
-        int n;
-        int d;
-        Data13(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data14 {
-        int a;
-        int n;
-        int d;
-        Data14(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data15 {
-        int a;
-        int n;
-        int d;
-        Data15(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
-    static class Data16 {
-        int a;
-        int n;
-        int d;
-        Data16(int a, int n, int d) {
-            this.a = a;
-            this.n = n;
-            this.d = d;
-        }
-        @Override public String toString() {
-            return String.format("{'a': %s, 'n': %s, 'd': %s}", String.valueOf(a), String.valueOf(n), String.valueOf(d));
-        }
-    }
-
+    static java.util.Map[][] testCases;
 
     static BigRat br(int n, int d) {
         return _div((_bigrat(n, null)), _bigrat((_bigrat(d, null)), null));
@@ -268,10 +44,44 @@ public class Main {
         return _div(_bigrat((_add(a_1, b_1)), null), _bigrat((_sub(_bigrat(1, null), _mul(a_1, b_1))), null));
     }
     public static void main(String[] args) {
-        testCases = ((Object[])(new Object[]{new Data1[]{new Data1(1, 1, 2), new Data1(1, 1, 3)}, new Data2[]{new Data2(2, 1, 3), new Data2(1, 1, 7)}, new Data3[]{new Data3(4, 1, 5), new Data3(-1, 1, 239)}, new Data4[]{new Data4(5, 1, 7), new Data4(2, 3, 79)}, new Data5[]{new Data5(1, 1, 2), new Data5(1, 1, 5), new Data5(1, 1, 8)}, new Data6[]{new Data6(4, 1, 5), new Data6(-1, 1, 70), new Data6(1, 1, 99)}, new Data7[]{new Data7(5, 1, 7), new Data7(4, 1, 53), new Data7(2, 1, 4443)}, new Data8[]{new Data8(6, 1, 8), new Data8(2, 1, 57), new Data8(1, 1, 239)}, new Data9[]{new Data9(8, 1, 10), new Data9(-1, 1, 239), new Data9(-4, 1, 515)}, new Data10[]{new Data10(12, 1, 18), new Data10(8, 1, 57), new Data10(-5, 1, 239)}, new Data11[]{new Data11(16, 1, 21), new Data11(3, 1, 239), new Data11(4, 3, 1042)}, new Data12[]{new Data12(22, 1, 28), new Data12(2, 1, 443), new Data12(-5, 1, 1393), new Data12(-10, 1, 11018)}, new Data13[]{new Data13(22, 1, 38), new Data13(17, 7, 601), new Data13(10, 7, 8149)}, new Data14[]{new Data14(44, 1, 57), new Data14(7, 1, 239), new Data14(-12, 1, 682), new Data14(24, 1, 12943)}, new Data15[]{new Data15(88, 1, 172), new Data15(51, 1, 239), new Data15(32, 1, 682), new Data15(44, 1, 5357), new Data15(68, 1, 12943)}, new Data16[]{new Data16(88, 1, 172), new Data16(51, 1, 239), new Data16(32, 1, 682), new Data16(44, 1, 5357), new Data16(68, 1, 12944)}}));
-        for (Object ts : testCases) {
-            System.out.println("tan " + String.valueOf(format(((java.util.Map<String,Integer>[])(ts)))) + " = " + _p(tans(((java.util.Map<String,Integer>[])(ts)))));
+        {
+            long _benchStart = _now();
+            long _benchMem = _mem();
+            testCases = ((java.util.Map[][])(new java.util.Map[][]{new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 2))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 3)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 2), java.util.Map.entry("n", 1), java.util.Map.entry("d", 3))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 7)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 4), java.util.Map.entry("n", 1), java.util.Map.entry("d", 5))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 5), java.util.Map.entry("n", 1), java.util.Map.entry("d", 7))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 2), java.util.Map.entry("n", 3), java.util.Map.entry("d", 79)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 2))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 5))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 8)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 4), java.util.Map.entry("n", 1), java.util.Map.entry("d", 5))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 70))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 99)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 5), java.util.Map.entry("n", 1), java.util.Map.entry("d", 7))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 4), java.util.Map.entry("n", 1), java.util.Map.entry("d", 53))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 2), java.util.Map.entry("n", 1), java.util.Map.entry("d", 4443)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 6), java.util.Map.entry("n", 1), java.util.Map.entry("d", 8))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 2), java.util.Map.entry("n", 1), java.util.Map.entry("d", 57))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 8), java.util.Map.entry("n", 1), java.util.Map.entry("d", 10))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -1), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -4), java.util.Map.entry("n", 1), java.util.Map.entry("d", 515)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 12), java.util.Map.entry("n", 1), java.util.Map.entry("d", 18))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 8), java.util.Map.entry("n", 1), java.util.Map.entry("d", 57))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -5), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 16), java.util.Map.entry("n", 1), java.util.Map.entry("d", 21))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 3), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 4), java.util.Map.entry("n", 3), java.util.Map.entry("d", 1042)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 22), java.util.Map.entry("n", 1), java.util.Map.entry("d", 28))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 2), java.util.Map.entry("n", 1), java.util.Map.entry("d", 443))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -5), java.util.Map.entry("n", 1), java.util.Map.entry("d", 1393))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -10), java.util.Map.entry("n", 1), java.util.Map.entry("d", 11018)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 22), java.util.Map.entry("n", 1), java.util.Map.entry("d", 38))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 17), java.util.Map.entry("n", 7), java.util.Map.entry("d", 601))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 10), java.util.Map.entry("n", 7), java.util.Map.entry("d", 8149)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 44), java.util.Map.entry("n", 1), java.util.Map.entry("d", 57))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 7), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", -12), java.util.Map.entry("n", 1), java.util.Map.entry("d", 682))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 24), java.util.Map.entry("n", 1), java.util.Map.entry("d", 12943)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 88), java.util.Map.entry("n", 1), java.util.Map.entry("d", 172))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 51), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 32), java.util.Map.entry("n", 1), java.util.Map.entry("d", 682))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 44), java.util.Map.entry("n", 1), java.util.Map.entry("d", 5357))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 68), java.util.Map.entry("n", 1), java.util.Map.entry("d", 12943)))}, new java.util.Map[]{new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 88), java.util.Map.entry("n", 1), java.util.Map.entry("d", 172))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 51), java.util.Map.entry("n", 1), java.util.Map.entry("d", 239))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 32), java.util.Map.entry("n", 1), java.util.Map.entry("d", 682))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 44), java.util.Map.entry("n", 1), java.util.Map.entry("d", 5357))), new java.util.LinkedHashMap<String, Integer>(java.util.Map.ofEntries(java.util.Map.entry("a", 68), java.util.Map.entry("n", 1), java.util.Map.entry("d", 12944)))}}));
+            for (java.util.Map[] ts : testCases) {
+                System.out.println("tan " + String.valueOf(format(((java.util.Map<String,Integer>[])(ts)))) + " = " + _p(tans(((java.util.Map<String,Integer>[])(ts)))));
+            }
+            long _benchDuration = _now() - _benchStart;
+            long _benchMemory = _mem() - _benchMem;
+            System.out.println("{");
+            System.out.println("  \"duration_us\": " + _benchDuration + ",");
+            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
+            System.out.println("  \"name\": \"main\"");
+            System.out.println("}");
+            return;
         }
+    }
+
+    static boolean _nowSeeded = false;
+    static int _nowSeed;
+    static int _now() {
+        if (!_nowSeeded) {
+            String s = System.getenv("MOCHI_NOW_SEED");
+            if (s != null && !s.isEmpty()) {
+                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
+            }
+        }
+        if (_nowSeeded) {
+            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
+            return _nowSeed;
+        }
+        return (int)(System.nanoTime() / 1000);
+    }
+
+    static long _mem() {
+        Runtime rt = Runtime.getRuntime();
+        rt.gc();
+        return rt.totalMemory() - rt.freeMemory();
     }
 
     static class BigRat {
