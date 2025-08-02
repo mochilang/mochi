@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/elliptic-curve-arithmetic.scala:71: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+  return Pt(x, (L * (p.x - x)).toString.toDouble - p.y, false)
+                         ^
+one error found
