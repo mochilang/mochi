@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (71/491) - updated 2025-08-02 09:34 UTC
+## Rosetta Checklist (78/491) - updated 2025-08-02 09:46 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -91,13 +91,13 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 84 | average-loop-length | ✓ | 185µs |  |
 | 85 | averages-arithmetic-mean | ✓ | 2µs | 7.7 KB |
 | 86 | averages-mean-time-of-day | ✓ | 1µs |  |
-| 87 | averages-median-1 |   |  |  |
-| 88 | averages-median-2 |   |  |  |
-| 89 | averages-median-3 |   |  |  |
-| 90 | averages-mode |   |  |  |
-| 91 | averages-pythagorean-means |   |  |  |
-| 92 | averages-root-mean-square |   |  |  |
-| 93 | averages-simple-moving-average |   |  |  |
+| 87 | averages-median-1 | ✓ | 1µs | 128 B |
+| 88 | averages-median-2 | ✓ | 1µs | 128 B |
+| 89 | averages-median-3 | ✓ | 1µs | 128 B |
+| 90 | averages-mode | ✓ | 1µs | 992 B |
+| 91 | averages-pythagorean-means | ✓ | 1µs | 64 B |
+| 92 | averages-root-mean-square | ✓ | 1µs | 64 B |
+| 93 | averages-simple-moving-average | ✓ | 2µs |  |
 | 94 | avl-tree |   |  |  |
 | 95 | b-zier-curves-intersections |   |  |  |
 | 96 | babbage-problem |   |  |  |

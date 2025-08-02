@@ -135,9 +135,9 @@ type Program struct {
 	LateAliases     map[string]string
 	UseFGL          bool
 	Stmts           []Stmt
-        UseSysUtils     bool
-       UseVariants     bool
-        UseMath         bool
+	UseSysUtils     bool
+	UseVariants     bool
+	UseMath         bool
 	NeedAvg         bool
 	NeedMin         bool
 	NeedMax         bool
@@ -160,29 +160,29 @@ type Program struct {
 }
 
 func collectVarNames(e Expr, set map[string]struct{}) {
-        switch v := e.(type) {
-        case *VarRef:
-                set[v.Name] = struct{}{}
-        case *BinaryExpr:
-                collectVarNames(v.Left, set)
-                if v.Right != nil {
-                        collectVarNames(v.Right, set)
-                }
-        case *CallExpr:
-                for _, a := range v.Args {
-                        collectVarNames(a, set)
-                }
-       case *CastExpr:
-               if v.Expr != nil {
-                       collectVarNames(v.Expr, set)
-               }
-       case *SelectorExpr:
-               collectVarNames(&VarRef{Name: v.Root}, set)
-        case *IndexExpr:
-                collectVarNames(v.Target, set)
-                collectVarNames(v.Index, set)
-        case *SliceExpr:
-                collectVarNames(v.Target, set)
+	switch v := e.(type) {
+	case *VarRef:
+		set[v.Name] = struct{}{}
+	case *BinaryExpr:
+		collectVarNames(v.Left, set)
+		if v.Right != nil {
+			collectVarNames(v.Right, set)
+		}
+	case *CallExpr:
+		for _, a := range v.Args {
+			collectVarNames(a, set)
+		}
+	case *CastExpr:
+		if v.Expr != nil {
+			collectVarNames(v.Expr, set)
+		}
+	case *SelectorExpr:
+		collectVarNames(&VarRef{Name: v.Root}, set)
+	case *IndexExpr:
+		collectVarNames(v.Target, set)
+		collectVarNames(v.Index, set)
+	case *SliceExpr:
+		collectVarNames(v.Target, set)
 		if v.Start != nil {
 			collectVarNames(v.Start, set)
 		}
@@ -965,12 +965,12 @@ func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
 	buf.WriteString("{$mode objfpc}\nprogram Main;\n")
 	var uses []string
-        if p.UseSysUtils {
-                uses = append(uses, "SysUtils")
-        }
-       if p.UseVariants {
-               uses = append(uses, "Variants")
-       }
+	if p.UseSysUtils {
+		uses = append(uses, "SysUtils")
+	}
+	if p.UseVariants {
+		uses = append(uses, "Variants")
+	}
 	if p.UseMath {
 		uses = append(uses, "Math")
 	}
@@ -2093,34 +2093,34 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					startType = fmt.Sprintf("specialize TFPGMap<%s, %s>", keyT, valT)
 				}
 			}
-                       typ := "integer"
-                       if st.For.RangeEnd == nil {
-                               if strings.HasPrefix(startType, "array of ") {
-                                       elem := strings.TrimPrefix(startType, "array of ")
-                                       switch elem {
-                                       case "string":
-                                               typ = "string"
-                                       case "boolean":
-                                               typ = "boolean"
-                                       default:
-                                               typ = elem
-                                       }
-                               } else if strings.HasPrefix(startType, "specialize TFPGMap") {
-                                       parts := strings.TrimPrefix(startType, "specialize TFPGMap<")
-                                       parts = strings.TrimSuffix(parts, ">")
-                                       kv := strings.Split(parts, ",")
-                                       if len(kv) == 2 {
-                                               typ = strings.TrimSpace(kv[0])
-                                       }
-                               } else {
-                                       tt := types.ExprType(st.For.Source, env)
-                                       if lt, ok := tt.(types.ListType); ok {
-                                               typ = pasTypeFromType(lt.Elem)
-                                       } else if mt, ok := tt.(types.MapType); ok {
-                                               typ = pasTypeFromType(mt.Key)
-                                       }
-                               }
-                       }
+			typ := "integer"
+			if st.For.RangeEnd == nil {
+				if strings.HasPrefix(startType, "array of ") {
+					elem := strings.TrimPrefix(startType, "array of ")
+					switch elem {
+					case "string":
+						typ = "string"
+					case "boolean":
+						typ = "boolean"
+					default:
+						typ = elem
+					}
+				} else if strings.HasPrefix(startType, "specialize TFPGMap") {
+					parts := strings.TrimPrefix(startType, "specialize TFPGMap<")
+					parts = strings.TrimSuffix(parts, ">")
+					kv := strings.Split(parts, ",")
+					if len(kv) == 2 {
+						typ = strings.TrimSpace(kv[0])
+					}
+				} else {
+					tt := types.ExprType(st.For.Source, env)
+					if lt, ok := tt.(types.ListType); ok {
+						typ = pasTypeFromType(lt.Elem)
+					} else if mt, ok := tt.(types.MapType); ok {
+						typ = pasTypeFromType(mt.Key)
+					}
+				}
+			}
 			name := sanitize(st.For.Name)
 			varTypes[name] = typ
 			setVarType(name, varTypes[name])
@@ -4029,18 +4029,22 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.NeedListStr2 = true
 				return &CallExpr{Name: "list_int_to_str", Args: args}, nil
 			}
-                       if t == "Variant" || t == "any" {
-                               currProg.UseSysUtils = true
-                               currProg.UseVariants = true
-                               return &CallExpr{Name: "VarToStr", Args: args}, nil
-                       }
-                       if t == "string" {
-                               return args[0], nil
-                       }
-                       if t == "real" {
-                                name = "FloatToStr"
-                                currProg.UseSysUtils = true
-                        } else if t == "BigRat" {
+			if t == "Variant" || t == "any" {
+				currProg.UseSysUtils = true
+				currProg.UseVariants = true
+				return &CallExpr{Name: "VarToStr", Args: args}, nil
+			}
+			if t == "string" {
+				return args[0], nil
+			}
+			if t == "bool" || t == "boolean" {
+				currProg.UseSysUtils = true
+				return &CallExpr{Name: "LowerCase", Args: []Expr{&CallExpr{Name: "BoolToStr", Args: []Expr{args[0], &VarRef{Name: "true"}}}}}, nil
+			}
+			if t == "real" {
+				name = "FloatToStr"
+				currProg.UseSysUtils = true
+			} else if t == "BigRat" {
 				currProg.UseSysUtils = true
 				numCall := &CallExpr{Name: "IntToStr", Args: []Expr{&CallExpr{Name: "num", Args: args}}}
 				denCall := &CallExpr{Name: "IntToStr", Args: []Expr{&CallExpr{Name: "denom", Args: args}}}
