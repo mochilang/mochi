@@ -1,0 +1,16 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/fivenum-1.erl:29:1: Warning: function mochi_safe_mul/2 is unused
+%   29| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fivenum-1.erl:35:1: Warning: function mochi_safe_fmod/2 is unused
+%   35| mochi_safe_fmod(A, B) ->
+%     | ^
+
+[7,15,37.5,39,41]
+[6,15,40,42,49]
+[-1.95059594,-0.72588772,0.23324706,0.73438555,1.73131507]
+{
+  "duration_us": 26217,
+  "memory_bytes": 68368,
+  "name": "main"
+}

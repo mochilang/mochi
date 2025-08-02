@@ -1,7 +1,7 @@
 [[1],2,[[3,4],5],[[[]]],[[[6]]],7,8,[]]
 [1 2 3 4 5 6 7 8]
 {
-  "duration_us": 23699,
-  "memory_bytes": 399936,
+  "duration_us": 24000,
+  "memory_bytes": 76784,
   "name": "main"
 }

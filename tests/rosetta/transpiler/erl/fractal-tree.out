@@ -1,0 +1,69 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:45:1: Warning: function mochi_safe_fmod/2 is unused
+%   45| mochi_safe_fmod(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:106:43: Warning: the result of evaluating operator '++'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  106|             G_4 = lists:sublist(G_3, Y_5) ++ [Row_4] ++ lists:nthtail(Y_5 + 1, G_3),
+%     |                                           ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:176:2: Warning: variable 'Dx_3' exported from 'case' (line 118, column 9)
+%  176| {Dx_3, Dy_3, Err_5, G_6, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_3(Dx_3, Dy_3, Err, G_6, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |  ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:176:8: Warning: variable 'Dy_3' exported from 'case' (line 124, column 9)
+%  176| {Dx_3, Dy_3, Err_5, G_6, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_3(Dx_3, Dy_3, Err, G_6, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |        ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:176:26: Warning: variable 'Sx_3' exported from 'case' (line 130, column 9)
+%  176| {Dx_3, Dy_3, Err_5, G_6, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_3(Dx_3, Dy_3, Err, G_6, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                          ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/fractal-tree.erl:176:32: Warning: variable 'Sy_3' exported from 'case' (line 136, column 9)
+%  176| {Dx_3, Dy_3, Err_5, G_6, Sx_3, Sy_3, X0_3, X1, Y0_3, Y1} = Fun_3(Dx_3, Dy_3, Err, G_6, Sx_3, Sy_3, X0, X1, Y0, Y1),
+%     |                                ^
+
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+{
+  "duration_us": 27138,
+  "memory_bytes": 251792,
+  "name": "main"
+}

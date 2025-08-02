@@ -3145,23 +3145,12 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 			if err != nil {
 				return nil, err
 			}
-			if len(ctx.mutated) == 1 {
-				for n := range ctx.mutated {
-					alias := ctx.current(n)
-					if nr, ok := val.(*NameRef); ok && nr.Name == alias {
-						// returning the mutated variable directly, no tuple needed
-					} else {
-						val = &TupleExpr{A: val, B: &NameRef{Name: alias}}
-					}
-				}
-			}
 			return []Stmt{&ReturnStmt{Expr: val}}, nil
 		}
 		if len(ctx.mutated) == 1 {
 			for n := range ctx.mutated {
 				alias := ctx.current(n)
-				tup := &TupleExpr{A: &AtomLit{Name: "nil"}, B: &NameRef{Name: alias}}
-				return []Stmt{&ReturnStmt{Expr: tup}}, nil
+				return []Stmt{&ReturnStmt{Expr: &NameRef{Name: alias}}}, nil
 			}
 		}
 		return []Stmt{&ReturnStmt{}}, nil
@@ -4045,8 +4034,8 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if ret == nil {
 		ret = &AtomLit{Name: "nil"}
 	}
-	// if exactly one parameter was mutated and function simply returns 0 or nil,
-	// return the mutated parameter instead
+	name := sanitizeFuncName(fn.Name)
+	// Track mutated parameters but do not automatically alter return values.
 	if len(fctx.mutated) == 1 {
 		var mname string
 		for n := range fctx.mutated {
@@ -4054,18 +4043,10 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 		}
 		alias := fctx.alias[mname]
 		if nr, ok := ret.(*NameRef); ok && nr.Name == alias {
-			// function returns the mutated parameter directly; no tuple needed
-		} else {
-			ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
-		}
-		for idx, p := range fn.Params {
-			if p.Name == mname {
-				mutatedFuncs[fn.Name] = idx
-				break
-			}
+			// function returns the mutated parameter directly; no change
 		}
 	}
-	if idx, ok := mutatedFuncs[fn.Name]; ok && isZeroExpr(ret) {
+	if idx, ok := mutatedFuncs[name]; ok && isZeroExpr(ret) {
 		if idx < len(fn.Params) {
 			alias := fctx.alias[fn.Params[idx].Name]
 			ret = &NameRef{Name: alias}
@@ -4074,7 +4055,6 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {
 		ret = &NameRef{Name: params[0]}
 	}
-	name := sanitizeFuncName(fn.Name)
 	return &FuncDecl{Name: name, Params: params, Body: stmts, Return: ret}, nil
 }
 
@@ -4288,7 +4268,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						ops = append(ops[:i], ops[i+1:]...)
 						continue
 					}
-					if !isFloatExpr(l, env, ctx) && !isFloatExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
+					if !isBigRatType(lt) && !isBigRatType(rt) {
 						op = "div"
 						typesList[i] = types.IntType{}
 					}
@@ -4541,7 +4521,11 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 						}
 					}
 				}
-				expr = ce
+				if _, ok := mutatedFuncs[ce.Func]; ok {
+					expr = &CallExpr{Func: "element", Args: []Expr{&IntLit{Value: 1}, ce}}
+				} else {
+					expr = ce
+				}
 			} else {
 				expr = &ApplyExpr{Fun: expr, Args: args}
 			}

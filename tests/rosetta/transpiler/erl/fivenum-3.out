@@ -1,8 +1,12 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/fivenum-3.erl:45:1: Warning: function mochi_safe_fmod/2 is unused
+%   45| mochi_safe_fmod(A, B) ->
+%     | ^
+
 [7.0,15.0,37.5,40.0,41.0]
 [6.0,25.5,40.0,42.5,49.0]
 [-1.95059594,-0.676741205,0.23324706,0.746070945,1.73131507]
 {
-  "duration_us": 21416,
-  "memory_bytes": 533072,
+  "duration_us": 26452,
+  "memory_bytes": 174952,
   "name": "main"
 }
