@@ -36,7 +36,7 @@ String _substr(String s, int start, int end) {
 
 List<List<String>> grid = [[".", ".", ".", ".", "."], [".", "#", "#", "#", "."], [".", "#", ".", "#", "."], [".", "#", "#", "#", "."], [".", ".", ".", ".", "."]];
 void flood(int x, int y, String repl) {
-  final String target = grid[y][x];
+  String target = grid[y][x];
   if (target == repl) {
     return;
   }
@@ -64,9 +64,9 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   flood(2, 2, "o");
-  for (var row in grid) {
+  for (List<String> row in grid) {
     String line = "";
-    for (var ch in row) {
+    for (String ch in row) {
     line = line + ch;
   }
     print(line);

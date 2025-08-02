@@ -22,15 +22,27 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num floorf(num x) {
-  final int y = (x).toInt();
+  int y = (x).toInt();
   return (y).toDouble();
 }
 
 int indexOf(String s, String ch) {
   int i = 0;
   while (i < s.length) {
-    if (s.substring(i, i + 1) == ch) {
+    if (_substr(s, i, i + 1) == ch) {
     return i;
   }
     i = i + 1;
@@ -47,7 +59,7 @@ String fmtF3(num x) {
   } else {
     int decs = s.length - dot - 1;
     if (decs > 3) {
-    s = s.substring(0, dot + 4);
+    s = _substr(s, 0, dot + 4);
   } else {
     while (decs < 3) {
     s = s + "0";
@@ -96,26 +108,26 @@ int leadingDigit(num x) {
 
 void show(List<num> nums, String title) {
   List<int> counts = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  for (var n in nums) {
-    final int d = leadingDigit(n);
+  for (num n in nums) {
+    int d = leadingDigit(n);
     if (d >= 1 && d <= 9) {
     counts[d - 1] = counts[d - 1] + 1;
   }
   }
-  final List<num> preds = [0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046];
-  final int total = nums.length;
+  List<num> preds = [0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046];
+  int total = nums.length;
   print(title);
   print("Digit  Observed  Predicted");
   int i = 0;
   while (i < 9) {
-    final num obs = ((counts[i]).toDouble()) / ((total).toDouble());
+    num obs = ((counts[i]).toDouble()) / ((total).toDouble());
     String line = "  " + (i + 1).toString() + "  " + padFloat3(obs, 9) + "  " + padFloat3(preds[i], 8);
     print(line);
     i = i + 1;
   }
 }
 
-void main() {
+void _main() {
   show(fib1000(), "First 1000 Fibonacci numbers");
 }
 
@@ -126,13 +138,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

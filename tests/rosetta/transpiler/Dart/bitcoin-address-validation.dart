@@ -63,7 +63,7 @@ int indexOf(String s, String ch) {
 }
 
 List<int> set58(String addr) {
-  final String tmpl = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+  String tmpl = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
   List<int> a = <int>[];
   int i = 0;
   while (i < 25) {
@@ -72,10 +72,10 @@ List<int> set58(String addr) {
   }
   int idx = 0;
   while (idx < addr.length) {
-    final String ch = _substr(addr, idx, idx + 1);
+    String ch = _substr(addr, idx, idx + 1);
     int c = tmpl.indexOf(ch);
     if (c < 0) {
-    return List<int>.from(<dynamic>[]);
+    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
     int j = 24;
     while (j >= 0) {
@@ -85,7 +85,7 @@ List<int> set58(String addr) {
     j = j - 1;
   }
     if (c > 0) {
-    return List<int>.from(<dynamic>[]);
+    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
     idx = idx + 1;
   }
@@ -93,24 +93,24 @@ List<int> set58(String addr) {
 }
 
 List<int> doubleSHA256(List<int> bs) {
-  final first = _sha256(bs);
-  return _sha256(first);
+  dynamic first = _sha256(bs);
+  return (_sha256(first) as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
 }
 
 List<int> computeChecksum(List<int> a) {
-  final List<int> hash = doubleSHA256(a.sublist(0, 21));
+  List<int> hash = doubleSHA256(a.sublist(0, 21));
   return hash.sublist(0, 4);
 }
 
 bool validA58(String addr) {
-  final List<int> a = set58(addr);
+  List<int> a = set58(addr);
   if (a.length != 25) {
     return false;
   }
   if (a[0] != 0) {
     return false;
   }
-  final List<int> sum = computeChecksum(a);
+  List<int> sum = computeChecksum(a);
   int i = 0;
   while (i < 4) {
     if (a[21 + i] != sum[i]) {

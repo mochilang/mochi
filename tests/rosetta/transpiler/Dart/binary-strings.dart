@@ -35,8 +35,8 @@ String _substr(String s, int start, int end) {
 }
 
 String char(int n) {
-  final String letters = "abcdefghijklmnopqrstuvwxyz";
-  final int idx = n - 97;
+  String letters = "abcdefghijklmnopqrstuvwxyz";
+  int idx = n - 97;
   if (idx < 0 || idx >= letters.length) {
     return "?";
   }
@@ -57,7 +57,7 @@ List<int> b = [98, 105, 110, 97, 114, 121];
 List<int> c = b;
 List<int> d = <int>[];
 int i = 0;
-List<int> z = [...b, 122];
+List<dynamic> z = [...b, 122];
 List<int> sub = b.sublist(1, 3);
 List<int> f = <int>[];
 List<int> rem = <int>[];
@@ -80,11 +80,11 @@ void main() {
   print(fromBytes(b));
   print(fromBytes(d));
   print((b.length == 0).toString());
-  print(fromBytes(z));
+  print(fromBytes(List<int>.from(z)));
   print(fromBytes(sub));
   i = 0;
   while (i < d.length) {
-    final int val = d[i];
+    dynamic val = d[i];
     if (val == 110) {
     f = [...f, 109];
   } else {

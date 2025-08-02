@@ -57,8 +57,8 @@ int indexOfFrom(String s, String ch, int start) {
 
 bool containsStr(String s, String sub) {
   int i = 0;
-  final int sl = s.length;
-  final int subl = sub.length;
+  int sl = s.length;
+  int subl = sub.length;
   while (i <= sl - subl) {
     if (_substr(s, i, i + subl) == sub) {
     return true;
@@ -70,9 +70,9 @@ bool containsStr(String s, String sub) {
 
 List<String> distinct(List<String> slist) {
   List<String> res = <String>[];
-  for (var s in slist) {
+  for (String s in slist) {
     bool found = false;
-    for (var r in res) {
+    for (String r in res) {
     if (r == s) {
     found = true;
     break;
@@ -100,15 +100,15 @@ List<List<String>> permutations(List<String> xs) {
   }
     j = j + 1;
   }
-    final List<List<String>> subs = permutations(rest);
-    for (var p in subs) {
+    List<List<String>> subs = permutations(rest);
+    for (List<String> p in subs) {
     List<String> perm = [xs[i]];
     int k = 0;
     while (k < p.length) {
     perm = [...perm, p[k]];
     k = k + 1;
   }
-    res = [...res, perm];
+    res = ([...res, perm] as List).map((e) => List<String>.from(e)).toList();
   }
     i = i + 1;
   }
@@ -118,24 +118,28 @@ List<List<String>> permutations(List<String> xs) {
 int headTailOverlap(String s1, String s2) {
   int start = 0;
   while (true) {
-    final int ix = indexOfFrom(s1, _substr(s2, 0, 1), start);
+    int ix = indexOfFrom(s1, _substr(s2, 0, 1), start);
     if (ix == 0 - 1) {
     return 0;
   }
     start = ix;
-    if (_substr(s2, 0, s1.length - start) == _substr(s1, start, s1.length)) {
-    return s1.length - start;
+    int sublen = s1.length - start;
+    if (sublen > s2.length) {
+    sublen = s2.length;
+  }
+    if (_substr(s2, 0, sublen) == _substr(s1, start, start + sublen)) {
+    return sublen;
   }
     start = start + 1;
   }
 }
 
 List<String> deduplicate(List<String> slist) {
-  final List<String> arr = distinct(slist);
+  List<String> arr = distinct(slist);
   List<String> filtered = <String>[];
   int i = 0;
   while (i < arr.length) {
-    final String s1 = arr[i];
+    String s1 = arr[i];
     bool within = false;
     int j = 0;
     while (j < arr.length) {
@@ -155,23 +159,23 @@ List<String> deduplicate(List<String> slist) {
 
 String joinAll(List<String> ss) {
   String out = "";
-  for (var s in ss) {
+  for (String s in ss) {
     out = out + s;
   }
   return out;
 }
 
 String shortestCommonSuperstring(List<String> slist) {
-  final List<String> ss = deduplicate(slist);
+  List<String> ss = deduplicate(slist);
   String shortest = joinAll(ss);
-  final List<List<String>> perms = permutations(ss);
+  List<List<String>> perms = permutations(ss);
   int idx = 0;
   while (idx < perms.length) {
-    final List<String> perm = perms[idx];
+    List<String> perm = perms[idx];
     String sup = perm[0];
     int i = 0;
     while (i < ss.length - 1) {
-    final int ov = headTailOverlap(perm[i], perm[i + 1]);
+    int ov = headTailOverlap(perm[i], perm[i + 1]);
     sup = sup + _substr(perm[i + 1], ov, perm[i + 1].length);
     i = i + 1;
   }
@@ -190,7 +194,7 @@ void printCounts(String seq) {
   int t = 0;
   int i = 0;
   while (i < seq.length) {
-    final String ch = _substr(seq, i, i + 1);
+    String ch = _substr(seq, i, i + 1);
     if (ch == "A") {
     a = a + 1;
   } else {
@@ -208,21 +212,21 @@ void printCounts(String seq) {
   }
     i = i + 1;
   }
-  final int total = seq.length;
+  int total = seq.length;
   print("\nNucleotide counts for " + seq + ":\n");
   print(padLeft("A", 10) + padLeft((a).toString(), 12));
   print(padLeft("C", 10) + padLeft((c).toString(), 12));
   print(padLeft("G", 10) + padLeft((g).toString(), 12));
   print(padLeft("T", 10) + padLeft((t).toString(), 12));
-  print(padLeft("Other", 10) + padLeft((total - a + c + g + t).toString(), 12));
+  print(padLeft("Other", 10) + padLeft((total - (a + c + g + t)).toString(), 12));
   print("  ____________________");
   print(padLeft("Total length", 14) + padLeft((total).toString(), 8));
 }
 
-void main() {
-  final List<List<String>> tests = [["TA", "AAG", "TA", "GAA", "TA"], ["CATTAGGG", "ATTAG", "GGG", "TA"], ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"], ["ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT", "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT", "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC", "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC", "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT", "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"]];
-  for (var seqs in tests) {
-    final String scs = shortestCommonSuperstring(seqs);
+void _main() {
+  List<List<String>> tests = [["TA", "AAG", "TA", "GAA", "TA"], ["CATTAGGG", "ATTAG", "GGG", "TA"], ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"], ["ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT", "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT", "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC", "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC", "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT", "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"]];
+  for (List<String> seqs in tests) {
+    String scs = shortestCommonSuperstring(seqs);
     printCounts(scs);
   }
 }
@@ -234,13 +238,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

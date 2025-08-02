@@ -22,17 +22,29 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<int> arr1 = [2, 7, 1, 8, 2];
-Map<int, int> counts1 = {};
-List<int> keys1 = [];
+Map<int, int> counts1 = <int, int>{};
+List<int> keys1 = <int>[];
 int i = 0;
 int max1 = 0;
-List<int> modes1 = [];
+List<int> modes1 = <int>[];
 List<int> arr2 = [2, 7, 1, 8, 2, 8];
-Map<int, int> counts2 = {};
-List<int> keys2 = [];
+Map<int, int> counts2 = <int, int>{};
+List<int> keys2 = <int>[];
 int max2 = 0;
-List<int> modes2 = [];
+List<int> modes2 = <int>[];
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
@@ -41,28 +53,28 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   while (i < arr1.length) {
-    final int v = arr1[i];
+    dynamic v = arr1[i];
     if (counts1.containsKey(v)) {
-    counts1[v] = counts1[v] + 1;
+    counts1[(v).toInt()] = (counts1[(v).toInt()]! + 1).toInt();
   } else {
-    counts1[v] = 1;
+    counts1[(v).toInt()] = 1;
     keys1 = [...keys1, v];
   }
     i = i + 1;
   }
   i = 0;
   while (i < keys1.length) {
-    final int k = keys1[i];
-    final int? c = counts1[k];
-    if (c > max1) {
+    dynamic k = keys1[i];
+    dynamic c = counts1[(k).toInt()];
+    if (c.compareTo(max1) > 0) {
     max1 = c;
   }
     i = i + 1;
   }
   i = 0;
   while (i < keys1.length) {
-    final int k = keys1[i];
-    if (counts1[k] == max1) {
+    dynamic k = keys1[i];
+    if (counts1[(k).toInt()]! == max1) {
     modes1 = [...modes1, k];
   }
     i = i + 1;
@@ -70,28 +82,28 @@ void main() {
   print((modes1).toString());
   i = 0;
   while (i < arr2.length) {
-    final int v = arr2[i];
+    dynamic v = arr2[i];
     if (counts2.containsKey(v)) {
-    counts2[v] = counts2[v] + 1;
+    counts2[(v).toInt()] = (counts2[(v).toInt()]! + 1).toInt();
   } else {
-    counts2[v] = 1;
+    counts2[(v).toInt()] = 1;
     keys2 = [...keys2, v];
   }
     i = i + 1;
   }
   i = 0;
   while (i < keys2.length) {
-    final int k = keys2[i];
-    final int? c = counts2[k];
-    if (c > max2) {
+    dynamic k = keys2[i];
+    dynamic c = counts2[(k).toInt()];
+    if (c.compareTo(max2) > 0) {
     max2 = c;
   }
     i = i + 1;
   }
   i = 0;
   while (i < keys2.length) {
-    final int k = keys2[i];
-    if (counts2[k] == max2) {
+    dynamic k = keys2[i];
+    if (counts2[(k).toInt()]! == max2) {
     modes2 = [...modes2, k];
   }
     i = i + 1;

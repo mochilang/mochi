@@ -22,27 +22,39 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<int> randOrder(int seed, int n) {
-  final int next = (seed * 1664525 + 1013904223) % 2147483647;
+  int next = (seed * 1664525 + 1013904223) % 2147483647;
   return [next, next % n];
 }
 
 List<int> randChaos(int seed, int n) {
-  final int next = (seed * 1103515245 + 12345) % 2147483647;
+  int next = (seed * 1103515245 + 12345) % 2147483647;
   return [next, next % n];
 }
 
-void main() {
-  final int nBuckets = 10;
-  final int initialSum = 1000;
-  List<int> buckets = [];
+void _main() {
+  int nBuckets = 10;
+  int initialSum = 1000;
+  List<int> buckets = <int>[];
   for (int i = 0; i < nBuckets; i++) {
     buckets = [...buckets, 0];
   }
   int i = nBuckets;
   int dist = initialSum;
   while (i > 0) {
-    final int v = dist ~/ i;
+    int v = dist ~/ i;
     i = i - 1;
     buckets[i] = v;
     dist = dist - v;
@@ -60,8 +72,8 @@ void main() {
     seedOrder = r[0];
     int b1 = r[1];
     int b2 = (b1 + 1) % nBuckets;
-    final int v1 = buckets[b1];
-    final int v2 = buckets[b2];
+    int v1 = buckets[b1];
+    int v2 = buckets[b2];
     if (v1 > v2) {
     int a = (v1 - v2) ~/ 2 as int;
     if (a > buckets[b1]) {
@@ -113,13 +125,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

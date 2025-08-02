@@ -22,22 +22,34 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 Map<String, int> removeKey(Map<String, int> m, String k) {
-  Map<String, int> out = {};
-  for (var key in m.keys) {
+  Map<String, int> out = <String, int>{};
+  for (String key in m.keys) {
     if (key != k) {
-    out[key] = m[key];
+    out[key] = m[key]!;
   }
   }
   return out;
 }
 
-void main() {
+void _main() {
   Map<String, int>? x = null;
-  x = {};
+  x = <String, int>{};
   x["foo"] = 3;
-  final y1 = x["bar"];
-  final bool ok = x.containsKey("bar");
+  dynamic y1 = x["bar"];
+  bool ok = x.containsKey("bar");
   print(y1);
   print(ok);
   x = removeKey(x, "foo");
@@ -52,13 +64,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

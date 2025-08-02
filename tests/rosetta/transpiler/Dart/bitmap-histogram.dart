@@ -95,7 +95,7 @@ List<List<int>> threshold(List<List<int>> g, int t) {
   }
     x = x + 1;
   }
-    out = [...out, newRow];
+    out = ([...out, newRow] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
     y = y + 1;
   }
   return out;
@@ -120,13 +120,13 @@ void printImage(List<List<int>> g) {
   }
 }
 
-void main() {
-  final List<List<int>> img = image();
-  final List<int> h = histogram(img, 0);
+void _main() {
+  List<List<int>> img = image();
+  List<int> h = histogram(img, 0);
   print("Histogram: " + (h).toString());
-  final int t = medianThreshold(h);
+  int t = medianThreshold(h);
   print("Threshold: " + (t).toString());
-  final List<List<int>> bw = threshold(img, t);
+  List<List<int>> bw = threshold(img, t);
   printImage(bw);
 }
 
@@ -137,13 +137,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

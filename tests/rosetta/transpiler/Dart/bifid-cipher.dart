@@ -35,14 +35,14 @@ String _substr(String s, int start, int end) {
 }
 
 Map<String, dynamic> square_to_maps(List<List<String>> square) {
-  Map<String, List<int>> emap = {};
-  Map<String, String> dmap = {};
+  Map<String, List<int>> emap = <String, List<int>>{};
+  Map<String, String> dmap = <String, String>{};
   int x = 0;
   while (x < square.length) {
-    final List<String> row = square[x];
+    List<String> row = square[x];
     int y = 0;
     while (y < row.length) {
-    final String ch = row[y];
+    String ch = row[y];
     emap[ch] = [x, y];
     dmap[(x).toString() + "," + (y).toString()] = ch;
     y = y + 1;
@@ -53,11 +53,11 @@ Map<String, dynamic> square_to_maps(List<List<String>> square) {
 }
 
 String remove_space(String text, Map<String, List<int>> emap) {
-  final String s = text.toUpperCase();
+  String s = text.toUpperCase();
   String out = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = _substr(s, i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch != " " && emap.containsKey(ch)) {
     out = out + ch;
   }
@@ -72,19 +72,19 @@ String encrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   List<int> row1 = <int>[];
   int i = 0;
   while (i < text.length) {
-    final String ch = _substr(text, i, i + 1);
-    final List<int> xy = emap[ch]!;
+    String ch = _substr(text, i, i + 1);
+    List<int> xy = emap[ch]!;
     row0 = [...row0, xy[0]];
     row1 = [...row1, xy[1]];
     i = i + 1;
   }
-  for (var v in row1) {
+  for (int v in row1) {
     row0 = [...row0, v];
   }
   String res = "";
   int j = 0;
   while (j < row0.length) {
-    final String key = (row0[j]).toString() + "," + (row0[j + 1]).toString();
+    String key = (row0[j]).toString() + "," + (row0[j + 1]).toString();
     res = res + dmap[key]!;
     j = j + 2;
   }
@@ -96,8 +96,8 @@ String decrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   List<int> coords = <int>[];
   int i = 0;
   while (i < text.length) {
-    final String ch = _substr(text, i, i + 1);
-    final List<int> xy = emap[ch]!;
+    String ch = _substr(text, i, i + 1);
+    List<int> xy = emap[ch]!;
     coords = [...coords, xy[0]];
     coords = [...coords, xy[1]];
     i = i + 1;
@@ -117,22 +117,22 @@ String decrypt(String text, Map<String, List<int>> emap, Map<String, String> dma
   String res = "";
   int j = 0;
   while (j < half) {
-    final String key = (k1[j]).toString() + "," + (k2[j]).toString();
+    String key = (k1[j]).toString() + "," + (k2[j]).toString();
     res = res + dmap[key]!;
     j = j + 1;
   }
   return res;
 }
 
-void main() {
-  final List<List<String>> squareRosetta = [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]];
-  final List<List<String>> squareWikipedia = [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]];
-  final String textRosetta = "0ATTACKATDAWN";
-  final String textWikipedia = "FLEEATONCE";
-  final String textTest = "The invasion will start on the first of January";
+void _main() {
+  List<List<String>> squareRosetta = [["A", "B", "C", "D", "E"], ["F", "G", "H", "I", "K"], ["L", "M", "N", "O", "P"], ["Q", "R", "S", "T", "U"], ["V", "W", "X", "Y", "Z"], ["J", "1", "2", "3", "4"]];
+  List<List<String>> squareWikipedia = [["B", "G", "W", "K", "Z"], ["Q", "P", "N", "D", "S"], ["I", "O", "A", "X", "E"], ["F", "C", "L", "U", "M"], ["T", "H", "Y", "V", "R"], ["J", "1", "2", "3", "4"]];
+  String textRosetta = "0ATTACKATDAWN";
+  String textWikipedia = "FLEEATONCE";
+  String textTest = "The invasion will start on the first of January";
   Map<String, dynamic> maps = square_to_maps(squareRosetta);
-  var emap = maps["e"]!;
-  var dmap = maps["d"]!;
+  dynamic emap = maps["e"]!;
+  dynamic dmap = maps["d"]!;
   print("from Rosettacode");
   print("original:	 " + textRosetta);
   String s = encrypt(textRosetta, emap, dmap);
@@ -166,13 +166,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

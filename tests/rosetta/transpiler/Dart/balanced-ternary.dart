@@ -22,12 +22,24 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 String trimLeftZeros(String s) {
   int i = 0;
-  while (i < s.length && s.substring(i, i + 1) == "0") {
+  while (i < s.length && _substr(s, i, i + 1) == "0") {
     i = i + 1;
   }
-  return s.substring(i, s.length);
+  return _substr(s, i, s.length);
 }
 
 Map<String, dynamic> btString(String s) {
@@ -35,7 +47,7 @@ Map<String, dynamic> btString(String s) {
   List<int> b = <int>[];
   int i = s.length - 1;
   while (i >= 0) {
-    final String ch = s.substring(i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == "+") {
     b = [...b, 1];
   } else {
@@ -45,7 +57,7 @@ Map<String, dynamic> btString(String s) {
     if (ch == "-") {
     b = [...b, 0 - 1];
   } else {
-    return {"bt": <dynamic>[], "ok": false};
+    return {"bt": [], "ok": false};
   };
   };
   }
@@ -61,7 +73,7 @@ String btToString(List<int> b) {
   String r = "";
   int i = b.length - 1;
   while (i >= 0) {
-    final int d = b[i];
+    int d = b[i];
     if (d == 0 - 1) {
     r = r + "-";
   } else {
@@ -78,7 +90,7 @@ String btToString(List<int> b) {
 
 List<int> btInt(int i) {
   if (i == 0) {
-    return List<int>.from(<dynamic>[]);
+    return ([] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
   int n = i;
   List<int> b = <int>[];
@@ -138,18 +150,18 @@ String padLeft(String s, int w) {
 }
 
 void show(String label, List<int> b) {
-  final String l = padLeft(label, 7);
-  final String bs = padLeft(btToString(b), 12);
-  final String _is = padLeft((btToInt(b)).toString(), 7);
+  String l = padLeft(label, 7);
+  String bs = padLeft(btToString(b), 12);
+  String _is = padLeft((btToInt(b)).toString(), 7);
   print(l + " " + bs + " " + _is);
 }
 
-void main() {
-  final Map<String, dynamic> ares = btString("+-0++0+");
-  final dynamic? a = ares["bt"]!;
-  final List<int> b = btInt(-436);
-  final Map<String, dynamic> cres = btString("+-++-");
-  final dynamic? c = cres["bt"]!;
+void _main() {
+  Map<String, dynamic> ares = btString("+-0++0+");
+  dynamic a = ares["bt"]!;
+  List<int> b = btInt(-436);
+  Map<String, dynamic> cres = btString("+-++-");
+  dynamic c = cres["bt"]!;
   show("a:", a);
   show("b:", b);
   show("c:", c);
@@ -163,13 +175,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

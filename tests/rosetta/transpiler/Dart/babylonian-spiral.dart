@@ -22,11 +22,23 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<Map<String, int>> push(List<Map<String, int>> h, Map<String, int> it) {
   h = [...h, it];
   int i = h.length - 1;
   while (i > 0 && h[i - 1]["s"]! > h[i]["s"]!) {
-    final Map<String, int> tmp = h[i - 1];
+    Map<String, int> tmp = h[i - 1];
     h[i - 1] = h[i];
     h[i] = tmp;
     i = i - 1;
@@ -39,44 +51,44 @@ Map<String, dynamic> step(List<Map<String, int>> h, int nv, List<int> dir) {
     h = push(h, {"s": nv * nv, "a": nv, "b": 0});
     nv = nv + 1;
   }
-  final int? s = h[0]["s"]!;
+  int s = h[0]["s"]!;
   List<List<int>> v = <List<int>>[];
   while (h.length > 0 && h[0]["s"]! == s) {
-    final Map<String, int> it = h[0];
+    Map<String, int> it = h[0];
     h = h.sublist(1, h.length);
-    v = [...v, [it["a"]!, it["b"]!]];
+    v = ([...v, [it["a"], it["b"]]] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
     if (it["a"]! > it["b"]!) {
     h = push(h, {"s": it["a"]! * it["a"]! + (it["b"]! + 1) * (it["b"]! + 1), "a": it["a"]!, "b": it["b"]! + 1});
   }
   }
   List<List<int>> list = <List<int>>[];
-  for (var p in v) {
-    list = [...list, p];
+  for (List<int> p in v) {
+    list = ([...list, p] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
   }
   List<List<int>> temp = list;
-  for (var p in temp) {
+  for (List<int> p in temp) {
     if (p[0] != p[1]) {
-    list = [...list, [p[1], p[0]]];
+    list = ([...list, [p[1], p[0]]] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
   }
   }
   temp = list;
-  for (var p in temp) {
+  for (List<int> p in temp) {
     if (p[1] != 0) {
-    list = [...list, [p[0], -p[1]]];
+    list = ([...list, [p[0], -p[1]]] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
   }
   }
   temp = list;
-  for (var p in temp) {
+  for (List<int> p in temp) {
     if (p[0] != 0) {
-    list = [...list, [-p[0], p[1]]];
+    list = ([...list, [-p[0], p[1]]] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
   }
   }
   int bestDot = -999999999;
   List<int> best = dir;
-  for (var p in list) {
-    final int cross = p[0] * dir[1] - p[1] * dir[0];
+  for (List<int> p in list) {
+    int cross = p[0] * dir[1] - p[1] * dir[0];
     if (cross >= 0) {
-    final int dot = p[0] * dir[0] + p[1] * dir[1];
+    int dot = p[0] * dir[0] + p[1] * dir[1];
     if (dot > bestDot) {
     bestDot = dot;
     best = p;
@@ -95,11 +107,11 @@ List<List<int>> positions(int n) {
   int nv = 1;
   int i = 0;
   while (i < n) {
-    pos = [...pos, [x, y]];
-    final Map<String, dynamic> st = step(heap, nv, dir);
-    dir = st["d"]! as List<int>;
-    heap = st["heap"]! as List<Map<String, int>>;
-    nv = st["n"]! as int;
+    pos = ([...pos, [x, y]] as List).map((e) => (e as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()).toList();
+    Map<String, dynamic> st = step(heap, nv, dir);
+    dir = (st["d"] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    heap = List<Map<String, int>>.from(st["heap"]);
+    nv = st["n"] as int;
     x = x + dir[0];
     y = y + dir[1];
     i = i + 1;
@@ -115,14 +127,14 @@ String pad(String s, int w) {
   return r;
 }
 
-void main() {
-  final List<List<int>> pts = positions(40);
+void _main() {
+  List<List<int>> pts = positions(40);
   print("The first 40 Babylonian spiral points are:");
   String line = "";
   int i = 0;
   while (i < pts.length) {
-    final List<int> p = pts[i];
-    final String s = pad("(" + (p[0]).toString() + ", " + (p[1]).toString() + ")", 10);
+    List<int> p = pts[i];
+    String s = pad("(" + (p[0]).toString() + ", " + (p[1]).toString() + ")", 10);
     line = line + s;
     if ((i + 1) % 10 == 0) {
     print(line);
@@ -139,13 +151,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

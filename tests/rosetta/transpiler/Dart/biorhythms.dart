@@ -34,14 +34,14 @@ String _substr(String s, int start, int end) {
   return s.substring(start, end);
 }
 
-final num PI = 3.141592653589793;
-final num TWO_PI = 6.283185307179586;
+num PI = 3.141592653589793;
+num TWO_PI = 6.283185307179586;
 num sinApprox(num x) {
   num term = x;
   num sum = x;
   int n = 1;
   while (n <= 8) {
-    final num denom = (2 * n * (2 * n + 1)).toDouble();
+    num denom = (2 * n * (2 * n + 1)).toDouble();
     term = -term * x * x / denom;
     sum = sum + term;
     n = n + 1;
@@ -79,9 +79,9 @@ int parseIntStr(String str) {
     i = 1;
   }
   int n = 0;
-  final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
+  Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[_substr(str, i, i + 1)]!;
+    n = (n * 10 + digits[_substr(str, i, i + 1)]!).toInt();
     i = i + 1;
   }
   if (neg) {
@@ -91,10 +91,10 @@ int parseIntStr(String str) {
 }
 
 List<int> parseDate(String s) {
-  final y = int.parse(_substr(s, 0, 4));
-  final m = int.parse(_substr(s, 5, 7));
-  final d = int.parse(_substr(s, 8, 10));
-  return List<int>.from([y, m, d]);
+  int y = int.parse(_substr(s, 0, 4));
+  int m = int.parse(_substr(s, 5, 7));
+  int d = int.parse(_substr(s, 8, 10));
+  return [y, m, d];
 }
 
 bool leap(int y) {
@@ -108,8 +108,8 @@ bool leap(int y) {
 }
 
 int daysInMonth(int y, int m) {
-  final int feb = leap(y) ? 29 : 28;
-  final List<int> lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  int feb = leap(y) ? 29 : 28;
+  List<int> lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   return lengths[m - 1];
 }
 
@@ -161,33 +161,33 @@ String dateString(int y, int m, int d) {
 }
 
 int day(int y, int m, int d) {
-  final int part1 = 367 * y;
-  final int part2 = 7 * (y + (m + 9) ~/ 12 as int) ~/ 4 as int;
-  final int part3 = 275 * m ~/ 9 as int;
+  int part1 = 367 * y;
+  int part2 = 7 * (y + (m + 9) ~/ 12 as int) ~/ 4 as int;
+  int part3 = 275 * m ~/ 9 as int;
   return part1 - part2 + part3 + d - 730530;
 }
 
 void biorhythms(String birth, String target) {
-  final List<int> bparts = parseDate(birth);
-  final int by = bparts[0];
-  final int bm = bparts[1];
-  final int bd = bparts[2];
-  final List<int> tparts = parseDate(target);
-  final int ty = tparts[0];
-  final int tm = tparts[1];
-  final int td = tparts[2];
-  final int diff = absInt(day(ty, tm, td) - day(by, bm, bd));
+  List<int> bparts = parseDate(birth);
+  int by = bparts[0];
+  int bm = bparts[1];
+  int bd = bparts[2];
+  List<int> tparts = parseDate(target);
+  int ty = tparts[0];
+  int tm = tparts[1];
+  int td = tparts[2];
+  int diff = absInt(day(ty, tm, td) - day(by, bm, bd));
   print("Born " + birth + ", Target " + target);
   print("Day " + (diff).toString());
-  final List<String> cycles = ["Physical day ", "Emotional day", "Mental day   "];
-  final List<int> lengths = [23, 28, 33];
-  final List<List<String>> quadrants = [["up and rising", "peak"], ["up but falling", "transition"], ["down and falling", "valley"], ["down but rising", "transition"]];
+  List<String> cycles = ["Physical day ", "Emotional day", "Mental day   "];
+  List<int> lengths = [23, 28, 33];
+  List<List<String>> quadrants = [["up and rising", "peak"], ["up but falling", "transition"], ["down and falling", "valley"], ["down but rising", "transition"]];
   int i = 0;
   while (i < 3) {
-    final int length = lengths[i];
-    final String cycle = cycles[i];
-    final int position = diff % length;
-    final int quadrant = position * 4 ~/ length;
+    int length = lengths[i];
+    String cycle = cycles[i];
+    int position = diff % length;
+    int quadrant = position * 4 ~/ length;
     num percent = sinApprox(2.0 * PI * ((position).toDouble()) / ((length).toDouble()));
     percent = floor(percent * 1000.0) / 10.0;
     String description = "";
@@ -200,14 +200,14 @@ void biorhythms(String birth, String target) {
     if (absFloat(percent) < 5.0) {
     description = " critical transition";
   } else {
-    final int daysToAdd = (quadrant + 1) * length ~/ 4 - position;
-    final List<int> res = addDays(ty, tm, td, daysToAdd);
-    final int ny = res[0];
-    final int nm = res[1];
-    final int nd = res[2];
-    final String transition = dateString(ny, nm, nd);
-    final String trend = quadrants[quadrant][0];
-    final String next = quadrants[quadrant][1];
+    int daysToAdd = (quadrant + 1) * length ~/ 4 - position;
+    List<int> res = addDays(ty, tm, td, daysToAdd);
+    int ny = res[0];
+    int nm = res[1];
+    int nd = res[2];
+    String transition = dateString(ny, nm, nd);
+    String trend = quadrants[quadrant][0];
+    String next = quadrants[quadrant][1];
     String pct = (percent).toString();
     if (!pct.contains(".")) {
     pct = pct + ".0";
@@ -226,11 +226,11 @@ void biorhythms(String birth, String target) {
   print("");
 }
 
-void main() {
-  final List<List<String>> pairs = [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]];
+void _main() {
+  List<List<String>> pairs = [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]];
   int idx = 0;
   while (idx < pairs.length) {
-    final List<String> p = pairs[idx];
+    List<String> p = pairs[idx];
     biorhythms(p[0], p[1]);
     idx = idx + 1;
   }
@@ -243,13 +243,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

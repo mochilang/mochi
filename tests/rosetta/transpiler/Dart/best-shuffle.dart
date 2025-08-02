@@ -50,7 +50,7 @@ List<dynamic> shuffleChars(String s, int seed) {
   while (idx > 0) {
     sd = nextRand(sd);
     int j = sd % (idx + 1);
-    final String tmp = chars[idx];
+    String tmp = chars[idx];
     chars[idx] = chars[j];
     chars[j] = tmp;
     idx = idx - 1;
@@ -61,13 +61,13 @@ List<dynamic> shuffleChars(String s, int seed) {
     res = res + chars[i];
     i = i + 1;
   }
-  return List<dynamic>.from([res, sd]);
+  return [res, sd];
 }
 
 List<dynamic> bestShuffle(String s, int seed) {
-  final List<dynamic> r = shuffleChars(s, seed);
-  var t = r[0];
-  var sd = r[1];
+  List<dynamic> r = shuffleChars(s, seed);
+  dynamic t = r[0];
+  dynamic sd = r[1];
   List<String> arr = <String>[];
   int i = 0;
   while (i < t.length) {
@@ -79,7 +79,7 @@ List<dynamic> bestShuffle(String s, int seed) {
     int j = 0;
     while (j < arr.length) {
     if (i != j && arr[i] != _substr(s, j, j + 1) && arr[j] != _substr(s, i, i + 1)) {
-    final String tmp = arr[i];
+    String tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
     break;
@@ -102,18 +102,18 @@ List<dynamic> bestShuffle(String s, int seed) {
     out = out + arr[i];
     i = i + 1;
   }
-  return List<dynamic>.from([out, sd, count]);
+  return [out, sd, count];
 }
 
-void main() {
-  final List<String> ts = ["abracadabra", "seesaw", "elk", "grrrrrr", "up", "a"];
+void _main() {
+  List<String> ts = ["abracadabra", "seesaw", "elk", "grrrrrr", "up", "a"];
   int seed = 1;
   int i = 0;
   while (i < ts.length) {
-    final List<dynamic> r = bestShuffle(ts[i], seed);
-    final shuf = r[0];
+    List<dynamic> r = bestShuffle(ts[i], seed);
+    dynamic shuf = r[0];
     seed = r[1];
-    final cnt = r[2];
+    dynamic cnt = r[2];
     print(ts[i] + " -> " + shuf + " (" + (cnt).toString() + ")");
     i = i + 1;
   }
@@ -126,13 +126,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<List<BigInt>> bellTriangle(int n) {
   List<List<BigInt>> tri = <List<BigInt>>[];
   int i = 0;
@@ -32,7 +44,7 @@ List<List<BigInt>> bellTriangle(int n) {
     row = [...row, BigInt.from(0)];
     j = j + 1;
   }
-    tri = [...tri, row];
+    tri = ([...tri, row] as List).map((e) => List<BigInt>.from(e)).toList();
     i = i + 1;
   }
   tri[1]![0] = BigInt.from(1);
@@ -49,8 +61,8 @@ List<List<BigInt>> bellTriangle(int n) {
   return tri;
 }
 
-void main() {
-  final List<List<BigInt>> bt = bellTriangle(51);
+void _main() {
+  List<List<BigInt>> bt = bellTriangle(51);
   print("First fifteen and fiftieth Bell numbers:");
   for (int i = 1; i < 16; i++) {
     print("" + (i).toString().padLeft(2, " ") + ": " + (bt[i][0]).toString());
@@ -70,13 +82,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

@@ -22,13 +22,25 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-final num PI = 3.141592653589793;
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+num PI = 3.141592653589793;
 num sinApprox(num x) {
   num term = x;
   num sum = x;
   int n = 1;
   while (n <= 8) {
-    final num denom = (2 * n * (2 * n + 1)).toDouble();
+    num denom = (2 * n * (2 * n + 1)).toDouble();
     term = -term * x * x / denom;
     sum = sum + term;
     n = n + 1;
@@ -41,7 +53,7 @@ num cosApprox(num x) {
   num sum = 1.0;
   int n = 1;
   while (n <= 8) {
-    final num denom = ((2 * n - 1) * 2 * n).toDouble();
+    num denom = ((2 * n - 1) * (2 * n)).toDouble();
     term = -term * x * x / denom;
     sum = sum + term;
     n = n + 1;
@@ -79,10 +91,10 @@ num atan2Approx(num y, num x) {
 }
 
 int digit(String ch) {
-  final String digits = "0123456789";
+  String digits = "0123456789";
   int i = 0;
   while (i < digits.length) {
-    if (digits.substring(i, i + 1) == ch) {
+    if (_substr(digits, i, i + 1) == ch) {
     return i;
   }
     i = i + 1;
@@ -91,14 +103,14 @@ int digit(String ch) {
 }
 
 int parseTwo(String s, int idx) {
-  return digit(s.substring(idx, idx + 1)) * 10 + digit(s.substring(idx + 1, idx + 2));
+  return digit(_substr(s, idx, idx + 1)) * 10 + digit(_substr(s, idx + 1, idx + 2));
 }
 
 num parseSec(String s) {
-  final int h = parseTwo(s, 0);
-  final int m = parseTwo(s, 3);
-  final int sec = parseTwo(s, 6);
-  final int tmp = (h * 60 + m) * 60 + sec;
+  int h = parseTwo(s, 0);
+  int m = parseTwo(s, 3);
+  int sec = parseTwo(s, 6);
+  int tmp = (h * 60 + m) * 60 + sec;
   return (tmp).toDouble();
 }
 
@@ -114,27 +126,27 @@ String meanTime(List<String> times) {
   num csum = 0.0;
   int i = 0;
   while (i < times.length) {
-    final num sec = parseSec(times[i]);
-    final num ang = sec * 2.0 * PI / 86400.0;
+    num sec = parseSec(times[i]);
+    num ang = sec * 2.0 * PI / 86400.0;
     ssum = ssum + sinApprox(ang);
     csum = csum + cosApprox(ang);
     i = i + 1;
   }
   num theta = atan2Approx(ssum, csum);
-  num frac = theta / 2.0 * PI;
+  num frac = theta / (2.0 * PI);
   while (frac < 0.0) {
     frac = frac + 1.0;
   }
-  final num total = frac * 86400.0;
-  final int si = (total).toInt();
-  final int h = si ~/ 3600 as int;
-  final int m = si % 3600 ~/ 60 as int;
-  final int s = si % 60 as int;
+  num total = frac * 86400.0;
+  int si = (total).toInt();
+  int h = si ~/ 3600 as int;
+  int m = si % 3600 ~/ 60 as int;
+  int s = si % 60 as int;
   return pad(h) + ":" + pad(m) + ":" + pad(s);
 }
 
-void main() {
-  final List<String> inputs = ["23:00:17", "23:40:20", "00:12:45", "00:17:19"];
+void _main() {
+  List<String> inputs = ["23:00:17", "23:40:20", "00:12:45", "00:17:19"];
   print(meanTime(inputs));
 }
 
@@ -145,13 +157,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 List<num> sortFloat(List<num> xs) {
   List<num> arr = xs;
   int n = arr.length;
@@ -30,7 +42,7 @@ List<num> sortFloat(List<num> xs) {
     int j = 0;
     while (j < n - 1) {
     if (arr[j] > arr[j + 1]) {
-    final num tmp = arr[j];
+    num tmp = arr[j];
     arr[j] = arr[j + 1];
     arr[j + 1] = tmp;
   }
@@ -43,7 +55,7 @@ List<num> sortFloat(List<num> xs) {
 
 num median(List<num> a) {
   List<num> arr = sortFloat(a);
-  final int half = arr.length ~/ 2 as int;
+  int half = arr.length ~/ 2 as int;
   num m = arr[half];
   if (arr.length % 2 == 0) {
     m = (m + arr[half - 1]) / 2.0;

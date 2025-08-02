@@ -38,7 +38,7 @@ int bsearch(List<int> arr, int x) {
   int low = 0;
   int high = arr.length - 1;
   while (low <= high) {
-    final int mid = (low + high) ~/ 2;
+    int mid = (low + high) ~/ 2;
     if (arr[mid] > x) {
     high = mid - 1;
   } else {
@@ -56,7 +56,7 @@ int bsearchRec(List<int> arr, int x, int low, int high) {
   if (high < low) {
     return -1;
   }
-  final int mid = (low + high) ~/ 2;
+  int mid = (low + high) ~/ 2;
   if (arr[mid] > x) {
     return bsearchRec(arr, x, low, mid - 1);
   } else {
@@ -67,8 +67,8 @@ int bsearchRec(List<int> arr, int x, int low, int high) {
   return mid;
 }
 
-void main() {
-  final List<int> nums = [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782];
+void _main() {
+  List<int> nums = [-31, 0, 1, 2, 2, 4, 65, 83, 99, 782];
   int x = 2;
   int idx = bsearch(nums, x);
   if (idx >= 0) {
@@ -92,13 +92,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

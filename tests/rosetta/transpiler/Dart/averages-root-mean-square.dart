@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num sqrtApprox(num x) {
   num guess = x;
   int i = 0;
@@ -32,10 +44,10 @@ num sqrtApprox(num x) {
   return guess;
 }
 
-final int n = 10;
+int n = 10;
 num sum = 0.0;
 int x = 1;
-final num rms = sqrtApprox(sum / ((n).toDouble()));
+num rms = sqrtApprox(sum / ((n).toDouble()));
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();

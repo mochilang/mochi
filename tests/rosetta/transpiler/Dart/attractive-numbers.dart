@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 bool isPrime(int n) {
   if (n < 2) {
     return false;
@@ -84,15 +96,15 @@ String pad4(int n) {
   return s;
 }
 
-void main() {
-  final int max = 120;
+void _main() {
+  int max = 120;
   print("The attractive numbers up to and including " + (max).toString() + " are:");
   int count = 0;
   String line = "";
   int lineCount = 0;
   int i = 1;
   while (i <= max) {
-    final int c = countPrimeFactors(i);
+    int c = countPrimeFactors(i);
     if (isPrime(c)) {
     line = line + pad4(i);
     count = count + 1;
@@ -117,13 +129,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

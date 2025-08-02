@@ -22,20 +22,32 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-final num xMin = -2.182;
-final num xMax = 2.6558;
-final num yMin = 0.0;
-final num yMax = 9.9983;
-final int width = 60;
-final int nIter = 10000;
-final num dx = xMax - xMin;
-final num dy = yMax - yMin;
-final int height = (width * dy / dx).toInt();
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+num xMin = -2.182;
+num xMax = 2.6558;
+num yMin = 0.0;
+num yMax = 9.9983;
+int width = 60;
+int nIter = 10000;
+num dx = xMax - xMin;
+num dy = yMax - yMin;
+int height = (width * dy / dx).toInt();
 List<List<String>> grid = <List<String>>[];
 int row = 0;
 int seed = 1;
 List<int> randInt(int s, int n) {
-  final int next = (s * 1664525 + 1013904223) % 2147483647;
+  int next = (s * 1664525 + 1013904223) % 2147483647;
   return [next, next % n];
 }
 
@@ -58,7 +70,7 @@ void main() {
     line = [...line, " "];
     col = col + 1;
   }
-    grid = [...grid, line];
+    grid = ([...grid, line] as List).map((e) => List<String>.from(e)).toList();
     row = row + 1;
   }
   if (ix >= 0 && ix < width && iy >= 0 && iy < height) {
@@ -67,22 +79,22 @@ void main() {
   while (i < nIter) {
     List<int> res = randInt(seed, 100);
     seed = res[0];
-    final int r = res[1];
-    if (r < 85) {
-    final num nx = 0.85 * x + 0.04 * y;
-    final num ny = -0.04 * x + 0.85 * y + 1.6;
+    dynamic r = res[1];
+    if (r.compareTo(85) < 0) {
+    dynamic nx = 0.85 * x + 0.04 * y;
+    dynamic ny = -0.04 * x + 0.85 * y + 1.6;
     x = nx;
     y = ny;
   } else {
-    if (r < 92) {
-    final num nx = 0.2 * x - 0.26 * y;
-    final num ny = 0.23 * x + 0.22 * y + 1.6;
+    if (r.compareTo(92) < 0) {
+    dynamic nx = 0.2 * x - 0.26 * y;
+    dynamic ny = 0.23 * x + 0.22 * y + 1.6;
     x = nx;
     y = ny;
   } else {
-    if (r < 99) {
-    final num nx = -0.15 * x + 0.28 * y;
-    final num ny = 0.26 * x + 0.24 * y + 0.44;
+    if (r.compareTo(99) < 0) {
+    dynamic nx = -0.15 * x + 0.28 * y;
+    dynamic ny = 0.26 * x + 0.24 * y + 0.44;
     x = nx;
     y = ny;
   } else {
