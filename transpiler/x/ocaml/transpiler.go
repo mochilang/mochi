@@ -1655,7 +1655,9 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 		mi.Key.emit(w)
 		io.WriteString(w, ") ")
 		mi.Map.emit(w)
-		io.WriteString(w, " with Not_found -> (Obj.magic 0))")
+		io.WriteString(w, " with Not_found -> ")
+		defaultValueExpr(mi.Typ).emit(w)
+		io.WriteString(w, ")")
 	}
 }
 
@@ -2056,7 +2058,14 @@ func (mu *MapUpdateExpr) emit(w io.Writer) {
 	if mu.Dyn {
 		io.WriteString(w, "(Obj.magic (")
 		mu.Map.emit(w)
-		if _, ok := mu.Key.(*StringLit); ok {
+		keyIsString := false
+		switch k := mu.Key.(type) {
+		case *StringLit:
+			keyIsString = true
+		case *Name:
+			keyIsString = k.Typ == "string"
+		}
+		if keyIsString {
 			io.WriteString(w, ") : (string * Obj.t) list)")
 		} else {
 			io.WriteString(w, ") : (int * Obj.t) list)")
