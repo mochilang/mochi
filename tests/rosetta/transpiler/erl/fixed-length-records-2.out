@@ -2,7 +2,7 @@
 "beta"
 "gamma"
 {
-  "duration_us": 18834,
-  "memory_bytes": 342432,
+  "duration_us": 23848,
+  "memory_bytes": 329704,
   "name": "main"
 }
