@@ -1051,7 +1051,11 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	castIndex := strings.HasPrefix(idx.Container, "ArrayBuffer[") || idx.Container == "String" || (idx.Container == "Any" && !idx.ForceMap)
+	container := idx.Container
+	if container == "" {
+		container = "Any"
+	}
+	castIndex := strings.HasPrefix(container, "ArrayBuffer[") || container == "String" || (container == "Any" && !idx.ForceMap)
 	emitIndex := func() {
 		if castIndex {
 			fmt.Fprint(w, "(")
@@ -1061,7 +1065,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			idx.Index.emit(w)
 		}
 	}
-	if (strings.HasPrefix(idx.Container, "Map[") || strings.HasPrefix(idx.Container, "scala.collection.mutable.Map[")) && idx.Container != "Any" {
+	if (strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[")) && container != "Any" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, "(")
 		emitIndex()
@@ -1069,7 +1073,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		if idx.Type != "" && idx.Type != "Any" {
 			fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 		}
-	} else if idx.Container == "Any" {
+	} else if container == "Any" {
 		if (idx.ForceMap) || (func() bool {
 			if prev, ok := idx.Value.(*IndexExpr); ok {
 				return strings.HasPrefix(prev.Container, "Map[") || strings.HasPrefix(prev.Container, "scala.collection.mutable.Map[")
@@ -1094,7 +1098,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 			emitIndex()
 			fmt.Fprint(w, ")")
 		}
-	} else if idx.Container == "String" {
+	} else if container == "String" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".slice(")
 		emitIndex()
@@ -1108,7 +1112,7 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 	}
 	if idx.Type != "" && idx.Type != "Any" &&
-		(idx.Container == "Any" || strings.Contains(idx.Container, "Any")) &&
+		(container == "Any" || strings.Contains(container, "Any")) &&
 		!strings.HasPrefix(idx.Type, "ArrayBuffer[") && !strings.HasPrefix(idx.Type, "Map[") {
 		fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
 	}
