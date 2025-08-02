@@ -1,6 +1,0 @@
-zig build: exit status 1
-/tmp/arrays.zig:8:19: error: function parameter shadows declaration of 'a'
-/tmp/arrays.zig:12:1: note: declared here
-/tmp/arrays.zig:23:9: error: local variable shadows declaration of 's'
-/tmp/arrays.zig:19:1: note: declared here
-/tmp/arrays.zig:60:19: error: unused capture
