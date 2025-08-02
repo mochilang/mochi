@@ -4147,6 +4147,44 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				return &StructLit{Name: name, Fields: vals, Names: names}, nil
 			}
+		} else {
+			// Fallback: infer struct using expression types when env inference fails.
+			names := make([]string, len(p.Map.Items))
+			vals := make([]Expr, len(p.Map.Items))
+			sigParts := make([]string, len(p.Map.Items))
+			stFields := make(map[string]types.Type, len(p.Map.Items))
+			fields := make([]Param, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				var keyName string
+				if k, ok := types.SimpleStringKey(it.Key); ok {
+					keyName = k
+				} else {
+					keyName = fmt.Sprintf("f%d", i)
+				}
+				names[i] = keyName
+				v, err := compileExpr(it.Value)
+				if err != nil {
+					return nil, err
+				}
+				vals[i] = v
+				rt := inferType(v)
+				sigParts[i] = keyName + ":" + rt
+				stFields[keyName] = typeFromString(rt)
+				fields[i] = Param{Name: keyName, Type: rt}
+			}
+			sig := strings.Join(sigParts, ";")
+			name, ok := structSig[sig]
+			if !ok {
+				name = types.UniqueStructName("Map", curEnv, nil)
+				st := types.StructType{Fields: stFields, Order: names}
+				st.Name = name
+				curEnv.SetStruct(name, st)
+				typeDecls = append(typeDecls, &StructDecl{Name: name, Fields: fields})
+				structTypes[name] = st
+				structSig[sig] = name
+			}
+			structForMap[p.Map] = name
+			return &StructLit{Name: name, Fields: vals, Names: names}, nil
 		}
 		entries := make([]MapEntry, len(p.Map.Items))
 		for i, it := range p.Map.Items {
