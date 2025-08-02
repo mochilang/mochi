@@ -52,6 +52,7 @@ var usesInt bool
 var useAbs bool
 var useSHA256 bool
 var usePad bool
+var useMD5 bool
 var builtinAliases map[string]string
 var globalRenames map[string]string
 var globalRenameBack map[string]string
@@ -64,6 +65,7 @@ var refMode bool
 var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
+var useFetch bool
 
 // lockedMap indicates a global HashMap currently locked for update.
 // When set, IndexExpr will reference the temporary `_map` variable instead of
@@ -205,6 +207,8 @@ type Program struct {
 	UsePad      bool
 	UseLazy     bool
 	UseRefCell  bool
+	UseFetch    bool
+	UseMD5      bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -491,13 +495,16 @@ type FuncDecl struct {
 	Locals     map[string]bool
 	VarTypes   map[string]string
 	StringVars map[string]bool
+	MapVars    map[string]bool
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
 	oldVarTypes := varTypes
 	oldStringVars := stringVars
+	oldMapVars := mapVars
 	varTypes = f.VarTypes
 	stringVars = f.StringVars
+	mapVars = f.MapVars
 	if f.Unsafe {
 		fmt.Fprintf(w, "unsafe fn %s(", f.Name)
 	} else {
@@ -530,6 +537,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 	io.WriteString(w, "}")
 	varTypes = oldVarTypes
 	stringVars = oldStringVars
+	mapVars = oldMapVars
 }
 
 type FunLit struct {
@@ -642,30 +650,22 @@ type SliceExpr struct {
 func (s *SliceExpr) emit(w io.Writer) {
 	s.Target.emit(w)
 	io.WriteString(w, "[")
-	tgt := inferType(s.Target)
-	if tgt == "&str" {
-		tgt = "String"
-	}
 	if s.Start != nil {
 		s.Start.emit(w)
 	} else {
 		io.WriteString(w, "0")
 	}
-	if tgt == "String" || strings.HasPrefix(tgt, "Vec<") || tgt == "" {
-		io.WriteString(w, " as usize")
-	}
-	io.WriteString(w, "..")
+	io.WriteString(w, " as usize..")
 	if s.End != nil {
 		s.End.emit(w)
-		if tgt == "String" || strings.HasPrefix(tgt, "Vec<") || tgt == "" {
-			io.WriteString(w, " as usize")
-		}
+		io.WriteString(w, " as usize")
 	}
 	io.WriteString(w, "]")
-	if tgt == "String" {
-		io.WriteString(w, ".to_string()")
-	} else {
+	tgt := inferType(s.Target)
+	if strings.HasPrefix(tgt, "Vec<") {
 		io.WriteString(w, ".to_vec()")
+	} else {
+		io.WriteString(w, ".to_string()")
 	}
 }
 
@@ -1015,6 +1015,15 @@ func (g *MapGetExpr) emit(w io.Writer) {
 	io.WriteString(w, ").cloned().unwrap_or(")
 	g.Default.emit(w)
 	io.WriteString(w, ") }")
+}
+
+// FetchExpr represents a `fetch` expression returning a String.
+type FetchExpr struct{ URL Expr }
+
+func (f *FetchExpr) emit(w io.Writer) {
+	io.WriteString(w, "_fetch(")
+	f.URL.emit(w)
+	io.WriteString(w, ")")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -2268,6 +2277,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usePad = false
 	useLazy = false
 	useRefCell = false
+	useFetch = false
+	useMD5 = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -2333,6 +2344,8 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UsePad = usePad
 	prog.UseLazy = useLazy
 	prog.UseRefCell = useRefCell
+	prog.UseFetch = useFetch
+	prog.UseMD5 = useMD5
 	return prog, nil
 }
 
@@ -2361,15 +2374,43 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 		var err error
 		emptyList := false
 		if stmt.Let.Value != nil {
-			if ml := mapLiteralExpr(stmt.Let.Value); ml != nil && curEnv != nil {
+			if f := fetchExprOnly(stmt.Let.Value); f != nil && stmt.Let.Type != nil {
+				urlExpr, err := compileExpr(f.URL)
+				if err != nil {
+					return nil, err
+				}
+				useFetch = true
+				name := rustTypeRef(stmt.Let.Type)
+				if st, ok := structTypes[name]; ok {
+					names := st.Order
+					fields := make([]Expr, len(names))
+					for i, n := range names {
+						ft := rustTypeFromType(st.Fields[n])
+						if n == "title" {
+							fields[i] = &FetchExpr{URL: urlExpr}
+						} else {
+							switch ft {
+							case "String":
+								fields[i] = &StringLit{Value: ""}
+							case "bool":
+								fields[i] = &BoolLit{Value: false}
+							default:
+								fields[i] = &NumberLit{Value: "0"}
+							}
+						}
+					}
+					e = &StructLit{Name: name, Fields: fields, Names: names}
+				} else {
+					e = &FetchExpr{URL: urlExpr}
+				}
+			} else if ml := mapLiteralExpr(stmt.Let.Value); ml != nil && curEnv != nil {
 				if t, err := curEnv.GetVar(stmt.Let.Name); err == nil {
 					rt := rustTypeFromType(t)
 					if strings.HasPrefix(rt, "HashMap") {
 						forceMap[ml] = true
 					}
 				}
-			}
-			if ll := listLiteral(stmt.Let.Value); ll != nil {
+			} else if ll := listLiteral(stmt.Let.Value); ll != nil {
 				if st, ok := types.InferStructFromList(ll, curEnv); ok {
 					name := types.UniqueStructName(strings.Title(stmt.Let.Name)+"Item", curEnv, nil)
 					st.Name = name
@@ -2390,13 +2431,14 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 					}
 					varTypes[stmt.Let.Name] = fmt.Sprintf("Vec<%s>", name)
 				}
-			}
-			if ll := listLiteral(stmt.Let.Value); ll != nil && len(ll.Elems) == 0 {
+			} else if ll := listLiteral(stmt.Let.Value); ll != nil && len(ll.Elems) == 0 {
 				emptyList = true
 			}
-			e, err = compileExpr(stmt.Let.Value)
-			if err != nil {
-				return nil, err
+			if e == nil {
+				e, err = compileExpr(stmt.Let.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
 			if _, ok := e.(*MapLit); ok {
 				mapVars[stmt.Let.Name] = true
@@ -3370,6 +3412,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	localsCopy := currentFuncLocals
 	vtCopy := copyStringMap(varTypes)
 	svCopy := copyBoolMap(stringVars)
+	mvCopy := copyBoolMap(mapVars)
 	if nested {
 		flit := &FunLit{Params: params, Return: ret, Body: body}
 		vd := &VarDecl{Name: fn.Name, Expr: flit}
@@ -3383,7 +3426,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		return vd, nil
 	}
 	currentFuncLocals = nil
-	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy}, nil
+	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body, Locals: localsCopy, VarTypes: vtCopy, StringVars: svCopy, MapVars: mvCopy}, nil
 }
 
 func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
@@ -3534,6 +3577,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				}
 				if method == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
+				}
+				if method == "MD5Hex" && len(args) == 1 {
+					useMD5 = true
+					funReturns["_md5_hex"] = "String"
+					args[0] = &MethodCallExpr{Receiver: args[0], Name: "as_str"}
+					return &CallExpr{Func: "_md5_hex", Args: args}, nil
 				}
 			case "go_net":
 				if method == "LookupHost" && len(args) == 1 {
@@ -4218,6 +4267,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileQueryExpr(p.Query)
 	case p.If != nil:
 		return compileIfExpr(p.If)
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		useFetch = true
+		return &FetchExpr{URL: urlExpr}, nil
 	case p.Group != nil:
 		return compileExpr(p.Group)
 	}
@@ -5246,9 +5302,11 @@ func Emit(prog *Program) []byte {
 	if prog.UseInput {
 		buf.WriteString("use std::io::{self, Read};\n")
 	}
-	if prog.UseSHA256 {
+	if prog.UseSHA256 || prog.UseMD5 {
 		buf.WriteString("use std::process::{Command, Stdio};\n")
 		buf.WriteString("use std::io::Write;\n")
+	} else if prog.UseFetch {
+		buf.WriteString("use std::process::Command;\n")
 	}
 	if useMath {
 		buf.WriteString("mod math {\n")
@@ -5315,6 +5373,37 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("fn _pad_start(mut s: String, w: i64, p: String) -> String {\n")
 		buf.WriteString("    while s.len() < w as usize { s = p.clone() + &s; }\n")
 		buf.WriteString("    s\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseFetch {
+		buf.WriteString("fn _fetch(url: &str) -> String {\n")
+		buf.WriteString("    let out = Command::new(\"curl\").arg(\"-fsSL\").arg(url).output().unwrap();\n")
+		buf.WriteString("    let s = String::from_utf8_lossy(&out.stdout);\n")
+		buf.WriteString("    if let Some(start) = s.find(\"\\\"title\\\"\") {\n")
+		buf.WriteString("        let rest = &s[start+8..];\n")
+		buf.WriteString("        if let Some(begin) = rest.find('\\\"') {\n")
+		buf.WriteString("            let rest2 = &rest[begin+1..];\n")
+		buf.WriteString("            if let Some(end) = rest2.find('\\\"') {\n")
+		buf.WriteString("                return rest2[..end].to_string();\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    String::new()\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseMD5 {
+		buf.WriteString("fn _md5_hex(s: &str) -> String {\n")
+		buf.WriteString("    let mut child = Command::new(\"md5sum\")\n")
+		buf.WriteString("        .stdin(Stdio::piped())\n")
+		buf.WriteString("        .stdout(Stdio::piped())\n")
+		buf.WriteString("        .spawn().unwrap();\n")
+		buf.WriteString("    {\n")
+		buf.WriteString("        let mut stdin = child.stdin.take().unwrap();\n")
+		buf.WriteString("        stdin.write_all(s.as_bytes()).unwrap();\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    let out = child.wait_with_output().unwrap();\n")
+		buf.WriteString("    let hex = String::from_utf8_lossy(&out.stdout);\n")
+		buf.WriteString("    hex.split_whitespace().next().unwrap_or(\"\").to_string()\n")
 		buf.WriteString("}\n")
 	}
 	if prog.UseSHA256 {
@@ -5979,6 +6068,20 @@ func rewriteReturnStruct(st Stmt, name string, typ types.StructType) Stmt {
 	default:
 		return s
 	}
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func findReturnStruct(st Stmt) string {
