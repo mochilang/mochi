@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 07:30 UTC
+Last updated: 2025-08-02 07:37 UTC
 
 ## Checklist (481/491)
 | Index | Name | Status | Duration | Memory |
@@ -457,7 +457,7 @@ Last updated: 2025-08-02 07:30 UTC
 | 448 | flow-control-structures-3 | ✓ | 21µs | 9.0 KB |
 | 449 | flow-control-structures-4 | ✓ | 19µs | 8.8 KB |
 | 450 | floyd-warshall-algorithm | ✓ | 177µs | 26.8 KB |
-| 451 | floyd-warshall-algorithm2 | ✓ |  |  |
+| 451 | floyd-warshall-algorithm2 | ✓ | 115µs | 30.6 KB |
 | 452 | floyds-triangle | ✓ | 124µs | 32.2 KB |
 | 453 | forest-fire | ✓ | 120µs | 14.5 KB |
 | 454 | fork-2 | ✓ | 29µs | 9.2 KB |
