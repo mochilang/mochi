@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (398/491)
-Last updated: 2025-08-02 16:13 UTC
+## Checklist (399/491)
+Last updated: 2025-08-02 16:30 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -230,7 +230,7 @@ Last updated: 2025-08-02 16:13 UTC
 | 221 | conditional-structures-7 | ✓ | 571.223ms | 12.3 MB |
 | 222 | conditional-structures-8 | ✓ | 571.223ms | 11.8 MB |
 | 223 | conditional-structures-9 | ✓ | 571.223ms | 12.2 MB |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
 | 225 | constrained-genericity-1 | ✓ | 571.223ms | 11.9 MB |
 | 226 | constrained-genericity-2 | ✓ | 571.223ms | 11.8 MB |
 | 227 | constrained-genericity-3 | ✓ | 571.223ms | 11.9 MB |
