@@ -134,10 +134,10 @@ $__start = _now();
   $x = 1;
   while ($x <= $y) {
   $val = $cache[$y - $x][minInt($x, $y - $x)];
-  $row = array_merge($row, [bigAdd(substr('row', count('row') - 1, count('row') - 1 + 1 - (count('row') - 1)), $val)]);
+  $row = array_merge($row, [bigAdd($row[count($row) - 1], $val)]);
   $x = $x + 1;
 };
-  $cache = array_merge($cache, ['row']);
+  $cache = array_merge($cache, [$row]);
   $y = $y + 1;
 };
   return $cache[$n];
@@ -174,10 +174,10 @@ $__start = _now();
   echo rtrim(_str($num) . ' ' . bigToString($r[count($r) - 1])), PHP_EOL;
 }
 $__end = _now();
-$__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__end_mem = memory_get_peak_usage();
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;
