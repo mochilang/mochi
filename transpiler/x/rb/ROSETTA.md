@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 11:03 UTC
+Last updated: 2025-08-02 13:35 UTC
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -145,7 +145,7 @@ Last updated: 2025-08-02 11:03 UTC
 | 136 | brilliant-numbers | ✓ | 1.251281s | 27.1 MB |
 | 137 | brownian-tree | ✓ | 4m54.916727s | 1.0 MB |
 | 138 | bulls-and-cows-player | ✓ | 14.329ms | 22.7 MB |
-| 139 | bulls-and-cows | ✓ |  |  |
+| 139 | bulls-and-cows | ✓ | 381.942ms | 19.1 KB |
 | 140 | burrows-wheeler-transform | ✓ | 38.918ms | 126.6 KB |
 | 141 | caesar-cipher-1 | ✓ | 288µs | 131.7 KB |
 | 142 | caesar-cipher-2 | ✓ | 345µs | 131.7 KB |

@@ -26,6 +26,9 @@ const helperNow = `
 $now_seed = 0
 $now_seeded = false
 s = ENV['MOCHI_NOW_SEED']
+if (!s || s == '') && ENV['MOCHI_BENCHMARK']
+  s = '1'
+end
 if s && s != ''
   begin
     $now_seed = Integer(s)
@@ -2244,11 +2247,11 @@ func (m *MethodCallExpr) emit(e *emitter) {
 }
 
 func (a *AppendExpr) emit(e *emitter) {
-       io.WriteString(e.w, "(")
-       a.List.emit(e)
-       io.WriteString(e.w, " << ")
-       a.Elem.emit(e)
-       io.WriteString(e.w, ")")
+	io.WriteString(e.w, "(")
+	a.List.emit(e)
+	io.WriteString(e.w, " << ")
+	a.Elem.emit(e)
+	io.WriteString(e.w, ")")
 }
 
 func (s *SliceExpr) emit(e *emitter) {
