@@ -348,6 +348,8 @@ type MapEntry struct {
 type MapLit struct {
 	Entries    []MapEntry
 	StructName string
+	KeyType    string
+	ValType    string
 }
 
 func isConstExpr(e Expr) bool {
@@ -925,11 +927,15 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " }")
 		return
 	}
-	keyType := "[]const u8"
-	valType := "i64"
-	if len(m.Entries) > 0 {
-		keyType = zigTypeFromExpr(m.Entries[0].Key)
-		valType = zigTypeFromExpr(m.Entries[0].Value)
+	keyType := m.KeyType
+	valType := m.ValType
+	if keyType == "" || valType == "" {
+		keyType = "[]const u8"
+		valType = "i64"
+		if len(m.Entries) > 0 {
+			keyType = zigTypeFromExpr(m.Entries[0].Key)
+			valType = zigTypeFromExpr(m.Entries[0].Value)
+		}
 	}
 	mapType := "std.StringHashMap(" + valType + ")"
 	if keyType != "[]const u8" {
@@ -1171,10 +1177,15 @@ func (p *Program) Emit() []byte {
 	if len(p.Globals) > 0 {
 		buf.WriteString("\n")
 	}
-	for i, fn := range p.Functions {
-		if i > 0 {
+	firstFn := true
+	for _, fn := range p.Functions {
+		if fn == nil {
+			continue
+		}
+		if !firstFn {
 			buf.WriteString("\n")
 		}
+		firstFn = false
 		fn.emit(&buf)
 	}
 	if useNow {
@@ -1246,6 +1257,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    var buf: [64]u8 = undefined;\n")
 		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
 		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \" \" );\n")
+		buf.WriteString("    _ = it.next(); // skip total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
 		buf.WriteString("        return pages * 4096;\n")
@@ -1621,17 +1633,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if _, ok := b.Right.(*IntLit); ok {
 			b.Left.emit(w)
 			fmt.Fprintf(w, " %s ", b.Op)
-			io.WriteString(w, "@intToFloat(f64, ")
+			io.WriteString(w, "@as(f64, @floatFromInt(")
 			b.Right.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 			return
 		}
 	}
 	if isIntType(lt) && rt == "f64" {
 		if _, ok := b.Left.(*IntLit); ok {
-			io.WriteString(w, "@intToFloat(f64, ")
+			io.WriteString(w, "@as(f64, @floatFromInt(")
 			b.Left.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 			fmt.Fprintf(w, " %s ", b.Op)
 			b.Right.emit(w)
 			return
@@ -1831,9 +1843,9 @@ func (c *CastExpr) emit(w io.Writer) {
 			c.Value.emit(w)
 			io.WriteString(w, ")")
 		} else if isIntType(vt) {
-			io.WriteString(w, "@intToFloat(f64, ")
+			io.WriteString(w, "@as(f64, @floatFromInt(")
 			c.Value.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, "))")
 		} else {
 			io.WriteString(w, "@as(f64, ")
 			c.Value.emit(w)
@@ -2172,9 +2184,9 @@ func (c *CallExpr) emit(w io.Writer) {
 								break
 							}
 						}
-						io.WriteString(w, "@intToFloat(f64, ")
+						io.WriteString(w, "@as(f64, @floatFromInt(")
 						a.emit(w)
-						io.WriteString(w, ")")
+						io.WriteString(w, "))")
 					case strings.HasPrefix(exp, "[]") && strings.HasPrefix(at, "["):
 						a.emit(w)
 						io.WriteString(w, "[0..]")
@@ -2228,6 +2240,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	nameCounts = map[string]int{}
 	pushAliasScope()
 	globalNames = map[string]bool{}
+	funDepth++
+	funParamsStack = append(funParamsStack, nil)
 	for _, st := range prog.Statements {
 		if st.Let != nil {
 			globalNames[st.Let.Name] = true
@@ -2294,6 +2308,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			main.Body = append(main.Body, s)
 		}
 	}
+	funParamsStack = funParamsStack[:len(funParamsStack)-1]
+	funDepth--
 	if len(globalInits) > 0 {
 		newBody := make([]Stmt, 0, len(globalInits)+len(main.Body))
 		newBody = append(newBody, globalInits...)
@@ -3102,12 +3118,24 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	}
 	body := make([]Stmt, 0, len(ws.Body))
 	pushAliasScope()
+	// track varDecls before processing the loop so we can remove
+	// any declarations that are scoped within the loop body
+	outerDecls := make(map[string]*VarDecl, len(varDecls))
+	for k, v := range varDecls {
+		outerDecls[k] = v
+	}
 	for _, s := range ws.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
 			return nil, err
 		}
 		body = append(body, st)
+	}
+	// remove varDecls introduced inside the loop body
+	for k := range varDecls {
+		if _, ok := outerDecls[k]; !ok {
+			delete(varDecls, k)
+		}
 	}
 	popAliasScope()
 	return &WhileStmt{Cond: cond, Body: body}, nil
@@ -3133,12 +3161,21 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	pushAliasScope()
+	outerDecls := make(map[string]*VarDecl, len(varDecls))
+	for k, v := range varDecls {
+		outerDecls[k] = v
+	}
 	for _, s := range fs.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
 			return nil, err
 		}
 		body = append(body, st)
+	}
+	for k := range varDecls {
+		if _, ok := outerDecls[k]; !ok {
+			delete(varDecls, k)
+		}
 	}
 	popAliasScope()
 	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
@@ -3450,9 +3487,19 @@ func toZigType(t *parser.TypeRef) string {
 			return "f64"
 		}
 	}
-	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
-		elem := toZigType(t.Generic.Args[0])
-		return "[]" + elem
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			elem := toZigType(t.Generic.Args[0])
+			return "[]" + elem
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			key := toZigType(t.Generic.Args[0])
+			val := toZigType(t.Generic.Args[1])
+			if key == "[]const u8" {
+				return fmt.Sprintf("std.StringHashMap(%s)", val)
+			}
+			return fmt.Sprintf("std.AutoHashMap(%s,%s)", key, val)
+		}
 	}
 	return "i64"
 }
@@ -3497,6 +3544,11 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			mapVars[aliasName] = true
 		}
 	}
+	name := fn.Name
+	if funDepth == 1 && fn.Name == "main" {
+		mainFuncName = "mochi_main"
+		name = mainFuncName
+	}
 	funParamsStack = append(funParamsStack, names)
 	funDepth++
 	defer func() {
@@ -3521,11 +3573,6 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	used := map[string]bool{}
 	for _, st := range body {
 		collectVarsStmt(st, used)
-	}
-	name := fn.Name
-	if funDepth == 1 && fn.Name == "main" {
-		mainFuncName = "mochi_main"
-		name = mainFuncName
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	funcReturns[name] = ret
@@ -3633,6 +3680,20 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				mapVars[s.Let.Name] = false
 			} else {
 				mapVars[s.Let.Name] = true
+				mapVars[alias] = true
+				if vd.Type != "" {
+					if strings.HasPrefix(vd.Type, "std.StringHashMap(") {
+						ml.KeyType = "[]const u8"
+						ml.ValType = strings.TrimSuffix(strings.TrimPrefix(vd.Type, "std.StringHashMap("), ")")
+					} else if strings.HasPrefix(vd.Type, "std.AutoHashMap(") {
+						inside := strings.TrimSuffix(strings.TrimPrefix(vd.Type, "std.AutoHashMap("), ")")
+						parts := strings.Split(inside, ",")
+						if len(parts) == 2 {
+							ml.KeyType = strings.TrimSpace(parts[0])
+							ml.ValType = strings.TrimSpace(parts[1])
+						}
+					}
+				}
 			}
 		}
 		if qc, ok := expr.(*QueryComp); ok {
@@ -3702,6 +3763,20 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				mapVars[s.Var.Name] = false
 			} else {
 				mapVars[s.Var.Name] = true
+				mapVars[alias] = true
+				if vd.Type != "" {
+					if strings.HasPrefix(vd.Type, "std.StringHashMap(") {
+						ml.KeyType = "[]const u8"
+						ml.ValType = strings.TrimSuffix(strings.TrimPrefix(vd.Type, "std.StringHashMap("), ")")
+					} else if strings.HasPrefix(vd.Type, "std.AutoHashMap(") {
+						inside := strings.TrimSuffix(strings.TrimPrefix(vd.Type, "std.AutoHashMap("), ")")
+						parts := strings.Split(inside, ",")
+						if len(parts) == 2 {
+							ml.KeyType = strings.TrimSpace(parts[0])
+							ml.ValType = strings.TrimSpace(parts[1])
+						}
+					}
+				}
 			}
 		}
 		if vr, ok := expr.(*VarRef); ok {
@@ -4220,6 +4295,9 @@ func collectVarUses(p *Program) map[string]int {
 		walkStmt(g)
 	}
 	for _, f := range p.Functions {
+		if f == nil {
+			continue
+		}
 		for _, st := range f.Body {
 			walkStmt(st)
 		}
