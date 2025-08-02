@@ -376,14 +376,23 @@ type MatchExpr struct {
 
 func (m *MatchExpr) emit(w io.Writer) {
 	m.Target.emit(w)
-	fmt.Fprint(w, " match {")
-	for _, c := range m.Cases {
-		fmt.Fprint(w, " case ")
+	fmt.Fprint(w, " match {\n")
+	for i, c := range m.Cases {
+		if _, ok := c.Pattern.(*IntLit); ok {
+			fmt.Fprintf(w, "  case v%d if v%d == ", i, i)
+			c.Pattern.emit(w)
+			fmt.Fprint(w, " => ")
+			c.Result.emit(w)
+			fmt.Fprint(w, "\n")
+			continue
+		}
+		fmt.Fprint(w, "  case ")
 		c.Pattern.emit(w)
 		fmt.Fprint(w, " => ")
 		c.Result.emit(w)
+		fmt.Fprint(w, "\n")
 	}
-	fmt.Fprint(w, " }")
+	fmt.Fprint(w, "}")
 }
 
 type LetStmt struct {
