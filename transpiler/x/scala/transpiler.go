@@ -1940,6 +1940,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			mapEntryTypes[st.Let.Name] = mt
+		} else if ie, ok := e.(*IndexExpr); ok {
+			if n, ok2 := ie.Value.(*Name); ok2 {
+				if mt, ok3 := mapEntryTypes[n.Name]; ok3 {
+					mapEntryTypes[st.Let.Name] = mt
+				}
+			}
+			if typ == "" && strings.HasSuffix(st.Let.Name, "Map") {
+				typ = "scala.collection.mutable.Map[Any,Any]"
+				e = &CastExpr{Value: e, Type: typ}
+				localVarTypes[st.Let.Name] = typ
+			}
 		}
 		if assignedVars != nil && assignedVars[st.Let.Name] {
 			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
@@ -3067,6 +3078,28 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 					if et == "" || et == "Any" || et != elemTyp {
 						args[1] = &CastExpr{Value: args[1], Type: elemTyp}
 					}
+				}
+			}
+			if n, ok := args[0].(*Name); ok {
+				var ml *MapLit
+				switch v := args[1].(type) {
+				case *MapLit:
+					ml = v
+				case *CastExpr:
+					if m2, ok := v.Value.(*MapLit); ok {
+						ml = m2
+					}
+				}
+				if ml != nil {
+					mt := make(map[string]string)
+					for _, it := range ml.Items {
+						if k, ok3 := it.Key.(*StringLit); ok3 {
+							if it.Type != "" && it.Type != "Any" {
+								mt[k.Value] = it.Type
+							}
+						}
+					}
+					mapEntryTypes[n.Name] = mt
 				}
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil

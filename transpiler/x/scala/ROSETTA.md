@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (420/491)
-_Last updated: 2025-08-02 16:36 +0700_
+## Golden Test Checklist (421/491)
+_Last updated: 2025-08-02 17:07 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -214,7 +214,7 @@ _Last updated: 2025-08-02 16:36 +0700_
 | 205 | circular-primes | ✓ | 10µs | 8.7 MB |
 | 206 | cistercian-numerals | error |  |  |
 | 207 | comma-quibbling | ✓ | 21µs | 8.7 MB |
-| 208 | compiler-virtual-machine-interpreter | error |  |  |
+| 208 | compiler-virtual-machine-interpreter | ✓ | 13µs | 8.7 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | error |  |  |
 | 210 | compound-data-type | ✓ |  |  |
 | 211 | concurrent-computing-1 | error |  |  |
