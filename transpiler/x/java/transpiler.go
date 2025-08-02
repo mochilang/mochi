@@ -24,6 +24,8 @@ import (
 var varTypes map[string]string
 var funcRet map[string]string
 var funcParams map[string][]string
+var funcParamNames map[string][]string
+var paramMapFields map[string]map[string]map[string]string
 var extraDecls []Stmt
 var structCount int
 var topEnv *types.Env
@@ -3510,6 +3512,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	funcMapFields = map[string]map[string]string{}
 	mapVarFields = map[string]map[string]string{}
 	funcParams = map[string][]string{}
+	funcParamNames = map[string][]string{}
+	paramMapFields = map[string]map[string]map[string]string{}
 	for _, s := range p.Statements {
 		if s.Fun != nil {
 			if strings.Contains(s.Fun.Name, ".") {
@@ -3560,6 +3564,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				if t := typeRefString(pa.Type); t != "" {
 					varTypes[pa.Name] = t
 				}
+				if pf, ok := paramMapFields[s.Fun.Name]; ok {
+					if f, ok2 := pf[pa.Name]; ok2 {
+						mapVarFields[pa.Name] = f
+					}
+				}
 			}
 			savedDecls := pushScope(false)
 			savedRet := currentFuncReturn
@@ -3569,9 +3578,12 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 				return nil, err
 			}
 			var params []Param
+			var pnames []string
 			for _, p := range s.Fun.Params {
 				params = append(params, Param{Name: p.Name, Type: typeRefString(p.Type)})
+				pnames = append(pnames, p.Name)
 			}
+			funcParamNames[s.Fun.Name] = pnames
 			ret := currentFuncReturn
 			if ret == "" {
 				ret = inferReturnType(body)
@@ -4702,8 +4714,6 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					if t, ok2 := fields[s]; ok2 {
 						rType = t
 					}
-					expr = &FieldExpr{Target: expr, Name: s}
-					continue
 				}
 			}
 			if rType == "" {
@@ -4719,11 +4729,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			}
-			fields := mapFieldsForExpr(expr)
 			isMap := isMapExpr(expr)
-			if fields != nil {
-				isMap = false
-			} else if !isMap {
+			if !isMap {
 				it := inferType(idx)
 				if it == "string" {
 					if !isStringExpr(expr) && !isArrayExpr(expr) {
@@ -4931,6 +4938,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 							ex = &MethodRefExpr{Name: v.Name}
 						}
 					}
+				}
+			}
+			if fields := mapFieldsForExpr(ex); fields != nil {
+				if names, okn := funcParamNames[p.Call.Func]; okn && i < len(names) {
+					pn := names[i]
+					if paramMapFields[p.Call.Func] == nil {
+						paramMapFields[p.Call.Func] = map[string]map[string]string{}
+					}
+					paramMapFields[p.Call.Func][pn] = fields
 				}
 			}
 			args[i] = ex
@@ -5234,7 +5250,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		elems := make([]Expr, len(p.List.Elems))
 		for i, e := range p.List.Elems {
+			savedDisable := disableStructList
+			if listLiteral(e) != nil {
+				disableStructList = true
+			}
 			ex, err := compileExpr(e)
+			disableStructList = savedDisable
 			if err != nil {
 				return nil, err
 			}
@@ -6376,6 +6397,21 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return v.Target.Map
+}
+
+func listLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil
+	}
+	v := u.Value
+	if len(v.Ops) != 0 || v.Target == nil {
+		return nil
+	}
+	return v.Target.List
 }
 
 func inferStructFromList(ll *parser.ListLiteral) (st types.StructType, ok bool) {
