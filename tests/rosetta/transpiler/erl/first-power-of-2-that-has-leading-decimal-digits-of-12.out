@@ -1,0 +1,12 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/first-power-of-2-that-has-leading-decimal-digits-of-12.erl:89:36: Warning: the result of evaluating operator '-'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   89|         true -> Count_3 = (Count_2 - 1),
+%     |                                    ^
+
+p(12, 1) = 6
+p(12, 2) = 59
+p(123, 45) = 59
+{
+  "duration_us": 25524,
+  "memory_bytes": 1413800,
+  "name": "main"
+}
