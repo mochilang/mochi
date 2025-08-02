@@ -35,6 +35,7 @@ var needNow bool
 var needAppendBool bool
 var needAppendObj bool
 var needNetLookupHost bool
+var needEnviron bool
 var needMem bool
 var needPadStart bool
 var needSHA256 bool
@@ -146,20 +147,40 @@ func currentEnv() *types.Env {
 	return env
 }
 
+var javaKeywords = map[string]struct{}{
+	"abstract": {}, "assert": {}, "boolean": {}, "break": {}, "byte": {},
+	"case": {}, "catch": {}, "char": {}, "class": {}, "const": {}, "continue": {},
+	"default": {}, "do": {}, "double": {}, "else": {}, "enum": {}, "extends": {},
+	"final": {}, "finally": {}, "float": {}, "for": {}, "goto": {}, "if": {},
+	"implements": {}, "import": {}, "instanceof": {}, "int": {}, "interface": {},
+	"long": {}, "native": {}, "new": {}, "package": {}, "private": {}, "protected": {},
+	"public": {}, "return": {}, "short": {}, "static": {}, "strictfp": {}, "super": {},
+	"switch": {}, "synchronized": {}, "this": {}, "throw": {}, "throws": {}, "transient": {},
+	"try": {}, "void": {}, "volatile": {}, "while": {},
+}
+
 func sanitize(name string) string {
-	switch name {
-	case "_":
+	if name == "_" {
 		return "_v"
-	case "this":
-		return "this_"
-	case "new":
-		return "new_"
-	case "double":
-		return "double_"
-	case "char":
-		return "char_"
+	}
+	if _, ok := javaKeywords[name]; ok {
+		return name + "_"
 	}
 	return name
+}
+
+func simpleUnionAlias(ut types.UnionType) string {
+	if len(ut.Variants) == 1 {
+		for name, st := range ut.Variants {
+			if len(st.Fields) == 0 {
+				switch name {
+				case "int", "float", "string", "bool", "boolean", "double":
+					return javaType(name)
+				}
+			}
+		}
+	}
+	return ""
 }
 
 func javaType(t string) string {
@@ -909,9 +930,9 @@ type Stmt interface{ emit(io.Writer, string) }
 type Expr interface{ emit(io.Writer) }
 
 func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
-	decl := "static class " + t.Name
+	decl := "static class " + sanitize(t.Name)
 	if t.Extends != "" {
-		decl += " implements " + t.Extends
+		decl += " implements " + sanitize(t.Extends)
 	}
 	fmt.Fprintf(w, indent+"%s {\n", decl)
 	for _, f := range t.Fields {
@@ -921,7 +942,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		}
 		fmt.Fprintf(w, indent+"    %s %s;\n", typ, f.Name)
 	}
-	fmt.Fprintf(w, indent+"    %s(", t.Name)
+	fmt.Fprintf(w, indent+"    %s(", sanitize(t.Name))
 	for i, f := range t.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -957,7 +978,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 	}
 	fmt.Fprint(w, indent+"    @Override public String toString() {\n")
 	if len(t.Fields) == 0 {
-		fmt.Fprintf(w, indent+"        return \"%s{}\";\n", t.Name)
+		fmt.Fprintf(w, indent+"        return \"%s{}\";\n", sanitize(t.Name))
 	} else {
 		fmt.Fprint(w, indent+"        return String.format(\"")
 		fmt.Fprint(w, "{")
@@ -989,11 +1010,11 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 }
 
 func (i *InterfaceDeclStmt) emit(w io.Writer, indent string) {
-	fmt.Fprintf(w, indent+"interface %s {}\n", i.Name)
+	fmt.Fprintf(w, indent+"interface %s {}\n", sanitize(i.Name))
 }
 
 func (s *StructLit) emit(w io.Writer) {
-	fmt.Fprintf(w, "new %s(", s.Name)
+	fmt.Fprintf(w, "new %s(", sanitize(s.Name))
 	for i, f := range s.Fields {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
@@ -2855,6 +2876,17 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
+	if m.Name == "padStart" && len(m.Args) == 2 {
+		needPadStart = true
+		fmt.Fprint(w, "_padStart(")
+		m.Target.emit(w)
+		fmt.Fprint(w, ", ")
+		m.Args[0].emit(w)
+		fmt.Fprint(w, ", ")
+		m.Args[1].emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	m.Target.emit(w)
 	name := sanitize(m.Name)
 	if name == "get" && len(m.Args) == 2 {
@@ -3863,14 +3895,22 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		return vs, nil
 	case s.Type != nil:
 		if len(s.Type.Variants) > 0 {
-			extraDecls = append(extraDecls, &InterfaceDeclStmt{Name: s.Type.Name})
+			ut := types.UnionType{Name: s.Type.Name, Variants: map[string]types.StructType{}}
 			for _, v := range s.Type.Variants {
 				if st, ok := topEnv.GetStruct(v.Name); ok {
-					fields := make([]Param, len(st.Order))
-					for i, n := range st.Order {
-						fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+					ut.Variants[v.Name] = st
+				}
+			}
+			if simpleUnionAlias(ut) == "" {
+				extraDecls = append(extraDecls, &InterfaceDeclStmt{Name: s.Type.Name})
+				for _, v := range s.Type.Variants {
+					if st, ok := topEnv.GetStruct(v.Name); ok {
+						fields := make([]Param, len(st.Order))
+						for i, n := range st.Order {
+							fields[i] = Param{Name: n, Type: toJavaTypeFromType(st.Fields[n])}
+						}
+						extraDecls = append(extraDecls, &TypeDeclStmt{Name: v.Name, Fields: fields, Extends: s.Type.Name})
 					}
-					extraDecls = append(extraDecls, &TypeDeclStmt{Name: v.Name, Fields: fields, Extends: s.Type.Name})
 				}
 			}
 			return nil, nil
@@ -4331,6 +4371,11 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				varTypes[alias] = "module"
 				return nil, nil
 			}
+			if trimmed == "os" {
+				builtinAliases[alias] = "go_os"
+				varTypes[alias] = "module"
+				return nil, nil
+			}
 		}
 		return nil, fmt.Errorf("unsupported import")
 	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
@@ -4702,6 +4747,15 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 						} else {
 							return nil, fmt.Errorf("unsupported call")
 						}
+					} else if kind == "go_os" {
+						if fe.Name == "Getenv" && len(args) == 1 {
+							expr = &CallExpr{Func: "System.getenv", Args: args}
+						} else if fe.Name == "Environ" && len(args) == 0 {
+							needEnviron = true
+							expr = &CallExpr{Func: "_environ", Args: nil}
+						} else {
+							return nil, fmt.Errorf("unsupported call")
+						}
 					} else if kind == "stdout" {
 						if fe.Name == "write" {
 							expr = &CallExpr{Func: "System.out.print", Args: args}
@@ -4922,6 +4976,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "keys" && len(args) == 1 {
 			return &KeysExpr{Map: args[0]}, nil
+		}
+		if name == "contains" && len(args) == 2 {
+			if isMapExpr(args[0]) || strings.Contains(inferType(args[0]), "Map") {
+				return &MethodCallExpr{Target: args[0], Name: "containsKey", Args: []Expr{args[1]}}, nil
+			}
 		}
 		if name == "append" && len(args) == 2 {
 			et := arrayElemType(args[0])
@@ -5893,6 +5952,15 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n")
 	}
+	if needEnviron {
+		buf.WriteString("\n    static String[] _environ() {\n")
+		buf.WriteString("        java.util.Map<String,String> env = System.getenv();\n")
+		buf.WriteString("        String[] out = new String[env.size()];\n")
+		buf.WriteString("        int i = 0;\n")
+		buf.WriteString("        for (java.util.Map.Entry<String,String> e : env.entrySet()) { out[i++] = e.getKey()+\"=\"+e.getValue(); }\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
 	if needPadStart {
 		buf.WriteString("\n    static String _padStart(String s, int width, String pad) {\n")
 		buf.WriteString("        String out = s;\n")
@@ -6030,7 +6098,17 @@ func typeRefString(tr *parser.TypeRef) string {
 		if *tr.Simple == "any" {
 			return "Object"
 		}
-		return *tr.Simple
+		name := *tr.Simple
+		if topEnv != nil {
+			if t, ok := topEnv.LookupType(name); ok {
+				if ut, ok2 := t.(types.UnionType); ok2 {
+					if alias := simpleUnionAlias(ut); alias != "" {
+						return alias
+					}
+				}
+			}
+		}
+		return name
 	}
 	if tr.Generic != nil {
 		if tr.Generic.Name == "list" && len(tr.Generic.Args) == 1 {
@@ -6095,6 +6173,9 @@ func toJavaTypeFromType(t types.Type) string {
 			return tt.Name
 		}
 	case types.UnionType:
+		if alias := simpleUnionAlias(tt); alias != "" {
+			return alias
+		}
 		if tt.Name != "" {
 			return tt.Name
 		}
