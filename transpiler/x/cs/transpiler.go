@@ -319,7 +319,7 @@ type BenchStmt struct {
 
 func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "{\n")
-	fmt.Fprint(w, "    var __memStart = _mem(true);\n")
+	fmt.Fprint(w, "    var __memStart = _mem();\n")
 	fmt.Fprint(w, "    var __start = _now();\n")
 	for _, st := range b.Body {
 		fmt.Fprint(w, "    ")
@@ -331,9 +331,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprint(w, "    var __end = _now();\n")
-	// Force a full collection at the end to ensure memory usage isn't reported
-	// as zero for trivial programs where GC hasn't run yet.
-	fmt.Fprint(w, "    var __memEnd = _mem(true);\n")
+	fmt.Fprint(w, "    var __memEnd = _mem();\n")
 	fmt.Fprint(w, "    var __dur = (__end - __start);\n")
 	fmt.Fprint(w, "    if (__dur <= 0) __dur = 1;\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
@@ -4566,8 +4564,8 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t}\n")
 	}
 	if usesMem {
-		buf.WriteString("\tstatic long _mem(bool force) {\n")
-		buf.WriteString("\t\treturn GC.GetTotalMemory(force);\n")
+		buf.WriteString("\tstatic long _mem() {\n")
+		buf.WriteString("\t\treturn GC.GetTotalAllocatedBytes(true);\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
