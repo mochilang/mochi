@@ -1,0 +1,29 @@
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /workspace/mochi/tests/rosetta/transpiler/Pascal/babylonian-spiral.pas
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.LongInt>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Variant>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+babylonian-spiral.pas(58,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+babylonian-spiral.pas(59,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+babylonian-spiral.pas(60,3) Note: Call to subroutine "procedure TFPGMap<System.ShortString,System.Variant>.AddOrSetData(const AKey:ShortString;const AData:Variant);" marked as inline is not inlined
+babylonian-spiral.pas(60,39) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+babylonian-spiral.pas(65,40) Error: Illegal qualifier
+babylonian-spiral.pas(65,50) Error: Illegal qualifier
+babylonian-spiral.pas(65,63) Error: Illegal qualifier
+babylonian-spiral.pas(65,79) Error: Illegal qualifier
+babylonian-spiral.pas(66,39) Error: Illegal qualifier
+babylonian-spiral.pas(67,39) Error: Illegal qualifier
+babylonian-spiral.pas(84,16) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "LongInt"
+babylonian-spiral.pas(86,16) Error: Incompatible types: got "LongInt" expected "TFPGMap<System.ShortString,System.LongInt>"
+babylonian-spiral.pas(104,24) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "TFPGMap<System.ShortString,System.LongInt>"
+babylonian-spiral.pas(110,10) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "LongInt"
+babylonian-spiral.pas(112,33) Error: Illegal qualifier
+babylonian-spiral.pas(112,42) Error: Illegal qualifier
+babylonian-spiral.pas(112,13) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of {Dynamic} Array Of IntArray", expected "{Open} Array Of Pointer"
+babylonian-spiral.pas(113,9) Error: Illegal qualifier
+babylonian-spiral.pas(113,19) Error: Illegal qualifier
+babylonian-spiral.pas(114,24) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "TFPGMap<System.ShortString,System.LongInt>"
+babylonian-spiral.pas(227) Fatal: There were 16 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
