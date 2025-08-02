@@ -1,0 +1,12 @@
+exit status 127
+ i       d
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  div/2
+     called as 0.0031419319566339254 div 1.7621029317378998
+  in call from main:'-main/0-Fun_5_loop/8-1-'/8 (/workspace/mochi/tests/rosetta/transpiler/erl/feigenbaum-constant-calculation.erl, line 148)
+  in call from main:'-main/0-Fun_6_loop/6-0-'/6 (/workspace/mochi/tests/rosetta/transpiler/erl/feigenbaum-constant-calculation.erl, line 154)
+  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/feigenbaum-constant-calculation.erl, line 165)
+  in call from main:main/1 (/workspace/mochi/tests/rosetta/transpiler/erl/feigenbaum-constant-calculation.erl, line 195)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 

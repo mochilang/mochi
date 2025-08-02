@@ -1,0 +1,16 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/execute-computer-zero-1.erl:190:21: Warning: variable 'Neg_3' exported from 'case' (line 171, column 9)
+%  190| {Digits, I_12, N_2, Neg_3, Str} = Fun_6(Digits, I_11, N, Neg_3, Str),
+%     |                     ^
+
+0
+0
+0
+0
+0
+0
+0
+{
+  "duration_us": 20886,
+  "memory_bytes": 2387800,
+  "name": "main"
+}

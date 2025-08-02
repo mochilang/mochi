@@ -1,0 +1,10 @@
+program start
+program sleeping
+task start
+program signaling event
+event reset by task
+{
+  "duration_us": 19277,
+  "memory_bytes": 156744,
+  "name": "main"
+}

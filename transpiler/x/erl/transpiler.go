@@ -124,6 +124,16 @@ mochi_not(X) ->
     end.
 `
 
+const helperSafeArith = `
+mochi_safe_mul(A, B) ->
+    try A * B catch _:_ -> 1.0e308 end.
+
+mochi_safe_div(A, B) ->
+    try A / B catch _:_ -> 0.0 end.
+
+mochi_safe_fmod(A, B) ->
+    try math:fmod(A, B) catch _:_ -> 0.0 end.
+`
 const helperBigRat = `
 mochi_gcd(A, B) ->
     A1 = abs(A),
@@ -180,6 +190,7 @@ var useParseIntStr bool
 var useBigRat bool
 var useRepeat bool
 var useNot bool
+var useSafeArith bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -208,6 +219,7 @@ type Program struct {
 	UseBigRat       bool
 	UseRepeat       bool
 	UseNot          bool
+	UseSafeArith    bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -3070,6 +3082,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useBigRat = false
 	useRepeat = false
 	useNot = false
+	useSafeArith = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -3114,6 +3127,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
 	p.UseNot = useNot
+	p.UseSafeArith = useSafeArith
 	return p, nil
 }
 
@@ -4254,16 +4268,34 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 				l := exprs[i]
 				r := exprs[i+1]
 				op := ops[i]
-				if op == "/" {
+				if op == "*" {
+					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
+						useSafeArith = true
+						exprs[i] = &CallExpr{Func: "mochi_safe_mul", Args: []Expr{l, r}}
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						typesList = append(typesList[:i+1], typesList[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
+				} else if op == "/" {
 					lt := exprType(l, env, ctx)
 					rt := exprType(r, env, ctx)
+					if isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) || isFloatType(lt) || isFloatType(rt) {
+						useSafeArith = true
+						exprs[i] = &CallExpr{Func: "mochi_safe_div", Args: []Expr{l, r}}
+						exprs = append(exprs[:i+1], exprs[i+2:]...)
+						typesList = append(typesList[:i+1], typesList[i+2:]...)
+						ops = append(ops[:i], ops[i+1:]...)
+						continue
+					}
 					if !isFloatExpr(l, env, ctx) && !isFloatExpr(r, env, ctx) && !isBigRatType(lt) && !isBigRatType(rt) {
 						op = "div"
 						typesList[i] = types.IntType{}
 					}
 				} else if op == "%" {
 					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
-						exprs[i] = &CallExpr{Func: "math:fmod", Args: []Expr{l, r}}
+						useSafeArith = true
+						exprs[i] = &CallExpr{Func: "mochi_safe_fmod", Args: []Expr{l, r}}
 						exprs = append(exprs[:i+1], exprs[i+2:]...)
 						typesList = append(typesList[:i+1], typesList[i+2:]...)
 						ops = append(ops[:i], ops[i+1:]...)
@@ -6080,6 +6112,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseNot {
 		buf.WriteString(helperNot)
+		buf.WriteString("\n")
+	}
+	if p.UseSafeArith {
+		buf.WriteString(helperSafeArith)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {

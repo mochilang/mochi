@@ -1,0 +1,30 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/exponentiation-operator.erl:78:7: Warning: variable 'Neg_3' exported from 'case' (line 54, column 9)
+%   78| {B_2, Neg_3, P_5, Pow_2, R_5} = Fun_2(B_2, Neg_3, P_4, Pow, R_3),
+%     |       ^
+
+expI tests
+2^10: 1024
+2^-10: negative power not allowed
+-2^10: 1024
+-2^11: -2048
+11^0: 1
+overflow undetected
+10^10: 10000000000
+
+expF tests:
+2^10: {1024,0}
+2^-10: {9.765625e-4,0}
+-2^10: {1024,0}
+-2^11: {-2048,0}
+11^0: {1,0}
+disallowed in expI, allowed here
+0^-1: +Inf
+other interesting cases for 32 bit float type
+10^39: {1000000000000000000000000000000000000000,0}
+10^-39: {1.0e-39,0}
+-10^39: {-1000000000000000000000000000000000000000,0}
+{
+  "duration_us": 21239,
+  "memory_bytes": 172696,
+  "name": "main"
+}
