@@ -1,0 +1,7 @@
+Are these strings numeric?
+  1 -> #t
+  3.14 -> #t
+  -100 -> #t
+  1e2 -> #t
+  NaN -> #t
+  rose -> #f
