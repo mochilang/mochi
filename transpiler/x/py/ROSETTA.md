@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-07-31 07:54 GMT+7
+Last updated: 2025-08-02 17:44 GMT+7
 
 ## Rosetta Golden Test Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
@@ -17,36 +17,36 @@ Last updated: 2025-07-31 07:54 GMT+7
 | 8 | 21-game | ✓ | 69.0µs | 13.80MB |
 | 9 | 24-game-solve | ✓ | 33.0ms | 13.94MB |
 | 10 | 24-game | ✓ |  |  |
-| 11 | 4-rings-or-4-squares-puzzle | ✓ | 21.0ms | 13.19MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ | 7.52s | 233.87MB |
-| 13 | 99-bottles-of-beer-2 | ✓ | 8.0ms | 14.24MB |
-| 14 | 99-bottles-of-beer | ✓ | 310.0µs | 13.00MB |
-| 15 | a+b | ✓ | 34.0µs | 12.51MB |
-| 16 | abbreviations-automatic | ✓ | 2.0ms | 14.14MB |
-| 17 | abbreviations-easy | ✓ | 549.0µs | 13.98MB |
-| 18 | abbreviations-simple | ✓ | 619.0µs | 14.00MB |
-| 19 | abc-problem | ✓ | 262.0µs | 13.26MB |
-| 20 | abelian-sandpile-model-identity | ✓ | 116.0µs | 14.00MB |
-| 21 | abelian-sandpile-model | ✓ | 98.0µs | 13.62MB |
-| 22 | abstract-type | ✓ | 12.0µs | 13.07MB |
-| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 6.37s | 13.37MB |
-| 24 | abundant-odd-numbers | ✓ | 7.15s | 13.10MB |
-| 25 | accumulator-factory | ✓ | 14.0µs | 12.90MB |
-| 26 | achilles-numbers | ✓ | 13.0ms | 14.18MB |
-| 27 | ackermann-function-2 | ✓ | 13.0µs | 12.80MB |
+| 11 | 4-rings-or-4-squares-puzzle | ✓ | 45.0ms | 13.05MB |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 14.73s | 234.16MB |
+| 13 | 99-bottles-of-beer-2 | ✓ | 15.0ms | 13.32MB |
+| 14 | 99-bottles-of-beer | ✓ | 564.0µs | 12.38MB |
+| 15 | a+b | ✓ | 151.0µs | 12.45MB |
+| 16 | abbreviations-automatic | ✓ | 4.0ms | 13.88MB |
+| 17 | abbreviations-easy | ✓ | 592.0µs | 13.76MB |
+| 18 | abbreviations-simple | ✓ | 974.0µs | 13.55MB |
+| 19 | abc-problem | ✓ | 363.0µs | 13.24MB |
+| 20 | abelian-sandpile-model-identity | ✓ | 143.0µs | 13.54MB |
+| 21 | abelian-sandpile-model | ✓ | 157.0µs | 13.25MB |
+| 22 | abstract-type | ✓ | 21.0µs | 12.64MB |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 13.66s | 12.80MB |
+| 24 | abundant-odd-numbers | ✓ | 15.33s | 12.62MB |
+| 25 | accumulator-factory | ✓ | 17.0µs | 12.44MB |
+| 26 | achilles-numbers | ✓ | 19.0ms | 13.82MB |
+| 27 | ackermann-function-2 | ✓ | 24.0µs | 12.73MB |
 | 28 | ackermann-function-3 | ✓ | 105.76s | 13.23MB |
-| 29 | ackermann-function | ✓ | 734.0µs | 12.85MB |
-| 30 | active-directory-connect | ✓ | 12.0µs | 12.82MB |
-| 31 | active-directory-search-for-a-user | ✓ | 11.0µs | 12.72MB |
-| 32 | active-object | ✓ | 430.0µs | 13.20MB |
+| 29 | ackermann-function | ✓ | 3.0ms | 12.04MB |
+| 30 | active-directory-connect | ✓ | 17.0µs | 12.79MB |
+| 31 | active-directory-search-for-a-user | ✓ | 12.0µs | 12.90MB |
+| 32 | active-object | ✓ | 662.0µs | 12.82MB |
 | 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
-| 34 | additive-primes | ✓ | 159.0µs | 13.43MB |
-| 35 | address-of-a-variable | ✓ | 13.0µs | 12.62MB |
-| 36 | adfgvx-cipher | ✓ | 295.0µs | 14.38MB |
-| 37 | aks-test-for-primes | ✓ | 131.0µs | 13.21MB |
-| 38 | algebraic-data-types | ✓ | 148.0µs | 14.18MB |
-| 39 | align-columns | ✓ | 519.0µs | 14.00MB |
-| 40 | aliquot-sequence-classifications | ✓ | 547.0ms | 14.15MB |
+| 34 | additive-primes | ✓ | 288.0µs | 12.77MB |
+| 35 | address-of-a-variable | ✓ | 14.0µs | 12.50MB |
+| 36 | adfgvx-cipher | ✓ | 424.0µs | 14.22MB |
+| 37 | aks-test-for-primes | ✓ | 176.0µs | 12.88MB |
+| 38 | algebraic-data-types | ✓ | 178.0µs | 13.57MB |
+| 39 | align-columns | ✓ | 237.0µs | 13.42MB |
+| 40 | aliquot-sequence-classifications | ✓ | 1.31s | 14.30MB |
 | 41 | almkvist-giullera-formula-for-pi | ✓ | 1.70s | 14.43MB |
 | 42 | almost-prime | ✓ | 438.0µs | 13.53MB |
 | 43 | amb | ✓ | 22.0µs | 13.19MB |
