@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 14:02 +0700
+Last updated: 2025-08-02 07:22 +0000
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -225,15 +225,15 @@ Last updated: 2025-08-02 14:02 +0700
 | 216 | conditional-structures-2 | ✓ | 1µs | 64 B |
 | 217 | conditional-structures-3 | ✓ | 1µs | 64 B |
 | 218 | conditional-structures-4 | ✓ | 1µs | 64 B |
-| 219 | conditional-structures-5 | ✓ |  |  |
+| 219 | conditional-structures-5 | ✓ | 1µs | 64 B |
 | 220 | conditional-structures-6 | ✓ | 1µs | 64 B |
 | 221 | conditional-structures-7 | ✓ | 1µs | 64 B |
-| 222 | conditional-structures-8 | ✓ |  |  |
+| 222 | conditional-structures-8 | ✓ | 1µs | 64 B |
 | 223 | conditional-structures-9 | ✓ | 1µs | 64 B |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 | ✓ |  |  |
-| 226 | constrained-genericity-2 | ✓ |  |  |
-| 227 | constrained-genericity-3 | ✓ |  |  |
+| 225 | constrained-genericity-1 | ✓ | 1µs | 64 B |
+| 226 | constrained-genericity-2 | ✓ | 1µs | 64 B |
+| 227 | constrained-genericity-3 | ✓ | 1µs | 64 B |
 | 228 | constrained-genericity-4 | ✓ | 75µs | 96 B |
 | 229 | constrained-random-points-on-a-circle-1 | ✓ | 851µs | 52.1 KB |
 | 230 | constrained-random-points-on-a-circle-2 | ✓ | 1.532ms | 149.5 KB |
