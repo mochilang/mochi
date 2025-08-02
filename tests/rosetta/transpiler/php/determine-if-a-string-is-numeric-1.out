@@ -6,7 +6,7 @@ Are these strings numeric?
   NaN -> true
   rose -> false
 {
-  "duration_us": 61,
+  "duration_us": 63,
   "memory_bytes": 96,
   "name": "main"
 }

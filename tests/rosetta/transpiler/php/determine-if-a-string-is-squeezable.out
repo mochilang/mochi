@@ -43,7 +43,7 @@ original : length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
 squeezed : length = 32, string = «««😍😀🙌💃😍😍😍🙌»»»
 
 {
-  "duration_us": 164,
+  "duration_us": 200,
   "memory_bytes": 352,
   "name": "main"
 }

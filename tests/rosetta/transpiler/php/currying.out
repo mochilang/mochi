@@ -5,7 +5,7 @@
 2 + 4 = 6
 3 + 5 = 8
 {
-  "duration_us": 82,
+  "duration_us": 98,
   "memory_bytes": 96,
   "name": "main"
 }

@@ -26,7 +26,7 @@ Analyzing "🐠🐟🐡🦈🐬🐳🐋🐡" which has a length of 32:
   Not all characters in the string are unique.
   '' (0x0) is duplicated at positions 1 and 5.
 {
-  "duration_us": 159,
+  "duration_us": 122,
   "memory_bytes": 96,
   "name": "main"
 }

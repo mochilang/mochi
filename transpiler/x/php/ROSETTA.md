@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 14:38 +0700
+Last updated: 2025-08-02 15:23 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -269,37 +269,37 @@ Last updated: 2025-08-02 14:38 +0700
 | 260 | csv-to-html-translation-4 | ✓ | 77µs | 96 B |
 | 261 | csv-to-html-translation-5 | ✓ | 128µs | 2.4 KB |
 | 262 | cuban-primes |   |  |  |
-| 263 | cullen-and-woodall-numbers | ✓ | 269µs | 96 B |
-| 264 | cumulative-standard-deviation | ✓ | 99µs | 96 B |
-| 265 | currency | ✓ | 113µs | 96 B |
-| 266 | currying | ✓ | 82µs | 96 B |
-| 267 | curzon-numbers | ✓ | 511.427ms | 96 B |
-| 268 | cusip | ✓ | 95µs | 160 B |
+| 263 | cullen-and-woodall-numbers | ✓ | 249µs | 96 B |
+| 264 | cumulative-standard-deviation | ✓ | 108µs | 96 B |
+| 265 | currency | ✓ | 101µs | 96 B |
+| 266 | currying | ✓ | 98µs | 96 B |
+| 267 | curzon-numbers | ✓ | 323.429ms | 96 B |
+| 268 | cusip | ✓ | 80µs | 160 B |
 | 269 | cyclops-numbers | ✓ |  |  |
-| 270 | damm-algorithm | ✓ | 79µs | 96 B |
-| 271 | date-format | ✓ | 81µs | 96 B |
-| 272 | date-manipulation | ✓ | 135µs | 128 B |
-| 273 | day-of-the-week | ✓ | 207µs | 96 B |
-| 274 | de-bruijn-sequences | ✓ | 403.959ms | 96 B |
-| 275 | deal-cards-for-freecell | ✓ | 443µs | 192 B |
-| 276 | death-star | ✓ | 6.535ms | 96 B |
-| 277 | deceptive-numbers | ✓ | 287.723ms | 96 B |
-| 278 | deconvolution-1d-2 | ✓ | 133µs | 96 B |
-| 279 | deconvolution-1d-3 | ✓ | 127µs | 96 B |
-| 280 | deconvolution-1d | ✓ | 93µs | 96 B |
-| 281 | deepcopy-1 | ✓ | 88µs | 968 B |
-| 282 | define-a-primitive-data-type | ✓ | 134µs | 96 B |
-| 283 | delegates | ✓ | 96µs | 1.6 KB |
-| 284 | demings-funnel | ✓ | 688µs | 160 B |
-| 285 | department-numbers | ✓ | 52µs | 96 B |
-| 286 | descending-primes | ✓ | 1.12ms | 2.9 KB |
-| 287 | detect-division-by-zero | ✓ | 70µs | 96 B |
-| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 120µs | 96 B |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 159µs | 96 B |
-| 290 | determine-if-a-string-is-collapsible | ✓ | 131µs | 96 B |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ | 61µs | 96 B |
-| 292 | determine-if-a-string-is-numeric-2 | ✓ | 58µs | 96 B |
-| 293 | determine-if-a-string-is-squeezable | ✓ | 164µs | 352 B |
+| 270 | damm-algorithm | ✓ | 80µs | 96 B |
+| 271 | date-format | ✓ | 76µs | 96 B |
+| 272 | date-manipulation | ✓ | 140µs | 128 B |
+| 273 | day-of-the-week | ✓ | 244µs | 96 B |
+| 274 | de-bruijn-sequences | ✓ | 305.865ms | 96 B |
+| 275 | deal-cards-for-freecell | ✓ | 354µs | 192 B |
+| 276 | death-star | ✓ | 4.082ms | 96 B |
+| 277 | deceptive-numbers | ✓ | 220.889ms | 96 B |
+| 278 | deconvolution-1d-2 | ✓ | 108µs | 96 B |
+| 279 | deconvolution-1d-3 | ✓ | 167µs | 96 B |
+| 280 | deconvolution-1d | ✓ | 82µs | 96 B |
+| 281 | deepcopy-1 | ✓ | 137µs | 968 B |
+| 282 | define-a-primitive-data-type | ✓ | 158µs | 96 B |
+| 283 | delegates | ✓ | 66µs | 1.6 KB |
+| 284 | demings-funnel | ✓ | 356µs | 160 B |
+| 285 | department-numbers | ✓ | 51µs | 96 B |
+| 286 | descending-primes | ✓ | 617µs | 2.9 KB |
+| 287 | detect-division-by-zero | ✓ | 80µs | 96 B |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 105µs | 96 B |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 122µs | 96 B |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 105µs | 96 B |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 63µs | 96 B |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 64µs | 96 B |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 200µs | 352 B |
 | 294 | determine-if-only-one-instance-is-running | ✓ | 40µs | 128 B |
 | 295 | determine-if-two-triangles-overlap | ✓ | 162µs | 96 B |
 | 296 | determine-sentence-type | ✓ | 95µs | 96 B |

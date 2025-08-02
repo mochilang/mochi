@@ -44,7 +44,7 @@ The first 50 Curzon numbers using a base of 10 :
 One thousandth: 46845
 
 {
-  "duration_us": 511427,
+  "duration_us": 323429,
   "memory_bytes": 96,
   "name": "main"
 }
