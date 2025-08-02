@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 10:04 UTC
+Last updated: 2025-08-02 10:47 UTC
 
-## Checklist (483/491)
+## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -77,7 +77,7 @@ Last updated: 2025-08-02 10:04 UTC
 | 68 | arithmetic-geometric-mean | ✓ | 81µs | 9.5 KB |
 | 69 | arithmetic-integer-1 | ✓ | 40µs | 10.6 KB |
 | 70 | arithmetic-integer-2 | ✓ | 36µs | 11.2 KB |
-| 71 | arithmetic-numbers |   |  |  |
+| 71 | arithmetic-numbers | ✓ | 2.525412s | 23.1 MB |
 | 72 | arithmetic-rational | ✓ | 166µs | 15.4 KB |
 | 73 | array-concatenation | ✓ | 95µs | 12.5 KB |
 | 74 | array-length | ✓ | 25µs | 9.9 KB |
