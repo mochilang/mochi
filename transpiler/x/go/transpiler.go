@@ -134,14 +134,14 @@ func toGoFieldName(name string) string {
 }
 
 func emitCastAnyToType(w io.Writer, typ, v string) {
-        if strings.HasPrefix(typ, "[]") {
-                elem := typ[2:]
-                fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
-                emitCastAnyToType(w, elem, "x")
-                fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
-                return
-        }
-        fmt.Fprintf(w, "%s.(%s)", v, typ)
+	if strings.HasPrefix(typ, "[]") {
+		elem := typ[2:]
+		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
+		emitCastAnyToType(w, elem, "x")
+		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
+		return
+	}
+	fmt.Fprintf(w, "%s.(%s)", v, typ)
 }
 
 func isIdentifier(s string) bool {
@@ -237,19 +237,19 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-        if vd, ok := varDecls[a.Name]; ok && vd.Type != "" && vd.Type != "any" {
-                if ix, ok2 := a.Value.(*IndexExpr); ok2 {
-                        if vr, ok3 := ix.X.(*VarRef); ok3 {
-                                if sd, ok4 := varDecls[vr.Name]; ok4 && sd.Type == "[]any" {
-                                        fmt.Fprintf(w, "%s = ", a.Name)
-                                        (&AssertExpr{Expr: a.Value, Type: vd.Type}).emit(w)
-                                        return
-                                }
-                        }
-                }
-        }
-        fmt.Fprintf(w, "%s = ", a.Name)
-        a.Value.emit(w)
+	if vd, ok := varDecls[a.Name]; ok && vd.Type != "" && vd.Type != "any" {
+		if ix, ok2 := a.Value.(*IndexExpr); ok2 {
+			if vr, ok3 := ix.X.(*VarRef); ok3 {
+				if sd, ok4 := varDecls[vr.Name]; ok4 && sd.Type == "[]any" {
+					fmt.Fprintf(w, "%s = ", a.Name)
+					(&AssertExpr{Expr: a.Value, Type: vd.Type}).emit(w)
+					return
+				}
+			}
+		}
+	}
+	fmt.Fprintf(w, "%s = ", a.Name)
+	a.Value.emit(w)
 }
 
 // SetStmt assigns to an arbitrary indexed or field-select expression.
@@ -527,32 +527,32 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-        if len(c.Args) == 1 && (c.Func == "int" || (c.Func == "" && funcIsInt(c.FuncExpr))) {
-                fmt.Fprint(w, "(")
-                c.Args[0].emit(w)
-                fmt.Fprint(w, ").(int)")
-                return
-        }
-        if c.FuncExpr != nil {
-                c.FuncExpr.emit(w)
-        } else {
-                fmt.Fprint(w, c.Func)
-        }
-        fmt.Fprint(w, "(")
-        for i, a := range c.Args {
-                if i > 0 {
-                        fmt.Fprint(w, ", ")
-                }
-                a.emit(w)
-        }
-        fmt.Fprint(w, ")")
+	if len(c.Args) == 1 && (c.Func == "int" || (c.Func == "" && funcIsInt(c.FuncExpr))) {
+		fmt.Fprint(w, "(")
+		c.Args[0].emit(w)
+		fmt.Fprint(w, ").(int)")
+		return
+	}
+	if c.FuncExpr != nil {
+		c.FuncExpr.emit(w)
+	} else {
+		fmt.Fprint(w, c.Func)
+	}
+	fmt.Fprint(w, "(")
+	for i, a := range c.Args {
+		if i > 0 {
+			fmt.Fprint(w, ", ")
+		}
+		a.emit(w)
+	}
+	fmt.Fprint(w, ")")
 }
 
 func funcIsInt(e Expr) bool {
-        if vr, ok := e.(*VarRef); ok {
-                return vr.Name == "int"
-        }
-        return false
+	if vr, ok := e.(*VarRef); ok {
+		return vr.Name == "int"
+	}
+	return false
 }
 
 type MethodCallExpr struct {
@@ -1898,24 +1898,24 @@ func (a *AssertExpr) emit(w io.Writer) {
 			}
 		}
 	}
-        if a.Type == "int" {
-                if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "int" {
-                        ae.emit(w)
-                        return
-                }
-                a.Expr.emit(w)
-                io.WriteString(w, ".(int)")
-                return
-        }
-        if a.Type == "float64" {
-                if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "float64" {
-                        ae.emit(w)
-                        return
-                }
-                switch ex := a.Expr.(type) {
-                case *IndexExpr, *VarRef, *FieldExpr:
-                        a.Expr.emit(w)
-                        io.WriteString(w, ".(float64)")
+	if a.Type == "int" {
+		if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "int" {
+			ae.emit(w)
+			return
+		}
+		a.Expr.emit(w)
+		io.WriteString(w, ".(int)")
+		return
+	}
+	if a.Type == "float64" {
+		if ae, ok := a.Expr.(*AssertExpr); ok && ae.Type == "float64" {
+			ae.emit(w)
+			return
+		}
+		switch ex := a.Expr.(type) {
+		case *IndexExpr, *VarRef, *FieldExpr:
+			a.Expr.emit(w)
+			io.WriteString(w, ".(float64)")
 		case *CallExpr:
 			if ex.Func == "_toFloat" || ex.Func == "float64" {
 				a.Expr.emit(w)
@@ -1930,42 +1930,42 @@ func (a *AssertExpr) emit(w io.Writer) {
 			io.WriteString(w, ")")
 		}
 		return
-        }
-        if a.Type == "string" {
-                if ix, ok := a.Expr.(*IndexExpr); ok {
-                        if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
-                                if vt, err := topEnv.GetVar(vr.Name); err == nil {
-                                        if lt, ok3 := vt.(types.ListType); ok3 {
-                                                if _, ok4 := lt.Elem.(types.StringType); ok4 {
-                                                        a.Expr.emit(w)
-                                                        return
-                                                }
-                                        }
-                                }
-                        }
-                }
-                if vr, ok := a.Expr.(*VarRef); ok && topEnv != nil {
-                        if vt, err := topEnv.GetVar(vr.Name); err == nil {
-                                if _, ok2 := vt.(types.StringType); ok2 {
-                                        a.Expr.emit(w)
-                                        return
-                                }
-                        }
-                }
-                a.Expr.emit(w)
-                io.WriteString(w, ".(string)")
-                return
-        }
-        if strings.HasPrefix(a.Type, "[]") {
-                elem := a.Type[2:]
-                fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
-                emitCastAnyToType(w, elem, "x")
-                fmt.Fprintf(w, " }; return out }; return v.([]%s) }(", elem)
-                a.Expr.emit(w)
-                fmt.Fprint(w, ")")
-                return
-        }
-        if strings.HasPrefix(a.Type, "map[") {
+	}
+	if a.Type == "string" {
+		if ix, ok := a.Expr.(*IndexExpr); ok {
+			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if lt, ok3 := vt.(types.ListType); ok3 {
+						if _, ok4 := lt.Elem.(types.StringType); ok4 {
+							a.Expr.emit(w)
+							return
+						}
+					}
+				}
+			}
+		}
+		if vr, ok := a.Expr.(*VarRef); ok && topEnv != nil {
+			if vt, err := topEnv.GetVar(vr.Name); err == nil {
+				if _, ok2 := vt.(types.StringType); ok2 {
+					a.Expr.emit(w)
+					return
+				}
+			}
+		}
+		a.Expr.emit(w)
+		io.WriteString(w, ".(string)")
+		return
+	}
+	if strings.HasPrefix(a.Type, "[]") {
+		elem := a.Type[2:]
+		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
+		emitCastAnyToType(w, elem, "x")
+		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(", elem)
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	if strings.HasPrefix(a.Type, "map[") {
 		if a.Type == "map[string]int" {
 			fmt.Fprint(w, "func(v any) map[string]int { if v == nil { return map[string]int{} }; if vv, ok := v.(map[string]int); ok { return vv }; out := make(map[string]int); if m, ok := v.(map[string]any); ok { for k, vv := range m { if vi, ok2 := vv.(int); ok2 { out[k] = vi } } }; return out }(")
 			a.Expr.emit(w)
@@ -1974,19 +1974,19 @@ func (a *AssertExpr) emit(w io.Writer) {
 		}
 		fmt.Fprintf(w, "func(v any) %s { if v == nil { return nil }; if vv, ok := v.(%s); ok { return vv }; return nil }(", a.Type, a.Type)
 		a.Expr.emit(w)
-                fmt.Fprint(w, ")")
-                return
-        }
-        if strings.HasPrefix(a.Type, "*") {
-                fmt.Fprintf(w, "func(v any) %s { if v == nil { return nil }; if vv, ok := v.(%s); ok { return vv }; return v.(%s) }(", a.Type, a.Type, a.Type)
-                a.Expr.emit(w)
-                fmt.Fprint(w, ")")
-                return
-        }
-        if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
-                inner.emit(w)
-                return
-        }
+		fmt.Fprint(w, ")")
+		return
+	}
+	if strings.HasPrefix(a.Type, "*") {
+		fmt.Fprintf(w, "func(v any) %s { if v == nil { return nil }; if vv, ok := v.(%s); ok { return vv }; return v.(%s) }(", a.Type, a.Type, a.Type)
+		a.Expr.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
+	if inner, ok := a.Expr.(*AssertExpr); ok && inner.Type == a.Type {
+		inner.emit(w)
+		return
+	}
 	if ce, ok := a.Expr.(*CallExpr); ok && ce.FuncExpr != nil {
 		if fl, ok2 := ce.FuncExpr.(*FuncLit); ok2 && fl.Return == a.Type {
 			a.Expr.emit(w)
@@ -1999,7 +1999,7 @@ func (a *AssertExpr) emit(w io.Writer) {
 	}
 	if strings.HasPrefix(a.Type, "func(") {
 		switch a.Expr.(type) {
-		case *VarRef, *FuncLit, *CallExpr:
+		case *VarRef, *FuncLit:
 			a.Expr.emit(w)
 			return
 		}
@@ -3813,14 +3813,14 @@ func isBigRatType(t types.Type) bool {
 }
 
 func ensureBigRatExpr(e Expr, t types.Type) Expr {
-        if isBigRatType(t) {
-                return e
-        }
-        if call, ok := e.(*CallExpr); ok && call.Func == "_bigrat" {
-                return e
-        }
-        usesBigRat = true
-        return &CallExpr{Func: "_bigrat", Args: []Expr{e}}
+	if isBigRatType(t) {
+		return e
+	}
+	if call, ok := e.(*CallExpr); ok && call.Func == "_bigrat" {
+		return e
+	}
+	usesBigRat = true
+	return &CallExpr{Func: "_bigrat", Args: []Expr{e}}
 }
 
 func isStringType(t types.Type) bool {
@@ -4110,7 +4110,7 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		if exprType == "" {
 			exprType = "any"
 		}
-		if ret != "any" && exprType != ret && exprType != "any" {
+		if ret != "any" && exprType != ret {
 			if exprType == "*big.Int" && (ret == "int" || ret == "int64") {
 				usesBigInt = true
 				val = &BigIntToIntExpr{Value: val}
@@ -4199,6 +4199,19 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		if t, err := child.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
 				ret = toGoTypeFromType(ft.Return)
+			}
+		}
+	}
+	if ret == "func(any) any" {
+		for _, st := range fn.Body {
+			if st.Return != nil && st.Return.Value != nil {
+				if rft, ok := types.ExprType(st.Return.Value, child).(types.FuncType); ok {
+					if len(rft.Params) != 1 || !types.IsAnyType(rft.Params[0]) || !types.IsAnyType(rft.Return) {
+						ret = "any"
+						env.SetVar(fn.Name, types.FuncType{Params: paramTypes, Return: types.AnyType{}}, false)
+					}
+				}
+				break
 			}
 		}
 	}
@@ -4979,7 +4992,21 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				if err != nil {
 					return nil, err
 				}
+				if ft, ok := t.(types.FuncType); ok && j < len(ft.Params) {
+					paramT := ft.Params[j]
+					if _, isFunc := paramT.(types.FuncType); isFunc {
+						ex = &AssertExpr{Expr: ex, Type: toGoTypeFromType(paramT)}
+					} else {
+						argT := types.ExprType(a, env)
+						if !types.IsAnyType(paramT) && types.IsAnyType(argT) {
+							ex = &AssertExpr{Expr: ex, Type: toGoTypeFromType(paramT)}
+						}
+					}
+				}
 				args[j] = ex
+			}
+			if types.IsAnyType(t) {
+				expr = &AssertExpr{Expr: expr, Type: "func(any) any"}
 			}
 			if vr, ok := expr.(*VarRef); ok {
 				if _, ok2 := imports[vr.Name]; ok2 {
