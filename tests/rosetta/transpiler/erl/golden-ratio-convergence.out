@@ -1,0 +1,16 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/golden-ratio-convergence.erl:29:1: Warning: function mochi_safe_mul/2 is unused
+%   29| mochi_safe_mul(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/golden-ratio-convergence.erl:35:1: Warning: function mochi_safe_fmod/2 is unused
+%   35| mochi_safe_fmod(A, B) ->
+%     | ^
+
+Final value of phi : 1.6180371352785146
+Number of iterations : 13
+Error (approx) : 3.1465286196574738e-6
+{
+  "duration_us": 17051,
+  "memory_bytes": 272976,
+  "name": "main"
+}

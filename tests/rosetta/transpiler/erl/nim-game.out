@@ -1,0 +1,29 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/nim-game.erl:64:20: Warning: variable 'Neg_3' exported from 'case' (line 45, column 9)
+%   64| {Digits, I_4, N_2, Neg_3, Str} = Fun(Digits, I_3, N, Neg_3, Str),
+%     |                    ^
+
+Tokens remaining 12
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 8
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 4
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 0
+  Computer wins!
+{
+  "duration_us": 15170,
+  "memory_bytes": 165408,
+  "name": "main"
+}
