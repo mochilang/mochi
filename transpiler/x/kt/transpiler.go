@@ -785,6 +785,12 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
+	if rt := guessType(f.Receiver); (rt == "Any" || rt == "Any?") && (f.Name == "R" || f.Name == "G" || f.Name == "B") {
+		io.WriteString(w, "(((")
+		f.Receiver.emit(w)
+		io.WriteString(w, ") as Pixel)."+safeName(f.Name)+")")
+		return
+	}
 	if _, ok := f.Receiver.(*CastExpr); ok {
 		io.WriteString(w, "(")
 		f.Receiver.emit(w)
@@ -857,6 +863,12 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, " as Double")
 		} else {
 			io.WriteString(w, ".toDouble()")
+		}
+	case "Long":
+		if t := guessType(c.Value); t == "Any" || t == "Any?" {
+			io.WriteString(w, " as Long")
+		} else {
+			io.WriteString(w, ".toLong()")
 		}
 	case "Int?":
 		if t := guessType(c.Value); t == "Any" || t == "Any?" {
@@ -2907,6 +2919,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
+				if ix, ok := val.(*IndexExpr); ok {
+					if lit, ok := ix.Index.(*StringLit); ok && lit.Value == "pixel" {
+						val = &CastExpr{Value: val, Type: "Pixel"}
+					}
+				}
 			} else {
 				val = &IntLit{Value: 0}
 			}
@@ -2944,6 +2961,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						typ = "Any?"
 					} else if !strings.HasSuffix(typ, "?") {
 						typ += "?"
+					}
+				}
+				if ix, ok := val.(*IndexExpr); ok {
+					if lit, ok := ix.Index.(*StringLit); ok && lit.Value == "pixel" {
+						if typ == "" || typ == "Any" || typ == "Any?" {
+							typ = "Pixel"
+						}
 					}
 				}
 			}
@@ -4371,7 +4395,10 @@ func convertStructLiteral(env *types.Env, sl *parser.StructLiteral) (Expr, error
 			if st, ok := env.GetStruct(sl.Name); ok {
 				if ft, ok := st.Fields[f.Name]; ok {
 					typName := kotlinTypeFromType(ft)
-					if _, ok := v.(*MapLit); ok {
+					if ll, ok := v.(*ListLit); ok && len(ll.Elems) == 0 && strings.HasPrefix(typName, "MutableList<") {
+						elem := strings.TrimSuffix(strings.TrimPrefix(typName, "MutableList<"), ">")
+						v = &TypedListLit{ElemType: elem, Elems: nil}
+					} else if _, ok := v.(*MapLit); ok {
 						if typName != "" && typName != "Any" {
 							v = &CastExpr{Value: v, Type: typName}
 						}
@@ -5171,6 +5198,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 				useHelper("sha256")
 				return &CallExpr{Func: "_sha256", Args: args}, nil
+			}
+			if name == "parseIntStr" {
+				if len(args) == 1 {
+					args = append(args, &IntLit{Value: 10})
+				} else if len(args) != 2 {
+					return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+				}
+				return &CallExpr{Func: "Integer.parseInt", Args: args}, nil
 			}
 			if name == "now" {
 				if len(args) != 0 {
