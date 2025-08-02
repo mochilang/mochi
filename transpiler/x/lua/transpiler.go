@@ -2568,7 +2568,24 @@ func collectHelpers(p *Program) map[string]bool {
 				walkExpr(a)
 			}
 		case *DynCallExpr:
-			walkExpr(ex.Fn)
+			if ix, ok := ex.Fn.(*IndexExpr); ok {
+				if s, ok2 := ix.Index.(*StringLit); ok2 {
+					switch s.Value {
+					case "slice":
+						used["slice"] = true
+					case "split":
+						used["split"] = true
+					case "substring":
+						used["substring"] = true
+					case "now":
+						used["now"] = true
+					}
+				}
+				walkExpr(ix.Target)
+				walkExpr(ix.Index)
+			} else {
+				walkExpr(ex.Fn)
+			}
 			for _, a := range ex.Args {
 				walkExpr(a)
 			}

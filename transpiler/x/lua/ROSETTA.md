@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 484/491
+Transpiled programs: 486/491
 
-Last updated: 2025-08-02 17:26 GMT+7
+Last updated: 2025-08-02 17:56 GMT+7
 
 Checklist:
 
@@ -413,7 +413,7 @@ Checklist:
 | 401 | faulhabers-triangle | ✓ | 2.715ms | 904 B |
 | 402 | feigenbaum-constant-calculation | ✓ | 3.561ms | 1.1 KB |
 | 403 | fermat-numbers | ✓ | 237µs | 1.1 KB |
-| 404 | fibonacci-n-step-number-sequences |   | 170µs | 3.0 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 230µs | 3.0 KB |
 | 405 | fibonacci-sequence-1 | ✓ | 2µs | 104 B |
 | 406 | fibonacci-sequence-2 | ✓ | 2µs | 104 B |
 | 407 | fibonacci-sequence-3 | ✓ | 2µs | 136 B |
@@ -435,7 +435,7 @@ Checklist:
 | 423 | find-duplicate-files | ✓ | 50µs | 2.9 KB |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 18.827ms | 4.5 KB |
 | 425 | find-limit-of-recursion | ✓ | 1.964ms | 2.1 KB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   | 28.702322s | 3.0 KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 1.19574s | 1.3 KB |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 143µs | 3.0 KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 63µs | 912 B |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 144µs | 1.0 KB |
