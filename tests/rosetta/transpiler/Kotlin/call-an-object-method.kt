@@ -24,7 +24,11 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Box(var Contents: String, var secret: Int)
+data class Box(var Contents: String = "", var secret: Int = 0) {
+    fun TellSecret(): Int {
+        return secret as Int
+    }
+}
 var box: Box = New()
 fun New(): Box {
     var b: Box = Box(Contents = "rabbit", secret = 1)

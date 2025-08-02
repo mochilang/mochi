@@ -24,7 +24,11 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Box(var Contents: String, var secret: Int)
+data class Box(var Contents: String = "", var secret: Int = 0) {
+    fun TellSecret(): Int {
+        return secret as Int
+    }
+}
 var funcs: MutableList<() -> Any> = newFactory()
 var New: () -> Any = funcs[0] as () -> Any
 var Count: () -> Any = funcs[1] as () -> Any

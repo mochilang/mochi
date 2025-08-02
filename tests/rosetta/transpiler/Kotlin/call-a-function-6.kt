@@ -29,10 +29,10 @@ fun bar(a: Int, b: Int, c: Int): Unit {
 }
 
 fun user_main(): Unit {
-    var args: MutableMap<String, Int> = mutableMapOf<Any?, Any?>() as MutableMap<String, Int>
-    ((args)["a"] as Int) = 3
-    ((args)["b"] as Int) = 2
-    ((args)["c"] as Int) = 1
+    var args: MutableMap<String, Int> = mutableMapOf<String, Int>()
+    (args)["a"] = 3
+    (args)["b"] = 2
+    (args)["c"] = 1
     bar((args)["a"] as Int, (args)["b"] as Int, (args)["c"] as Int)
 }
 

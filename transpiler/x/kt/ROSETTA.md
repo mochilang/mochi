@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 12:08 +0700
+Last updated: 2025-08-02 13:55 +0700
 
-Completed tasks: **227/491**
+Completed tasks: **234/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -164,17 +164,17 @@ Completed tasks: **227/491**
 | 153 | call-a-function-2 | ✓ | 29.05ms | 132.0 KB |
 | 154 | call-a-function-3 | ✓ | 22.90ms | 124.1 KB |
 | 155 | call-a-function-4 | ✓ | 6.37ms | 130.8 KB |
-| 156 | call-a-function-5 |  |  |  |
-| 157 | call-a-function-6 |  |  |  |
-| 158 | call-a-function-7 | ✓ | 7.18ms | 134.6 KB |
-| 159 | call-a-function-8 | ✓ | 14.49ms | 129.0 KB |
-| 160 | call-a-function-9 |  |  |  |
-| 161 | call-an-object-method-1 |  |  |  |
-| 162 | call-an-object-method-2 |  |  |  |
-| 163 | call-an-object-method-3 |  |  |  |
-| 164 | call-an-object-method |  |  |  |
-| 165 | camel-case-and-snake-case | ✓ | 30.51ms | 84.9 KB |
-| 166 | canny-edge-detector | ✓ | 35.47ms | 114.0 KB |
+| 156 | call-a-function-5 | ✓ | 8.90ms | 131.3 KB |
+| 157 | call-a-function-6 | ✓ | 6.01ms | 133.7 KB |
+| 158 | call-a-function-7 | ✓ | 6.01ms | 134.6 KB |
+| 159 | call-a-function-8 | ✓ | 12.37ms | 129.0 KB |
+| 160 | call-a-function-9 | ✓ | 16.78ms | 124.4 KB |
+| 161 | call-an-object-method-1 | ✓ | 5.83ms | 134.6 KB |
+| 162 | call-an-object-method-2 | ✓ | 5.87ms | 134.6 KB |
+| 163 | call-an-object-method-3 | ✓ | 5.57ms | 134.6 KB |
+| 164 | call-an-object-method | ✓ | 6.14ms | 134.6 KB |
+| 165 | camel-case-and-snake-case | ✓ | 22.47ms | 84.9 KB |
+| 166 | canny-edge-detector | ✓ | 18.65ms | 114.0 KB |
 | 167 | canonicalize-cidr | ✓ | 22.76ms | 128.5 KB |
 | 168 | cantor-set | ✓ | 16.47ms | 122.5 KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 26.90ms | 120.8 KB |

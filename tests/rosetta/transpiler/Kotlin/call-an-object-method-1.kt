@@ -24,7 +24,12 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Foo()
+class Foo {
+    fun ValueMethod(x: Int): Unit {
+    }
+    fun PointerMethod(x: Int): Unit {
+    }
+}
 var myValue: Foo = Foo()
 var myPointer: Foo = Foo()
 fun main() {
