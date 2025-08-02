@@ -1599,6 +1599,9 @@ func (s *IndexAssignStmt) emit(w io.Writer, indent string) {
 					valType = inner
 				}
 			}
+			if ll, ok := s.Expr.(*ListLit); ok && ll.ElemType == "" && strings.HasSuffix(valType, "[]") {
+				ll.ElemType = strings.TrimSuffix(valType, "[]")
+			}
 			if valType != "" {
 				if ml, ok := s.Expr.(*MapLit); ok && ml.ValueType == "" {
 					kt := mapKeyType(inferType(s.Target))
