@@ -1793,9 +1793,25 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 		switch {
 		case st.Assign != nil:
 			name := sanitize(st.Assign.Name)
-			ex, err := convertExpr(env, st.Assign.Value)
-			if err != nil {
-				return nil, err
+			var ex Expr
+			var err error
+			if isEmptyMapLiteral(st.Assign.Value) {
+				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
+					parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+					parts = strings.TrimSuffix(parts, ">")
+					kv := strings.Split(parts, ",")
+					if len(kv) == 2 {
+						keyT := strings.TrimSpace(kv[0])
+						valT := strings.TrimSpace(kv[1])
+						ex = &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", keyT, valT)}
+					}
+				}
+			}
+			if ex == nil {
+				ex, err = convertExpr(env, st.Assign.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
 			if len(st.Assign.Field) > 0 {
 				target := &SelectorExpr{Root: name}
@@ -1956,6 +1972,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					case "boolean":
 						typ = "boolean"
 					}
+				} else if strings.HasPrefix(t, "specialize TFPGMap") {
+					parts := strings.TrimPrefix(t, "specialize TFPGMap<")
+					parts = strings.TrimSuffix(parts, ">")
+					kv := strings.Split(parts, ",")
+					if len(kv) == 2 {
+						typ = strings.TrimSpace(kv[0])
+					}
 				} else {
 					tt := types.ExprType(st.For.Source, env)
 					if lt, ok := tt.(types.ListType); ok {
@@ -1964,6 +1987,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 						} else if _, ok := lt.Elem.(types.BoolType); ok {
 							typ = "boolean"
 						}
+					} else if mt, ok := tt.(types.MapType); ok {
+						typ = pasTypeFromType(mt.Key)
 					}
 				}
 			}
@@ -1980,6 +2005,15 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					return nil, err
 				}
 				out = append(out, &ForRangeStmt{Name: name, Start: start, End: end, Body: body})
+			} else if strings.HasPrefix(inferType(start), "specialize TFPGMap") {
+				idxVar := fmt.Sprintf("%s_idx", name)
+				varTypes[idxVar] = "integer"
+				setVarType(idxVar, "integer")
+				keySel := &SelectorExpr{Root: exprToVarRef(start), Tail: []string{"Keys"}}
+				assignKey := &AssignStmt{Name: name, Expr: &IndexExpr{Target: keySel, Index: &VarRef{Name: idxVar}}}
+				body = append([]Stmt{assignKey}, body...)
+				end := &SelectorExpr{Root: exprToVarRef(start), Tail: []string{"Count"}}
+				out = append(out, &ForRangeStmt{Name: idxVar, Start: &IntLit{Value: 0}, End: end, Body: body})
 			} else {
 				out = append(out, &ForEachStmt{Name: name, Iterable: start, Body: body})
 			}
