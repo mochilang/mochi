@@ -224,6 +224,46 @@ func collectVarNames(e Expr, set map[string]struct{}) {
 	}
 }
 
+func usesMapIndex(e Expr, name string) bool {
+	switch v := e.(type) {
+	case *IndexExpr:
+		if vr, ok := v.Target.(*VarRef); ok && vr.Name == name && !v.String {
+			if _, ok := v.Index.(*StringLit); ok {
+				return true
+			}
+		}
+		return usesMapIndex(v.Target, name) || usesMapIndex(v.Index, name)
+	case *BinaryExpr:
+		if usesMapIndex(v.Left, name) {
+			return true
+		}
+		if v.Right != nil && usesMapIndex(v.Right, name) {
+			return true
+		}
+	case *CallExpr:
+		for _, a := range v.Args {
+			if usesMapIndex(a, name) {
+				return true
+			}
+		}
+	case *ListLit:
+		for _, el := range v.Elems {
+			if usesMapIndex(el, name) {
+				return true
+			}
+		}
+	case *RecordLit:
+		for _, f := range v.Fields {
+			if usesMapIndex(f.Expr, name) {
+				return true
+			}
+		}
+	case *UnaryExpr:
+		return usesMapIndex(v.Expr, name)
+	}
+	return false
+}
+
 // Stmt represents a Pascal statement.
 type Stmt interface{ emit(io.Writer) }
 
@@ -1732,6 +1772,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				for k, v := range varTypes {
 					local[k] = v
 				}
+				startVarCount := len(currProg.Vars)
+				pushScope()
+				currentFunc = fn.Name
 				for _, p := range st.Fun.Params {
 					typ := "integer"
 					if p.Type != nil {
@@ -1743,12 +1786,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					name := sanitize(p.Name)
 					local[name] = typ
-				}
-				startVarCount := len(currProg.Vars)
-				pushScope()
-				currentFunc = fn.Name
-				for _, p := range st.Fun.Params {
-					name := sanitize(p.Name)
 					currentScope()[p.Name] = name
 				}
 				fnBody, err := convertBody(env, st.Fun.Body, local)
@@ -4214,6 +4251,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		keyType := "string"
 		valType := "Variant"
 		varsSet := map[string]struct{}{}
+		allInts := true
 		for _, it := range p.Map.Items {
 			val, err := convertExpr(env, it.Value)
 			if err != nil {
@@ -4228,6 +4266,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val})
 			collectVarNames(val, varsSet)
+			if inferType(val) != "integer" {
+				allInts = false
+			}
+		}
+		if allInts {
+			valType = "integer"
 		}
 		names := make([]string, 0, len(varsSet))
 		for name := range varsSet {
@@ -4238,6 +4282,14 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		args := []Expr{}
 		for _, n := range names {
 			typ := inferType(&VarRef{Name: n})
+			if typ == "" || typ == "integer" {
+				for _, it := range items {
+					if usesMapIndex(it.Value, n) {
+						typ = "specialize TFPGMap<string, integer>"
+						break
+					}
+				}
+			}
 			if typ == "" {
 				continue
 			}
@@ -4488,7 +4540,11 @@ func inferType(e Expr) string {
 	case *BoolLit:
 		return "boolean"
 	case *VarRef:
-		if t, ok := currentVarTypes[v.Name]; ok {
+		name := v.Name
+		if s, ok := lookupName(name); ok {
+			name = s
+		}
+		if t, ok := currentVarTypes[name]; ok {
 			return resolveAlias(t)
 		}
 		return ""
@@ -4604,7 +4660,11 @@ func inferType(e Expr) string {
 		}
 		return "array of integer"
 	case *SelectorExpr:
-		if t, ok := currentVarTypes[v.Root]; ok {
+		root := v.Root
+		if s, ok := lookupName(root); ok {
+			root = s
+		}
+		if t, ok := currentVarTypes[root]; ok {
 			if strings.HasPrefix(t, "array of ") {
 				t = strings.TrimPrefix(t, "array of ")
 			}

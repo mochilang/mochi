@@ -45,8 +45,8 @@ var
   nv: integer;
   s: string;
 function Map3(h: SpecializeTFPGMapStringIntegerArray; nv: integer; step_best: IntArray): specialize TFPGMap<string, Variant>; forward;
-function Map2(it: integer): specialize TFPGMap<string, Variant>; forward;
-function Map1(nv: integer): specialize TFPGMap<string, Variant>; forward;
+function Map2(it: specialize TFPGMap<string, integer>): specialize TFPGMap<string, integer>; forward;
+function Map1(nv: integer): specialize TFPGMap<string, integer>; forward;
 function push(h: SpecializeTFPGMapStringIntegerArray; it: specialize TFPGMap<string, integer>): SpecializeTFPGMapStringIntegerArray; forward;
 function step(h: SpecializeTFPGMapStringIntegerArray; nv: integer; dir: IntArray): specialize TFPGMap<string, Variant>; forward;
 function positions(n: integer): IntArrayArray; forward;
@@ -59,16 +59,16 @@ begin
   Result.AddOrSetData('heap', Variant(h));
   Result.AddOrSetData('n', Variant(nv));
 end;
-function Map2(it: integer): specialize TFPGMap<string, Variant>;
+function Map2(it: specialize TFPGMap<string, integer>): specialize TFPGMap<string, integer>;
 begin
-  Result := specialize TFPGMap<string, Variant>.Create();
+  Result := specialize TFPGMap<string, integer>.Create();
   Result.AddOrSetData('s', Variant((it['a'] * it['a']) + ((it['b'] + 1) * (it['b'] + 1))));
   Result.AddOrSetData('a', Variant(it['a']));
   Result.AddOrSetData('b', Variant(it['b'] + 1));
 end;
-function Map1(nv: integer): specialize TFPGMap<string, Variant>;
+function Map1(nv: integer): specialize TFPGMap<string, integer>;
 begin
-  Result := specialize TFPGMap<string, Variant>.Create();
+  Result := specialize TFPGMap<string, integer>.Create();
   Result.AddOrSetData('s', Variant(nv * nv));
   Result.AddOrSetData('a', Variant(nv));
   Result.AddOrSetData('b', Variant(0));
