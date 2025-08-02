@@ -82,8 +82,7 @@ $__start = _now();
   while ($k < strlen($src)) {
   $cc = substr($src, $k, $k + 1 - $k);
   if ($cc == ' ' || $cc == '	' || $cc == '
-  while ($p >= 0 && (substr($src, $p, $p + 1 - $p) == ' ' || substr($src, $p, $p + 1 - $p) == '	')) {
-') {
+' || $cc == '') {
   $k = $k + 1;
 } else {
   break;
@@ -91,7 +90,7 @@ $__start = _now();
 };
   if ($k < strlen($src) && substr($src, $k, $k + 1 - $k) == '(') {
   $p = $i - 1;
-  while ($p >= 0 && (substr($src, $p, $p + 1 - $p) == ' ' || substr($src, $p, $p + 1 - $p) == '\t')) {
+  while ($p >= 0 && (substr($src, $p, $p + 1 - $p) == ' ' || substr($src, $p, $p + 1 - $p) == '	')) {
   $p = $p - 1;
 };
   $skip = false;
@@ -130,9 +129,9 @@ $__start = _now();
   main();
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

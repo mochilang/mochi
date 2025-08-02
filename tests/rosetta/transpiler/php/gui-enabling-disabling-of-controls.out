@@ -20,7 +20,7 @@ value=2 entry=false inc=true dec=true
 value=1 entry=false inc=true dec=true
 value=0 entry=true inc=true dec=false
 {
-  "duration_us": 107,
+  "duration_us": 200,
   "memory_bytes": 96,
   "name": "main"
 }
