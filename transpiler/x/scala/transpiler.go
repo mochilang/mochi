@@ -43,6 +43,7 @@ var needsRepeat bool
 var needsParseIntStr bool
 var needsMD5 bool
 var needsEnviron bool
+var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
 var returnTypeStack []string
@@ -1070,6 +1071,9 @@ func (idx *IndexExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "(")
 		emitIndex()
 		fmt.Fprint(w, ")")
+		if idx.Type != "" && idx.Type != "Any" {
+			fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
+		}
 	} else if idx.Container == "Any" {
 		if (idx.ForceMap) || (func() bool {
 			if prev, ok := idx.Value.(*IndexExpr); ok {
@@ -1751,6 +1755,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsMD5 = false
 	useNow = false
 	useLookupHost = false
+	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
 	assignedVars = make(map[string]bool)
@@ -1926,6 +1931,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		if typ != "" {
 			localVarTypes[st.Let.Name] = typ
 		}
+		if ml, ok := e.(*MapLit); ok {
+			mt := make(map[string]string)
+			for _, it := range ml.Items {
+				if k, ok := it.Key.(*StringLit); ok {
+					if it.Type != "" && it.Type != "Any" {
+						mt[k.Value] = it.Type
+					}
+				}
+			}
+			mapEntryTypes[st.Let.Name] = mt
+		}
 		if assignedVars != nil && assignedVars[st.Let.Name] {
 			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
 		}
@@ -2026,6 +2042,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
+		}
+		if ml, ok := e.(*MapLit); ok {
+			mt := make(map[string]string)
+			for _, it := range ml.Items {
+				if k, ok := it.Key.(*StringLit); ok {
+					if it.Type != "" && it.Type != "Any" {
+						mt[k.Value] = it.Type
+					}
+				}
+			}
+			mapEntryTypes[st.Var.Name] = mt
 		}
 		g := env == nil || env.Parent() == nil
 		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: g}, nil
@@ -2251,6 +2278,10 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "Int"}
 				} else if rt == "Int" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "Int"}
+				} else if lt == "BigInt" && (rt == "Any" || rt == "") {
+					right = &CastExpr{Value: right, Type: "BigInt"}
+				} else if rt == "BigInt" && (lt == "Any" || lt == "") {
+					left = &CastExpr{Value: left, Type: "BigInt"}
 				} else if lt == "BigInt" && (rt == "Double" || rt == "Float") {
 					left = &CastExpr{Value: left, Type: "Double"}
 				} else if rt == "BigInt" && (lt == "Double" || lt == "Float") {
@@ -2687,6 +2718,17 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				ie := &IndexExpr{Value: expr, Index: start, Container: ct, ForceMap: forceMap}
 				ie.Type = elementType(ct)
+				if ie.Type == "" || ie.Type == "Any" {
+					if k, ok := start.(*StringLit); ok {
+						if n, ok := expr.(*Name); ok {
+							if mt, ok := mapEntryTypes[n.Name]; ok {
+								if t, ok := mt[k.Value]; ok {
+									ie.Type = t
+								}
+							}
+						}
+					}
+				}
 				expr = ie
 			}
 		case op.Call != nil:
@@ -2952,7 +2994,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			}
 			val := args[0]
 			if inferTypeWithEnv(val, env) == "Any" {
-				val = &CastExpr{Value: val, Type: "String"}
+				val = &CastExpr{Value: val, Type: "ArrayBuffer[Any]"}
 			}
 			return &LenExpr{Value: val}, nil
 		}

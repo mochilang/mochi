@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (417/491)
-_Last updated: 2025-08-02 12:12 +0700_
+## Golden Test Checklist (418/491)
+_Last updated: 2025-08-02 14:18 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -205,7 +205,7 @@ _Last updated: 2025-08-02 12:12 +0700_
 | 196 | cheryls-birthday | ✓ | 5µs | 8.7 MB |
 | 197 | chinese-remainder-theorem | ✓ | 22µs | 8.7 MB |
 | 198 | chinese-zodiac | ✓ | 4µs | 8.7 MB |
-| 199 | cholesky-decomposition-1 | error |  |  |
+| 199 | cholesky-decomposition-1 | ✓ | 14µs | 8.8 MB |
 | 200 | cholesky-decomposition | ✓ | 11µs | 8.8 MB |
 | 201 | chowla-numbers | ✓ |  |  |
 | 202 | church-numerals-1 | ✓ |  |  |
