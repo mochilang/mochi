@@ -1,8 +1,0 @@
-run: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/rb/formal-power-series.rb:30:in `extract': wrong number of arguments (given 1, expected 0) (ArgumentError)
-
-    v = f.compute(idx)
-                  ^^^
-	from /workspace/mochi/tests/rosetta/transpiler/rb/formal-power-series.rb:143:in `partialSeries'
-	from /workspace/mochi/tests/rosetta/transpiler/rb/formal-power-series.rb:150:in `main'
-	from /workspace/mochi/tests/rosetta/transpiler/rb/formal-power-series.rb:155:in `<main>'
