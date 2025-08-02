@@ -3996,6 +3996,43 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			return &ForStmt{Var: s.For.Name, List: list, ElemType: elemType, Body: body}, nil
 		}
 		typStr := inferExprType(env, convertExpr(s.For.Source))
+		if strings.HasSuffix(typStr, "[]") {
+			elemType := strings.TrimSuffix(typStr, "[]")
+			switch elemType {
+			case "int":
+				env.SetVarDeep(s.For.Name, types.IntType{}, true)
+			case "double":
+				env.SetVarDeep(s.For.Name, types.FloatType{}, true)
+			case "const char*":
+				env.SetVarDeep(s.For.Name, types.StringType{}, true)
+			default:
+				if st, ok := env.GetStruct(elemType); ok {
+					env.SetVarDeep(s.For.Name, st, true)
+				} else {
+					env.SetVarDeep(s.For.Name, types.AnyType{}, true)
+				}
+			}
+			body, err := compileStmts(env, s.For.Body)
+			if err != nil {
+				return nil, err
+			}
+			tmp := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			var buf bytes.Buffer
+			buf.WriteString("{\n")
+			writeIndent(&buf, 1)
+			fmt.Fprintf(&buf, "%s* %s = ", elemType, tmp)
+			convertExpr(s.For.Source).emitExpr(&buf)
+			buf.WriteString(";\n")
+			writeIndent(&buf, 1)
+			fmt.Fprintf(&buf, "size_t %s_len = ", tmp)
+			emitLenExpr(&buf, convertExpr(s.For.Source))
+			buf.WriteString(";\n")
+			forStmt := &ForStmt{Var: s.For.Name, ListVar: tmp, LenVar: tmp + "_len", ElemType: elemType, Body: body}
+			forStmt.emit(&buf, 1)
+			buf.WriteString("}\n")
+			return &RawStmt{Code: buf.String()}, nil
+		}
 		if typStr == "const char*" {
 			body, err := compileStmts(env, s.For.Body)
 			if err != nil {
