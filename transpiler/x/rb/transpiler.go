@@ -150,6 +150,12 @@ def _mem()
 end
 `
 
+const helperStringEach = `
+class String
+  alias each each_char
+end
+`
+
 // --- Ruby AST ---
 
 type Program struct {
@@ -1250,13 +1256,31 @@ var builtinConsts = map[string]bool{
 }
 
 func safeName(n string) string {
-	if reserved[n] || builtinConsts[n] {
-		return n + "_"
-	}
-	if n != "" && unicode.IsUpper(rune(n[0])) {
-		n = strings.ToLower(n[:1]) + n[1:]
-	}
-	return n
+        if reserved[n] || builtinConsts[n] {
+                return n + "_"
+        }
+        if n != "" && unicode.IsUpper(rune(n[0])) {
+                n = strings.ToLower(n[:1]) + n[1:]
+        }
+        return n
+}
+
+func isValidIdent(s string) bool {
+       if s == "" {
+               return false
+       }
+       for i, r := range s {
+               if i == 0 {
+                       if !unicode.IsLetter(r) && r != '_' {
+                               return false
+                       }
+               } else {
+                       if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '_' {
+                               return false
+                       }
+               }
+       }
+       return true
 }
 
 // emitter maintains the current indentation level while emitting Ruby code.
@@ -2742,17 +2766,20 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
-	if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
-		return err
-	}
-	if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
-		return err
-	}
-	for _, s := range p.Stmts {
-		e.writeIndent()
-		s.emit(e)
-		e.nl()
-	}
+       if _, err := io.WriteString(w, helperAdd+"\n"); err != nil {
+               return err
+       }
+       if _, err := io.WriteString(w, helperPadStart+"\n"); err != nil {
+               return err
+       }
+       if _, err := io.WriteString(w, helperStringEach+"\n"); err != nil {
+               return err
+       }
+       for _, s := range p.Stmts {
+               e.writeIndent()
+               s.emit(e)
+               e.nl()
+       }
 	return nil
 }
 
@@ -3697,19 +3724,24 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			// Sanitize string literals used as keys so reserved
-			// words like "begin" work with Structs that use the
-			// sanitized field names.
-			if sl, ok := idx.(*StringLit); ok {
-				idx = &StringLit{Value: fieldName(sl.Value)}
-				if st, ok := curType.(types.StructType); ok {
-					if ft, ok := st.Fields[sl.Value]; ok {
-						expr = &FieldExpr{Target: expr, Name: fieldName(sl.Value)}
-						curType = ft
-						continue
-					}
-				}
-			}
+                       // If the index is a string literal and the target is a
+                       // struct, sanitize the field name and emit a field
+                       // access. For non-struct types (maps), preserve the
+                       // original key so that characters like '.' remain
+                       // intact. Previously we sanitized all string keys which
+                       // caused map lookups such as ["input.txt"] to be
+                       // rewritten as field accesses ($fs.input.txt).
+                       if sl, ok := idx.(*StringLit); ok {
+                               if st, ok := curType.(types.StructType); ok && isValidIdent(sl.Value) {
+                                       name := fieldName(sl.Value)
+                                       if ft, ok := st.Fields[sl.Value]; ok {
+                                               expr = &FieldExpr{Target: expr, Name: name}
+                                               curType = ft
+                                               continue
+                                       }
+                                       idx = &StringLit{Value: name}
+                               }
+                       }
 			expr = &IndexExpr{Target: expr, Index: idx}
 			if lt, ok := curType.(types.ListType); ok {
 				curType = lt.Elem
