@@ -933,8 +933,9 @@ type SliceExpr struct {
 
 // CastExpr represents a type cast.
 type CastExpr struct {
-	Expr Expr
-	Type string
+	Expr       Expr
+	Type       string
+	FromString bool
 }
 
 func (ie *IndexExpr) emit(w io.Writer) {
@@ -1045,6 +1046,18 @@ func (c *CastExpr) emit(w io.Writer) {
 				fmt.Fprint(w, "(")
 				inner.Expr.emit(w)
 				fmt.Fprint(w, " as! Int)")
+				return
+			}
+			if force {
+				if c.FromString {
+					fmt.Fprint(w, "Int(")
+					c.Expr.emit(w)
+					fmt.Fprint(w, ")!")
+				} else {
+					fmt.Fprint(w, "(")
+					c.Expr.emit(w)
+					fmt.Fprint(w, " as! Int)")
+				}
 				return
 			}
 		}
@@ -3660,7 +3673,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			typ := toSwiftType(op.Cast.Type)
 			if env != nil {
 				resT := types.ResolveTypeRef(op.Cast.Type, env)
-				if st, ok := resT.(types.StructType); ok {
+				if typ == "Int" && types.IsStringType(baseType) {
+					expr = &CastExpr{Expr: expr, Type: "Int!", FromString: true}
+					baseType = resT
+				} else if st, ok := resT.(types.StructType); ok {
 					if ml, ok := expr.(*MapLit); ok {
 						var fields []FieldInit
 						for j := range ml.Keys {
