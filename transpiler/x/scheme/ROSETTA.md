@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (397/491)
-Last updated: 2025-08-02 13:58 UTC
+## Checklist (398/491)
+Last updated: 2025-08-02 16:13 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -212,7 +212,7 @@ Last updated: 2025-08-02 13:58 UTC
 | 203 | church-numerals-2 | ✓ | 571.223ms | 12.9 MB |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 571.223ms | 13.4 MB |
 | 205 | circular-primes | ✓ | 571.223ms | 12.9 MB |
-| 206 | cistercian-numerals |   |  |  |
+| 206 | cistercian-numerals | ✓ | 571.223ms | 13.7 MB |
 | 207 | comma-quibbling | ✓ | 571.223ms | 12.3 MB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 571.223ms | 14.1 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
