@@ -12,7 +12,7 @@ Solved:
 0 0 0
 Moves: 0
 {
-  "duration_us": 19482,
-  "memory_bytes": 6366432,
+  "duration_us": 27215,
+  "memory_bytes": 7328608,
   "name": "main"
 }

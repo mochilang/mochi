@@ -9,7 +9,7 @@
 sin:  1.0e303   1.0e303   1.0e303   1.0e303   1.0e303   1.0e303 
 cos:  1.0e303   1.0e303   1.0e303   1.0e303   1.0e303   1.0e303 
 {
-  "duration_us": 16484,
-  "memory_bytes": 2461040,
+  "duration_us": 16981,
+  "memory_bytes": 2537264,
   "name": "main"
 }
