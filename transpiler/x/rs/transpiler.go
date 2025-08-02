@@ -251,6 +251,8 @@ func (c *CallExpr) emit(w io.Writer) {
 				if nr, ok := a.(*NameRef); ok {
 					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
 						a.emit(w)
+					} else if vt, ok2 := varTypes[nr.Name]; ok2 && strings.HasPrefix(vt, "&") {
+						a.emit(w)
 					} else {
 						io.WriteString(w, "&mut ")
 						a.emit(w)
@@ -266,6 +268,8 @@ func (c *CallExpr) emit(w io.Writer) {
 			if strings.HasPrefix(pt, "&") {
 				if nr, ok := a.(*NameRef); ok {
 					if cpt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(cpt, "&") {
+						a.emit(w)
+					} else if vt, ok2 := varTypes[nr.Name]; ok2 && strings.HasPrefix(vt, "&") {
 						a.emit(w)
 					} else {
 						io.WriteString(w, "&")
@@ -3182,7 +3186,8 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
 	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
+	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
 	stmts := []Stmt{startMem, startDecl}
@@ -3199,7 +3204,8 @@ func wrapBench(name string, body []Stmt) Stmt {
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
 	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
+	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
 	stmts := []Stmt{startMem, startDecl}
 	stmts = append(stmts, body...)
