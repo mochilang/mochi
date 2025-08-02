@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (348/491)
+## Rosetta Golden Test Checklist (349/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -493,8 +493,8 @@ This file is auto-generated from rosetta tests.
 | 486 | md5 |   |  |  |
 | 487 | nim-game | ✓ | 387µs | 50.2 KB |
 | 488 | plasma-effect | ✓ | 1.288ms | 55.4 KB |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 304µs | 43.3 KB |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-08-02 10:52 +0700
+Last updated: 2025-08-02 11:21 +0700
