@@ -39,7 +39,7 @@ fun user_main(): Unit {
     f()
     g(1, 2.0)
     var res: MutableList<Any?> = f()
-    g((res[0] as Any?) as Int, (res[1] as Any?).toDouble())
+    g((res[0] as Any?) as Int, (res[1] as Any?) as Double)
     g(g(1, 2.0), 3.0)
 }
 
