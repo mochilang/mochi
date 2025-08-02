@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Prolog code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Prolog`.
-Last updated: 2025-08-02 11:41 +0700
+Last updated: 2025-08-02 12:07 +0700
 
-## Rosetta Golden Test Checklist (76/491)
+## Rosetta Golden Test Checklist (77/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -106,7 +106,7 @@ Last updated: 2025-08-02 11:41 +0700
 | 97 | babylonian-spiral |   |  |  |
 | 98 | balanced-brackets |   |  |  |
 | 99 | balanced-ternary |   |  |  |
-| 100 | barnsley-fern |   |  |  |
+| 100 | barnsley-fern | ✓ |  |  |
 | 101 | base64-decode-data |   |  |  |
 | 102 | bell-numbers |   |  |  |
 | 103 | benfords-law |   |  |  |
