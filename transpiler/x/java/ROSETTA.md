@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 11:31 GMT+7
+Last updated: 2025-08-02 11:39 GMT+7
 
-## Rosetta Checklist (340/491)
+## Rosetta Checklist (345/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -350,16 +350,16 @@ Last updated: 2025-08-02 11:31 GMT+7
 | 342 | empty-directory | ✓ | 13.0ms | 760B |
 | 343 | empty-program | ✓ | 13.0ms | 0B |
 | 344 | empty-string-1 | ✓ | 21.0ms | 448B |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 | ✓ | 13.0ms | 0B |
-| 351 | enumerations-2 | ✓ | 14.0ms | 0B |
-| 352 | enumerations-3 | ✓ | 13.0ms | 0B |
-| 353 | enumerations-4 | ✓ | 13.0ms | 0B |
-| 354 | environment-variables-1 | ✓ | 16.0ms | 496B |
+| 345 | empty-string-2 | ✓ | 21.0ms | 552B |
+| 346 | enforced-immutability | ✓ | 34.0ms | 37.41KB |
+| 347 | entropy-1 | ✓ | 22.0ms | 10.84KB |
+| 348 | entropy-2 | ✓ | 23.0ms | 10.84KB |
+| 349 | entropy-narcissist | ✓ | 44.0ms | 48.86KB |
+| 350 | enumerations-1 | ✓ | 19.0ms | 0B |
+| 351 | enumerations-2 | ✓ | 21.0ms | 0B |
+| 352 | enumerations-3 | ✓ | 19.0ms | 0B |
+| 353 | enumerations-4 | ✓ | 20.0ms | 0B |
+| 354 | environment-variables-1 | ✓ | 20.0ms | 496B |
 | 355 | environment-variables-2 | ✓ | 35.0ms | 80.77KB |
 | 356 | equal-prime-and-composite-sums | ✓ | 2.54s | 111.33KB |
 | 357 | equilibrium-index | ✓ | 293.0ms | 46.18KB |

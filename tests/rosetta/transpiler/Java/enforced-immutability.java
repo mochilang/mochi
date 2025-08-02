@@ -1,15 +1,14 @@
 public class Main {
-    static int apple;
-    static int banana;
-    static int cherry;
+    static String s;
+    static String s2;
 
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            apple = 0;
-            banana = apple + 1;
-            cherry = banana + 1;
+            s = "immutable";
+            s2 = "a" + s.substring(1, _runeLen(s));
+            System.out.println(s2);
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -41,5 +40,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }

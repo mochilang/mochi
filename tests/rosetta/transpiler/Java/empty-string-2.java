@@ -1,15 +1,24 @@
 public class Main {
-    static int apple;
-    static int banana;
-    static int cherry;
 
+    static void check(String s) {
+        if (_runeLen(s) == 0) {
+            System.out.println("empty");
+        } else {
+            System.out.println("not empty");
+        }
+    }
+
+    static void main() {
+        String str1 = "";
+        String str2 = " ";
+        check(str1);
+        check(str2);
+    }
     public static void main(String[] args) {
         {
             long _benchStart = _now();
             long _benchMem = _mem();
-            apple = 0;
-            banana = apple + 1;
-            cherry = banana + 1;
+            main();
             long _benchDuration = _now() - _benchStart;
             long _benchMemory = _mem() - _benchMem;
             System.out.println("{");
@@ -41,5 +50,9 @@ public class Main {
         Runtime rt = Runtime.getRuntime();
         rt.gc();
         return rt.totalMemory() - rt.freeMemory();
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }
