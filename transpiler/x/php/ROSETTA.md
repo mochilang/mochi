@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 17:46 +0700
+Last updated: 2025-08-02 18:31 +0700
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -230,7 +230,7 @@ Last updated: 2025-08-02 17:46 +0700
 | 221 | conditional-structures-7 | ✓ | 1µs | 35.4 KB |
 | 222 | conditional-structures-8 | ✓ | 1µs | 35.2 KB |
 | 223 | conditional-structures-9 | ✓ | 1µs | 35.4 KB |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✗ (timeout) |  |  |
 | 225 | constrained-genericity-1 | ✓ | 1µs | 35.1 KB |
 | 226 | constrained-genericity-2 | ✓ | 1µs | 35.1 KB |
 | 227 | constrained-genericity-3 | ✓ | 1µs | 35.3 KB |
