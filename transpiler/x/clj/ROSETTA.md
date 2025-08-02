@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 174/491
-Last updated: 2025-08-02 01:26 +0700
+Completed: 175/491
+Last updated: 2025-08-02 10:47 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -193,7 +193,7 @@ Last updated: 2025-08-02 01:26 +0700
 | 186 | character-codes-4 | ✓ | 48.252ms | 18.8 MB |
 | 187 | character-codes-5 | ✓ | 49.027ms | 18.3 MB |
 | 188 | chat-server |   | 48.539ms | 19.6 MB |
-| 189 | check-machin-like-formulas |   |  |  |
+| 189 | check-machin-like-formulas | ✓ | 68.286ms | 21.5 MB |
 | 190 | check-that-file-exists |   | 43.926ms | 19.0 MB |
 | 191 | checkpoint-synchronization-1 |   | 44.686ms | 20.1 MB |
 | 192 | checkpoint-synchronization-2 | ✓ | 47.853ms | 20.4 MB |

@@ -1,3 +1,239 @@
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
+## Progress (2025-08-02 10:28 +0700)
+- transpiler/java: add more rosetta cases
+- Regenerated golden files - 102/105 vm valid programs passing
+
 ## Progress (2025-08-02 00:23 +0700)
 - clj transpiler: support simple method calls
 - Regenerated golden files - 102/105 vm valid programs passing
