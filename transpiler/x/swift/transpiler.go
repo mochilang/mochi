@@ -2251,6 +2251,20 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				varT = types.TypeOfExpr(st.Let.Value, env)
 			}
 			env.SetVar(st.Let.Name, varT, true)
+			swiftT := swiftTypeOf(varT)
+			if st.Let.Value != nil && swiftT != "Any" {
+				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Let.Value, env))
+				if srcSwiftT == swiftT {
+					// no cast needed
+				} else if ie, ok := ex.(*IndexExpr); ok && !ie.Force {
+					// optional map lookup
+				} else if (swiftT == "Int" || swiftT == "Int64" || swiftT == "Double") &&
+					(srcSwiftT == "Int" || srcSwiftT == "Int64" || srcSwiftT == "Double") {
+					ex = &CastExpr{Expr: ex, Type: swiftT}
+				} else {
+					ex = &CastExpr{Expr: ex, Type: swiftT + "!"}
+				}
+			}
 		}
 		return &VarDecl{Name: st.Let.Name, Const: true, Type: typ, Expr: ex}, nil
 	case st.Var != nil:
@@ -2408,6 +2422,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				force := !isLast
 				lhs = &IndexExpr{Base: lhs, Index: ix, Force: force, KeyString: keyStr, KeyAny: keyAny}
 			} else if lt, ok := cur.(types.ListType); ok {
+				if env != nil {
+					if ixT := types.TypeOfExpr(idx.Start, env); types.IsAnyType(ixT) {
+						ix = &CastExpr{Expr: ix, Type: "Int!"}
+					}
+				}
 				cur = lt.Elem
 				lhs = &IndexExpr{Base: lhs, Index: ix}
 			} else {
@@ -3632,6 +3651,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				cast := "[Any]"
 				if types.IsStringType(idxType) {
 					cast = "[String: Any]"
+				} else if types.IsAnyType(idxType) {
+					idx = &CastExpr{Expr: idx, Type: "Int!"}
 				}
 				expr = &IndexExpr{Base: &CastExpr{Expr: expr, Type: cast}, Index: idx, AsString: isStr, Force: force}
 			} else {
@@ -3644,6 +3665,13 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					} else if types.IsAnyType(mt.Key) {
 						keyAny = true
 					}
+				} else if lt, ok := origBaseType.(types.ListType); ok {
+					if env != nil {
+						if idxT := types.TypeOfExpr(op.Index.Start, env); types.IsAnyType(idxT) {
+							idx = &CastExpr{Expr: idx, Type: "Int!"}
+						}
+					}
+					_ = lt // silence unused if lt not used
 				}
 				expr = &IndexExpr{Base: expr, Index: idx, AsString: isStr, Force: force, KeyString: keyStr, KeyAny: keyAny}
 			}
