@@ -125,6 +125,29 @@ type MapLitDef struct {
 
 func ctorName(name string) string { return "make" + name }
 
+func pasType(t string) string {
+	switch t {
+	case "any":
+		if currProg != nil {
+			currProg.UseVariants = true
+		}
+		return "Variant"
+	case "array of any":
+		if currProg != nil {
+			currProg.UseVariants = true
+		}
+		return "array of Variant"
+	default:
+		if strings.Contains(t, "any") {
+			if currProg != nil {
+				currProg.UseVariants = true
+			}
+			return strings.ReplaceAll(t, "any", "Variant")
+		}
+		return t
+	}
+}
+
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
@@ -255,7 +278,7 @@ type FunDecl struct {
 }
 
 func (f *FunDecl) emit(out io.Writer) {
-	rt := f.ReturnType
+	rt := pasType(f.ReturnType)
 	proc := false
 	if rt == "" {
 		proc = true
@@ -265,11 +288,17 @@ func (f *FunDecl) emit(out io.Writer) {
 	} else {
 		fmt.Fprintf(out, "function %s(", f.Name)
 	}
-	for i, p := range f.Params {
+	for i, param := range f.Params {
 		if i > 0 {
 			io.WriteString(out, "; ")
 		}
-		io.WriteString(out, p)
+		if idx := strings.Index(param, ":"); idx != -1 {
+			name := param[:idx]
+			typ := strings.TrimSpace(param[idx+1:])
+			fmt.Fprintf(out, "%s: %s", name, pasType(typ))
+		} else {
+			io.WriteString(out, param)
+		}
 	}
 	if proc {
 		io.WriteString(out, ");\n")
@@ -282,6 +311,8 @@ func (f *FunDecl) emit(out io.Writer) {
 			typ := v.Type
 			if typ == "" {
 				typ = "integer"
+			} else {
+				typ = pasType(typ)
 			}
 			fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
 		}
@@ -859,7 +890,14 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ", ")
 	if m.Expr != nil {
-		m.Expr.emit(w)
+		t := inferType(m.Expr)
+		if t != "Variant" && t != "any" {
+			io.WriteString(w, "Variant(")
+			m.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Expr.emit(w)
+		}
 	}
 	io.WriteString(w, ");")
 }
@@ -1135,10 +1173,8 @@ end;
 			typ := v.Type
 			if typ == "" {
 				typ = "integer"
-			} else if typ == "any" {
-				typ = "Variant"
-			} else if typ == "array of any" {
-				typ = "array of Variant"
+			} else {
+				typ = pasType(typ)
 			}
 			fmt.Fprintf(&buf, "  %s: %s;\n", v.Name, typ)
 		}
@@ -1149,16 +1185,22 @@ end;
 		} else {
 			fmt.Fprintf(&buf, "function %s(", f.Name)
 		}
-		for i, p := range f.Params {
+		for i, param := range f.Params {
 			if i > 0 {
 				io.WriteString(&buf, "; ")
 			}
-			io.WriteString(&buf, p)
+			if idx := strings.Index(param, ":"); idx != -1 {
+				name := param[:idx]
+				typ := strings.TrimSpace(param[idx+1:])
+				fmt.Fprintf(&buf, "%s: %s", name, pasType(typ))
+			} else {
+				io.WriteString(&buf, param)
+			}
 		}
 		if f.ReturnType == "" {
 			io.WriteString(&buf, "); forward;\n")
 		} else {
-			fmt.Fprintf(&buf, "): %s; forward;\n", f.ReturnType)
+			fmt.Fprintf(&buf, "): %s; forward;\n", pasType(f.ReturnType))
 		}
 	}
 	for _, f := range p.Funs {
@@ -4192,6 +4234,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		args := []Expr{}
 		for _, n := range names {
 			typ := inferType(&VarRef{Name: n})
+			if typ == "" {
+				continue
+			}
 			if strings.HasPrefix(typ, "array of ") {
 				elem := strings.TrimPrefix(typ, "array of ")
 				typ = currProg.addArrayAlias(elem)
@@ -4583,8 +4628,11 @@ func inferType(e Expr) string {
 		if v.Type == "bigrat" {
 			return "BigRat"
 		}
-		if strings.HasPrefix(v.Type, "array of ") {
-			return v.Type
+		if strings.HasPrefix(v.Type, "array of ") || strings.HasPrefix(v.Type, "specialize TFPGMap") {
+			return pasType(v.Type)
+		}
+		if v.Type != "" {
+			return pasType(v.Type)
 		}
 		return inferType(v.Expr)
 	case *UnaryExpr:
@@ -4960,7 +5008,7 @@ func formatParam(name, typ string) string {
 	// arrays when using recursion. Using "var" for array parameters caused
 	// access violations on some programs (e.g. Cramer's rule) so we no
 	// longer emit it here.
-	return fmt.Sprintf("%s: %s", name, typ)
+	return fmt.Sprintf("%s: %s", name, pasType(typ))
 }
 
 func findRecord(name string) (RecordDef, bool) {
