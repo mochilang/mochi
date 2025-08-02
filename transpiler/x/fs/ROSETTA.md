@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (353/491)
+## Rosetta Golden Test Checklist (354/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -29,7 +29,7 @@ This file is auto-generated from rosetta tests.
 | 22 | abstract-type | ✓ |  |  |
 | 23 | abundant-deficient-and-perfect-number-classifications | ✓ |  |  |
 | 24 | abundant-odd-numbers | ✓ |  |  |
-| 25 | accumulator-factory |   |  |  |
+| 25 | accumulator-factory | ✓ | 387µs | 44.0 KB |
 | 26 | achilles-numbers | ✓ | 540µs | 57.4 KB |
 | 27 | ackermann-function-2 | ✓ | 333µs | 41.5 KB |
 | 28 | ackermann-function-3 |   |  | 65.9 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-02 11:55 +0700
+Last updated: 2025-08-02 14:06 +0700
