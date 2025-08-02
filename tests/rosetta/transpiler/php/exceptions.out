@@ -2,7 +2,7 @@ let's foo...
 Recovered from runtime error: index out of range [12] with length 0
 glad that's over.
 {
-  "duration_us": 33,
+  "duration_us": 38,
   "memory_bytes": 96,
   "name": "main"
 }

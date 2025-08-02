@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 16:06 +0700
+Last updated: 2025-08-02 16:16 +0700
 
 ## Checklist (484/491)
 | Index | Name | Status | Duration | Memory |
@@ -356,38 +356,38 @@ Last updated: 2025-08-02 16:06 +0700
 | 347 | entropy-1 | ✓ | 121µs | 96 B |
 | 348 | entropy-2 | ✓ | 132µs | 96 B |
 | 349 | entropy-narcissist | ✓ | 237µs | 128 B |
-| 350 | enumerations-1 | ✓ |  |  |
-| 351 | enumerations-2 | ✓ |  |  |
+| 350 | enumerations-1 | ✓ | 1µs | 64 B |
+| 351 | enumerations-2 | ✓ | 1µs | 64 B |
 | 352 | enumerations-3 | ✓ | 1µs | 64 B |
-| 353 | enumerations-4 | ✓ |  |  |
-| 354 | environment-variables-1 | ✓ | 99µs | 96 B |
-| 355 | environment-variables-2 | ✓ | 100µs | 272 B |
-| 356 | equal-prime-and-composite-sums | ✓ | 2.603738s | 96 B |
-| 357 | equilibrium-index | ✓ | 71.06ms | 128 B |
+| 353 | enumerations-4 | ✓ | 1µs | 64 B |
+| 354 | environment-variables-1 | ✓ | 64µs | 96 B |
+| 355 | environment-variables-2 | ✓ | 132µs | 272 B |
+| 356 | equal-prime-and-composite-sums | ✓ | 2.67123s | 96 B |
+| 357 | equilibrium-index | ✓ | 74.533ms | 128 B |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 4.529ms | 40.2 KB |
-| 360 | esthetic-numbers | ✓ | 1.554426s | 1.0 MB |
-| 361 | ethiopian-multiplication | ✓ | 41µs | 96 B |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 4.674ms | 40.2 KB |
+| 360 | esthetic-numbers | ✓ | 1.680718s | 1.0 MB |
+| 361 | ethiopian-multiplication | ✓ | 70µs | 96 B |
 | 362 | euclid-mullin-sequence | ✓ | 4m36.368866s | 67.5 KB |
-| 363 | euler-method | ✓ | 476µs | 96 B |
-| 364 | eulers-constant-0.5772... | ✓ | 1.689ms | 96 B |
-| 365 | eulers-identity | ✓ | 54µs | 128 B |
-| 366 | eulers-sum-of-powers-conjecture | ✓ | 75.318ms | 96 B |
-| 367 | evaluate-binomial-coefficients | ✓ | 80µs | 96 B |
-| 368 | even-or-odd | ✓ | 223µs | 96 B |
-| 369 | events | ✓ | 57µs | 96 B |
-| 370 | evolutionary-algorithm | ✓ | 24.226ms | 192 B |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 36µs | 128 B |
-| 372 | exceptions | ✓ | 33µs | 96 B |
-| 373 | executable-library | ✓ | 3.585073s | 96 B |
-| 374 | execute-a-markov-algorithm | ✓ | 1.551ms | 128 B |
-| 375 | execute-a-system-command | ✓ | 2.36ms | 608 B |
-| 376 | execute-brain- | ✓ | 165µs | 96 B |
-| 377 | execute-computer-zero-1 | ✓ | 356µs | 96 B |
-| 378 | execute-computer-zero | ✓ | 59µs | 96 B |
-| 379 | execute-hq9+ | ✓ | 422µs | 8.1 KB |
-| 380 | execute-snusp | ✓ | 27µs | 96 B |
-| 381 | exponentiation-operator-2 | ✓ | 85µs | 96 B |
+| 363 | euler-method | ✓ | 347µs | 96 B |
+| 364 | eulers-constant-0.5772... | ✓ | 1.612ms | 96 B |
+| 365 | eulers-identity | ✓ | 78µs | 128 B |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 90.659ms | 96 B |
+| 367 | evaluate-binomial-coefficients | ✓ | 61µs | 96 B |
+| 368 | even-or-odd | ✓ | 181µs | 96 B |
+| 369 | events | ✓ | 77µs | 96 B |
+| 370 | evolutionary-algorithm | ✓ | 23.658ms | 192 B |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 34µs | 128 B |
+| 372 | exceptions | ✓ | 38µs | 96 B |
+| 373 | executable-library | ✓ | 3.656559s | 96 B |
+| 374 | execute-a-markov-algorithm | ✓ | 1.582ms | 128 B |
+| 375 | execute-a-system-command | ✓ | 8.896ms | 608 B |
+| 376 | execute-brain- | ✓ | 152µs | 96 B |
+| 377 | execute-computer-zero-1 | ✓ | 322µs | 96 B |
+| 378 | execute-computer-zero | ✓ | 74µs | 96 B |
+| 379 | execute-hq9+ | ✓ | 397µs | 8.1 KB |
+| 380 | execute-snusp | ✓ | 205µs | 96 B |
+| 381 | exponentiation-operator-2 | ✓ | 97µs | 96 B |
 | 382 | exponentiation-operator | ✓ | 71µs | 96 B |
 | 383 | exponentiation-order | ✓ | 110µs | 160 B |
 | 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 65µs | 256 B |

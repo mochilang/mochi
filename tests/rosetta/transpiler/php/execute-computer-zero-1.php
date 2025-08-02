@@ -42,11 +42,11 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function mochi_trim($s) {
   $start = 0;
-  while ($start < strlen($s) && (substr($s, $start, $start + 1 - $start) == ' ' || substr($s, $start, $start + 1 - $start) == '\t')) {
+  while ($start < strlen($s) && (substr($s, $start, $start + 1 - $start) == ' ' || substr($s, $start, $start + 1 - $start) == '	')) {
   $start = $start + 1;
 };
   $end = strlen($s);
-  while ($end > $start && (substr($s, $end - 1, $end - ($end - 1)) == ' ' || substr($s, $end - 1, $end - ($end - 1)) == '\t')) {
+  while ($end > $start && (substr($s, $end - 1, $end - ($end - 1)) == ' ' || substr($s, $end - 1, $end - ($end - 1)) == '	')) {
   $end = $end - 1;
 };
   return substr($s, $start, $end - $start);
@@ -74,7 +74,7 @@ $__start = _now();
   $i = 0;
   while ($i < strlen($s)) {
   $ch = substr($s, $i, $i + 1 - $i);
-  if ($ch == ' ' || $ch == '\t') {
+  if ($ch == ' ' || $ch == '	') {
   if (strlen($cur) > 0) {
   $out = array_merge($out, [$cur]);
   $cur = '';
@@ -342,9 +342,9 @@ $__start = _now();
   main();
 $__end = _now();
 $__end_mem = memory_get_usage();
-$__duration = intdiv($__end - $__start, 1000);
+$__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;

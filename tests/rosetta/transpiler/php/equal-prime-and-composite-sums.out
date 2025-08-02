@@ -8,7 +8,7 @@ Sum        | Prime Index | Composite Index
 18,859,052 |       2,143 |           5,699
 93,952,013 |       4,556 |          12,821
 {
-  "duration_us": 2603738,
+  "duration_us": 2671230,
   "memory_bytes": 96,
   "name": "main"
 }
