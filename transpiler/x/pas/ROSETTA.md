@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (60/491) - updated 2025-08-02 04:47 UTC
+## Rosetta Checklist (63/491) - updated 2025-08-02 05:10 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -79,10 +79,10 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 72 | arithmetic-rational | ✓ | 2µs |  |
 | 73 | array-concatenation |   |  |  |
 | 74 | array-length | ✓ | 1µs |  |
-| 75 | arrays |   |  |  |
-| 76 | ascending-primes | ✓ |  |  |
-| 77 | ascii-art-diagram-converter |   |  |  |
-| 78 | assertions |   |  |  |
+| 75 | arrays | ✓ | 1µs | 544 B |
+| 76 | ascending-primes | ✓ | 2µs | 448 B |
+| 77 | ascii-art-diagram-converter | ✓ | 1µs |  |
+| 78 | assertions | ✓ | 2µs |  |
 | 79 | associative-array-creation |   |  |  |
 | 80 | associative-array-iteration |   |  |  |
 | 81 | associative-array-merging |   |  |  |
