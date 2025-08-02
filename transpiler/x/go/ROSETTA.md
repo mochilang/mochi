@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 463/491
-Last updated: 2025-08-02 17:26 +0700
+Last updated: 2025-08-02 17:42 +0700
 
 Checklist:
 
@@ -394,37 +394,37 @@ Checklist:
 | 385 | extend-your-language | ✓ | 316.0µs | 944B |
 | 386 | extensible-prime-generator | ✓ | 5.0ms | 351.82KB |
 | 387 | extreme-floating-point-values | ✓ | 354.0µs | 1.44KB |
-| 388 | faces-from-a-mesh-2 | ✓ |  |  |
-| 389 | faces-from-a-mesh | ✓ |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ |  |  |
-| 391 | factorial-primes | ✓ |  |  |
-| 392 | factorial | ✓ |  |  |
-| 393 | factorions | ✓ |  |  |
-| 394 | factors-of-a-mersenne-number | ✓ |  |  |
-| 395 | factors-of-an-integer | ✓ |  |  |
-| 396 | fairshare-between-two-and-more | ✓ |  |  |
-| 397 | farey-sequence | ✓ |  |  |
-| 398 | fast-fourier-transform | ✓ |  |  |
-| 399 | fasta-format | ✓ |  |  |
-| 400 | faulhabers-formula | ✓ | 8.0ms | 395.55KB |
-| 401 | faulhabers-triangle | ✓ | 20.0ms | 993.22KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 393.0µs | 2.98KB |
+| 389 | faces-from-a-mesh | ✓ | 390.0µs | 3.42KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 1.0ms | 66.44KB |
+| 391 | factorial-primes | ✓ | 676.0µs | 1.46KB |
+| 392 | factorial | ✓ | 3.0ms | 400.91KB |
+| 393 | factorions | ✓ | 107.0ms | 1.60KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 2.0ms | 414.56KB |
+| 395 | factors-of-an-integer | ✓ | 1.46s | 3.31KB |
+| 396 | fairshare-between-two-and-more | ✓ | 19.0ms | 2.62MB |
+| 397 | farey-sequence | ✓ | 774.0µs | 22.98KB |
+| 398 | fast-fourier-transform | ✓ | 286.0µs | 1.73KB |
+| 399 | fasta-format | ✓ | 702.0µs | 51.65KB |
+| 400 | faulhabers-formula | ✓ | 2.0ms | 395.51KB |
+| 401 | faulhabers-triangle | ✓ | 7.0ms | 993.22KB |
 | 402 | feigenbaum-constant-calculation | ✓ | 1.0ms | 1.73KB |
-| 403 | fermat-numbers | ✓ | 5.0ms | 213.73KB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 485.0µs | 3.73KB |
-| 405 | fibonacci-sequence-1 | ✓ | 232.0µs | 0B |
-| 406 | fibonacci-sequence-2 | ✓ | 288.0µs | 0B |
-| 407 | fibonacci-sequence-3 | ✓ | 247.0µs | 0B |
-| 408 | fibonacci-sequence-4 | ✓ | 621.0µs | 1.32KB |
-| 409 | fibonacci-sequence-5 | ✓ | 1.0ms | 3.92KB |
-| 410 | fibonacci-word-fractal | ✓ | 3.0ms | 125.33KB |
+| 403 | fermat-numbers | ✓ | 1.0ms | 213.73KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 399.0µs | 3.73KB |
+| 405 | fibonacci-sequence-1 | ✓ | 23.0µs | 0B |
+| 406 | fibonacci-sequence-2 | ✓ | 19.0µs | 0B |
+| 407 | fibonacci-sequence-3 | ✓ | 140.0µs | 0B |
+| 408 | fibonacci-sequence-4 | ✓ | 181.0µs | 1.32KB |
+| 409 | fibonacci-sequence-5 | ✓ | 360.0µs | 3.92KB |
+| 410 | fibonacci-word-fractal | ✓ | 897.0µs | 125.33KB |
 | 411 | fibonacci-word | ✓ |  |  |
-| 412 | file-extension-is-in-extensions-list | ✓ | 997.0µs | 3.51KB |
-| 413 | file-input-output-1 | ✓ | 601.0µs | 1.26KB |
-| 414 | file-input-output-2 | ✓ | 849.0µs | 1.26KB |
-| 415 | file-input-output-3 | ✓ | 482.0µs | 1.29KB |
-| 416 | file-modification-time | ✓ | 729.0µs | 1.39KB |
-| 417 | file-size-distribution | ✓ | 667.0µs | 2.28KB |
-| 418 | file-size | ✓ | 884.0µs | 1.04KB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 610.0µs | 3.51KB |
+| 413 | file-input-output-1 | ✓ | 307.0µs | 1.26KB |
+| 414 | file-input-output-2 | ✓ | 375.0µs | 1.26KB |
+| 415 | file-input-output-3 | ✓ | 396.0µs | 1.29KB |
+| 416 | file-modification-time | ✓ | 350.0µs | 1.39KB |
+| 417 | file-size-distribution | ✓ | 230.0µs | 2.28KB |
+| 418 | file-size | ✓ | 338.0µs | 1.04KB |
 | 419 | filter | ✓ | 1.0ms | 5.11KB |
 | 420 | find-chess960-starting-position-identifier-2 | ✓ | 1.0ms | 3.48KB |
 | 421 | find-chess960-starting-position-identifier | ✓ | 1.0ms | 3.46KB |
