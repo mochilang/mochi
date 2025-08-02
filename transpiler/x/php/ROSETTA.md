@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 14:38 +0700
+Last updated: 2025-08-02 14:44 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -259,7 +259,7 @@ Last updated: 2025-08-02 14:38 +0700
 | 250 | crc-32-2 | ✓ | 23.058ms | 8.2 KB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 38µs | 64 B |
 | 252 | create-a-file | ✓ | 66µs | 96 B |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 112µs | 96 B |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 110µs | 96 B |
 | 254 | create-an-html-table | ✓ | 113µs | 96 B |
 | 255 | create-an-object-at-a-given-address | ✓ | 137µs | 96 B |
 | 256 | csv-data-manipulation | ✓ | 95µs | 1.3 KB |
