@@ -935,7 +935,7 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
-	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
+	fmt.Fprintf(w, "blk: { const m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -1240,6 +1240,16 @@ func (p *Program) Emit() []byte {
 	}
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
+		buf.WriteString("    const path = \"/proc/self/statm\";\n")
+		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
+		buf.WriteString("    defer f.close();\n")
+		buf.WriteString("    var buf: [64]u8 = undefined;\n")
+		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
+		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \" \" );\n")
+		buf.WriteString("    if (it.next()) |tok| {\n")
+		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
+		buf.WriteString("        return pages * 4096;\n")
+		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
 	}
@@ -1785,11 +1795,15 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
 	if sli.Start != nil {
+		io.WriteString(w, "@intCast(")
 		sli.Start.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "..")
 	if sli.End != nil {
+		io.WriteString(w, "@intCast(")
 		sli.End.emit(w)
+		io.WriteString(w, ")")
 	}
 	io.WriteString(w, "]")
 }
