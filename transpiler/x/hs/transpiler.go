@@ -2751,6 +2751,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				return nil, err
 			}
 			h.Funcs = append(h.Funcs, *fn)
+			preludeHide[safeName(st.Fun.Name)] = true
 		case st.If != nil:
 			s, err := convertIfStmt(st.If)
 			if err != nil {
