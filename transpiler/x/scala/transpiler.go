@@ -1048,7 +1048,7 @@ type IndexExpr struct {
 }
 
 func (idx *IndexExpr) emit(w io.Writer) {
-	castIndex := strings.HasPrefix(idx.Container, "ArrayBuffer[") || idx.Container == "String"
+	castIndex := strings.HasPrefix(idx.Container, "ArrayBuffer[") || idx.Container == "String" || (idx.Container == "Any" && !idx.ForceMap)
 	emitIndex := func() {
 		if castIndex {
 			fmt.Fprint(w, "(")
@@ -1157,7 +1157,7 @@ func (c *CastExpr) emit(w io.Writer) {
 				}
 				if typ == "String" {
 					fmt.Fprint(w, ".charAt(0).toInt")
-				} else if typ == "Any" {
+				} else if typ == "Any" || typ == "" {
 					fmt.Fprint(w, ".toString")
 				} else {
 					fmt.Fprint(w, ".toInt")
@@ -2664,6 +2664,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				start, err := convertExpr(idx.Start, env)
 				if err != nil {
 					return nil, err
+				}
+				if typ := inferTypeWithEnv(start, env); typ != "Int" && typ != "String" {
+					start = &FieldExpr{Receiver: start, Name: "toInt"}
 				}
 				ct := inferTypeWithEnv(expr, env)
 				forceMap := false
