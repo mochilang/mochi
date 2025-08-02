@@ -12,7 +12,7 @@ The first 100 Goldbach numbers:
 
 The 1,000th Goldbach number = 28
 {
-  "duration_us": 37539,
-  "memory_bytes": 94568,
+  "duration_us": 52268,
+  "memory_bytes": 121976,
   "name": "main"
 }

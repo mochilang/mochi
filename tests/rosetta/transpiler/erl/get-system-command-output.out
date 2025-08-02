@@ -1,6 +1,6 @@
 Would run: ls -l and capture output
 {
-  "duration_us": 13541,
-  "memory_bytes": 194928,
+  "duration_us": 17854,
+  "memory_bytes": 341976,
   "name": "main"
 }

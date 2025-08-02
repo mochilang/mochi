@@ -31,7 +31,7 @@ MD5 fail
   expected:   "e38ca1d920c4b8b8d3946b2c72f01680"
   got:        nil
 {
-  "duration_us": 19604,
-  "memory_bytes": 464592,
+  "duration_us": 26231,
+  "memory_bytes": 268232,
   "name": "main"
 }

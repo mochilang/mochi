@@ -10,7 +10,7 @@ Final value of phi : 1.6180371352785146
 Number of iterations : 13
 Error (approx) : 3.1465286196574738e-6
 {
-  "duration_us": 17051,
-  "memory_bytes": 272976,
+  "duration_us": 23917,
+  "memory_bytes": 367568,
   "name": "main"
 }

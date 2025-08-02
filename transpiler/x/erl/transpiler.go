@@ -4070,21 +4070,21 @@ func convertFunStmt(fn *parser.FunStmt, env *types.Env, ctx *context) (*FuncDecl
 		}
 		alias := fctx.alias[mname]
 		if isZeroExpr(ret) {
-			// return the mutated parameter directly when the function
-			// would otherwise return a zero/nil value.
-			ret = &NameRef{Name: alias}
+			// function mutates one parameter and returns zero/nil
+			// mark the mutated parameter and return a tuple
 			for idx, p := range fn.Params {
 				if p.Name == mname {
-					mutatedFuncs[fn.Name] = idx
+					mutatedFuncs[sanitizeFuncName(fn.Name)] = idx
+					ret = &TupleExpr{A: &AtomLit{Name: "nil"}, B: &NameRef{Name: alias}}
 					break
 				}
 			}
 		}
 	}
-	if idx, ok := mutatedFuncs[fn.Name]; ok && isZeroExpr(ret) {
+	if idx, ok := mutatedFuncs[sanitizeFuncName(fn.Name)]; ok && isZeroExpr(ret) {
 		if idx < len(fn.Params) {
 			alias := fctx.alias[fn.Params[idx].Name]
-			ret = &NameRef{Name: alias}
+			ret = &TupleExpr{A: ret, B: &NameRef{Name: alias}}
 		}
 	}
 	if fn.Name == "topple" && len(params) > 0 && isZeroExpr(ret) {

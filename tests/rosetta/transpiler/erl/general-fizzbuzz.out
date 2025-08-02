@@ -19,7 +19,7 @@ Fizz
 19
 Buzz
 {
-  "duration_us": 19261,
-  "memory_bytes": 284464,
+  "duration_us": 27292,
+  "memory_bytes": 294128,
   "name": "main"
 }
