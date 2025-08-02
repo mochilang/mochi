@@ -26,9 +26,9 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-data class Point(var x: Double, var y: Double, var z: Double)
-data class Edge(var pn1: Int, var pn2: Int, var fn1: Int, var fn2: Int, var cp: Point)
-data class PointEx(var p: Point, var n: Int)
+data class Point(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
+data class Edge(var pn1: Int = 0, var pn2: Int = 0, var fn1: Int = 0, var fn2: Int = 0, var cp: Point = Point(x = 0.0, y = 0.0, z = 0.0))
+data class PointEx(var p: Point = Point(x = 0.0, y = 0.0, z = 0.0), var n: Int = 0)
 fun indexOf(s: String, ch: String): Int {
     var i: Int = 0
     while (i < s.length) {
@@ -47,7 +47,7 @@ fun fmt4(x: Double): String {
     } else {
         y = y - 0.5
     }
-    y = (y.toInt()).toDouble() / 10000.0
+    y = ((y.toInt()).toDouble()) / 10000.0
     var s: String = y.toString()
     var dot: Int = s.indexOf(".")
     if (dot == (0 - 1)) {
@@ -220,7 +220,7 @@ fun getAvgFacePoints(points: MutableList<Point>, faces: MutableList<MutableList<
         var fp: Point = facePoints[fnum]!!
         for (pn in faces[fnum]!!) {
             var tp: PointEx = temp[pn]!!
-            (temp[pn]) = PointEx(p = sumPoint((tp.p) as Point, fp), n = tp.n + 1)
+            temp[pn] = PointEx(p = sumPoint((tp.p) as Point, fp), n = tp.n + 1)
         }
         fnum = fnum + 1
     }
@@ -247,7 +247,7 @@ fun getAvgMidEdges(points: MutableList<Point>, edgesFaces: MutableList<Edge>): M
         var arr: MutableList<Int> = mutableListOf(edge.pn1, edge.pn2)
         for (pn in arr) {
             var tp: PointEx = temp[pn]!!
-            (temp[pn]) = PointEx(p = sumPoint(tp.p, cp), n = tp.n + 1)
+            temp[pn] = PointEx(p = sumPoint(tp.p, cp), n = tp.n + 1)
         }
     }
     var avg: MutableList<Point> = mutableListOf<Point>()
@@ -270,7 +270,7 @@ fun getPointsFaces(points: MutableList<Point>, faces: MutableList<MutableList<In
     var fnum: Int = 0
     while (fnum < faces.size) {
         for (pn in faces[fnum]!!) {
-            (pf[pn]) = pf[pn]!! + 1
+            pf[pn] = pf[pn]!! + 1
         }
         fnum = fnum + 1
     }
@@ -317,12 +317,12 @@ fun cmcSubdiv(points: MutableList<Point>, faces: MutableList<MutableList<Int>>):
         facePointNums = run { val _tmp = facePointNums.toMutableList(); _tmp.add(nextPoint); _tmp } as MutableList<Int>
         nextPoint = nextPoint + 1
     }
-    var edgePointNums: MutableMap<String, Int> = mutableMapOf<Any?, Any?>() as MutableMap<String, Int>
+    var edgePointNums: MutableMap<String, Int> = mutableMapOf<String, Int>()
     var idx: Int = 0
     while (idx < edgesFaces.size) {
         var e: Edge = edgesFaces[idx]!!
         newPoints = run { val _tmp = newPoints.toMutableList(); _tmp.add(edgePoints[idx]!!); _tmp } as MutableList<Point>
-        ((edgePointNums)[key(e.pn1, e.pn2)] as Int) = nextPoint
+        (edgePointNums)[key(e.pn1, e.pn2)] = nextPoint
         nextPoint = nextPoint + 1
         idx = idx + 1
     }

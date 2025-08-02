@@ -71,7 +71,7 @@ fun cartN(lists: Any?): MutableList<MutableList<Int>> {
     }
     var res: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
     var idx: MutableList<Int> = mutableListOf<Int>()
-    for (_ in a) {
+    for (_u1 in a) {
         idx = run { val _tmp = idx.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
     }
     var n: Int = a.size
@@ -86,11 +86,11 @@ fun cartN(lists: Any?): MutableList<MutableList<Int>> {
         res = run { val _tmp = res.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<Int>>
         var k: BigInteger = (n - 1).toBigInteger()
         while (k.compareTo(0.toBigInteger()) >= 0) {
-            (idx[(k).toInt()]) = idx[(k).toInt()]!! + 1
+            idx[(k).toInt()] = idx[(k).toInt()]!! + 1
             if (idx[(k).toInt()]!! < (a[(k).toInt()]!!).size) {
                 break
             }
-            (idx[(k).toInt()]) = 0
+            idx[(k).toInt()] = 0
             k = k.subtract(1.toBigInteger())
         }
         count = count + 1

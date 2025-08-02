@@ -27,7 +27,7 @@ fun toJson(v: Any?): String = when (v) {
 }
 
 var width: Int = 60
-var height: Int = (width.toDouble() * 0.86602540378).toInt()
+var height: Int = ((width.toDouble()) * 0.86602540378).toInt()
 var iterations: Int = 5000
 var grid: MutableList<MutableList<String>> = mutableListOf<MutableList<String>>()
 var y: Int = 0
@@ -64,7 +64,7 @@ fun main() {
             px = ((px + v[0]!!) / 2).toInt()
             py = ((py + v[1]!!) / 2).toInt()
             if ((((((px >= 0) && (px < width) as Boolean)) && (py >= 0) as Boolean)) && (py < height)) {
-                ((grid[py]!!)[px]) = "*"
+                (grid[py]!!)[px] = "*"
             }
             i = i + 1
         }

@@ -1,5 +1,12 @@
 import java.math.BigInteger
 
+fun _len(v: Any?): Int = when (v) {
+    is String -> v.length
+    is Collection<*> -> v.size
+    is Map<*, *> -> v.size
+    else -> v.toString().length
+}
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -95,8 +102,8 @@ fun main() {
             var sx: Int = 0
             var valid: Boolean = true
             var i: Int = 0
-            while (i < ((tc)["kaprekar"] as Any?).toString().length) {
-                var k = (((tc)["kaprekar"] as Any?) as Any?)[i]
+            while (i < _len((tc)["kaprekar"] as Any?)) {
+                var k = (((tc)["kaprekar"] as Any?) as Any? as MutableList<Any?>)[i]
                 var found: Boolean = false
                 while (sx < s.size) {
                     if (s[sx]!! == k) {

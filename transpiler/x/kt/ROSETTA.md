@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-02 13:55 +0700
+Last updated: 2025-08-02 14:18 +0700
 
-Completed tasks: **234/491**
+Completed tasks: **241/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -179,34 +179,34 @@ Completed tasks: **234/491**
 | 168 | cantor-set | ✓ | 16.47ms | 122.5 KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 26.90ms | 120.8 KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 22.52ms | 123.5 KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 30.89ms | 123.0 KB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 27.35ms | 114.3 KB |
-| 174 | case-sensitivity-of-identifiers |  |  |  |
-| 175 | casting-out-nines |  |  |  |
-| 176 | catalan-numbers-1 | ✓ | 8.57ms | 134.2 KB |
-| 177 | catalan-numbers-2 | ✓ | 14.84ms | 121.4 KB |
-| 178 | catalan-numbers-pascals-triangle |  |  |  |
-| 179 | catamorphism | ✓ | 12.46ms | 131.6 KB |
-| 180 | catmull-clark-subdivision-surface |  |  |  |
-| 181 | chaocipher | ✓ | 23.96ms | 125.4 KB |
-| 182 | chaos-game | ✓ | 49.18ms | 106.8 KB |
-| 183 | character-codes-1 | ✓ | 12.70ms | 130.5 KB |
-| 184 | character-codes-2 | ✓ | 13.83ms | 130.5 KB |
-| 185 | character-codes-3 | ✓ | 9.33ms | 133.9 KB |
-| 186 | character-codes-4 | ✓ | 9.09ms | 134.0 KB |
-| 187 | character-codes-5 | ✓ | 8.64ms | 134.0 KB |
-| 188 | chat-server | ✓ | 27.82ms | 119.8 KB |
-| 189 | check-machin-like-formulas | ✓ | 44.07ms | 83.2 KB |
-| 190 | check-that-file-exists |  |  |  |
-| 191 | checkpoint-synchronization-1 | ✓ | 9.65ms | 133.7 KB |
-| 192 | checkpoint-synchronization-2 |  |  |  |
-| 193 | checkpoint-synchronization-3 | ✓ | 10.32ms | 133.5 KB |
-| 194 | checkpoint-synchronization-4 | ✓ | 10.93ms | 133.6 KB |
-| 195 | chernicks-carmichael-numbers | ✓ | 430.30ms | 838.4 KB |
-| 196 | cheryls-birthday | ✓ | 11.40ms | 131.6 KB |
-| 197 | chinese-remainder-theorem | ✓ | 8.23ms | 134.1 KB |
-| 198 | chinese-zodiac | ✓ | 12.17ms | 124.1 KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 29.30ms | 114.1 KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 27.83ms | 123.0 KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 27.91ms | 114.2 KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 23.16ms | 123.8 KB |
+| 175 | casting-out-nines | ✓ | 33.67ms | 142.3 KB |
+| 176 | catalan-numbers-1 | ✓ | 8.08ms | 134.2 KB |
+| 177 | catalan-numbers-2 | ✓ | 15.51ms | 121.4 KB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 24.68ms | 115.2 KB |
+| 179 | catamorphism | ✓ | 11.12ms | 131.6 KB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 48.05ms | 96.9 KB |
+| 181 | chaocipher | ✓ | 27.19ms | 125.4 KB |
+| 182 | chaos-game | ✓ | 45.13ms | 106.8 KB |
+| 183 | character-codes-1 | ✓ | 12.69ms | 130.5 KB |
+| 184 | character-codes-2 | ✓ | 11.08ms | 130.5 KB |
+| 185 | character-codes-3 | ✓ | 7.39ms | 133.9 KB |
+| 186 | character-codes-4 | ✓ | 9.52ms | 134.0 KB |
+| 187 | character-codes-5 | ✓ | 8.98ms | 134.0 KB |
+| 188 | chat-server | ✓ | 26.60ms | 119.8 KB |
+| 189 | check-machin-like-formulas | ✓ | 50.10ms | 83.2 KB |
+| 190 | check-that-file-exists | ✓ | 20.74ms | 124.4 KB |
+| 191 | checkpoint-synchronization-1 | ✓ | 11.57ms | 133.7 KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 11.78ms | 133.6 KB |
+| 193 | checkpoint-synchronization-3 | ✓ | 11.41ms | 133.4 KB |
+| 194 | checkpoint-synchronization-4 | ✓ | 12.10ms | 133.6 KB |
+| 195 | chernicks-carmichael-numbers | ✓ | 409.40ms | 828.5 KB |
+| 196 | cheryls-birthday | ✓ | 12.64ms | 131.6 KB |
+| 197 | chinese-remainder-theorem | ✓ | 10.04ms | 134.1 KB |
+| 198 | chinese-zodiac | ✓ | 12.61ms | 124.1 KB |
 | 199 | cholesky-decomposition-1 |  |  |  |
 | 200 | cholesky-decomposition | ✓ | 26.00ms | 113.2 KB |
 | 201 | chowla-numbers |  |  |  |
