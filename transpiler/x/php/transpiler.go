@@ -748,6 +748,168 @@ func freeVars(body []Stmt, params []string) []string {
 	return vars
 }
 
+func mutatedVars(body []Stmt) map[string]struct{} {
+	mutated := map[string]struct{}{}
+
+	var rootVar func(Expr) string
+	rootVar = func(e Expr) string {
+		switch t := e.(type) {
+		case *Var:
+			return t.Name
+		case *IndexExpr:
+			return rootVar(t.X)
+		default:
+			return ""
+		}
+	}
+
+	var walkExpr func(Expr)
+	walkExpr = func(e Expr) {
+		switch ex := e.(type) {
+		case *CallExpr:
+			for _, a := range ex.Args {
+				walkExpr(a)
+			}
+		case *IndexExpr:
+			walkExpr(ex.X)
+			walkExpr(ex.Index)
+		case *SliceExpr:
+			walkExpr(ex.X)
+			if ex.Start != nil {
+				walkExpr(ex.Start)
+			}
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		case *UnaryExpr:
+			walkExpr(ex.X)
+		case *BinaryExpr:
+			walkExpr(ex.Left)
+			walkExpr(ex.Right)
+		case *CondExpr:
+			walkExpr(ex.Cond)
+			walkExpr(ex.Then)
+			walkExpr(ex.Else)
+		case *MatchExpr:
+			walkExpr(ex.Target)
+			for _, a := range ex.Arms {
+				walkExpr(a.Pattern)
+				walkExpr(a.Result)
+			}
+		case *UnionMatchExpr:
+			walkExpr(ex.Target)
+			for _, c := range ex.Cases {
+				walkExpr(c.Result)
+			}
+		case *QueryExpr:
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+		case *GroupByExpr:
+			if ex.Key != nil {
+				walkExpr(ex.Key)
+			}
+			if ex.Where != nil {
+				walkExpr(ex.Where)
+			}
+			if ex.Select != nil {
+				walkExpr(ex.Select)
+			}
+			if ex.Having != nil {
+				walkExpr(ex.Having)
+			}
+		case *RightJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *LeftJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *OuterJoinExpr:
+			walkExpr(ex.Select)
+			walkExpr(ex.Cond)
+		case *SumExpr:
+			walkExpr(ex.List)
+		case *SubstringExpr:
+			walkExpr(ex.Str)
+			walkExpr(ex.Start)
+			if ex.End != nil {
+				walkExpr(ex.End)
+			}
+		}
+	}
+
+	var walkStmt func(Stmt)
+	walkStmt = func(s Stmt) {
+		switch st := s.(type) {
+		case *AssignStmt:
+			mutated[st.Name] = struct{}{}
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *IndexAssignStmt:
+			if name := rootVar(st.Target); name != "" {
+				mutated[name] = struct{}{}
+			}
+			walkExpr(st.Value)
+		case *ExprStmt:
+			walkExpr(st.Expr)
+		case *LetStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *VarStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *IfStmt:
+			for _, t := range st.Then {
+				walkStmt(t)
+			}
+			for _, e := range st.Else {
+				walkStmt(e)
+			}
+		case *WhileStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForRangeStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *ForEachStmt:
+			for _, b := range st.Body {
+				walkStmt(b)
+			}
+		case *QueryLetStmt:
+			if st.Query != nil {
+				walkExpr(st.Query.Select)
+				walkExpr(st.Query.Where)
+			}
+		case *ReturnStmt:
+			if st.Value != nil {
+				walkExpr(st.Value)
+			}
+		case *SaveStmt:
+			walkExpr(st.Src)
+		case *UpdateStmt:
+			for _, v := range st.Values {
+				walkExpr(v)
+			}
+			if st.Cond != nil {
+				walkExpr(st.Cond)
+			}
+		}
+	}
+
+	for _, st := range body {
+		walkStmt(st)
+	}
+	return mutated
+}
+
 func markRefParams(body []Stmt, params []string) []bool {
 	idx := map[string]int{}
 	for i, p := range params {
@@ -2202,7 +2364,15 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	hasMain := false
 	mainCalled := false
-	for _, s := range p.Stmts {
+	stmts := p.Stmts
+	var bench *BenchStmt
+	if len(p.Stmts) == 1 {
+		if b, ok := p.Stmts[0].(*BenchStmt); ok {
+			bench = b
+			stmts = b.Body
+		}
+	}
+	for _, s := range stmts {
 		if fd, ok := s.(*FuncDecl); ok && fd.Name == "main" {
 			hasMain = true
 		} else if es, ok := s.(*ExprStmt); ok {
@@ -2213,10 +2383,14 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
+	if bench != nil && hasMain && !mainCalled {
+		bench.Body = append(bench.Body, &ExprStmt{Expr: &CallExpr{Func: "main"}})
+		mainCalled = true
+	}
 	for _, s := range p.Stmts {
 		s.emit(w)
 		switch s.(type) {
-		case *IfStmt, *FuncDecl, *WhileStmt, *ForRangeStmt, *ForEachStmt, *QueryLetStmt:
+		case *IfStmt, *FuncDecl, *WhileStmt, *ForRangeStmt, *ForEachStmt, *QueryLetStmt, *BenchStmt:
 			if _, err := io.WriteString(w, "\n"); err != nil {
 				return err
 			}
@@ -2226,7 +2400,7 @@ func Emit(w io.Writer, p *Program) error {
 			}
 		}
 	}
-	if hasMain && !mainCalled {
+	if bench == nil && hasMain && !mainCalled {
 		if _, err := io.WriteString(w, "main();\n"); err != nil {
 			return err
 		}
@@ -3116,6 +3290,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		funcStack = funcStack[:len(funcStack)-1]
 		refFlags = markRefParams(body, params)
+		mut := mutatedVars(body)
 		outer := map[string]struct{}{}
 		for _, frame := range funcStack {
 			for _, v := range frame {
@@ -3128,13 +3303,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if _, ok := outer[n]; !ok {
 				continue
 			}
+			prefix := ""
+			if _, ok := mut[n]; ok {
+				prefix = "&"
+			}
 			if _, ok := globalSet[n]; ok {
 				if _, fn := globalFuncs[n]; fn {
 					continue
 				}
 				uses = append(uses, "&"+n)
 			} else {
-				uses = append(uses, n)
+				uses = append(uses, prefix+n)
 			}
 		}
 		for n := range outer {
@@ -3148,13 +3327,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if found {
 				continue
 			}
+			prefix := ""
+			if _, ok := mut[n]; ok {
+				prefix = "&"
+			}
 			if _, ok := globalSet[n]; ok {
 				if _, fn := globalFuncs[n]; fn {
 					continue
 				}
 				uses = append(uses, "&"+n)
 			} else {
-				uses = append(uses, n)
+				uses = append(uses, prefix+n)
 			}
 		}
 		for _, n := range fv {
@@ -3168,13 +3351,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if present {
 				continue
 			}
+			prefix := ""
+			if _, ok := mut[n]; ok {
+				prefix = "&"
+			}
 			if _, ok := globalSet[n]; ok {
 				if _, fn := globalFuncs[n]; fn {
 					continue
 				}
 				uses = append(uses, "&"+n)
 			} else {
-				uses = append(uses, n)
+				uses = append(uses, prefix+n)
 			}
 		}
 		// remove duplicates from captured variables
@@ -3452,6 +3639,7 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		refFlags = markRefParams(body, params)
+		mut := mutatedVars(body)
 		name := st.Fun.Name
 		if _, reserved := phpReserved[name]; reserved {
 			newName := "mochi_" + name
@@ -3461,7 +3649,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		funcRefParams[name] = refFlags
 		uses := []string{"&" + st.Fun.Name}
 		for _, frame := range funcStack {
-			uses = append(uses, frame...)
+			for _, v := range frame {
+				if _, ok := mut[v]; ok {
+					uses = append(uses, "&"+v)
+				} else {
+					uses = append(uses, v)
+				}
+			}
 		}
 		if len(globalNames) > 0 {
 			for _, g := range globalNames {

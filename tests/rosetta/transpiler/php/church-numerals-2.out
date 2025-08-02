@@ -1,5 +1,12 @@
+zero = 0
+one = 1
+two = 2
+three = 3
+four = 4
+eight = 8
+toStr(four) = ||||
 {
-  "duration_us": 0,
-  "memory_bytes": 64,
+  "duration_us": 134,
+  "memory_bytes": 11984,
   "name": "main"
 }

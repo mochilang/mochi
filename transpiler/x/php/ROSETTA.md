@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-02 11:41 +0700
+Last updated: 2025-08-02 11:59 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -209,7 +209,7 @@ Last updated: 2025-08-02 11:41 +0700
 | 200 | cholesky-decomposition | ✓ | 147µs | 96 B |
 | 201 | chowla-numbers | ✓ | 97µs | 96 B |
 | 202 | church-numerals-1 | ✓ | 603µs | 3.2 KB |
-| 203 | church-numerals-2 | ✓ |  |  |
+| 203 | church-numerals-2 | ✓ | 134µs | 11.7 KB |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 148µs | 760 B |
 | 205 | circular-primes | ✓ | 464µs | 17.1 KB |
 | 206 | cistercian-numerals | ✓ | 503µs | 68.9 KB |

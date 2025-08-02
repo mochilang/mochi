@@ -67,7 +67,8 @@ $__start = _now();
 };
   function toInt($x) {
   $counter = 0;
-  $fCounter = function($f) use (&$fCounter, $x, $counter) {
+  $fCounter = null;
+$fCounter = function($f) use (&$fCounter, $x, &$counter) {
   $counter = $counter + 1;
   return $f;
 };
@@ -76,7 +77,8 @@ $__start = _now();
 };
   function toStr($x) {
   $s = '';
-  $fCounter = function($f) use (&$fCounter, $x, $s) {
+  $fCounter = null;
+$fCounter = function($f) use (&$fCounter, $x, &$s) {
   $s = $s . '|';
   return $f;
 };
@@ -97,6 +99,7 @@ $__start = _now();
   echo rtrim('eight = ' . _str(toInt($eight))), PHP_EOL;
   echo rtrim('toStr(four) = ' . toStr($four)), PHP_EOL;
 };
+  main();
 $__end = _now();
 $__end_mem = memory_get_usage();
 $__duration = intdiv($__end - $__start, 1000);
@@ -104,4 +107,4 @@ $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];
 $__j = json_encode($__bench, 128);
 $__j = str_replace("    ", "  ", $__j);
-echo $__j, PHP_EOL;;
+echo $__j, PHP_EOL;
