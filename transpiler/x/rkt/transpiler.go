@@ -66,6 +66,12 @@ func sanitizeName(name string) string {
 		return "list_"
 	case "length":
 		return "length_"
+	case "format":
+		return "format_"
+	case "lower":
+		return "lower_"
+	case "upper":
+		return "upper_"
 	default:
 		return name
 	}
