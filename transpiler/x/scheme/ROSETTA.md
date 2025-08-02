@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (370/491)
-Last updated: 2025-08-02 10:43 UTC
+## Checklist (397/491)
+Last updated: 2025-08-02 11:21 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -176,36 +176,36 @@ Last updated: 2025-08-02 10:43 UTC
 | 167 | canonicalize-cidr | ✓ | 571.223ms | 13.6 MB |
 | 168 | cantor-set | ✓ |  |  |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 571.223ms | 12.1 MB |
-| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 174 | case-sensitivity-of-identifiers |   |  |  |
-| 175 | casting-out-nines |   |  |  |
-| 176 | catalan-numbers-1 |   |  |  |
-| 177 | catalan-numbers-2 |   |  |  |
-| 178 | catalan-numbers-pascals-triangle |   |  |  |
-| 179 | catamorphism |   |  |  |
-| 180 | catmull-clark-subdivision-surface |   |  |  |
-| 181 | chaocipher |   |  |  |
-| 182 | chaos-game |   |  |  |
-| 183 | character-codes-1 |   |  |  |
-| 184 | character-codes-2 |   |  |  |
-| 185 | character-codes-3 |   |  |  |
-| 186 | character-codes-4 |   |  |  |
-| 187 | character-codes-5 |   |  |  |
-| 188 | chat-server |   |  |  |
-| 189 | check-machin-like-formulas |   |  |  |
-| 190 | check-that-file-exists |   |  |  |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 |   |  |  |
-| 193 | checkpoint-synchronization-3 |   |  |  |
-| 194 | checkpoint-synchronization-4 |   |  |  |
-| 195 | chernicks-carmichael-numbers |   |  |  |
-| 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem | ✓ | 571.223ms | 12.4 MB |
-| 198 | chinese-zodiac | ✓ | 571.223ms | 12.6 MB |
-| 199 | cholesky-decomposition-1 | ✓ | 571.223ms | 13.8 MB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 571.223ms | 12.5 MB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 571.223ms | 13.3 MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 571.223ms | 13.2 MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 571.223ms | 13.1 MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 571.223ms | 12.4 MB |
+| 175 | casting-out-nines | ✓ | 571.223ms | 13.3 MB |
+| 176 | catalan-numbers-1 | ✓ | 571.223ms | 12.1 MB |
+| 177 | catalan-numbers-2 | ✓ | 571.223ms | 12.3 MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 571.223ms | 12.2 MB |
+| 179 | catamorphism | ✓ | 571.223ms | 12.2 MB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 571.223ms | 16.6 MB |
+| 181 | chaocipher | ✓ | 571.223ms | 12.5 MB |
+| 182 | chaos-game | ✓ | 571.223ms | 12.4 MB |
+| 183 | character-codes-1 | ✓ | 571.223ms | 12.3 MB |
+| 184 | character-codes-2 | ✓ | 571.223ms | 12.2 MB |
+| 185 | character-codes-3 | ✓ | 571.223ms | 12.4 MB |
+| 186 | character-codes-4 | ✓ | 571.223ms | 12.3 MB |
+| 187 | character-codes-5 | ✓ | 571.223ms | 12.1 MB |
+| 188 | chat-server | ✓ | 571.223ms | 12.4 MB |
+| 189 | check-machin-like-formulas | ✓ | 571.223ms | 13.7 MB |
+| 190 | check-that-file-exists | ✓ | 571.223ms | 12.1 MB |
+| 191 | checkpoint-synchronization-1 | ✓ | 571.223ms | 12.3 MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 571.223ms | 12.1 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 571.223ms | 12.3 MB |
+| 194 | checkpoint-synchronization-4 | ✓ | 571.223ms | 12.7 MB |
+| 195 | chernicks-carmichael-numbers | ✓ | 571.223ms | 16.6 MB |
+| 196 | cheryls-birthday | ✓ | 571.223ms | 12.3 MB |
+| 197 | chinese-remainder-theorem | ✓ | 571.223ms | 12.6 MB |
+| 198 | chinese-zodiac | ✓ | 571.223ms | 12.1 MB |
+| 199 | cholesky-decomposition-1 | ✓ | 571.223ms | 13.0 MB |
 | 200 | cholesky-decomposition | ✓ | 571.223ms | 12.3 MB |
 | 201 | chowla-numbers | ✓ | 571.223ms | 12.5 MB |
 | 202 | church-numerals-1 | ✓ | 571.223ms | 12.4 MB |
