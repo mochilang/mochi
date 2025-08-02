@@ -250,6 +250,12 @@ var preludeHide map[string]bool
 var varStruct map[string]string
 var currentLoop string
 var loopArgs string
+var loopCounter int
+
+func newLoopName() string {
+	loopCounter++
+	return fmt.Sprintf("loop%d", loopCounter)
+}
 
 func markMutated(name string) {
 	mutated[name] = true
@@ -985,7 +991,7 @@ func (f *ForStmt) emit(w io.Writer) {
 		}
 	}()
 	if f.WithBreak {
-		loop := "loop"
+		loop := newLoopName()
 		prevLoop := currentLoop
 		prevArgs := loopArgs
 		currentLoop = loop
@@ -1188,7 +1194,7 @@ func (f *ForStmt) emit(w io.Writer) {
 }
 
 func (wst *WhileStmt) emit(w io.Writer) {
-	name := "loop"
+	name := newLoopName()
 	prevLoop := currentLoop
 	prevArgs := loopArgs
 	currentLoop = name
@@ -1247,7 +1253,7 @@ func (wst *WhileStmt) emit(w io.Writer) {
 }
 
 func (we *WhileExpr) emit(w io.Writer) {
-	name := "loop"
+	name := newLoopName()
 	prevLoop := currentLoop
 	prevArgs := loopArgs
 	currentLoop = name
@@ -1313,7 +1319,7 @@ func (we *WhileExpr) emit(w io.Writer) {
 }
 
 func (fe *ForExpr) emit(w io.Writer) {
-	name := "loop"
+	name := newLoopName()
 	prevLoop := currentLoop
 	prevArgs := loopArgs
 	currentLoop = name
@@ -2170,6 +2176,16 @@ func (g *GroupExpr) emit(w io.Writer) {
 	io.WriteString(w, ")")
 }
 func (c *CallExpr) emit(w io.Writer) {
+	if f, ok := c.Fun.(*FieldExpr); ok && f.Field == "get" && isMapExpr(f.Target) && !hasStruct(f.Target) && len(c.Args) == 2 {
+		needDataMap = true
+		io.WriteString(w, "Map.findWithDefault ")
+		c.Args[1].emit(w)
+		io.WriteString(w, " ")
+		c.Args[0].emit(w)
+		io.WriteString(w, " ")
+		f.Target.emit(w)
+		return
+	}
 	var fname string
 	if n, ok := c.Fun.(*NameRef); ok {
 		fname = n.Name
