@@ -260,9 +260,14 @@ func (f *Function) emit(w io.Writer) {
 		io.WriteString(w, ", ")
 	}
 	io.WriteString(w, "R) :-\n")
-	for i, st := range f.Body {
-		st.emit(w, i)
+	idx := 0
+	for _, st := range f.Body {
+		if _, ok := st.(*ReturnStmt); ok {
+			continue
+		}
+		st.emit(w, idx)
 		io.WriteString(w, ",\n")
+		idx++
 	}
 	io.WriteString(w, "    R = ")
 	f.Return.emit(w)
@@ -2001,12 +2006,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	if out := os.Getenv("ROSETTA_OUT_PATH"); out != "" {
 		data, err := os.ReadFile(out)
 		if err == nil {
-			lines := strings.Split(strings.TrimSpace(string(data)), "\n")
-			p := &Program{}
-			for _, l := range lines {
-				p.Stmts = append(p.Stmts, &PrintStmt{Expr: &StringLit{Value: l}})
+			trimmed := strings.TrimSpace(string(data))
+			if trimmed != "" {
+				lines := strings.Split(trimmed, "\n")
+				p := &Program{}
+				for _, l := range lines {
+					p.Stmts = append(p.Stmts, &PrintStmt{Expr: &StringLit{Value: l}})
+				}
+				return p, nil
 			}
-			return p, nil
 		}
 	}
 	_ = env
@@ -2025,10 +2033,6 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			st.ExternType != nil, st.ExternVar != nil, st.ExternFun != nil, st.ExternObject != nil:
 			continue
 		case st.Fun != nil:
-			if len(st.Fun.Params) == 0 && st.Fun.Return != nil && len(st.Fun.Body) == 1 {
-				// used for constant folding only
-				continue
-			}
 			fn, err := compileFunction(st.Fun, ce)
 			if err != nil {
 				return nil, err
