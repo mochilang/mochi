@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (422/491)
-_Last updated: 2025-08-02 17:38 +0700_
+## Golden Test Checklist (434/491)
+_Last updated: 2025-08-02 18:00 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -216,57 +216,57 @@ _Last updated: 2025-08-02 17:38 +0700_
 | 207 | comma-quibbling | ✓ | 21µs | 8.7 MB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 13µs | 8.7 MB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 207.25ms | 3.5 MB |
-| 210 | compound-data-type | ✓ |  |  |
-| 211 | concurrent-computing-1 | error |  |  |
-| 212 | concurrent-computing-2 | error |  |  |
-| 213 | concurrent-computing-3 | error |  |  |
-| 214 | conditional-structures-1 | ✓ |  |  |
-| 215 | conditional-structures-10 | ✓ |  |  |
-| 216 | conditional-structures-2 | ✓ |  |  |
-| 217 | conditional-structures-3 | ✓ |  |  |
-| 218 | conditional-structures-4 | ✓ |  |  |
-| 219 | conditional-structures-5 | ✓ |  |  |
-| 220 | conditional-structures-6 | error |  |  |
+| 210 | compound-data-type | ✓ | 1µs | 8.7 MB |
+| 211 | concurrent-computing-1 | ✓ | 6µs | 8.7 MB |
+| 212 | concurrent-computing-2 | ✓ | 6µs | 8.7 MB |
+| 213 | concurrent-computing-3 | ✓ | 9µs | 8.7 MB |
+| 214 | conditional-structures-1 | ✓ |  | 8.7 MB |
+| 215 | conditional-structures-10 | ✓ | 3µs | 8.7 MB |
+| 216 | conditional-structures-2 | ✓ |  | 8.7 MB |
+| 217 | conditional-structures-3 | ✓ |  | 8.7 MB |
+| 218 | conditional-structures-4 | ✓ |  | 8.7 MB |
+| 219 | conditional-structures-5 | ✓ |  | 8.7 MB |
+| 220 | conditional-structures-6 | ✓ |  | 8.7 MB |
 | 221 | conditional-structures-7 | ✓ |  | 8.7 MB |
 | 222 | conditional-structures-8 | ✓ |  | 8.7 MB |
 | 223 | conditional-structures-9 | ✓ |  | 8.7 MB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences | error |  |  |
-| 225 | constrained-genericity-1 | ✓ |  | 8.7 MB |
-| 226 | constrained-genericity-2 | error |  |  |
+| 225 | constrained-genericity-1 | ✓ | 1µs | 8.7 MB |
+| 226 | constrained-genericity-2 | ✓ |  | 8.7 MB |
 | 227 | constrained-genericity-3 | ✓ |  | 8.7 MB |
-| 228 | constrained-genericity-4 | ✓ | 3µs | 8.7 MB |
-| 229 | constrained-random-points-on-a-circle-1 | error |  |  |
-| 230 | constrained-random-points-on-a-circle-2 | error |  |  |
-| 231 | continued-fraction | ✓ | 10µs | 8.7 MB |
-| 232 | convert-decimal-number-to-rational | error |  |  |
-| 233 | convert-seconds-to-compound-duration | ✓ | 3µs | 8.7 MB |
-| 234 | convex-hull | ✓ | 21µs | 8.7 MB |
-| 235 | conways-game-of-life | ✓ | 851µs | 8.7 MB |
+| 228 | constrained-genericity-4 | ✓ | 5µs | 8.7 MB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 69µs | 8.7 MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 43µs | 8.8 MB |
+| 231 | continued-fraction | ✓ | 14µs | 8.7 MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 9µs | 8.7 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 4µs | 8.7 MB |
+| 234 | convex-hull | ✓ | 3µs | 8.7 MB |
+| 235 | conways-game-of-life | ✓ | 1.11ms | 8.7 MB |
 | 236 | copy-a-string-1 | ✓ |  | 8.7 MB |
-| 237 | copy-a-string-2 | ✓ | 3µs | 8.7 MB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 15µs | 8.7 MB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 3µs | 8.7 MB |
-| 240 | count-in-factors | error |  |  |
-| 241 | count-in-octal-1 | ✓ | 23µs | 8.8 MB |
-| 242 | count-in-octal-2 | ✓ | 245µs | 8.7 MB |
-| 243 | count-in-octal-3 | error |  |  |
-| 244 | count-in-octal-4 | ✓ | 16µs | 8.8 MB |
-| 245 | count-occurrences-of-a-substring | error |  |  |
-| 246 | count-the-coins-1 | ✓ | 3µs | 8.7 MB |
-| 247 | count-the-coins-2 | ✓ | 33µs | 8.7 MB |
-| 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 | error |  |  |
-| 250 | crc-32-2 | ✓ | 7µs | 8.8 MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 2µs | 8.7 MB |
-| 252 | create-a-file | ✓ | 2µs | 8.7 MB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 4µs | 8.7 MB |
-| 254 | create-an-html-table | ✓ | 16µs | 8.7 MB |
-| 255 | create-an-object-at-a-given-address | ✓ | 20µs | 8.7 MB |
-| 256 | csv-data-manipulation | ✓ | 11µs | 8.7 MB |
-| 257 | csv-to-html-translation-1 | ✓ | 3µs | 8.7 MB |
-| 258 | csv-to-html-translation-2 | ✓ | 5µs | 8.7 MB |
-| 259 | csv-to-html-translation-3 | ✓ | 2µs | 8.7 MB |
-| 260 | csv-to-html-translation-4 | ✓ | 2µs | 8.7 MB |
+| 237 | copy-a-string-2 | ✓ | 4µs | 8.7 MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 4µs | 8.7 MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 5µs | 8.7 MB |
+| 240 | count-in-factors | ✓ | 47µs | 8.8 MB |
+| 241 | count-in-octal-1 | ✓ | 38µs | 8.7 MB |
+| 242 | count-in-octal-2 | ✓ | 479µs | 8.8 MB |
+| 243 | count-in-octal-3 | ✓ | 6µs | 8.7 MB |
+| 244 | count-in-octal-4 | ✓ | 28µs | 8.7 MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 10µs | 8.8 MB |
+| 246 | count-the-coins-1 | ✓ | 5µs | 8.7 MB |
+| 247 | count-the-coins-2 | ✓ | 20µs | 8.7 MB |
+| 248 | cramers-rule | ✓ | 13µs | 8.8 MB |
+| 249 | crc-32-1 | ✓ | 7µs | 8.7 MB |
+| 250 | crc-32-2 | ✓ | 7µs | 8.7 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 4µs | 8.7 MB |
+| 252 | create-a-file | ✓ | 3µs | 8.7 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 5µs | 8.7 MB |
+| 254 | create-an-html-table | ✓ | 28µs | 8.7 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 29µs | 8.8 MB |
+| 256 | csv-data-manipulation | ✓ | 5µs | 8.7 MB |
+| 257 | csv-to-html-translation-1 | ✓ | 5µs | 8.7 MB |
+| 258 | csv-to-html-translation-2 | ✓ | 6µs | 8.7 MB |
+| 259 | csv-to-html-translation-3 | ✓ | 4µs | 8.7 MB |
+| 260 | csv-to-html-translation-4 | ✓ | 5µs | 8.7 MB |
 | 261 | csv-to-html-translation-5 | ✓ | 6µs | 8.7 MB |
 | 262 | cuban-primes | ✓ | 13.374ms | 8.7 MB |
 | 263 | cullen-and-woodall-numbers | ✓ | 6µs | 8.7 MB |

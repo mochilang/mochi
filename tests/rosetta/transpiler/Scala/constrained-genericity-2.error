@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/constrained-genericity-2.scala:32: error: not found: type Eatable
-case class Foodbox(var items: ArrayBuffer[Eatable])
-                                          ^
-one error found

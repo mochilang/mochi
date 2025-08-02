@@ -50,6 +50,8 @@ var returnTypeStack []string
 var funCtxStack []bool
 var assignedVars map[string]bool
 var benchMain bool
+var declaredTypes map[string]bool
+var structFieldTypes map[string]map[string]string
 
 // SetBenchMain configures whether Transpile should wrap the main function
 // in a benchmark block when emitting code.
@@ -378,6 +380,15 @@ func (m *MatchExpr) emit(w io.Writer) {
 	m.Target.emit(w)
 	fmt.Fprint(w, " match {")
 	for _, c := range m.Cases {
+		if il, ok := c.Pattern.(*IntLit); ok {
+			tmp := fmt.Sprintf("_m%d", loopCounter)
+			loopCounter++
+			fmt.Fprintf(w, " case %s if %s == ", tmp, tmp)
+			il.emit(w)
+			fmt.Fprint(w, " => ")
+			c.Result.emit(w)
+			continue
+		}
 		fmt.Fprint(w, " case ")
 		c.Pattern.emit(w)
 		fmt.Fprint(w, " => ")
@@ -1067,8 +1078,14 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	}
 	if (strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[")) && container != "Any" {
 		idx.Value.emit(w)
-		fmt.Fprint(w, "(")
+		fmt.Fprint(w, ".getOrElse(")
 		emitIndex()
+		fmt.Fprint(w, ", ")
+		defVal := defaultExpr(idx.Type)
+		if defVal == nil {
+			defVal = &Name{Name: "null"}
+		}
+		defVal.emit(w)
 		fmt.Fprint(w, ")")
 		if idx.Type != "" && idx.Type != "Any" {
 			fmt.Fprintf(w, ".asInstanceOf[%s]", idx.Type)
@@ -1762,6 +1779,22 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
 	assignedVars = make(map[string]bool)
+	declaredTypes = map[string]bool{}
+	structFieldTypes = make(map[string]map[string]string)
+	for _, st := range prog.Statements {
+		if st.Type != nil {
+			declaredTypes[st.Type.Name] = true
+			if len(st.Type.Members) > 0 {
+				fields := make(map[string]string)
+				for _, m := range st.Type.Members {
+					if m.Field != nil {
+						fields[m.Field.Name] = toScalaType(m.Field.Type)
+					}
+				}
+				structFieldTypes[st.Type.Name] = fields
+			}
+		}
+	}
 	gatherAssigned(prog.Statements, assignedVars)
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -4263,7 +4296,11 @@ func toScalaType(t *parser.TypeRef) string {
 		case "any":
 			return "Any"
 		default:
-			return strings.TrimSpace(*t.Simple)
+			nameRaw := strings.TrimSpace(*t.Simple)
+			if !declaredTypes[nameRaw] {
+				return "Any"
+			}
+			return nameRaw
 		}
 	}
 	if t.Generic != nil {
@@ -4448,6 +4485,17 @@ func inferType(e Expr) string {
 			}
 		}
 		return "Any"
+	case *FieldExpr:
+		if n, ok := ex.Receiver.(*Name); ok {
+			if typ, ok2 := localVarTypes[n.Name]; ok2 {
+				if fields, ok3 := structFieldTypes[typ]; ok3 {
+					if ft, ok4 := fields[ex.Name]; ok4 {
+						return ft
+					}
+				}
+			}
+		}
+		return ""
 	case *SubstringExpr:
 		return "String"
 	case *SliceExpr:
@@ -4657,6 +4705,11 @@ func isBigIntExpr(e Expr) bool {
 			return true
 		}
 		return isBigIntExpr(v.Value)
+	case *FieldExpr:
+		if inferType(v) == "BigInt" {
+			return true
+		}
+		return isBigIntExpr(v.Receiver)
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			lt := inferType(v.Left)
