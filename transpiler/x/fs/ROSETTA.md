@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (346/491)
+## Rosetta Golden Test Checklist (359/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -474,27 +474,27 @@ This file is auto-generated from rosetta tests.
 | 467 | function-prototype | ✓ | 21µs | 15.5 KB |
 | 468 | functional-coverage-tree | ✓ | 335µs | 34.5 KB |
 | 469 | fusc-sequence | ✓ | 369µs | 50.9 KB |
-| 470 | gamma-function | ✓ | 395µs | 47.5 KB |
-| 471 | general-fizzbuzz | ✓ | 349µs | 52.4 KB |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
+| 470 | gamma-function |   |  |  |
+| 471 | general-fizzbuzz |   |  |  |
+| 472 | generic-swap | ✓ | 237µs | 41.5 KB |
+| 473 | get-system-command-output | ✓ | 230µs | 41.6 KB |
+| 474 | giuga-numbers | ✓ | 507µs | 84.3 KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 240µs | 41.6 KB |
+| 476 | goldbachs-comet | ✓ | 258µs | 41.6 KB |
+| 477 | golden-ratio-convergence | ✓ | 248µs | 55.3 KB |
+| 478 | graph-colouring | ✓ | 230µs | 41.6 KB |
+| 479 | gray-code | ✓ | 252µs | 41.6 KB |
 | 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 249µs | 54.1 KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 226µs | 49.1 KB |
 | 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
+| 484 | image-noise | ✓ | 2.533ms | 69.6 KB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ |  |  |
+| 486 | md5 | ✓ |  |  |
 | 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
+| 488 | plasma-effect | ✓ |  |  |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 245µs | 43.3 KB |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
 
-Last updated: 2025-08-02 01:18 +0700
+Last updated: 2025-08-02 01:57 +0700

@@ -1,3 +1,7 @@
+## Progress (2025-08-02 01:57 +0700)
+- fs transpiler: support array str and typed maps
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-02 00:55 +0700)
 - go transpiler: fix float casting and map[string]any returns
 - Generated F# for 103/105 programs (103 passing)
