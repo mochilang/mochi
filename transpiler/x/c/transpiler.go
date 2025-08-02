@@ -2173,9 +2173,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needStrInt {
-		buf.WriteString("static char* str_int(int v) {\n")
+		buf.WriteString("static char* str_int(long long v) {\n")
 		buf.WriteString("    char buf[32];\n")
-		buf.WriteString("    snprintf(buf, sizeof(buf), \"%d\", v);\n")
+		buf.WriteString("    snprintf(buf, sizeof(buf), \"%lld\", v);\n")
 		buf.WriteString("    return strdup(buf);\n")
 		buf.WriteString("}\n\n")
 	}
@@ -6060,13 +6060,13 @@ func exprIsBool(e Expr) bool {
 
 func inferExprType(env *types.Env, e Expr) string {
 	if exprIsBool(e) {
-		return "int"
+		return "long long"
 	}
 	switch v := e.(type) {
 	case *StringLit:
 		return "const char*"
 	case *IntLit:
-		return "int"
+		return "long long"
 	case *FloatLit:
 		return "double"
 	case *ListLit:
@@ -6086,7 +6086,7 @@ func inferExprType(env *types.Env, e Expr) string {
 				return elemType + "[]"
 			}
 		} else {
-			return "int[]"
+			return "long long[]"
 		}
 		allStr := true
 		for _, it := range v.Elems {
@@ -6172,7 +6172,7 @@ func inferExprType(env *types.Env, e Expr) string {
 		case "str", "substring", "json", "padStart", "_padStart":
 			return "const char*"
 		case "len":
-			return "int"
+			return "long long"
 		case "num", "denom":
 			return "bigint"
 		case "_bigrat", "_add", "_sub", "_mul", "_div":
@@ -6191,7 +6191,7 @@ func inferExprType(env *types.Env, e Expr) string {
 					if _, ok := env.GetStruct(*fn.Return.Simple); ok {
 						return *fn.Return.Simple
 					}
-					return "int"
+					return "long long"
 				}
 			}
 		}
@@ -6250,7 +6250,7 @@ func inferCType(env *types.Env, name string, e Expr) string {
 	if t, err := env.GetVar(name); err == nil {
 		return cTypeFromMochiType(t)
 	}
-	return "int"
+	return "long long"
 }
 
 func cTypeFromMochiType(t types.Type) string {
@@ -6260,7 +6260,7 @@ func cTypeFromMochiType(t types.Type) string {
 	case types.FloatType:
 		return "double"
 	case types.IntType, types.Int64Type:
-		return "int"
+		return "long long"
 	case types.BigIntType:
 		needGMP = true
 		return "bigint"
