@@ -1411,7 +1411,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		v.Value.emit(w)
 	}
 	io.WriteString(w, ";")
-	if varUses[v.Name] == 0 {
+	if indent > 0 && varUses[v.Name] == 0 {
 		if v.Mutable {
 			io.WriteString(w, " _ = ")
 			io.WriteString(w, v.Name)
@@ -3706,10 +3706,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		// also record the alias name for later lookups
 		varTypes[alias] = varTypes[s.Let.Name]
-		if funDepth == 0 && !isConstExpr(expr) {
+		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			vd.Mutable = true
-			globalInits = append(globalInits, &AssignStmt{Name: s.Let.Name, Value: expr})
+			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
 		}
 		return vd, nil
 	case s.Var != nil:
@@ -3795,9 +3795,9 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		}
 		// record alias name as well so later lookups succeed
 		varTypes[alias] = varTypes[s.Var.Name]
-		if funDepth == 0 && !isConstExpr(expr) {
+		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
-			globalInits = append(globalInits, &AssignStmt{Name: s.Var.Name, Value: expr})
+			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
 		}
 		return vd, nil
 	case s.Assign != nil && len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0:
