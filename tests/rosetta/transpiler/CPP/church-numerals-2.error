@@ -1,38 +1,41 @@
 compile: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:21:181: warning: multi-character character constant [-Wmultichar]
-   21 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:49:181: warning: multi-character character constant [-Wmultichar]
+   49 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
       |                                                                                                                                                                                     ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:22:209: warning: multi-character character constant [-Wmultichar]
-   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:50:179: warning: multi-character character constant [-Wmultichar]
+   50 |     else if(val.type() == typeid(std::vector<double>)) { const auto& v = std::any_cast<const std::vector<double>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                   ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:51:209: warning: multi-character character constant [-Wmultichar]
+   51 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
       |                                                                                                                                                                                                                 ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:22:295: warning: multi-character character constant [-Wmultichar]
-   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:51:295: warning: multi-character character constant [-Wmultichar]
+   51 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
       |                                                                                                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:23:189: warning: multi-character character constant [-Wmultichar]
-   23 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:52:189: warning: multi-character character constant [-Wmultichar]
+   52 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
       |                                                                                                                                                                                             ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:24:183: warning: multi-character character constant [-Wmultichar]
-   24 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:53:183: warning: multi-character character constant [-Wmultichar]
+   53 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
       |                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:25:215: warning: multi-character character constant [-Wmultichar]
-   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:54:215: warning: multi-character character constant [-Wmultichar]
+   54 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                       ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:25:251: warning: multi-character character constant [-Wmultichar]
-   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:54:251: warning: multi-character character constant [-Wmultichar]
+   54 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> zero()’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:73:12: error: could not convert ‘<lambda closure object>zero()::<lambda(std::function<std::any(std::any)>)>()’ from ‘zero()::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
-   73 |     return [=](std::function<std::any(std::any)> f) mutable {
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:126:12: error: could not convert ‘<lambda closure object>zero()::<lambda(std::function<std::any(std::any)>)>()’ from ‘zero()::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+  126 |     return [=](std::function<std::any(std::any)> f) mutable {
       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |            |
       |            zero()::<lambda(std::function<std::any(std::any)>)>
-   74 |     return id;
+  127 |     return id;
       |     ~~~~~~~~~~
-   75 | };
+  128 | };
       | ~           
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:84:63: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
-   84 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:137:63: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+  137 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
       |                                                               ^
 In file included from /usr/include/c++/13/functional:59,
                  from /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:4:
@@ -76,18 +79,18 @@ In file included from /usr/include/c++/13/bits/move.h:37,
       |       ^~~~~~~~
 /usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> succ(std::function<std::any(std::any)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:83:12: error: could not convert ‘<lambda closure object>succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(n)}’ from ‘succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
-   83 |     return [=](std::function<std::any(std::any)> f) mutable {
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:136:12: error: could not convert ‘<lambda closure object>succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(n)}’ from ‘succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+  136 |     return [=](std::function<std::any(std::any)> f) mutable {
       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |            |
       |            succ(std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>
-   84 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
+  137 |     return compose(f, (std::function<std::any(std::any)>)(n(f)));
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   85 | };
+  138 | };
       | ~           
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:90:60: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
-   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:143:60: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+  143 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
       |                                                            ^
 /usr/include/c++/13/bits/std_function.h:435:9: note: candidate: ‘template<class _Functor, class _Constraints> std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Constraints = _Functor; _Res = std::any; _ArgTypes = {std::any}]’
   435 |         function(_Functor&& __f)
@@ -115,8 +118,8 @@ In file included from /usr/include/c++/13/bits/move.h:37,
   368 |       function() noexcept
       |       ^~~~~~~~
 /usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:90:103: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
-   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:143:103: error: no matching function for call to ‘std::function<std::any(std::any)>::function(std::any)’
+  143 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
       |                                                                                                       ^
 /usr/include/c++/13/bits/std_function.h:435:9: note: candidate: ‘template<class _Functor, class _Constraints> std::function<_Res(_ArgTypes ...)>::function(_Functor&&) [with _Constraints = _Functor; _Res = std::any; _ArgTypes = {std::any}]’
   435 |         function(_Functor&& __f)
@@ -145,26 +148,26 @@ In file included from /usr/include/c++/13/bits/move.h:37,
       |       ^~~~~~~~
 /usr/include/c++/13/bits/std_function.h:368:7: note:   candidate expects 0 arguments, 1 provided
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:89:12: error: could not convert ‘<lambda closure object>plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(m), std::function<std::any(std::any)>(n)}’ from ‘plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
-   89 |     return [=](std::function<std::any(std::any)> f) mutable {
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:142:12: error: could not convert ‘<lambda closure object>plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>{std::function<std::any(std::any)>(m), std::function<std::any(std::any)>(n)}’ from ‘plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>’ to ‘std::function<std::any(std::any)>’
+  142 |     return [=](std::function<std::any(std::any)> f) mutable {
       |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |            |
       |            plus(std::function<std::any(std::any)>, std::function<std::any(std::any)>)::<lambda(std::function<std::any(std::any)>)>
-   90 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
+  143 |     return compose((std::function<std::any(std::any)>)(m(f)), (std::function<std::any(std::any)>)(n(f)));
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   91 | };
+  144 | };
       | ~           
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::function<std::any(std::any)> exp(std::function<std::any(std::any)>, std::function<std::any(std::any)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:99:13: error: could not convert ‘std::function<_Res(_ArgTypes ...)>::operator()(_ArgTypes ...) const [with _Res = std::any; _ArgTypes = {std::any}](std::any(m))’ from ‘std::any’ to ‘std::function<std::any(std::any)>’
-   99 |     return n(m);
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:152:13: error: could not convert ‘std::function<_Res(_ArgTypes ...)>::operator()(_ArgTypes ...) const [with _Res = std::any; _ArgTypes = {std::any}](std::any(m))’ from ‘std::any’ to ‘std::function<std::any(std::any)>’
+  152 |     return n(m);
       |            ~^~~
       |             |
       |             std::any
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘int64_t toInt(std::function<std::any(std::any)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:108:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
-  108 |     (x(fCounter))(id);
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:161:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
+  161 |     (x(fCounter))(id);
       |     ~~~~~~~~~~~~~^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp: In function ‘std::string toStr(std::function<std::any(std::any)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:118:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
-  118 |     (x(fCounter))(id);
+/workspace/mochi/tests/rosetta/transpiler/CPP/church-numerals-2.cpp:171:18: error: no match for call to ‘(std::any) (std::any (&)(std::any))’
+  171 |     (x(fCounter))(id);
       |     ~~~~~~~~~~~~~^~~~

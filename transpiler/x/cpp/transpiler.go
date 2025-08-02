@@ -725,6 +725,7 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<double>)) { const auto& v = std::any_cast<const std::vector<double>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }")
@@ -743,6 +744,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(double)) { std::ostringstream ss; ss << std::any_cast<double>(v); return ss.str(); }")
 		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v) ? \"true\" : \"false\";")
 		fmt.Fprintln(w, "    return std::string();")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static size_t any_len(const std::any& v) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::string)) return std::any_cast<std::string>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<int64_t>)) return std::any_cast<std::vector<int64_t>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<double>)) return std::any_cast<std::vector<double>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::any>)) return std::any_cast<std::vector<std::any>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::string>)) return std::any_cast<std::vector<std::string>>(v).size();")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::map<std::string, std::any>)) return std::any_cast<std::map<std::string, std::any>>(v).size();")
+		fmt.Fprintln(w, "    return 0;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static std::any any_index(const std::any& v, int64_t i) {")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<int64_t>)) return std::any_cast<std::vector<int64_t>>(v)[i];")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<double>)) return std::any_cast<std::vector<double>>(v)[i];")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::any>)) return std::any_cast<std::vector<std::any>>(v)[i];")
+		fmt.Fprintln(w, "    if(v.type() == typeid(std::vector<std::string>)) return std::any_cast<std::vector<std::string>>(v)[i];")
+		fmt.Fprintln(w, "    return std::any();")
 		fmt.Fprintln(w, "}")
 	}
 
@@ -1102,9 +1119,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 
 func (l *LenExpr) emit(w io.Writer) {
 	if exprType(l.Value) == "std::any" {
-		io.WriteString(w, "std::any_cast<std::string>(")
+		io.WriteString(w, "any_len(")
 		l.Value.emit(w)
-		io.WriteString(w, ").size()")
+		io.WriteString(w, ")")
 	} else {
 		l.Value.emit(w)
 		io.WriteString(w, ".size()")
@@ -1368,16 +1385,21 @@ func (i *IndexExpr) emit(w io.Writer) {
 		resType := exprType(i)
 		if idxType == "int64_t" {
 			if resType == "auto" {
-				// The any value is cast to a vector<int64_t>, so the
-				// indexed result must be an int rather than a
-				// whole vector.
-				resType = "int64_t"
+				resType = "std::any"
 			}
-			io.WriteString(w, "std::any_cast<"+resType+">(std::any_cast<std::vector<int64_t>>(")
-			i.Target.emit(w)
-			io.WriteString(w, ")[")
-			i.Index.emit(w)
-			io.WriteString(w, "])")
+			if resType == "std::any" {
+				io.WriteString(w, "any_index(")
+				i.Target.emit(w)
+				io.WriteString(w, ", ")
+				i.Index.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				io.WriteString(w, "std::any_cast<"+resType+">(any_index(")
+				i.Target.emit(w)
+				io.WriteString(w, ", ")
+				i.Index.emit(w)
+				io.WriteString(w, "))")
+			}
 			return
 		}
 		if idxType == "std::string" {
@@ -6524,6 +6546,9 @@ func exprType(e Expr) string {
 		return "std::map<auto, auto>"
 	case *IndexExpr:
 		t := exprType(v.Target)
+		if t == "std::any" {
+			return "std::any"
+		}
 		if t == "std::string" {
 			return "std::string"
 		}

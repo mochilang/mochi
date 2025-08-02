@@ -1,4 +1,5 @@
-A:
-L:
-terminate called after throwing an instance of 'std::bad_any_cast'
-  what():  bad any_cast
+{
+  "duration_us": 294,
+  "memory_bytes": 14745600,
+  "name": "main"
+}

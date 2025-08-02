@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (254/491) - Last updated 2025-08-02 11:41 +0700:
+Checklist of programs that currently transpile and run (254/491) - Last updated 2025-08-02 11:57 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -164,56 +164,56 @@ Checklist of programs that currently transpile and run (254/491) - Last updated 
 | 157 | call-a-function-6 | ✓ | 253.0µs | 12.57MB |
 | 158 | call-a-function-7 | ✓ | 22.0µs | 12.79MB |
 | 159 | call-a-function-8 | ✓ | 57.0µs | 12.88MB |
-| 160 | call-a-function-9 | ✓ | 56.0µs | 12.79MB |
-| 161 | call-an-object-method-1 | ✓ | 15.0µs | 12.30MB |
+| 160 | call-a-function-9 | ✓ | 66.0µs | 12.96MB |
+| 161 | call-an-object-method-1 | ✓ | 20.0µs | 12.84MB |
 | 162 | call-an-object-method-2 |   |  |  |
-| 163 | call-an-object-method-3 | ✓ | 3.0µs | 12.62MB |
-| 164 | call-an-object-method | ✓ | 2.0µs | 12.69MB |
-| 165 | camel-case-and-snake-case | ✓ | 1.0ms | 14.19MB |
-| 166 | canny-edge-detector | ✓ | 212.0µs | 14.18MB |
-| 167 | canonicalize-cidr | ✓ | 666.0µs | 13.99MB |
-| 168 | cantor-set | ✓ | 681.0µs | 13.09MB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 737.0µs | 13.35MB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 284.0µs | 13.12MB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 71.0µs | 14.17MB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 296.0µs | 13.56MB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 55.0µs | 13.16MB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 157.0µs | 13.62MB |
-| 175 | casting-out-nines | ✓ | 4.0ms | 13.41MB |
-| 176 | catalan-numbers-1 | ✓ | 59.0µs | 12.89MB |
-| 177 | catalan-numbers-2 | ✓ | 51.0µs | 13.16MB |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 73.0µs | 12.96MB |
-| 179 | catamorphism | ✓ | 22.0µs | 12.98MB |
-| 180 | catmull-clark-subdivision-surface | ✓ | 1.0ms | 14.62MB |
-| 181 | chaocipher | ✓ | 403.0µs | 13.44MB |
-| 182 | chaos-game | ✓ | 28.0ms | 12.88MB |
-| 183 | character-codes-1 | ✓ | 42.0µs | 12.60MB |
-| 184 | character-codes-2 | ✓ | 42.0µs | 13.25MB |
-| 185 | character-codes-3 | ✓ | 58.0µs | 13.36MB |
-| 186 | character-codes-4 | ✓ | 26.0µs | 12.68MB |
-| 187 | character-codes-5 | ✓ | 28.0µs | 12.80MB |
-| 188 | chat-server | ✓ | 53.0µs | 13.29MB |
-| 189 | check-machin-like-formulas | ✓ | 54.0ms | 14.19MB |
-| 190 | check-that-file-exists | ✓ | 297.0µs | 13.13MB |
-| 191 | checkpoint-synchronization-1 | ✓ | 188.0µs | 13.18MB |
-| 192 | checkpoint-synchronization-2 | ✓ | 261.0µs | 13.05MB |
-| 193 | checkpoint-synchronization-3 | ✓ | 290.0µs | 13.00MB |
-| 194 | checkpoint-synchronization-4 | ✓ | 356.0µs | 12.62MB |
-| 195 | chernicks-carmichael-numbers | ✓ | 334.0ms | 13.98MB |
-| 196 | cheryls-birthday | ✓ | 221.0µs | 13.49MB |
-| 197 | chinese-remainder-theorem | ✓ | 175.0µs | 12.80MB |
-| 198 | chinese-zodiac | ✓ | 285.0µs | 13.36MB |
-| 199 | cholesky-decomposition-1 |   |  |  |
-| 200 | cholesky-decomposition | ✓ | 573.0µs | 13.04MB |
-| 201 | chowla-numbers | ✓ | 174.0µs | 13.23MB |
-| 202 | church-numerals-1 | ✓ | 677.0µs | 13.62MB |
+| 163 | call-an-object-method-3 | ✓ | 5.0µs | 12.62MB |
+| 164 | call-an-object-method | ✓ | 5.0µs | 12.81MB |
+| 165 | camel-case-and-snake-case | ✓ | 1.0ms | 14.37MB |
+| 166 | canny-edge-detector | ✓ | 409.0µs | 14.18MB |
+| 167 | canonicalize-cidr | ✓ | 965.0µs | 13.92MB |
+| 168 | cantor-set | ✓ | 938.0µs | 13.40MB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.0ms | 13.37MB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 407.0µs | 13.17MB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 254.0µs | 14.30MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 254.0µs | 13.99MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 244.0µs | 13.97MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 627.0µs | 13.60MB |
+| 175 | casting-out-nines | ✓ | 7.0ms | 13.62MB |
+| 176 | catalan-numbers-1 | ✓ | 197.0µs | 13.15MB |
+| 177 | catalan-numbers-2 | ✓ | 222.0µs | 12.55MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 319.0µs | 13.11MB |
+| 179 | catamorphism | ✓ | 197.0µs | 12.59MB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 2.0ms | 15.30MB |
+| 181 | chaocipher | ✓ | 578.0µs | 12.93MB |
+| 182 | chaos-game | ✓ | 43.0ms | 13.36MB |
+| 183 | character-codes-1 | ✓ | 275.0µs | 12.79MB |
+| 184 | character-codes-2 | ✓ | 240.0µs | 13.00MB |
+| 185 | character-codes-3 | ✓ | 245.0µs | 13.18MB |
+| 186 | character-codes-4 | ✓ | 199.0µs | 12.68MB |
+| 187 | character-codes-5 | ✓ | 205.0µs | 12.80MB |
+| 188 | chat-server | ✓ | 183.0µs | 13.36MB |
+| 189 | check-machin-like-formulas |   | 54.0ms | 14.19MB |
+| 190 | check-that-file-exists | ✓ | 259.0µs | 12.74MB |
+| 191 | checkpoint-synchronization-1 | ✓ | 274.0µs | 12.87MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 330.0µs | 13.12MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 285.0µs | 13.06MB |
+| 194 | checkpoint-synchronization-4 | ✓ | 325.0µs | 12.80MB |
+| 195 | chernicks-carmichael-numbers | ✓ | 332.0ms | 14.30MB |
+| 196 | cheryls-birthday | ✓ | 303.0µs | 13.29MB |
+| 197 | chinese-remainder-theorem | ✓ | 206.0µs | 12.96MB |
+| 198 | chinese-zodiac | ✓ | 284.0µs | 12.87MB |
+| 199 | cholesky-decomposition-1 | ✓ | 294.0µs | 14.06MB |
+| 200 | cholesky-decomposition | ✓ | 482.0µs | 13.25MB |
+| 201 | chowla-numbers | ✓ | 231.0µs | 12.50MB |
+| 202 | church-numerals-1 | ✓ | 711.0µs | 13.68MB |
 | 203 | church-numerals-2 |   |  |  |
-| 204 | circles-of-given-radius-through-two-points | ✓ | 347.0µs | 14.15MB |
-| 205 | circular-primes | ✓ | 814.0µs | 13.68MB |
-| 206 | cistercian-numerals | ✓ | 12.0ms | 14.62MB |
-| 207 | comma-quibbling | ✓ | 172.0µs | 12.96MB |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 514.0µs | 14.16MB |
+| 205 | circular-primes | ✓ | 868.0µs | 13.89MB |
+| 206 | cistercian-numerals | ✓ | 17.0ms | 14.37MB |
+| 207 | comma-quibbling | ✓ | 207.0µs | 13.09MB |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 27.29s | 14.12MB |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 26.92s | 13.74MB |
 | 210 | compound-data-type | ✓ |  |  |
 | 211 | concurrent-computing-1 | ✓ |  |  |
 | 212 | concurrent-computing-2 | ✓ |  |  |
