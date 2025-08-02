@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 463/491
-Last updated: 2025-08-02 17:42 +0700
+Completed programs: 464/491
+Last updated: 2025-08-02 17:58 +0700
 
 Checklist:
 
@@ -447,36 +447,36 @@ Checklist:
 | 438 | fixed-length-records-1 | ✓ | 2.0ms | 87.27KB |
 | 439 | fixed-length-records-2 | ✓ | 3.0ms | 259.48KB |
 | 440 | fizzbuzz-1 | ✓ | 699.0µs | 1.85KB |
-| 441 | fizzbuzz-2 |   |  |  |
-| 442 | fizzbuzz | ✓ | 1.0ms | 1.85KB |
-| 443 | flatten-a-list-1 | ✓ | 1.0ms | 1.69KB |
-| 444 | flatten-a-list-2 | ✓ | 359.0µs | 944B |
-| 445 | flipping-bits-game | ✓ | 748.0µs | 2.91KB |
-| 446 | flow-control-structures-1 | ✓ | 665.0µs | 936B |
-| 447 | flow-control-structures-2 | ✓ | 706.0µs | 936B |
-| 448 | flow-control-structures-3 | ✓ | 685.0µs | 936B |
-| 449 | flow-control-structures-4 | ✓ | 493.0µs | 944B |
-| 450 | floyd-warshall-algorithm | ✓ | 778.0µs | 3.29KB |
-| 451 | floyd-warshall-algorithm2 | ✓ | 473.0µs | 3.64KB |
-| 452 | floyds-triangle | ✓ | 513.0µs | 3.98KB |
-| 453 | forest-fire | ✓ | 1.0ms | 88.84KB |
-| 454 | fork-2 | ✓ | 471.0µs | 1.01KB |
-| 455 | fork | ✓ | 411.0µs | 1.01KB |
-| 456 | formal-power-series | ✓ | 586.0µs | 8.73KB |
-| 457 | formatted-numeric-output | ✓ | 376.0µs | 1016B |
-| 458 | forward-difference | ✓ | 641.0µs | 1.24KB |
-| 459 | four-bit-adder-1 | ✓ | 391.0µs | 984B |
-| 460 | four-is-magic | ✓ | 753.0µs | 10.80KB |
-| 461 | four-is-the-number-of-letters-in-the-... | ✓ | 3.48s | 245.85MB |
+| 441 | fizzbuzz-2 | ✓ | 566.0µs | 52.66KB |
+| 442 | fizzbuzz | ✓ | 344.0µs | 1.85KB |
+| 443 | flatten-a-list-1 | ✓ | 718.0µs | 1.64KB |
+| 444 | flatten-a-list-2 | ✓ | 137.0µs | 944B |
+| 445 | flipping-bits-game | ✓ | 425.0µs | 2.91KB |
+| 446 | flow-control-structures-1 | ✓ | 153.0µs | 936B |
+| 447 | flow-control-structures-2 | ✓ | 250.0µs | 936B |
+| 448 | flow-control-structures-3 | ✓ | 294.0µs | 936B |
+| 449 | flow-control-structures-4 | ✓ | 277.0µs | 944B |
+| 450 | floyd-warshall-algorithm | ✓ | 352.0µs | 3.29KB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 392.0µs | 3.64KB |
+| 452 | floyds-triangle | ✓ | 281.0µs | 3.98KB |
+| 453 | forest-fire | ✓ | 983.0µs | 88.84KB |
+| 454 | fork-2 | ✓ | 539.0µs | 1.01KB |
+| 455 | fork | ✓ | 193.0µs | 1.01KB |
+| 456 | formal-power-series | ✓ | 466.0µs | 8.73KB |
+| 457 | formatted-numeric-output | ✓ | 212.0µs | 1016B |
+| 458 | forward-difference | ✓ | 328.0µs | 1.24KB |
+| 459 | four-bit-adder-1 | ✓ | 301.0µs | 984B |
+| 460 | four-is-magic | ✓ | 507.0µs | 10.80KB |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ | 2.74s | 391.21MB |
 | 462 | fractal-tree | ✓ | 3.0ms | 459.84KB |
-| 463 | fractran | ✓ | 2.92s | 3.09MB |
-| 464 | french-republican-calendar | ✓ | 576.0µs | 1.62KB |
-| 465 | ftp | ✓ | 267.0µs | 2.08KB |
-| 466 | function-frequency | ✓ | 21.0ms | 761.31KB |
-| 467 | function-prototype | ✓ | 25.0µs | 0B |
-| 468 | functional-coverage-tree | ✓ | 560.0µs | 28.27KB |
-| 469 | fusc-sequence | ✓ | 560.0µs | 3.88KB |
-| 470 | gamma-function | ✓ | 216.0µs | 1.91KB |
+| 463 | fractran | ✓ | 2.88s | 1.75MB |
+| 464 | french-republican-calendar | ✓ | 242.0µs | 1.62KB |
+| 465 | ftp | ✓ | 620.0µs | 2.08KB |
+| 466 | function-frequency | ✓ | 20.0ms | 756.20KB |
+| 467 | function-prototype | ✓ | 6.0µs | 0B |
+| 468 | functional-coverage-tree | ✓ | 625.0µs | 28.27KB |
+| 469 | fusc-sequence | ✓ | 740.0µs | 3.92KB |
+| 470 | gamma-function | ✓ | 741.0µs | 1.91KB |
 | 471 | general-fizzbuzz | ✓ | 259.0µs | 1.53KB |
 | 472 | generic-swap | ✓ | 424.0µs | 1000B |
 | 473 | get-system-command-output | ✓ | 212.0µs | 968B |

@@ -1,5 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/fizzbuzz-2.go:41:37: cannot use map[string]any{…} (value of type map[string]any) as map[bool]map[bool]string value in variable declaration
-../../../tests/rosetta/transpiler/Go/fizzbuzz-2.go:41:52: cannot use false (untyped bool constant) as string value in map literal
-../../../tests/rosetta/transpiler/Go/fizzbuzz-2.go:41:111: cannot use true (untyped bool constant) as string value in map literal

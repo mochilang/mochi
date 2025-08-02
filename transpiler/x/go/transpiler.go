@@ -5270,7 +5270,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			if types.IsAnyType(argType) {
 				return &AssertExpr{Expr: args[0], Type: "int"}, nil
 			}
-			return &CallExpr{Func: "int", Args: []Expr{args[0]}}, nil
+			return &IntCastExpr{Expr: args[0]}, nil
 		case "float":
 			if types.IsAnyType(types.TypeOfExpr(p.Call.Args[0], env)) {
 				return &AssertExpr{Expr: args[0], Type: "float64"}, nil
@@ -5305,9 +5305,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				int2 = true
 				a1 = &CallExpr{Func: "float64", Args: []Expr{a1}}
 			}
-			expr := &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}
+			var expr Expr = &CallExpr{Func: "math.Pow", Args: []Expr{a0, a1}}
 			if int1 && int2 {
-				expr = &CallExpr{Func: "int", Args: []Expr{expr}}
+				expr = &IntCastExpr{Expr: expr}
 			}
 			return expr, nil
 		case "sum":
@@ -5647,6 +5647,7 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 	case p.Map != nil:
 		keys := make([]Expr, len(p.Map.Items))
 		vals := make([]Expr, len(p.Map.Items))
+		var kt, vt types.Type
 		for i, it := range p.Map.Items {
 			var ke Expr
 			if k, ok := types.SimpleStringKey(it.Key); ok {
@@ -5667,6 +5668,18 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					return nil, err
 				}
 			}
+			keyT := types.ExprType(it.Key, env)
+			valT := types.ExprType(it.Value, env)
+			if i == 0 {
+				kt, vt = keyT, valT
+			} else {
+				if !types.EqualTypes(kt, keyT) {
+					kt = types.AnyType{}
+				}
+				if !types.EqualTypes(vt, valT) {
+					vt = types.AnyType{}
+				}
+			}
 			ve, err := compileExpr(it.Value, env, "")
 			if err != nil {
 				return nil, err
@@ -5677,8 +5690,17 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		mt, _ := types.TypeOfPrimaryBasic(p, env).(types.MapType)
 		if sm, ok := types.InferSimpleMap(p.Map, env); ok {
 			mt = sm
+		} else {
+			if mt.Key == nil || types.IsAnyType(mt.Key) {
+				mt.Key = kt
+			}
+			if mt.Value == nil || types.IsAnyType(mt.Value) {
+				mt.Value = vt
+			}
 		}
-		return &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}, nil
+		ml := &MapLit{KeyType: toGoTypeFromType(mt.Key), ValueType: toGoTypeFromType(mt.Value), Keys: keys, Values: vals}
+		updateMapLitTypes(ml, mt)
+		return ml, nil
 	case p.Struct != nil:
 		st, ok := env.GetStruct(p.Struct.Name)
 		if !ok {
