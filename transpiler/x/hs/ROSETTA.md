@@ -1,8 +1,8 @@
-# Rosetta Haskell Transpiler (17/491 succeeded)
+# Rosetta Haskell Transpiler (18/491 succeeded)
 
 Generated Haskell code for Rosetta Mochi programs. Each `.hs` file is in `tests/rosetta/transpiler/Haskell` with matching `.out` output. Failures produce a `.error` file.
 
-Last updated: 2025-08-02 10:56 GMT+7
+Last updated: 2025-08-02 11:24 GMT+7
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -41,7 +41,7 @@ Last updated: 2025-08-02 10:56 GMT+7
 | 32 | active-object |  |  |  |
 | 33 | add-a-variable-to-a-class-instance-at-runtime |  |  |  |
 | 34 | additive-primes |  |  |  |
-| 35 | address-of-a-variable |  |  |  |
+| 35 | address-of-a-variable | ✓ | 107µs | 31.0 MB |
 | 36 | adfgvx-cipher |  |  |  |
 | 37 | aks-test-for-primes |  |  |  |
 | 38 | algebraic-data-types |  |  |  |
