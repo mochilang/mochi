@@ -4465,21 +4465,22 @@ func compileStmts(list []*parser.Statement) ([]Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if st != nil {
-			if _, ok := st.(*ReturnStmt); ok {
-				out = append(out, st)
-				if len(extraDecls) > 0 {
-					out = append(out, extraDecls...)
-					extraDecls = nil
-				}
-				break
-			} else {
+		if _, ok := st.(*ReturnStmt); ok {
+			if len(extraDecls) > 0 {
+				out = append(out, extraDecls...)
+				extraDecls = nil
+			}
+			if st != nil {
 				out = append(out, st)
 			}
+			break
 		}
 		if len(extraDecls) > 0 {
 			out = append(out, extraDecls...)
 			extraDecls = nil
+		}
+		if st != nil {
+			out = append(out, st)
 		}
 	}
 	// preserve explicit return statements even after infinite loops
@@ -4870,11 +4871,22 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				} else {
 					return nil, fmt.Errorf("unsupported call")
 				}
+			} else if _, ok := expr.(*CallExpr); ok {
+				expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
+			} else if _, ok := expr.(*MethodCallExpr); ok {
+				expr = &MethodCallExpr{Target: expr, Name: "apply", Args: args}
 			} else {
 				return nil, fmt.Errorf("unsupported call")
 			}
 		case op.Cast != nil && op.Cast.Type != nil:
 			ctype := typeRefString(op.Cast.Type)
+			simple := ""
+			if op.Cast.Type.Simple != nil {
+				simple = *op.Cast.Type.Simple
+			}
+			if ctype == "" {
+				ctype = simple
+			}
 			if ctype == "" {
 				break
 			}
@@ -4883,8 +4895,8 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = idx
 				break
 			}
-			if op.Cast.Type.Simple != nil {
-				switch ctype {
+			if simple != "" {
+				switch simple {
 				case "int":
 					expr = &IntCastExpr{Value: expr}
 				case "float", "float64", "double":
@@ -5465,14 +5477,6 @@ func compileFunExpr(fn *parser.FunExpr, closure bool) (Expr, error) {
 			if exprUsesVar(lam, name) {
 				if bodyModifiesVar(body, name) {
 					refVars[name] = true
-				} else {
-					alias := fmt.Sprintf("%s_%d", name, aliasCounts[name])
-					aliasCounts[name]++
-					typ := varTypes[name]
-					extraDecls = append(extraDecls, &LetStmt{Name: alias, Type: typ, Expr: &VarExpr{Name: name}})
-					if nl, ok := renameVar(lam, name, alias).(*LambdaExpr); ok {
-						lam = nl
-					}
 				}
 			}
 		}
@@ -6266,9 +6270,14 @@ func typeRefString(tr *parser.TypeRef) string {
 		name := *tr.Simple
 		if topEnv != nil {
 			if t, ok := topEnv.LookupType(name); ok {
-				if ut, ok2 := t.(types.UnionType); ok2 {
-					if alias := simpleUnionAlias(ut); alias != "" {
+				switch tt := t.(type) {
+				case types.UnionType:
+					if alias := simpleUnionAlias(tt); alias != "" {
 						return alias
+					}
+				case types.FuncType:
+					if jt := toJavaTypeFromType(tt); jt != "" {
+						return jt
 					}
 				}
 			}
