@@ -1738,13 +1738,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						elem := strings.TrimPrefix(typ, "array of ")
 						typ = currProg.addArrayAlias(elem)
 					}
-					local[p.Name] = typ
+					name := sanitize(p.Name)
+					local[name] = typ
 				}
 				startVarCount := len(currProg.Vars)
 				pushScope()
 				currentFunc = fn.Name
 				for _, p := range st.Fun.Params {
-					currentScope()[p.Name] = p.Name
+					name := sanitize(p.Name)
+					currentScope()[p.Name] = name
 				}
 				fnBody, err := convertBody(env, st.Fun.Body, local)
 				if err != nil {
@@ -1764,7 +1766,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						elem := strings.TrimPrefix(typ, "array of ")
 						typ = currProg.addArrayAlias(elem)
 					}
-					params = append(params, formatParam(p.Name, typ))
+					name := sanitize(p.Name)
+					params = append(params, formatParam(name, typ))
 				}
 				rt := ""
 				if st.Fun.Return != nil {
@@ -2292,12 +2295,14 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					elem := strings.TrimPrefix(typ, "array of ")
 					typ = currProg.addArrayAlias(elem)
 				}
-				local[p.Name] = typ
+				name := sanitize(p.Name)
+				local[name] = typ
 			}
 			pushScope()
 			currentFunc = st.Fun.Name
 			for _, p := range st.Fun.Params {
-				currentScope()[p.Name] = p.Name
+				name := sanitize(p.Name)
+				currentScope()[p.Name] = name
 			}
 			fnBody, err := convertBody(env, st.Fun.Body, local)
 			if err != nil {
@@ -2315,7 +2320,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					elem := strings.TrimPrefix(typ, "array of ")
 					typ = currProg.addArrayAlias(elem)
 				}
-				params = append(params, formatParam(p.Name, typ))
+				name := sanitize(p.Name)
+				params = append(params, formatParam(name, typ))
 			}
 			rt := ""
 			if st.Fun.Return != nil {
