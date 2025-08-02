@@ -2026,29 +2026,34 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if (b.Op == "==" || b.Op == "!=") && isStringExpr(b.Left) && isStringExpr(b.Right) {
-		if b.Op == "!=" {
-			fmt.Fprint(w, "!")
-		}
-		fmt.Fprint(w, "(")
-		b.Left.emit(w)
-		fmt.Fprint(w, ".equals(")
-		b.Right.emit(w)
-		fmt.Fprint(w, "))")
-		return
-	}
-	if (b.Op == "==" || b.Op == "!=") && (isNullExpr(b.Left) || isNullExpr(b.Right)) {
-		if b.Op == "!=" {
-			fmt.Fprint(w, "!")
-		}
-		fmt.Fprint(w, "(")
-		if isNullExpr(b.Left) {
-			b.Right.emit(w)
-		} else {
+	if b.Op == "==" || b.Op == "!=" {
+		lt := inferType(b.Left)
+		rt := inferType(b.Right)
+		if (lt == "string" || lt == "String" || isStringExpr(b.Left)) &&
+			(rt == "string" || rt == "String" || isStringExpr(b.Right)) {
+			if b.Op == "!=" {
+				fmt.Fprint(w, "!")
+			}
+			fmt.Fprint(w, "(")
 			b.Left.emit(w)
+			fmt.Fprint(w, ".equals(")
+			b.Right.emit(w)
+			fmt.Fprint(w, "))")
+			return
 		}
-		fmt.Fprint(w, " == null)")
-		return
+		if isNullExpr(b.Left) || isNullExpr(b.Right) {
+			if b.Op == "!=" {
+				fmt.Fprint(w, "!")
+			}
+			fmt.Fprint(w, "(")
+			if isNullExpr(b.Left) {
+				b.Right.emit(w)
+			} else {
+				b.Left.emit(w)
+			}
+			fmt.Fprint(w, " == null)")
+			return
+		}
 	}
 	if (isStringExpr(b.Left) || isStringExpr(b.Right)) &&
 		(b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
