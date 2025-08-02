@@ -4563,7 +4563,7 @@ func Emit(prog *Program) []byte {
 	}
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
-		buf.WriteString("\t\treturn GC.GetTotalMemory(false);\n")
+		buf.WriteString("\t\treturn System.Environment.WorkingSet;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
