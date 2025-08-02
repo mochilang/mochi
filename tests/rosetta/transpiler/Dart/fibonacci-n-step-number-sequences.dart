@@ -36,14 +36,42 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+String show(List<int> xs) {
+  String s = "";
+  int i = 0;
+  while (i < xs.length) {
+    s = s + (xs[i]).toString();
+    if (i < xs.length - 1) {
+    s = s + " ";
+  }
+    i = i + 1;
+  }
+  return s;
+}
+
+List<int> gen(List<int> init, int n) {
+  List<int> b = init;
+  List<int> res = <int>[];
+  int sum = 0;
+  for (var x in b) {
+    res = [...res, x];
+    sum = (sum + x).toInt();
+  }
+  while (res.length < n) {
+    int next = sum;
+    res = [...res, next];
+    sum = sum + next - b[0];
+    b = ([...b.sublist(1, b.length), next] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+  }
+  return res;
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  int n = 10;
+  print(" Fibonacci: " + show(gen([1, 1], n)));
+  print("Tribonacci: " + show(gen([1, 1, 2], n)));
+  print("Tetranacci: " + show(gen([1, 1, 2, 4], n)));
+  print("     Lucas: " + show(gen([2, 1], n)));
 }
 
 void _start() {

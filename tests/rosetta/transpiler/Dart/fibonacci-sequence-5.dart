@@ -36,13 +36,21 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+Map<int, int> memo = {0: 0, 1: 1};
+int fib(int n) {
+  if (memo.containsKey(n)) {
+    return (memo[n])!;
   }
-    n = n + 1;
+  int v = fib(n - 1) + fib(n - 2);
+  memo[n] = v;
+  return v;
+}
+
+void _main() {
+  int i = 1;
+  while (i <= 30) {
+    print((fib(i)).toString());
+    i = i + 1;
   }
 }
 

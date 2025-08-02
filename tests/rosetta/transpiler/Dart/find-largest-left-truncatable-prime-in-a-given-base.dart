@@ -36,13 +36,47 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
+bool isPrime(int n) {
+  if (n < 2) {
+    return false;
   }
-    n = n + 1;
+  int i = 2;
+  while (i * i <= n) {
+    if (n % i == 0) {
+    return false;
+  }
+    i = i + 1;
+  }
+  return true;
+}
+
+int search(int base, int prefix, int depth, int limit, int best) {
+  int b = best;
+  int d = 1;
+  while (d < base) {
+    int val = prefix * base + d;
+    if (isPrime(val)) {
+    if (val > b) {
+    b = val;
+  };
+    if (depth + 1 < limit) {
+    b = search(base, val, depth + 1, limit, b);
+  };
+  }
+    d = d + 1;
+  }
+  return b;
+}
+
+int largest(int base) {
+  return search(base, 0, 0, 6, 0);
+}
+
+void _main() {
+  int b = 3;
+  while (b <= 17) {
+    print((b).toString() + ": " + (largest(b)).toString());
+    b = b + 1;
   }
 }
 

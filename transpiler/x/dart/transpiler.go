@@ -219,12 +219,18 @@ func emitWithBigIntCast(w io.Writer, e Expr, from, to string) error {
 // emitListConversion converts expr to the target list type recursively.
 func emitListConversion(w io.Writer, expr Expr, target string) error {
 	elem := strings.TrimSuffix(strings.TrimPrefix(target, "List<"), ">")
+	exprType := inferType(expr)
 	if strings.HasPrefix(elem, "List<") {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
 		if err := expr.emit(w); err != nil {
 			return err
+		}
+		if strings.HasSuffix(exprType, "?") {
+			if _, err := io.WriteString(w, "!"); err != nil {
+				return err
+			}
 		}
 		if _, err := io.WriteString(w, " as List).map((e) => "); err != nil {
 			return err
@@ -242,6 +248,11 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 		if err := expr.emit(w); err != nil {
 			return err
 		}
+		if strings.HasSuffix(exprType, "?") {
+			if _, err := io.WriteString(w, "!"); err != nil {
+				return err
+			}
+		}
 		if _, err := io.WriteString(w, " as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList()"); err != nil {
 			return err
 		}
@@ -252,6 +263,11 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 	}
 	if err := expr.emit(w); err != nil {
 		return err
+	}
+	if strings.HasSuffix(exprType, "?") {
+		if _, err := io.WriteString(w, "!"); err != nil {
+			return err
+		}
 	}
 	_, err := io.WriteString(w, ")")
 	return err
@@ -401,9 +417,14 @@ func (f *ForInStmt) emit(out io.Writer) error {
 			if _, err := io.WriteString(out, ".keys"); err != nil {
 				return err
 			}
-		} else if typ == "String" {
+		} else if typ == "String" || typ == "String?" {
 			if err := f.Iterable.emit(out); err != nil {
 				return err
+			}
+			if typ == "String?" {
+				if _, err := io.WriteString(out, "!"); err != nil {
+					return err
+				}
 			}
 			if _, err := io.WriteString(out, ".split('')"); err != nil {
 				return err
@@ -1671,6 +1692,11 @@ func (l *ListLit) emit(w io.Writer) error {
 		}
 		if err := e.emit(w); err != nil {
 			return err
+		}
+		if strings.HasSuffix(inferType(e), "?") {
+			if _, err := io.WriteString(w, "!"); err != nil {
+				return err
+			}
 		}
 	}
 	if _, err := io.WriteString(w, "]"); err != nil {

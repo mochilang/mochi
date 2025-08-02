@@ -36,44 +36,63 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
-class Vector {
-  num x;
-  num y;
-  num z;
-  Vector({required this.x, required this.y, required this.z});
+bool endsWith(String s, String suf) {
+  if (s.length < suf.length) {
+    return false;
+  }
+  return _substr(s, s.length - suf.length, s.length) == suf;
 }
 
-Vector add(Vector a, Vector b) {
-  return Vector(x: a.x + b.x, y: a.y + b.y, z: a.z + b.z);
+int lastIndexOf(String s, String sub) {
+  int idx = 0 - 1;
+  int i = 0;
+  while (i <= s.length - sub.length) {
+    if (_substr(s, i, i + sub.length) == sub) {
+    idx = i;
+  }
+    i = i + 1;
+  }
+  return idx;
 }
 
-Vector sub(Vector a, Vector b) {
-  return Vector(x: a.x - b.x, y: a.y - b.y, z: a.z - b.z);
+List<String> extensions = ["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"];
+List<dynamic> fileExtInList(String filename) {
+  String fl = filename.toLowerCase();
+  for (String ext in extensions) {
+    String ext2 = "." + ext.toLowerCase();
+    if (endsWith(fl, ext2)) {
+    return [true, ext];
+  }
+  }
+  int idx = lastIndexOf(filename, ".");
+  if (idx != 0 - 1) {
+    String t = _substr(filename, idx + 1, filename.length);
+    if (t != "") {
+    return [false, t];
+  };
+    return [false, "<empty>"];
+  }
+  return [false, "<none>"];
 }
 
-Vector mul(Vector v, num s) {
-  return Vector(x: v.x * s, y: v.y * s, z: v.z * s);
-}
-
-num dot(Vector a, Vector b) {
-  return a.x * b.x + a.y * b.y + a.z * b.z;
-}
-
-Vector intersectPoint(Vector rv, Vector rp, Vector pn, Vector pp) {
-  Vector diff = sub(rp, pp);
-  num prod1 = dot(diff, pn);
-  num prod2 = dot(rv, pn);
-  num prod3 = prod1 / prod2;
-  return sub(rp, mul(rv, prod3));
+String pad(String s, int w) {
+  String t = s;
+  while (t.length < w) {
+    t = t + " ";
+  }
+  return t;
 }
 
 void _main() {
-  Vector rv = Vector(x: 0.0, y: -1.0, z: -1.0);
-  Vector rp = Vector(x: 0.0, y: 0.0, z: 10.0);
-  Vector pn = Vector(x: 0.0, y: 0.0, z: 1.0);
-  Vector pp = Vector(x: 0.0, y: 0.0, z: 5.0);
-  Vector ip = intersectPoint(rv, rp, pn, pp);
-  print("The ray intersects the plane at (" + (ip.x).toString() + ", " + (ip.y).toString() + ", " + (ip.z).toString() + ")");
+  print("The listed extensions are:");
+  print("[" + extensions.join(', ') + "]");
+  List<String> tests = ["MyData.a##", "MyData.tar.Gz", "MyData.gzip", "MyData.7z.backup", "MyData...", "MyData", "MyData_v1.0.tar.bz2", "MyData_v1.0.bz2"];
+  for (String t in tests) {
+    List<dynamic> res = fileExtInList(t);
+    bool ok = res[0] as bool;
+    String ext = res[1] as String;
+    print(pad(t, 20) + " => " + (ok).toString() + "  (extension = " + ext + ")");
+  }
 }
 
 void _start() {

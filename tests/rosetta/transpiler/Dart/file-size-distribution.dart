@@ -36,14 +36,64 @@ String _substr(String s, num start, num end) {
   return s.substring(s0, e0);
 }
 
+int log10floor(int n) {
+  int p = 0;
+  int v = n;
+  while (v >= 10) {
+    v = v ~/ 10 as int;
+    p = p + 1;
+  }
+  return p;
+}
+
+String commatize(int n) {
+  String s = (n).toString();
+  String res = "";
+  int i = 0;
+  while (i < s.length) {
+    if (i > 0 && (s.length - i) % 3 == 0) {
+    res = res + ",";
+  }
+    res = res + _substr(s, i, i + 1);
+    i = i + 1;
+  }
+  return res;
+}
+
+void showDistribution(List<int> sizes) {
+  List<int> bins = <int>[];
+  int i = 0;
+  while (i < 12) {
+    bins = [...bins, 0];
+    i = i + 1;
+  }
+  int total = 0;
+  for (int sz in sizes) {
+    total = total + sz;
+    int idx = 0;
+    if (sz > 0) {
+    idx = log10floor(sz) + 1;
+  }
+    bins[idx] = bins[idx] + 1;
+  }
+  print("File size distribution:\n");
+  i = 0;
+  while (i < bins.length) {
+    String prefix = "  ";
+    if (i > 0) {
+    prefix = "+ ";
+  }
+    print(prefix + "Files less than 10 ^ " + (i).toString() + " bytes : " + (bins[i]).toString());
+    i = i + 1;
+  }
+  print("                                  -----");
+  print("= Total number of files         : " + (sizes.length).toString());
+  print("  Total size of files           : " + commatize(total) + " bytes");
+}
+
 void _main() {
-  int n = 1;
-  while (n <= 51300) {
-    if (n % 100 == 0) {
-    print((n).toString());
-  }
-    n = n + 1;
-  }
+  List<int> sizes = [0, 1, 9, 10, 99, 100, 1234, 50000, 730000, 8200000];
+  showDistribution(sizes);
 }
 
 void _start() {
