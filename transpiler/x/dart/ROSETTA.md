@@ -134,7 +134,7 @@ Compiled and ran: 420/491
 | 125 | bitmap-write-a-ppm-file | ✓ | 19.945ms | 4.8 MB |
 | 126 | bitmap | ✓ | 209.767ms | 11.1 MB |
 | 127 | bitwise-io-1 | ✓ | 13.005ms | 3.4 MB |
-| 128 | bitwise-io-2 | ✓ | 7.84ms | 1.4 MB |
+| 128 | bitwise-io-2 | ✓ | 14.069ms | 3.6 MB |
 | 129 | bitwise-operations | ✓ | 6.685ms | 28.0 KB |
 | 130 | blum-integer | ✓ | 6.868ms | 660.0 KB |
 | 131 | boolean-values | ✓ | 6.335ms | 12.4 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 10:28 +0700_
+_Last updated: 2025-08-02 10:56 +0700_
