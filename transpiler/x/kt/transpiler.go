@@ -118,6 +118,16 @@ func init() {
     }
     if (path != null && path != "-") writer.close()
 }`,
+		"_powInt": `fun _powInt(base: Int, exp: Int): Int {
+    var res = 1
+    var b = base
+    var e = exp
+    while (e > 0) {
+        res *= b
+        e--
+    }
+    return res
+}`,
 		"toJson": `fun toJson(v: Any?): String = when (v) {
     null -> "null"
     is String -> "\"" + v.replace("\"", "\\\"") + "\""
@@ -189,7 +199,7 @@ fun _add(a: BigRat, b: BigRat): BigRat = a.add(b)
 fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)`,
-"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
+		"sha256": `fun _sha256(bs: List<Int>): MutableList<Int> {
 val md = java.security.MessageDigest.getInstance("SHA-256")
 val arr = ByteArray(bs.size)
 for (i in bs.indices) arr[i] = bs[i].toByte()
@@ -198,7 +208,7 @@ val res = mutableListOf<Int>()
 for (b in hash) res.add((b.toInt() and 0xff))
 return res
 }`,
-"pow2": `fun pow2(n: Int): Long {
+		"pow2": `fun pow2(n: Int): Long {
 var v = 1L
 var i = 0
 while (i < n) {
@@ -207,13 +217,13 @@ i++
 }
 return v
 }`,
-"lshift": `fun lshift(x: Int, n: Int): Int {
+		"lshift": `fun lshift(x: Int, n: Int): Int {
 return (x.toLong() * pow2(n)).toInt()
 }`,
-"rshift": `fun rshift(x: Int, n: Int): Int {
+		"rshift": `fun rshift(x: Int, n: Int): Int {
 return (x.toLong() / pow2(n)).toInt()
 }`,
-}
+	}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
 		"this": true, "super": true, "val": true, "var": true,
@@ -516,6 +526,11 @@ type InvokeExpr struct {
 }
 
 func (in *InvokeExpr) emit(w io.Writer) {
+	if fe, ok := in.Callee.(*FieldExpr); ok && fe.Name == "padStart" && len(in.Args) == 2 {
+		if s, ok := in.Args[1].(*StringLit); ok && len(s.Value) == 1 {
+			in.Args[1] = &CharLit{Value: []rune(s.Value)[0]}
+		}
+	}
 	in.Callee.emit(w)
 	io.WriteString(w, "(")
 	for i, a := range in.Args {
@@ -600,6 +615,10 @@ func (f *FloatLit) emit(w io.Writer) {
 	}
 	io.WriteString(w, s)
 }
+
+type CharLit struct{ Value rune }
+
+func (c *CharLit) emit(w io.Writer) { fmt.Fprintf(w, "'%c'", c.Value) }
 
 type BoolLit struct{ Value bool }
 
@@ -964,6 +983,34 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "==" || b.Op == "!=" {
+		if vr, ok := b.Left.(*VarRef); ok {
+			if (vr.Name == "true" || vr.Name == "false") && guessType(b.Right) == "String" {
+				b.Left = &StringLit{Value: vr.Name}
+			}
+		} else if bl, ok := b.Left.(*BoolLit); ok {
+			if guessType(b.Right) == "String" {
+				if bl.Value {
+					b.Left = &StringLit{Value: "true"}
+				} else {
+					b.Left = &StringLit{Value: "false"}
+				}
+			}
+		}
+		if vr, ok := b.Right.(*VarRef); ok {
+			if (vr.Name == "true" || vr.Name == "false") && guessType(b.Left) == "String" {
+				b.Right = &StringLit{Value: vr.Name}
+			}
+		} else if bl, ok := b.Right.(*BoolLit); ok {
+			if guessType(b.Left) == "String" {
+				if bl.Value {
+					b.Right = &StringLit{Value: "true"}
+				} else {
+					b.Right = &StringLit{Value: "false"}
+				}
+			}
+		}
+	}
 	leftType := guessType(b.Left)
 	rightType := guessType(b.Right)
 	listOp := b.Op == "+" && (strings.HasPrefix(leftType, "MutableList<") || strings.HasPrefix(rightType, "MutableList<"))
@@ -981,7 +1028,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if typ == "Int" {
 			io.WriteString(w, "(")
 			e.emit(w)
-			io.WriteString(w, ").toInt()")
+			if t := guessType(e); t == "Any" || t == "Any?" {
+				io.WriteString(w, " as Int")
+			} else {
+				io.WriteString(w, ").toInt()")
+				return
+			}
+			io.WriteString(w, ")")
 		} else if typ == "BigInteger" {
 			io.WriteString(w, "(")
 			e.emit(w)
@@ -1016,22 +1069,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				cast(e, "String")
 				return
 			}
-               } else if numOp {
-                       t := guessType(e)
-                       if t == "Int" && guessType(other) == "Long" {
-                               cast(e, "Long")
-                               return
-                       }
-                       if t == "Any" || t == "Any?" {
-                               ot := guessType(other)
-                               if ot == "Int" {
-                                       cast(e, "Int")
-                               } else {
-                                       cast(e, "Double")
-                               }
-                               return
-                       }
-               }
+		} else if numOp {
+			t := guessType(e)
+			if t == "Int" && guessType(other) == "Long" {
+				cast(e, "Long")
+				return
+			}
+			if t == "Any" || t == "Any?" {
+				ot := guessType(other)
+				if ot == "Int" {
+					cast(e, "Int")
+				} else {
+					cast(e, "Double")
+				}
+				return
+			}
+		}
 		if boolOp {
 			t := guessType(e)
 			if t != "Boolean" {
@@ -2530,6 +2583,8 @@ func guessType(e Expr) string {
 		return "Int"
 	case *FloatLit:
 		return "Double"
+	case *CharLit:
+		return "Char"
 	case *BoolLit:
 		return "Boolean"
 	case *StringLit:
@@ -3117,25 +3172,25 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			}
 			p.Stmts = append(p.Stmts, stmt)
 			seenStmt = true
-               case st.Return != nil:
-                       var val Expr
-                       if st.Return.Value != nil {
-                               var err error
-                               val, err = convertExpr(env, st.Return.Value)
-                               if err != nil {
-                                       return nil, err
-                               }
-                       }
-                       if _, ok := val.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
-                               val = nil
-                       }
-                       if currentRetType != "" && currentRetType != "Any" && val != nil {
-                               if guessType(val) != currentRetType {
-                                       val = &CastExpr{Value: val, Type: currentRetType}
-                               }
-                       }
-                       p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
-                       seenStmt = true
+		case st.Return != nil:
+			var val Expr
+			if st.Return.Value != nil {
+				var err error
+				val, err = convertExpr(env, st.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if _, ok := val.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
+				val = nil
+			}
+			if currentRetType != "" && currentRetType != "Any" && val != nil {
+				if guessType(val) != currentRetType {
+					val = &CastExpr{Value: val, Type: currentRetType}
+				}
+			}
+			p.Stmts = append(p.Stmts, &ReturnStmt{Value: val})
+			seenStmt = true
 		case st.Fun != nil:
 			bodyEnv := types.NewEnv(env)
 			ftParams := make([]types.Type, 0, len(st.Fun.Params))
@@ -3148,21 +3203,21 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if st.Fun.Return != nil {
 				retType = types.ResolveTypeRef(st.Fun.Return, env)
 			}
-                       env.SetVar(st.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
-                       env.SetFunc(st.Fun.Name, st.Fun)
-                       localFuncs[st.Fun.Name] = true
-                       if st.Fun.Name == "pow2" || st.Fun.Name == "lshift" || st.Fun.Name == "rshift" {
-                               switch st.Fun.Name {
-                               case "pow2":
-                                       funcRets[st.Fun.Name] = "Long"
-                               default:
-                                       funcRets[st.Fun.Name] = "Int"
-                               }
-                               useHelper(st.Fun.Name)
-                               continue
-                       }
-                       prevRet := currentRetType
-                       ret := kotlinType(st.Fun.Return)
+			env.SetVar(st.Fun.Name, types.FuncType{Params: ftParams, Return: retType}, false)
+			env.SetFunc(st.Fun.Name, st.Fun)
+			localFuncs[st.Fun.Name] = true
+			if st.Fun.Name == "pow2" || st.Fun.Name == "lshift" || st.Fun.Name == "rshift" {
+				switch st.Fun.Name {
+				case "pow2":
+					funcRets[st.Fun.Name] = "Long"
+				default:
+					funcRets[st.Fun.Name] = "Int"
+				}
+				useHelper(st.Fun.Name)
+				continue
+			}
+			prevRet := currentRetType
+			ret := kotlinType(st.Fun.Return)
 			if ret == "" {
 				if t, ok := env.Types()[st.Fun.Name]; ok {
 					if ft, ok := t.(types.FuncType); ok {
@@ -3716,24 +3771,24 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 				fname = "user_main"
 			}
 			out = append(out, &FuncDef{Name: fname, Params: params, Ret: ret, Body: body})
-               case s.Return != nil:
-                       var v Expr
-                       if s.Return.Value != nil {
-                               var err error
-                               v, err = convertExpr(env, s.Return.Value)
-                               if err != nil {
-                                       return nil, err
-                               }
-                       }
-                       if _, ok := v.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
-                               v = nil
-                       }
-                       if currentRetType != "" && currentRetType != "Any" && v != nil {
-                               if guessType(v) != currentRetType {
-                                       v = &CastExpr{Value: v, Type: currentRetType}
-                               }
-                       }
-                       out = append(out, &ReturnStmt{Value: v})
+		case s.Return != nil:
+			var v Expr
+			if s.Return.Value != nil {
+				var err error
+				v, err = convertExpr(env, s.Return.Value)
+				if err != nil {
+					return nil, err
+				}
+			}
+			if _, ok := v.(*NullLit); ok && (currentRetType == "" || currentRetType == "Unit") {
+				v = nil
+			}
+			if currentRetType != "" && currentRetType != "Any" && v != nil {
+				if guessType(v) != currentRetType {
+					v = &CastExpr{Value: v, Type: currentRetType}
+				}
+			}
+			out = append(out, &ReturnStmt{Value: v})
 		case s.If != nil:
 			st, err := convertIfStmt(env, s.If)
 			if err != nil {
@@ -5137,6 +5192,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			return &PadStartExpr{Value: str, Width: width, Pad: pad}, nil
+		case "pow":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("pow expects 2 args")
+			}
+			args := make([]Expr, 2)
+			for i := 0; i < 2; i++ {
+				ex, err := convertExpr(env, p.Call.Args[i])
+				if err != nil {
+					return nil, err
+				}
+				args[i] = ex
+			}
+			useHelper("_powInt")
+			return &CallExpr{Func: "_powInt", Args: args}, nil
 		case "indexOf":
 			if len(p.Call.Args) != 2 {
 				return nil, fmt.Errorf("indexOf expects 2 args")
