@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Prolog code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Prolog`.
-Last updated: 2025-08-01 15:22 +0700
+Last updated: 2025-08-02 11:41 +0700
 
-## Rosetta Golden Test Checklist (75/491)
+## Rosetta Golden Test Checklist (76/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -159,7 +159,7 @@ Last updated: 2025-08-01 15:22 +0700
 | 150 | call-a-function-10 |   |  |  |
 | 151 | call-a-function-11 |   |  |  |
 | 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 |   |  |  |
+| 153 | call-a-function-2 | ✓ | 43µs |  |
 | 154 | call-a-function-3 |   |  |  |
 | 155 | call-a-function-4 |   |  |  |
 | 156 | call-a-function-5 |   |  |  |
