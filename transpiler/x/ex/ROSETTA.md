@@ -3,7 +3,7 @@
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
 ## Rosetta Test Checklist (156/491)
-_Last updated: 2025-08-01 10:51 +0000_
+_Last updated: 2025-08-02 17:26 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -105,7 +105,7 @@ _Last updated: 2025-08-01 10:51 +0000_
 | 97 | babylonian-spiral | ✓ | 2.51ms | 2.0 MB |
 | 98 | balanced-brackets | ✓ | 1.09ms | 391.1 KB |
 | 99 | balanced-ternary | ✓ | 2.97ms | 296.1 KB |
-| 100 | barnsley-fern | ✓ |  |  |
+| 100 | barnsley-fern | ✓ | 55.06ms | 97.5 KB |
 | 101 | base64-decode-data | ✓ |  |  |
 | 102 | bell-numbers | ✓ |  |  |
 | 103 | benfords-law | ✓ |  |  |

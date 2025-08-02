@@ -119,4 +119,11 @@
                            *                                
                            *                                
                                                             
-                           *
+                           *                                
+                                                            
+                                                            
+{
+  "duration_us": 55060,
+  "memory_bytes": 99864,
+  "name": "main"
+}
