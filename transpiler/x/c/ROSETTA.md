@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (134/491) - Last updated 2025-08-02 11:55 +0700:
+Checklist of programs that currently transpile and run (134/491) - Last updated 2025-08-02 12:08 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -164,7 +164,7 @@ Checklist of programs that currently transpile and run (134/491) - Last updated 
 | 157 | call-a-function-6 | ✓ | 274us | 4.9 KB |
 | 158 | call-a-function-7 | ✓ | 21us | 0 B |
 | 159 | call-a-function-8 | ✓ | 69us | 2.2 KB |
-| 160 | call-a-function-9 | ✓ | 59us | 688 B |
+| 160 | call-a-function-9 | ✓ | 76us | 688 B |
 | 161 | call-an-object-method-1 | ✓ | 20us | 0 B |
 | 162 | call-an-object-method-2 | ✓ | 43us | 0 B |
 | 163 | call-an-object-method-3 | ✓ | 23us | 0 B |
