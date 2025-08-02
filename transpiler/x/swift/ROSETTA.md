@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 392/491
-Last updated: 2025-08-02 20:30 +0700
+Completed: 397/491
+Last updated: 2025-08-02 20:59 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -235,36 +235,36 @@ Last updated: 2025-08-02 20:30 +0700
 | 226 | constrained-genericity-2 | ✓ | 105µs | 2.7 MB |
 | 227 | constrained-genericity-3 | ✓ | 107µs | 3.0 MB |
 | 228 | constrained-genericity-4 | ✓ | 223µs | 3.2 MB |
-| 229 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 231 | continued-fraction | ✓ | 534µs | 3.1 MB |
-| 232 | convert-decimal-number-to-rational | ✓ | 571µs | 3.1 MB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 395µs | 3.0 MB |
-| 234 | convex-hull |   |  |  |
-| 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 | ✓ | 128µs | 3.1 MB |
-| 237 | copy-a-string-2 | ✓ | 217µs | 3.1 MB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 254µs | 3.1 MB |
-| 239 | copy-stdin-to-stdout-2 | ✓ |  |  |
-| 240 | count-in-factors | ✓ |  |  |
-| 241 | count-in-octal-1 | ✓ |  |  |
-| 242 | count-in-octal-2 | ✓ |  |  |
-| 243 | count-in-octal-3 | ✓ |  |  |
-| 244 | count-in-octal-4 | ✓ |  |  |
-| 245 | count-occurrences-of-a-substring | ✓ |  |  |
-| 246 | count-the-coins-1 | ✓ |  |  |
-| 247 | count-the-coins-2 | ✓ | 765µs | 3.2 MB |
-| 248 | cramers-rule | ✓ | 638µs | 3.4 MB |
-| 249 | crc-32-1 | ✓ | 1.565ms | 3.2 MB |
-| 250 | crc-32-2 |   | 1.664ms | 3.3 MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 234µs | 3.0 MB |
-| 252 | create-a-file | ✓ | 295µs | 3.1 MB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 424µs | 3.2 MB |
-| 254 | create-an-html-table | ✓ | 472µs | 3.0 MB |
-| 255 | create-an-object-at-a-given-address | ✓ | 383µs | 3.4 MB |
-| 256 | csv-data-manipulation | ✓ | 464µs | 3.2 MB |
-| 257 | csv-to-html-translation-1 | ✓ |  |  |
-| 258 | csv-to-html-translation-2 | ✓ |  |  |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 23.001ms | 3.0 MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 8.374ms | 3.0 MB |
+| 231 | continued-fraction | ✓ | 314µs | 3.3 MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 389µs | 3.4 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 181µs | 3.1 MB |
+| 234 | convex-hull | ✓ | 289µs | 3.1 MB |
+| 235 | conways-game-of-life | ✓ | 503.691ms | 3.2 MB |
+| 236 | copy-a-string-1 | ✓ | 72µs | 3.1 MB |
+| 237 | copy-a-string-2 | ✓ | 172µs | 3.2 MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 157µs | 3.1 MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 270µs | 2.9 MB |
+| 240 | count-in-factors | ✓ | 289µs | 3.4 MB |
+| 241 | count-in-octal-1 | ✓ | 453µs | 3.3 MB |
+| 242 | count-in-octal-2 | ✓ | 209.584ms | 3.1 MB |
+| 243 | count-in-octal-3 | ✓ | 265µs | 3.0 MB |
+| 244 | count-in-octal-4 | ✓ | 290µs | 3.2 MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 222µs | 3.2 MB |
+| 246 | count-the-coins-1 | ✓ | 184µs | 3.1 MB |
+| 247 | count-the-coins-2 | ✓ | 529µs | 3.1 MB |
+| 248 | cramers-rule | ✓ | 462µs | 3.3 MB |
+| 249 | crc-32-1 | ✓ | 1.172ms | 3.5 MB |
+| 250 | crc-32-2 | ✓ | 1.155ms | 3.2 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 163µs | 2.8 MB |
+| 252 | create-a-file | ✓ | 199µs | 3.2 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 174µs | 3.2 MB |
+| 254 | create-an-html-table | ✓ | 221µs | 3.1 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 255µs | 3.1 MB |
+| 256 | csv-data-manipulation | ✓ | 242µs | 3.1 MB |
+| 257 | csv-to-html-translation-1 | ✓ | 353µs | 3.4 MB |
+| 258 | csv-to-html-translation-2 | ✓ | 322µs | 3.0 MB |
 | 259 | csv-to-html-translation-3 | ✓ |  |  |
 | 260 | csv-to-html-translation-4 | ✓ |  |  |
 | 261 | csv-to-html-translation-5 | ✓ |  |  |
