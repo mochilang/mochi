@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/averages-root-mean-square.zig:13:15: error: function parameter shadows declaration of 'x'
-/tmp/averages-root-mean-square.zig:10:1: note: declared here
