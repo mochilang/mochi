@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 382/491
-Last updated: 2025-08-02 17:56 +0700
+Completed: 392/491
+Last updated: 2025-08-02 20:30 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -215,36 +215,36 @@ Last updated: 2025-08-02 17:56 +0700
 | 206 | cistercian-numerals | ✓ | 1.187ms | 3.3 MB |
 | 207 | comma-quibbling | ✓ | 226µs | 3.2 MB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 1.348ms | 3.5 MB |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 210 | compound-data-type | ✓ |  |  |
-| 211 | concurrent-computing-1 | ✓ |  |  |
-| 212 | concurrent-computing-2 | ✓ |  |  |
-| 213 | concurrent-computing-3 | ✓ |  |  |
-| 214 | conditional-structures-1 |   |  |  |
-| 215 | conditional-structures-10 | ✓ |  |  |
-| 216 | conditional-structures-2 |   |  |  |
-| 217 | conditional-structures-3 |   |  |  |
-| 218 | conditional-structures-4 | ✓ |  |  |
-| 219 | conditional-structures-5 |   |  |  |
-| 220 | conditional-structures-6 |   |  |  |
-| 221 | conditional-structures-7 |   |  |  |
-| 222 | conditional-structures-8 |   |  |  |
-| 223 | conditional-structures-9 | ✓ |  |  |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 1m7.170769s | 3.7 MB |
+| 210 | compound-data-type | ✓ | 107µs | 2.8 MB |
+| 211 | concurrent-computing-1 | ✓ | 549µs | 3.2 MB |
+| 212 | concurrent-computing-2 | ✓ | 470µs | 3.2 MB |
+| 213 | concurrent-computing-3 | ✓ | 791µs | 3.0 MB |
+| 214 | conditional-structures-1 | ✓ | 106µs | 3.2 MB |
+| 215 | conditional-structures-10 | ✓ | 232µs | 2.8 MB |
+| 216 | conditional-structures-2 | ✓ | 109µs | 2.9 MB |
+| 217 | conditional-structures-3 | ✓ | 106µs | 3.2 MB |
+| 218 | conditional-structures-4 | ✓ | 108µs | 2.7 MB |
+| 219 | conditional-structures-5 | ✓ | 108µs | 3.1 MB |
+| 220 | conditional-structures-6 | ✓ | 108µs | 2.8 MB |
+| 221 | conditional-structures-7 | ✓ | 107µs | 3.0 MB |
+| 222 | conditional-structures-8 | ✓ | 109µs | 3.1 MB |
+| 223 | conditional-structures-9 | ✓ | 107µs | 3.1 MB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ |  |  |
-| 225 | constrained-genericity-1 | ✓ |  |  |
-| 226 | constrained-genericity-2 | ✓ |  |  |
-| 227 | constrained-genericity-3 |   |  |  |
-| 228 | constrained-genericity-4 | ✓ |  |  |
+| 225 | constrained-genericity-1 | ✓ | 109µs | 3.1 MB |
+| 226 | constrained-genericity-2 | ✓ | 105µs | 2.7 MB |
+| 227 | constrained-genericity-3 | ✓ | 107µs | 3.0 MB |
+| 228 | constrained-genericity-4 | ✓ | 223µs | 3.2 MB |
 | 229 | constrained-random-points-on-a-circle-1 |   |  |  |
 | 230 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 231 | continued-fraction |   |  |  |
-| 232 | convert-decimal-number-to-rational | ✓ |  |  |
-| 233 | convert-seconds-to-compound-duration | ✓ |  |  |
+| 231 | continued-fraction | ✓ | 534µs | 3.1 MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 571µs | 3.1 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 395µs | 3.0 MB |
 | 234 | convex-hull |   |  |  |
 | 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 | ✓ |  |  |
-| 237 | copy-a-string-2 | ✓ |  |  |
-| 238 | copy-stdin-to-stdout-1 | ✓ |  |  |
+| 236 | copy-a-string-1 | ✓ | 128µs | 3.1 MB |
+| 237 | copy-a-string-2 | ✓ | 217µs | 3.1 MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 254µs | 3.1 MB |
 | 239 | copy-stdin-to-stdout-2 | ✓ |  |  |
 | 240 | count-in-factors | ✓ |  |  |
 | 241 | count-in-octal-1 | ✓ |  |  |

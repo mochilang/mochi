@@ -1,8 +1,0 @@
-exit status 1
-/tmp/TestSwiftTranspiler_Rosetta_Golden4111604101/001/main.swift:10:25: error: 'nil' requires a contextual type
- 8 | 
- 9 | func example6(_ value: Int) {
-10 |     _ = ((value == 1) ? nil : ((value == 2) ? nil : ((value == 3) ? nil : ((value == 4) ? nil : nil))))
-   |                         `- error: 'nil' requires a contextual type
-11 | }
-12 | 
