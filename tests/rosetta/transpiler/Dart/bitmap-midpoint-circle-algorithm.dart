@@ -44,7 +44,7 @@ List<List<String>> initGrid(int size) {
     row = [...row, " "];
     x = x + 1;
   }
-    g = [...g, row];
+    g = ([...g, row] as List).map((e) => List<String>.from(e)).toList();
     y = y + 1;
   }
   return g;
@@ -57,7 +57,7 @@ void set(List<List<String>> g, int x, int y) {
 }
 
 List<List<String>> circle(int r) {
-  final int size = r * 2 + 1;
+  int size = r * 2 + 1;
   List<List<String>> g = initGrid(size);
   int x = r;
   int y = 0;
@@ -104,7 +104,7 @@ void main() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  for (var row in g) {
+  for (List<String> row in g) {
     print(trimRight(row));
   }
   _benchSw.stop();

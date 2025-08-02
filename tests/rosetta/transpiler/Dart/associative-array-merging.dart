@@ -22,21 +22,33 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 Map<String, dynamic> merge(Map<String, dynamic> base, Map<String, dynamic> update) {
-  Map<String, dynamic> result = {};
-  for (var k in base.keys) {
-    result[k] = base[k];
+  Map<String, dynamic> result = <String, dynamic>{};
+  for (String k in base.keys) {
+    result[k] = base[k]!;
   }
-  for (var k in update.keys) {
-    result[k] = update[k];
+  for (String k in update.keys) {
+    result[k] = update[k]!;
   }
   return result;
 }
 
-void main() {
-  final Map<String, dynamic> base = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"};
-  final Map<String, dynamic> update = {"price": 15.25, "color": "red", "year": 1974};
-  final Map<String, dynamic> result = merge(base, update);
+void _main() {
+  Map<String, dynamic> base = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"};
+  Map<String, dynamic> update = {"price": 15.25, "color": "red", "year": 1974};
+  Map<String, dynamic> result = merge(base, update);
   print(result);
 }
 
@@ -47,13 +59,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

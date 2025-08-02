@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 int indexOf(String s, String ch) {
   int i = 0;
   while (i < s.length) {
@@ -41,9 +53,9 @@ int parseIntStr(String str) {
     i = 1;
   }
   int n = 0;
-  final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
+  Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[str.substring(i, i + 1)]!;
+    n = (n * 10 + digits[str.substring(i, i + 1)]!).toInt();
     i = i + 1;
   }
   if (neg) {
@@ -53,8 +65,8 @@ int parseIntStr(String str) {
 }
 
 int ord(String ch) {
-  final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  final String lower = "abcdefghijklmnopqrstuvwxyz";
+  String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  String lower = "abcdefghijklmnopqrstuvwxyz";
   int idx = upper.indexOf(ch);
   if (idx >= 0) {
     return 65 + idx;
@@ -64,7 +76,7 @@ int ord(String ch) {
     return 97 + idx;
   }
   if (ch.compareTo("0") >= 0 && ch.compareTo("9") <= 0) {
-    return (48 + int.parse(ch)).toInt();
+    return 48 + int.parse(ch);
   }
   if (ch == "+") {
     return 43;
@@ -82,17 +94,17 @@ int ord(String ch) {
 }
 
 String chr(int n) {
-  final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  final String lower = "abcdefghijklmnopqrstuvwxyz";
+  String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  String lower = "abcdefghijklmnopqrstuvwxyz";
   if (n >= 65 && n < 91) {
-    return upper.substring(n - 65, n - 64);
+    return _substr(upper, n - 65, n - 64);
   }
   if (n >= 97 && n < 123) {
-    return lower.substring(n - 97, n - 96);
+    return _substr(lower, n - 97, n - 96);
   }
   if (n >= 48 && n < 58) {
-    final String digits = "0123456789";
-    return digits.substring(n - 48, n - 47);
+    String digits = "0123456789";
+    return _substr(digits, n - 48, n - 47);
   }
   if (n == 43) {
     return "+";
@@ -125,16 +137,16 @@ int binToInt(String bits) {
   int n = 0;
   int i = 0;
   while (i < bits.length) {
-    n = n * 2 + int.parse(bits.substring(i, i + 1));
+    n = n * 2 + int.parse(_substr(bits, i, i + 1));
     i = i + 1;
   }
   return n;
 }
 
 String base64Encode(String text) {
-  final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   String bin = "";
-  for (var ch in text.split('')) {
+  for (String ch in text.split('')) {
     bin = bin + toBinary(ord(ch), 8);
   }
   while (bin.length % 6 != 0) {
@@ -143,48 +155,48 @@ String base64Encode(String text) {
   String out = "";
   int i = 0;
   while (i < bin.length) {
-    final String chunk = bin.substring(i, i + 6);
-    final int val = binToInt(chunk);
-    out = out + alphabet.substring(val, val + 1);
+    String chunk = _substr(bin, i, i + 6);
+    int val = binToInt(chunk);
+    out = out + _substr(alphabet, val, val + 1);
     i = i + 6;
   }
-  final int pad = (3 - text.length % 3) % 3;
+  int pad = (3 - text.length % 3) % 3;
   if (pad == 1) {
-    out = out.substring(0, out.length - 1) + "=";
+    out = _substr(out, 0, out.length - 1) + "=";
   }
   if (pad == 2) {
-    out = out.substring(0, out.length - 2) + "==";
+    out = _substr(out, 0, out.length - 2) + "==";
   }
   return out;
 }
 
 String base64Decode(String enc) {
-  final String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   String bin = "";
   int i = 0;
   while (i < enc.length) {
-    final String ch = enc.substring(i, i + 1);
+    String ch = enc.substring(i, i + 1);
     if (ch == "=") {
     break;
   }
-    final int idx = alphabet.indexOf(ch);
+    int idx = alphabet.indexOf(ch);
     bin = bin + toBinary(idx, 6);
     i = i + 1;
   }
   String out = "";
   i = 0;
   while (i + 8 <= bin.length) {
-    final String chunk = bin.substring(i, i + 8);
-    final int val = binToInt(chunk);
+    String chunk = _substr(bin, i, i + 8);
+    int val = binToInt(chunk);
     out = out + chr(val);
     i = i + 8;
   }
   return out;
 }
 
-final String msg = "Rosetta Code Base64 decode data task";
-final String enc = base64Encode(msg);
-final String dec = base64Decode(enc);
+String msg = "Rosetta Code Base64 decode data task";
+String enc = base64Encode(msg);
+String dec = base64Decode(enc);
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();

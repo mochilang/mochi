@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 Map<String, dynamic> mean(List<num> v) {
   if (v.length == 0) {
     return {"ok": false};
@@ -35,11 +47,11 @@ Map<String, dynamic> mean(List<num> v) {
   return {"ok": true, "mean": sum / ((v.length).toDouble())};
 }
 
-void main() {
-  final List<List<num>> sets = [[], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0], [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0], [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11], [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]];
-  for (var v in sets) {
+void _main() {
+  List<List<num>> sets = [[], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0], [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0], [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11], [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0]];
+  for (List<num> v in sets) {
     print("Vector: " + (v).toString());
-    final Map<String, dynamic> r = mean(v);
+    Map<String, dynamic> r = mean(v);
     if (r["ok"]) {
     print("Mean of " + (v.length).toString() + " numbers is " + (r["mean"]).toString());
   } else {
@@ -56,13 +68,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

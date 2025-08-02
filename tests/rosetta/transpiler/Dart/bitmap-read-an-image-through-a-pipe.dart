@@ -42,9 +42,9 @@ int parseIntStr(String str) {
     i = 1;
   }
   int n = 0;
-  final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
+  Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[_substr(str, i, i + 1)]!;
+    n = (n * 10 + digits[_substr(str, i, i + 1)]!).toInt();
     i = i + 1;
   }
   if (neg) {
@@ -58,7 +58,7 @@ List<String> splitWs(String s) {
   String cur = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = _substr(s, i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == " " || ch == "\n" || ch == "	" || ch == "\r") {
     if (cur.length > 0) {
     parts = [...parts, cur];
@@ -76,14 +76,14 @@ List<String> splitWs(String s) {
 }
 
 Map<String, dynamic> parsePpm(String data) {
-  final List<String> toks = splitWs(data);
+  List<String> toks = splitWs(data);
   if (toks.length < 4) {
     return {"err": true};
   }
-  final String magic = toks[0];
-  final w = int.parse(toks[1]);
-  final h = int.parse(toks[2]);
-  final maxv = int.parse(toks[3]);
+  String magic = toks[0];
+  int w = int.parse(toks[1]);
+  int h = int.parse(toks[2]);
+  int maxv = int.parse(toks[3]);
   List<int> px = <int>[];
   int i = 4;
   while (i < toks.length) {
@@ -93,8 +93,8 @@ Map<String, dynamic> parsePpm(String data) {
   return {"magic": magic, "w": w, "h": h, "max": maxv, "px": px};
 }
 
-final String ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n";
-final Map<String, dynamic> img = parsePpm(ppmData);
+String ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n";
+Map<String, dynamic> img = parsePpm(ppmData);
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();

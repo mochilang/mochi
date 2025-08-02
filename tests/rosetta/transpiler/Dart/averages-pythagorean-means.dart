@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num powf(num base, int exp) {
   num result = 1.0;
   int i = 0;
@@ -37,7 +49,7 @@ num nthRoot(num x, int n) {
   num high = x;
   int i = 0;
   while (i < 60) {
-    final num mid = (low + high) / 2.0;
+    num mid = (low + high) / 2.0;
     if (powf(mid, n) > x) {
     high = mid;
   } else {
@@ -48,22 +60,22 @@ num nthRoot(num x, int n) {
   return low;
 }
 
-void main() {
+void _main() {
   num sum = 0.0;
   num sumRecip = 0.0;
   num prod = 1.0;
   int n = 1;
   while (n <= 10) {
-    final num f = (n).toDouble();
+    num f = (n).toDouble();
     sum = sum + f;
     sumRecip = sumRecip + 1.0 / f;
     prod = prod * f;
     n = n + 1;
   }
-  final num count = 10.0;
-  final num a = sum / count;
-  final num g = nthRoot(prod, 10);
-  final num h = count / sumRecip;
+  num count = 10.0;
+  num a = sum / count;
+  num g = nthRoot(prod, 10);
+  num h = count / sumRecip;
   print("A: " + (a).toString() + " G: " + (g).toString() + " H: " + (h).toString());
   print("A >= G >= H: " + (a >= g && g >= h).toString());
 }
@@ -75,13 +87,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

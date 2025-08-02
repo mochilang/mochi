@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Colour {
   int R;
   int G;
@@ -36,36 +48,31 @@ class Bitmap {
   Bitmap({required this.width, required this.height, required this.pixels});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  Bitmap newBitmap(int w, int h, Colour c) {
-  List<List<Colour>> rows = [];
+Bitmap newBitmap(int w, int h, Colour c) {
+  List<List<Colour>> rows = <List<Colour>>[];
   int y = 0;
   while (y < h) {
-    List<Colour> row = [];
+    List<Colour> row = <Colour>[];
     int x = 0;
     while (x < w) {
     row = [...row, c];
     x = x + 1;
   }
-    rows = [...rows, row];
+    rows = ([...rows, row] as List).map((e) => List<Colour>.from(e)).toList();
     y = y + 1;
   }
   return Bitmap(width: w, height: h, pixels: rows);
 }
-  void setPixel(Bitmap b, int x, int y, Colour c) {
+
+void setPixel(Bitmap b, int x, int y, Colour c) {
   List<List<Colour>> rows = b.pixels;
   List<Colour> row = rows[y];
   row[x] = c;
   rows[y] = row;
   b.pixels = rows;
 }
-  void fillRect(Bitmap b, int x, int y, int w, int h, Colour c) {
+
+void fillRect(Bitmap b, int x, int y, int w, int h, Colour c) {
   int yy = y;
   while (yy < y + h) {
     int xx = x;
@@ -76,20 +83,22 @@ void main() {
     yy = yy + 1;
   }
 }
-  String pad(int n, int width) {
+
+String pad(int n, int width) {
   String s = (n).toString();
   while (s.length < width) {
     s = " " + s;
   }
   return s;
 }
-  String writePPMP3(Bitmap b) {
+
+String writePPMP3(Bitmap b) {
   int maxv = 0;
   int y = 0;
   while (y < b.height) {
     int x = 0;
     while (x < b.width) {
-    final Colour p = b.pixels[y]![x];
+    Colour p = b.pixels[y][x];
     if (p.R > maxv) {
     maxv = p.R;
   }
@@ -110,7 +119,7 @@ void main() {
     String line = "";
     int x = 0;
     while (x < b.width) {
-    final Colour p = b.pixels[y]![x];
+    Colour p = b.pixels[y][x];
     line = line + "   " + pad(p.R, numsize) + " " + pad(p.G, numsize) + " " + pad(p.B, numsize);
     x = x + 1;
   }
@@ -124,21 +133,32 @@ void main() {
   }
   return out;
 }
-  void main() {
-  final Colour black = Colour(R: 0, G: 0, B: 0);
-  final Colour white = Colour(R: 255, G: 255, B: 255);
+
+void _main() {
+  Colour black = Colour(R: 0, G: 0, B: 0);
+  Colour white = Colour(R: 255, G: 255, B: 255);
   Bitmap bm = newBitmap(4, 4, black);
   fillRect(bm, 1, 0, 1, 2, white);
   setPixel(bm, 3, 3, Colour(R: 127, G: 0, B: 63));
-  final String ppm = writePPMP3(bm);
+  String ppm = writePPMP3(bm);
   print(ppm);
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

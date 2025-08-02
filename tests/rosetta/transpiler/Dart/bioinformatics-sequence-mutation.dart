@@ -35,7 +35,7 @@ String _substr(String s, int start, int end) {
 }
 
 List<int> randInt(int s, int n) {
-  final int next = (s * 1664525 + 1013904223) % 2147483647;
+  int next = (s * 1664525 + 1013904223) % 2147483647;
   return [next, next % n];
 }
 
@@ -50,28 +50,28 @@ String padLeft(String s, int w) {
 }
 
 List<dynamic> makeSeq(int s, int le) {
-  final String bases = "ACGT";
+  String bases = "ACGT";
   String out = "";
   int i = 0;
   while (i < le) {
     List<int> r = randInt(s, 4);
     s = r[0];
-    final int idx = r[1] as int;
+    int idx = r[1] as int;
     out = out + _substr(bases, idx, idx + 1);
     i = i + 1;
   }
-  return List<dynamic>.from([s, out]);
+  return [s, out];
 }
 
 List<dynamic> mutate(int s, String dna, List<int> w) {
-  final String bases = "ACGT";
-  final int le = dna.length;
+  String bases = "ACGT";
+  int le = dna.length;
   List<int> r = randInt(s, le);
   s = r[0];
-  final int p = r[1] as int;
+  int p = r[1] as int;
   r = randInt(s, 300);
   s = r[0];
-  final int x = r[1] as int;
+  int x = r[1] as int;
   List<String> arr = <String>[];
   int i = 0;
   while (i < le) {
@@ -81,8 +81,8 @@ List<dynamic> mutate(int s, String dna, List<int> w) {
   if (x < w[0]) {
     r = randInt(s, 4);
     s = r[0];
-    final int idx = r[1] as int;
-    final String b = _substr(bases, idx, idx + 1);
+    int idx = r[1] as int;
+    String b = _substr(bases, idx, idx + 1);
     print("  Change @" + padLeft((p).toString(), 3) + " '" + arr[p] + "' to '" + b + "'");
     arr[p] = b;
   } else {
@@ -97,8 +97,8 @@ List<dynamic> mutate(int s, String dna, List<int> w) {
   } else {
     r = randInt(s, 4);
     s = r[0];
-    final int idx2 = r[1] as int;
-    final String b = _substr(bases, idx2, idx2 + 1);
+    int idx2 = r[1] as int;
+    String b = _substr(bases, idx2, idx2 + 1);
     arr = [...arr, ""];
     int j = arr.length - 1;
     while (j > p) {
@@ -115,12 +115,12 @@ List<dynamic> mutate(int s, String dna, List<int> w) {
     out = out + arr[i];
     i = i + 1;
   }
-  return List<dynamic>.from([s, out]);
+  return [s, out];
 }
 
 void prettyPrint(String dna, int rowLen) {
   print("SEQUENCE:");
-  final int le = dna.length;
+  int le = dna.length;
   int i = 0;
   while (i < le) {
     int k = i + rowLen;
@@ -136,7 +136,7 @@ void prettyPrint(String dna, int rowLen) {
   int t = 0;
   int idx = 0;
   while (idx < le) {
-    final String ch = _substr(dna, idx, idx + 1);
+    String ch = _substr(dna, idx, idx + 1);
     if (ch == "A") {
     a = a + 1;
   } else {
@@ -169,14 +169,14 @@ String wstring(List<int> w) {
   return "  Change: " + (w[0]).toString() + "\n  Delete: " + (w[1]).toString() + "\n  Insert: " + (w[2]).toString() + "\n";
 }
 
-void main() {
+void _main() {
   int seed = 1;
   List<dynamic> res = makeSeq(seed, 250);
   seed = res[0];
   String dna = res[1] as String;
   prettyPrint(dna, 50);
-  final int muts = 10;
-  final List<int> w = [100, 100, 100];
+  int muts = 10;
+  List<int> w = [100, 100, 100];
   print("\nWEIGHTS (ex 300):");
   print(wstring(w));
   print("MUTATIONS (" + (muts).toString() + "):");
@@ -198,13 +198,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

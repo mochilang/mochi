@@ -66,12 +66,13 @@ BigRat _add(BigRat a, BigRat b) => a.add(b);
 BigRat _sub(BigRat a, BigRat b) => a.sub(b);
 BigRat _mul(BigRat a, BigRat b) => a.mul(b);
 BigRat _div(BigRat a, BigRat b) => a.div(b);
+BigRat _neg(BigRat a) => BigRat(-a.num, a.den);
 
 BigRat bernoulli(int n) {
   List<BigRat> a = <BigRat>[];
   int m = 0;
   while (m <= n) {
-    a = [...a, _div(_bigrat(1), _bigrat(m + 1))];
+    a = List<BigRat>.from([...a, _div(_bigrat(1), _bigrat(m + 1))]);
     int j = m;
     while (j >= 1) {
     a[j - 1] = _mul(_bigrat(j), _sub(a[j - 1], a[j]));
@@ -98,10 +99,10 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   for (int i = 0; i < 61; i++) {
-    final BigRat b = bernoulli(i);
-    if (b != 0) {
-    final String numStr = (b).toString();
-    final String denStr = (1).toString();
+    dynamic b = bernoulli(i);
+    if (_num(b) != BigInt.from(0)) {
+    dynamic numStr = (_num(b)).toString();
+    dynamic denStr = (_denom(b)).toString();
     print("B(" + (i).toString().padLeft(2, " ") + ") =" + numStr.padLeft(45, " ") + "/" + denStr);
   }
   }

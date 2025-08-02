@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num sel(List<num> list, int k) {
   int i = 0;
   while (i <= k) {
@@ -33,7 +45,7 @@ num sel(List<num> list, int k) {
   }
     j = j + 1;
   }
-    final num tmp = list[i];
+    num tmp = list[i];
     list[i] = list[minIndex];
     list[minIndex] = tmp;
     i = i + 1;
@@ -43,8 +55,8 @@ num sel(List<num> list, int k) {
 
 num median(List<num> a) {
   List<num> arr = a;
-  final int half = arr.length ~/ 2 as int;
-  final num med = sel(arr, half);
+  int half = arr.length ~/ 2 as int;
+  num med = sel(arr, half);
   if (arr.length % 2 == 0) {
     return (med + arr[half - 1]) / 2.0;
   }

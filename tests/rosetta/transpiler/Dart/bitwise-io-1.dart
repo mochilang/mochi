@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Writer {
   String order;
   int bits;
@@ -30,14 +42,7 @@ class Writer {
   Writer({required this.order, required this.bits, required this.nbits, required this.data});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  int pow2(int n) {
+int pow2(int n) {
   int v = 1;
   int i = 0;
   while (i < n) {
@@ -46,44 +51,51 @@ void main() {
   }
   return v;
 }
-  int lshift(int x, int n) {
+
+int lshift(int x, int n) {
   return x * pow2(n);
 }
-  int rshift(int x, int n) {
+
+int rshift(int x, int n) {
   return x ~/ pow2(n);
 }
-  Writer NewWriter(String order) {
+
+Writer NewWriter(String order) {
   return Writer(order: order, bits: 0, nbits: 0, data: []);
 }
-  Writer writeBitsLSB(Writer w, int c, int width) {
+
+Writer writeBitsLSB(Writer w, int c, int width) {
   w.bits = w.bits + lshift(c, w.nbits);
   w.nbits = w.nbits + width;
   while (w.nbits >= 8) {
-    final int b = w.bits % 256;
+    int b = w.bits % 256;
     w.data = [...w.data, b];
     w.bits = rshift(w.bits, 8);
     w.nbits = w.nbits - 8;
   }
   return w;
 }
-  Writer writeBitsMSB(Writer w, int c, int width) {
+
+Writer writeBitsMSB(Writer w, int c, int width) {
   w.bits = w.bits + lshift(c, 32 - width - w.nbits);
   w.nbits = w.nbits + width;
   while (w.nbits >= 8) {
-    final int b = rshift(w.bits, 24) % 256;
+    int b = rshift(w.bits, 24) % 256;
     w.data = [...w.data, b];
     w.bits = w.bits % pow2(24) * 256;
     w.nbits = w.nbits - 8;
   }
   return w;
 }
-  Writer WriteBits(Writer w, int c, int width) {
+
+Writer WriteBits(Writer w, int c, int width) {
   if (w.order == "LSB") {
     return writeBitsLSB(w, c, width);
   }
   return writeBitsMSB(w, c, width);
 }
-  Writer CloseWriter(Writer w) {
+
+Writer CloseWriter(Writer w) {
   if (w.nbits > 0) {
     if (w.order == "MSB") {
     w.bits = rshift(w.bits, 24);
@@ -94,7 +106,8 @@ void main() {
   w.nbits = 0;
   return w;
 }
-  String toBinary(int n, int bits) {
+
+String toBinary(int n, int bits) {
   String b = "";
   int val = n;
   int i = 0;
@@ -105,7 +118,8 @@ void main() {
   }
   return b;
 }
-  String bytesToBits(List<int> bs) {
+
+String bytesToBits(List<int> bs) {
   String out = "[";
   int i = 0;
   while (i < bs.length) {
@@ -118,7 +132,8 @@ void main() {
   out = out + "]";
   return out;
 }
-  void ExampleWriter_WriteBits() {
+
+void ExampleWriter_WriteBits() {
   Writer bw = NewWriter("MSB");
   bw = WriteBits(bw, 15, 4);
   bw = WriteBits(bw, 0, 1);
@@ -126,6 +141,14 @@ void main() {
   bw = CloseWriter(bw);
   print(bytesToBits(bw.data));
 }
+
+void main() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
   ExampleWriter_WriteBits();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;

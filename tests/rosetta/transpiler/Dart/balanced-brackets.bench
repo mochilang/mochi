@@ -1,11 +1,1 @@
-: ok
-][: not ok
-[[]]: ok
-][][][: not ok
-[[[]]][]: ok
-[][]][][][: not ok
-[[[][][]]][]: ok
-][[]][]][[]][[: not ok
-[[][[][]]][][][]: ok
-][[[]]]]][][[[][][: not ok
-(): not ok
+{"duration_us":26333,"memory_bytes":11132928,"name":"_start"}

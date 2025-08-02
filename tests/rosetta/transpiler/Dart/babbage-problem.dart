@@ -22,8 +22,20 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-final int target = 269696;
-final int modulus = 1000000;
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
+int target = 269696;
+int modulus = 1000000;
 int n = 1;
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
@@ -33,8 +45,8 @@ void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
   while (true) {
-    final int square = n * n;
-    final int ending = square % modulus;
+    dynamic square = n * n;
+    dynamic ending = square % modulus;
     if (ending == target) {
     print("The smallest number whose square ends with " + (target).toString() + " is " + (n).toString());
     break;

@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Point {
   num x;
   num y;
@@ -85,7 +97,7 @@ num min3(num a, num b, num c) {
 }
 
 List<QuadSpline> subdivideQuadSpline(QuadSpline q, num t) {
-  final num s = 1.0 - t;
+  num s = 1.0 - t;
   QuadSpline u = QuadSpline(c0: q.c0, c1: 0.0, c2: 0.0);
   QuadSpline v = QuadSpline(c0: 0.0, c1: 0.0, c2: q.c2);
   u.c1 = s * q.c0 + t * q.c1;
@@ -96,8 +108,8 @@ List<QuadSpline> subdivideQuadSpline(QuadSpline q, num t) {
 }
 
 List<QuadCurve> subdivideQuadCurve(QuadCurve q, num t) {
-  final List<QuadSpline> xs = subdivideQuadSpline(q.x, t);
-  final List<QuadSpline> ys = subdivideQuadSpline(q.y, t);
+  List<QuadSpline> xs = subdivideQuadSpline(q.x, t);
+  List<QuadSpline> ys = subdivideQuadSpline(q.y, t);
   QuadCurve u = QuadCurve(x: xs[0], y: ys[0]);
   QuadCurve v = QuadCurve(x: xs[1], y: ys[1]);
   return [u, v];
@@ -108,24 +120,24 @@ bool rectsOverlap(num xa0, num ya0, num xa1, num ya1, num xb0, num yb0, num xb1,
 }
 
 Map<String, dynamic> testIntersect(QuadCurve p, QuadCurve q, num tol) {
-  final num pxmin = min3(p.x.c0, p.x.c1, p.x.c2);
-  final num pymin = min3(p.y.c0, p.y.c1, p.y.c2);
-  final num pxmax = max3(p.x.c0, p.x.c1, p.x.c2);
-  final num pymax = max3(p.y.c0, p.y.c1, p.y.c2);
-  final num qxmin = min3(q.x.c0, q.x.c1, q.x.c2);
-  final num qymin = min3(q.y.c0, q.y.c1, q.y.c2);
-  final num qxmax = max3(q.x.c0, q.x.c1, q.x.c2);
-  final num qymax = max3(q.y.c0, q.y.c1, q.y.c2);
+  num pxmin = min3(p.x.c0, p.x.c1, p.x.c2);
+  num pymin = min3(p.y.c0, p.y.c1, p.y.c2);
+  num pxmax = max3(p.x.c0, p.x.c1, p.x.c2);
+  num pymax = max3(p.y.c0, p.y.c1, p.y.c2);
+  num qxmin = min3(q.x.c0, q.x.c1, q.x.c2);
+  num qymin = min3(q.y.c0, q.y.c1, q.y.c2);
+  num qxmax = max3(q.x.c0, q.x.c1, q.x.c2);
+  num qymax = max3(q.y.c0, q.y.c1, q.y.c2);
   bool exclude = true;
   bool accept = false;
   Point inter = Point(x: 0.0, y: 0.0);
   if (rectsOverlap(pxmin, pymin, pxmax, pymax, qxmin, qymin, qxmax, qymax)) {
     exclude = false;
-    final num xmin = maxf(pxmin, qxmin);
-    final num xmax = minf(pxmax, qxmax);
+    num xmin = maxf(pxmin, qxmin);
+    num xmax = minf(pxmax, qxmax);
     if (xmax - xmin <= tol) {
-    final num ymin = maxf(pymin, qymin);
-    final num ymax = minf(pymax, qymax);
+    num ymin = maxf(pymin, qymin);
+    num ymax = minf(pymax, qymax);
     if (ymax - ymin <= tol) {
     accept = true;
     inter.x = 0.5 * (xmin + xmax);
@@ -139,7 +151,7 @@ Map<String, dynamic> testIntersect(QuadCurve p, QuadCurve q, num tol) {
 bool seemsToBeDuplicate(List<Point> pts, Point xy, num spacing) {
   int i = 0;
   while (i < pts.length) {
-    final Point pt = pts[i];
+    Point pt = pts[i];
     if (absf(pt.x - xy.x) < spacing && absf(pt.y - xy.y) < spacing) {
     return true;
   }
@@ -152,25 +164,25 @@ List<Point> findIntersects(QuadCurve p, QuadCurve q, num tol, num spacing) {
   List<Point> inters = <Point>[];
   List<Map<String, QuadCurve>> workload = [{"p": p, "q": q}];
   while (workload.length > 0) {
-    final int idx = workload.length - 1;
-    final Map<String, QuadCurve> work = workload[idx];
+    int idx = workload.length - 1;
+    Map<String, QuadCurve> work = workload[idx];
     workload = workload.sublist(0, idx);
-    final Map<String, dynamic> res = testIntersect(work["p"]!, work["q"]!, tol);
-    final dynamic? excl = res["exclude"]!;
-    final dynamic? acc = res["accept"]!;
-    final Point inter = res["intersect"]! as Point;
+    Map<String, dynamic> res = testIntersect(work["p"]!, work["q"]!, tol);
+    dynamic excl = res["exclude"];
+    dynamic acc = res["accept"];
+    Point inter = res["intersect"] as Point;
     if (acc) {
     if (!seemsToBeDuplicate(inters, inter, spacing)) {
     inters = [...inters, inter];
   };
   } else {
     if (!excl) {
-    final List<QuadCurve> ps = subdivideQuadCurve(work["p"]!, 0.5);
-    final List<QuadCurve> qs = subdivideQuadCurve(work["q"]!, 0.5);
-    final QuadCurve p0 = ps[0];
-    final QuadCurve p1 = ps[1];
-    final QuadCurve q0 = qs[0];
-    final QuadCurve q1 = qs[1];
+    List<QuadCurve> ps = subdivideQuadCurve(work["p"]!, 0.5);
+    List<QuadCurve> qs = subdivideQuadCurve(work["q"]!, 0.5);
+    QuadCurve p0 = ps[0];
+    QuadCurve p1 = ps[1];
+    QuadCurve q0 = qs[0];
+    QuadCurve q1 = qs[1];
     workload = [...workload, {"p": p0, "q": q0}];
     workload = [...workload, {"p": p0, "q": q1}];
     workload = [...workload, {"p": p1, "q": q0}];
@@ -181,15 +193,15 @@ List<Point> findIntersects(QuadCurve p, QuadCurve q, num tol, num spacing) {
   return inters;
 }
 
-void main() {
-  final QuadCurve p = QuadCurve(x: QuadSpline(c0: -1.0, c1: 0.0, c2: 1.0), y: QuadSpline(c0: 0.0, c1: 10.0, c2: 0.0));
-  final QuadCurve q = QuadCurve(x: QuadSpline(c0: 2.0, c1: -8.0, c2: 2.0), y: QuadSpline(c0: 1.0, c1: 2.0, c2: 3.0));
-  final num tol = 0.0000001;
-  final num spacing = tol * 10.0;
-  final List<Point> inters = findIntersects(p, q, tol, spacing);
+void _main() {
+  QuadCurve p = QuadCurve(x: QuadSpline(c0: -1.0, c1: 0.0, c2: 1.0), y: QuadSpline(c0: 0.0, c1: 10.0, c2: 0.0));
+  QuadCurve q = QuadCurve(x: QuadSpline(c0: 2.0, c1: -8.0, c2: 2.0), y: QuadSpline(c0: 1.0, c1: 2.0, c2: 3.0));
+  num tol = 0.0000001;
+  num spacing = tol * 10.0;
+  List<Point> inters = findIntersects(p, q, tol, spacing);
   int i = 0;
   while (i < inters.length) {
-    final Point pt = inters[i];
+    Point pt = inters[i];
     print("(" + (pt.x).toString() + ", " + (pt.y).toString() + ")");
     i = i + 1;
   }
@@ -202,13 +214,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

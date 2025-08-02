@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 int seed = 1;
 int prng(int max) {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -38,14 +50,14 @@ String gen(int n) {
   }
   int j = arr.length - 1;
   while (j > 0) {
-    final int k = prng(j + 1);
-    final String tmp = arr[j];
+    int k = prng(j + 1);
+    String tmp = arr[j];
     arr[j] = arr[k];
     arr[k] = tmp;
     j = j - 1;
   }
   String out = "";
-  for (var ch in arr) {
+  for (String ch in arr) {
     out = out + ch;
   }
   return out;
@@ -55,7 +67,7 @@ void testBalanced(String s) {
   int open = 0;
   int i = 0;
   while (i < s.length) {
-    final String c = s.substring(i, i + 1);
+    String c = _substr(s, i, i + 1);
     if (c == "[") {
     open = open + 1;
   } else {
@@ -79,7 +91,7 @@ void testBalanced(String s) {
   }
 }
 
-void main() {
+void _main() {
   int i = 0;
   while (i < 10) {
     testBalanced(gen(i));
@@ -95,13 +107,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

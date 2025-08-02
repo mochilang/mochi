@@ -41,11 +41,11 @@ class Pixel {
   Pixel({required this.r, required this.g, required this.b});
 }
 
-final int b3Seg = 30;
+int b3Seg = 30;
 Pixel pixelFromRgb(int rgb) {
-  final int r = rgb ~/ 65536 % 256 as int;
-  final int g = rgb ~/ 256 % 256 as int;
-  final int b = rgb % 256 as int;
+  int r = rgb ~/ 65536 % 256 as int;
+  int g = rgb ~/ 256 % 256 as int;
+  int b = rgb % 256 as int;
   return Pixel(r: r, g: g, b: b);
 }
 
@@ -59,23 +59,23 @@ Map<String, dynamic> newBitmap(int cols, int rows) {
     row = [...row, Pixel(r: 0, g: 0, b: 0)];
     x = x + 1;
   }
-    d = [...d, row];
+    d = ([...d, row] as List).map((e) => List<Pixel>.from(e)).toList();
     y = y + 1;
   }
   return {"cols": cols, "rows": rows, "data": d};
 }
 
 void setPx(Map<String, dynamic> b, int x, int y, Pixel p) {
-  final int cols = b["cols"]! as int;
-  final int rows = b["rows"]! as int;
+  int cols = b["cols"] as int;
+  int rows = b["rows"] as int;
   if (x >= 0 && x < cols && y >= 0 && y < rows) {
     b["data"]![y]![x] = p;
   }
 }
 
 void fill(Map<String, dynamic> b, Pixel p) {
-  final int cols = b["cols"]! as int;
-  final int rows = b["rows"]! as int;
+  int cols = b["cols"] as int;
+  int rows = b["rows"] as int;
   int y = 0;
   while (y < rows) {
     int x = 0;
@@ -114,7 +114,7 @@ void line(Map<String, dynamic> b, int x0, int y0, int x1, int y1, Pixel p) {
     if (x0 == x1 && y0 == y1) {
     break;
   }
-    final int e2 = 2 * err;
+    int e2 = 2 * err;
     if (e2 > 0 - dy) {
     err = err - dy;
     x0 = x0 + sx;
@@ -135,17 +135,17 @@ void bezier3(Map<String, dynamic> b, int x1, int y1, int x2, int y2, int x3, int
     py = [...py, 0];
     i = i + 1;
   }
-  final num fx1 = (x1).toDouble();
-  final num fy1 = (y1).toDouble();
-  final num fx2 = (x2).toDouble();
-  final num fy2 = (y2).toDouble();
-  final num fx3 = (x3).toDouble();
-  final num fy3 = (y3).toDouble();
-  final num fx4 = (x4).toDouble();
-  final num fy4 = (y4).toDouble();
+  num fx1 = (x1).toDouble();
+  num fy1 = (y1).toDouble();
+  num fx2 = (x2).toDouble();
+  num fy2 = (y2).toDouble();
+  num fx3 = (x3).toDouble();
+  num fy3 = (y3).toDouble();
+  num fx4 = (x4).toDouble();
+  num fy4 = (y4).toDouble();
   i = 0;
   while (i <= b3Seg) {
-    final num d = ((i).toDouble()) / ((b3Seg).toDouble());
+    num d = ((i).toDouble()) / ((b3Seg).toDouble());
     num a = 1.0 - d;
     num bcoef = a * a;
     num ccoef = d * d;
@@ -161,8 +161,8 @@ void bezier3(Map<String, dynamic> b, int x1, int y1, int x2, int y2, int x3, int
   int y0 = py[0];
   i = 1;
   while (i <= b3Seg) {
-    final int x = px[i];
-    final int y = py[i];
+    int x = px[i];
+    int y = py[i];
     line(b, x0, y0, x, y, p);
     x0 = x;
     y0 = y;

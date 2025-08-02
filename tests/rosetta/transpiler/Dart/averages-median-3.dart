@@ -22,21 +22,33 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num qsel(List<num> a, int k) {
   List<num> arr = a;
   while (arr.length > 1) {
     int px = _now() % arr.length;
     num pv = arr[px];
-    final int last = arr.length - 1;
-    final num tmp = arr[px];
+    int last = arr.length - 1;
+    num tmp = arr[px];
     arr[px] = arr[last];
     arr[last] = tmp;
     px = 0;
     int i = 0;
     while (i < last) {
-    final num v = arr[i];
+    num v = arr[i];
     if (v < pv) {
-    final num tmp2 = arr[px];
+    num tmp2 = arr[px];
     arr[px] = arr[i];
     arr[i] = tmp2;
     px = px + 1;
@@ -49,11 +61,11 @@ num qsel(List<num> a, int k) {
     if (k < px) {
     arr = arr.sublist(0, px);
   } else {
-    final num tmp2 = arr[px];
+    num tmp2 = arr[px];
     arr[px] = pv;
     arr[last] = tmp2;
     arr = arr.sublist(px + 1, arr.length);
-    k = k - px + 1;
+    k = k - (px + 1);
   }
   }
   return arr[0];
@@ -61,8 +73,8 @@ num qsel(List<num> a, int k) {
 
 num median(List<num> list) {
   List<num> arr = list;
-  final int half = arr.length ~/ 2 as int;
-  final num med = qsel(arr, half);
+  int half = arr.length ~/ 2 as int;
+  num med = qsel(arr, half);
   if (arr.length % 2 == 0) {
     return (med + qsel(arr, half - 1)) / 2.0;
   }

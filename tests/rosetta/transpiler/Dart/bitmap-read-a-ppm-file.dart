@@ -59,7 +59,7 @@ Bitmap newBitmap(int w, int h, int max) {
     row = [...row, Pixel(R: 0, G: 0, B: 0)];
     x = x + 1;
   }
-    rows = [...rows, row];
+    rows = ([...rows, row] as List).map((e) => List<Pixel>.from(e)).toList();
     y = y + 1;
   }
   return Bitmap(w: w, h: h, max: max, data: rows);
@@ -82,7 +82,7 @@ List<String> splitLines(String s) {
   String cur = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = _substr(s, i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == "\n") {
     out = [...out, cur];
     cur = "";
@@ -100,7 +100,7 @@ List<String> splitWS(String s) {
   String cur = "";
   int i = 0;
   while (i < s.length) {
-    final String ch = _substr(s, i, i + 1);
+    String ch = _substr(s, i, i + 1);
     if (ch == " " || ch == "	" || ch == "\r" || ch == "\n") {
     if (cur.length > 0) {
     out = [...out, cur];
@@ -125,9 +125,9 @@ int parseIntStr(String str) {
     i = 1;
   }
   int n = 0;
-  final Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
+  Map<String, int> digits = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9};
   while (i < str.length) {
-    n = n * 10 + digits[_substr(str, i, i + 1)]!;
+    n = (n * 10 + digits[_substr(str, i, i + 1)]!).toInt();
     i = i + 1;
   }
   if (neg) {
@@ -137,16 +137,16 @@ int parseIntStr(String str) {
 }
 
 List<String> tokenize(String s) {
-  final List<String> lines = splitLines(s);
+  List<String> lines = splitLines(s);
   List<String> toks = <String>[];
   int i = 0;
   while (i < lines.length) {
-    final String line = lines[i];
+    String line = lines[i];
     if (line.length > 0 && _substr(line, 0, 1) == "#") {
     i = i + 1;
     continue;
   }
-    final List<String> parts = splitWS(line);
+    List<String> parts = splitWS(line);
     int j = 0;
     while (j < parts.length) {
     toks = [...toks, parts[j]];
@@ -158,25 +158,25 @@ List<String> tokenize(String s) {
 }
 
 Bitmap readP3(String text) {
-  final List<String> toks = tokenize(text);
+  List<String> toks = tokenize(text);
   if (toks.length < 4) {
     return newBitmap(0, 0, 0);
   }
   if (toks[0] != "P3") {
     return newBitmap(0, 0, 0);
   }
-  final int w = int.parse(toks[1]);
-  final int h = int.parse(toks[2]);
-  final int maxv = int.parse(toks[3]);
+  int w = int.parse(toks[1]);
+  int h = int.parse(toks[2]);
+  int maxv = int.parse(toks[3]);
   int idx = 4;
   Bitmap bm = newBitmap(w, h, maxv);
   int y = h - 1;
   while (y >= 0) {
     int x = 0;
     while (x < w) {
-    final int r = int.parse(toks[idx]);
-    final int g = int.parse(toks[idx + 1]);
-    final int b = int.parse(toks[idx + 2]);
+    int r = int.parse(toks[idx]);
+    int g = int.parse(toks[idx + 1]);
+    int b = int.parse(toks[idx + 2]);
     setPx(bm, x, y, Pixel(R: r, G: g, B: b));
     idx = idx + 3;
     x = x + 1;
@@ -187,14 +187,14 @@ Bitmap readP3(String text) {
 }
 
 void toGrey(Bitmap b) {
-  final int h = b.h;
-  final int w = b.w;
+  int h = b.h;
+  int w = b.w;
   int m = 0;
   int y = 0;
   while (y < h) {
     int x = 0;
     while (x < w) {
-    final Pixel p = getPx(b, x, y);
+    Pixel p = getPx(b, x, y);
     int l = (p.R * 2126 + p.G * 7152 + p.B * 722) ~/ 10000;
     if (l > b.max) {
     l = b.max;
@@ -219,17 +219,17 @@ String pad(int n, int w) {
 }
 
 String writeP3(Bitmap b) {
-  final int h = b.h;
-  final int w = b.w;
+  int h = b.h;
+  int w = b.w;
   int max = b.max;
-  final int digits = (max).toString().length;
+  int digits = (max).toString().length;
   String out = "P3\n# generated from Bitmap.writeppmp3\n" + (w).toString() + " " + (h).toString() + "\n" + (max).toString() + "\n";
   int y = h - 1;
   while (y >= 0) {
     String line = "";
     int x = 0;
     while (x < w) {
-    final Pixel p = getPx(b, x, y);
+    Pixel p = getPx(b, x, y);
     line = line + "   " + pad(p.R, digits) + " " + pad(p.G, digits) + " " + pad(p.B, digits);
     x = x + 1;
   }
@@ -241,7 +241,7 @@ String writeP3(Bitmap b) {
 
 String ppmtxt = "P3\n" + "# feep.ppm\n" + "4 4\n" + "15\n" + " 0  0  0    0  0  0    0  0  0   15  0 15\n" + " 0  0  0    0 15  7    0  0  0    0  0  0\n" + " 0  0  0    0  0  0    0 15  7    0  0  0\n" + "15  0 15    0  0  0    0  0  0    0  0  0\n";
 Bitmap bm = readP3(ppmtxt);
-final String out = writeP3(bm);
+String out = writeP3(bm);
 void main() {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();

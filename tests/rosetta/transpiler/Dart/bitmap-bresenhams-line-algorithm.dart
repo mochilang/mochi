@@ -78,11 +78,11 @@ List<Point> bresenham(int x0, int y0, int x1, int y1) {
   return pts;
 }
 
-void main() {
-  final List<Point> pts = bresenham(0, 0, 6, 4);
+void _main() {
+  List<Point> pts = bresenham(0, 0, 6, 4);
   int i = 0;
   while (i < pts.length) {
-    final Point p = pts[i];
+    Point p = pts[i];
     print("(" + (p.x).toString() + "," + (p.y).toString() + ")");
     i = i + 1;
   }
@@ -95,13 +95,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

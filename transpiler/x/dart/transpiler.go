@@ -559,7 +559,7 @@ func (s *VarStmt) emit(w io.Writer) error {
 			oldBang := iex.NoBang
 			oldSuf := iex.NoSuffix
 			iex.NoBang = true
-			iex.NoSuffix = true
+			iex.NoSuffix = strings.HasSuffix(typ, "?")
 			defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 		}
 		if typ == "BigInt" && inferType(s.Value) == "int" {
@@ -590,7 +590,8 @@ type AssignStmt struct {
 }
 
 func (s *AssignStmt) emit(w io.Writer) error {
-	targetType := strings.TrimSuffix(inferType(s.Target), "?")
+	fullTargetType := inferType(s.Target)
+	targetType := strings.TrimSuffix(fullTargetType, "?")
 	if n, ok := s.Value.(*Name); ok && n.Name == "null" && !strings.HasSuffix(targetType, "?") {
 		// assigning null to a non-null variable is a no-op
 		return nil
@@ -665,6 +666,25 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		_, err := io.WriteString(w, "<"+kv+">{}")
 		return err
 	}
+	if iex, ok := s.Value.(*IndexExpr); ok {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		iex.NoBang = true
+		needBang := false
+		if t := inferType(iex.Target); strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
+			parts := strings.SplitN(kv, ",", 2)
+			if len(parts) == 2 {
+				vt := strings.TrimSpace(parts[1])
+				if !strings.HasSuffix(vt, "?") {
+					needBang = true
+				}
+			}
+		}
+		iex.NoSuffix = !needBang
+		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
+		return iex.emit(w)
+	}
 	return s.Value.emit(w)
 }
 
@@ -706,7 +726,7 @@ func (s *LetStmt) emit(w io.Writer) error {
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
 		iex.NoBang = true
-		iex.NoSuffix = true
+		iex.NoSuffix = strings.HasSuffix(typ, "?")
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
 	valType := inferType(s.Value)
@@ -1143,6 +1163,20 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	}
 	lt := inferType(b.Left)
 	rt := inferType(b.Right)
+	if iex, ok := b.Left.(*IndexExpr); ok && strings.HasSuffix(lt, "?") {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		iex.NoBang = true
+		iex.NoSuffix = false
+		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
+	}
+	if iex, ok := b.Right.(*IndexExpr); ok && strings.HasSuffix(rt, "?") {
+		oldBang := iex.NoBang
+		oldSuf := iex.NoSuffix
+		iex.NoBang = true
+		iex.NoSuffix = false
+		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
+	}
 	if lt == "BigRat" || rt == "BigRat" {
 		useBigRat = true
 		var fn string
@@ -1475,8 +1509,20 @@ func (c *CallExpr) emit(w io.Writer) error {
 				return err
 			}
 		} else {
-			if err := a.emit(w); err != nil {
-				return err
+			if iex, ok := a.(*IndexExpr); ok && strings.HasSuffix(inferType(a), "?") && (i >= len(paramTypes) || !strings.HasSuffix(paramTypes[i], "?")) {
+				oldBang := iex.NoBang
+				oldSuf := iex.NoSuffix
+				iex.NoBang = true
+				iex.NoSuffix = false
+				if err := a.emit(w); err != nil {
+					return err
+				}
+				iex.NoBang = oldBang
+				iex.NoSuffix = oldSuf
+			} else {
+				if err := a.emit(w); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -1718,6 +1764,15 @@ func (m *MapLit) emit(w io.Writer) error {
 		_, err := io.WriteString(w, ")")
 		return err
 	}
+	t := inferType(m)
+	valOptional := true
+	if strings.HasPrefix(t, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+		parts := strings.SplitN(kv, ",", 2)
+		if len(parts) == 2 {
+			valOptional = strings.HasSuffix(strings.TrimSpace(parts[1]), "?")
+		}
+	}
 	if _, err := io.WriteString(w, "{"); err != nil {
 		return err
 	}
@@ -1757,8 +1812,20 @@ func (m *MapLit) emit(w io.Writer) error {
 		if _, err := io.WriteString(w, ": "); err != nil {
 			return err
 		}
-		if err := e.Value.emit(w); err != nil {
-			return err
+		if iex, ok := e.Value.(*IndexExpr); ok && !valOptional && strings.HasSuffix(inferType(e.Value), "?") {
+			oldBang := iex.NoBang
+			oldSuf := iex.NoSuffix
+			iex.NoBang = true
+			iex.NoSuffix = false
+			if err := iex.emit(w); err != nil {
+				return err
+			}
+			iex.NoBang = oldBang
+			iex.NoSuffix = oldSuf
+		} else {
+			if err := e.Value.emit(w); err != nil {
+				return err
+			}
 		}
 	}
 	_, err := io.WriteString(w, "}")
@@ -1936,7 +2003,22 @@ func (i *IndexExpr) emit(w io.Writer) error {
 	}
 	if i.Index != nil {
 		idxType := inferType(i.Index)
-		if idxType == "BigInt" || idxType == "num" || idxType == "dynamic" {
+		needToInt := idxType == "BigInt" || idxType == "num"
+		if idxType == "dynamic" {
+			if strings.HasPrefix(strings.TrimSuffix(t, "?"), "Map<") {
+				kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
+				parts := strings.SplitN(kv, ",", 2)
+				if len(parts) == 2 {
+					kt := strings.TrimSpace(parts[0])
+					needToInt = kt == "int"
+				} else {
+					needToInt = false
+				}
+			} else {
+				needToInt = false
+			}
+		}
+		if needToInt {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -4773,6 +4855,7 @@ func convertAssignTarget(as *parser.AssignStmt) (Expr, error) {
 		iexpr := &IndexExpr{Target: expr, Index: val}
 		if i < len(as.Index)-1 || len(as.Field) > 0 {
 			iexpr.NoBang = true
+			iexpr.NoSuffix = true
 			expr = &NotNilExpr{X: iexpr}
 		} else {
 			if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {

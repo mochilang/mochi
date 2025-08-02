@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 num absf(num x) {
   if (x < 0.0) {
     return -x;
@@ -30,14 +42,14 @@ num absf(num x) {
 }
 
 num floorf(num x) {
-  final int y = (x).toInt();
+  int y = (x).toInt();
   return (y).toDouble();
 }
 
 int indexOf(String s, String ch) {
   int i = 0;
   while (i < s.length) {
-    if (s.substring(i, i + 1) == ch) {
+    if (_substr(s, i, i + 1) == ch) {
     return i;
   }
     i = i + 1;
@@ -54,7 +66,7 @@ String fmtF(num x) {
   } else {
     int decs = s.length - dot - 1;
     if (decs > 4) {
-    s = s.substring(0, dot + 5);
+    s = _substr(s, 0, dot + 5);
   } else {
     while (decs < 4) {
     s = s + "0";
@@ -82,12 +94,12 @@ String padFloat(num x, int width) {
 }
 
 num avgLen(int n) {
-  final int tests = 10000;
+  int tests = 10000;
   int sum = 0;
   int seed = 1;
   int t = 0;
   while (t < tests) {
-    List<bool> visited = [];
+    List<bool> visited = <bool>[];
     int i = 0;
     while (i < n) {
     visited = [...visited, false];
@@ -111,22 +123,22 @@ num ana(int n) {
   num sum = 1.0;
   num i = nn - 1.0;
   while (i >= 1.0) {
-    term = term * i / nn;
+    term = term * (i / nn);
     sum = sum + term;
     i = i - 1.0;
   }
   return sum;
 }
 
-void main() {
-  final int nmax = 20;
+void _main() {
+  int nmax = 20;
   print(" N    average    analytical    (error)");
   print("===  =========  ============  =========");
   int n = 1;
   while (n <= nmax) {
-    final num a = avgLen(n);
-    final num b = ana(n);
-    final num err = absf(a - b) / b * 100.0;
+    num a = avgLen(n);
+    num b = ana(n);
+    num err = absf(a - b) / b * 100.0;
     String line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " + padFloat(b, 12) + "  (" + padFloat(err, 6) + "%)";
     print(line);
     n = n + 1;
@@ -140,13 +152,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

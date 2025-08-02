@@ -84,56 +84,56 @@ Compiled and ran: 420/491
 | 75 | arrays | ✓ | 12.049ms | 3.4 MB |
 | 76 | ascending-primes | ✓ | 24.433ms | 9.6 MB |
 | 77 | ascii-art-diagram-converter | ✓ | 22.821ms | 9.5 MB |
-| 78 | assertions | ✓ |  |  |
-| 79 | associative-array-creation | ✓ |  |  |
-| 80 | associative-array-iteration | ✓ |  |  |
-| 81 | associative-array-merging | ✓ |  |  |
-| 82 | atomic-updates | ✓ |  |  |
-| 83 | attractive-numbers | ✓ |  |  |
-| 84 | average-loop-length | ✓ |  |  |
-| 85 | averages-arithmetic-mean | ✓ |  |  |
-| 86 | averages-mean-time-of-day | ✓ |  |  |
-| 87 | averages-median-1 | ✓ | 6.154ms | 12.5 MB |
-| 88 | averages-median-2 | ✓ | 6.537ms | 11.8 MB |
-| 89 | averages-median-3 | ✓ | 7.315ms | 504.0 KB |
-| 90 | averages-mode | ✓ |  |  |
-| 91 | averages-pythagorean-means | ✓ |  |  |
-| 92 | averages-root-mean-square | ✓ | 6.155ms | 12.2 MB |
-| 93 | averages-simple-moving-average | ✓ |  |  |
-| 94 | avl-tree | ✓ |  |  |
-| 95 | b-zier-curves-intersections | ✓ |  |  |
-| 96 | babbage-problem | ✓ | 5.873ms | 3.9 MB |
-| 97 | babylonian-spiral | ✓ |  |  |
-| 98 | balanced-brackets | ✓ |  |  |
-| 99 | balanced-ternary | ✓ |  |  |
-| 100 | barnsley-fern | ✓ | 16.066ms | 2.9 MB |
-| 101 | base64-decode-data | ✓ | 7.738ms | 916.0 KB |
-| 102 | bell-numbers | ✓ |  |  |
-| 103 | benfords-law | ✓ |  |  |
-| 104 | bernoulli-numbers | ✓ | 374.485ms | 1.2 MB |
-| 105 | best-shuffle | ✓ |  |  |
-| 106 | bifid-cipher | ✓ |  |  |
-| 107 | bin-given-limits | ✓ |  |  |
-| 108 | binary-digits | ✓ | 18.793ms | 10.1 MB |
-| 109 | binary-search | ✓ |  |  |
-| 110 | binary-strings | ✓ | 16.734ms | 2.4 MB |
-| 111 | bioinformatics-base-count | ✓ | 14.528ms | 1.9 MB |
-| 112 | bioinformatics-global-alignment | ✓ |  |  |
-| 113 | bioinformatics-sequence-mutation | ✓ |  |  |
-| 114 | biorhythms | ✓ |  |  |
-| 115 | bitcoin-address-validation | ✓ | 182.763ms | 13.4 MB |
-| 116 | bitmap-b-zier-curves-cubic | ✓ | 209.129ms | 8.7 MB |
-| 117 | bitmap-b-zier-curves-quadratic | ✓ | 209.587ms | 6.4 MB |
-| 118 | bitmap-bresenhams-line-algorithm | ✓ |  |  |
-| 119 | bitmap-flood-fill | ✓ | 15.93ms | 2.2 MB |
-| 120 | bitmap-histogram | ✓ |  |  |
-| 121 | bitmap-midpoint-circle-algorithm | ✓ | 27.77ms | 2.8 MB |
-| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ |  |  |
-| 123 | bitmap-read-a-ppm-file | ✓ | 14.691ms | 4.1 MB |
-| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 12.352ms | 3.2 MB |
-| 125 | bitmap-write-a-ppm-file | ✓ | 7.857ms | 660.0 KB |
-| 126 | bitmap | ✓ | 58.397ms | 6.0 MB |
-| 127 | bitwise-io-1 | ✓ | 6.417ms | 16.0 KB |
+| 78 | assertions | ✓ | 20.044ms | 10.0 MB |
+| 79 | associative-array-creation | ✓ | 16.947ms | 2.1 MB |
+| 80 | associative-array-iteration | ✓ | 19.711ms | 9.8 MB |
+| 81 | associative-array-merging | ✓ | 21.388ms | 9.3 MB |
+| 82 | atomic-updates | ✓ | 21.839ms | 3.1 MB |
+| 83 | attractive-numbers | ✓ | 29.682ms | 11.1 MB |
+| 84 | average-loop-length | ✓ | 202.44ms | 4.0 MB |
+| 85 | averages-arithmetic-mean | ✓ | 16.287ms | 4.2 MB |
+| 86 | averages-mean-time-of-day | ✓ | 12.704ms | 3.4 MB |
+| 87 | averages-median-1 | ✓ | 17.194ms | 2.4 MB |
+| 88 | averages-median-2 | ✓ | 20.531ms | 9.4 MB |
+| 89 | averages-median-3 | ✓ | 29.028ms | 10.1 MB |
+| 90 | averages-mode | ✓ | 28.216ms | 10.0 MB |
+| 91 | averages-pythagorean-means | ✓ | 31.182ms | 9.9 MB |
+| 92 | averages-root-mean-square | ✓ | 24.85ms | 10.7 MB |
+| 93 | averages-simple-moving-average | ✓ | 16.751ms | 2.4 MB |
+| 94 | avl-tree | ✓ | 16.553ms | 4.2 MB |
+| 95 | b-zier-curves-intersections | ✓ | 33.355ms | 8.6 MB |
+| 96 | babbage-problem | ✓ | 13.004ms | 3.6 MB |
+| 97 | babylonian-spiral | ✓ | 28.31ms | 7.5 MB |
+| 98 | balanced-brackets | ✓ | 26.333ms | 10.6 MB |
+| 99 | balanced-ternary | ✓ | 15.616ms | 3.9 MB |
+| 100 | barnsley-fern | ✓ | 68.27ms | 2.2 MB |
+| 101 | base64-decode-data | ✓ | 15.675ms | 2.9 MB |
+| 102 | bell-numbers | ✓ | 37.565ms | 6.2 MB |
+| 103 | benfords-law | ✓ | 36.083ms | 9.2 MB |
+| 104 | bernoulli-numbers | ✓ | 444.775ms | 4.6 MB |
+| 105 | best-shuffle | ✓ | 19.948ms | 2.6 MB |
+| 106 | bifid-cipher | ✓ | 19.299ms | 5.1 MB |
+| 107 | bin-given-limits | ✓ | 11.901ms | 3.5 MB |
+| 108 | binary-digits | ✓ | 12.807ms | 3.2 MB |
+| 109 | binary-search | ✓ | 18.066ms | 9.9 MB |
+| 110 | binary-strings | ✓ | 15.026ms | 3.5 MB |
+| 111 | bioinformatics-base-count | ✓ | 11.422ms | 2.9 MB |
+| 112 | bioinformatics-global-alignment | ✓ | 1.316552s | 30.7 MB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 29.882ms | 9.2 MB |
+| 114 | biorhythms | ✓ | 14.786ms | 3.8 MB |
+| 115 | bitcoin-address-validation | ✓ | 224.882ms | 1.4 MB |
+| 116 | bitmap-b-zier-curves-cubic | ✓ | 427.662ms | 38.4 MB |
+| 117 | bitmap-b-zier-curves-quadratic | ✓ | 415.523ms | 36.1 MB |
+| 118 | bitmap-bresenhams-line-algorithm | ✓ | 25.705ms | 10.4 MB |
+| 119 | bitmap-flood-fill | ✓ | 17.331ms | 2.3 MB |
+| 120 | bitmap-histogram | ✓ | 22.9ms | 9.1 MB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 20.911ms | 5.4 MB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 405.551ms | 36.6 MB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 17.596ms | 4.2 MB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 11.864ms | 3.1 MB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 19.945ms | 4.8 MB |
+| 126 | bitmap | ✓ | 209.767ms | 11.1 MB |
+| 127 | bitwise-io-1 | ✓ | 13.005ms | 3.4 MB |
 | 128 | bitwise-io-2 | ✓ | 7.84ms | 1.4 MB |
 | 129 | bitwise-operations | ✓ | 6.685ms | 28.0 KB |
 | 130 | blum-integer | ✓ | 6.868ms | 660.0 KB |
@@ -499,4 +499,4 @@ Compiled and ran: 420/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 01:52 +0700_
+_Last updated: 2025-08-02 10:28 +0700_

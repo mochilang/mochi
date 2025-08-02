@@ -49,9 +49,9 @@ class Bitmap {
 }
 
 Pixel pixelFromRgb(int c) {
-  final int r = (c ~/ 65536 as int) % 256;
-  final int g = (c ~/ 256 as int) % 256;
-  final int b = c % 256;
+  int r = (c ~/ 65536 as int) % 256;
+  int g = (c ~/ 256 as int) % 256;
+  int b = c % 256;
   return Pixel(R: r, G: g, B: b);
 }
 
@@ -69,7 +69,7 @@ Bitmap NewBitmap(int x, int y) {
     r = [...r, Pixel(R: 0, G: 0, B: 0)];
     col = col + 1;
   }
-    data = [...data, r];
+    data = ([...data, r] as List).map((e) => List<Pixel>.from(e)).toList();
     row = row + 1;
   }
   return Bitmap(cols: x, rows: y, px: data);
@@ -77,7 +77,7 @@ Bitmap NewBitmap(int x, int y) {
 
 void FillRgb(Bitmap b, int c) {
   int y = 0;
-  final Pixel p = pixelFromRgb(c);
+  Pixel p = pixelFromRgb(c);
   while (y < b.rows) {
     int x = 0;
     while (x < b.cols) {
@@ -108,16 +108,16 @@ int nextRand(int seed) {
   return (seed * 1664525 + 1013904223) % 2147483648;
 }
 
-void main() {
+void _main() {
   Bitmap bm = NewBitmap(400, 300);
   FillRgb(bm, 12615744);
   int seed = _now();
   int i = 0;
   while (i < 2000) {
     seed = nextRand(seed);
-    final int x = seed % 400;
+    int x = seed % 400;
     seed = nextRand(seed);
-    final int y = seed % 300;
+    int y = seed % 300;
     SetPxRgb(bm, x, y, 8405024);
     i = i + 1;
   }
@@ -158,13 +158,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

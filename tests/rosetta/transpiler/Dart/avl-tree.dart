@@ -22,16 +22,28 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 Map<String, dynamic> Node(int data) {
   return {"Data": data, "Balance": 0, "Link": <dynamic>[null, null]};
 }
 
 dynamic getLink(Map<String, dynamic> n, int dir) {
-  return (n["Link"]! as List<dynamic>)[dir];
+  return (List<dynamic>.from(n["Link"]))[dir];
 }
 
 void setLink(Map<String, dynamic> n, int dir, dynamic v) {
-  List<dynamic> links = n["Link"]! as List<dynamic>;
+  List<dynamic> links = List<dynamic>.from(n["Link"]);
   links[dir] = v;
   n["Link"] = links;
 }
@@ -41,14 +53,14 @@ int opp(int dir) {
 }
 
 Map<String, dynamic> single(Map<String, dynamic> root, int dir) {
-  var tmp = getLink(root, opp(dir));
+  dynamic tmp = getLink(root, opp(dir));
   setLink(root, opp(dir), getLink(tmp, dir));
   setLink(tmp, dir, root);
   return tmp;
 }
 
 Map<String, dynamic> double(Map<String, dynamic> root, int dir) {
-  var tmp = getLink(getLink(root, opp(dir)), dir);
+  dynamic tmp = getLink(getLink(root, opp(dir)), dir);
   setLink(getLink(root, opp(dir)), dir, getLink(tmp, opp(dir)));
   setLink(tmp, opp(dir), getLink(root, opp(dir)));
   setLink(root, opp(dir), tmp);
@@ -61,11 +73,11 @@ Map<String, dynamic> double(Map<String, dynamic> root, int dir) {
 void adjustBalance(Map<String, dynamic> root, int dir, int bal) {
   Map<String, dynamic> n = getLink(root, dir) as Map<String, dynamic>;
   Map<String, dynamic> nn = getLink(n, opp(dir)) as Map<String, dynamic>;
-  if (nn["Balance"] == 0) {
+  if (nn["Balance"]! == 0) {
     root["Balance"] = 0;
     n["Balance"] = 0;
   } else {
-    if (nn["Balance"] == bal) {
+    if (nn["Balance"]! == bal) {
     root["Balance"] = -bal;
     n["Balance"] = 0;
   } else {
@@ -79,7 +91,7 @@ void adjustBalance(Map<String, dynamic> root, int dir, int bal) {
 Map<String, dynamic> insertBalance(Map<String, dynamic> root, int dir) {
   Map<String, dynamic> n = getLink(root, dir) as Map<String, dynamic>;
   int bal = 2 * dir - 1;
-  if (n["Balance"] == bal) {
+  if (n["Balance"]! == bal) {
     root["Balance"] = 0;
     n["Balance"] = 0;
     return single(root, opp(dir));
@@ -94,38 +106,38 @@ Map<String, dynamic> insertR(dynamic root, int data) {
   }
   Map<String, dynamic> node = root as Map<String, dynamic>;
   int dir = 0;
-  if ((node["Data"]! as int) < data) {
+  if (((node["Data"] ?? null) as int) < data) {
     dir = 1;
   }
   Map<String, dynamic> r = insertR(getLink(node, dir), data);
-  setLink(node, dir, r["node"]);
-  if (r["done"]) {
+  setLink(node, dir, (r["node"] ?? null));
+  if ((r["done"] ?? null)) {
     return {"node": node, "done": true};
   }
-  node["Balance"] = (node["Balance"]! as int) + 2 * dir - 1;
-  if (node["Balance"] == 0) {
+  node["Balance"] = ((node["Balance"] ?? null) as int) + (2 * dir - 1);
+  if (node["Balance"]! == 0) {
     return {"node": node, "done": true};
   }
-  if (node["Balance"] == 1 || node["Balance"] == -1) {
+  if (node["Balance"]! == 1 || node["Balance"]! == -1) {
     return {"node": node, "done": false};
   }
   return {"node": insertBalance(node, dir), "done": true};
 }
 
 dynamic Insert(dynamic tree, int data) {
-  final Map<String, dynamic> r = insertR(tree, data);
-  return r["node"];
+  Map<String, dynamic> r = insertR(tree, data);
+  return (r["node"])!;
 }
 
 Map<String, dynamic> removeBalance(Map<String, dynamic> root, int dir) {
   Map<String, dynamic> n = getLink(root, opp(dir)) as Map<String, dynamic>;
   int bal = 2 * dir - 1;
-  if (n["Balance"] == -bal) {
+  if (n["Balance"]! == -bal) {
     root["Balance"] = 0;
     n["Balance"] = 0;
     return {"node": single(root, dir), "done": false};
   }
-  if (n["Balance"] == bal) {
+  if (n["Balance"]! == bal) {
     adjustBalance(root, opp(dir), -bal);
     return {"node": double(root, dir), "done": false};
   }
@@ -139,14 +151,14 @@ Map<String, dynamic> removeR(dynamic root, int data) {
     return {"node": null, "done": false};
   }
   Map<String, dynamic> node = root as Map<String, dynamic>;
-  if ((node["Data"]! as int) == data) {
+  if (((node["Data"] ?? null) as int) == data) {
     if (getLink(node, 0) == null) {
     return {"node": getLink(node, 1), "done": false};
   };
     if (getLink(node, 1) == null) {
     return {"node": getLink(node, 0), "done": false};
   };
-    var heir = getLink(node, 0);
+    dynamic heir = getLink(node, 0);
     while (getLink(heir, 1) != null) {
     heir = getLink(heir, 1);
   };
@@ -154,7 +166,7 @@ Map<String, dynamic> removeR(dynamic root, int data) {
     data = heir["Data"] as int;
   }
   int dir = 0;
-  if ((node["Data"]! as int) < data) {
+  if (((node["Data"] ?? null) as int) < data) {
     dir = 1;
   }
   Map<String, dynamic> r = removeR(getLink(node, dir), data);
@@ -162,19 +174,19 @@ Map<String, dynamic> removeR(dynamic root, int data) {
   if (r["done"]) {
     return {"node": node, "done": true};
   }
-  node["Balance"] = (node["Balance"]! as int) + 1 - 2 * dir;
-  if (node["Balance"] == 1 || node["Balance"] == -1) {
+  node["Balance"] = ((node["Balance"] ?? null) as int) + 1 - 2 * dir;
+  if (node["Balance"]! == 1 || node["Balance"]! == -1) {
     return {"node": node, "done": true};
   }
-  if (node["Balance"] == 0) {
+  if (node["Balance"]! == 0) {
     return {"node": node, "done": false};
   }
   return removeBalance(node, dir);
 }
 
 dynamic Remove(dynamic tree, int data) {
-  final Map<String, dynamic> r = removeR(tree, data);
-  return r["node"];
+  Map<String, dynamic> r = removeR(tree, data);
+  return (r["node"])!;
 }
 
 String indentStr(int n) {
@@ -188,7 +200,7 @@ String indentStr(int n) {
 }
 
 void dumpNode(dynamic node, int indent, bool comma) {
-  final String sp = indentStr(indent);
+  String sp = indentStr(indent);
   if (node == null) {
     String line = sp + "null";
     if (comma) {
@@ -215,7 +227,7 @@ void dump(dynamic node, int indent) {
   dumpNode(node, indent, false);
 }
 
-void main() {
+void _main() {
   dynamic? tree = null;
   print("Empty tree:");
   dump(tree, 0);
@@ -244,13 +256,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();

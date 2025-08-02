@@ -22,6 +22,18 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
+String _substr(String s, int start, int end) {
+  var n = s.length;
+  if (start < 0) start += n;
+  if (end < 0) end += n;
+  if (start < 0) start = 0;
+  if (start > n) start = n;
+  if (end < 0) end = 0;
+  if (end > n) end = n;
+  if (start > end) start = end;
+  return s.substring(start, end);
+}
+
 class Pixel {
   int R;
   int G;
@@ -36,41 +48,38 @@ class Bitmap {
   Bitmap({required this.cols, required this.rows, required this.px});
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  Pixel pixelFromRgb(int c) {
-  final int r = (c ~/ 65536 as int) % 256;
-  final int g = (c ~/ 256 as int) % 256;
-  final int b = c % 256;
+Pixel pixelFromRgb(int c) {
+  int r = (c ~/ 65536 as int) % 256;
+  int g = (c ~/ 256 as int) % 256;
+  int b = c % 256;
   return Pixel(R: r, G: g, B: b);
 }
-  int rgbFromPixel(Pixel p) {
+
+int rgbFromPixel(Pixel p) {
   return p.R * 65536 + p.G * 256 + p.B;
 }
-  Bitmap NewBitmap(int x, int y) {
-  List<List<Pixel>> data = [];
+
+Bitmap NewBitmap(int x, int y) {
+  List<List<Pixel>> data = <List<Pixel>>[];
   int row = 0;
   while (row < y) {
-    List<Pixel> r = [];
+    List<Pixel> r = <Pixel>[];
     int col = 0;
     while (col < x) {
     r = [...r, Pixel(R: 0, G: 0, B: 0)];
     col = col + 1;
   }
-    data = [...data, r];
+    data = ([...data, r] as List).map((e) => List<Pixel>.from(e)).toList();
     row = row + 1;
   }
   return Bitmap(cols: x, rows: y, px: data);
 }
-  Map<String, int> Extent(Bitmap b) {
+
+Map<String, int> Extent(Bitmap b) {
   return {"cols": b.cols, "rows": b.rows};
 }
-  void Fill(Bitmap b, Pixel p) {
+
+void Fill(Bitmap b, Pixel p) {
   int y = 0;
   while (y < b.rows) {
     int x = 0;
@@ -85,10 +94,12 @@ void main() {
     y = y + 1;
   }
 }
-  void FillRgb(Bitmap b, int c) {
+
+void FillRgb(Bitmap b, int c) {
   Fill(b, pixelFromRgb(c));
 }
-  bool SetPx(Bitmap b, int x, int y, Pixel p) {
+
+bool SetPx(Bitmap b, int x, int y, Pixel p) {
   if (x < 0 || x >= b.cols || y < 0 || y >= b.rows) {
     return false;
   }
@@ -99,39 +110,45 @@ void main() {
   b.px = px;
   return true;
 }
-  bool SetPxRgb(Bitmap b, int x, int y, int c) {
+
+bool SetPxRgb(Bitmap b, int x, int y, int c) {
   return SetPx(b, x, y, pixelFromRgb(c));
 }
-  Map<String, dynamic> GetPx(Bitmap b, int x, int y) {
+
+Map<String, dynamic> GetPx(Bitmap b, int x, int y) {
   if (x < 0 || x >= b.cols || y < 0 || y >= b.rows) {
     return {"ok": false};
   }
-  final List<Pixel> row = b.px[y];
+  List<Pixel> row = b.px[y];
   return {"ok": true, "pixel": row[x]};
 }
-  Map<String, dynamic> GetPxRgb(Bitmap b, int x, int y) {
-  final Map<String, dynamic> r = GetPx(b, x, y);
+
+Map<String, dynamic> GetPxRgb(Bitmap b, int x, int y) {
+  Map<String, dynamic> r = GetPx(b, x, y);
   if (!r["ok"]) {
     return {"ok": false};
   }
   return {"ok": true, "rgb": rgbFromPixel(r["pixel"])};
 }
-  int ppmSize(Bitmap b) {
-  final String header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + (b.cols).toString() + " " + (b.rows).toString() + "\n255\n";
+
+int ppmSize(Bitmap b) {
+  String header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + (b.cols).toString() + " " + (b.rows).toString() + "\n255\n";
   return header.length + 3 * b.cols * b.rows;
 }
-  String pixelStr(Pixel p) {
+
+String pixelStr(Pixel p) {
   return "{" + (p.R).toString() + " " + (p.G).toString() + " " + (p.B).toString() + "}";
 }
-  void main() {
+
+void _main() {
   Bitmap bm = NewBitmap(300, 240);
   FillRgb(bm, 16711680);
   SetPxRgb(bm, 10, 20, 255);
   SetPxRgb(bm, 20, 30, 0);
   SetPxRgb(bm, 30, 40, 1056816);
-  final Map<String, dynamic> c1 = GetPx(bm, 0, 0);
-  final Map<String, dynamic> c2 = GetPx(bm, 10, 20);
-  final Map<String, dynamic> c3 = GetPx(bm, 30, 40);
+  Map<String, dynamic> c1 = GetPx(bm, 0, 0);
+  Map<String, dynamic> c2 = GetPx(bm, 10, 20);
+  Map<String, dynamic> c3 = GetPx(bm, 30, 40);
   print("Image size: " + (bm.cols).toString() + " × " + (bm.rows).toString());
   print((ppmSize(bm)).toString() + " bytes when encoded as PPM.");
   if (c1["ok"]) {
@@ -141,19 +158,29 @@ void main() {
     print("Pixel at (10,20) is " + pixelStr(c2["pixel"]));
   }
   if (c3["ok"]) {
-    final p = c3["pixel"];
+    dynamic p = c3["pixel"];
     num r16 = p.R * 257;
     num g16 = p.G * 257;
     num b16 = p.B * 257;
     print("Pixel at (30,40) has R=" + (r16).toString() + ", G=" + (g16).toString() + ", B=" + (b16).toString());
   }
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
