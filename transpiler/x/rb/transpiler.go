@@ -115,6 +115,7 @@ const helperFetch = `
 require 'net/http'
 require 'uri'
 require 'ostruct'
+require 'json'
 def _fetch(url, opts = nil)
   uri = URI.parse(url)
   method = opts && opts['method'] ? opts['method'].to_s.upcase : 'GET'

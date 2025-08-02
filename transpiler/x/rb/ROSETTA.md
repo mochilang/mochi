@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 04:45 UTC
+Last updated: 2025-08-02 05:09 UTC
 
-## Checklist (480/491)
+## Checklist (481/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -256,7 +256,7 @@ Last updated: 2025-08-02 04:45 UTC
 | 247 | count-the-coins-2 | ✓ | 15.539ms | 3.9 MB |
 | 248 | cramers-rule | ✓ | 349µs | 103.7 KB |
 | 249 | crc-32-1 | ✓ | 6.735ms | 304.5 KB |
-| 250 | crc-32-2 | ✓ | 6.819ms | 304.6 KB |
+| 250 | crc-32-2 | ✓ | 5.906ms | 304.6 KB |
 | 251 | create-a-file-on-magnetic-tape | ✓ | 15µs | 1.4 KB |
 | 252 | create-a-file | ✓ | 54µs | 10.4 KB |
 | 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 92µs | 10.8 KB |
@@ -489,7 +489,7 @@ Last updated: 2025-08-02 04:45 UTC
 | 480 | gui-component-interaction | ✓ | 90µs | 21.4 KB |
 | 481 | gui-enabling-disabling-of-controls | ✓ | 192µs | 33.2 KB |
 | 482 | gui-maximum-window-dimensions | ✓ | 75µs | 13.0 KB |
-| 483 | http |   | 177.722ms | 410.5 KB |
+| 483 | http | ✓ | 133.07ms | 409.9 KB |
 | 484 | image-noise | ✓ | 115.461ms | 2.2 MB |
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 2.094468s | 82.1 KB |
 | 486 | md5 | ✓ | 3.818ms | 73.3 KB |
