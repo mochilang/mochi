@@ -209,6 +209,8 @@ func bodyUsesBreak(body []Stmt) bool {
 
 func fsType(t types.Type) string {
 	switch tt := t.(type) {
+	case types.AnyType:
+		return "obj"
 	case types.IntType, types.Int64Type:
 		return "int"
 	case types.BigIntType:
@@ -265,6 +267,8 @@ func fsTypeFromString(s string) string {
 		return "string"
 	case "bigint":
 		return "bigint"
+	case "any":
+		return "obj"
 	default:
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
@@ -272,6 +276,17 @@ func fsTypeFromString(s string) string {
 		}
 		if strings.HasSuffix(s, " list") {
 			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
+		}
+		if strings.HasPrefix(s, "fun(") && strings.HasSuffix(s, ")") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(s, "fun("), ")")
+			params := []string{}
+			if strings.TrimSpace(inner) != "" {
+				for _, p := range strings.Split(inner, ",") {
+					params = append(params, fsTypeFromString(strings.TrimSpace(p)))
+				}
+			}
+			params = append(params, "obj")
+			return strings.Join(params, " -> ")
 		}
 		if strings.HasPrefix(s, "Map<") {
 			return strings.Replace(s, "Map<", "System.Collections.Generic.IDictionary<", 1)
@@ -289,6 +304,18 @@ func typeRefString(t *parser.TypeRef) string {
 	}
 	if t.Simple != nil {
 		return fsTypeFromString(*t.Simple)
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params)+1)
+		for i, p := range t.Fun.Params {
+			params[i] = typeRefString(p)
+		}
+		if t.Fun.Return != nil {
+			params[len(params)-1] = typeRefString(t.Fun.Return)
+		} else {
+			params[len(params)-1] = "obj"
+		}
+		return strings.Join(params, " -> ")
 	}
 	ft := types.ResolveTypeRef(t, transpileEnv)
 	return fsType(ft)
@@ -1691,6 +1718,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	} else if (rt == "obj" || rt == "") && (lt == "int" || lt == "float" || lt == "string" || lt == "bool") {
 		right = castIf(right, lt)
 		rt = lt
+	} else if (lt == "obj" || lt == "") && (rt == "obj" || rt == "") && (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/") {
+		left = castIf(left, "float")
+		right = castIf(right, "float")
+		lt, rt = "float", "float"
 	}
 	if lt == "float" && rt == "int" {
 		right = &CastExpr{Expr: right, Type: "float"}
@@ -1978,6 +2009,9 @@ func inferType(e Expr) string {
 		case "+", "-", "*", "/", "%":
 			lt := inferType(v.Left)
 			rt := inferType(v.Right)
+			if lt == "obj" && rt == "obj" {
+				return "float"
+			}
 			if lt == rt {
 				return lt
 			}
@@ -2569,9 +2603,17 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	t := inferType(c.Expr)
 	switch c.Type {
+	case "obj":
+		if needsParen(c.Expr) {
+			io.WriteString(w, "(")
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
 	case "float":
 		if t == "obj" || isIndexExpr(c.Expr) {
-			io.WriteString(w, "unbox<float> ")
+			io.WriteString(w, "System.Convert.ToDouble ")
 		} else {
 			io.WriteString(w, "float ")
 		}
@@ -3296,6 +3338,12 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			return nil, err
 		}
 		typ := varTypes[st.Assign.Name]
+		if strings.HasSuffix(typ, " array") {
+			elem := strings.TrimSuffix(typ, " array")
+			if elem == "obj" && inferType(val) != "obj" {
+				val = &CallExpr{Func: "box", Args: []Expr{val}}
+			}
+		}
 		target := Expr(&IdentExpr{Name: st.Assign.Name, Type: typ})
 		if len(st.Assign.Index) > 0 {
 			target, err = applyIndexOps(target, st.Assign.Index)
@@ -3398,15 +3446,28 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 		}
 		var retType string
-		if transpileEnv != nil {
+		if st.Fun.Return != nil {
+			retType = typeRefString(st.Fun.Return)
+		}
+		if retType == "" && transpileEnv != nil {
 			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
 				if ft, ok := vt.(types.FuncType); ok {
 					retType = fsType(ft.Return)
 				}
 			}
 		}
-		if retType == "" && st.Fun.Return != nil {
-			retType = typeRefString(st.Fun.Return)
+		if transpileEnv != nil {
+			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
+				if ft, ok := vt.(types.FuncType); ok {
+					if inner, ok2 := ft.Return.(types.FuncType); ok2 {
+						inner.Return = types.AnyType{}
+						ft.Return = inner
+					} else {
+						ft.Return = types.AnyType{}
+					}
+					transpileEnv.SetVar(st.Fun.Name, ft, false)
+				}
+			}
 		}
 		prevReturn := currentReturn
 		currentReturn = retType
