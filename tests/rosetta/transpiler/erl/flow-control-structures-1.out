@@ -2,7 +2,7 @@ loop
 loop
 loop
 {
-  "duration_us": 18307,
-  "memory_bytes": 185584,
+  "duration_us": 14232,
+  "memory_bytes": 195904,
   "name": "main"
 }

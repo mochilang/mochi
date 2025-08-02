@@ -1,0 +1,19 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/gamma-function.erl:35:1: Warning: function mochi_safe_fmod/2 is unused
+%   35| mochi_safe_fmod(A, B) ->
+%     | ^
+
+-0.5 -1.8772053029713742
+0.1 -44.13742875391705
+0.5 -45.89827222383702
+1 -172.08550835053623
+1.5 -902.4118714093041
+2 -5550.918619201778
+3 -269826.847123533
+10 -2.1194586905998733e17
+140 -2.6190499787063195e61
+170 -7.223819378047462e64
+{
+  "duration_us": 20373,
+  "memory_bytes": 103840,
+  "name": "main"
+}

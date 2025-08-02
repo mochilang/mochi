@@ -1,0 +1,15 @@
+/workspace/mochi/tests/rosetta/transpiler/erl/formal-power-series.erl:59:1: Warning: function mochi_safe_fmod/2 is unused
+%   59| mochi_safe_fmod(A, B) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/transpiler/erl/formal-power-series.erl:72:19: Warning: the result of calling length/1 is ignored (suppress the warning by assigning the expression to the _ variable)
+%   72|             Idx = length(maps:get("coeffs", F, nil)),
+%     |                   ^
+
+sin:  1.0e303   1.0e303   1.0e303   1.0e303   1.0e303   1.0e303 
+cos:  1.0e303   1.0e303   1.0e303   1.0e303   1.0e303   1.0e303 
+{
+  "duration_us": 16484,
+  "memory_bytes": 2461040,
+  "name": "main"
+}
