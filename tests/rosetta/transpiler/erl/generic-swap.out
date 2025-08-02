@@ -1,0 +1,7 @@
+3 "four"
+"four" 3
+{
+  "duration_us": 25166,
+  "memory_bytes": 350008,
+  "name": "main"
+}

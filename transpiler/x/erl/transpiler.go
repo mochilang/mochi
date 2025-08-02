@@ -179,6 +179,31 @@ mochi_repeat(S, N) when is_list(S) ->
 mochi_repeat(_, _) -> [].
 `
 
+const helperFetch = `
+mochi_fetch(Url) ->
+    Cmd = "curl -fsSL " ++ Url,
+    Out = os:cmd(Cmd),
+    Pos = string:str(Out, "\"title\""),
+    case Pos of
+        0 -> #{};
+        _ ->
+            Rest = string:substr(Out, Pos + 8),
+            B = string:chr(Rest, $"),
+            case B of
+                0 -> #{};
+                _ ->
+                    Rest2 = string:substr(Rest, B + 1),
+                    E = string:chr(Rest2, $"),
+                    case E of
+                        0 -> #{};
+                        _ ->
+                            Title = string:substr(Rest2, 1, E - 1),
+                            #{"title" => Title}
+                    end
+            end
+    end.
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
@@ -189,6 +214,7 @@ var useIndexOf bool
 var useParseIntStr bool
 var useBigRat bool
 var useRepeat bool
+var useFetch bool
 var useNot bool
 var useSafeArith bool
 var mutatedFuncs map[string]int
@@ -218,6 +244,7 @@ type Program struct {
 	UseParseIntStr  bool
 	UseBigRat       bool
 	UseRepeat       bool
+	UseFetch        bool
 	UseNot          bool
 	UseSafeArith    bool
 }
@@ -3081,6 +3108,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useParseIntStr = false
 	useBigRat = false
 	useRepeat = false
+	useFetch = false
 	useNot = false
 	useSafeArith = false
 	mutatedFuncs = map[string]int{
@@ -3126,6 +3154,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseParseIntStr = useParseIntStr
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
+	p.UseFetch = useFetch
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
 	return p, nil
@@ -5102,6 +5131,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			list[i] = valueToExpr(r)
 		}
 		return &ListLit{Elems: list}, nil
+	case p.Fetch != nil:
+		url, err := convertExpr(p.Fetch.URL, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		useFetch = true
+		return &CallExpr{Func: "mochi_fetch", Args: []Expr{url}}, nil
 	case p.Query != nil:
 		return convertQueryExpr(p.Query, env, ctx)
 	case p.If != nil:
@@ -6115,6 +6151,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseSafeArith {
 		buf.WriteString(helperSafeArith)
+		buf.WriteString("\n")
+	}
+	if p.UseFetch {
+		buf.WriteString(helperFetch)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
