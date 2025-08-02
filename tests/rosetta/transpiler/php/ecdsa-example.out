@@ -14,7 +14,7 @@ S: 94150071556658883365738746782965214584303361499725266605620843043083873122499
 
 Signature verified: true
 {
-  "duration_us": 178,
+  "duration_us": 69,
   "memory_bytes": 1624,
   "name": "main"
 }

@@ -53,7 +53,7 @@ Rule #90:
              ..O..O...O...O...O...O...O...O...O...O...O...O...O.OO
 
 {
-  "duration_us": 841,
+  "duration_us": 623,
   "memory_bytes": 96,
   "name": "main"
 }

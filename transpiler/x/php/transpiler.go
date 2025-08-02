@@ -28,13 +28,18 @@ var builtinNames = map[string]struct{}{
 }
 
 const helperLookupHost = `function _lookup_host($host) {
-    $res = dns_get_record($host, DNS_A);
+    $res = dns_get_record($host, DNS_A + DNS_AAAA);
     if ($res === false) {
-        return [[], "lookup failed"];
+        $fallback = gethostbynamel($host);
+        if ($fallback === false) {
+            return [[], "lookup failed"];
+        }
+        return [$fallback, null];
     }
     $ips = [];
     foreach ($res as $r) {
         if (isset($r['ip'])) { $ips[] = $r['ip']; }
+        if (isset($r['ipv6'])) { $ips[] = $r['ipv6']; }
     }
     return [$ips, null];
 }`

@@ -6,7 +6,7 @@ EKG(10): [1 10 2 4 6 3 9 12 8 14 7 21 15 5 20 16 18 22 11 33 24 26 13 39 27 30 2
 
 EKG(5) and EKG(7) converge at term 21
 {
-  "duration_us": 3082,
+  "duration_us": 2314,
   "memory_bytes": 96,
   "name": "main"
 }

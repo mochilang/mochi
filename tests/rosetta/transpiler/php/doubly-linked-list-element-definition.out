@@ -1,7 +1,7 @@
 A B
 C B A
 {
-  "duration_us": 110,
+  "duration_us": 103,
   "memory_bytes": 96,
   "name": "main"
 }
