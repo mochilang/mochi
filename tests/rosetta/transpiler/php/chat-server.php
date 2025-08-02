@@ -28,19 +28,26 @@ $__start = _now();
 };
   function main() {
   $clients = [];
-  $broadcast = function($msg) use (&$broadcast, $clients) {
+  $broadcast = null;
+$broadcast = function($msg) use (&$broadcast, $clients) {
   echo rtrim($msg), PHP_EOL;
 };
-  $add = function($name) use (&$add, $clients, $broadcast) {
+  $add = null;
+$add = function($name) use (&$add, $clients, $broadcast) {
   $clients = array_merge($clients, [$name]);
-  $broadcast('+++ "' . $name . '" connected +++\n');
+  $broadcast('+++ "' . $name . '" connected +++
+');
 };
-  $send = function($name, $msg) use (&$send, $clients, $broadcast, $add) {
-  $broadcast($name . '> ' . $msg . '\n');
+  $send = null;
+$send = function($name, $msg) use (&$send, $clients, $broadcast, $add) {
+  $broadcast($name . '> ' . $msg . '
+');
 };
-  $remove = function($name) use (&$remove, $clients, $broadcast, $add, $send) {
+  $remove = null;
+$remove = function($name) use (&$remove, $clients, $broadcast, $add, $send) {
   $clients = removeName($clients, $name);
-  $broadcast('--- "' . $name . '" disconnected ---\n');
+  $broadcast('--- "' . $name . '" disconnected ---
+');
 };
   $add('Alice');
   $add('Bob');
@@ -48,7 +55,8 @@ $__start = _now();
   $send('Bob', 'Hi Alice!');
   $remove('Bob');
   $remove('Alice');
-  $broadcast('Server stopping!\n');
+  $broadcast('Server stopping!
+');
 };
   main();
 $__end = _now();

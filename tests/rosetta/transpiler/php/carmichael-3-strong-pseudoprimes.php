@@ -33,8 +33,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -95,7 +95,8 @@ $__start = _now();
 };
 };
 };
-  echo rtrim('The following are Carmichael munbers for p1 <= 61:\n'), PHP_EOL;
+  echo rtrim('The following are Carmichael munbers for p1 <= 61:
+'), PHP_EOL;
   echo rtrim('p1     p2      p3     product'), PHP_EOL;
   echo rtrim('==     ==      ==     ======='), PHP_EOL;
   for ($p1 = 2; $p1 < 62; $p1++) {

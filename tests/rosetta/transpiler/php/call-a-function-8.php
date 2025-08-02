@@ -27,14 +27,15 @@ $__start = _now();
   return $out;
 };
   function main() {
-  $fn = function($r) {
+  $fn = null;
+$fn = function($r) use ($fn) {
   return ($r == ' ' ? '' : $r);
 };
   mapString('Spaces removed', $fn);
-  mapString('Test', function($r) {
+  mapString('Test', function($r) use ($fn, $strtolower) {
   return strtolower($r);
 });
-  mapString('shift', function($r) {
+  mapString('shift', function($r) use ($fn) {
   return $r;
 });
 };

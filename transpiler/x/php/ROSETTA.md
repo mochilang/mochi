@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-01 17:46 +0700
+Last updated: 2025-08-02 11:41 +0700
 
 ## Checklist (482/491)
 | Index | Name | Status | Duration | Memory |
@@ -159,56 +159,56 @@ Last updated: 2025-08-01 17:46 +0700
 | 150 | call-a-function-10 | ✓ | 7µs | 64 B |
 | 151 | call-a-function-11 | ✓ | 49µs | 96 B |
 | 152 | call-a-function-12 | ✓ | 47µs | 96 B |
-| 153 | call-a-function-2 | ✓ | 6µs | 64 B |
-| 154 | call-a-function-3 | ✓ | 1µs | 64 B |
-| 155 | call-a-function-4 | ✓ | 6µs | 64 B |
-| 156 | call-a-function-5 | ✓ | 38µs | 96 B |
-| 157 | call-a-function-6 | ✓ | 43µs | 96 B |
-| 158 | call-a-function-7 | ✓ | 1µs | 64 B |
-| 159 | call-a-function-8 | ✓ | 13µs | 64 B |
-| 160 | call-a-function-9 | ✓ | 8µs | 64 B |
+| 153 | call-a-function-2 | ✓ | 19µs | 64 B |
+| 154 | call-a-function-3 | ✓ | 2µs | 64 B |
+| 155 | call-a-function-4 | ✓ | 23µs | 64 B |
+| 156 | call-a-function-5 | ✓ | 62µs | 96 B |
+| 157 | call-a-function-6 | ✓ | 55µs | 96 B |
+| 158 | call-a-function-7 | ✓ | 11µs | 64 B |
+| 159 | call-a-function-8 | ✓ | 97µs | 152 B |
+| 160 | call-a-function-9 | ✓ | 30µs | 64 B |
 | 161 | call-an-object-method-1 | ✓ | 1µs | 128 B |
-| 162 | call-an-object-method-2 | ✓ | 8µs | 1.9 KB |
-| 163 | call-an-object-method-3 | ✓ | 33µs | 184 B |
-| 164 | call-an-object-method | ✓ | 52µs | 184 B |
-| 165 | camel-case-and-snake-case | ✓ | 129µs | 96 B |
-| 166 | canny-edge-detector | ✓ | 91µs | 128 B |
-| 167 | canonicalize-cidr | ✓ | 157µs | 128 B |
-| 168 | cantor-set | ✓ | 134µs | 1.7 KB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.587ms | 96 B |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 37µs | 96 B |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 107µs | 96 B |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 53µs | 96 B |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 25µs | 96 B |
-| 174 | case-sensitivity-of-identifiers | ✓ | 64µs | 888 B |
-| 175 | casting-out-nines | ✓ | 1.313ms | 2.7 KB |
-| 176 | catalan-numbers-1 | ✓ | 79µs | 96 B |
-| 177 | catalan-numbers-2 | ✓ | 97µs | 96 B |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 63µs | 792 B |
-| 179 | catamorphism | ✓ | 80µs | 128 B |
-| 180 | catmull-clark-subdivision-surface | ✓ | 408µs | 96 B |
-| 181 | chaocipher | ✓ | 142µs | 96 B |
-| 182 | chaos-game | ✓ | 3.552ms | 69.6 KB |
-| 183 | character-codes-1 | ✓ | 43µs | 96 B |
-| 184 | character-codes-2 | ✓ | 46µs | 96 B |
-| 185 | character-codes-3 | ✓ | 112µs | 192 B |
-| 186 | character-codes-4 | ✓ | 42µs | 160 B |
-| 187 | character-codes-5 | ✓ | 52µs | 96 B |
-| 188 | chat-server | ✓ | 89µs | 3.2 KB |
-| 189 | check-machin-like-formulas | ✓ | 115.869ms | 224 B |
-| 190 | check-that-file-exists | ✓ | 72µs | 96 B |
-| 191 | checkpoint-synchronization-1 | ✓ | 101µs | 96 B |
-| 192 | checkpoint-synchronization-2 | ✓ | 86µs | 128 B |
-| 193 | checkpoint-synchronization-3 | ✓ | 94µs | 128 B |
-| 194 | checkpoint-synchronization-4 | ✓ | 181µs | 96 B |
-| 195 | chernicks-carmichael-numbers | ✓ | 901.469ms | 96 B |
-| 196 | cheryls-birthday | ✓ | 159µs | 1.2 KB |
-| 197 | chinese-remainder-theorem | ✓ | 84µs | 160 B |
-| 198 | chinese-zodiac | ✓ | 196µs | 600 B |
-| 199 | cholesky-decomposition-1 | ✓ | 168µs | 96 B |
-| 200 | cholesky-decomposition | ✓ | 157µs | 96 B |
-| 201 | chowla-numbers | ✓ | 44µs | 96 B |
-| 202 | church-numerals-1 | ✓ | 341µs | 3.2 KB |
+| 162 | call-an-object-method-2 | ✓ | 22µs | 1.9 KB |
+| 163 | call-an-object-method-3 | ✓ | 19µs | 96 B |
+| 164 | call-an-object-method | ✓ | 19µs | 96 B |
+| 165 | camel-case-and-snake-case | ✓ | 127µs | 96 B |
+| 166 | canny-edge-detector | ✓ | 132µs | 128 B |
+| 167 | canonicalize-cidr | ✓ | 167µs | 128 B |
+| 168 | cantor-set | ✓ | 225µs | 1.7 KB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 1.253ms | 96 B |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 73µs | 96 B |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 132µs | 96 B |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 74µs | 96 B |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 69µs | 96 B |
+| 174 | case-sensitivity-of-identifiers | ✓ | 84µs | 888 B |
+| 175 | casting-out-nines | ✓ | 159µs | 632 B |
+| 176 | catalan-numbers-1 | ✓ | 103µs | 96 B |
+| 177 | catalan-numbers-2 | ✓ | 85µs | 96 B |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 167µs | 792 B |
+| 179 | catamorphism | ✓ | 68µs | 128 B |
+| 180 | catmull-clark-subdivision-surface | ✓ | 316µs | 96 B |
+| 181 | chaocipher | ✓ | 85µs | 96 B |
+| 182 | chaos-game | ✓ | 2.676ms | 69.6 KB |
+| 183 | character-codes-1 | ✓ | 210µs | 96 B |
+| 184 | character-codes-2 | ✓ | 36µs | 96 B |
+| 185 | character-codes-3 | ✓ | 38µs | 192 B |
+| 186 | character-codes-4 | ✓ | 32µs | 160 B |
+| 187 | character-codes-5 | ✓ | 36µs | 96 B |
+| 188 | chat-server | ✓ | 82µs | 3.2 KB |
+| 189 | check-machin-like-formulas | ✓ | 90.364ms | 224 B |
+| 190 | check-that-file-exists | ✓ | 54µs | 96 B |
+| 191 | checkpoint-synchronization-1 | ✓ | 50µs | 96 B |
+| 192 | checkpoint-synchronization-2 | ✓ | 63µs | 128 B |
+| 193 | checkpoint-synchronization-3 | ✓ | 153µs | 128 B |
+| 194 | checkpoint-synchronization-4 | ✓ | 65µs | 96 B |
+| 195 | chernicks-carmichael-numbers | ✓ | 421.061ms | 96 B |
+| 196 | cheryls-birthday | ✓ | 95µs | 1.2 KB |
+| 197 | chinese-remainder-theorem | ✓ | 62µs | 160 B |
+| 198 | chinese-zodiac | ✓ | 104µs | 600 B |
+| 199 | cholesky-decomposition-1 | ✓ | 152µs | 96 B |
+| 200 | cholesky-decomposition | ✓ | 147µs | 96 B |
+| 201 | chowla-numbers | ✓ | 97µs | 96 B |
+| 202 | church-numerals-1 | ✓ | 603µs | 3.2 KB |
 | 203 | church-numerals-2 | ✓ |  |  |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 148µs | 760 B |
 | 205 | circular-primes | ✓ | 464µs | 17.1 KB |

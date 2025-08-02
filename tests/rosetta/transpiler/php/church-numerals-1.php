@@ -42,7 +42,7 @@ $__start = _now();
   function succ($c) {
   global $z, $three, $four;
   return function($f) use ($c) {
-  return function($x) use ($f, $c) {
+  return function($x) use ($c, $f, $call_user_func) {
   return $f(call_user_func($c($f), $x));
 };
 };
@@ -50,15 +50,15 @@ $__start = _now();
   function add($c, $d) {
   global $z, $three, $four;
   return function($f) use ($c, $d) {
-  return function($x) use ($f, $c, $d) {
+  return function($x) use ($c, $d, $f, $call_user_func) {
   return call_user_func($c($f), call_user_func($d($f), $x));
 };
 };
 };
   function mul($c, $d) {
   global $z, $three, $four;
-  return function($f) use ($c, $d) {
-  return function($x) use ($f, $d, $c) {
+  return function($f) use ($d, $c) {
+  return function($x) use ($c, $d, $f, $call_user_func) {
   return call_user_func($c($d($f)), $x);
 };
 };

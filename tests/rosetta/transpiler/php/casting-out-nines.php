@@ -38,8 +38,8 @@ function _str($x) {
 }
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
-        $sa = is_int($a) ? strval($a) : sprintf('%.0f', $a);
-        $sb = is_int($b) ? strval($b) : sprintf('%.0f', $b);
+        $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
+        $sb = is_int($b) ? strval($b) : (is_string($b) ? $b : sprintf('%.0f', $b));
         return intval(bcdiv($sa, $sb, 0));
     }
     return intdiv($a, $b);
@@ -95,7 +95,7 @@ $__start = _now();
   if ($r1 == $r2) {
   $out = array_merge($out, [$ks]);
 }
-  $k = $k + 1;
+  $k = $k . 1;
 };
   return $out;
 };
@@ -103,7 +103,8 @@ $__start = _now();
   $idx = 0;
   while ($idx < count($testCases)) {
   $tc = $testCases[$idx];
-  echo rtrim('\nTest case base = ' . _str($tc['base']) . ', begin = ' . $tc['begin'] . ', end = ' . $tc['end'] . ':'), PHP_EOL;
+  echo rtrim('
+Test case base = ' . _str($tc['base']) . ', begin = ' . $tc['begin'] . ', end = ' . $tc['end'] . ':'), PHP_EOL;
   $s = subset($tc['base'], $tc['begin'], $tc['end']);
   echo rtrim('Subset:  ' . _str($s)), PHP_EOL;
   echo rtrim('Kaprekar:' . _str($tc['kaprekar'])), PHP_EOL;

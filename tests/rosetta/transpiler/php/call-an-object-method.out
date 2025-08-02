@@ -1,6 +1,5 @@
-Warning: Undefined variable $secret in /workspace/mochi/tests/rosetta/transpiler/php/call-an-object-method.php on line 22
 {
-  "duration_us": 52,
-  "memory_bytes": 184,
+  "duration_us": 19,
+  "memory_bytes": 96,
   "name": "main"
 }

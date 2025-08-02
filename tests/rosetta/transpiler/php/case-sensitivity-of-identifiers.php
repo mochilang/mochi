@@ -42,26 +42,30 @@ $__start = _now();
   $pkg_dog = 'Salt';
   $Dog = 'Pepper';
   $pkg_DOG = 'Mustard';
-  $packageSees = function($d1, $d2, $d3) use (&$packageSees, $pkg_dog, $Dog, $pkg_DOG) {
+  $packageSees = null;
+$packageSees = function($d1, $d2, $d3) use (&$packageSees, $pkg_dog, $Dog, $pkg_DOG) {
   echo rtrim('Package sees: ' . $d1 . ' ' . $d2 . ' ' . $d3), PHP_EOL;
   return ['pkg_dog' => true, 'Dog' => true, 'pkg_DOG' => true];
 };
   $d = $packageSees($pkg_dog, $Dog, $pkg_DOG);
-  echo rtrim('There are ' . _str(_len($d)) . ' dogs.\n'), PHP_EOL;
+  echo rtrim('There are ' . _str(_len($d)) . ' dogs.
+'), PHP_EOL;
   $dog = 'Benjamin';
   $d = $packageSees($pkg_dog, $Dog, $pkg_DOG);
   echo rtrim('Main sees:   ' . $dog . ' ' . $Dog . ' ' . $pkg_DOG), PHP_EOL;
   $d['dog'] = true;
   $d['Dog'] = true;
   $d['pkg_DOG'] = true;
-  echo rtrim('There are ' . _str(_len($d)) . ' dogs.\n'), PHP_EOL;
+  echo rtrim('There are ' . _str(_len($d)) . ' dogs.
+'), PHP_EOL;
   $Dog = 'Samba';
   $d = $packageSees($pkg_dog, $Dog, $pkg_DOG);
   echo rtrim('Main sees:   ' . $dog . ' ' . $Dog . ' ' . $pkg_DOG), PHP_EOL;
   $d['dog'] = true;
   $d['Dog'] = true;
   $d['pkg_DOG'] = true;
-  echo rtrim('There are ' . _str(_len($d)) . ' dogs.\n'), PHP_EOL;
+  echo rtrim('There are ' . _str(_len($d)) . ' dogs.
+'), PHP_EOL;
   $DOG = 'Bernie';
   $d = $packageSees($pkg_dog, $Dog, $pkg_DOG);
   echo rtrim('Main sees:   ' . $dog . ' ' . $Dog . ' ' . $DOG), PHP_EOL;

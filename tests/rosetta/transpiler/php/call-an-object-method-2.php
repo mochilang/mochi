@@ -19,12 +19,15 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function Box_TellSecret($self) {
   global $funcs, $New, $Count;
+  $Contents = $self['Contents'];
+  $secret = $self['secret'];
   return $secret;
 };
   function newFactory() {
-  global $funcs;
+  global $funcs, $New;
   $sn = 0;
-  $New = function() use (&$New, $sn) {
+  $mochi_New = null;
+$mochi_New = function() use (&$New, $sn) {
   $sn = $sn + 1;
   $b = ['secret' => $sn];
   if ($sn == 1) {
@@ -36,10 +39,11 @@ $__start = _now();
 }
   return $b;
 };
-  $Count = function() use (&$Count, $sn, $New) {
+  $Count = null;
+$Count = function() use (&$Count, $sn, $mochi_New) {
   return $sn;
 };
-  return [$New, $Count];
+  return [$mochi_New, $Count];
 };
   $funcs = newFactory();
   $New = $funcs[0];

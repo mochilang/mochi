@@ -19,6 +19,8 @@ $__start_mem = memory_get_usage();
 $__start = _now();
   function Box_TellSecret($self) {
   global $box;
+  $Contents = $self['Contents'];
+  $secret = $self['secret'];
   return $secret;
 };
   function mochi_New() {
