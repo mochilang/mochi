@@ -41,6 +41,11 @@ var needPadStart bool
 var needSHA256 bool
 var needRuneLen bool
 var needSubstr bool
+var needArrGetI bool
+var needArrGetD bool
+var needArrGetB bool
+var needArrGetO bool
+var needP bool
 var needBigRat bool
 var needModPow2 bool
 var needCastInt2D bool
@@ -3453,6 +3458,11 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needModPow2 = false
 	needRuneLen = false
 	needSubstr = false
+	needArrGetI = false
+	needArrGetD = false
+	needArrGetB = false
+	needArrGetO = false
+	needP = false
 	pyMathAliases = map[string]bool{}
 	builtinAliases = map[string]string{}
 	builtinAliases["stdout"] = "stdout"
@@ -4964,6 +4974,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &IntCastExpr{Value: args[0]}, nil
 		}
 		if (name == "float" || name == "float64" || name == "double") && len(args) == 1 {
+			if name == "double" && topEnv != nil {
+				if _, ok := topEnv.GetFunc("double"); ok {
+					return &CallExpr{Func: name, Args: args}, nil
+				}
+			}
 			return &FloatCastExpr{Value: args[0]}, nil
 		}
 		if name == "num" && len(args) == 1 {
@@ -4993,7 +5008,26 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
 		if name == "str" && len(args) == 1 {
-			return &CallExpr{Func: "String.valueOf", Args: args}, nil
+			needP = true
+			arg := args[0]
+			if ix, ok := arg.(*IndexExpr); ok && isArrayExpr(ix.Target) {
+				et := arrayElemType(ix.Target)
+				switch et {
+				case "int":
+					needArrGetI = true
+					arg = &CallExpr{Func: "_geti", Args: []Expr{ix.Target, ix.Index}}
+				case "double":
+					needArrGetD = true
+					arg = &CallExpr{Func: "_getd", Args: []Expr{ix.Target, ix.Index}}
+				case "boolean":
+					needArrGetB = true
+					arg = &CallExpr{Func: "_getb", Args: []Expr{ix.Target, ix.Index}}
+				default:
+					needArrGetO = true
+					arg = &CallExpr{Func: "_geto", Args: []Expr{ix.Target, ix.Index}}
+				}
+			}
+			return &CallExpr{Func: "_p", Args: []Expr{arg}}, nil
 		}
 		if (name == "substring" || name == "substr") && len(args) == 3 {
 			return &SubstringExpr{Str: args[0], Start: args[1], End: args[2]}, nil
@@ -6079,6 +6113,31 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        int start = s.offsetByCodePoints(0, i);\n")
 		buf.WriteString("        int end = s.offsetByCodePoints(0, j);\n")
 		buf.WriteString("        return s.substring(start, end);\n")
+		buf.WriteString("    }\n")
+	}
+	if needP {
+		buf.WriteString("\n    static String _p(Object v) {\n")
+		buf.WriteString("        return v != null ? String.valueOf(v) : \"<nil>\";\n")
+		buf.WriteString("    }\n")
+	}
+	if needArrGetI {
+		buf.WriteString("\n    static Integer _geti(int[] a, int i) {\n")
+		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
+		buf.WriteString("    }\n")
+	}
+	if needArrGetD {
+		buf.WriteString("\n    static Double _getd(double[] a, int i) {\n")
+		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
+		buf.WriteString("    }\n")
+	}
+	if needArrGetB {
+		buf.WriteString("\n    static Boolean _getb(boolean[] a, int i) {\n")
+		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
+		buf.WriteString("    }\n")
+	}
+	if needArrGetO {
+		buf.WriteString("\n    static Object _geto(Object[] a, int i) {\n")
+		buf.WriteString("        return (i >= 0 && i < a.length) ? a[i] : null;\n")
 		buf.WriteString("    }\n")
 	}
 	buf.WriteString("}\n")
