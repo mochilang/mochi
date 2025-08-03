@@ -5,7 +5,6 @@ function _indexof($s, $sub) {
     return $pos === false ? -1 : $pos;
 }
 function indexOf($s, $ch) {
-  global $fields, $makePatterns, $main;
   $i = 0;
   while ($i < strlen($s)) {
   if (substr($s, $i, $i + 1 - $i) == $ch) {
@@ -16,7 +15,6 @@ function indexOf($s, $ch) {
   return -1;
 }
 function fields($s) {
-  global $indexOf, $makePatterns, $main;
   $words = [];
   $cur = '';
   $i = 0;
@@ -39,7 +37,6 @@ function fields($s) {
   return $words;
 }
 function makePatterns() {
-  global $indexOf, $fields, $main;
   $digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
   $pats = [];
   $i = 0;
@@ -68,7 +65,6 @@ function makePatterns() {
   return $pats;
 }
 function main() {
-  global $indexOf, $fields, $makePatterns;
   echo rtrim('Cows and bulls/player
 ' . 'You think of four digit number of unique digits in the range 1 to 9.
 ' . 'I guess.  You score my guess:
