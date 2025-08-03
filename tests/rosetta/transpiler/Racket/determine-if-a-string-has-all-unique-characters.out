@@ -1,0 +1,35 @@
+Analyzing "" which has a length of 0:
+  All characters in the string are unique.
+
+Analyzing "." which has a length of 1:
+  All characters in the string are unique.
+
+Analyzing "abcABC" which has a length of 6:
+  All characters in the string are unique.
+
+Analyzing "XYZ ZYX" which has a length of 7:
+  Not all characters in the string are unique.
+  'X' (0x58) is duplicated at positions 1 and 7.
+
+Analyzing "1234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ" which has a length of 36:
+  Not all characters in the string are unique.
+  '0' (0x30) is duplicated at positions 10 and 25.
+
+Analyzing "01234567890ABCDEFGHIJKLMN0PQRSTUVWXYZ0X" which has a length of 39:
+  Not all characters in the string are unique.
+  '0' (0x30) is duplicated at positions 1 and 11.
+
+Analyzing "hétérogénéité" which has a length of 13:
+  Not all characters in the string are unique.
+  'é' (0xe9) is duplicated at positions 2 and 4.
+
+Analyzing "🎆🎃🎇🎈" which has a length of 4:
+  All characters in the string are unique.
+
+Analyzing "😍😀🙌💃😍🙌" which has a length of 6:
+  Not all characters in the string are unique.
+  '😍' (0x1f60d) is duplicated at positions 1 and 5.
+
+Analyzing "🐠🐟🐡🦈🐬🐳🐋🐡" which has a length of 8:
+  Not all characters in the string are unique.
+  '🐡' (0x1f421) is duplicated at positions 3 and 8.

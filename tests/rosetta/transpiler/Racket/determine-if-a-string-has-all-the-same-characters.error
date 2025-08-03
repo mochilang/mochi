@@ -1,0 +1,6 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Racket/determine-if-a-string-has-all-the-same-characters.rkt:51:11: #%app: missing procedure expression;
+ probably originally (), which is an illegal empty application
+  in: (#%app)
+  location...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/determine-if-a-string-has-all-the-same-characters.rkt:51:11
