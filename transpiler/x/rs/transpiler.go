@@ -3196,14 +3196,20 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 func wrapBench(name string, body []Stmt) Stmt {
 	useTime = true
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
+	memStart := &VarDecl{Name: "_mem_start", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
+	memEnd := &VarDecl{Name: "_mem_end", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	memDiff := &BinaryExpr{Left: &NameRef{Name: "_mem_end"}, Op: "-", Right: &NameRef{Name: "_mem_start"}}
+	zero := &NumberLit{Value: "0"}
+	cond := &BinaryExpr{Left: memDiff, Op: "<=", Right: zero}
+	memExpr := &IfExpr{Cond: cond, Then: &NameRef{Name: "_mem_end"}, Else: memDiff}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
-	stmts := []Stmt{startDecl}
+	stmts := []Stmt{startDecl, memStart}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, durDecl, memDecl, print)
+	stmts = append(stmts, endDecl, memEnd, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}
 }
 
