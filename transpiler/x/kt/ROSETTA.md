@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-03 15:40 +0700
+Last updated: 2025-08-03 16:13 +0700
 
-Completed tasks: **265/491**
+Completed tasks: **266/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -149,7 +149,7 @@ Completed tasks: **265/491**
 | 138 | bulls-and-cows-player |  |  |  |
 | 139 | bulls-and-cows |  |  |  |
 | 140 | burrows-wheeler-transform | ✓ | 74.95ms | 127.5 KB |
-| 141 | caesar-cipher-1 |  |  |  |
+| 141 | caesar-cipher-1 | ✓ | 31.53ms | 122.5 KB |
 | 142 | caesar-cipher-2 |  |  |  |
 | 143 | calculating-the-value-of-e |  |  |  |
 | 144 | calendar---for-real-programmers-1 |  |  |  |
