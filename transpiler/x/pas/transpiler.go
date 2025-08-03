@@ -1688,7 +1688,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					break
 				}
 				existing, ok := varTypes[name]
-				if t := inferType(ex); t != "" && (!ok || existing == "" || existing == "array of integer") {
+				t := inferType(ex)
+				if t == "" {
+					if tt := types.ExprType(st.Assign.Value, env); tt != nil {
+						t = pasTypeFromType(tt)
+					}
+				}
+				if t != "" && (!ok || existing == "" || existing == "array of integer") {
 					varTypes[name] = t
 					setVarType(name, t)
 				}
@@ -1718,13 +1724,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				typ := "integer"
 				if st.For.RangeEnd == nil {
 					if t := inferType(start); strings.HasPrefix(t, "array of ") {
-						elem := strings.TrimPrefix(t, "array of ")
-						switch elem {
-						case "string":
-							typ = "string"
-						case "boolean":
-							typ = "boolean"
-						}
+						typ = strings.TrimPrefix(t, "array of ")
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
 						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
 						parts = strings.TrimSuffix(parts, ">")
@@ -1735,10 +1735,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					} else {
 						tt := types.ExprType(st.For.Source, env)
 						if lt, ok := tt.(types.ListType); ok {
-							if _, ok := lt.Elem.(types.StringType); ok {
-								typ = "string"
-							} else if _, ok := lt.Elem.(types.BoolType); ok {
-								typ = "boolean"
+							typ = pasTypeFromType(lt.Elem)
+							if strings.HasPrefix(typ, "array of ") {
+								elem := strings.TrimPrefix(typ, "array of ")
+								typ = currProg.addArrayAlias(elem)
 							}
 						} else if mt, ok := tt.(types.MapType); ok {
 							typ = pasTypeFromType(mt.Key)
@@ -2116,7 +2116,13 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					out = append(out, &AssignStmt{Name: name, Expr: &CallExpr{Name: ctorName(rec.Type), Args: args}})
 				} else {
 					if vd.Type == "" {
-						if t := inferType(ex); t != "" {
+						t := inferType(ex)
+						if t == "" {
+							if tt := types.ExprType(st.Let.Value, env); tt != nil {
+								t = pasTypeFromType(tt)
+							}
+						}
+						if t != "" {
 							vd.Type = t
 						}
 					}
