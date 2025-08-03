@@ -336,7 +336,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "    if (__dur <= 0) __dur = 1;\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
-	fmt.Fprintf(w, "    Console.WriteLine(JsonSerializer.Serialize(new SortedDictionary<string, object>{{\"name\", \"%s\"}, {\"duration_us\", __dur}, {\"memory_bytes\", __memDiff}}, new JsonSerializerOptions{ WriteIndented = true }));\n", b.Name)
+	fmt.Fprintf(w, "    Console.WriteLine(\"{\\\"name\\\":\\\"%s\\\",\\\"duration_us\\\":\" + __dur + \",\\\"memory_bytes\\\":\" + __memDiff + \"}\");\\n", b.Name)
 	fmt.Fprint(w, "}")
 }
 
@@ -3384,8 +3384,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mutatedVars = savedMut
 		usesNow = true
 		usesMem = true
-		usesJson = true
-		usesDict = true
 		return &BenchStmt{Name: s.Bench.Name, Body: body}, nil
 	case s.If != nil:
 		return compileIfStmt(prog, s.If)
