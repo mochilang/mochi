@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (265/491) - Last updated 2025-08-03 07:58 +0700:
+Checklist of programs that currently transpile and run (266/491) - Last updated 2025-08-03 08:56 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -29,7 +29,7 @@ Checklist of programs that currently transpile and run (265/491) - Last updated 
 | 22 | abstract-type | ✓ | 113.0µs | 13.05MB |
 | 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 222.0ms | 12.93MB |
 | 24 | abundant-odd-numbers | ✓ | 1.10s | 12.94MB |
-| 25 | accumulator-factory |   | 71.0µs | 12.79MB |
+| 25 | accumulator-factory | ✓ | 71.0µs | 12.79MB |
 | 26 | achilles-numbers | ✓ | 21.0ms | 14.59MB |
 | 27 | ackermann-function-2 | ✓ | 52.0µs | 13.44MB |
 | 28 | ackermann-function-3 | ✓ |  |  |
@@ -124,14 +124,14 @@ Checklist of programs that currently transpile and run (265/491) - Last updated 
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 187.0ms | 14.15MB |
 | 118 | bitmap-bresenhams-line-algorithm | ✓ | 281.0µs | 13.12MB |
 | 119 | bitmap-flood-fill | ✓ | 192.0µs | 12.69MB |
-| 120 | bitmap-histogram | ✓ | 267.0µs | 13.55MB |
-| 121 | bitmap-midpoint-circle-algorithm | ✓ | 374.0µs | 12.62MB |
+| 120 | bitmap-histogram | ✓ | 479.0µs | 256.00KB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 254.0µs | 0B |
 | 122 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
-| 123 | bitmap-read-a-ppm-file | ✓ | 163.0µs | 14.37MB |
-| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 47.0µs | 12.98MB |
-| 125 | bitmap-write-a-ppm-file | ✓ | 119.0µs | 13.36MB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 213.0µs | 0B |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 222.0µs | 0B |
+| 125 | bitmap-write-a-ppm-file | ✓ | 424.0µs | 0B |
 | 126 | bitmap |   |  |  |
-| 127 | bitwise-io-1 |   | 246.0µs | 13.08MB |
+| 127 | bitwise-io-1 |   | 304.0µs | 0B |
 | 128 | bitwise-io-2 | ✓ | 574.0µs | 14.68MB |
 | 129 | bitwise-operations | ✓ | 233.0µs | 13.95MB |
 | 130 | blum-integer | ✓ | 200.0µs | 14.06MB |
