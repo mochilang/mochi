@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (399/491)
-Last updated: 2025-08-03 01:08 UTC
+Last updated: 2025-08-03 01:55 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -266,7 +266,7 @@ Last updated: 2025-08-03 01:08 UTC
 | 257 | csv-to-html-translation-1 | ✓ | 571.223ms | 12.2 MB |
 | 258 | csv-to-html-translation-2 | ✓ | 571.223ms | 11.9 MB |
 | 259 | csv-to-html-translation-3 | ✓ | 571.223ms | 12.2 MB |
-| 260 | csv-to-html-translation-4 | ✓ |  |  |
+| 260 | csv-to-html-translation-4 | ✓ | 571.223ms | 12.0 MB |
 | 261 | csv-to-html-translation-5 | ✓ |  |  |
 | 262 | cuban-primes | ✓ |  |  |
 | 263 | cullen-and-woodall-numbers | ✓ |  |  |
