@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 397/491
-Last updated: 2025-08-02 20:59 +0700
+Completed: 398/491
+Last updated: 2025-08-03 16:20 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -469,7 +469,7 @@ Last updated: 2025-08-02 20:59 +0700
 | 460 | four-is-magic | ✓ | 559µs | 3.2 MB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
+| 463 | fractran | ✓ | 39.032827s | 3.4 MB |
 | 464 | french-republican-calendar |   |  |  |
 | 465 | ftp |   |  |  |
 | 466 | function-frequency |   |  |  |
