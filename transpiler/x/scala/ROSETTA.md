@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (427/491)
-_Last updated: 2025-08-03 09:00 +0000_
+_Last updated: 2025-08-03 17:14 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -363,7 +363,7 @@ _Last updated: 2025-08-03 09:00 +0000_
 | 354 | environment-variables-1 | ✓ | 2µs | 8.7 MB |
 | 355 | environment-variables-2 | ✓ | 12µs | 8.7 MB |
 | 356 | equal-prime-and-composite-sums | ✓ |  | 8.8 MB |
-| 357 | equilibrium-index | ✓ | 270µs | 8.7 MB |
+| 357 | equilibrium-index | ✓ | 291µs | 8.7 MB |
 | 358 | erd-s-nicolas-numbers | error |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 113µs | 21.6 KB |
 | 360 | esthetic-numbers | ✓ |  |  |

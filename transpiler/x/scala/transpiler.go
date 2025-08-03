@@ -1752,6 +1752,9 @@ func Emit(p *Program) []byte {
 	code := formatScala(buf.Bytes())
 	code = bytes.ReplaceAll(code, []byte("keys()"), []byte("keys"))
 	code = bytes.ReplaceAll(code, []byte("values()"), []byte("values"))
+	if len(code) == 0 || code[len(code)-1] != '\n' {
+		code = append(code, '\n')
+	}
 	return code
 }
 
