@@ -198,14 +198,14 @@ func header() []byte {
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
-	prelude += "(import (rename (scheme base) (list _list)))\n"
+	prelude += "(import (scheme base))\n"
 	prelude += "(import (scheme time))\n"
 	// Always import string helpers for functions like string-contains
 	prelude += "(import (chibi string))\n"
 	prelude += "(import (only (scheme char) string-upcase string-downcase))\n"
-	prelude += "(import (scheme write))\n"
 	prelude += "(import (srfi 69))\n"
 	prelude += "(import (srfi 1))\n"
+	prelude += "(define _list list)\n"
 	if usesInput {
 		prelude += "(import (chibi io))\n"
 	}
