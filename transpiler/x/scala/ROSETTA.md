@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (425/491)
-_Last updated: 2025-08-03 00:30 +0700_
+## Golden Test Checklist (423/491)
+_Last updated: 2025-08-03 08:09 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -363,11 +363,11 @@ _Last updated: 2025-08-03 00:30 +0700_
 | 354 | environment-variables-1 | ✓ | 2µs | 8.7 MB |
 | 355 | environment-variables-2 | ✓ | 12µs | 8.7 MB |
 | 356 | equal-prime-and-composite-sums | ✓ |  | 8.8 MB |
-| 357 | equilibrium-index | error |  |  |
+| 357 | equilibrium-index | ✓ | 270µs | 8.7 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 111µs | 18.6 KB |
-| 360 | esthetic-numbers | ✓ |  |  |
-| 361 | ethiopian-multiplication | ✓ |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 360 | esthetic-numbers |   |  |  |
+| 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 65µs | 8.7 MB |
 | 364 | eulers-constant-0.5772... | ✓ | 85µs | 8.7 MB |
