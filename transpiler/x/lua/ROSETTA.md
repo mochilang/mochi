@@ -145,7 +145,7 @@ Checklist:
 | 133 | boyer-moore-string-search | ✓ | 363µs | 4.0 KB |
 | 134 | brazilian-numbers | ✓ | 2m58.01392s | 472 B |
 | 135 | break-oo-privacy | ✓ | 117µs | 448 B |
-| 136 | brilliant-numbers | ✓ |  |  |
+| 136 | brilliant-numbers | ✓ | timeout |  |
 | 137 | brownian-tree | ✓ | 4m41.44364s | 2.4 MB |
 | 138 | bulls-and-cows-player | ✓ | 73.451ms | 12.4 KB |
 | 139 | bulls-and-cows | ✓ |  |  |
