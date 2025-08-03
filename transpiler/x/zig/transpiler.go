@@ -32,6 +32,7 @@ var groupCounter int
 var groupItemTypes map[string]string
 var typeAliases map[string]string
 var varUses map[string]int
+var varMut map[string]bool
 var funDepth int
 var funParamsStack [][]string
 var nestedFunArgs map[string][]string
@@ -222,6 +223,8 @@ func exprToString(e Expr) (string, bool) {
 	switch t := e.(type) {
 	case *VarRef:
 		return t.Name, true
+	case *IndexExpr:
+		return exprToString(t.Target)
 	case *FieldExpr:
 		if s, ok := exprToString(t.Target); ok {
 			return s + "." + t.Name, true
@@ -1165,7 +1168,12 @@ func compileLoadExpr(l *parser.LoadExpr) (Expr, error) {
 // Emit returns the Zig source code for the program.
 func (p *Program) Emit() []byte {
 	var buf bytes.Buffer
-	varUses = collectVarUses(p)
+	varUses, varMut = collectVarInfo(p)
+	for _, vd := range varDecls {
+		if vd.Mutable && !varMut[vd.Name] {
+			vd.Mutable = false
+		}
+	}
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n\n")
 	for _, st := range p.Structs {
@@ -1253,7 +1261,7 @@ func (p *Program) Emit() []byte {
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
 		buf.WriteString("    const path = \"/proc/self/status\";\n")
-		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
+		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{ .read = true }) catch return 0;\n")
 		buf.WriteString("    defer f.close();\n")
 		buf.WriteString("    var buf: [4096]u8 = undefined;\n")
 		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
@@ -4193,8 +4201,9 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 	return nil
 }
 
-func collectVarUses(p *Program) map[string]int {
+func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 	uses := map[string]int{}
+	muts := map[string]bool{}
 	var walkExpr func(e Expr)
 	walkExpr = func(e Expr) {
 		switch t := e.(type) {
@@ -4235,6 +4244,10 @@ func collectVarUses(p *Program) map[string]int {
 				walkExpr(e2.Value)
 			}
 		case *AppendExpr:
+			if s, ok := exprToString(t.List); ok {
+				base := strings.SplitN(s, ".", 2)[0]
+				muts[base] = true
+			}
 			walkExpr(t.List)
 			walkExpr(t.Value)
 		case *NotExpr:
@@ -4255,12 +4268,20 @@ func collectVarUses(p *Program) map[string]int {
 				walkExpr(t.Value)
 			}
 		case *AssignStmt:
+			muts[t.Name] = true
 			walkExpr(t.Value)
 		case *IndexAssignStmt:
+			if s, ok := exprToString(t.Target); ok {
+				base := strings.SplitN(s, ".", 2)[0]
+				muts[base] = true
+			}
 			walkExpr(t.Target)
 			walkExpr(t.Value)
 		case *FieldAssignStmt:
-			walkExpr(t.Target)
+			if s, ok := exprToString(t.Target); ok {
+				base := strings.SplitN(s, ".", 2)[0]
+				muts[base] = true
+			}
 			walkExpr(t.Value)
 		case *ExprStmt:
 			walkExpr(t.Expr)
@@ -4311,5 +4332,5 @@ func collectVarUses(p *Program) map[string]int {
 			walkStmt(st)
 		}
 	}
-	return uses
+	return uses, muts
 }
