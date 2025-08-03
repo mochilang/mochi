@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 468/491
-Last updated: 2025-08-03 21:18 +0700
+Last updated: 2025-08-03 22:32 +0700
 
 Checklist:
 
@@ -154,7 +154,7 @@ Checklist:
 | 145 | calendar---for-real-programmers-2 | ✓ | 1.0ms | 11.21KB |
 | 146 | calendar | ✓ | 518.0µs | 11.21KB |
 | 147 | calkin-wilf-sequence | ✓ | 1.0ms | 34.42KB |
-| 148 | call-a-foreign-language-function | ✓ | 203.0µs | 952B |
+| 148 | call-a-foreign-language-function | ✓ | 419.0µs | 952B |
 | 149 | call-a-function-1 | ✓ | 26.0µs | 0B |
 | 150 | call-a-function-10 | ✓ | 125.0µs | 64B |
 | 151 | call-a-function-11 | ✓ | 460.0µs | 1.02KB |
