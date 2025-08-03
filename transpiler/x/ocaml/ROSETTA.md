@@ -337,7 +337,7 @@ Completed programs: 314/491
 | 329 | eban-numbers | error |  |  |
 | 330 | ecdsa-example | error |  |  |
 | 331 | echo-server | ✓ | 142.0µs | 384B |
-| 332 | eertree |   |  |  |
+| 332 | eertree | ✓ | 120.0µs | 10.67KB |
 | 333 | egyptian-division |   |  |  |
 | 334 | ekg-sequence-convergence |   |  |  |
 | 335 | element-wise-operations |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 314/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 15:40 +0700
+Last updated 2025-08-03 16:15 +0700
