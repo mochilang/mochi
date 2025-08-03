@@ -237,23 +237,23 @@ type AssignStmt struct {
 }
 
 func (a *AssignStmt) emit(w io.Writer) {
-        if vd, ok := varDecls[a.Name]; ok && vd.Type != "" && vd.Type != "any" {
-                val := a.Value
-                if ae, ok2 := val.(*AssertExpr); ok2 {
-                        val = ae.Expr
-                }
-                if ix, ok2 := val.(*IndexExpr); ok2 {
-                        if vr, ok3 := ix.X.(*VarRef); ok3 {
-                                if sd, ok4 := varDecls[vr.Name]; ok4 && sd.Type == "[]any" {
-                                        fmt.Fprintf(w, "%s = ", a.Name)
-                                        (&AssertExpr{Expr: a.Value, Type: vd.Type}).emit(w)
-                                        return
-                                }
-                        }
-                }
-        }
-        fmt.Fprintf(w, "%s = ", a.Name)
-        a.Value.emit(w)
+	if vd, ok := varDecls[a.Name]; ok && vd.Type != "" && vd.Type != "any" {
+		val := a.Value
+		if ae, ok2 := val.(*AssertExpr); ok2 {
+			val = ae.Expr
+		}
+		if ix, ok2 := val.(*IndexExpr); ok2 {
+			if vr, ok3 := ix.X.(*VarRef); ok3 {
+				if sd, ok4 := varDecls[vr.Name]; ok4 && sd.Type == "[]any" {
+					fmt.Fprintf(w, "%s = ", a.Name)
+					(&AssertExpr{Expr: a.Value, Type: vd.Type}).emit(w)
+					return
+				}
+			}
+		}
+	}
+	fmt.Fprintf(w, "%s = ", a.Name)
+	a.Value.emit(w)
 }
 
 // SetStmt assigns to an arbitrary indexed or field-select expression.
@@ -4367,6 +4367,28 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 			if contains(level, opName) {
 				left := operands[i]
 				right := operands[i+1]
+				if ops[i].Op == "==" || ops[i].Op == "!=" {
+					if _, ok := typesList[i].(types.StringType); ok {
+						if bl, ok2 := right.(*BoolLit); ok2 {
+							if bl.Value {
+								right = &StringLit{Value: "true"}
+							} else {
+								right = &StringLit{Value: "false"}
+							}
+							typesList[i+1] = types.StringType{}
+						}
+					}
+					if _, ok := typesList[i+1].(types.StringType); ok {
+						if bl, ok2 := left.(*BoolLit); ok2 {
+							if bl.Value {
+								left = &StringLit{Value: "true"}
+							} else {
+								left = &StringLit{Value: "false"}
+							}
+							typesList[i] = types.StringType{}
+						}
+					}
+				}
 				var newExpr Expr
 				switch opName {
 				case "&&", "||":

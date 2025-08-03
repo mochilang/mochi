@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 466/491
-Last updated: 2025-08-03 17:00 +0700
+Completed programs: 467/491
+Last updated: 2025-08-03 17:09 +0700
 
 Checklist:
 
@@ -137,7 +137,7 @@ Checklist:
 | 128 | bitwise-io-2 |   |  |  |
 | 129 | bitwise-operations | ✓ | 538.0µs | 3.30KB |
 | 130 | blum-integer | ✓ | 449.0µs | 4.83KB |
-| 131 | boolean-values |   |  |  |
+| 131 | boolean-values | ✓ | 237.0µs | 1000B |
 | 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
 | 133 | boyer-moore-string-search | ✓ | 763.0µs | 57.34KB |
 | 134 | brazilian-numbers | ✓ | 4.07s | 2.68KB |
