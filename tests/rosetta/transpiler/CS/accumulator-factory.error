@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden4120306260/001/Program.cs(65,16): error CS0029: Cannot implicitly convert type 'System.Func<object, object>' to 'System.Action<object>' [/tmp/TestCSTranspiler_Rosetta_Golden4120306260/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden4120306260/001/Program.cs(72,45): error CS0023: Operator '.' cannot be applied to operand of type 'void' [/tmp/TestCSTranspiler_Rosetta_Golden4120306260/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
