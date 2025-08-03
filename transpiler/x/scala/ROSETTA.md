@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (426/491)
-_Last updated: 2025-08-03 09:05 +0700_
+## Golden Test Checklist (427/491)
+_Last updated: 2025-08-03 09:50 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -368,7 +368,7 @@ _Last updated: 2025-08-03 09:05 +0700_
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 113µs | 21.6 KB |
 | 360 | esthetic-numbers | ✓ |  |  |
 | 361 | ethiopian-multiplication | ✓ |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
+| 362 | euclid-mullin-sequence | ✓ | 329µs | 8.7 MB |
 | 363 | euler-method | ✓ | 65µs | 8.7 MB |
 | 364 | eulers-constant-0.5772... | ✓ | 85µs | 8.7 MB |
 | 365 | eulers-identity | ✓ | 7µs | 8.7 MB |
