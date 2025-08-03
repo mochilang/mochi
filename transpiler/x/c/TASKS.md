@@ -1,5 +1,5 @@
-## Progress (2025-08-02 12:08 +0700)
-- Commit 7ee341a4bd: ctrans: use void return for functions without result
+## Progress (2025-08-03 17:09 +0700)
+- Commit f61fefeca5: feat: add bitwise-operations rosetta output
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)
