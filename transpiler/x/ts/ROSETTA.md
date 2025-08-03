@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-03 10:29 UTC
+Last updated: 2025-08-03 10:42 UTC
 
 ## Rosetta Golden Test Checklist (472/491)
 | Index | Name | Status | Duration | Memory |
@@ -149,7 +149,7 @@ Last updated: 2025-08-03 10:29 UTC
 | 140 | burrows-wheeler-transform | ✓ | 12.137ms | 372.1 KB |
 | 141 | caesar-cipher-1 | ✓ | 1.868ms | 568.7 KB |
 | 142 | caesar-cipher-2 | ✓ | 1.927ms | 312.6 KB |
-| 143 | calculating-the-value-of-e | ✓ | 724µs | 128.0 KB |
+| 143 | calculating-the-value-of-e | ✓ | 588µs | 16.3 KB |
 | 144 | calendar---for-real-programmers-1 | ✓ | 7.269ms | 3.2 MB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 7.22ms | 3.0 MB |
 | 146 | calendar | ✓ | 5.892ms | 3.0 MB |
