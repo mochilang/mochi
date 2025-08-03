@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (223/491)
-_Last updated: 2025-08-03 23:24 +0700_
+## Rosetta Test Checklist (188/491)
+_Last updated: 2025-08-03 23:52 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -187,55 +187,55 @@ _Last updated: 2025-08-03 23:24 +0700_
 | 179 | catamorphism | ✓ | 6.49ms | 12.5 KB |
 | 180 | catmull-clark-subdivision-surface |  |  |  |
 | 181 | chaocipher | ✓ | 8.46ms | 25.0 KB |
-| 182 | chaos-game | ✓ | 12.37ms | 269.4 KB |
-| 183 | character-codes-1 | ✓ | 2.70ms | 12.5 KB |
-| 184 | character-codes-2 | ✓ | 3.66ms | 12.5 KB |
-| 185 | character-codes-3 | ✓ | 183us | 0 B |
-| 186 | character-codes-4 | ✓ | 2.40ms | 17.3 KB |
-| 187 | character-codes-5 | ✓ | 2.16ms | 12.5 KB |
-| 188 | chat-server | ✓ | 253us | 0 B |
+| 182 | chaos-game |  |  |  |
+| 183 | character-codes-1 |  |  |  |
+| 184 | character-codes-2 |  |  |  |
+| 185 | character-codes-3 |  |  |  |
+| 186 | character-codes-4 |  |  |  |
+| 187 | character-codes-5 |  |  |  |
+| 188 | chat-server |  |  |  |
 | 189 | check-machin-like-formulas |  |  |  |
-| 190 | check-that-file-exists | ✓ | 223us | 0 B |
-| 191 | checkpoint-synchronization-1 | ✓ | 4.75ms | 25.0 KB |
-| 192 | checkpoint-synchronization-2 | ✓ | 5.17ms | 17.3 KB |
-| 193 | checkpoint-synchronization-3 | ✓ | 15.64ms | 12.5 KB |
-| 194 | checkpoint-synchronization-4 | ✓ | 6.10ms | 17.3 KB |
-| 195 | chernicks-carmichael-numbers | ✓ | 321.87ms | 25.0 KB |
-| 196 | cheryls-birthday | ✓ | 369us | 17.3 KB |
-| 197 | chinese-remainder-theorem | ✓ | 144us | 0 B |
-| 198 | chinese-zodiac | ✓ | 464us | 0 B |
+| 190 | check-that-file-exists |  |  |  |
+| 191 | checkpoint-synchronization-1 |  |  |  |
+| 192 | checkpoint-synchronization-2 |  |  |  |
+| 193 | checkpoint-synchronization-3 |  |  |  |
+| 194 | checkpoint-synchronization-4 |  |  |  |
+| 195 | chernicks-carmichael-numbers |  |  |  |
+| 196 | cheryls-birthday |  |  |  |
+| 197 | chinese-remainder-theorem |  |  |  |
+| 198 | chinese-zodiac |  |  |  |
 | 199 | cholesky-decomposition-1 |  |  |  |
 | 200 | cholesky-decomposition |  |  |  |
-| 201 | chowla-numbers | ✓ | 123us | 0 B |
+| 201 | chowla-numbers |  |  |  |
 | 202 | church-numerals-1 |  |  |  |
 | 203 | church-numerals-2 |  |  |  |
 | 204 | circles-of-given-radius-through-two-points |  |  |  |
-| 205 | circular-primes | ✓ | 3.18ms | 25.0 KB |
+| 205 | circular-primes |  |  |  |
 | 206 | cistercian-numerals |  |  |  |
-| 207 | comma-quibbling | ✓ | 10.71ms | 17.3 KB |
+| 207 | comma-quibbling |  |  |  |
 | 208 | compiler-virtual-machine-interpreter |  |  |  |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 2.76ms | 17.3 KB |
-| 210 | compound-data-type | ✓ | 1us | 0 B |
-| 211 | concurrent-computing-1 | ✓ | 2.94ms | 17.3 KB |
-| 212 | concurrent-computing-2 | ✓ | 2.31ms | 12.5 KB |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |  |  |  |
+| 210 | compound-data-type |  |  |  |
+| 211 | concurrent-computing-1 |  |  |  |
+| 212 | concurrent-computing-2 |  |  |  |
 | 213 | concurrent-computing-3 |  |  |  |
-| 214 | conditional-structures-1 | ✓ | 1us | 0 B |
-| 215 | conditional-structures-10 | ✓ | 197us | 0 B |
-| 216 | conditional-structures-2 | ✓ | 1us | 0 B |
-| 217 | conditional-structures-3 | ✓ | 1us | 0 B |
-| 218 | conditional-structures-4 | ✓ | 1us | 0 B |
-| 219 | conditional-structures-5 | ✓ | 1us | 0 B |
-| 220 | conditional-structures-6 | ✓ | 1us | 0 B |
-| 221 | conditional-structures-7 | ✓ | 1us | 0 B |
-| 222 | conditional-structures-8 | ✓ | 1us | 0 B |
-| 223 | conditional-structures-9 | ✓ | 1us | 0 B |
+| 214 | conditional-structures-1 |  |  |  |
+| 215 | conditional-structures-10 |  |  |  |
+| 216 | conditional-structures-2 |  |  |  |
+| 217 | conditional-structures-3 |  |  |  |
+| 218 | conditional-structures-4 |  |  |  |
+| 219 | conditional-structures-5 |  |  |  |
+| 220 | conditional-structures-6 |  |  |  |
+| 221 | conditional-structures-7 |  |  |  |
+| 222 | conditional-structures-8 |  |  |  |
+| 223 | conditional-structures-9 |  |  |  |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |  |  |  |
-| 225 | constrained-genericity-1 | ✓ | 1us | 0 B |
+| 225 | constrained-genericity-1 |  |  |  |
 | 226 | constrained-genericity-2 |  |  |  |
-| 227 | constrained-genericity-3 | ✓ | 1us | 0 B |
-| 228 | constrained-genericity-4 | ✓ | 150us | 0 B |
+| 227 | constrained-genericity-3 |  |  |  |
+| 228 | constrained-genericity-4 |  |  |  |
 | 229 | constrained-random-points-on-a-circle-1 |  |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |  |  |  |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 6.65ms | 110.6 KB |
 | 231 | continued-fraction |  |  |  |
 | 232 | convert-decimal-number-to-rational |  |  |  |
 | 233 | convert-seconds-to-compound-duration |  |  |  |
