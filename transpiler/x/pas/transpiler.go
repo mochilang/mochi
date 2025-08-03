@@ -152,35 +152,37 @@ func pasType(t string) string {
 // Program is a minimal Pascal AST consisting of a sequence of statements
 // plus optional variable declarations.
 type Program struct {
-	Funs            []FunDecl
-	Vars            []VarDecl
-	Records         []RecordDef
-	ArrayAliases    map[string]string
-	LateAliases     map[string]string
-	UseFGL          bool
-	Stmts           []Stmt
-	UseSysUtils     bool
-	UseVariants     bool
-	UseMath         bool
-	NeedAvg         bool
-	NeedMin         bool
-	NeedMax         bool
-	NeedContains    bool
-	NeedShowList    bool
-	NeedShowList2   bool
-	NeedShowMap     bool
-	NeedListStr     bool
-	NeedListStr2    bool
-	NeedListStrReal bool
-	NeedIndexOf     bool
-	UseLookupHost   bool
-	UseNow          bool
-	UseMem          bool
-	NeedBenchNow    bool
-	UseInput        bool
-	UseBigRat       bool
-	Maps            []MapLitDef
-	VarTypes        map[string]string
+	Funs              []FunDecl
+	Vars              []VarDecl
+	Records           []RecordDef
+	ArrayAliases      map[string]string
+	LateAliases       map[string]string
+	UseFGL            bool
+	Stmts             []Stmt
+	UseSysUtils       bool
+	UseVariants       bool
+	UseMath           bool
+	NeedAvg           bool
+	NeedMin           bool
+	NeedMax           bool
+	NeedContains      bool
+	NeedShowList      bool
+	NeedShowList2     bool
+	NeedShowListInt64 bool
+	NeedShowMap       bool
+	NeedListStr       bool
+	NeedListStr2      bool
+	NeedListStrReal   bool
+	NeedIndexOf       bool
+	UseLookupHost     bool
+	UseNow            bool
+	UseMem            bool
+	NeedBenchNow      bool
+	UseInput          bool
+	UseBigRat         bool
+	NeedPadStart      bool
+	Maps              []MapLitDef
+	VarTypes          map[string]string
 }
 
 func collectVarNames(e Expr, set map[string]struct{}) {
@@ -976,8 +978,12 @@ func (p *PrintStmt) emit(w io.Writer) {
 			io.WriteString(w, "writeln(list_to_str(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, "));")
-		} else if strings.HasPrefix(p.Types[0], "array of array") || strings.HasPrefix(p.Types[0], "array of IntArray") {
+		} else if strings.HasPrefix(p.Types[0], "array of array") || strings.HasPrefix(p.Types[0], "array of IntArray") || strings.HasPrefix(p.Types[0], "array of Int64Array") {
 			io.WriteString(w, "show_list_list(")
+			p.Exprs[0].emit(w)
+			io.WriteString(w, ");")
+		} else if p.Types[0] == "array of int64" {
+			io.WriteString(w, "show_list_int64(")
 			p.Exprs[0].emit(w)
 			io.WriteString(w, ");")
 		} else {
@@ -1075,17 +1081,6 @@ func (p *Program) Emit() []byte {
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
-	if len(p.ArrayAliases) > 0 {
-		keys := make([]string, 0, len(p.ArrayAliases))
-		for elem := range p.ArrayAliases {
-			keys = append(keys, elem)
-		}
-		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
-		for _, elem := range keys {
-			alias := p.ArrayAliases[elem]
-			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
-		}
-	}
 	if len(p.LateAliases) > 0 {
 		keys := make([]string, 0, len(p.LateAliases))
 		for elem := range p.LateAliases {
@@ -1097,6 +1092,17 @@ func (p *Program) Emit() []byte {
 				continue
 			}
 			alias := p.LateAliases[elem]
+			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
+		}
+	}
+	if len(p.ArrayAliases) > 0 {
+		keys := make([]string, 0, len(p.ArrayAliases))
+		for elem := range p.ArrayAliases {
+			keys = append(keys, elem)
+		}
+		sort.Slice(keys, func(i, j int) bool { return len(keys[i]) < len(keys[j]) })
+		for _, elem := range keys {
+			alias := p.ArrayAliases[elem]
 			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 		}
 	}
@@ -1151,11 +1157,17 @@ end;
 	if p.NeedMax {
 		buf.WriteString("function max(xs: array of integer): integer;\nvar i, m: integer;\nbegin\n  if Length(xs) = 0 then begin max := 0; exit; end;\n  m := xs[0];\n  for i := 1 to High(xs) do if xs[i] > m then m := xs[i];\n  max := m;\nend;\n")
 	}
+	if p.NeedPadStart {
+		buf.WriteString("function padStart(s: string; l: integer; c: char): string;\nvar d: integer;\nbegin\n  d := l - Length(s);\n  if d > 0 then padStart := StringOfChar(c, d) + s else padStart := s;\nend;\n")
+	}
 	if p.NeedIndexOf {
 		buf.WriteString("function indexOf(s: string; ch: string): integer;\nbegin\n  Result := Pos(ch, s);\n  if Result = 0 then Result := -1 else Dec(Result);\nend;\n")
 	}
 	if p.NeedShowList || p.NeedShowList2 {
 		buf.WriteString("procedure show_list(xs: array of integer);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
+	}
+	if p.NeedShowListInt64 {
+		buf.WriteString("procedure show_list_int64(xs: array of int64);\nvar i: integer;\nbegin\n  write('[');\n  for i := 0 to High(xs) do begin\n    write(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  write(']');\nend;\n")
 	}
 	if p.NeedShowList2 {
 		buf.WriteString("procedure show_list_list(xs: array of IntArray);\nvar i: integer;\nbegin\n  for i := 0 to High(xs) do begin\n    show_list(xs[i]);\n    if i < High(xs) then write(' ');\n  end;\n  writeln('');\nend;\n")
@@ -1358,8 +1370,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						} else if strings.HasPrefix(t, "array of ") {
 							if strings.HasPrefix(t, "array of string") {
 								pr.NeedListStr = true
-							} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") {
+							} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array") {
 								pr.NeedShowList2 = true
+							} else if strings.HasPrefix(t, "array of int64") {
+								pr.NeedShowListInt64 = true
 							} else {
 								pr.NeedShowList = true
 							}
@@ -1814,7 +1828,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					rt = typeFromRef(st.Fun.Return)
 					if strings.HasPrefix(rt, "array of ") {
 						elem := strings.TrimPrefix(rt, "array of ")
-						rt = currProg.addArrayAlias(elem)
+						if !isArrayAlias(elem) {
+							rt = currProg.addArrayAlias(elem)
+						}
 					}
 				}
 				if rt == "" {
@@ -1823,7 +1839,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							rt = inferType(ret.Expr)
 							if strings.HasPrefix(rt, "array of ") {
 								elem := strings.TrimPrefix(rt, "array of ")
-								rt = currProg.addArrayAlias(elem)
+								if !isArrayAlias(elem) {
+									rt = currProg.addArrayAlias(elem)
+								}
 							}
 							break
 						}
@@ -2302,6 +2320,16 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					typesList = append(typesList, t)
 					if t == "boolean" {
 						needSys = true
+					} else if strings.HasPrefix(t, "array of ") {
+						if strings.HasPrefix(t, "array of string") {
+							currProg.NeedListStr = true
+						} else if strings.HasPrefix(t, "array of array") || strings.HasPrefix(t, "array of IntArray") || strings.HasPrefix(t, "array of Int64Array") {
+							currProg.NeedShowList2 = true
+						} else if strings.HasPrefix(t, "array of int64") {
+							currProg.NeedShowListInt64 = true
+						} else {
+							currProg.NeedShowList = true
+						}
 					} else if strings.HasPrefix(t, "specialize TFPGMap") {
 						currProg.NeedShowMap = true
 					}
@@ -4204,6 +4232,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 		} else if name == "input" && len(args) == 0 {
 			currProg.UseInput = true
 			return &CallExpr{Name: "_input", Args: nil}, nil
+		} else if name == "padStart" && len(args) == 3 {
+			currProg.NeedPadStart = true
+			currProg.UseSysUtils = true
+			return &CallExpr{Name: "padStart", Args: args}, nil
 		} else if name == "append" && len(args) == 2 {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		} else if name == "float" && len(args) == 1 {
@@ -4643,7 +4675,8 @@ func inferType(e Expr) string {
 		}
 		t := resolveAlias(inferType(v.Target))
 		if strings.HasPrefix(t, "array of ") {
-			return strings.TrimPrefix(t, "array of ")
+			elem := strings.TrimPrefix(t, "array of ")
+			return resolveAlias(elem)
 		}
 		if strings.HasPrefix(t, "specialize TFPGMap") {
 			parts := strings.TrimPrefix(t, "specialize TFPGMap<")
@@ -5040,14 +5073,34 @@ func (p *Program) addArrayAlias(elem string) string {
 }
 
 func resolveAlias(t string) string {
-	if currProg != nil && currProg.ArrayAliases != nil {
-		for elem, alias := range currProg.ArrayAliases {
-			if alias == t {
-				return "array of " + elem
+	if currProg == nil {
+		return t
+	}
+	seen := map[string]bool{}
+	for {
+		if currProg.ArrayAliases != nil {
+			for elem, alias := range currProg.ArrayAliases {
+				if alias == t {
+					t = "array of " + elem
+					goto next
+				}
 			}
 		}
+		if currProg.LateAliases != nil {
+			for elem, alias := range currProg.LateAliases {
+				if alias == t {
+					t = "array of " + elem
+					goto next
+				}
+			}
+		}
+		return t
+	next:
+		if seen[t] {
+			return t
+		}
+		seen[t] = true
 	}
-	return t
 }
 
 func isArrayAlias(t string) bool {
