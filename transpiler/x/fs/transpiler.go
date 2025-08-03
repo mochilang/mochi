@@ -145,12 +145,12 @@ const helperParseIntStr = `let parseIntStr (s:string) (b:int) : int =
     System.Convert.ToInt32(s, b)
 `
 
-const helperDictAdd = `let _dictAdd (d:System.Collections.Generic.IDictionary<string, obj>) (k:string) (v:obj) =
+const helperDictAdd = `let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
     d.[k] <- v
     d`
 
-const helperDictCreate = `let _dictCreate<'T> (pairs:(string * 'T) list) : System.Collections.Generic.IDictionary<string,'T> =
-    let d = System.Collections.Generic.Dictionary<string, 'T>()
+const helperDictCreate = `let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
     for (k, v) in pairs do
         d.[k] <- v
     upcast d`
@@ -472,6 +472,17 @@ func mapValueType(s string) string {
 		idx := strings.LastIndex(parts, ",")
 		if idx >= 0 {
 			return strings.TrimSpace(parts[idx+1:])
+		}
+	}
+	return "obj"
+}
+
+func mapKeyType(s string) string {
+	if strings.HasPrefix(s, "System.Collections.Generic.IDictionary<") && strings.HasSuffix(s, ">") {
+		parts := strings.TrimSuffix(strings.TrimPrefix(s, "System.Collections.Generic.IDictionary<"), ">")
+		idx := strings.LastIndex(parts, ",")
+		if idx >= 0 {
+			return strings.TrimSpace(parts[:idx])
 		}
 	}
 	return "obj"
@@ -912,7 +923,6 @@ func (m *MapLit) emit(w io.Writer) {
 	io.WriteString(w, " [")
 	for i, kv := range m.Items {
 		io.WriteString(w, "(")
-		io.WriteString(w, "string ")
 		kv[0].emit(w)
 		io.WriteString(w, ", ")
 		if !same && m.Types[i] != "obj" {
@@ -1599,15 +1609,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				b.Right.emit(w)
 			}
 		} else if rtyp == "map" {
-			io.WriteString(w, "Map.containsKey ")
-			if needsParen(b.Left) {
-				io.WriteString(w, "(")
-				b.Left.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				b.Left.emit(w)
-			}
-			io.WriteString(w, " ")
 			if needsParen(b.Right) {
 				io.WriteString(w, "(")
 				b.Right.emit(w)
@@ -1615,6 +1616,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			} else {
 				b.Right.emit(w)
 			}
+			io.WriteString(w, ".ContainsKey(")
+			if needsParen(b.Left) {
+				io.WriteString(w, "(")
+				b.Left.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				b.Left.emit(w)
+			}
+			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "Seq.contains ")
 			if needsParen(b.Left) {
@@ -2094,7 +2104,7 @@ func inferType(e Expr) string {
 		}
 	case *MethodCallExpr:
 		switch v.Name {
-		case "contains", "Contains":
+		case "contains", "Contains", "ContainsKey":
 			return "bool"
 		case "FifteenPuzzleExample":
 			return "string"
@@ -2192,18 +2202,26 @@ func (i *IndexExpr) emit(w io.Writer) {
 	if id, ok := i.Target.(*IdentExpr); ok && strings.HasPrefix(id.Type, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
-		io.WriteString(w, "(string (")
-		i.Index.emit(w)
-		io.WriteString(w, "))")
+		if mapKeyType(id.Type) == "string" {
+			io.WriteString(w, "(string (")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "]")
 		return
 	}
 	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
 		i.Target.emit(w)
 		io.WriteString(w, ".[")
-		io.WriteString(w, "(string (")
-		i.Index.emit(w)
-		io.WriteString(w, "))")
+		if mapKeyType(t) == "string" {
+			io.WriteString(w, "(string (")
+			i.Index.emit(w)
+			io.WriteString(w, "))")
+		} else {
+			i.Index.emit(w)
+		}
 		io.WriteString(w, "]")
 		return
 	}
@@ -2458,6 +2476,28 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	}
 
 	typ := inferType(m.Target)
+	if typ == "map" {
+		if needsParen(m.Target) {
+			io.WriteString(w, "(")
+			m.Target.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			m.Target.emit(w)
+		}
+		io.WriteString(w, ".")
+		io.WriteString(w, mapMethod(m.Name))
+		if len(m.Args) > 0 {
+			io.WriteString(w, "(")
+			for i, a := range m.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+		}
+		return
+	}
 	if ft, ok := structFieldType(typ, m.Name); ok && strings.Contains(ft, "->") {
 		if needsParen(m.Target) {
 			io.WriteString(w, "(")
@@ -3980,7 +4020,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			case t == "array":
 				return &CallExpr{Func: "Array.contains", Args: []Expr{args[1], args[0]}}, nil
 			case t == "map":
-				return &CallExpr{Func: "Map.containsKey", Args: []Expr{args[1], args[0]}}, nil
+				return &MethodCallExpr{Target: args[0], Name: "ContainsKey", Args: []Expr{args[1]}}, nil
 			default:
 				return &CallExpr{Func: "Seq.contains", Args: []Expr{args[1], args[0]}}, nil
 			}
