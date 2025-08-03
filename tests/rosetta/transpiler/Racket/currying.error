@@ -1,0 +1,12 @@
+run error: exit status 1
+Method: arity mismatch;
+ the expected number of arguments does not match the given number
+  expected: 2
+  given: 1
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/currying.rkt:90:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/currying.rkt:60:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/currying.rkt:59:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/currying.rkt"
+2^8 = 256.0
+4³ = 64.0
