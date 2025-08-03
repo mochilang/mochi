@@ -1,6 +1,6 @@
 hello C
 {
-  "duration_us": 4792,
-  "memory_bytes": 240824,
+  "duration_us": 13197,
+  "memory_bytes": 516096,
   "name": "main"
 }

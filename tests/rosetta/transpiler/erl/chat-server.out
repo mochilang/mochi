@@ -10,7 +10,7 @@
 "--- \"Alice\" disconnected ---\n"
 "Server stopping!\n"
 {
-  "duration_us": 26853,
-  "memory_bytes": 375448,
+  "duration_us": 18819,
+  "memory_bytes": 326624,
   "name": "main"
 }

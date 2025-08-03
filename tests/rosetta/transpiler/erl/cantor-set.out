@@ -4,7 +4,7 @@
 "***   ***         ***   ***                           ***   ***         ***   ***"
 "* *   * *         * *   * *                           * *   * *         * *   * *"
 {
-  "duration_us": 8180,
-  "memory_bytes": 159856,
+  "duration_us": 19614,
+  "memory_bytes": 40504,
   "name": "main"
 }

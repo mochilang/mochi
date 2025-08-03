@@ -1,1 +1,6 @@
 e = 2.718281828459046
+{
+  "duration_us": 19015,
+  "memory_bytes": 352536,
+  "name": "main"
+}

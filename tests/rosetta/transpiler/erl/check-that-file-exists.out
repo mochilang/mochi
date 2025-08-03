@@ -3,7 +3,7 @@ stat /input.txt: no such file or directory
 docs is a directory
 stat /docs: no such file or directory
 {
-  "duration_us": 19971,
-  "memory_bytes": 202112,
+  "duration_us": 16154,
+  "memory_bytes": 158456,
   "name": "main"
 }

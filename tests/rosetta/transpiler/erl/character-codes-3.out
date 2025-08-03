@@ -3,7 +3,7 @@ string cast to []rune: [97 960]
     string range loop: 97 960
          string bytes: 0x61 0xcf 0x80
 {
-  "duration_us": 24382,
-  "memory_bytes": 392440,
+  "duration_us": 18451,
+  "memory_bytes": 266312,
   "name": "main"
 }
