@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-03 04:43 UTC
+Last updated: 2025-08-03 07:53 UTC
 
-## Rosetta Golden Test Checklist (218/491)
+## Rosetta Golden Test Checklist (219/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -108,7 +108,7 @@ Last updated: 2025-08-03 04:43 UTC
 | 99 | balanced-ternary |   |  |  |
 | 100 | barnsley-fern |   |  |  |
 | 101 | base64-decode-data |   |  |  |
-| 102 | bell-numbers |   |  |  |
+| 102 | bell-numbers | ✓ | 1.021ms | 2.3 MB |
 | 103 | benfords-law | ✓ | 604µs |  |
 | 104 | bernoulli-numbers |   |  |  |
 | 105 | best-shuffle |   |  |  |
