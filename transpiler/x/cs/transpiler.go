@@ -673,6 +673,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			lt := typeOfExpr(b.Left)
 			rt := typeOfExpr(b.Right)
+			if b.Op == "+" && lt == "string" && strings.HasSuffix(rt, "[]") {
+				fmt.Fprint(w, "(")
+				b.Left.emit(w)
+				fmt.Fprint(w, " + string.Concat(")
+				b.Right.emit(w)
+				fmt.Fprint(w, "))")
+				return
+			}
+			if b.Op == "+" && rt == "string" && strings.HasSuffix(lt, "[]") {
+				fmt.Fprint(w, "(")
+				fmt.Fprint(w, "string.Concat(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ") + ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
 			if lt == "BigRat" || rt == "BigRat" {
 				usesBigRat = true
 				switch b.Op {
@@ -1730,6 +1747,8 @@ func typeOfExpr(e Expr) string {
 		if t == "double" {
 			return "double"
 		}
+		return "int"
+	case *LenExpr:
 		return "int"
 	case *StrExpr:
 		return "string"
