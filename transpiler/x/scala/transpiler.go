@@ -1939,6 +1939,17 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			env.SetVar(st.Let.Name, t, false)
 		}
+		if typ == "" {
+			if n, ok := e.(*Name); ok {
+				if lt, ok2 := localVarTypes[n.Name]; ok2 {
+					typ = lt
+				}
+			} else if c, ok := e.(*CastExpr); ok && c.Type != "" {
+				typ = c.Type
+			} else if t := inferTypeWithEnv(e, env); t != "" {
+				typ = t
+			}
+		}
 		if typ != "" {
 			localVarTypes[st.Let.Name] = typ
 		}
@@ -2059,6 +2070,13 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					typ = "Int"
 				} else {
 					typ = toScalaTypeFromType(t)
+				}
+			}
+		}
+		if typ == "" || typ == "Any" {
+			if n, ok := e.(*Name); ok {
+				if lt, ok2 := localVarTypes[n.Name]; ok2 {
+					typ = lt
 				}
 			}
 		}
@@ -3027,7 +3045,15 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 			}
 			val := args[0]
-			if inferTypeWithEnv(val, env) == "Any" {
+			tval := inferTypeWithEnv(val, env)
+			if tval == "Any" {
+				if n, ok := val.(*Name); ok {
+					if lt, ok2 := localVarTypes[n.Name]; ok2 {
+						tval = lt
+					}
+				}
+			}
+			if tval == "Any" {
 				val = &CastExpr{Value: val, Type: "ArrayBuffer[Any]"}
 			}
 			return &LenExpr{Value: val}, nil
@@ -4101,6 +4127,13 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		child = types.NewEnv(env)
 	}
 	itType := inferTypeWithEnv(iter, env)
+	if (itType == "" || itType == "Any") && env != nil {
+		if tt := types.ExprType(fs.Source, env); tt != nil {
+			if s := toScalaTypeFromType(tt); s != "" {
+				itType = s
+			}
+		}
+	}
 	if strings.HasPrefix(itType, "ArrayBuffer[") {
 		elem := strings.TrimSuffix(strings.TrimPrefix(itType, "ArrayBuffer["), "]")
 		if elem == "" {
