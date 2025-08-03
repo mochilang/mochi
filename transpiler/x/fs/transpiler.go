@@ -56,6 +56,7 @@ type Program struct {
 	UseSHA256      bool
 	UseParseIntStr bool
 	UseDictAdd     bool
+	UseSafeIndex   bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -84,6 +85,7 @@ var (
 	useParseIntStr bool
 	mutatedVars    map[string]bool
 	letPtrs        map[string][]*LetStmt
+	usesSafeIndex  bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -154,6 +156,9 @@ const helperDictCreate = `let _dictCreate<'K,'V when 'K : equality> (pairs:('K *
     for (k, v) in pairs do
         d.[k] <- v
     upcast d`
+
+const helperIndex = `let _idx (arr:'a array) (i:int) : 'a =
+    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -2179,6 +2184,8 @@ type IndexExpr struct {
 func (i *IndexExpr) emit(w io.Writer) {
 	t := inferType(i.Target)
 	if strings.Contains(t, "array") || t == "" {
+		usesSafeIndex = true
+		io.WriteString(w, "_idx ")
 		if needsParen(i.Target) {
 			io.WriteString(w, "(")
 			i.Target.emit(w)
@@ -2186,9 +2193,8 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Target.emit(w)
 		}
-		io.WriteString(w, ".[")
+		io.WriteString(w, " ")
 		i.Index.emit(w)
-		io.WriteString(w, "]")
 		return
 	}
 	if t == "string" {
@@ -2816,6 +2822,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperDictCreate)
 		buf.WriteString("\n")
 	}
+	if prog.UseSafeIndex {
+		buf.WriteString(helperIndex)
+		buf.WriteString("\n")
+	}
 	for _, a := range prog.Aliases {
 		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(a.Name), a.Type)
 	}
@@ -2914,6 +2924,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesPadStart = false
 	usesSHA256 = false
 	usesDictAdd = false
+	usesSafeIndex = false
 	currentReturn = ""
 	p := &Program{}
 	for _, st := range prog.Statements {
@@ -2974,6 +2985,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseSHA256 = usesSHA256
 	p.UseParseIntStr = useParseIntStr
 	p.UseDictAdd = usesDictAdd
+	p.UseSafeIndex = usesSafeIndex
 	return p, nil
 }
 
@@ -3354,6 +3366,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				if et := inferType(app.Elem); et != "" && et != "obj" {
 					t = et + " array"
 				}
+			} else if cur := varTypes[st.Assign.Name]; cur != "" && cur != "array" && cur != "obj" {
+				t = cur
+				e = &CastExpr{Expr: e, Type: fsTypeFromString(cur)}
 			}
 		}
 		if t != "" {
@@ -3715,6 +3730,7 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
+			usesSafeIndex = true
 			expr = &IndexExpr{Target: expr, Index: idx}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Step == nil && op.Index.Colon2 == nil:
 			var start, end Expr
