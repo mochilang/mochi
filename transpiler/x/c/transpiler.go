@@ -1025,19 +1025,15 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "{\n")
 	writeIndent(w, indent+1)
 	io.WriteString(w, "long long __start = _now();\n")
-	writeIndent(w, indent+1)
-	io.WriteString(w, "long long __mem_start = _mem();\n")
 	for _, s := range b.Body {
 		s.emit(w, indent+1)
 	}
 	writeIndent(w, indent+1)
 	io.WriteString(w, "long long __end = _now();\n")
 	writeIndent(w, indent+1)
-	io.WriteString(w, "long long __mem_end = _mem();\n")
-	writeIndent(w, indent+1)
 	io.WriteString(w, "long long __dur_us = (__end - __start) / 1000;\n")
 	writeIndent(w, indent+1)
-	io.WriteString(w, "long long __mem_bytes = __mem_end - __mem_start;\n")
+	io.WriteString(w, "long long __mem_bytes = _mem();\n")
 	writeIndent(w, indent+1)
 	fmt.Fprintf(w, "printf(\"{\\n  \\\"duration_us\\\": %%-lld,\\n  \\\"memory_bytes\\\": %%-lld,\\n  \\\"name\\\": \\\"%s\\\"\\n}\\n\", __dur_us, __mem_bytes);\n", escape(b.Name))
 	writeIndent(w, indent)
@@ -2517,13 +2513,13 @@ func (p *Program) Emit() []byte {
 	}
 	if needMem {
 		buf.WriteString("static long long _mem(void) {\n")
-		buf.WriteString("    long long pages = 0;\n")
+		buf.WriteString("    long long size = 0, rss = 0;\n")
 		buf.WriteString("    FILE *f = fopen(\"/proc/self/statm\", \"r\");\n")
 		buf.WriteString("    if (f) {\n")
-		buf.WriteString("        if (fscanf(f, \"%lld\", &pages) != 1) pages = 0;\n")
+		buf.WriteString("        if (fscanf(f, \"%lld %lld\", &size, &rss) != 2) rss = 0;\n")
 		buf.WriteString("        fclose(f);\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    return pages * (long long)sysconf(_SC_PAGESIZE);\n")
+		buf.WriteString("    return rss * (long long)sysconf(_SC_PAGESIZE);\n")
 		buf.WriteString("}\n\n")
 	}
 	if needInput {
