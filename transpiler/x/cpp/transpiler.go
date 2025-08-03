@@ -2424,6 +2424,29 @@ func (e *ExistsExpr) emit(w io.Writer) {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if b.Op == "union_all" {
+		io.WriteString(w, "([&]{ auto __lhs = ")
+		b.Left.emit(w)
+		io.WriteString(w, "; auto __rhs = ")
+		b.Right.emit(w)
+		io.WriteString(w, "; __lhs.insert(__lhs.end(), __rhs.begin(), __rhs.end()); return __lhs; }())")
+		return
+	}
+	if b.Op == "union" {
+		if currentProgram != nil {
+			currentProgram.addInclude("<algorithm>")
+			currentProgram.addInclude("<iterator>")
+		}
+		elem := elementTypeFromListType(exprType(b.Left))
+		io.WriteString(w, "([&]{ auto __lhs = ")
+		b.Left.emit(w)
+		io.WriteString(w, "; auto __rhs = ")
+		b.Right.emit(w)
+		io.WriteString(w, "; std::sort(__lhs.begin(), __lhs.end()); std::sort(__rhs.begin(), __rhs.end()); std::vector<")
+		io.WriteString(w, elem)
+		io.WriteString(w, "> __res; std::set_union(__lhs.begin(), __lhs.end(), __rhs.begin(), __rhs.end(), std::back_inserter(__res)); return __res; }())")
+		return
+	}
 	if b.Op == "+" {
 		lt := exprType(b.Left)
 		rt := exprType(b.Right)
@@ -4133,14 +4156,19 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	if len(b.Right) == 0 {
 		return left, nil
 	}
+	type binOp struct{ op string }
 	operands := []Expr{left}
-	ops := []string{}
+	ops := []binOp{}
 	for _, part := range b.Right {
 		right, err := convertPostfix(part.Right)
 		if err != nil {
 			return nil, err
 		}
-		ops = append(ops, part.Op)
+		op := part.Op
+		if part.All {
+			op = op + "_all"
+		}
+		ops = append(ops, binOp{op: op})
 		operands = append(operands, right)
 	}
 	levels := [][]string{
@@ -4162,13 +4190,13 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	}
 	for _, level := range levels {
 		for i := 0; i < len(ops); {
-			if containsOp(level, ops[i]) {
+			if containsOp(level, ops[i].op) {
 				l := operands[i]
 				r := operands[i+1]
 				var ex Expr
 				lt := exprType(l)
 				rt := exprType(r)
-				if (ops[i] == "==" || ops[i] == "!=") && lt == "std::string" && rt == "bool" {
+				if (ops[i].op == "==" || ops[i].op == "!=") && lt == "std::string" && rt == "bool" {
 					if bl, ok := r.(*BoolLit); ok {
 						if bl.Value {
 							r = &StringLit{Value: "true"}
@@ -4177,7 +4205,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 						}
 						rt = "std::string"
 					}
-				} else if (ops[i] == "==" || ops[i] == "!=") && rt == "std::string" && lt == "bool" {
+				} else if (ops[i].op == "==" || ops[i].op == "!=") && rt == "std::string" && lt == "bool" {
 					if bl, ok := l.(*BoolLit); ok {
 						if bl.Value {
 							l = &StringLit{Value: "true"}
@@ -4187,17 +4215,17 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 						lt = "std::string"
 					}
 				}
-				if ops[i] == "in" {
+				if ops[i].op == "in" {
 					if currentProgram != nil {
 						currentProgram.addInclude("<algorithm>")
 						currentProgram.addInclude("<type_traits>")
 					}
 					ex = &InExpr{Value: l, Coll: r}
 				} else {
-					if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" || ops[i] == "%" {
+					if ops[i].op == "+" || ops[i].op == "-" || ops[i].op == "*" || ops[i].op == "/" || ops[i].op == "%" {
 						lt := exprType(l)
 						rt := exprType(r)
-						if ops[i] == "+" {
+						if ops[i].op == "+" {
 							if !(lt == "std::string" || rt == "std::string") {
 								if !(strings.Contains(lt, "any") && strings.Contains(rt, "any")) {
 									if strings.Contains(lt, "any") {
@@ -4219,7 +4247,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 							}
 						}
 					}
-					ex = &BinaryExpr{Left: l, Op: ops[i], Right: r}
+					ex = &BinaryExpr{Left: l, Op: ops[i].op, Right: r}
 				}
 				operands[i] = ex
 				operands = append(operands[:i+1], operands[i+2:]...)
