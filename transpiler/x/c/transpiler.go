@@ -80,6 +80,7 @@ var (
 	needListAppendIntNew    bool
 	needListAppendStruct    map[string]bool
 	needListAppendStructNew map[string]bool
+	needListAppendStructPtr map[string]bool
 	needListAppendSizeT     bool
 	needSHA256              bool
 	needMD5Hex              bool
@@ -787,7 +788,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						needListAppendStruct = make(map[string]bool)
 					}
 					needListAppendStruct[typ] = true
-					fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", a.Name, typ, a.Name, a.Name)
+					fmt.Fprintf(w, "%s = list_append_%s(%s, &%s_len, ", a.Name, sanitizeTypeName(typ), a.Name, a.Name)
 					call.Args[1].emitExpr(w)
 					io.WriteString(w, ");\n")
 					return
@@ -809,8 +810,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 						needListAppendDoublePtr = true
 						fmt.Fprintf(w, "%s = list_append_doubleptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
 					default:
-						needListAppendStrPtr = true
-						fmt.Fprintf(w, "%s = list_append_strptr(%s, &%s_len, ", a.Name, a.Name, a.Name)
+						if needListAppendStructPtr == nil {
+							needListAppendStructPtr = make(map[string]bool)
+						}
+						needListAppendStructPtr[elemBase] = true
+						fmt.Fprintf(w, "%s = list_append_%sptr(%s, &%s_len, ", a.Name, sanitizeTypeName(elemBase), a.Name, a.Name)
 					}
 					if lit, ok := call.Args[1].(*ListLit); ok {
 						fmt.Fprintf(w, "({%s *tmp = malloc(%d * sizeof(%s)); ", elemBase, len(lit.Elems), elemBase)
@@ -1468,13 +1472,13 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 						needListAppendStructNew = make(map[string]bool)
 					}
 					needListAppendStructNew[typ] = true
-					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", typ, vr.Name, vr.Name)
+					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", sanitizeTypeName(typ), vr.Name, vr.Name)
 				} else if base != "" {
 					if needListAppendStructNew == nil {
 						needListAppendStructNew = make(map[string]bool)
 					}
 					needListAppendStructNew[base] = true
-					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", base, vr.Name, vr.Name)
+					fmt.Fprintf(w, "list_append_%s_new(%s, %s_len, ", sanitizeTypeName(base), vr.Name, vr.Name)
 				} else {
 					needListAppendIntNew = true
 					fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
@@ -2721,8 +2725,20 @@ func (p *Program) Emit() []byte {
 	}
 	if len(needListAppendStruct) > 0 {
 		for typ := range needListAppendStruct {
-			fmt.Fprintf(&buf, "static %s* list_append_%s(%s *arr, size_t *len, %s val) {\n", typ, typ, typ, typ)
+			name := sanitizeTypeName(typ)
+			fmt.Fprintf(&buf, "static %s* list_append_%s(%s *arr, size_t *len, %s val) {\n", typ, name, typ, typ)
 			fmt.Fprintf(&buf, "    arr = realloc(arr, (*len + 1) * sizeof(%s));\n", typ)
+			buf.WriteString("    arr[*len] = val;\n")
+			buf.WriteString("    (*len)++;\n")
+			buf.WriteString("    return arr;\n")
+			buf.WriteString("}\n\n")
+		}
+	}
+	if len(needListAppendStructPtr) > 0 {
+		for typ := range needListAppendStructPtr {
+			name := sanitizeTypeName(typ)
+			fmt.Fprintf(&buf, "static %s** list_append_%sptr(%s **arr, size_t *len, %s *val) {\n", typ, name, typ, typ)
+			fmt.Fprintf(&buf, "    arr = realloc(arr, (*len + 1) * sizeof(%s*));\n", typ)
 			buf.WriteString("    arr[*len] = val;\n")
 			buf.WriteString("    (*len)++;\n")
 			buf.WriteString("    return arr;\n")
@@ -2731,7 +2747,8 @@ func (p *Program) Emit() []byte {
 	}
 	if len(needListAppendStructNew) > 0 {
 		for typ := range needListAppendStructNew {
-			fmt.Fprintf(&buf, "static %s* list_append_%s_new(const %s *arr, size_t len, %s val) {\n", typ, typ, typ, typ)
+			name := sanitizeTypeName(typ)
+			fmt.Fprintf(&buf, "static %s* list_append_%s_new(const %s *arr, size_t len, %s val) {\n", typ, name, typ, typ)
 			fmt.Fprintf(&buf, "    %s *res = malloc((len + 1) * sizeof(%s));\n", typ, typ)
 			fmt.Fprintf(&buf, "    if (arr && len) memcpy(res, arr, len * sizeof(%s));\n", typ)
 			buf.WriteString("    res[len] = val;\n")
@@ -2940,6 +2957,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needListAppendIntNew = false
 	needListAppendStruct = map[string]bool{}
 	needListAppendStructNew = map[string]bool{}
+	needListAppendStructPtr = map[string]bool{}
 	needSHA256 = false
 	needMD5Hex = false
 	needNow = false
@@ -6369,6 +6387,13 @@ func listPtrType(t string) string {
 	cnt := strings.Count(t, "[]")
 	base := strings.TrimSuffix(t, strings.Repeat("[]", cnt))
 	return base + strings.Repeat("*", cnt)
+}
+
+func sanitizeTypeName(typ string) string {
+	typ = strings.ReplaceAll(typ, " ", "_")
+	typ = strings.ReplaceAll(typ, "*", "ptr")
+	typ = strings.ReplaceAll(typ, "const", "c")
+	return typ
 }
 
 func anyToExpr(v any) Expr {
