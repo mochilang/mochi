@@ -2180,9 +2180,9 @@ func (s *SliceExpr) emit(w io.Writer) {
 	s.Start.emit(w)
 	io.WriteString(w, ") (Seq.drop ")
 	s.Start.emit(w)
-	io.WriteString(w, " (List.to_seq ")
+	io.WriteString(w, " (List.to_seq (")
 	s.Col.emit(w)
-	io.WriteString(w, ")))")
+	io.WriteString(w, "))))")
 }
 
 func (s *SliceExpr) emitPrint(w io.Writer) { s.emit(w) }
@@ -5484,18 +5484,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		return &FuncCall{Name: "_now", Args: nil, Ret: "int"}, "int", nil
 	}
 	if c.Func == "contains" && len(c.Args) == 2 {
-		strArg, styp, err := convertExpr(c.Args[0], env, vars)
-		if err != nil {
-			return nil, "", err
+		if _, ok := env.GetFunc("contains"); !ok {
+			strArg, styp, err := convertExpr(c.Args[0], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			subArg, subTyp, err := convertExpr(c.Args[1], env, vars)
+			if err != nil {
+				return nil, "", err
+			}
+			if styp != "string" || subTyp != "string" {
+				return nil, "", fmt.Errorf("contains expects string")
+			}
+			return &StringContainsBuiltin{Str: strArg, Sub: subArg}, "bool", nil
 		}
-		subArg, subTyp, err := convertExpr(c.Args[1], env, vars)
-		if err != nil {
-			return nil, "", err
-		}
-		if styp != "string" || subTyp != "string" {
-			return nil, "", fmt.Errorf("contains expects string")
-		}
-		return &StringContainsBuiltin{Str: strArg, Sub: subArg}, "bool", nil
 	}
 	if c.Func == "split" && len(c.Args) == 2 {
 		strArg, styp, err := convertExpr(c.Args[0], env, vars)
