@@ -1284,6 +1284,14 @@ func (s *StructLit) emitExpr(w io.Writer) {
 					io.WriteString(w, ", .")
 					io.WriteString(w, f.Name+"_len = ")
 					emitLenExpr(w, f.Value)
+					if _, ok := mt.Elem.(types.ListType); ok {
+						io.WriteString(w, ", .")
+						io.WriteString(w, f.Name+"_lens = ")
+						emitLensExpr(w, f.Value)
+						io.WriteString(w, ", .")
+						io.WriteString(w, f.Name+"_lens_len = ")
+						emitLenExpr(w, f.Value)
+					}
 					printed = true
 				case types.MapType:
 					if ml, okm := f.Value.(*MapLit); okm && len(ml.Items) == 0 {
