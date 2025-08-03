@@ -2840,6 +2840,35 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 		}
 	}
 
+	if len(bodyNodes) > 0 {
+		if ifList, ok := bodyNodes[len(bodyNodes)-1].(*List); ok && len(ifList.Elems) == 4 {
+			if sym, ok := ifList.Elems[0].(Symbol); ok && sym == "if" {
+				if recurList, ok := ifList.Elems[3].(*List); ok && len(recurList.Elems) == 2 {
+					if rsym, ok := recurList.Elems[0].(Symbol); ok && rsym == "recur" {
+						recurThen := &List{Elems: []Node{Symbol("recur"), Symbol(flagVar)}}
+						if tb, ok := ifList.Elems[2].(*List); ok {
+							if len(tb.Elems) > 0 {
+								if tsym, ok := tb.Elems[0].(Symbol); ok && tsym == "do" {
+									tb.Elems = append(tb.Elems, recurThen)
+								} else {
+									ifList.Elems[2] = &List{Elems: []Node{Symbol("do"), ifList.Elems[2], recurThen}}
+								}
+							} else {
+								ifList.Elems[2] = &List{Elems: []Node{Symbol("do"), recurThen}}
+							}
+						} else {
+							ifList.Elems[2] = &List{Elems: []Node{Symbol("do"), ifList.Elems[2], recurThen}}
+						}
+						body := &List{Elems: append([]Node{Symbol("do")}, bodyNodes...)}
+						loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("and"), Symbol(flagVar), cond}}, body}}
+						binding := &Vector{Elems: []Node{Symbol(flagVar), Symbol("true")}}
+						return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
+					}
+				}
+			}
+		}
+	}
+
 	condElems := []Node{}
 	other := []Node{}
 	pre := []Node{}
