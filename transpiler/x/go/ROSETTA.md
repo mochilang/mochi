@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 465/491
-Last updated: 2025-08-03 16:11 +0700
+Completed programs: 466/491
+Last updated: 2025-08-03 17:00 +0700
 
 Checklist:
 
@@ -135,7 +135,7 @@ Checklist:
 | 126 | bitmap | ✓ | 17.0ms | 2.86MB |
 | 127 | bitwise-io-1 | ✓ | 407.0µs | 1.12KB |
 | 128 | bitwise-io-2 |   |  |  |
-| 129 | bitwise-operations |   |  |  |
+| 129 | bitwise-operations | ✓ | 538.0µs | 3.30KB |
 | 130 | blum-integer | ✓ | 449.0µs | 4.83KB |
 | 131 | boolean-values |   |  |  |
 | 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
