@@ -3175,8 +3175,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		retType := csType(s.Fun.Return)
 		currentReturnType = retType
 		currentReturnVoid = s.Fun.Return == nil
-		// record return type for local functions so callers can infer it
+		// record return and parameter types for local functions so callers can infer them
 		funRets[s.Fun.Name] = retType
+		funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
 			prog = nil
@@ -3192,13 +3193,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		blockDepth--
-		if len(body) == 1 {
-			if r, ok := body[0].(*ReturnStmt); ok && r.Value != nil {
+		for _, st := range body {
+			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
 				vt := typeOfExpr(r.Value)
-				if strings.HasPrefix(retType, "Func<object, object>") && strings.HasPrefix(vt, "Func<") {
-					retType = vt
-					currentReturnType = vt
-					funRets[s.Fun.Name] = retType
+				if strings.HasPrefix(vt, "Func<") {
+					if strings.HasPrefix(retType, "Func<object") || strings.HasPrefix(retType, "Action") || retType == "" {
+						retType = vt
+						currentReturnType = vt
+						funRets[s.Fun.Name] = retType
+					}
 				}
 			}
 		}
@@ -3229,7 +3232,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if prog != nil && blockDepth == 0 {
 			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
 			funRets[s.Fun.Name] = retType
-			funParams[s.Fun.Name] = append([]string{}, ptypes...)
 			userFuncs[s.Fun.Name] = true
 		}
 		if s.Fun.Return == nil {
@@ -3240,6 +3242,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			prog.Funcs = append(prog.Funcs, &Function{Name: s.Fun.Name, Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body})
 		} else {
 			lit := &FunLit{Params: params, ParamTypes: ptypes, ReturnType: retType, Body: body}
+			typ := typeOfExpr(lit)
+			varTypes[s.Fun.Name] = typ
+			finalVarTypes[s.Fun.Name] = typ
 			res = &LetStmt{Name: s.Fun.Name, Value: lit}
 		}
 		if res == nil {
@@ -3286,7 +3291,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 			if ct := currentReturnType; ct != "" {
 				vt := typeOfExpr(val)
-				if vt != ct && vt != "" {
+				if strings.HasPrefix(ct, "Action") && strings.HasPrefix(vt, "Func<") {
+					currentReturnType = vt
+				} else if vt != ct && vt != "" {
 					if vt == "object[]" && strings.HasSuffix(ct, "[]") {
 						elem := strings.TrimSuffix(ct, "[]")
 						if elem == "Action" {
