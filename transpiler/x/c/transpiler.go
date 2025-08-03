@@ -2131,6 +2131,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
 	if needMem {
+		buf.WriteString("#include <unistd.h>\n")
 		buf.WriteString("#include <malloc.h>\n")
 	}
 	if needUpper || needLower {
@@ -2516,8 +2517,13 @@ func (p *Program) Emit() []byte {
 	}
 	if needMem {
 		buf.WriteString("static long long _mem(void) {\n")
-		buf.WriteString("    struct mallinfo mi = mallinfo();\n")
-		buf.WriteString("    return (long long)mi.uordblks;\n")
+		buf.WriteString("    long long pages = 0;\n")
+		buf.WriteString("    FILE *f = fopen(\"/proc/self/statm\", \"r\");\n")
+		buf.WriteString("    if (f) {\n")
+		buf.WriteString("        if (fscanf(f, \"%lld\", &pages) != 1) pages = 0;\n")
+		buf.WriteString("        fclose(f);\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return pages * (long long)sysconf(_SC_PAGESIZE);\n")
 		buf.WriteString("}\n\n")
 	}
 	if needInput {
