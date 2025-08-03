@@ -1486,9 +1486,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 					}
 					io.WriteString(w, "std::any_cast<"+resType+">(")
 					i.Target.emit(w)
-					io.WriteString(w, ".at(")
+					io.WriteString(w, "[")
 					emitIndex(w, i.Index)
-					io.WriteString(w, ")")
+					io.WriteString(w, "]")
 					io.WriteString(w, ")")
 					return
 				}
@@ -1497,9 +1497,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 	}
 	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
 		i.Target.emit(w)
-		io.WriteString(w, ".at(")
+		io.WriteString(w, "[")
 		emitIndex(w, i.Index)
-		io.WriteString(w, ")")
+		io.WriteString(w, "]")
 		return
 	}
 	i.Target.emit(w)

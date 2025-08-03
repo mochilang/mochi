@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (267/491) - Last updated 2025-08-03 10:55 +0700:
+Checklist of programs that currently transpile and run (268/491) - Last updated 2025-08-03 11:14 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -234,7 +234,7 @@ Checklist of programs that currently transpile and run (267/491) - Last updated 
 | 227 | constrained-genericity-3 | ✓ | 5.0µs | 12.73MB |
 | 228 | constrained-genericity-4 | ✓ | 150.0µs | 12.96MB |
 | 229 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 45.0ms | 3.78MB |
 | 231 | continued-fraction |   |  |  |
 | 232 | convert-decimal-number-to-rational |   |  |  |
 | 233 | convert-seconds-to-compound-duration |   |  |  |
