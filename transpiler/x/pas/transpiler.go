@@ -1412,6 +1412,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if call := callFromExpr(st.Let.Value); call != nil && call.Func == "net.LookupHost" {
 					vd.Type = "array of string"
 				}
+				if vd.Type == "" {
+					if call := callFromExpr(st.Let.Value); call != nil {
+						if rt, ok := funcReturns[call.Func]; ok {
+							vd.Type = rt
+						}
+					}
+				}
 				if st.Let.Value != nil {
 					if isEmptyMapLiteral(st.Let.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
 						vd.Init = &CallExpr{Name: vd.Type + ".Create"}
@@ -1502,6 +1509,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							return nil, err
 						}
 						vd.Init = ex
+						if vd.Type == "" {
+							if ce, ok := ex.(*CallExpr); ok {
+								if rt, ok2 := funcReturns[ce.Name]; ok2 {
+									vd.Type = rt
+								}
+							}
+						}
 						if vd.Type == "array of any" {
 							if t := inferType(ex); strings.HasPrefix(t, "array of ") {
 								vd.Type = t
@@ -1514,16 +1528,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 								case types.StringType:
 									vd.Type = "string"
 								case types.ListType:
-									if _, ok := tt.Elem.(types.StringType); ok {
-										vd.Type = "array of string"
-									} else if _, ok := tt.Elem.(types.BoolType); ok {
-										vd.Type = "array of boolean"
-									} else if _, ok := tt.Elem.(types.AnyType); ok {
-										// unknown element type, leave var type empty for now
-										vd.Type = ""
-									} else {
-										vd.Type = "array of integer"
-									}
+									vd.Type = pasTypeFromType(tt)
 								case types.BoolType:
 									vd.Type = "boolean"
 								}
@@ -1547,6 +1552,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if st.Var.Type != nil {
 					vd.Type = typeFromRef(st.Var.Type)
 				}
+				if vd.Type == "" {
+					if call := callFromExpr(st.Var.Value); call != nil {
+						if rt, ok := funcReturns[call.Func]; ok {
+							vd.Type = rt
+						}
+					}
+				}
 				if st.Var.Value != nil {
 					if isEmptyMapLiteral(st.Var.Value) && strings.HasPrefix(vd.Type, "specialize TFPGMap") {
 						vd.Init = &CallExpr{Name: vd.Type + ".Create"}
@@ -1560,6 +1572,13 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					expectedMapType = prevMap
 					if err != nil {
 						return nil, err
+					}
+					if vd.Type == "" {
+						if ce, ok := ex.(*CallExpr); ok {
+							if rt, ok2 := funcReturns[ce.Name]; ok2 {
+								vd.Type = rt
+							}
+						}
 					}
 					if rec, ok := ex.(*RecordLit); ok {
 						if vd.Type == "" {
@@ -1585,16 +1604,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 							case types.StringType:
 								vd.Type = "string"
 							case types.ListType:
-								if _, ok := t.Elem.(types.StringType); ok {
-									vd.Type = "array of string"
-								} else if _, ok := t.Elem.(types.BoolType); ok {
-									vd.Type = "array of boolean"
-								} else if _, ok := t.Elem.(types.AnyType); ok {
-									// unknown element type, default to Variant array
-									vd.Type = "array of any"
-								} else {
-									vd.Type = "array of integer"
-								}
+								vd.Type = pasTypeFromType(t)
 							case types.BoolType:
 								vd.Type = "boolean"
 							}
@@ -1789,6 +1799,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				startVarCount := len(currProg.Vars)
 				pushScope()
 				currentFunc = fn.Name
+				rt := ""
+				if st.Fun.Return != nil {
+					rt = typeFromRef(st.Fun.Return)
+					if strings.HasPrefix(rt, "array of ") {
+						elem := strings.TrimPrefix(rt, "array of ")
+						if !isArrayAlias(elem) {
+							rt = currProg.addArrayAlias(elem)
+						}
+					}
+					funcReturns[fn.Name] = rt
+				}
 				for _, p := range st.Fun.Params {
 					typ := "integer"
 					if p.Type != nil {
@@ -1822,16 +1843,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 					name := sanitize(p.Name)
 					params = append(params, formatParam(name, typ))
-				}
-				rt := ""
-				if st.Fun.Return != nil {
-					rt = typeFromRef(st.Fun.Return)
-					if strings.HasPrefix(rt, "array of ") {
-						elem := strings.TrimPrefix(rt, "array of ")
-						if !isArrayAlias(elem) {
-							rt = currProg.addArrayAlias(elem)
-						}
-					}
 				}
 				if rt == "" {
 					for _, st := range fnBody {
