@@ -985,12 +985,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	}
 	if benchMain {
 		needBase = true
-		usesNow = true
 		usesJSON = true
 		usesBench = true
 		startSym := gensym("start")
 		endSym := gensym("end")
 		durSym := gensym("dur")
+		jpsSym := gensym("jps")
+		durCalc := &List{Elems: []Node{
+			Symbol("quotient"),
+			&List{Elems: []Node{
+				Symbol("*"),
+				&List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}},
+				IntLit(1000000),
+			}},
+			Symbol(jpsSym),
+		}}
 		durStr := &List{Elems: []Node{Symbol("number->string"), Symbol(durSym)}}
 		memStr := &List{Elems: []Node{Symbol("number->string"), &List{Elems: []Node{Symbol("_mem")}}}}
 		jsonStr := &List{Elems: []Node{Symbol("string-append"),
@@ -1006,21 +1015,24 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		innerLet2 := &List{Elems: []Node{
 			Symbol("let"),
 			&List{Elems: []Node{
-				&List{Elems: []Node{Symbol(durSym), &List{Elems: []Node{Symbol("quotient"), &List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}}, IntLit(1000)}}}},
+				&List{Elems: []Node{Symbol(durSym), durCalc}},
 			}},
 			jsonCall,
 		}}
 		innerLet1 := &List{Elems: []Node{
 			Symbol("let"),
 			&List{Elems: []Node{
-				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("now")}}}},
+				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("current-jiffy")}}}},
 			}},
 			innerLet2,
 		}}
 		inner := append(p.Forms, innerLet1)
 		p.Forms = []Node{&List{Elems: []Node{
 			Symbol("let"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("now")}}}}}},
+			&List{Elems: []Node{
+				&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("current-jiffy")}}}},
+				&List{Elems: []Node{Symbol(jpsSym), &List{Elems: []Node{Symbol("jiffies-per-second")}}}},
+			}},
 			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
 		}}}
 	}
