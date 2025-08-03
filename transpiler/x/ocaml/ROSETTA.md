@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 316/491
+Completed programs: 317/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -340,7 +340,7 @@ Completed programs: 316/491
 | 332 | eertree | ✓ | 120.0µs | 10.67KB |
 | 333 | egyptian-division | ✓ | 176.0µs | 1.56KB |
 | 334 | ekg-sequence-convergence | ✓ | 1.12s | 23.76MB |
-| 335 | element-wise-operations |   |  |  |
+| 335 | element-wise-operations | ✓ | 640.0µs | 41.70KB |
 | 336 | elementary-cellular-automaton-infinite-length |   |  |  |
 | 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
 | 338 | elementary-cellular-automaton |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 316/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 17:36 +0700
+Last updated 2025-08-03 17:48 +0700
