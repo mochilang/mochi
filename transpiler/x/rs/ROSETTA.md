@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-03 16:50 UTC
+Last updated: 2025-08-03 17:34 UTC
 
-## Rosetta Golden Test Checklist (226/491)
+## Rosetta Golden Test Checklist (227/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -134,7 +134,7 @@ Last updated: 2025-08-03 16:50 UTC
 | 125 | bitmap-write-a-ppm-file | ✓ | 86µs | 2.0 MB |
 | 126 | bitmap | ✓ | 1m20.467472s | 5.2 MB |
 | 127 | bitwise-io-1 | ✓ | 37µs | 2.0 MB |
-| 128 | bitwise-io-2 |   |  |  |
+| 128 | bitwise-io-2 | ✓ | 191µs | 2.0 MB |
 | 129 | bitwise-operations |   |  |  |
 | 130 | blum-integer |   |  |  |
 | 131 | boolean-values |   |  |  |
