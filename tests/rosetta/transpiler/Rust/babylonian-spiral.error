@@ -1,599 +1,389 @@
-error[E0106]: missing lifetime specifiers
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:70:90
-   |
-70 |     fn step(mut h: Vec<HashMap<String, i64>>, mut nv: i64, mut dir: Vec<i64>) -> HashMap<&str, &Vec<i64>> {
-   |                                                                                          ^     ^ expected named lifetime parameter
-   |                                                                                          |
-   |                                                                                          expected named lifetime parameter
-   |
-   = help: this function's return type contains a borrowed value, but there is no value for it to be borrowed from
-help: consider using the `'static` lifetime, but this is uncommon unless you're returning a borrowed value from a `const` or a `static`
-   |
-70 |     fn step(mut h: Vec<HashMap<String, i64>>, mut nv: i64, mut dir: Vec<i64>) -> HashMap<&'static str, &'static Vec<i64>> {
-   |                                                                                           +++++++       +++++++
-
 warning: unnecessary trailing semicolon
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:69:2
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:87:2
    |
-69 | };
+87 | };
    |  ^ help: remove this semicolon
    |
    = note: `#[warn(redundant_semicolons)]` on by default
 
 warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:120:2
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:138:2
     |
-120 | };
+138 | };
     |  ^ help: remove this semicolon
 
 warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:140:2
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:158:2
     |
-140 | };
+158 | };
     |  ^ help: remove this semicolon
 
 warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:147:2
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:165:2
     |
-147 | };
+165 | };
     |  ^ help: remove this semicolon
 
 warning: unnecessary trailing semicolon
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:163:2
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:181:2
     |
-163 | };
+181 | };
     |  ^ help: remove this semicolon
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:61:17
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:79:17
    |
-61 |     let mut i = ((h.len() as i64) - 1);
+79 |     let mut i = ((h.len() as i64) - 1);
    |                 ^                    ^
    |
    = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
    |
-61 -     let mut i = ((h.len() as i64) - 1);
-61 +     let mut i = (h.len() as i64) - 1;
+79 -     let mut i = ((h.len() as i64) - 1);
+79 +     let mut i = (h.len() as i64) - 1;
    |
 
 warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:62:11
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:80:11
    |
-62 |     while ((i > 0) && (h[(i - 1) as usize].clone()["s".as_str()] > h[i as usize].clone()["s".as_str()])) {
-   |           ^                                                                                            ^
+80 |     while ((i > 0) && (h[(i - 1) as usize].clone()["s"] > h[i as usize].clone()["s"])) {
+   |           ^                                                                          ^
    |
 help: remove these parentheses
    |
-62 -     while ((i > 0) && (h[(i - 1) as usize].clone()["s".as_str()] > h[i as usize].clone()["s".as_str()])) {
-62 +     while (i > 0) && (h[(i - 1) as usize].clone()["s".as_str()] > h[i as usize].clone()["s".as_str()]) {
+80 -     while ((i > 0) && (h[(i - 1) as usize].clone()["s"] > h[i as usize].clone()["s"])) {
+80 +     while (i > 0) && (h[(i - 1) as usize].clone()["s"] > h[i as usize].clone()["s"]) {
    |
 
 warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:66:13
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:84:13
    |
-66 |         i = (i - 1);
+84 |         i = (i - 1);
    |             ^     ^
    |
 help: remove these parentheses
    |
-66 -         i = (i - 1);
-66 +         i = i - 1;
+84 -         i = (i - 1);
+84 +         i = i - 1;
    |
 
 warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:71:11
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:89:11
    |
-71 |     while (((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s".as_str()])) {
-   |           ^                                                                             ^
-   |
-help: remove these parentheses
-   |
-71 -     while (((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s".as_str()])) {
-71 +     while ((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s".as_str()]) {
-   |
-
-warning: unnecessary parentheses around assigned value
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:73:14
-   |
-73 |         nv = (nv + 1);
-   |              ^      ^
-   |
-help: remove these parentheses
-   |
-73 -         nv = (nv + 1);
-73 +         nv = nv + 1;
-   |
-
-warning: unnecessary parentheses around `while` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:77:11
-   |
-77 |     while (((h.len() as i64) > 0) && (h[0 as usize].clone()["s".as_str()] == s)) {
+89 |     while (((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s"])) {
    |           ^                                                                    ^
    |
 help: remove these parentheses
    |
-77 -     while (((h.len() as i64) > 0) && (h[0 as usize].clone()["s".as_str()] == s)) {
-77 +     while ((h.len() as i64) > 0) && (h[0 as usize].clone()["s".as_str()] == s) {
+89 -     while (((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s"])) {
+89 +     while ((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s"]) {
    |
 
-warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:81:12
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:91:14
    |
-81 |         if (it["a".as_str()] > it["b".as_str()]) {
-   |            ^                                   ^
+91 |         nv = (nv + 1);
+   |              ^      ^
    |
 help: remove these parentheses
    |
-81 -         if (it["a".as_str()] > it["b".as_str()]) {
-81 +         if it["a".as_str()] > it["b".as_str()] {
+91 -         nv = (nv + 1);
+91 +         nv = nv + 1;
    |
 
-warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:91:12
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:95:11
    |
-91 |         if (p[0] != p[1]) {
-   |            ^            ^
+95 |     while (((h.len() as i64) > 0) && (h[0 as usize].clone()["s"] == s)) {
+   |           ^                                                           ^
    |
 help: remove these parentheses
    |
-91 -         if (p[0] != p[1]) {
-91 +         if p[0] != p[1] {
+95 -     while (((h.len() as i64) > 0) && (h[0 as usize].clone()["s"] == s)) {
+95 +     while ((h.len() as i64) > 0) && (h[0 as usize].clone()["s"] == s) {
    |
 
 warning: unnecessary parentheses around `if` condition
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:97:12
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:99:12
    |
-97 |         if (p[1] != 0) {
-   |            ^         ^
+99 |         if (it.get("a").cloned().unwrap_or_default() > it.get("b").cloned().unwrap_or_default()) {
+   |            ^                                                                                   ^
    |
 help: remove these parentheses
    |
-97 -         if (p[1] != 0) {
-97 +         if p[1] != 0 {
+99 -         if (it.get("a").cloned().unwrap_or_default() > it.get("b").cloned().unwrap_or_default()) {
+99 +         if it.get("a").cloned().unwrap_or_default() > it.get("b").cloned().unwrap_or_default() {
    |
 
 warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:103:12
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:109:12
     |
-103 |         if (p[0] != 0) {
-    |            ^         ^
+109 |         if (p[0 as usize] != p[1 as usize]) {
+    |            ^                              ^
     |
 help: remove these parentheses
     |
-103 -         if (p[0] != 0) {
-103 +         if p[0] != 0 {
+109 -         if (p[0 as usize] != p[1 as usize]) {
+109 +         if p[0 as usize] != p[1 as usize] {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:115:12
+    |
+115 |         if (p[1 as usize] != 0) {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+115 -         if (p[1 as usize] != 0) {
+115 +         if p[1 as usize] != 0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:121:12
+    |
+121 |         if (p[0 as usize] != 0) {
+    |            ^                  ^
+    |
+help: remove these parentheses
+    |
+121 -         if (p[0 as usize] != 0) {
+121 +         if p[0 as usize] != 0 {
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:110:26
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:128:30
     |
-110 |         let cross: i64 = ((p[0] * dir[1 as usize]) - (p[1] * dir[0 as usize]));
-    |                          ^                                                   ^
+128 |         let mut cross: i64 = ((p[0 as usize] * dir[1 as usize]) - (p[1 as usize] * dir[0 as usize]));
+    |                              ^                                                                     ^
     |
 help: remove these parentheses
     |
-110 -         let cross: i64 = ((p[0] * dir[1 as usize]) - (p[1] * dir[0 as usize]));
-110 +         let cross: i64 = (p[0] * dir[1 as usize]) - (p[1] * dir[0 as usize]);
+128 -         let mut cross: i64 = ((p[0 as usize] * dir[1 as usize]) - (p[1 as usize] * dir[0 as usize]));
+128 +         let mut cross: i64 = (p[0 as usize] * dir[1 as usize]) - (p[1 as usize] * dir[0 as usize]);
     |
 
 warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:111:12
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:129:12
     |
-111 |         if (cross >= 0) {
+129 |         if (cross >= 0) {
     |            ^          ^
     |
 help: remove these parentheses
     |
-111 -         if (cross >= 0) {
-111 +         if cross >= 0 {
+129 -         if (cross >= 0) {
+129 +         if cross >= 0 {
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:112:28
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:130:32
     |
-112 |             let dot: i64 = ((p[0] * dir[0 as usize]) + (p[1] * dir[1 as usize]));
-    |                            ^                                                   ^
+130 |             let mut dot: i64 = ((p[0 as usize] * dir[0 as usize]) + (p[1 as usize] * dir[1 as usize]));
+    |                                ^                                                                     ^
     |
 help: remove these parentheses
     |
-112 -             let dot: i64 = ((p[0] * dir[0 as usize]) + (p[1] * dir[1 as usize]));
-112 +             let dot: i64 = (p[0] * dir[0 as usize]) + (p[1] * dir[1 as usize]);
+130 -             let mut dot: i64 = ((p[0 as usize] * dir[0 as usize]) + (p[1 as usize] * dir[1 as usize]));
+130 +             let mut dot: i64 = (p[0 as usize] * dir[0 as usize]) + (p[1 as usize] * dir[1 as usize]);
     |
 
 warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:113:16
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:131:16
     |
-113 |             if (dot > bestDot) {
+131 |             if (dot > bestDot) {
     |                ^             ^
     |
 help: remove these parentheses
     |
-113 -             if (dot > bestDot) {
-113 +             if dot > bestDot {
+131 -             if (dot > bestDot) {
+131 +             if dot > bestDot {
     |
 
 warning: unnecessary parentheses around `while` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:129:11
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:147:11
     |
-129 |     while (i < n) {
+147 |     while (i < n) {
     |           ^     ^
     |
 help: remove these parentheses
     |
-129 -     while (i < n) {
-129 +     while i < n {
+147 -     while (i < n) {
+147 +     while i < n {
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:134:14
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:153:13
     |
-134 |         nv = (st["n".as_str()].clone() as i64);
-    |              ^                               ^
+153 |         x = (x + dir[0 as usize]);
+    |             ^                   ^
     |
 help: remove these parentheses
     |
-134 -         nv = (st["n".as_str()].clone() as i64);
-134 +         nv = st["n".as_str()].clone() as i64;
+153 -         x = (x + dir[0 as usize]);
+153 +         x = x + dir[0 as usize];
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:135:13
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:154:13
     |
-135 |         x = (x + dir[0]);
-    |             ^          ^
+154 |         y = (y + dir[1 as usize]);
+    |             ^                   ^
     |
 help: remove these parentheses
     |
-135 -         x = (x + dir[0]);
-135 +         x = x + dir[0];
+154 -         y = (y + dir[1 as usize]);
+154 +         y = y + dir[1 as usize];
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:136:13
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:155:13
     |
-136 |         y = (y + dir[1]);
-    |             ^          ^
-    |
-help: remove these parentheses
-    |
-136 -         y = (y + dir[1]);
-136 +         y = y + dir[1];
-    |
-
-warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:137:13
-    |
-137 |         i = (i + 1);
+155 |         i = (i + 1);
     |             ^     ^
     |
 help: remove these parentheses
     |
-137 -         i = (i + 1);
-137 +         i = i + 1;
+155 -         i = (i + 1);
+155 +         i = i + 1;
     |
 
 warning: unnecessary parentheses around `while` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:143:11
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:161:11
     |
-143 |     while ((r.len() as i64) < w) {
+161 |     while ((r.len() as i64) < w) {
     |           ^                    ^
     |
 help: remove these parentheses
     |
-143 -     while ((r.len() as i64) < w) {
-143 +     while (r.len() as i64) < w {
+161 -     while ((r.len() as i64) < w) {
+161 +     while (r.len() as i64) < w {
     |
 
 warning: unnecessary parentheses around `while` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:153:11
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:171:11
     |
-153 |     while (i < (pts.len() as i64)) {
+171 |     while (i < (pts.len() as i64)) {
     |           ^                      ^
     |
 help: remove these parentheses
     |
-153 -     while (i < (pts.len() as i64)) {
-153 +     while i < (pts.len() as i64) {
+171 -     while (i < (pts.len() as i64)) {
+171 +     while i < (pts.len() as i64) {
     |
 
 warning: unnecessary parentheses around `if` condition
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:157:12
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:175:12
     |
-157 |         if (((i + 1) % 10) == 0) {
+175 |         if (((i + 1) % 10) == 0) {
     |            ^                   ^
     |
 help: remove these parentheses
     |
-157 -         if (((i + 1) % 10) == 0) {
-157 +         if ((i + 1) % 10) == 0 {
+175 -         if (((i + 1) % 10) == 0) {
+175 +         if ((i + 1) % 10) == 0 {
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:161:13
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:179:13
     |
-161 |         i = (i + 1);
+179 |         i = (i + 1);
     |             ^     ^
     |
 help: remove these parentheses
     |
-161 -         i = (i + 1);
-161 +         i = i + 1;
+179 -         i = (i + 1);
+179 +         i = i + 1;
     |
 
 warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:167:28
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:185:28
     |
-167 |     let duration_us: i64 = ((_end - _start) / 1000);
+185 |     let duration_us: i64 = ((_end - _start) / 1000);
     |                            ^                      ^
     |
 help: remove these parentheses
     |
-167 -     let duration_us: i64 = ((_end - _start) / 1000);
-167 +     let duration_us: i64 = (_end - _start) / 1000;
+185 -     let duration_us: i64 = ((_end - _start) / 1000);
+185 +     let duration_us: i64 = (_end - _start) / 1000;
     |
-
-warning: unnecessary parentheses around assigned value
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:168:29
-    |
-168 |     let memory_bytes: i64 = (_end_mem - _start_mem);
-    |                             ^                     ^
-    |
-help: remove these parentheses
-    |
-168 -     let memory_bytes: i64 = (_end_mem - _start_mem);
-168 +     let memory_bytes: i64 = _end_mem - _start_mem;
-    |
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:62:56
-   |
-62 |     while ((i > 0) && (h[(i - 1) as usize].clone()["s".as_str()] > h[i as usize].clone()["s".as_str()])) {
-   |                                                        ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:62:94
-   |
-62 |     while ((i > 0) && (h[(i - 1) as usize].clone()["s".as_str()] > h[i as usize].clone()["s".as_str()])) {
-   |                                                                                              ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:71:79
-   |
-71 |     while (((h.len() as i64) == 0) || ((nv * nv) <= h[0 as usize].clone()["s".as_str()])) {
-   |                                                                               ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:72:29
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:90:29
    |
-72 |         h = push(h.clone(), &Map {s: (nv * nv), a: nv, b: 0});
-   |             ----            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&HashMap<String, i64>`, found `&Map`
+90 |         h = push(h.clone(), Map {s: (nv * nv), a: nv, b: 0});
+   |             ----            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `HashMap<String, i64>`, found `Map`
    |             |
    |             arguments to this function are incorrect
    |
-   = note: expected reference `&HashMap<String, i64>`
-              found reference `&Map`
+   = note: expected struct `HashMap<String, i64>`
+              found struct `Map`
 note: function defined here
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:59:8
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:77:8
    |
-59 |     fn push(mut h: Vec<HashMap<String, i64>>, it: &HashMap<String, i64>) -> Vec<HashMap<String, i64>> {
-   |        ^^^^                                   -------------------------
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:75:44
-   |
-75 |     let s: i64 = h[0 as usize].clone()["s".as_str()];
-   |                                            ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:77:65
-   |
-77 |     while (((h.len() as i64) > 0) && (h[0 as usize].clone()["s".as_str()] == s)) {
-   |                                                                 ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:80:59
-   |
-80 |         v = { let mut _v = v.clone(); _v.push(vec![it["a".as_str()], it["b".as_str()]]); _v };
-   |                                                           ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:80:77
-   |
-80 |         v = { let mut _v = v.clone(); _v.push(vec![it["a".as_str()], it["b".as_str()]]); _v };
-   |                                                                             ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:81:20
-   |
-81 |         if (it["a".as_str()] > it["b".as_str()]) {
-   |                    ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:81:39
-   |
-81 |         if (it["a".as_str()] > it["b".as_str()]) {
-   |                                       ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:78
-   |
-82 | ...   h = push(h.clone(), &HashMap::from([(String::from("s"), ((it["a".as_str()] * it["a".as_str()]) + ((it["b".as_str()] + 1) * (it["b"....
-   |                                                                        ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:97
-   |
-82 | ...   h = push(h.clone(), &HashMap::from([(String::from("s"), ((it["a".as_str()] * it["a".as_str()]) + ((it["b".as_str()] + 1) * (it["b"....
-   |                                                                                           ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:119
-   |
-82 | ...   h = push(h.clone(), &HashMap::from([(String::from("s"), ((it["a".as_str()] * it["a".as_str()]) + ((it["b".as_str()] + 1) * (it["b"....
-   |                                                                                                                 ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:144
-   |
-82 | ..._str()] * it["a".as_str()]) + ((it["b".as_str()] + 1) * (it["b".as_str()] + 1)))), (String::from("a"), it["a".as_str()]), (String::fro...
-   |                                                                    ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:190
-   |
-82 | ...)] + 1) * (it["b".as_str()] + 1)))), (String::from("a"), it["a".as_str()]), (String::from("b"), (it["b".as_str()] + 1))]));
-   |                                                                    ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:82:230
-   |
-82 | ...ring::from("a"), it["a".as_str()]), (String::from("b"), (it["b".as_str()] + 1))]));
-   |                                                                    ^^^^^^
-   |
-   = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
+77 |     fn push(mut h: Vec<HashMap<String, i64>>, mut it: HashMap<String, i64>) -> Vec<HashMap<String, i64>> {
+   |        ^^^^                                   ----------------------------
 
 error[E0308]: mismatched types
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:87:53
-   |
-87 |         list = { let mut _v = list.clone(); _v.push(p); _v };
-   |                                                ---- ^- help: try using a conversion method: `.to_vec()`
-   |                                                |    |
-   |                                                |    expected `Vec<i64>`, found `&Vec<i64>`
-   |                                                arguments to this method are incorrect
-   |
-   = note: expected struct `Vec<_>`
-           found reference `&Vec<_>`
-note: method defined here
-  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
-
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:115:24
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:151:34
     |
-108 |     let mut best: Vec<i64> = dir;
-    |                   -------- expected due to this type
-...
-115 |                 best = p;
-    |                        ^- help: try using a conversion method: `.to_vec()`
-    |                        |
-    |                        expected `Vec<i64>`, found `&Vec<i64>`
-    |
-    = note: expected struct `Vec<_>`
-            found reference `&Vec<_>`
-
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:119:77
-    |
-119 |     return HashMap::from([(String::from("d"), best), (String::from("heap"), h), (String::from("n"), nv)])
-    |                                                                             ^ expected `Vec<i64>`, found `Vec<HashMap<String, i64>>`
+151 |         let mut heap: Vec<i64> = st.heap;
+    |                       --------   ^^^^^^^ expected `Vec<i64>`, found `Vec<HashMap<String, i64>>`
+    |                       |
+    |                       expected due to this
     |
     = note: expected struct `Vec<i64>`
                found struct `Vec<HashMap<String, i64>>`
 
-error[E0308]: mismatched types
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:119:101
-    |
-119 |     return HashMap::from([(String::from("d"), best), (String::from("heap"), h), (String::from("n"), nv)])
-    |                                                                                                     ^^ expected `Vec<i64>`, found `i64`
-    |
-    = note: expected struct `Vec<i64>`
-                 found type `i64`
-
-error[E0658]: use of unstable library feature `str_as_str`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:132:22
-    |
-132 |         dir = st["d".as_str()].clone();
-    |                      ^^^^^^
-    |
-    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:133:26
-    |
-133 |         heap = st["heap".as_str()].clone();
-    |                          ^^^^^^
-    |
-    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
-error[E0658]: use of unstable library feature `str_as_str`
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:134:22
-    |
-134 |         nv = (st["n".as_str()].clone() as i64);
-    |                      ^^^^^^
-    |
-    = note: see issue #130366 <https://github.com/rust-lang/rust/issues/130366> for more information
-
 warning: variable does not need to be mutable
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:63:13
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:77:47
    |
-63 |         let mut tmp: HashMap<String, i64> = h[(i - 1) as usize].clone();
-   |             ----^^^
-   |             |
-   |             help: remove this `mut`
+77 |     fn push(mut h: Vec<HashMap<String, i64>>, mut it: HashMap<String, i64>) -> Vec<HashMap<String, i64>> {
+   |                                               ----^^
+   |                                               |
+   |                                               help: remove this `mut`
    |
    = note: `#[warn(unused_mut)]` on by default
 
 warning: variable does not need to be mutable
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:141:12
-    |
-141 |     fn pad(mut s: String, mut w: i64) -> String {
-    |            ----^
-    |            |
-    |            help: remove this `mut`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:81:13
+   |
+81 |         let mut tmp: HashMap<String, i64> = h[(i - 1) as usize].clone();
+   |             ----^^^
+   |             |
+   |             help: remove this `mut`
 
 warning: variable does not need to be mutable
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:141:27
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:159:21
     |
-141 |     fn pad(mut s: String, mut w: i64) -> String {
-    |                           ----^
-    |                           |
-    |                           help: remove this `mut`
+159 |     fn pad(s: &str, mut w: i64) -> String {
+    |                     ----^
+    |                     |
+    |                     help: remove this `mut`
 
 warning: variable does not need to be mutable
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:149:9
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:167:9
     |
-149 |     let mut pts: Vec<Vec<i64>> = positions(40);
+167 |     let mut pts: Vec<Vec<i64>> = positions(40);
     |         ----^^^
     |         |
     |         help: remove this `mut`
 
 warning: variable does not need to be mutable
-   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:154:13
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:172:13
     |
-154 |         let mut p: Vec<i64> = pts[i as usize].clone();
+172 |         let mut p: Vec<i64> = pts[i as usize].clone();
     |             ----^
     |             |
     |             help: remove this `mut`
 
-error: aborting due to 24 previous errors; 35 warnings emitted
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/babylonian-spiral.rs:173:13
+    |
+173 | ...   let mut s: String = pad(&format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "(", p[0 as usize].to_string()), ", "), p[...
+    |           ----^
+    |           |
+    |           help: remove this `mut`
 
-Some errors have detailed explanations: E0106, E0308, E0658.
-For more information about an error, try `rustc --explain E0106`.
+error: aborting due to 2 previous errors; 34 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

@@ -3199,7 +3199,9 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	memEnd := &VarDecl{Name: "_mem_end", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_mem_end"}, Type: "i64"}
+	memDiff := &BinaryExpr{Left: &NameRef{Name: "_mem_end"}, Op: "-", Right: &NameRef{Name: "_mem_start"}}
+	memAbs := &MethodCallExpr{Receiver: memDiff, Name: "abs"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memAbs, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
 	stmts := []Stmt{startDecl, memStart}
@@ -3216,7 +3218,9 @@ func wrapBench(name string, body []Stmt) Stmt {
 	memEnd := &VarDecl{Name: "_mem_end", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_mem_end"}, Type: "i64"}
+	memDiff := &BinaryExpr{Left: &NameRef{Name: "_mem_end"}, Op: "-", Right: &NameRef{Name: "_mem_start"}}
+	memAbs := &MethodCallExpr{Receiver: memDiff, Name: "abs"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memAbs, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
 	stmts := []Stmt{startDecl, memStart}
 	stmts = append(stmts, body...)
