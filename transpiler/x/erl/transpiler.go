@@ -1987,6 +1987,21 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 		return
+	case "pow":
+		io.WriteString(w, "trunc(math:pow(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, ", ")
+		if len(c.Args) > 1 {
+			c.Args[1].emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, "))")
+		return
 	case "pow_big":
 		if len(c.Args) == 2 {
 			if lit, ok := c.Args[0].(*IntLit); ok && lit.Value == 2 {
