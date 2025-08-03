@@ -1,5 +1,0 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Racket/deal-cards-for-freecell.rkt:98:9: stdout: unbound identifier
-  in: stdout
-  location...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/deal-cards-for-freecell.rkt:98:9
