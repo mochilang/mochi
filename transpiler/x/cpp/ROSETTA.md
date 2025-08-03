@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (286/491) - Last updated 2025-08-03 23:06 +0700:
+Checklist of programs that currently transpile and run (289/491) - Last updated 2025-08-03 23:52 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -293,17 +293,17 @@ Checklist of programs that currently transpile and run (286/491) - Last updated 
 | 286 | descending-primes | ✓ | 636.0µs | 3.57MB |
 | 287 | detect-division-by-zero | ✓ |  |  |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 377.0µs | 3.61MB |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
-| 290 | determine-if-a-string-is-collapsible | ✓ |  |  |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |   |  |  |
-| 293 | determine-if-a-string-is-squeezable | ✓ |  |  |
-| 294 | determine-if-only-one-instance-is-running | ✓ |  |  |
-| 295 | determine-if-two-triangles-overlap | ✓ |  |  |
-| 296 | determine-sentence-type | ✓ |  |  |
-| 297 | dice-game-probabilities-1 | ✓ |  |  |
-| 298 | dice-game-probabilities-2 |   |  |  |
-| 299 | digital-root-multiplicative-digital-root |   |  |  |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 520.0µs | 3.64MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 677.0µs | 3.71MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 416.0µs | 3.69MB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 288.0µs | 3.68MB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 765.0µs | 3.70MB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 209.0µs | 3.56MB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 721.0µs | 3.86MB |
+| 296 | determine-sentence-type | ✓ | 337.0µs | 3.51MB |
+| 297 | dice-game-probabilities-1 | ✓ | 125.0ms | 3.65MB |
+| 298 | dice-game-probabilities-2 | ✓ | 781.0µs | 3.73MB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 57.0ms | 3.70MB |
 | 300 | dijkstras-algorithm |   |  |  |
 | 301 | dinesmans-multiple-dwelling-problem |   |  |  |
 | 302 | dining-philosophers-1 |   |  |  |

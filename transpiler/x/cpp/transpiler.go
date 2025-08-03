@@ -1490,7 +1490,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 						currentProgram.addInclude("<any>")
 					}
 					io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
-					emitIndex(w, i.Index)
+					i.Index.emit(w)
 					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
 					io.WriteString(w, "(")
 					i.Target.emit(w)
@@ -1505,7 +1505,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		if len(parts) == 2 {
 			valType := strings.TrimSpace(parts[1])
 			io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
-			emitIndex(w, i.Index)
+			i.Index.emit(w)
 			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
 			io.WriteString(w, "(")
 			i.Target.emit(w)
@@ -2446,6 +2446,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, elem)
 		io.WriteString(w, "> __res; std::set_union(__lhs.begin(), __lhs.end(), __rhs.begin(), __rhs.end(), std::back_inserter(__res)); return __res; }())")
 		return
+	}
+	lt0 := exprType(b.Left)
+	rt0 := exprType(b.Right)
+	if (lt0 == "char" && rt0 == "std::string") || (lt0 == "std::string" && rt0 == "char") {
+		if sl, ok := b.Right.(*StringLit); ok && lt0 == "char" && len(sl.Value) == 1 {
+			io.WriteString(w, "(")
+			b.Left.emit(w)
+			io.WriteString(w, " "+b.Op+" '")
+			io.WriteString(w, sl.Value)
+			io.WriteString(w, "')")
+			return
+		}
+		if sl, ok := b.Left.(*StringLit); ok && rt0 == "char" && len(sl.Value) == 1 {
+			io.WriteString(w, "('")
+			io.WriteString(w, sl.Value)
+			io.WriteString(w, "' "+b.Op+" ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	if b.Op == "+" {
 		lt := exprType(b.Left)
@@ -3630,6 +3650,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			varType := elementTypeFromListType(gtyp)
 			if varType == "auto" {
 				varType = gtyp
+			}
+			if strings.HasPrefix(gtyp, "std::map<") && strings.HasSuffix(gtyp, ">") {
+				parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">"), ",", 2)
+				if len(parts) == 2 {
+					varType = strings.TrimSpace(parts[0])
+				}
+			}
+			if gtyp == "std::string" {
+				varType = "char"
 			}
 			if isIndexExpr(stmt.For.Source) {
 				varType = elementTypeFromListType(varType)
@@ -6548,6 +6577,9 @@ func guessType(e *parser.Expr) string {
 }
 
 func elementTypeFromListType(t string) string {
+	if t == "std::string" {
+		return "char"
+	}
 	if strings.HasPrefix(t, "std::vector<") && strings.HasSuffix(t, ">") {
 		return strings.TrimSuffix(strings.TrimPrefix(t, "std::vector<"), ">")
 	}
