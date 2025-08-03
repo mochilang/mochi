@@ -613,6 +613,8 @@ func (p *Program) write(w io.Writer) {
 	}
 	if p.UseMem {
 		p.addInclude("<sys/resource.h>")
+		p.addInclude("<unistd.h>")
+		p.addInclude("<cstdio>")
 	}
 	if p.UseLookupHost {
 		p.addInclude("<any>")
@@ -657,11 +659,18 @@ func (p *Program) write(w io.Writer) {
 	}
 	if p.UseMem {
 		fmt.Fprintln(w, "static long _mem() {")
+		fmt.Fprintln(w, "#if defined(__linux__)")
+		fmt.Fprintln(w, "    long rss = 0;")
+		fmt.Fprintln(w, "    FILE* f = std::fopen(\"/proc/self/statm\", \"r\");")
+		io.WriteString(w, "    if (f) { long pages; if (std::fscanf(f, \"%*s %ld\", &pages) == 1) rss = pages * sysconf(_SC_PAGESIZE); std::fclose(f); }\n")
+		fmt.Fprintln(w, "    return rss;")
+		fmt.Fprintln(w, "#elif defined(__APPLE__)")
 		fmt.Fprintln(w, "    struct rusage usage{};")
 		fmt.Fprintln(w, "    getrusage(RUSAGE_SELF, &usage);")
-		fmt.Fprintln(w, "#ifdef __APPLE__")
 		fmt.Fprintln(w, "    return usage.ru_maxrss;")
 		fmt.Fprintln(w, "#else")
+		fmt.Fprintln(w, "    struct rusage usage{};")
+		fmt.Fprintln(w, "    getrusage(RUSAGE_SELF, &usage);")
 		fmt.Fprintln(w, "    return usage.ru_maxrss * 1024;")
 		fmt.Fprintln(w, "#endif")
 		fmt.Fprintln(w, "}")
@@ -3006,18 +3015,22 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 		currentProgram.addInclude("<iostream>")
 		currentProgram.addInclude("<chrono>")
 		currentProgram.addInclude("<sys/resource.h>")
+		currentProgram.addInclude("<unistd.h>")
+		currentProgram.addInclude("<cstdio>")
 	}
 	ind := strings.Repeat("    ", indent)
 	fmt.Fprintln(w, ind+"{")
 	ind2 := strings.Repeat("    ", indent+1)
 	fmt.Fprintf(w, "%sstruct __BenchGuard {\n", ind2)
 	fmt.Fprintf(w, "%s    long long start;\n", ind2)
-	fmt.Fprintf(w, "%s    __BenchGuard() : start(_bench_now()) {}\n", ind2)
+	fmt.Fprintf(w, "%s    long mem_start;\n", ind2)
+	fmt.Fprintf(w, "%s    __BenchGuard() : start(_bench_now()), mem_start(_mem()) {}\n", ind2)
 	fmt.Fprintf(w, "%s    ~__BenchGuard() {\n", ind2)
 	fmt.Fprintf(w, "%s        auto __bench_end = _bench_now();\n", ind2+"    ")
 	fmt.Fprintf(w, "%s        auto __bench_mem_end = _mem();\n", ind2+"    ")
 	fmt.Fprintf(w, "%s        auto __bench_dur = __bench_end - start;\n", ind2+"    ")
-	fmt.Fprintf(w, "%s        auto __bench_mem = __bench_mem_end;\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        auto __bench_mem = __bench_mem_end - mem_start;\n", ind2+"    ")
+	fmt.Fprintf(w, "%s        if (__bench_mem < 0) __bench_mem = 0;\n", ind2+"    ")
 	fmt.Fprintf(w, "%s        std::cout << \"{\\n  \\\"duration_us\\\": \" << __bench_dur << \",\\n  \\\"memory_bytes\\\": \" << __bench_mem << \",\\n  \\\"name\\\": \\\"%s\\\"\\n}\" << std::endl;\n", ind2+"    ", b.Name)
 	fmt.Fprintf(w, "%s    }\n", ind2)
 	fmt.Fprintf(w, "%s} __bench_guard;\n", ind2)

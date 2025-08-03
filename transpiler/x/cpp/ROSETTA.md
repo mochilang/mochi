@@ -2,10 +2,10 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (266/491) - Last updated 2025-08-03 00:15 +0700:
+Checklist of programs that currently transpile and run (265/491) - Last updated 2025-08-03 07:58 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
-| 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
+| 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
 | 2 | 100-doors-3 | ✓ | 206.0µs | 12.62MB |
 | 3 | 100-doors | ✓ | 485.0µs | 12.42MB |
 | 4 | 100-prisoners | ✓ | 915.0ms | 12.78MB |
@@ -29,7 +29,7 @@ Checklist of programs that currently transpile and run (266/491) - Last updated 
 | 22 | abstract-type | ✓ | 113.0µs | 13.05MB |
 | 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 222.0ms | 12.93MB |
 | 24 | abundant-odd-numbers | ✓ | 1.10s | 12.94MB |
-| 25 | accumulator-factory | ✓ | 71.0µs | 12.79MB |
+| 25 | accumulator-factory |   | 71.0µs | 12.79MB |
 | 26 | achilles-numbers | ✓ | 21.0ms | 14.59MB |
 | 27 | ackermann-function-2 | ✓ | 52.0µs | 13.44MB |
 | 28 | ackermann-function-3 | ✓ |  |  |
