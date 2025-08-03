@@ -2096,11 +2096,12 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 }
 
 func escape(s string) string {
-	s = strings.ReplaceAll(s, "\\", "\\\\")
-	s = strings.ReplaceAll(s, "\"", "\\\"")
-	s = strings.ReplaceAll(s, "\n", "\\n")
-	s = strings.ReplaceAll(s, "\t", "\\t")
-	return s
+        s = strings.ReplaceAll(s, "\\", "\\\\")
+        s = strings.ReplaceAll(s, "\"", "\\\"")
+        s = strings.ReplaceAll(s, "\n", "\\n")
+        s = strings.ReplaceAll(s, "\t", "\\t")
+       s = strings.ReplaceAll(s, "\r", "\\r")
+        return s
 }
 
 func formatConst(e Expr) string {
@@ -3564,33 +3565,36 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 					valT = cTypeFromMochiType(mt.Value)
 				}
 			}
-			if len(m.Items) > 0 {
-				if _, ok := evalString(m.Items[0].Key); ok {
-					keyT = "const char*"
-				} else if _, ok := m.Items[0].Key.(*VarRef); ok {
-					keyT = "const char*"
-				} else {
-					keyT = "int"
-				}
-				vt := inferExprType(env, m.Items[0].Value)
-				if vt != "" {
-					valT = vt
-				}
-			}
-			if s.Let.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Let.Type, env)) {
-				valT = "const char*"
-			}
-			mapKeyTypes[s.Let.Name] = keyT
-			mapValTypes[s.Let.Name] = valT
-			if strings.HasSuffix(valT, "[]") {
-				varTypes[s.Let.Name] = "MapSL"
-				needMapGetSL = true
-			} else if valT == "const char*" {
-				varTypes[s.Let.Name] = "MapSS"
-				needMapGetSS = true
-			} else {
-				varTypes[s.Let.Name] = "int"
-			}
+                       if len(m.Items) > 0 {
+                               if _, ok := evalString(m.Items[0].Key); ok {
+                                       keyT = "const char*"
+                               } else if _, ok := m.Items[0].Key.(*VarRef); ok {
+                                       keyT = "const char*"
+                               } else {
+                                       keyT = "int"
+                               }
+                               vt := inferExprType(env, m.Items[0].Value)
+                               if vt != "" {
+                                       valT = vt
+                               }
+                       }
+                       if s.Let.Type != nil && types.IsStringAnyMapLike(types.ResolveTypeRef(s.Let.Type, env)) {
+                               valT = "const char*"
+                       }
+                       if valT == "long long" {
+                               valT = "int"
+                       }
+                       mapKeyTypes[s.Let.Name] = keyT
+                       mapValTypes[s.Let.Name] = valT
+                       if strings.HasSuffix(valT, "[]") {
+                               varTypes[s.Let.Name] = "MapSL"
+                               needMapGetSL = true
+                       } else if valT == "const char*" {
+                               varTypes[s.Let.Name] = "MapSS"
+                               needMapGetSS = true
+                       } else {
+                               varTypes[s.Let.Name] = "int"
+                       }
 			var buf bytes.Buffer
 			fmt.Fprintf(&buf, "%s %s_keys[%d] = {", keyT, s.Let.Name, len(m.Items)+16)
 			for i, it := range m.Items {
@@ -5478,34 +5482,34 @@ func convertUnary(u *parser.Unary) Expr {
 				return &IntLit{Value: 0}
 			}
 		}
-		if call.Func == "substring" && len(call.Args) == 3 {
-			arg0 := convertExpr(call.Args[0])
-			arg1 := convertExpr(call.Args[1])
-			arg2 := convertExpr(call.Args[2])
-			if arg0 == nil || arg1 == nil || arg2 == nil {
-				return nil
-			}
-			if s, ok := evalString(arg0); ok {
-				start, ok1 := evalInt(arg1)
-				end, ok2 := evalInt(arg2)
-				if ok1 && ok2 {
-					r := []rune(s)
-					if start < 0 {
-						start = 0
-					}
-					if end > len(r) {
-						end = len(r)
-					}
-					if start > end {
-						start = end
-					}
-					return &StringLit{Value: string(r[start:end])}
-				}
-			}
-			needSubstring = true
-			funcReturnTypes["_substring"] = "const char*"
-			return &CallExpr{Func: "_substring", Args: []Expr{arg0, arg1, arg2}}
-		}
+               if (call.Func == "substring" || call.Func == "substr") && len(call.Args) == 3 {
+                       arg0 := convertExpr(call.Args[0])
+                       arg1 := convertExpr(call.Args[1])
+                       arg2 := convertExpr(call.Args[2])
+                       if arg0 == nil || arg1 == nil || arg2 == nil {
+                               return nil
+                       }
+                       if s, ok := evalString(arg0); ok {
+                               start, ok1 := evalInt(arg1)
+                               end, ok2 := evalInt(arg2)
+                               if ok1 && ok2 {
+                                       r := []rune(s)
+                                       if start < 0 {
+                                               start = 0
+                                       }
+                                       if end > len(r) {
+                                               end = len(r)
+                                       }
+                                       if start > end {
+                                               start = end
+                                       }
+                                       return &StringLit{Value: string(r[start:end])}
+                               }
+                       }
+                       needSubstring = true
+                       funcReturnTypes["_substring"] = "const char*"
+                       return &CallExpr{Func: "_substring", Args: []Expr{arg0, arg1, arg2}}
+               }
 		if call.Func == "now" && len(call.Args) == 0 {
 			needNow = true
 			return &CallExpr{Func: "_now"}
@@ -6184,9 +6188,9 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-		if v.Func == "str" || v.Func == "substring" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" {
-			return true
-		}
+               if v.Func == "str" || v.Func == "substring" || v.Func == "substr" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" {
+                       return true
+               }
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
 			return *fn.Return.Simple == "string"
 		}
@@ -6371,8 +6375,8 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 	case *CallExpr:
 		switch v.Func {
-		case "str", "substring", "json", "padStart", "_padStart":
-			return "const char*"
+               case "str", "substring", "substr", "json", "padStart", "_padStart":
+                       return "const char*"
 		case "len":
 			return "long long"
 		case "num", "denom":
