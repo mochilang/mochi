@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -592,7 +593,13 @@ func (f *FuncLit) emit(w io.Writer) {
 // StringLit represents a quoted string literal.
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+var hexEscape = regexp.MustCompile(`\\x([0-9a-fA-F]{2})`)
+
+func (s *StringLit) emit(w io.Writer) {
+	q := strconv.Quote(s.Value)
+	q = hexEscape.ReplaceAllString(q, `\\u00$1`)
+	io.WriteString(w, q)
+}
 
 type IntLit struct{ Value int64 }
 
