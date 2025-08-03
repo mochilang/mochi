@@ -43,6 +43,7 @@ var needsRepeat bool
 var needsParseIntStr bool
 var needsMD5 bool
 var needsEnviron bool
+var needsSubprocess bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
@@ -838,12 +839,13 @@ func (i *IfStmt) emit(w io.Writer) {
 }
 
 func (ie *IfExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "if (")
+	fmt.Fprint(w, "(if (")
 	ie.Cond.emit(w)
 	fmt.Fprint(w, ") ")
 	ie.Then.emit(w)
 	fmt.Fprint(w, " else ")
 	ie.Else.emit(w)
+	fmt.Fprint(w, ")")
 }
 
 func (f *FunExpr) emit(w io.Writer) {
@@ -890,7 +892,12 @@ type LenExpr struct{ Value Expr }
 func (l *LenExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "(")
 	l.Value.emit(w)
-	fmt.Fprint(w, ").size")
+	t := inferTypeWithEnv(l.Value, nil)
+	if t == "String" {
+		fmt.Fprint(w, ").length")
+	} else {
+		fmt.Fprint(w, ").size")
+	}
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -1053,9 +1060,18 @@ type IndexExpr struct {
 func (idx *IndexExpr) emit(w io.Writer) {
 	container := idx.Container
 	if container == "" {
-		container = "Any"
+		if n, ok := idx.Value.(*Name); ok {
+			if t, ok2 := localVarTypes[n.Name]; ok2 {
+				container = t
+			} else {
+				container = "Any"
+			}
+		} else {
+			container = "Any"
+		}
 	}
-	castIndex := strings.HasPrefix(container, "ArrayBuffer[") || container == "String" || (container == "Any" && !idx.ForceMap)
+	idxType := inferTypeWithEnv(idx.Index, nil)
+	castIndex := strings.HasPrefix(container, "ArrayBuffer[") || container == "String" || (container == "Any" && !idx.ForceMap && idxType != "BigInt")
 	emitIndex := func() {
 		if castIndex {
 			fmt.Fprint(w, "(")
@@ -1607,6 +1623,9 @@ func Emit(p *Program) []byte {
 	if needsPadStart {
 		buf.WriteString("import scala.annotation.tailrec\n")
 	}
+	if needsSubprocess {
+		buf.WriteString("import scala.sys.process._\n")
+	}
 	buf.WriteString("object Main {\n")
 	if useNow {
 		buf.WriteString("  private var _nowSeed: Long = 0L\n")
@@ -1695,6 +1714,9 @@ func Emit(p *Program) []byte {
 		buf.WriteString("    ArrayBuffer(sys.env.map{ case (k,v) => s\"$k=$v\" }.toSeq: _*)\n")
 		buf.WriteString("  }\n\n")
 	}
+	if needsSubprocess {
+		buf.WriteString("  private def _subprocessGetOutput(cmd: String): String = cmd.!!\n\n")
+	}
 
 	var globals []Stmt
 	for _, st := range p.Stmts {
@@ -1769,6 +1791,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	needsMD5 = false
 	useNow = false
 	useLookupHost = false
+	needsSubprocess = false
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
@@ -1796,6 +1819,8 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			case "python":
 				if path == "math" {
 					builtinAliases[alias] = "python_math"
+				} else if path == "subprocess" {
+					builtinAliases[alias] = "python_subprocess"
 				}
 			}
 		}
@@ -2417,10 +2442,17 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp, env *types.Env) (Expr, erro
 		ct := inferTypeWithEnv(base, env)
 		forceMap := false
 		if ct == "" || ct == "Any" {
-			if iePrev, ok := base.(*IndexExpr); ok {
-				ct = iePrev.Type
-			} else if _, ok := idx.(*StringLit); ok {
-				forceMap = true
+			if n, ok := base.(*Name); ok {
+				if t, ok2 := localVarTypes[n.Name]; ok2 {
+					ct = t
+				}
+			}
+			if ct == "" || ct == "Any" {
+				if iePrev, ok := base.(*IndexExpr); ok {
+					ct = iePrev.Type
+				} else if _, ok := idx.(*StringLit); ok {
+					forceMap = true
+				}
 			}
 		}
 		ie := &IndexExpr{Value: base, Index: idx, Container: ct, ForceMap: forceMap}
@@ -2567,6 +2599,13 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					return expr, nil
 				case "e":
 					expr = &FieldExpr{Receiver: &Name{Name: "math"}, Name: "E"}
+					return expr, nil
+				}
+			case "python_subprocess":
+				switch field {
+				case "getoutput":
+					needsSubprocess = true
+					expr = &CallExpr{Fn: &Name{Name: "_subprocessGetOutput"}, Args: args}
 					return expr, nil
 				}
 			case "go_net":
@@ -2758,18 +2797,25 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				if typ := inferTypeWithEnv(start, env); typ != "Int" && typ != "String" {
-					start = &FieldExpr{Receiver: start, Name: "toInt"}
-				}
 				ct := inferTypeWithEnv(expr, env)
 				forceMap := false
 				if ct == "" || ct == "Any" {
-					if iePrev, ok := expr.(*IndexExpr); ok {
-						ct = iePrev.Type
-					} else if _, ok := start.(*StringLit); ok {
-						// assume map when indexing by string
-						forceMap = true
+					if n, ok := expr.(*Name); ok {
+						if t, ok2 := localVarTypes[n.Name]; ok2 {
+							ct = t
+						}
 					}
+					if ct == "" || ct == "Any" {
+						if iePrev, ok := expr.(*IndexExpr); ok {
+							ct = iePrev.Type
+						} else if _, ok := start.(*StringLit); ok {
+							// assume map when indexing by string
+							forceMap = true
+						}
+					}
+				}
+				if typ := inferTypeWithEnv(start, env); typ != "Int" && typ != "String" && (strings.HasPrefix(ct, "ArrayBuffer[") || ct == "String" || ((ct == "" || ct == "Any") && !forceMap)) {
+					start = &FieldExpr{Receiver: start, Name: "toInt"}
 				}
 				ie := &IndexExpr{Value: expr, Index: start, Container: ct, ForceMap: forceMap}
 				ie.Type = elementType(ct)
@@ -3057,7 +3103,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 			}
 			if tval == "Any" {
-				val = &CastExpr{Value: val, Type: "ArrayBuffer[Any]"}
+				val = &CastExpr{Value: val, Type: "String"}
 			}
 			return &LenExpr{Value: val}, nil
 		}
@@ -4602,16 +4648,18 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 	if t := inferType(e); t != "" && t != "Any" {
 		return t
 	}
-	if env != nil {
-		switch ex := e.(type) {
-		case *Name:
-			if t, ok := localVarTypes[ex.Name]; ok {
-				return t
-			}
+	switch ex := e.(type) {
+	case *Name:
+		if t, ok := localVarTypes[ex.Name]; ok {
+			return t
+		}
+		if env != nil {
 			if typ, err := env.GetVar(ex.Name); err == nil {
 				return toScalaTypeFromType(typ)
 			}
-		case *FieldExpr:
+		}
+	case *FieldExpr:
+		if env != nil {
 			if n, ok := ex.Receiver.(*Name); ok {
 				if t, err := env.GetVar(n.Name); err == nil {
 					if st, ok := t.(types.StructType); ok {
@@ -4623,59 +4671,59 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 					}
 				}
 			}
-		case *IndexExpr:
-			t := inferTypeWithEnv(ex.Value, env)
-			if strings.HasPrefix(t, "ArrayBuffer[") {
-				inner := strings.TrimSuffix(strings.TrimPrefix(t, "ArrayBuffer["), "]")
-				if inner != "" {
-					return inner
-				}
-				return "Any"
+		}
+	case *IndexExpr:
+		t := inferTypeWithEnv(ex.Value, env)
+		if strings.HasPrefix(t, "ArrayBuffer[") {
+			inner := strings.TrimSuffix(strings.TrimPrefix(t, "ArrayBuffer["), "]")
+			if inner != "" {
+				return inner
 			}
-			if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
-				parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
-				kv := strings.SplitN(parts, ",", 2)
-				if len(kv) == 2 {
-					valType := strings.TrimSpace(kv[1])
-					if valType != "" {
-						return valType
-					}
+			return "Any"
+		}
+		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
+			parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
+			kv := strings.SplitN(parts, ",", 2)
+			if len(kv) == 2 {
+				valType := strings.TrimSpace(kv[1])
+				if valType != "" {
+					return valType
 				}
 			}
-		case *BinaryExpr:
-			lt := inferTypeWithEnv(ex.Left, env)
-			rt := inferTypeWithEnv(ex.Right, env)
-			switch ex.Op {
-			case "+", "-", "*", "/", "%":
-				if lt == "String" || rt == "String" {
-					return "String"
-				}
-				if lt == "Double" || rt == "Double" || lt == "Float" || rt == "Float" {
-					return "Double"
-				}
-				if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(ex.Left) || isBigIntExpr(ex.Right) {
-					return "BigInt"
-				}
-				if lt == "" || rt == "" {
-					return ""
-				}
-				return "Int"
-			case "==", "!=", ">", "<", ">=", "<=":
-				return "Boolean"
+		}
+	case *BinaryExpr:
+		lt := inferTypeWithEnv(ex.Left, env)
+		rt := inferTypeWithEnv(ex.Right, env)
+		switch ex.Op {
+		case "+", "-", "*", "/", "%":
+			if lt == "String" || rt == "String" {
+				return "String"
 			}
-		case *CallExpr:
-			if n, ok := ex.Fn.(*Name); ok {
-				if typ, err := env.GetVar(n.Name); err == nil {
-					if ft, ok2 := typ.(types.FuncType); ok2 {
-						return toScalaTypeFromType(ft.Return)
-					}
+			if lt == "Double" || rt == "Double" || lt == "Float" || rt == "Float" {
+				return "Double"
+			}
+			if lt == "BigInt" || rt == "BigInt" || isBigIntExpr(ex.Left) || isBigIntExpr(ex.Right) {
+				return "BigInt"
+			}
+			if lt == "" || rt == "" {
+				return ""
+			}
+			return "Int"
+		case "==", "!=", ">", "<", ">=", "<=":
+			return "Boolean"
+		}
+	case *CallExpr:
+		if n, ok := ex.Fn.(*Name); ok && env != nil {
+			if typ, err := env.GetVar(n.Name); err == nil {
+				if ft, ok2 := typ.(types.FuncType); ok2 {
+					return toScalaTypeFromType(ft.Return)
 				}
-				if n.Name == "_bigrat" {
-					return "BigRat"
-				}
-				if n.Name == "String.valueOf" {
-					return "String"
-				}
+			}
+			if n.Name == "_bigrat" {
+				return "BigRat"
+			}
+			if n.Name == "String.valueOf" {
+				return "String"
 			}
 		}
 	}
