@@ -738,6 +738,8 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " = \"\"")
 		} else if typ == "bigrat" {
 			io.WriteString(w, " = _bigrat(0,1)")
+		} else if _, ok := structTypes[typ]; ok {
+			// structs default to zero initialization without explicit value
 		} else {
 			io.WriteString(w, " = 0")
 		}
@@ -4489,16 +4491,18 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		varTypes[p.Name] = typ
 		localEnv.SetVar(p.Name, mochiT, true)
 		if mt, ok := mochiT.(types.MapType); ok {
-			if _, ok2 := mt.Key.(types.StringType); ok2 {
-				mapKeyTypes[p.Name] = "const char*"
-			} else {
-				mapKeyTypes[p.Name] = "int"
-			}
-			if types.IsStringAnyMapLike(mochiT) {
-				mapValTypes[p.Name] = "const char*"
-				needMapGetSS = true
-			} else {
-				mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
+			if _, isStruct := structTypes[typ]; !isStruct {
+				if _, ok2 := mt.Key.(types.StringType); ok2 {
+					mapKeyTypes[p.Name] = "const char*"
+				} else {
+					mapKeyTypes[p.Name] = "int"
+				}
+				if types.IsStringAnyMapLike(mochiT) {
+					mapValTypes[p.Name] = "const char*"
+					needMapGetSS = true
+				} else {
+					mapValTypes[p.Name] = cTypeFromMochiType(mt.Value)
+				}
 			}
 		}
 		if strings.HasSuffix(typ, "[]") {
@@ -4878,6 +4882,8 @@ func convertUnary(u *parser.Unary) Expr {
 								tt = types.ListType{Elem: types.ListType{Elem: types.StringType{}}}
 							} else if inner == "double" {
 								tt = types.ListType{Elem: types.ListType{Elem: types.FloatType{}}}
+							} else if st, ok := currentEnv.GetStruct(inner); ok {
+								tt = types.ListType{Elem: types.ListType{Elem: st}}
 							}
 						} else {
 							if base == "const char*" {
@@ -6367,6 +6373,9 @@ func cTypeFromMochiType(t types.Type) string {
 				return "MapSI"
 			}
 			if _, ok2 := tt.Value.(types.AnyType); ok2 {
+				for _, name := range anonStructs {
+					return name
+				}
 				return "MapSS"
 			}
 		}
