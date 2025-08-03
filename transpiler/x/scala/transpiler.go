@@ -849,6 +849,8 @@ func (ie *IfExpr) emit(w io.Writer) {
 }
 
 func (f *FunExpr) emit(w io.Writer) {
+	funCtxStack = append(funCtxStack, true)
+	defer func() { funCtxStack = funCtxStack[:len(funCtxStack)-1] }()
 	fmt.Fprint(w, "(")
 	fmt.Fprint(w, "(")
 	for i, p := range f.Params {
@@ -1177,8 +1179,14 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" {
 		if c.Type == "int" && inferType(c.Value) == "Double" {
-			c.Value.emit(w)
-			fmt.Fprint(w, ".toInt")
+			if _, ok := c.Value.(*BinaryExpr); ok {
+				fmt.Fprint(w, "(")
+				c.Value.emit(w)
+				fmt.Fprint(w, ").toInt")
+			} else {
+				c.Value.emit(w)
+				fmt.Fprint(w, ".toInt")
+			}
 		} else {
 			needsBigInt = true
 			if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
@@ -4532,9 +4540,29 @@ func inferType(e Expr) string {
 		}
 		return fmt.Sprintf("Map[%s,%s]", kt, vt)
 	case *CallExpr:
-		if n, ok := ex.Fn.(*Name); ok {
-			if n.Name == "String.valueOf" {
+		switch fn := ex.Fn.(type) {
+		case *Name:
+			switch fn.Name {
+			case "String.valueOf":
 				return "String"
+			case "math.log", "math.log10", "math.log2", "math.log1p",
+				"math.exp", "math.expm1", "math.sin", "math.cos",
+				"math.tan", "math.asin", "math.acos", "math.atan",
+				"math.sqrt", "math.pow":
+				return "Double"
+			}
+		case *FieldExpr:
+			if recv, ok := fn.Receiver.(*Name); ok {
+				fullname := recv.Name + "." + fn.Name
+				switch fullname {
+				case "math.log", "math.log10", "math.log2", "math.log1p",
+					"math.exp", "math.expm1", "math.sin", "math.cos",
+					"math.tan", "math.asin", "math.acos", "math.atan",
+					"math.sqrt", "math.pow":
+					return "Double"
+				case "String.valueOf":
+					return "String"
+				}
 			}
 		}
 		return ""

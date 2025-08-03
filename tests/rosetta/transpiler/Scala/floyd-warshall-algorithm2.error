@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/floyd-warshall-algorithm2.scala:70: error: type mismatch;
- found   : scala.math.BigInt
- required: Int
-              val alt: Int = dist((i).toInt)((k).toInt) + dist((k).toInt)((j).toInt)
-                                                        ^
-one error found

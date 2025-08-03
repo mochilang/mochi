@@ -1,0 +1,25 @@
+The first 6 numbers which are palindromic in both binary and ternary are :
+
+Decimal : 0
+Binary  : 0
+Ternary : 0
+
+Decimal : 1
+Binary  : 1
+Ternary : 1
+
+Decimal : 6643
+Binary  : 1100111110011
+Ternary : 100010001
+
+Decimal : 1422773
+Binary  : 101011011010110110101
+Ternary : 2200021200022
+
+Decimal : 5415589
+Binary  : 10100101010001010100101
+Ternary : 101012010210101
+
+Decimal : 4295045431
+Binary  : 11111111111111111111111111111111
+Ternary : 102002022212220200201

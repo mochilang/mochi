@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (429/491)
-_Last updated: 2025-08-03 23:05 +0700_
+## Golden Test Checklist (431/491)
+_Last updated: 2025-08-04 00:21 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -416,56 +416,56 @@ _Last updated: 2025-08-03 23:05 +0700_
 | 407 | fibonacci-sequence-3 | ✓ |  | 8.7 MB |
 | 408 | fibonacci-sequence-4 | ✓ | 4µs | 8.7 MB |
 | 409 | fibonacci-sequence-5 | ✓ | 6µs | 8.7 MB |
-| 410 | fibonacci-word-fractal | ✓ | 4µs | 8.7 MB |
-| 411 | fibonacci-word | ✓ | 6.583ms | 8.7 MB |
-| 412 | file-extension-is-in-extensions-list | ✓ | 7µs | 8.7 MB |
-| 413 | file-input-output-1 | ✓ | 2µs | 8.7 MB |
-| 414 | file-input-output-2 | ✓ | 4µs | 8.7 MB |
-| 415 | file-input-output-3 | ✓ | 6µs | 8.7 MB |
-| 416 | file-modification-time | ✓ | 5µs | 8.7 MB |
-| 417 | file-size-distribution | ✓ | 8µs | 8.7 MB |
-| 418 | file-size | ✓ | 4µs | 8.7 MB |
-| 419 | filter | ✓ | 14µs | 8.7 MB |
-| 420 | find-chess960-starting-position-identifier-2 | ✓ |  |  |
-| 421 | find-chess960-starting-position-identifier | ✓ |  |  |
-| 422 | find-common-directory-path | ✓ | 11µs | 8.7 MB |
-| 423 | find-duplicate-files | ✓ | 5µs | 8.7 MB |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 412µs | 8.7 MB |
-| 425 | find-limit-of-recursion | ✓ | 50µs | 8.7 MB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 6µs | 8.7 MB |
-| 428 | find-the-intersection-of-two-lines | ✓ | 7µs | 8.8 MB |
-| 429 | find-the-last-sunday-of-each-month | ✓ |  |  |
-| 430 | find-the-missing-permutation | ✓ | 8µs | 8.7 MB |
-| 431 | first-class-environments | ✓ | 35µs | 8.7 MB |
-| 432 | first-class-functions-use-numbers-analogously | ✓ | 5µs | 8.7 MB |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 27µs | 8.7 MB |
-| 434 | five-weekends | ✓ | 46µs | 8.7 MB |
-| 435 | fivenum-1 | ✓ | 6µs | 8.8 MB |
-| 436 | fivenum-2 | ✓ | 11µs | 8.7 MB |
-| 437 | fivenum-3 | ✓ | 9µs | 8.7 MB |
-| 438 | fixed-length-records-1 | ✓ | 5µs | 8.7 MB |
-| 439 | fixed-length-records-2 | ✓ | 11µs | 8.7 MB |
-| 440 | fizzbuzz-1 | ✓ | 23µs | 8.8 MB |
-| 441 | fizzbuzz-2 | ✓ | 26µs | 8.8 MB |
-| 442 | fizzbuzz | ✓ | 21µs | 8.8 MB |
-| 443 | flatten-a-list-1 | ✓ | 4µs | 8.7 MB |
-| 444 | flatten-a-list-2 | ✓ | 2µs | 8.7 MB |
-| 445 | flipping-bits-game | ✓ | 8µs | 8.7 MB |
-| 446 | flow-control-structures-1 | ✓ | 3µs | 8.7 MB |
-| 447 | flow-control-structures-2 | ✓ | 2µs | 8.7 MB |
-| 448 | flow-control-structures-3 | ✓ | 17µs | 8.7 MB |
-| 449 | flow-control-structures-4 | ✓ | 2µs | 8.7 MB |
-| 450 | floyd-warshall-algorithm | ✓ | 8µs | 8.7 MB |
-| 451 | floyd-warshall-algorithm2 | error |  |  |
-| 452 | floyds-triangle | ✓ | 8µs | 8.7 MB |
-| 453 | forest-fire | ✓ | 66µs | 8.7 MB |
-| 454 | fork-2 | ✓ | 3µs | 8.7 MB |
-| 455 | fork | ✓ | 3µs | 8.7 MB |
-| 456 | formal-power-series | error |  |  |
-| 457 | formatted-numeric-output | ✓ | 5µs | 8.7 MB |
-| 458 | forward-difference | ✓ | 4µs | 8.7 MB |
-| 459 | four-bit-adder-1 | ✓ | 4µs | 8.7 MB |
+| 410 | fibonacci-word-fractal | ✓ | 3µs | 3.4 MB |
+| 411 | fibonacci-word | ✓ | 4.745ms | 3.5 MB |
+| 412 | file-extension-is-in-extensions-list | ✓ | 9µs | 3.4 MB |
+| 413 | file-input-output-1 | ✓ | 2µs | 3.4 MB |
+| 414 | file-input-output-2 | ✓ | 2µs | 3.4 MB |
+| 415 | file-input-output-3 | ✓ | 3µs | 3.4 MB |
+| 416 | file-modification-time | ✓ | 4µs | 3.4 MB |
+| 417 | file-size-distribution | ✓ | 10µs | 3.4 MB |
+| 418 | file-size | ✓ | 3µs | 3.4 MB |
+| 419 | filter | ✓ | 14µs | 3.4 MB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 16µs | 3.5 MB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 18µs | 3.5 MB |
+| 422 | find-common-directory-path | ✓ | 14µs | 3.5 MB |
+| 423 | find-duplicate-files | ✓ | 10µs | 3.4 MB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 98µs | 3.5 MB |
+| 425 | find-limit-of-recursion | ✓ | 34µs | 3.5 MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 193µs | 3.5 MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 1µs | 3.4 MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 2µs | 3.4 MB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 9µs | 3.4 MB |
+| 430 | find-the-missing-permutation | ✓ | 10µs | 3.4 MB |
+| 431 | first-class-environments | ✓ | 23µs | 3.5 MB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 13µs | 3.5 MB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 17µs | 3.5 MB |
+| 434 | five-weekends | ✓ | 49µs | 3.5 MB |
+| 435 | fivenum-1 | ✓ | 12µs | 3.5 MB |
+| 436 | fivenum-2 | ✓ | 17µs | 3.5 MB |
+| 437 | fivenum-3 | ✓ | 12µs | 3.5 MB |
+| 438 | fixed-length-records-1 | ✓ | 7µs | 3.4 MB |
+| 439 | fixed-length-records-2 | ✓ | 2µs | 3.5 MB |
+| 440 | fizzbuzz-1 | ✓ | 14µs | 3.4 MB |
+| 441 | fizzbuzz-2 | ✓ | 19µs | 3.4 MB |
+| 442 | fizzbuzz | ✓ | 17µs | 3.4 MB |
+| 443 | flatten-a-list-1 | ✓ | 6µs | 3.4 MB |
+| 444 | flatten-a-list-2 | ✓ | 1µs | 3.4 MB |
+| 445 | flipping-bits-game | ✓ | 9µs | 3.5 MB |
+| 446 | flow-control-structures-1 | ✓ | 1µs | 3.4 MB |
+| 447 | flow-control-structures-2 | ✓ | 2µs | 3.4 MB |
+| 448 | flow-control-structures-3 | ✓ | 10µs | 3.4 MB |
+| 449 | flow-control-structures-4 | ✓ | 1µs | 3.4 MB |
+| 450 | floyd-warshall-algorithm | ✓ | 9µs | 3.4 MB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 15µs | 3.5 MB |
+| 452 | floyds-triangle | ✓ | 4µs | 3.4 MB |
+| 453 | forest-fire | ✓ | 71µs | 3.5 MB |
+| 454 | fork-2 | ✓ | 1µs | 3.4 MB |
+| 455 | fork | ✓ | 1µs | 3.4 MB |
+| 456 | formal-power-series | ✓ | 11µs | 3.5 MB |
+| 457 | formatted-numeric-output | ✓ | 1µs | 3.4 MB |
+| 458 | forward-difference | ✓ | 7µs | 3.4 MB |
+| 459 | four-bit-adder-1 | ✓ | 2µs | 3.4 MB |
 | 460 | four-is-magic | ✓ | 7µs | 8.7 MB |
 | 461 | four-is-the-number-of-letters-in-the-... | error |  |  |
 | 462 | fractal-tree | ✓ | 30µs | 8.8 MB |
