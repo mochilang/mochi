@@ -144,7 +144,9 @@ mochi_safe_mul(A, B) ->
 
 mochi_safe_div(A, B) ->
     try A / B catch _:_ -> 0.0 end.
+`
 
+const helperSafeFmod = `
 mochi_safe_fmod(A, B) ->
     try math:fmod(A, B) catch _:_ -> 0.0 end.
 `
@@ -206,6 +208,7 @@ var useRepeat bool
 var useFetch bool
 var useNot bool
 var useSafeArith bool
+var useSafeFmod bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -236,6 +239,7 @@ type Program struct {
 	UseFetch        bool
 	UseNot          bool
 	UseSafeArith    bool
+	UseSafeFmod     bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -3100,6 +3104,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useFetch = false
 	useNot = false
 	useSafeArith = false
+	useSafeFmod = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -3146,6 +3151,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseFetch = useFetch
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
+	p.UseSafeFmod = useSafeFmod
 	return p, nil
 }
 
@@ -4311,7 +4317,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					}
 				} else if op == "%" {
 					if isFloatType(typesList[i]) || isFloatType(typesList[i+1]) || isFloatExpr(l, env, ctx) || isFloatExpr(r, env, ctx) {
-						useSafeArith = true
+						useSafeFmod = true
 						exprs[i] = &CallExpr{Func: "mochi_safe_fmod", Args: []Expr{l, r}}
 						exprs = append(exprs[:i+1], exprs[i+2:]...)
 						typesList = append(typesList[:i+1], typesList[i+2:]...)
@@ -6151,6 +6157,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseSafeArith {
 		buf.WriteString(helperSafeArith)
+		buf.WriteString("\n")
+	}
+	if p.UseSafeFmod {
+		buf.WriteString(helperSafeFmod)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {
