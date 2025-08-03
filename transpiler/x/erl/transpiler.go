@@ -2645,12 +2645,12 @@ func (c *ContinueStmt) emit(w io.Writer) {
 func (cs *CallStmt) emit(w io.Writer) { cs.Call.emit(w) }
 
 func (b *BenchStmt) emit(w io.Writer) {
-	io.WriteString(w, "BenchStart = mochi_now(),\n    BenchStartMem = erlang:memory(total)")
+	io.WriteString(w, "__mochi_bench_start = mochi_now(),\n    __mochi_bench_start_mem = erlang:memory(total)")
 	for _, st := range b.Body {
 		io.WriteString(w, ",\n    ")
 		st.emit(w)
 	}
-	fmt.Fprintf(w, ",\n    BenchEnd = mochi_now(),\n    BenchEndMem = erlang:memory(total),\n    DurationUs = (BenchEnd - BenchStart) div 1000,\n    MemBytes = erlang:abs(BenchEndMem - BenchStartMem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [DurationUs, MemBytes])", b.Name)
+	fmt.Fprintf(w, ",\n    __mochi_bench_end = mochi_now(),\n    __mochi_bench_end_mem = erlang:memory(total),\n    __mochi_bench_duration_us = (__mochi_bench_end - __mochi_bench_start) div 1000,\n    __mochi_bench_mem_bytes = erlang:abs(__mochi_bench_end_mem - __mochi_bench_start_mem),\n    io:format(\"{~n  \\\"duration_us\\\": ~p,~n  \\\"memory_bytes\\\": ~p,~n  \\\"name\\\": \\\"%s\\\"~n}\n\", [__mochi_bench_duration_us, __mochi_bench_mem_bytes])", b.Name)
 }
 
 func isNameRef(e Expr, name string) bool {
