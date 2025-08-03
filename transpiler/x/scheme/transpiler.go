@@ -2387,13 +2387,17 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		return ok
 	}
 	if op == "/" {
-		if !hasFloat(left) && !hasFloat(right) {
+		_, lint := lt.(types.IntType)
+		_, rint := rt.(types.IntType)
+		if lint && rint {
 			return &List{Elems: []Node{Symbol("quotient"), left, right}}
 		}
 		return &List{Elems: []Node{Symbol("/"), left, right}}
 	}
 	if op == "%" {
-		if !hasFloat(left) && !hasFloat(right) {
+		_, lint := lt.(types.IntType)
+		_, rint := rt.(types.IntType)
+		if lint && rint {
 			return &List{Elems: []Node{Symbol("modulo"), left, right}}
 		}
 		needBase = true
