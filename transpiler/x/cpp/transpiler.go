@@ -1484,11 +1484,11 @@ func (i *IndexExpr) emit(w io.Writer) {
 					if currentProgram != nil {
 						currentProgram.addInclude("<any>")
 					}
-					io.WriteString(w, "std::any_cast<"+resType+">(")
-					i.Target.emit(w)
-					io.WriteString(w, ".at(")
+					io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
 					emitIndex(w, i.Index)
-					io.WriteString(w, ")")
+					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
+					io.WriteString(w, "(")
+					i.Target.emit(w)
 					io.WriteString(w, ")")
 					return
 				}
@@ -1496,11 +1496,17 @@ func (i *IndexExpr) emit(w io.Writer) {
 		}
 	}
 	if strings.HasPrefix(t, "std::map<") && strings.HasSuffix(t, ">") {
-		i.Target.emit(w)
-		io.WriteString(w, ".at(")
-		emitIndex(w, i.Index)
-		io.WriteString(w, ")")
-		return
+		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
+		if len(parts) == 2 {
+			valType := strings.TrimSpace(parts[1])
+			io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
+			emitIndex(w, i.Index)
+			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
+			io.WriteString(w, "(")
+			i.Target.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 	}
 	i.Target.emit(w)
 	io.WriteString(w, "[")
