@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (408/491)
-Last updated: 2025-08-03 10:19 UTC
+## Checklist (409/491)
+Last updated: 2025-08-03 10:57 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -364,12 +364,12 @@ Last updated: 2025-08-03 10:19 UTC
 | 355 | environment-variables-2 | ✓ | 571.223ms | 12.1 MB |
 | 356 | equal-prime-and-composite-sums |   |  |  |
 | 357 | equilibrium-index | ✓ |  |  |
-| 358 | erd-s-nicolas-numbers | ✓ |  |  |
+| 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 571.223ms | 32.8 MB |
 | 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
+| 361 | ethiopian-multiplication | ✓ | 571.223ms | 12.4 MB |
 | 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
+| 363 | euler-method | ✓ | 571.223ms | 13.6 MB |
 | 364 | eulers-constant-0.5772... |   |  |  |
 | 365 | eulers-identity |   |  |  |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
