@@ -1,0 +1,11 @@
+run error: exit status 1
+-: contract violation
+  expected: number?
+  given: #f
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/death-star.rkt:127:19: loop
+   [repeats 68 more times]
+   /workspace/mochi/tests/rosetta/transpiler/Racket/death-star.rkt:122:0
+   /workspace/mochi/tests/rosetta/transpiler/Racket/death-star.rkt:60:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/death-star.rkt:59:0
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/death-star.rkt"
