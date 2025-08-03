@@ -1,0 +1,44 @@
+For primes < 1 million:
+Longest run(s) of primes with ascending differences is 8 :
+128981 (2)  False
+128983 (4)  False
+128987 (6)  False
+128993 (8)  False
+129001 (10)  False
+129011 (12)  False
+129023 (14)  False
+129037
+402581 (2)  False
+402583 (4)  False
+402587 (6)  False
+402593 (8)  False
+402601 (12)  False
+402613 (18)  False
+402631 (60)  False
+402691
+665111 (2)  False
+665113 (4)  False
+665117 (6)  False
+665123 (8)  False
+665131 (10)  False
+665141 (12)  False
+665153 (24)  False
+665177
+
+Longest run(s) of primes with descending differences is 8 :
+322171 (22)  False
+322193 (20)  False
+322213 (16)  False
+322229 (8)  False
+322237 (6)  False
+322243 (4)  False
+322247 (2)  False
+322249
+752207 (44)  False
+752251 (12)  False
+752263 (10)  False
+752273 (8)  False
+752281 (6)  False
+752287 (4)  False
+752291 (2)  False
+752293
