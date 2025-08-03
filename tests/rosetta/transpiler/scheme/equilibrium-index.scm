@@ -1,11 +1,11 @@
-;; Generated on 2025-08-03 15:40 +0700
-(import (rename (scheme base) (list _list)))
+;; Generated on 2025-08-03 22:49 +0700
+(import (scheme base))
 (import (scheme time))
 (import (chibi string))
 (import (only (scheme char) string-upcase string-downcase))
-(import (scheme write))
 (import (srfi 69))
 (import (srfi 1))
+(define _list list)
 (import (chibi time) (srfi 98))
 (define _now_seeded #f)
 (define _now_seed 0)
@@ -21,6 +21,7 @@
         _now_seed)
       (exact (floor (* (current-second) 1000000000))))
 )
+(define (_bench_now) (exact (floor (* (current-second) 1000000))))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
 (define (to-str x)
@@ -100,4 +101,4 @@
                   (loop (_substring r (+ idx (string-length del)) (string-length r))
                         (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))
-(let ((start10 (now))) (begin (define seed (modulo (now) 2147483647)) (define (randN n) (call/cc (lambda (ret1) (begin (set! seed (modulo (_add (* seed 1664525) 1013904223) 2147483647)) (ret1 (modulo seed n)))))) (define (eqIndices xs) (call/cc (lambda (ret2) (let ((r 0)) (begin (let ((i 0)) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda () (if (< i (cond ((string? xs) (string-length xs)) ((hash-table? xs) (hash-table-size xs)) (else (length xs)))) (begin (set! r (+ r (list-ref xs i))) (set! i (+ i 1)) (loop3)) (quote ()))))) (loop3)))) (let ((l 0)) (begin (let ((eq (_list))) (begin (set! i 0) (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (< i (cond ((string? xs) (string-length xs)) ((hash-table? xs) (hash-table-size xs)) (else (length xs)))) (begin (set! r (- r (list-ref xs i))) (if (equal? l r) (begin (set! eq (append eq (_list i)))) (quote ())) (set! l (+ l (list-ref xs i))) (set! i (+ i 1)) (loop5)) (quote ()))))) (loop5)))) (ret2 eq)))))))))))) (define (main) (call/cc (lambda (ret7) (begin (_display (to-str (eqIndices (_list (- 7) 1 5 2 (- 4) 3 0)))) (newline) (let ((verylong (_list))) (begin (let ((i 0)) (begin (call/cc (lambda (break9) (letrec ((loop8 (lambda () (if (< i 10000) (begin (set! seed (modulo (_add (* seed 1664525) 1013904223) 2147483647)) (set! verylong (append verylong (_list (- (modulo seed 1001) 500)))) (set! i (+ i 1)) (loop8)) (quote ()))))) (loop8)))) (_display (to-str (eqIndices verylong))) (newline))))))))) (main) (let ((end11 (now))) (let ((dur12 (quotient (- end11 start10) 1000))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur12) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
+(let ((start10 (_bench_now))) (begin (define seed (modulo (now) 2147483647)) (define (randN n) (call/cc (lambda (ret1) (begin (set! seed (modulo (_add (* seed 1664525) 1013904223) 2147483647)) (ret1 (modulo seed n)))))) (define (eqIndices xs) (call/cc (lambda (ret2) (let ((r 0)) (begin (let ((i 0)) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda () (if (< i (cond ((string? xs) (string-length xs)) ((hash-table? xs) (hash-table-size xs)) (else (length xs)))) (begin (set! r (+ r (list-ref xs i))) (set! i (+ i 1)) (loop3)) (quote ()))))) (loop3)))) (let ((l 0)) (begin (let ((eq (_list))) (begin (set! i 0) (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (< i (cond ((string? xs) (string-length xs)) ((hash-table? xs) (hash-table-size xs)) (else (length xs)))) (begin (set! r (- r (list-ref xs i))) (if (equal? l r) (begin (set! eq (append eq (_list i)))) (quote ())) (set! l (+ l (list-ref xs i))) (set! i (+ i 1)) (loop5)) (quote ()))))) (loop5)))) (ret2 eq)))))))))))) (define (main) (call/cc (lambda (ret7) (begin (_display (to-str (eqIndices (_list (- 7) 1 5 2 (- 4) 3 0)))) (newline) (let ((verylong (_list))) (begin (let ((i 0)) (begin (call/cc (lambda (break9) (letrec ((loop8 (lambda () (if (< i 10000) (begin (set! seed (modulo (_add (* seed 1664525) 1013904223) 2147483647)) (set! verylong (append verylong (_list (- (modulo seed 1001) 500)))) (set! i (+ i 1)) (loop8)) (quote ()))))) (loop8)))) (_display (to-str (eqIndices verylong))) (newline))))))))) (main) (let ((end11 (_bench_now))) (let ((dur12 (- end11 start10))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur12) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

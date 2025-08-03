@@ -231,6 +231,7 @@ func header() []byte {
 		if !usesNow {
 			prelude += "(import (chibi time))\n"
 		}
+		prelude += "(define (_bench_now) (exact (floor (* (current-second) 1000000))))\n"
 		prelude += "(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))\n"
 	}
 	if usesLookupHost {
@@ -1006,21 +1007,21 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		innerLet2 := &List{Elems: []Node{
 			Symbol("let"),
 			&List{Elems: []Node{
-				&List{Elems: []Node{Symbol(durSym), &List{Elems: []Node{Symbol("quotient"), &List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}}, IntLit(1000)}}}},
+				&List{Elems: []Node{Symbol(durSym), &List{Elems: []Node{Symbol("-"), Symbol(endSym), Symbol(startSym)}}}},
 			}},
 			jsonCall,
 		}}
 		innerLet1 := &List{Elems: []Node{
 			Symbol("let"),
 			&List{Elems: []Node{
-				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("now")}}}},
+				&List{Elems: []Node{Symbol(endSym), &List{Elems: []Node{Symbol("_bench_now")}}}},
 			}},
 			innerLet2,
 		}}
 		inner := append(p.Forms, innerLet1)
 		p.Forms = []Node{&List{Elems: []Node{
 			Symbol("let"),
-			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("now")}}}}}},
+			&List{Elems: []Node{&List{Elems: []Node{Symbol(startSym), &List{Elems: []Node{Symbol("_bench_now")}}}}}},
 			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
 		}}}
 	}
