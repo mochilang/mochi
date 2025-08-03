@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (431/491)
-_Last updated: 2025-08-04 00:21 +0700_
+## Golden Test Checklist (432/491)
+_Last updated: 2025-08-04 00:41 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -467,7 +467,7 @@ _Last updated: 2025-08-04 00:21 +0700_
 | 458 | forward-difference | ✓ | 7µs | 3.4 MB |
 | 459 | four-bit-adder-1 | ✓ | 2µs | 3.4 MB |
 | 460 | four-is-magic | ✓ | 7µs | 8.7 MB |
-| 461 | four-is-the-number-of-letters-in-the-... | error |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
 | 462 | fractal-tree | ✓ | 30µs | 8.8 MB |
 | 463 | fractran | ✓ | 2.549ms | 8.7 MB |
 | 464 | french-republican-calendar | ✓ | 4µs | 8.7 MB |
