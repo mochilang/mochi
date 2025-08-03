@@ -336,7 +336,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	fmt.Fprint(w, "    if (__dur <= 0) __dur = 1;\n")
 	fmt.Fprint(w, "    var __memDiff = __memEnd - __memStart;\n")
 	fmt.Fprint(w, "    if (__memDiff <= 0) __memDiff = __memEnd;\n")
-	fmt.Fprintf(w, "    Console.WriteLine(\"{\\\"name\\\":\\\"%s\\\",\\\"duration_us\\\":\" + __dur + \",\\\"memory_bytes\\\":\" + __memDiff + \"}\");\\n", b.Name)
+	fmt.Fprintf(w, "    Console.WriteLine(\"{\\\"name\\\":\\\"%s\\\",\\\"duration_us\\\":\" + __dur + \",\\\"memory_bytes\\\":\" + __memDiff + \"}\");\n", b.Name)
 	fmt.Fprint(w, "}")
 }
 
@@ -2193,7 +2193,7 @@ func (f *FmtExpr) emit(w io.Writer) {
 type FmtTopExpr struct{ Value Expr }
 
 func (f *FmtTopExpr) emit(w io.Writer) {
-	fmt.Fprint(w, "_fmtTop(")
+	fmt.Fprint(w, "Program._fmtTop(")
 	f.Value.emit(w)
 	fmt.Fprint(w, ")")
 }
@@ -3613,9 +3613,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					case "string":
 						args[i] = &RawExpr{Code: fmt.Sprintf("Convert.ToString(%s)", exprString(arg)), Type: "string"}
 					default:
-						if strings.HasPrefix(types[i], "Dictionary<") {
-							args[i] = &RawExpr{Code: fmt.Sprintf("(%s)%s", types[i], exprString(arg)), Type: types[i]}
-						}
+						args[i] = &RawExpr{Code: fmt.Sprintf("(%s)%s", types[i], exprString(arg)), Type: types[i]}
 					}
 				}
 			}
@@ -4653,7 +4651,7 @@ if (v is bool b) return b ? "true" : "false";
 return Convert.ToString(v);
 }
 `)
-		buf.WriteString(`static string _fmtTop(object v) {
+		buf.WriteString(`public static string _fmtTop(object v) {
 if (v is Array a && a.Length > 0 && a.GetValue(0) is Array) {
     var parts = new List<string>();
     foreach (var x in a) parts.Add(_fmt(x));
