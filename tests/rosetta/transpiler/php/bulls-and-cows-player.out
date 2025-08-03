@@ -6,3 +6,8 @@ I guess.  You score my guess:
 You give my score as two numbers separated with a space.
 My guess: 1234.  Score? (c b)
 I did it. :)
+{
+  "duration_us": 19678,
+  "memory_bytes": 236456,
+  "name": "main"
+}
