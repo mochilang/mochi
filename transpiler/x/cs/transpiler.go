@@ -460,7 +460,11 @@ func (f *ForInStmt) emit(w io.Writer) {
 		f.Iterable.emit(w)
 		fmt.Fprintf(w, ".Substring((int)(%s), 1);\n", idx)
 	} else {
-		fmt.Fprintf(w, "foreach (var %s in ", v)
+		elem := "var"
+		if t := typeOfExpr(f.Iterable); strings.HasSuffix(t, "[]") {
+			elem = strings.TrimSuffix(t, "[]")
+		}
+		fmt.Fprintf(w, "foreach (%s %s in ", elem, v)
 		if isMapExpr(f.Iterable) {
 			f.Iterable.emit(w)
 			fmt.Fprint(w, ".Keys")
@@ -500,7 +504,7 @@ func (f *Function) emit(w io.Writer) {
 	if f.Receiver != "" {
 		fmt.Fprintf(w, "public %s %s(", ret, safeName(f.Name))
 	} else {
-		fmt.Fprintf(w, "static %s %s(", ret, safeName(f.Name))
+		fmt.Fprintf(w, "public static %s %s(", ret, safeName(f.Name))
 	}
 	for i, p := range f.Params {
 		if i > 0 {
@@ -925,7 +929,11 @@ func (c *CallExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ")")
 		return
 	}
-	fmt.Fprint(w, c.Func)
+	name := c.Func
+	if userFuncs != nil && userFuncs[name] {
+		name = "Program." + name
+	}
+	fmt.Fprint(w, name)
 	fmt.Fprint(w, "(")
 	for i, a := range c.Args {
 		if i > 0 {
@@ -1735,9 +1743,9 @@ func typeOfExpr(e Expr) string {
 		}
 		if strings.HasPrefix(t, "Dictionary<") {
 			parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
-			arr := strings.Split(parts, ",")
+			arr := splitTop(parts)
 			if len(arr) == 2 {
-				return strings.TrimSpace(arr[1])
+				return arr[1]
 			}
 		}
 		return ""
@@ -1753,9 +1761,9 @@ func typeOfExpr(e Expr) string {
 		}
 		if strings.HasPrefix(t, "Dictionary<") {
 			parts := strings.TrimPrefix(strings.TrimSuffix(t, ">"), "Dictionary<")
-			arr := strings.Split(parts, ",")
+			arr := splitTop(parts)
 			if len(arr) == 2 {
-				return strings.TrimSpace(arr[1])
+				return arr[1]
 			}
 		}
 		return ""
@@ -1845,6 +1853,29 @@ func typeOfExpr(e Expr) string {
 	return ""
 }
 
+func splitTop(s string) []string {
+	var parts []string
+	depth := 0
+	start := 0
+	for i, r := range s {
+		switch r {
+		case '<':
+			depth++
+		case '>':
+			if depth > 0 {
+				depth--
+			}
+		case ',':
+			if depth == 0 {
+				parts = append(parts, strings.TrimSpace(s[start:i]))
+				start = i + 1
+			}
+		}
+	}
+	parts = append(parts, strings.TrimSpace(s[start:]))
+	return parts
+}
+
 func mapTypes(m *MapLit) (string, string) {
 	if m.KeyType != "" && m.ValType != "" {
 		return m.KeyType, m.ValType
@@ -1898,6 +1929,10 @@ func listType(l *ListLit) string {
 			}
 		}
 		if t == "object[]" || t == "object" || t == "" {
+			if elemType != "" {
+				elemType = ""
+				break
+			}
 			continue
 		}
 		if elemType == "" {
@@ -1934,32 +1969,11 @@ func listType(l *ListLit) string {
 
 func (ix *IndexExpr) emit(w io.Writer) {
 	t := typeOfExpr(ix)
-	if t == "object" || t == "" {
-		fmt.Fprint(w, "((dynamic)")
-		ix.Target.emit(w)
-		fmt.Fprint(w, ")[")
-		ix.Index.emit(w)
-		fmt.Fprint(w, "]")
-		return
-	}
 	targetType := typeOfExpr(ix.Target)
 	idxType := typeOfExpr(ix.Index)
-	if strings.HasSuffix(targetType, "[]") {
-		ix.Target.emit(w)
-		fmt.Fprint(w, "[")
-		if idxType != "int" {
-			fmt.Fprint(w, "(int)(")
-			ix.Index.emit(w)
-			fmt.Fprint(w, ")")
-		} else {
-			ix.Index.emit(w)
-		}
-		fmt.Fprint(w, "]")
-		return
-	}
-	if strings.HasPrefix(targetType, "Dictionary<") {
+	if strings.HasPrefix(targetType, "Dictionary<") && !strings.HasSuffix(targetType, "[]") {
 		parts := strings.TrimPrefix(strings.TrimSuffix(targetType, ">"), "Dictionary<")
-		arr := strings.Split(parts, ",")
+		arr := splitTop(parts)
 		valType := "object"
 		if len(arr) == 2 {
 			valType = strings.TrimSpace(arr[1])
@@ -1986,6 +2000,27 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			fmt.Fprint(w, "null")
 		}
 		fmt.Fprint(w, ")")
+		return
+	}
+	if t == "object" || t == "" {
+		fmt.Fprint(w, "((dynamic)")
+		ix.Target.emit(w)
+		fmt.Fprint(w, ")[")
+		ix.Index.emit(w)
+		fmt.Fprint(w, "]")
+		return
+	}
+	if strings.HasSuffix(targetType, "[]") {
+		ix.Target.emit(w)
+		fmt.Fprint(w, "[")
+		if idxType != "int" {
+			fmt.Fprint(w, "(int)(")
+			ix.Index.emit(w)
+			fmt.Fprint(w, ")")
+		} else {
+			ix.Index.emit(w)
+		}
+		fmt.Fprint(w, "]")
 		return
 	}
 	if targetType == "string" {
@@ -3003,6 +3038,27 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 					}
 				}
 			}
+			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				nameAlias := s.Assign.Name
+				if alias, ok := varAliases[nameAlias]; ok {
+					nameAlias = alias
+				}
+				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
+					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
+					arr := splitTop(parts)
+					if len(arr) == 2 {
+						valPart := arr[1]
+						if strings.HasPrefix(valPart, "Dictionary<") && strings.HasSuffix(valPart, ">") {
+							inner := strings.TrimPrefix(strings.TrimSuffix(valPart, ">"), "Dictionary<")
+							innerArr := splitTop(inner)
+							if len(innerArr) == 2 {
+								mp.KeyType = innerArr[0]
+								mp.ValType = innerArr[1]
+							}
+						}
+					}
+				}
+			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
 		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
@@ -3350,6 +3406,9 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		stringVars = savedStr
 		mutatedVars = savedMut
 		stmt := &ForInStmt{Var: alias, Iterable: iterable, Body: body}
+		if t := typeOfExpr(iterable); strings.HasSuffix(t, "[]") {
+			varTypes[alias] = strings.TrimSuffix(t, "[]")
+		}
 		if savedVar == "" {
 			delete(varTypes, s.For.Name)
 		} else {

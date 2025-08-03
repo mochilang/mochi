@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden3680944079/001/Program.cs(112,54): error CS0411: The type arguments for method 'Enumerable.Append<TSource>(IEnumerable<TSource>, TSource)' cannot be inferred from the usage. Try specifying the type arguments explicitly. [/tmp/TestCSTranspiler_Rosetta_Golden3680944079/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

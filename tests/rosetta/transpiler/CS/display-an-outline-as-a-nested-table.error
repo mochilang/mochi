@@ -1,5 +1,5 @@
 dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden4193701757/001/Program.cs(154,52): error CS0030: Cannot convert type 'string' to 'int' [/tmp/TestCSTranspiler_Rosetta_Golden4193701757/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden4193701757/001/Program.cs(154,42): error CS1061: 'Dictionary<string, object>' does not contain a definition for 'Substring' and no accessible extension method 'Substring' accepting a first argument of type 'Dictionary<string, object>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Rosetta_Golden4193701757/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden346824357/001/Program.cs(154,52): error CS0030: Cannot convert type 'string' to 'int' [/tmp/TestCSTranspiler_Rosetta_Golden346824357/001/app.csproj]
+/tmp/TestCSTranspiler_Rosetta_Golden346824357/001/Program.cs(154,42): error CS1061: 'Dictionary<string, object>' does not contain a definition for 'Substring' and no accessible extension method 'Substring' accepting a first argument of type 'Dictionary<string, object>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Rosetta_Golden346824357/001/app.csproj]
 
 The build failed. Fix the build errors and run again.

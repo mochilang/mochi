@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden1059240818/001/Program.cs(65,13): error CS0103: The name 'panic' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden1059240818/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
