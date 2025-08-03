@@ -224,6 +224,11 @@ return (x.toLong() * pow2(n)).toInt()
 		"rshift": `fun rshift(x: Int, n: Int): Int {
 return (x.toLong() / pow2(n)).toInt()
 }`,
+		"repeat": `fun repeat(s: String, n: Int): String {
+    val sb = StringBuilder()
+    repeat(n) { sb.append(s) }
+    return sb.toString()
+}`,
 	}
 	reserved = map[string]bool{
 		"package": true, "as": true, "typealias": true, "class": true,
@@ -531,6 +536,20 @@ func (in *InvokeExpr) emit(w io.Writer) {
 		if s, ok := in.Args[1].(*StringLit); ok && len(s.Value) == 1 {
 			in.Args[1] = &CharLit{Value: []rune(s.Value)[0]}
 		}
+		io.WriteString(w, "(")
+		fe.Receiver.emit(w)
+		io.WriteString(w, ").toString().padStart(")
+		if guessType(in.Args[0]) == "BigInteger" {
+			io.WriteString(w, "(")
+			in.Args[0].emit(w)
+			io.WriteString(w, ").toInt()")
+		} else {
+			in.Args[0].emit(w)
+		}
+		io.WriteString(w, ", ")
+		in.Args[1].emit(w)
+		io.WriteString(w, ")")
+		return
 	}
 	in.Callee.emit(w)
 	io.WriteString(w, "(")
@@ -1992,8 +2011,9 @@ type PadStartExpr struct {
 }
 
 func (pse *PadStartExpr) emit(w io.Writer) {
+	io.WriteString(w, "(")
 	pse.Value.emit(w)
-	io.WriteString(w, ".padStart(")
+	io.WriteString(w, ").toString().padStart(")
 	if guessType(pse.Width) == "BigInteger" {
 		io.WriteString(w, "(")
 		pse.Width.emit(w)
@@ -2002,8 +2022,13 @@ func (pse *PadStartExpr) emit(w io.Writer) {
 		pse.Width.emit(w)
 	}
 	io.WriteString(w, ", ")
-	pse.Pad.emit(w)
-	io.WriteString(w, "[0])")
+	if _, ok := pse.Pad.(*CharLit); ok {
+		pse.Pad.emit(w)
+	} else {
+		pse.Pad.emit(w)
+		io.WriteString(w, "[0]")
+	}
+	io.WriteString(w, ")")
 }
 
 type ExistsExpr struct{ Value Expr }
@@ -5182,6 +5207,20 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			isStr := types.IsStringExpr(p.Call.Args[0], env)
 			return &SliceExpr{Value: expr, Start: startExpr, End: endExpr, IsString: isStr}, nil
+		case "repeat":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("repeat expects 2 args")
+			}
+			str, err := convertExpr(env, p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			cnt, err := convertExpr(env, p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			useHelper("repeat")
+			return &CallExpr{Func: "repeat", Args: []Expr{str, cnt}}, nil
 		case "padStart":
 			if len(p.Call.Args) != 3 {
 				return nil, fmt.Errorf("padStart expects 3 args")
