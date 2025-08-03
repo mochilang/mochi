@@ -393,27 +393,40 @@ type UnaryExpr struct {
 }
 
 func (dc *DynCallExpr) emit(w io.Writer) {
-	if ix, ok := dc.Fn.(*IndexExpr); ok {
-		if s, ok2 := ix.Index.(*StringLit); ok2 && s.Value == "slice" {
-			io.WriteString(w, "slice(")
-			ix.Target.emit(w)
-			for _, a := range dc.Args {
-				io.WriteString(w, ", ")
-				a.emit(w)
-			}
-			io.WriteString(w, ")")
-			return
-		}
-	}
-	dc.Fn.emit(w)
-	io.WriteString(w, "(")
-	for i, a := range dc.Args {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
-		a.emit(w)
-	}
-	io.WriteString(w, ")")
+        if ix, ok := dc.Fn.(*IndexExpr); ok {
+                if id, ok2 := ix.Target.(*Ident); ok2 {
+                        if s, ok3 := ix.Index.(*StringLit); ok3 {
+                                io.WriteString(w, sanitizeName(s.Value))
+                                io.WriteString(w, "(")
+                                id.emit(w)
+                                for _, a := range dc.Args {
+                                        io.WriteString(w, ", ")
+                                        a.emit(w)
+                                }
+                                io.WriteString(w, ")")
+                                return
+                        }
+                }
+                if s, ok2 := ix.Index.(*StringLit); ok2 && s.Value == "slice" {
+                        io.WriteString(w, "slice(")
+                        ix.Target.emit(w)
+                        for _, a := range dc.Args {
+                                io.WriteString(w, ", ")
+                                a.emit(w)
+                        }
+                        io.WriteString(w, ")")
+                        return
+                }
+        }
+        dc.Fn.emit(w)
+        io.WriteString(w, "(")
+        for i, a := range dc.Args {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
+                a.emit(w)
+        }
+        io.WriteString(w, ")")
 }
 
 type MatchArm struct {
@@ -463,8 +476,26 @@ func (s *ExprStmt) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	switch c.Func {
-	case "print":
+        if strings.Contains(c.Func, ".") {
+                parts := strings.SplitN(c.Func, ".", 2)
+                if len(parts) == 2 {
+                        if currentEnv != nil {
+                                if _, err := currentEnv.GetVar(parts[1]); err == nil {
+                                        io.WriteString(w, sanitizeName(parts[1]))
+                                        io.WriteString(w, "(")
+                                        io.WriteString(w, sanitizeName(parts[0]))
+                                        for _, a := range c.Args {
+                                                io.WriteString(w, ", ")
+                                                a.emit(w)
+                                        }
+                                        io.WriteString(w, ")")
+                                        return
+                                }
+                        }
+                }
+        }
+        switch c.Func {
+        case "print":
 		if len(c.Args) == 1 && (isListExpr(c.Args[0]) || isMapExpr(c.Args[0])) {
 			io.WriteString(w, "print(")
 			(&CallExpr{Func: "repr", Args: c.Args}).emit(w)
@@ -1801,18 +1832,13 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && (isIntExpr(b.Left) || isFloatExpr(b.Left)) && (isIntExpr(b.Right) || isFloatExpr(b.Right)) {
-		// numeric addition, keep '+'
-	} else if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
-		op = ".."
-	} else if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
-		io.WriteString(w, "((tonumber(")
-		b.Left.emit(w)
-		io.WriteString(w, ") or 0) + (tonumber(")
-		b.Right.emit(w)
-		io.WriteString(w, ") or 0))")
-		return
-	}
+        if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && (isIntExpr(b.Left) || isFloatExpr(b.Left)) && (isIntExpr(b.Right) || isFloatExpr(b.Right)) {
+                // numeric addition, keep '+'
+        } else if op == "+" && (isStringExpr(b.Left) || isStringExpr(b.Right)) {
+                op = ".."
+        } else if op == "+" && !isStringExpr(b.Left) && !isStringExpr(b.Right) && !(isIntExpr(b.Left) || isFloatExpr(b.Left)) && !(isIntExpr(b.Right) || isFloatExpr(b.Right)) {
+                op = ".."
+        }
 
 	io.WriteString(w, "(")
 	if op == ".." {
@@ -2912,9 +2938,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 	} else {
 		ops = p.Ops
 	}
-	for i := 0; i < len(ops); i++ {
-		op := ops[i]
-		switch {
+        for i := 0; i < len(ops); i++ {
+                op := ops[i]
+                switch {
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil:
 			idx, err := convertExpr(op.Index.Start)
 			if err != nil {
@@ -3004,26 +3030,40 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// string method
 					args = append([]Expr{expr}, args...)
 					expr = &CallExpr{Func: "padStart", Args: args}
-				} else if id, ok := expr.(*Ident); ok {
-					if currentEnv != nil {
-						if t, err := currentEnv.GetVar(id.Name); err == nil {
-							if st, ok := t.(types.StructType); ok {
-								if info, ok := currentEnv.GetStruct(st.Name); ok {
-									if m, ok := info.Methods[op.Field.Name]; ok {
-										args = append([]Expr{expr}, args...)
-										expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: m.Type.Params}
-										continue
-									}
-								}
-							}
-						}
-					}
-					if id.Name == "net" {
-						// treat as a namespaced function call for known package
-						name := id.Name + "." + op.Field.Name
-						cexpr := &CallExpr{Func: name, Args: args}
-						if currentEnv != nil {
-							if t, err := currentEnv.GetVar(name); err == nil {
+                                } else if id, ok := expr.(*Ident); ok {
+                                        if currentEnv != nil {
+                                                if t, err := currentEnv.GetVar(id.Name); err == nil {
+                                                        if st, ok := t.(types.StructType); ok {
+                                                                if info, ok := currentEnv.GetStruct(st.Name); ok {
+                                                                        if m, ok := info.Methods[op.Field.Name]; ok {
+                                                                                args = append([]Expr{expr}, args...)
+                                                                                expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: m.Type.Params}
+                                                                                continue
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                        if currentEnv != nil {
+                                                if t, err := currentEnv.GetVar(op.Field.Name); err == nil {
+                                                        if ft, ok := t.(types.FuncType); ok {
+                                                                args = append([]Expr{expr}, args...)
+                                                                expr = &CallExpr{Func: op.Field.Name, Args: args, ParamTypes: ft.Params}
+                                                                continue
+                                                        }
+                                                }
+                                        }
+                                        if !isMapExpr(expr) && !isListExpr(expr) && !isStringExpr(expr) {
+                                                args = append([]Expr{expr}, args...)
+                                                expr = &CallExpr{Func: op.Field.Name, Args: args}
+                                                continue
+                                        }
+                                        if id.Name == "net" {
+                                                // treat as a namespaced function call for known package
+                                                name := id.Name + "." + op.Field.Name
+                                                cexpr := &CallExpr{Func: name, Args: args}
+                                                if currentEnv != nil {
+                                                        if t, err := currentEnv.GetVar(name); err == nil {
 								if ft, ok := t.(types.FuncType); ok {
 									cexpr.ParamTypes = ft.Params
 								}
@@ -3100,11 +3140,36 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					expr = &CallExpr{Func: "_bigrat", Args: []Expr{expr}}
 				}
 			}
-		default:
-			return nil, fmt.Errorf("postfix ops not supported")
-		}
-	}
-	return expr, nil
+                default:
+                        return nil, fmt.Errorf("postfix ops not supported")
+                }
+        }
+        expr = normalizeDynCall(expr)
+        return expr, nil
+}
+
+func normalizeDynCall(e Expr) Expr {
+        if dc, ok := e.(*DynCallExpr); ok {
+                if ix, ok := dc.Fn.(*IndexExpr); ok {
+                        if id, ok := ix.Target.(*Ident); ok {
+                                if sl, ok := ix.Index.(*StringLit); ok {
+                                        if currentEnv != nil {
+                                                if t, err := currentEnv.GetVar(sl.Value); err == nil {
+                                                        if ft, ok := t.(types.FuncType); ok {
+                                                                args := append([]Expr{id}, dc.Args...)
+                                                                return &CallExpr{Func: sl.Value, Args: args, ParamTypes: ft.Params}
+                                                        }
+                                                }
+                                        }
+                                        if !isMapExpr(ix.Target) && !isListExpr(ix.Target) && !isStringExpr(ix.Target) {
+                                                args := append([]Expr{id}, dc.Args...)
+                                                return &CallExpr{Func: sl.Value, Args: args}
+                                        }
+                                }
+                        }
+                }
+        }
+        return e
 }
 
 func convertPrimary(p *parser.Primary) (Expr, error) {
@@ -3169,12 +3234,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			ce.Func = "substring"
 			return ce, nil
 		}
-		if (!hasFT || len(ft.Params) == 0) && len(ce.Args) >= 1 {
-			if id, ok := ce.Args[0].(*Ident); ok {
-				fn := &IndexExpr{Target: id, Index: &StringLit{Value: p.Call.Func}, Kind: "map"}
-				return &DynCallExpr{Fn: fn, Args: ce.Args[1:]}, nil
-			}
-		}
+                // Avoid rewriting calls into field accesses when the callee is
+                // not found in the current environment. This preserves
+                // recursive and forward function calls.
 		if hasFT {
 			argCount := len(p.Call.Args)
 			if insertedSelf {
@@ -3869,19 +3931,32 @@ func convertUpdateStmt(u *parser.UpdateStmt) (Stmt, error) {
 
 func convertFunStmt(fs *parser.FunStmt) (Stmt, error) {
 	local := funcDepth > 0
-	f := &FunStmt{Name: fs.Name, Local: local}
-	child := types.NewEnv(currentEnv)
-	for _, p := range fs.Params {
-		f.Params = append(f.Params, p.Name)
-		if p.Type != nil {
-			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, currentEnv), false)
-		} else {
-			child.SetVar(p.Name, types.AnyType{}, false)
-		}
-	}
-	prev := currentEnv
-	currentEnv = child
-	funcDepth++
+        f := &FunStmt{Name: fs.Name, Local: local}
+        child := types.NewEnv(currentEnv)
+        var params []types.Type
+        for _, p := range fs.Params {
+                f.Params = append(f.Params, p.Name)
+                if p.Type != nil {
+                        t := types.ResolveTypeRef(p.Type, currentEnv)
+                        child.SetVar(p.Name, t, false)
+                        params = append(params, t)
+                } else {
+                        child.SetVar(p.Name, types.AnyType{}, false)
+                        params = append(params, types.AnyType{})
+                }
+        }
+        var retType types.Type = types.VoidType{}
+        if fs.Return != nil {
+                retType = types.ResolveTypeRef(fs.Return, currentEnv)
+        }
+        ft := types.FuncType{Params: params, Return: retType}
+        child.SetVar(fs.Name, ft, false)
+        if currentEnv != nil {
+                currentEnv.SetVar(fs.Name, ft, false)
+        }
+        prev := currentEnv
+        currentEnv = child
+        funcDepth++
 	for _, st := range fs.Body {
 		s, err := convertStmt(st)
 		if err != nil {

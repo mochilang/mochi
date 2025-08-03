@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 486/491
+Transpiled programs: 487/491
 
-Last updated: 2025-08-02 17:56 GMT+7
+Last updated: 2025-08-03 15:40 GMT+7
 
 Checklist:
 
@@ -128,7 +128,7 @@ Checklist:
 | 116 | bitmap-b-zier-curves-cubic | ✓ | 1.842636s | 2.4 MB |
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 1.960474s | 2.4 MB |
 | 118 | bitmap-bresenhams-line-algorithm | ✓ | 127µs | 432 B |
-| 119 | bitmap-flood-fill |   | 341µs | 3.9 KB |
+| 119 | bitmap-flood-fill | ✓ | 53µs | 3.7 KB |
 | 120 | bitmap-histogram | ✓ | 155µs | 552 B |
 | 121 | bitmap-midpoint-circle-algorithm | ✓ | 839µs | 12.7 KB |
 | 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 1.836549s | 632 B |

@@ -1,6 +1,0 @@
-exit status 1
-lua: ...mochi/tests/rosetta/transpiler/Lua/bitmap-flood-fill.lua:81: attempt to index a number value (local 'x')
-stack traceback:
-	...mochi/tests/rosetta/transpiler/Lua/bitmap-flood-fill.lua:81: in function 'flood'
-	...mochi/tests/rosetta/transpiler/Lua/bitmap-flood-fill.lua:84: in main chunk
-	[C]: in ?
