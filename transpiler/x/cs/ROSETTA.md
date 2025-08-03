@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 474/491
-Last updated: 2025-08-03 10:56 +0700
+Last updated: 2025-08-03 11:17 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -322,7 +322,7 @@ Last updated: 2025-08-03 10:56 +0700
 | 314 | dot-product | ✓ | 1.76ms | 16.0KB |
 | 315 | doubly-linked-list-definition-1 | ✓ |  |  |
 | 316 | doubly-linked-list-definition-2 | ✓ | 15.625ms | 3.3MB |
-| 317 | doubly-linked-list-element-definition | ✓ | 10.831ms | 2.1MB |
+| 317 | doubly-linked-list-element-definition | ✓ | 14.618ms | 1.9MB |
 | 318 | doubly-linked-list-traversal | ✓ | 29.187ms | 2.8MB |
 | 319 | dragon-curve | ✓ | 9.51ms | 2.5MB |
 | 320 | draw-a-clock | ✓ | 1.836ms | 16.0KB |
