@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 180/491
-Last updated: 2025-08-03 17:49 +0700
+Completed: 181/491
+Last updated: 2025-08-03 21:29 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -137,7 +137,7 @@ Last updated: 2025-08-03 17:49 +0700
 | 130 | blum-integer | ✓ | 3.36ms | 3.5 MB |
 | 131 | boolean-values | ✓ | 35.813ms | 19.0 MB |
 | 132 | box-the-compass | ✓ | 54.033ms | 21.6 MB |
-| 133 | boyer-moore-string-search |   |  |  |
+| 133 | boyer-moore-string-search | ✓ | 33.226ms | 21.0 MB |
 | 134 | brazilian-numbers |   |  |  |
 | 135 | break-oo-privacy |   |  |  |
 | 136 | brilliant-numbers |   |  |  |
