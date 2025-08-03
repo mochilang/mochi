@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (361/491)
+## Rosetta Golden Test Checklist (362/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -364,7 +364,7 @@ This file is auto-generated from rosetta tests.
 | 357 | equilibrium-index | ✓ | 10.144ms | 116.6 KB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 887µs | 77.6 KB |
-| 360 | esthetic-numbers |   |  |  |
+| 360 | esthetic-numbers | ✓ | 937µs | 51.3 KB |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-03 15:40 +0700
+Last updated: 2025-08-03 16:22 +0700
