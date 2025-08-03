@@ -1,7 +1,7 @@
 A: 5.5 G: 4.528728688115136 H: 3.414171521474055
 A >= G >= H: true
 {
-  "duration_us": 7928,
-  "memory_bytes": 465312,
+  "duration_us": 24815,
+  "memory_bytes": 481888,
   "name": "main"
 }
