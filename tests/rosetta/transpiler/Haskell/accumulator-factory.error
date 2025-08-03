@@ -1,1 +1,7 @@
-transpile: unsupported statement in block
+run: exit status 1
+
+/workspace/mochi/tests/rosetta/transpiler/Haskell/accumulator-factory.hs:57:9: error:
+    parse error (possibly incorrect indentation or mismatched brackets)
+   |
+57 |         return (((deref store) !! 0))
+   |         ^
