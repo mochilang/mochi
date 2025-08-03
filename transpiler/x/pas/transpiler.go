@@ -70,7 +70,7 @@ func sanitize(name string) string {
 	}
 	newName := name
 	switch name {
-	case "label", "xor", "and", "or", "div", "mod", "type":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set":
 		// Avoid Pascal reserved keywords
 		newName = name + "_"
 	}
@@ -362,14 +362,29 @@ func (f *FunDecl) emit(out io.Writer) {
 			fmt.Fprintf(out, "  %s: %s;\n", v.Name, typ)
 		}
 	}
+	for _, s := range f.Body {
+		if nf, ok := s.(*NestedFunDecl); ok {
+			io.WriteString(out, "  ")
+			nf.emit(out)
+		}
+	}
 	io.WriteString(out, "begin\n")
 	for _, s := range f.Body {
+		if _, ok := s.(*NestedFunDecl); ok {
+			continue
+		}
 		io.WriteString(out, "  ")
 		s.emit(out)
 		io.WriteString(out, "\n")
 	}
 	io.WriteString(out, "end;\n")
 }
+
+// NestedFunDecl represents a function declared within another function.
+// It satisfies the Stmt interface so it can appear inside a function body.
+type NestedFunDecl struct{ FunDecl }
+
+func (f *NestedFunDecl) emit(out io.Writer) { f.FunDecl.emit(out) }
 
 // WhileStmt represents a simple while loop.
 type WhileStmt struct {
@@ -1125,12 +1140,36 @@ func (p *Program) Emit() []byte {
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
 	}
+	var delayed []RecordDef
+	aliasNames := make(map[string]struct{})
+	for _, a := range p.ArrayAliases {
+		aliasNames[a] = struct{}{}
+	}
+	for _, a := range p.LateAliases {
+		aliasNames[a] = struct{}{}
+	}
 	for _, r := range p.Records {
-		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
+		uses := false
 		for _, f := range r.Fields {
-			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
+			for name := range aliasNames {
+				if strings.Contains(f.Type, name) {
+					uses = true
+					break
+				}
+			}
+			if uses {
+				break
+			}
 		}
-		buf.WriteString("end;\n")
+		if uses {
+			delayed = append(delayed, r)
+		} else {
+			fmt.Fprintf(&buf, "type %s = record\n", r.Name)
+			for _, f := range r.Fields {
+				fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
+			}
+			buf.WriteString("end;\n")
+		}
 	}
 	if len(p.LateAliases) > 0 {
 		keys := make([]string, 0, len(p.LateAliases))
@@ -1156,6 +1195,13 @@ func (p *Program) Emit() []byte {
 			alias := p.ArrayAliases[elem]
 			fmt.Fprintf(&buf, "type %s = array of %s;\n", alias, elem)
 		}
+	}
+	for _, r := range delayed {
+		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
+		for _, f := range r.Fields {
+			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
+		}
+		buf.WriteString("end;\n")
 	}
 	if p.UseNow {
 		buf.WriteString("var _nowSeed: int64 = 0;\n")
@@ -1845,6 +1891,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				startVarCount := len(currProg.Vars)
 				pushScope()
+				prevFunc := currentFunc
 				currentFunc = fn.Name
 				rt := ""
 				if st.Fun.Return != nil {
@@ -1875,7 +1922,6 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					return nil, err
 				}
 				popScope()
-				currentFunc = ""
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]
 				var params []string
@@ -1936,11 +1982,16 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						funcReturns[fn.Name] = "integer"
 					}
 				} else {
-					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Locals: locals, Body: fnBody})
+					if prevFunc == "" {
+						currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Locals: locals, Body: fnBody})
+					} else {
+						pr.Stmts = append(pr.Stmts, &NestedFunDecl{FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Locals: locals, Body: fnBody}})
+					}
 					if rt != "" {
 						funcReturns[fn.Name] = rt
 					}
 				}
+				currentFunc = prevFunc
 			case st.Return != nil:
 				if st.Return.Value != nil {
 					ex, err := convertExpr(env, st.Return.Value)
@@ -2437,11 +2488,22 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			}
 			out = append(out, ifStmt)
 		case st.Fun != nil:
+			fn := st.Fun
+			name := fn.Name
+			switch name {
+			case "xor", "and", "or", "div", "mod", "type", "set", "label":
+				name = name + "_"
+			}
+			if name != fn.Name {
+				funcNames[name] = struct{}{}
+				nameMap[fn.Name] = name
+				fn.Name = name
+			}
 			local := map[string]string{}
 			for k, v := range varTypes {
 				local[k] = v
 			}
-			for _, p := range st.Fun.Params {
+			for _, p := range fn.Params {
 				typ := "integer"
 				if p.Type != nil {
 					typ = typeFromRef(p.Type)
@@ -2454,19 +2516,19 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				local[name] = typ
 			}
 			pushScope()
-			currentFunc = st.Fun.Name
-			for _, p := range st.Fun.Params {
+			prevFunc := currentFunc
+			currentFunc = fn.Name
+			for _, p := range fn.Params {
 				name := sanitize(p.Name)
 				currentScope()[p.Name] = name
 			}
-			fnBody, err := convertBody(env, st.Fun.Body, local)
+			fnBody, err := convertBody(env, fn.Body, local)
 			if err != nil {
 				return nil, err
 			}
 			popScope()
-			currentFunc = ""
 			var params []string
-			for _, p := range st.Fun.Params {
+			for _, p := range fn.Params {
 				typ := "integer"
 				if p.Type != nil {
 					typ = typeFromRef(p.Type)
@@ -2479,8 +2541,8 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				params = append(params, formatParam(name, typ))
 			}
 			rt := ""
-			if st.Fun.Return != nil {
-				rt = typeFromRef(st.Fun.Return)
+			if fn.Return != nil {
+				rt = typeFromRef(fn.Return)
 				if strings.HasPrefix(rt, "array of ") {
 					elem := strings.TrimPrefix(rt, "array of ")
 					rt = currProg.addArrayAlias(elem)
@@ -2517,23 +2579,28 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					}
 				}
 				if strings.HasPrefix(rt, "Anon") {
-					funcReturns[st.Fun.Name] = rt
+					funcReturns[fn.Name] = rt
 				}
 			}
-			if st.Fun.Name == "parseIntStr" {
+			if fn.Name == "parseIntStr" {
 				if len(params) == 1 {
 					nameParts := strings.SplitN(params[0], ":", 2)
 					paramName := strings.TrimSpace(nameParts[0])
 					body := []Stmt{&ReturnStmt{Expr: &CallExpr{Name: "StrToInt", Args: []Expr{&VarRef{Name: paramName}}}}}
-					currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: "integer", Body: body})
-					funcReturns[st.Fun.Name] = "integer"
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: "integer", Body: body})
+					funcReturns[fn.Name] = "integer"
 				}
 			} else {
-				currProg.Funs = append(currProg.Funs, FunDecl{Name: st.Fun.Name, Params: params, ReturnType: rt, Body: fnBody})
+				if prevFunc == "" {
+					currProg.Funs = append(currProg.Funs, FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Body: fnBody})
+				} else {
+					out = append(out, &NestedFunDecl{FunDecl{Name: fn.Name, Params: params, ReturnType: rt, Body: fnBody}})
+				}
 				if rt != "" {
-					funcReturns[st.Fun.Name] = rt
+					funcReturns[fn.Name] = rt
 				}
 			}
+			currentFunc = prevFunc
 		case st.Return != nil:
 			if st.Return.Value != nil {
 				ex, err := convertExpr(env, st.Return.Value)
@@ -4220,6 +4287,8 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &IntLit{Value: int64(len(ml.Items))}, nil
 			}
 			name = "Length"
+		} else if name == "substr" && len(args) == 3 {
+			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
 		} else if name == "substring" && len(args) == 3 {
 			return &SliceExpr{Target: args[0], Start: args[1], End: args[2], String: true}, nil
 		} else if name == "int" && len(args) == 1 {
@@ -4353,6 +4422,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			currProg.UseSHA256 = true
 			_ = currProg.addArrayAlias("integer")
 			return &CallExpr{Name: "_sha256", Args: args}, nil
+		}
+		if mapped, ok := nameMap[name]; ok {
+			name = mapped
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
