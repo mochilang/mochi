@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-03 04:20 UTC
+Last updated: 2025-08-03 04:43 UTC
 
 ## Rosetta Golden Test Checklist (218/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
+| 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
 | 2 | 100-doors-3 | ✓ | 81µs | 3.2 MB |
 | 3 | 100-doors | ✓ | 118µs | 3.2 MB |
 | 4 | 100-prisoners | ✓ | 138.514ms | 3.3 MB |
