@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (161/491)
-_Last updated: 2025-08-03 21:11 +0700_
+## Rosetta Test Checklist (175/491)
+_Last updated: 2025-08-03 22:12 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -159,21 +159,21 @@ _Last updated: 2025-08-03 21:11 +0700_
 | 151 | call-a-function-11 | ✓ | 255us | 768 B |
 | 152 | call-a-function-12 | ✓ | 2.06ms | 786.4 KB |
 | 153 | call-a-function-2 | ✓ | 1.58ms | 1000.9 KB |
-| 154 | call-a-function-3 |  |  |  |
-| 155 | call-a-function-4 |  |  |  |
-| 156 | call-a-function-5 |  |  |  |
-| 157 | call-a-function-6 |  |  |  |
-| 158 | call-a-function-7 |  |  |  |
-| 159 | call-a-function-8 |  |  |  |
-| 160 | call-a-function-9 |  |  |  |
-| 161 | call-an-object-method-1 |  |  |  |
-| 162 | call-an-object-method-2 |  |  |  |
-| 163 | call-an-object-method-3 |  |  |  |
-| 164 | call-an-object-method |  |  |  |
+| 154 | call-a-function-3 | ✓ | 1.62ms | 567.1 KB |
+| 155 | call-a-function-4 | ✓ | 914us | 918.0 KB |
+| 156 | call-a-function-5 | ✓ | 3.95ms | 1.0 MB |
+| 157 | call-a-function-6 | ✓ | 2.60ms | 577.9 KB |
+| 158 | call-a-function-7 | ✓ | 2.64ms | 863.0 KB |
+| 159 | call-a-function-8 | ✓ | 11.95ms | 181.8 KB |
+| 160 | call-a-function-9 | ✓ | 1.40ms | 411.9 KB |
+| 161 | call-an-object-method-1 | ✓ | 1.77ms | 1.2 MB |
+| 162 | call-an-object-method-2 | ✓ | 1.48ms | 1.1 MB |
+| 163 | call-an-object-method-3 | ✓ | 2.00ms | 275.2 KB |
+| 164 | call-an-object-method | ✓ | 2.69ms | 390.5 KB |
 | 165 | camel-case-and-snake-case |  |  |  |
-| 166 | canny-edge-detector |  |  |  |
-| 167 | canonicalize-cidr |  |  |  |
-| 168 | cantor-set |  |  |  |
+| 166 | canny-edge-detector | ✓ | 3.62ms | 3.0 MB |
+| 167 | canonicalize-cidr | ✓ | 7.31ms | 458.6 KB |
+| 168 | cantor-set | ✓ | 6.64ms | 520.6 KB |
 | 169 | carmichael-3-strong-pseudoprimes |  |  |  |
 | 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
 | 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
