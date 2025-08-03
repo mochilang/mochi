@@ -238,6 +238,10 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
+	if c.Func == "padStart" && len(c.Args) == 3 {
+		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
+		return
+	}
 	io.WriteString(w, rustIdent(c.Func))
 	io.WriteString(w, "(")
 	pts, hasPts := funParamTypes[c.Func]
