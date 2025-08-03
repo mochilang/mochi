@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-02 13:35 UTC
+Last updated: 2025-08-03 08:56 UTC
 
-## Checklist (484/491)
+## Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -230,7 +230,7 @@ Last updated: 2025-08-02 13:35 UTC
 | 221 | conditional-structures-7 | ✓ | 3µs | 600 B |
 | 222 | conditional-structures-8 | ✓ | 3µs | 472 B |
 | 223 | conditional-structures-9 | ✓ | 2µs | 472 B |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 571.223ms | 869.4 KB |
 | 225 | constrained-genericity-1 | ✓ | 24µs | 1.1 KB |
 | 226 | constrained-genericity-2 | ✓ | 26µs | 1.1 KB |
 | 227 | constrained-genericity-3 | ✓ | 22µs | 1.1 KB |
