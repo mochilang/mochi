@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (427/491)
-_Last updated: 2025-08-03 17:14 +0700_
+## Golden Test Checklist (430/491)
+_Last updated: 2025-08-03 18:03 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -372,7 +372,7 @@ _Last updated: 2025-08-03 17:14 +0700_
 | 363 | euler-method | ✓ | 65µs | 8.7 MB |
 | 364 | eulers-constant-0.5772... | ✓ | 85µs | 8.7 MB |
 | 365 | eulers-identity | ✓ | 7µs | 8.7 MB |
-| 366 | eulers-sum-of-powers-conjecture | ✓ | 554µs | 8.7 MB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 493µs | 8.7 MB |
 | 367 | evaluate-binomial-coefficients | ✓ | 4µs | 8.7 MB |
 | 368 | even-or-odd | ✓ | 5µs | 8.7 MB |
 | 369 | events | ✓ | 3µs | 8.7 MB |
@@ -380,8 +380,8 @@ _Last updated: 2025-08-03 17:14 +0700_
 | 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 4µs | 8.7 MB |
 | 372 | exceptions | ✓ | 4µs | 8.7 MB |
 | 373 | executable-library | ✓ | 1.789ms | 8.8 MB |
-| 374 | execute-a-markov-algorithm | error |  |  |
-| 375 | execute-a-system-command | error |  |  |
+| 374 | execute-a-markov-algorithm | ✓ | 38µs | 8.7 MB |
+| 375 | execute-a-system-command | ✓ | 1µs | 8.8 MB |
 | 376 | execute-brain- | ✓ | 24µs | 8.7 MB |
 | 377 | execute-computer-zero-1 | ✓ | 17µs | 8.7 MB |
 | 378 | execute-computer-zero | ✓ | 7µs | 8.7 MB |
@@ -390,7 +390,7 @@ _Last updated: 2025-08-03 17:14 +0700_
 | 381 | exponentiation-operator-2 | ✓ | 8µs | 8.7 MB |
 | 382 | exponentiation-operator | ✓ | 7µs | 8.7 MB |
 | 383 | exponentiation-order | ✓ | 3µs | 8.7 MB |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | error |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 7µs | 8.7 MB |
 | 385 | extend-your-language | ✓ | 3µs | 8.7 MB |
 | 386 | extensible-prime-generator | ✓ | 414µs | 8.8 MB |
 | 387 | extreme-floating-point-values | ✓ | 13µs | 8.7 MB |
