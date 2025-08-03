@@ -5326,13 +5326,28 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				return &NowExpr{}, nil
 			}
 			if name == "print" {
-				if len(args) == 1 {
-					name = "println"
-					return &CallExpr{Func: name, Args: args}, nil
+				newline := true
+				if len(args) > 1 {
+					if b, ok := args[len(args)-1].(*BoolLit); ok {
+						newline = b.Value
+						args = args[:len(args)-1]
+					}
 				}
-				listExpr := &CallExpr{Func: "listOf", Args: args}
-				join := &InvokeExpr{Callee: &FieldExpr{Receiver: listExpr, Name: "joinToString"}, Args: []Expr{&StringLit{Value: " "}}}
-				return &CallExpr{Func: "println", Args: []Expr{join}}, nil
+				var arg Expr
+				switch len(args) {
+				case 0:
+					arg = &StringLit{Value: ""}
+				case 1:
+					arg = args[0]
+				default:
+					listExpr := &CallExpr{Func: "listOf", Args: args}
+					arg = &InvokeExpr{Callee: &FieldExpr{Receiver: listExpr, Name: "joinToString"}, Args: []Expr{&StringLit{Value: " "}}}
+				}
+				name = "println"
+				if !newline {
+					name = "print"
+				}
+				return &CallExpr{Func: name, Args: []Expr{arg}}, nil
 			}
 			var retType string
 			if env != nil {
