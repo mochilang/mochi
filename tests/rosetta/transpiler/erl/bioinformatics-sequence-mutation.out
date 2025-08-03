@@ -1,33 +1,29 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:39:1: Warning: function mochi_pad_start/3 is unused
-%   39| mochi_pad_start(S, Len, Ch) ->
-%     | ^
-
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:2: Warning: variable 'Arr_10' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:2: Warning: variable 'Arr_10' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |  ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:10: Warning: variable 'B_4' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:10: Warning: variable 'B_4' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |          ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:34: Warning: variable 'Idx_3' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:34: Warning: variable 'Idx_3' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |                                  ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:41: Warning: variable 'Idx2_3' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:41: Warning: variable 'Idx2_3' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |                                         ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:49: Warning: variable 'J_6' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:49: Warning: variable 'J_6' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |                                                 ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:70: Warning: variable 'R_7' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:70: Warning: variable 'R_7' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |                                                                      ^
 
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:199:75: Warning: variable 'S_11' exported from 'case' (line 117, column 9)
-%  199| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
+/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-sequence-mutation.erl:186:75: Warning: variable 'S_11' exported from 'case' (line 104, column 9)
+%  186| {Arr_10, B_4, Bases_2, Dna, I_6, Idx_3, Idx2_3, J_6, Le_2, Out_4, P, R_7, S_11, W_2, X} = Fun_8(Arr_10, B_4, Bases_2, Dna, I_5, Idx_3, Idx2_3, J_6, Le_2, Out_3, P, R_7, S_11, W_2, X),
 %     |                                                                           ^
 
 SEQUENCE:
@@ -47,7 +43,10 @@ BASE COUNT:
     ======
 
 WEIGHTS (ex 300):
-"  Change: 100\n  Delete: 100\n  Insert: 100\n"
+  Change: 100
+  Delete: 100
+  Insert: 100
+
 MUTATIONS (10):
   Insert @113 'C'
   Insert @172 'A'
@@ -76,7 +75,7 @@ BASE COUNT:
     Σ: 248
     ======
 {
-  "duration_us": 34709,
-  "memory_bytes": 4207440,
+  "duration_us": 25199,
+  "memory_bytes": 343648,
   "name": "main"
 }
