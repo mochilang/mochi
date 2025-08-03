@@ -1,13 +1,5 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 202, in <module>
-    Example()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 181, in Example
-    msgBytes = bytesOfStr(message)
-               ^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 167, in bytesOfStr
-    bs = bs + [ord(s[i:i + 1])]
-               ^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 135, in ord
-    idx = indexOf(upper, ch)
-          ^^^^^^^
-NameError: name 'indexOf' is not defined
+"This is a test." as bytes: 84 104 105 115 32 105 115 32 97 32 116 101 115 116 46
+    original bits: [01010100 01101000 01101001 01110011 00100000 01101001 01110011 00100000 01100001 00100000 01110100 01100101 01110011 01110100 00101110]
+Written bitstream: [10101001 10100011 01001111 00110100 00011010 01111001 10100000 11000010 10000011 10100110 01011110 01111101 00010111 00000000]
+Written bytes: A9 A3 4F 34 1A 79 A0 C2 83 A6 5E 7D 17 00
+Read back as "This is a test."

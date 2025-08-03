@@ -1,13 +1,5 @@
-"This is a test." as bytes: 84 104 105 115 32 105 115 32 97 32 116 101 115 116 46
-    original bits: [01010100 01101000 01101001 01110011 00100000 01101001 01110011 00100000 01100001 00100000 01110100 01100101 01110011 01110100 00101110]
-Written bitstream: [1.00.01.00.01.00.00.01.625 1.00.01.00.00.00.01.01.28125 0.01.00.00.01.01.01.01.1875 0.00.01.01.00.01.00.00.0 0.00.00.01.01.00.01.00.25 0.01.01.01.01.00.00.01.5 1.00.01.00.00.00.00.00.0 1.01.00.00.00.00.01.00.5 1.00.00.00.00.00.01.01.625 1.00.01.00.00.01.01.00.3125 0.01.00.01.01.01.01.00.375 0.01.01.01.01.01.00.01.0 0.00.00.01.00.01.01.01.0 0.00.00.00.00.00.00.00.0]
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 224, in <module>
-    Example()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 213, in Example
-    print("Written bytes: " + bytesToHex(bw.data))
-                              ^^^^^^^^^^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/bitwise-io-2.py", line 149, in bytesToHex
-    out = out + "".join(digits[hi:hi + 1]) + "".join(digits[lo:lo + 1])
-                        ~~~~~~^^^^^^^^^^^
-TypeError: slice indices must be integers or None or have an __index__ method
+{
+  "duration_us": 2169,
+  "memory_bytes": 15134720,
+  "name": "main"
+}
