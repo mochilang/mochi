@@ -1,23 +1,28 @@
 exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:89: error: value slice is not a member of Any
-          ln = ln.slice((BigInt(0)).toInt, (hash).toInt)
-                  ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:101: error: value slice is not a member of Any
-              var pre: Boolean = j > BigInt(0) && (ln.slice((j - BigInt(1)).toInt, (j).toInt) == " " || ln.slice((j - BigInt(1)).toInt, (j).toInt) == "\t").asInstanceOf[Boolean]
-                                                      ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:101: error: value slice is not a member of Any
-              var pre: Boolean = j > BigInt(0) && (ln.slice((j - BigInt(1)).toInt, (j).toInt) == " " || ln.slice((j - BigInt(1)).toInt, (j).toInt) == "\t").asInstanceOf[Boolean]
-                                                                                                           ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:102: error: value slice is not a member of Any
-              var post: Boolean = j + BigInt(2) < (ln.toString).size && (ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == " " || ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == "\t").asInstanceOf[Boolean]
-                                                                            ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:102: error: value slice is not a member of Any
-              var post: Boolean = j + BigInt(2) < (ln.toString).size && (ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == " " || ln.slice((j + BigInt(2)).toInt, (j + BigInt(3)).toInt) == "\t").asInstanceOf[Boolean]
-                                                                                                                                             ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:117: error: value slice is not a member of Any
-        var pat: String = trimSpace((ln.slice((BigInt(0)).toInt, (arrow).toInt)).toString)
-                                        ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/execute-a-markov-algorithm.scala:118: error: value slice is not a member of Any
-        var rest: String = trimSpace((ln.slice((arrow + BigInt(2)).toInt, ((ln.toString).size).toInt)).toString)
-                                         ^
-7 errors found
+validating 5 test cases
+java.lang.ClassCastException: class java.lang.String cannot be cast to class scala.collection.mutable.ArrayBuffer (java.lang.String is in module java.base of loader 'bootstrap'; scala.collection.mutable.ArrayBuffer is in unnamed module of loader scala.reflect.internal.util.ScalaClassLoader$URLClassLoader @7c6908d7)
+	at Main$$anonfun$runRules$1$$anonfun$apply$mcV$sp$2.apply$mcV$sp(execute-a-markov-algorithm.scala:121)
+	at scala.util.control.Breaks.breakable(Breaks.scala:38)
+	at Main$$anonfun$runRules$1.apply$mcV$sp(execute-a-markov-algorithm.scala:113)
+	at scala.util.control.Breaks.breakable(Breaks.scala:38)
+	at Main$.runRules(execute-a-markov-algorithm.scala:108)
+	at Main$.interpret(execute-a-markov-algorithm.scala:141)
+	at Main$.main(execute-a-markov-algorithm.scala:151)
+	at Main$.main(execute-a-markov-algorithm.scala:171)
+	at Main.main(execute-a-markov-algorithm.scala)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at scala.reflect.internal.util.ScalaClassLoader$$anonfun$run$1.apply(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$class.asContext(ScalaClassLoader.scala:31)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.asContext(ScalaClassLoader.scala:101)
+	at scala.reflect.internal.util.ScalaClassLoader$class.run(ScalaClassLoader.scala:70)
+	at scala.reflect.internal.util.ScalaClassLoader$URLClassLoader.run(ScalaClassLoader.scala:101)
+	at scala.tools.nsc.CommonRunner$class.run(ObjectRunner.scala:22)
+	at scala.tools.nsc.ObjectRunner$.run(ObjectRunner.scala:39)
+	at scala.tools.nsc.CommonRunner$class.runAndCatch(ObjectRunner.scala:29)
+	at scala.tools.nsc.ObjectRunner$.runAndCatch(ObjectRunner.scala:39)
+	at scala.tools.nsc.MainGenericRunner.runTarget$1(MainGenericRunner.scala:65)
+	at scala.tools.nsc.MainGenericRunner.run$1(MainGenericRunner.scala:87)
+	at scala.tools.nsc.MainGenericRunner.process(MainGenericRunner.scala:98)
+	at scala.tools.nsc.MainGenericRunner$.main(MainGenericRunner.scala:103)
+	at scala.tools.nsc.MainGenericRunner.main(MainGenericRunner.scala)
