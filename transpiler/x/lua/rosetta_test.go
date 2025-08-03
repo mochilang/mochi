@@ -80,13 +80,7 @@ func runCase(src, outDir string) ([]byte, bool, error) {
 	cmd := exec.Command("lua", codePath)
 	runEnv := append(os.Environ(), "MOCHI_NOW_SEED=1")
 	if bench {
-		// allow real timing when benchmarking
-		for i, v := range runEnv {
-			if strings.HasPrefix(v, "MOCHI_NOW_SEED=") {
-				runEnv = append(runEnv[:i], runEnv[i+1:]...)
-				break
-			}
-		}
+		// run with benchmarking while keeping deterministic seed
 		runEnv = append(runEnv, "MOCHI_BENCHMARK=1")
 	}
 	cmd.Env = runEnv
