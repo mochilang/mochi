@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (267/491) - Last updated 2025-08-03 11:14 +0700:
+Checklist of programs that currently transpile and run (267/491) - Last updated 2025-08-03 11:39 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -209,9 +209,9 @@ Checklist of programs that currently transpile and run (267/491) - Last updated 
 | 202 | church-numerals-1 | ✓ | 677.0µs | 13.62MB |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points | ✓ | 347.0µs | 14.15MB |
-| 205 | circular-primes | ✓ | 814.0µs | 13.68MB |
-| 206 | cistercian-numerals | ✓ | 12.0ms | 14.62MB |
-| 207 | comma-quibbling | ✓ | 172.0µs | 12.96MB |
+| 205 | circular-primes | ✓ | 887.0µs | 3.66MB |
+| 206 | cistercian-numerals | ✓ | 20.0ms | 3.83MB |
+| 207 | comma-quibbling | ✓ | 209.0µs | 3.64MB |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 27.29s | 14.12MB |
 | 210 | compound-data-type | ✓ | 4.0µs | 11.86MB |
