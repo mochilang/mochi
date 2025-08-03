@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-03 17:01 +0700
+Last updated: 2025-08-03 17:43 +0700
 
 ## Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -155,7 +155,7 @@ Last updated: 2025-08-03 17:01 +0700
 | 146 | calendar | ✓ | 664µs | 128 B |
 | 147 | calkin-wilf-sequence | ✓ | 589µs | 96 B |
 | 148 | call-a-foreign-language-function | ✓ | 42µs | 96 B |
-| 149 | call-a-function-1 | ✓ |  |  |
+| 149 | call-a-function-1 | ✓ | 1µs | 35.2 KB |
 | 150 | call-a-function-10 | ✓ | 7µs | 64 B |
 | 151 | call-a-function-11 | ✓ | 49µs | 96 B |
 | 152 | call-a-function-12 | ✓ | 47µs | 96 B |
