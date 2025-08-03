@@ -41,6 +41,7 @@ var usesParseIntStr bool
 var useBigRat bool
 var useRepeat bool
 var useSplit bool
+var usesPanic bool
 var reserved = map[string]bool{
 	"this":   true,
 	"new":    true,
@@ -143,6 +144,7 @@ type Program struct {
 	UseRepeat      bool
 	UseSplit       bool
 	UseBenchNow    bool
+	UsePanic       bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -625,6 +627,9 @@ func (p *Program) write(w io.Writer) {
 	}
 	if p.UseSHA256 {
 		p.addInclude("<openssl/sha.h>")
+	}
+	if p.UsePanic {
+		p.addInclude("<stdexcept>")
 	}
 	usesAny := false
 	for _, inc := range p.Includes {
@@ -2899,6 +2904,15 @@ func (a *AssignFieldStmt) emit(w io.Writer, indent int) {
 }
 
 func (e *ExprStmt) emit(w io.Writer, indent int) {
+	if ce, ok := e.Expr.(*CallExpr); ok && ce.Name == "panic" && len(ce.Args) == 1 {
+		for i := 0; i < indent; i++ {
+			io.WriteString(w, "    ")
+		}
+		io.WriteString(w, "throw std::runtime_error(")
+		ce.Args[0].emit(w)
+		io.WriteString(w, ");\n")
+		return
+	}
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "    ")
 	}
@@ -3188,6 +3202,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	usesIndexOf = false
 	usesParseIntStr = false
+	usesPanic = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -3648,6 +3663,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseRepeat = useRepeat
 	cp.UseSplit = useSplit
 	cp.UseBenchNow = benchMain
+	cp.UsePanic = usesPanic
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -5024,6 +5040,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					return &LambdaExpr{Params: params, Body: call}, nil
 				}
 			}
+		}
+		if p.Call.Func == "panic" {
+			usesPanic = true
 		}
 		return &CallExpr{Name: safeName(p.Call.Func), Args: args}, nil
 	case p.Selector != nil:

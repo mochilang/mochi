@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (284/491) - Last updated 2025-08-03 17:41 +0700:
+Checklist of programs that currently transpile and run (285/491) - Last updated 2025-08-03 21:03 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -289,7 +289,7 @@ Checklist of programs that currently transpile and run (284/491) - Last updated 
 | 282 | define-a-primitive-data-type |   |  |  |
 | 283 | delegates |   |  |  |
 | 284 | demings-funnel |   |  |  |
-| 285 | department-numbers | ✓ |  |  |
+| 285 | department-numbers | ✓ | 324.0µs | 3.61MB |
 | 286 | descending-primes |   |  |  |
 | 287 | detect-division-by-zero | ✓ |  |  |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
@@ -337,7 +337,7 @@ Checklist of programs that currently transpile and run (284/491) - Last updated 
 | 330 | ecdsa-example |   |  |  |
 | 331 | echo-server |   |  |  |
 | 332 | eertree |   |  |  |
-| 333 | egyptian-division |   |  |  |
+| 333 | egyptian-division | ✓ | 273.0µs | 3.69MB |
 | 334 | ekg-sequence-convergence |   |  |  |
 | 335 | element-wise-operations |   |  |  |
 | 336 | elementary-cellular-automaton-infinite-length |   |  |  |
