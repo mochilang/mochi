@@ -645,7 +645,7 @@ func (u *UnaryExpr) emit(w io.Writer) {
 	}
 	fmt.Fprint(w, u.Op)
 	switch u.Expr.(type) {
-	case *BinaryExpr:
+	case *BinaryExpr, *ContainsExpr:
 		fmt.Fprint(w, "(")
 		u.Expr.emit(w)
 		fmt.Fprint(w, ")")
@@ -767,6 +767,7 @@ type IfExpr struct {
 }
 
 func (i *IfExpr) emit(w io.Writer) {
+	currProg.UseMath = true
 	io.WriteString(w, "IfThen(")
 	i.Cond.emit(w)
 	io.WriteString(w, ", ")
@@ -3917,11 +3918,21 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 				}
 				if name == "indexOf" && len(args) == 2 {
 					currProg.NeedIndexOf = true
+					expr = &CallExpr{Name: name, Args: args}
 				} else if name == "parseIntStr" && len(args) == 1 {
 					currProg.UseSysUtils = true
 					name = "StrToInt"
+					expr = &CallExpr{Name: name, Args: args}
+				} else if name == "contains" && len(args) == 2 {
+					if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
+						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}
+					} else {
+						currProg.NeedContains = true
+						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "list"}
+					}
+				} else {
+					expr = &CallExpr{Name: name, Args: args}
 				}
-				expr = &CallExpr{Name: name, Args: args}
 			case *SelectorExpr:
 				if len(t.Tail) == 1 {
 					name := t.Tail[0]
@@ -4257,6 +4268,12 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			return &CallExpr{Name: "concat", Args: []Expr{args[0], &ListLit{Elems: []Expr{args[1]}}}}, nil
 		} else if name == "float" && len(args) == 1 {
 			return &CallExpr{Name: "Double", Args: args}, nil
+		} else if name == "contains" && len(args) == 2 {
+			if inferType(args[0]) == "string" || inferType(args[1]) == "string" {
+				return &ContainsExpr{Collection: args[0], Value: args[1], Kind: "string"}, nil
+			}
+			currProg.NeedContains = true
+			return &ContainsExpr{Collection: args[0], Value: args[1], Kind: "list"}, nil
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:
@@ -4541,6 +4558,9 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 			return nil, err
 		}
 		elseExpr = e
+	}
+	if currProg != nil {
+		currProg.UseMath = true
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
