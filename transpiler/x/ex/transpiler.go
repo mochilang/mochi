@@ -4024,7 +4024,7 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    Process.put(:_now_seed, seed)\n")
 	buf.WriteString(pad + "    abs(seed)\n")
 	buf.WriteString(pad + "  else\n")
-	buf.WriteString(pad + "    System.monotonic_time(:microsecond)\n")
+        buf.WriteString(pad + "    System.unique_integer([:positive, :monotonic])\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
