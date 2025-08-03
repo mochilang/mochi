@@ -1,5 +1,24 @@
 # 📦 CHANGELOG.md
 
+## [0.10.56] – 2025-08-03T10:08:34+07:00
+
+### Added
+
+* Scheme transpiler supports struct methods and typed div/mod
+* Racket and Pascal expand Rosetta benchmark coverage including 50 new Racket programs and Benford's law
+* Rust and C++ benchmarks capture memory usage directly
+
+### Changed
+
+* Benchmarks report memory more accurately across C++, Zig, C#, TypeScript and others
+* Rosetta outputs refreshed for Scala, Kotlin, Erlang, Pascal and more
+
+### Fixed
+
+* Corrected memory detection and capture in C++, Rust, Zig, C and PHP transpilers
+* Improved map and list handling in Pascal, Kotlin and Rust
+* Fixed benchmark timing and string comparison bugs across languages
+
 ## [0.10.55] – 2025-08-02T16:16:26+07:00
 
 ### Added
