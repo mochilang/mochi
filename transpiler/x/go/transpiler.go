@@ -159,6 +159,32 @@ func isIdentifier(s string) bool {
 	return len(s) > 0
 }
 
+func isBigIntExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *VarRef:
+		if vd, ok := varDecls[ex.Name]; ok && vd.Type == "*big.Int" {
+			return true
+		}
+		if topEnv != nil {
+			if vt, err := topEnv.GetVar(ex.Name); err == nil {
+				if _, ok2 := vt.(types.BigIntType); ok2 {
+					return true
+				}
+			}
+		}
+	case *CallExpr:
+		if strings.HasPrefix(ex.Func, "new(big.Int)") || ex.Func == "big.NewInt" {
+			return true
+		}
+		if ex.FuncExpr != nil {
+			return isBigIntExpr(ex.FuncExpr)
+		}
+	case *MethodCallExpr:
+		return isBigIntExpr(ex.Target)
+	}
+	return false
+}
+
 type Stmt interface{ emit(io.Writer) }
 
 type Expr interface{ emit(io.Writer) }
@@ -566,6 +592,26 @@ type MethodCallExpr struct {
 }
 
 func (m *MethodCallExpr) emit(w io.Writer) {
+	if m.Method == "padStart" {
+		usesPadStart = true
+		usesStrings = true
+		fmt.Fprint(w, "_padStart(")
+		m.Target.emit(w)
+		fmt.Fprint(w, ", ")
+		if len(m.Args) > 0 {
+			m.Args[0].emit(w)
+		} else {
+			fmt.Fprint(w, "0")
+		}
+		fmt.Fprint(w, ", ")
+		if len(m.Args) > 1 {
+			m.Args[1].emit(w)
+		} else {
+			fmt.Fprint(w, "\" \"")
+		}
+		fmt.Fprint(w, ")")
+		return
+	}
 	m.Target.emit(w)
 	fmt.Fprintf(w, ".%s(", m.Method)
 	for i, a := range m.Args {
@@ -1910,6 +1956,24 @@ func (a *AssertExpr) emit(w io.Writer) {
 			ae.emit(w)
 			return
 		}
+		if vr, ok := a.Expr.(*VarRef); ok {
+			if vd, ok2 := varDecls[vr.Name]; ok2 && vd.Type != "" && vd.Type != "any" {
+				a.Expr.emit(w)
+				return
+			}
+			if topEnv != nil {
+				if vt, err := topEnv.GetVar(vr.Name); err == nil {
+					if _, ok2 := vt.(types.IntType); ok2 {
+						a.Expr.emit(w)
+						return
+					}
+				}
+			}
+		}
+		if isBigIntExpr(a.Expr) {
+			(&BigIntToIntExpr{Value: a.Expr}).emit(w)
+			return
+		}
 		a.Expr.emit(w)
 		io.WriteString(w, ".(int)")
 		return
@@ -2448,6 +2512,12 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
+			if vd.Type == "" {
+				switch vd.Value.(type) {
+				case *IntCastExpr:
+					vd.Type = "int"
+				}
+			}
 			varDecls[st.Let.Name] = vd
 			if vd.Global && vd.Value != nil {
 				extraDecls = append(extraDecls, &AssignStmt{Name: vd.Name, Value: vd.Value})
@@ -5431,8 +5501,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 					et := toGoTypeFromType(lt.Elem)
 					if et != "" && et != "any" {
 						for i := 1; i < len(args); i++ {
-							if types.IsAnyType(types.TypeOfExpr(p.Call.Args[i], env)) {
+							at := types.TypeOfExpr(p.Call.Args[i], env)
+							if types.IsAnyType(at) {
 								args[i] = &AssertExpr{Expr: args[i], Type: et}
+							} else if _, ok3 := at.(types.BigIntType); ok3 && et == "int" {
+								usesBigInt = true
+								args[i] = &BigIntToIntExpr{Value: args[i]}
 							} else if ll, ok2 := args[i].(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
 								if strings.HasPrefix(et, "[]") {
 									ll.ElemType = strings.TrimPrefix(et, "[]")
