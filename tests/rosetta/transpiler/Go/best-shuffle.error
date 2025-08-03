@@ -1,3 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/best-shuffle.go:174:10: cannot use r[1] (variable of interface type any) as int value in assignment: need type assertion
