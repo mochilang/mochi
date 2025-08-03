@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (175/491)
-_Last updated: 2025-08-03 22:12 +0700_
+## Rosetta Test Checklist (176/491)
+_Last updated: 2025-08-03 22:49 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -174,7 +174,7 @@ _Last updated: 2025-08-03 22:12 +0700_
 | 166 | canny-edge-detector | ✓ | 3.62ms | 3.0 MB |
 | 167 | canonicalize-cidr | ✓ | 7.31ms | 458.6 KB |
 | 168 | cantor-set | ✓ | 6.64ms | 520.6 KB |
-| 169 | carmichael-3-strong-pseudoprimes |  |  |  |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 20.34ms | 269.3 KB |
 | 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
 | 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
