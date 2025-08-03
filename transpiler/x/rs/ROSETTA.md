@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-03 16:35 UTC
+Last updated: 2025-08-03 16:50 UTC
 
-## Rosetta Golden Test Checklist (224/491)
+## Rosetta Golden Test Checklist (226/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -22,7 +22,7 @@ Last updated: 2025-08-03 16:35 UTC
 | 13 | 99-bottles-of-beer-2 | ✓ | 7.592ms |  |
 | 14 | 99-bottles-of-beer | ✓ | 191µs |  |
 | 15 | a+b | ✓ | 42µs |  |
-| 16 | abbreviations-automatic |   | 2.886ms |  |
+| 16 | abbreviations-automatic | ✓ | 2.886ms |  |
 | 17 | abbreviations-easy | ✓ | 773µs |  |
 | 18 | abbreviations-simple |   | 1.004ms | 3.2 MB |
 | 19 | abc-problem | ✓ | 599µs |  |
@@ -133,7 +133,7 @@ Last updated: 2025-08-03 16:35 UTC
 | 124 | bitmap-read-an-image-through-a-pipe | ✓ | 106µs | 2.1 MB |
 | 125 | bitmap-write-a-ppm-file | ✓ | 86µs | 2.0 MB |
 | 126 | bitmap | ✓ | 1m20.467472s | 5.2 MB |
-| 127 | bitwise-io-1 |   |  |  |
+| 127 | bitwise-io-1 | ✓ | 37µs | 2.0 MB |
 | 128 | bitwise-io-2 |   |  |  |
 | 129 | bitwise-operations |   |  |  |
 | 130 | blum-integer |   |  |  |
