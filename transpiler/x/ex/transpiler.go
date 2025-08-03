@@ -550,6 +550,10 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
+	io.WriteString(w, ":erlang.garbage_collect()\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
 	io.WriteString(w, "mem_start = _mem()\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
@@ -559,6 +563,10 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 		st.emit(w, indent)
 		io.WriteString(w, "\n")
 	}
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, ":erlang.garbage_collect()\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1783,6 +1791,7 @@ func Emit(p *Program, benchMain bool) []byte {
 	if !hasMain {
 		buf.WriteString("  def main() do\n")
 		if benchMain {
+			buf.WriteString("    :erlang.garbage_collect()\n")
 			buf.WriteString("    mem_start = _mem()\n")
 			buf.WriteString("    t_start = _now()\n")
 		}
@@ -1799,6 +1808,7 @@ func Emit(p *Program, benchMain bool) []byte {
 			buf.WriteString("\n")
 		}
 		if benchMain {
+			buf.WriteString("    :erlang.garbage_collect()\n")
 			buf.WriteString("    duration_us = _now() - t_start\n")
 			buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
@@ -1814,9 +1824,11 @@ func Emit(p *Program, benchMain bool) []byte {
 			}
 			buf.WriteString("\n")
 		}
+		buf.WriteString("    :erlang.garbage_collect()\n")
 		buf.WriteString("    mem_start = _mem()\n")
 		buf.WriteString("    t_start = _now()\n")
 		buf.WriteString("    main()\n")
+		buf.WriteString("    :erlang.garbage_collect()\n")
 		buf.WriteString("    duration_us = _now() - t_start\n")
 		buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
 		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
@@ -3911,7 +3923,7 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    Process.put(:_now_seed, seed)\n")
 	buf.WriteString(pad + "    abs(seed)\n")
 	buf.WriteString(pad + "  else\n")
-	buf.WriteString(pad + "    System.monotonic_time(:native) |> System.convert_time_unit(:native, :microsecond)\n")
+	buf.WriteString(pad + "    System.monotonic_time(:microsecond)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
@@ -3947,8 +3959,7 @@ func memHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
 	buf.WriteString(pad + "defp _mem() do\n")
-	buf.WriteString(pad + "  {:memory, words} = :erlang.process_info(self(), :memory)\n")
-	buf.WriteString(pad + "  words * :erlang.system_info(:wordsize)\n")
+	buf.WriteString(pad + "  :erlang.memory(:total)\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
