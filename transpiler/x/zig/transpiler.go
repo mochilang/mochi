@@ -871,6 +871,18 @@ func zigTypeFromExpr(e Expr) string {
 			}
 			return "i64"
 		}
+	case *AppendExpr:
+		ae := e.(*AppendExpr)
+		// Prefer explicitly tracked element type when available.
+		if ae.ElemType != "" {
+			return "[]" + ae.ElemType
+		}
+		// Otherwise infer from the list or value being appended.
+		lt := zigTypeFromExpr(ae.List)
+		if strings.HasPrefix(lt, "[]") {
+			return lt
+		}
+		return "[]" + zigTypeFromExpr(ae.Value)
 	case *IndexExpr:
 		ix := e.(*IndexExpr)
 		t := zigTypeFromExpr(ix.Target)
@@ -1235,8 +1247,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\nfn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
 		buf.WriteString("    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;\n")
-		buf.WriteString("    std.mem.copy(u8, out[0..lhs.len], lhs);\n")
-		buf.WriteString("    std.mem.copy(u8, out[lhs.len..lhs.len + rhs.len], rhs);\n")
+		buf.WriteString("    std.mem.copyForwards(u8, out[0..lhs.len], lhs);\n")
+		buf.WriteString("    std.mem.copyForwards(u8, out[lhs.len..lhs.len + rhs.len], rhs);\n")
 		buf.WriteString("    out[lhs.len + rhs.len] = 0;\n")
 		buf.WriteString("    return out[0..lhs.len + rhs.len];\n")
 		buf.WriteString("}\n")
@@ -1653,6 +1665,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			b.Right.emit(w)
 			io.WriteString(w, ") != .lt")
+			return
+		}
+	}
+	// handle equality for slices of non-byte elements
+	if strings.HasPrefix(lt, "[]") && lt == rt {
+		switch b.Op {
+		case "==", "!=":
+			elem := lt[2:]
+			if b.Op == "==" {
+				fmt.Fprintf(w, "std.mem.eql(%s, ", elem)
+			} else {
+				fmt.Fprintf(w, "!std.mem.eql(%s, ", elem)
+			}
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
 			return
 		}
 	}
