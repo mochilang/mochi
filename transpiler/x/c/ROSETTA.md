@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (143/491) - Last updated 2025-08-03 21:09 +0700:
+Checklist of programs that currently transpile and run (144/491) - Last updated 2025-08-03 22:10 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -127,7 +127,7 @@ Checklist of programs that currently transpile and run (143/491) - Last updated 
 | 120 | bitmap-histogram | ✓ | 661us | 1.4 MB |
 | 121 | bitmap-midpoint-circle-algorithm | ✓ | 404us | 1.7 MB |
 | 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 15.23ms | 4.6 MB |
-| 123 | bitmap-read-a-ppm-file |  |  |  |
+| 123 | bitmap-read-a-ppm-file | ✓ | 606us | 1.6 MB |
 | 124 | bitmap-read-an-image-through-a-pipe |  |  |  |
 | 125 | bitmap-write-a-ppm-file |  |  |  |
 | 126 | bitmap |  |  |  |
