@@ -358,7 +358,7 @@ type MapLit struct {
 
 func isConstExpr(e Expr) bool {
 	switch e.(type) {
-	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NullLit, *ListLit, *MapLit:
+	case *IntLit, *FloatLit, *StringLit, *BoolLit, *NullLit:
 		return true
 	default:
 		return false
@@ -482,9 +482,9 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		elem = zigTypeFromExpr(ae.Value)
 	}
 	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
-	io.WriteString(w, "_tmp.appendSlice(")
+	fmt.Fprintf(w, "_tmp.appendSlice(@as([]const %s, ", elem)
 	ae.List.emit(w)
-	io.WriteString(w, ") catch |err| handleError(err); _tmp.append(")
+	io.WriteString(w, ")) catch |err| handleError(err); _tmp.append(")
 	ae.Value.emit(w)
 	io.WriteString(w, ") catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 }
@@ -2293,6 +2293,31 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	mapVars = map[string]bool{}
 	structDefs = map[string]*StructDef{}
 	variantTags = map[string]int{}
+
+	// reserve global variable names so that functions compiled earlier
+	// do not reuse the same identifiers. This prevents name collisions
+	// when a local variable shares the name with a global variable that
+	// is declared later in the source program.
+	for _, st := range prog.Statements {
+		switch {
+		case st.Let != nil:
+			name := st.Let.Name
+			if funDepth > 0 && globalNames[name] {
+				name = name + "_var"
+			}
+			alias := uniqueName(name)
+			aliasStack[len(aliasStack)-1][st.Let.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		case st.Var != nil:
+			name := st.Var.Name
+			if funDepth > 0 && globalNames[name] {
+				name = name + "_var"
+			}
+			alias := uniqueName(name)
+			aliasStack[len(aliasStack)-1][st.Var.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		}
+	}
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
 			alias := st.Import.As
@@ -3710,9 +3735,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if funDepth > 0 && globalNames[name] {
 			name = name + "_var"
 		}
-		alias := uniqueName(name)
-		aliasStack[len(aliasStack)-1][s.Let.Name] = alias
-		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		alias, ok := aliasStack[len(aliasStack)-1][s.Let.Name]
+		if !ok {
+			alias = uniqueName(name)
+			aliasStack[len(aliasStack)-1][s.Let.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		}
 		vd := &VarDecl{Name: alias, Value: expr}
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
@@ -3790,9 +3818,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if funDepth > 0 && globalNames[name] {
 			name = name + "_var"
 		}
-		alias := uniqueName(name)
-		aliasStack[len(aliasStack)-1][s.Var.Name] = alias
-		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		alias, ok := aliasStack[len(aliasStack)-1][s.Var.Name]
+		if !ok {
+			alias = uniqueName(name)
+			aliasStack[len(aliasStack)-1][s.Var.Name] = alias
+			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
+		}
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
 		varDecls[s.Var.Name] = vd
 		varDecls[alias] = vd
