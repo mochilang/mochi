@@ -2751,6 +2751,17 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				return nil, fmt.Errorf("repeat expects 2 args")
 			}
 			return &List{Elems: []Node{Symbol("_repeat"), args[0], args[1]}}, nil
+		case "contains":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("contains expects 2 args")
+			}
+			needHash = true
+			return &List{Elems: []Node{
+				Symbol("cond"),
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-exists?"), args[0], args[1]}}}},
+				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("string-contains"), args[0], args[1]}}, BoolLit(true), BoolLit(false)}}}},
+				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("if"), &List{Elems: []Node{Symbol("member"), args[1], args[0]}}, BoolLit(true), BoolLit(false)}}}},
+			}}, nil
 		case "keys":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("keys expects 1 arg")
