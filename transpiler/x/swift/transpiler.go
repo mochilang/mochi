@@ -40,6 +40,7 @@ var usesLen bool
 var usesSplit bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
+var varDecls map[string]*VarDecl
 
 var swiftKeywords = map[string]struct{}{
 	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
@@ -2046,6 +2047,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesSplit = false
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
+	varDecls = map[string]*VarDecl{}
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
@@ -2388,14 +2390,18 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			typ = toSwiftType(st.Var.Type)
 		}
 		if env != nil {
-			var varT types.Type = types.AnyType{}
-			if st.Var.Type != nil {
+			var varT types.Type
+			if t, err := env.GetVar(st.Var.Name); err == nil {
+				varT = t
+			} else if st.Var.Type != nil {
 				varT = types.ResolveTypeRef(st.Var.Type, env)
 			} else if st.Var.Value != nil {
 				varT = types.TypeOfExpr(st.Var.Value, env)
 				if typ == "[String: Any?]" {
 					varT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 				}
+			} else {
+				varT = types.AnyType{}
 			}
 			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
 			if okU {
@@ -2407,7 +2413,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if okU {
 				swiftT = ut.Name
 			}
-			if swiftT != "Any" {
+			if swiftT != "Any" && st.Var.Value != nil {
 				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Var.Value, env))
 				if srcSwiftT == swiftT {
 					// no cast needed
@@ -2421,7 +2427,11 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		return &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}, nil
+		vd := &VarDecl{Name: st.Var.Name, Const: false, Type: typ, Expr: ex}
+		if varDecls != nil {
+			varDecls[st.Var.Name] = vd
+		}
+		return vd, nil
 	case st.Type != nil:
 		def, err := convertTypeDecl(env, st.Type)
 		if err != nil {
@@ -2459,7 +2469,13 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		if env != nil {
 			if t, err := env.GetVar(st.Assign.Name); err == nil {
 				typ := swiftTypeOf(t)
-				if typ != "Any" {
+				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Assign.Value, env))
+				if typ != "Any" && typ != "Any?" && (srcSwiftT == "Any?" || srcSwiftT == "Any") {
+					if vd, ok := varDecls[st.Assign.Name]; ok {
+						vd.Type = "Any?"
+					}
+					env.SetVar(st.Assign.Name, types.AnyType{}, true)
+				} else if typ != "Any" && typ != "Any?" {
 					if isNullLiteral(st.Assign.Value) {
 						ex = zeroValue(parserTypeRefFromType(t))
 					} else {

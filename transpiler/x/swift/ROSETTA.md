@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 400/491
-Last updated: 2025-08-03 17:43 +0700
+Completed: 409/491
+Last updated: 2025-08-03 22:32 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -472,16 +472,16 @@ Last updated: 2025-08-03 17:43 +0700
 | 463 | fractran | ✓ | 39.032827s | 3.4 MB |
 | 464 | french-republican-calendar | ✓ | 189µs | 3.2 MB |
 | 465 | ftp |   |  |  |
-| 466 | function-frequency | ✓ | 69.28ms | 3.5 MB |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
+| 466 | function-frequency | ✓ | 70.729ms | 3.5 MB |
+| 467 | function-prototype | ✓ | 128µs | 3.1 MB |
+| 468 | functional-coverage-tree | ✓ | 1.491ms | 3.2 MB |
+| 469 | fusc-sequence | ✓ | 534µs | 3.2 MB |
+| 470 | gamma-function | ✓ | 406µs | 3.4 MB |
+| 471 | general-fizzbuzz | ✓ | 334µs | 3.1 MB |
+| 472 | generic-swap | ✓ | 532µs | 3.3 MB |
+| 473 | get-system-command-output | ✓ | 213µs | 3.0 MB |
+| 474 | giuga-numbers | ✓ | 391µs | 3.3 MB |
+| 475 | globally-replace-text-in-several-files | ✓ | 309µs | 3.1 MB |
 | 476 | goldbachs-comet |   |  |  |
 | 477 | golden-ratio-convergence |   |  |  |
 | 478 | graph-colouring |   |  |  |
