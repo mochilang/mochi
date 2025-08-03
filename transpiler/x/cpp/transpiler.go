@@ -1761,10 +1761,17 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	if c.Type == "std::string" && valType != "std::string" && valType != "std::any" {
-		io.WriteString(w, "std::string(1, ")
-		c.Value.emit(w)
-		io.WriteString(w, ")")
+	if c.Type == "std::string" && !strings.Contains(valType, "std::string") && valType != "std::any" {
+		switch valType {
+		case "char", "int", "int64_t":
+			io.WriteString(w, "std::string(1, ")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		default:
+			io.WriteString(w, "std::string(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	if valType == "std::any" {
@@ -1878,7 +1885,7 @@ func (c *FuncCallExpr) emit(w io.Writer) {
 func (l *LambdaExpr) emit(w io.Writer) {
 	cap := "[]"
 	if inFunction || inLambda > 0 {
-		cap = "[&]"
+		cap = "[=]"
 	}
 	io.WriteString(w, cap+"(")
 	for i, p := range l.Params {
@@ -2638,7 +2645,7 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ")> ")
 		io.WriteString(w, safeName(s.Name))
 		io.WriteString(w, " = ")
-		io.WriteString(w, "[&](")
+		io.WriteString(w, "[=](")
 		for i, p := range bl.Params {
 			if i > 0 {
 				io.WriteString(w, ", ")
