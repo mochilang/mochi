@@ -3183,13 +3183,14 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	}
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
+	endMemDecl := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
 	stmts := []Stmt{startDecl}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, durDecl, memDecl, print)
+	stmts = append(stmts, endDecl, endMemDecl, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}, nil
 }
 
@@ -3198,12 +3199,13 @@ func wrapBench(name string, body []Stmt) Stmt {
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
+	endMemDecl := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
 	stmts := []Stmt{startDecl}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, durDecl, memDecl, print)
+	stmts = append(stmts, endDecl, endMemDecl, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}
 }
 
