@@ -2842,7 +2842,7 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ind)
 		a.Target.emit(w)
 		io.WriteString(w, "[")
-		a.Index.emit(w)
+		emitIndex(w, a.Index)
 		io.WriteString(w, "] = ")
 		a.Value.emit(w)
 		io.WriteString(w, ";\n")
@@ -2868,17 +2868,17 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 		fmt.Fprintf(w, "std::any_cast<%s&>(", cont)
 		target.emit(w)
 		io.WriteString(w, "[")
-		idxs[0].emit(w)
+		emitIndex(w, idxs[0])
 		io.WriteString(w, "])")
 	} else {
 		target.emit(w)
 		io.WriteString(w, "[")
-		idxs[0].emit(w)
+		emitIndex(w, idxs[0])
 		io.WriteString(w, "]")
 	}
 	for _, ix := range idxs[1:] {
 		io.WriteString(w, "[")
-		ix.emit(w)
+		emitIndex(w, ix)
 		io.WriteString(w, "]")
 	}
 	io.WriteString(w, " = ")
