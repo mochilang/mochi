@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 403/491
-Last updated: 2025-08-03 23:05 +0700
+Completed: 404/491
+Last updated: 2025-08-03 23:50 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -476,7 +476,7 @@ Last updated: 2025-08-03 23:05 +0700
 | 467 | function-prototype | ✓ | 74µs | 3.1 MB |
 | 468 | functional-coverage-tree | ✓ | 1.542ms | 3.5 MB |
 | 469 | fusc-sequence | ✓ | 423µs | 3.2 MB |
-| 470 | gamma-function |   |  |  |
+| 470 | gamma-function | ✓ | 425µs | 3.4 MB |
 | 471 | general-fizzbuzz |   |  |  |
 | 472 | generic-swap |   |  |  |
 | 473 | get-system-command-output |   |  |  |
