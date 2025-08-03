@@ -1106,6 +1106,17 @@ func (i *InputBuiltin) emit(w io.Writer) {
 
 func (i *InputBuiltin) emitPrint(w io.Writer) { i.emit(w) }
 
+// PanicExpr represents a call to panic that raises an exception.
+type PanicExpr struct{ Arg Expr }
+
+func (p *PanicExpr) emit(w io.Writer) {
+	io.WriteString(w, "(failwith (")
+	p.Arg.emit(w)
+	io.WriteString(w, "))")
+}
+
+func (p *PanicExpr) emitPrint(w io.Writer) { p.emit(w) }
+
 // SubstringBuiltin represents substring(str, start, end).
 type SubstringBuiltin struct {
 	Str   Expr
@@ -5443,6 +5454,16 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return arg, "float", nil
 		}
 		return &CastExpr{Expr: arg, Type: castType}, "float", nil
+	}
+	if c.Func == "panic" && len(c.Args) == 1 {
+		arg, typ, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if typ != "string" {
+			arg = &StrBuiltin{Expr: arg, Typ: typ}
+		}
+		return &PanicExpr{Arg: arg}, "", nil
 	}
 	if c.Func == "input" && len(c.Args) == 0 {
 		return &InputBuiltin{}, "string", nil
