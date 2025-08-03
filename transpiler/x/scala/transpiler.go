@@ -1249,25 +1249,36 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-	isMap := false
-	switch r := f.Receiver.(type) {
-	case *Name:
-		if typ, ok := localVarTypes[r.Name]; ok {
-			if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
-				isMap = true
-			}
-		}
-	case *IndexExpr:
-		if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
-			isMap = true
-		}
-	}
-	f.Receiver.emit(w)
-	if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
-		fmt.Fprint(w, ".toInt")
-		return
-	}
-	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
+       isMap := false
+       switch r := f.Receiver.(type) {
+       case *Name:
+               if typ, ok := localVarTypes[r.Name]; ok {
+                       if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
+                               isMap = true
+                       }
+               }
+       case *IndexExpr:
+               if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
+                       isMap = true
+               }
+       }
+       needParens := false
+       switch f.Receiver.(type) {
+       case *BinaryExpr, *CallExpr:
+               needParens = true
+       }
+       if needParens {
+               fmt.Fprint(w, "(")
+       }
+       f.Receiver.emit(w)
+       if needParens {
+               fmt.Fprint(w, ")")
+       }
+       if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
+               fmt.Fprint(w, ".toInt")
+               return
+       }
+       if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
 		fmt.Fprintf(w, "(\"%s\")", f.Name)
 	} else {
 		fmt.Fprintf(w, ".%s", escapeName(f.Name))
