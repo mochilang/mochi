@@ -1,3 +1,7 @@
+## Progress (2025-08-03 16:19 +0700)
+- Add Scheme transpiler output for equilibrium-index
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-02 20:55 +0700)
 - transpiler/java: support nested list literals
 - Regenerated golden files - 93/105 vm valid programs passing
