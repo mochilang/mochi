@@ -482,7 +482,7 @@ func (ae *AppendExpr) emit(w io.Writer) {
 		elem = zigTypeFromExpr(ae.Value)
 	}
 	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
-	io.WriteString(w, "defer _tmp.deinit(); _tmp.appendSlice(")
+	io.WriteString(w, "_tmp.appendSlice(")
 	ae.List.emit(w)
 	io.WriteString(w, ") catch |err| handleError(err); _tmp.append(")
 	ae.Value.emit(w)
@@ -1224,15 +1224,21 @@ func (p *Program) Emit() []byte {
 	if useStr {
 		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
-		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
+		buf.WriteString("        const s = std.fmt.allocPrintZ(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
+		buf.WriteString("        return s[0..s.len];\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
+		buf.WriteString("    const s = std.fmt.allocPrintZ(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
+		buf.WriteString("    return s[0..s.len];\n")
 		buf.WriteString("}\n")
 	}
 	if useConcat {
 		buf.WriteString("\nfn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {\n")
 		buf.WriteString("    const alloc = std.heap.page_allocator;\n")
-		buf.WriteString("    return std.mem.concat(alloc, u8, &[_][]const u8{ lhs, rhs }) catch unreachable;\n")
+		buf.WriteString("    var out = alloc.alloc(u8, lhs.len + rhs.len + 1) catch unreachable;\n")
+		buf.WriteString("    std.mem.copy(u8, out[0..lhs.len], lhs);\n")
+		buf.WriteString("    std.mem.copy(u8, out[lhs.len..lhs.len + rhs.len], rhs);\n")
+		buf.WriteString("    out[lhs.len + rhs.len] = 0;\n")
+		buf.WriteString("    return out[0..lhs.len + rhs.len];\n")
 		buf.WriteString("}\n")
 	}
 	if useSplit {
@@ -1242,6 +1248,20 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    var it = std.mem.splitSequence(u8, s, sep);\n")
 		buf.WriteString("    while (it.next()) |p| { res.append(p) catch unreachable; }\n")
 		buf.WriteString("    return res.toOwnedSlice() catch unreachable;\n")
+		buf.WriteString("}\n")
+	}
+	if useAscii {
+		buf.WriteString("\nfn _upper(s: []const u8) []const u8 {\n")
+		buf.WriteString("    var out = std.heap.page_allocator.alloc(u8, s.len + 1) catch unreachable;\n")
+		buf.WriteString("    _ = std.ascii.upperString(out[0..s.len], s);\n")
+		buf.WriteString("    out[s.len] = 0;\n")
+		buf.WriteString("    return out[0..s.len];\n")
+		buf.WriteString("}\n")
+		buf.WriteString("\nfn _lower(s: []const u8) []const u8 {\n")
+		buf.WriteString("    var out = std.heap.page_allocator.alloc(u8, s.len + 1) catch unreachable;\n")
+		buf.WriteString("    _ = std.ascii.lowerString(out[0..s.len], s);\n")
+		buf.WriteString("    out[s.len] = 0;\n")
+		buf.WriteString("    return out[0..s.len];\n")
 		buf.WriteString("}\n")
 	}
 	if useInput {
@@ -1760,7 +1780,17 @@ func (l *ListLit) emit(w io.Writer) {
 		if strings.HasPrefix(et, "const ") {
 			et = et[len("const "):]
 		}
-		fmt.Fprintf(w, "@constCast(&[_]%s{", et)
+		lbl := fmt.Sprintf("blk%d", groupCounter)
+		tmp := fmt.Sprintf("_tmp%d", groupCounter)
+		groupCounter++
+		fmt.Fprintf(w, "%s: { var %s = std.heap.page_allocator.alloc(%s, %d) catch unreachable;", lbl, tmp, et, len(l.Elems))
+		for i, e := range l.Elems {
+			fmt.Fprintf(w, " %s[%d] = ", tmp, i)
+			e.emit(w)
+			io.WriteString(w, ";")
+		}
+		fmt.Fprintf(w, " break :%s %s; }", lbl, tmp)
+		return
 	} else if len(l.Elems) > 0 {
 		if _, ok := l.Elems[0].(*ListLit); ok {
 			if sub, ok := l.Elems[0].(*ListLit); ok {
@@ -2784,13 +2814,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("upper expects one argument")
 			}
 			useAscii = true
-			return &CallExpr{Func: "std.ascii.upperString", Args: args}, nil
+			return &CallExpr{Func: "_upper", Args: args}, nil
 		case "lower":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("lower expects one argument")
 			}
 			useAscii = true
-			return &CallExpr{Func: "std.ascii.lowerString", Args: args}, nil
+			return &CallExpr{Func: "_lower", Args: args}, nil
 		case "split":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("split expects two arguments")
@@ -2942,6 +2972,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		ml := &MapLit{Entries: entries}
+		if fields, ok := mapFields(ml); ok && len(fields) > 0 {
+			structName := fmt.Sprintf("Map%d", len(structDefs))
+			if _, exists := structDefs[structName]; !exists {
+				structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+			}
+			ml.StructName = structName
+		}
 		return ml, nil
 	case p.Struct != nil:
 		entries := make([]MapEntry, len(p.Struct.Fields))
@@ -3583,6 +3620,16 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	used := map[string]bool{}
 	for _, st := range body {
 		collectVarsStmt(st, used)
+	}
+	if strings.HasPrefix(ret, "std.StringHashMap(") {
+		for _, st := range body {
+			if rs, ok := st.(*ReturnStmt); ok {
+				if ml, ok2 := rs.Value.(*MapLit); ok2 && ml.StructName != "" {
+					ret = ml.StructName
+					break
+				}
+			}
+		}
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
 	funcReturns[name] = ret
