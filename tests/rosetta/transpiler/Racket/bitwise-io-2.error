@@ -1,5 +1,9 @@
-run error: exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:215:13: indexOf: unbound identifier
-  in: indexOf
-  location...:
-   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:215:13
+user break
+  context...:
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:68:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:85:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:168:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:186:2
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:335:9
+   /workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt:317:2
+   body of "/workspace/mochi/tests/rosetta/transpiler/Racket/bitwise-io-2.rkt"

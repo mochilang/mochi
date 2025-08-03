@@ -1375,7 +1375,7 @@ func header() string {
 	hdr += "(define (sublist lst start end)\n  (if (string? lst)\n      (substring lst start end)\n      (take (drop lst start) (- end start))))\n\n"
 	hdr += "(define (slice seq start end)\n  (define len (if (string? seq) (string-length seq) (length seq)))\n  (define s (int start))\n  (define e (int end))\n  (when (< s 0) (set! s (+ len s)))\n  (when (< e 0) (set! e (+ len e)))\n  (set! s (max 0 (min len s)))\n  (set! e (max 0 (min len e)))\n  (when (< e s) (set! e s))\n  (if (string? seq) (substring seq s e) (sublist seq s e)))\n"
 	hdr += "(define (pad-start s width ch)\n  (let ([s (format \"~a\" s)])\n    (if (< (string-length s) width)\n        (string-append (make-string (- width (string-length s)) (string-ref ch 0)) s)\n        s)))\n"
-	hdr += "(define (index-of s ch)\n  (let loop ([i 0])\n    (cond [(>= i (string-length s)) -1]\n          [(string=? (substring s i (add1 i)) ch) i]\n          [else (loop (add1 i))])))\n"
+	hdr += "(define (index-of s ch)\n  (cond\n    [(string? s)\n     (let loop ([i 0])\n       (cond [(>= i (string-length s)) -1]\n             [(string=? (substring s i (add1 i)) ch) i]\n             [else (loop (add1 i))]))]\n    [else\n     (let loop ([i 0] [lst s])\n       (cond [(null? lst) -1]\n             [(equal? (car lst) ch) i]\n             [else (loop (add1 i) (cdr lst))]))]))\n"
 	hdr += "(define (_repeat s n)\n  (cond\n    [(string? s) (apply string-append (make-list (int n) s))]\n    [(list? s) (apply append (make-list (int n) s))]\n    [else '()]))\n"
 	hdr += "(define (_parse-int-str s base) (int (string->number s base)))\n"
 	hdr += "(define (_sha256 bs) (bytes->list (sha256-bytes (list->bytes bs))))\n"
