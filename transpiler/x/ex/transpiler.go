@@ -562,11 +562,11 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "duration_us = div(_now() - t_start, 1000)\n")
+	io.WriteString(w, "duration_us = _now() - t_start\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "mem_diff = _mem() - mem_start\n")
+	io.WriteString(w, "mem_diff = abs(_mem() - mem_start)\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1799,7 +1799,7 @@ func Emit(p *Program, benchMain bool) []byte {
 			buf.WriteString("\n")
 		}
 		if benchMain {
-			buf.WriteString("    duration_us = div(_now() - t_start, 1000)\n")
+			buf.WriteString("    duration_us = _now() - t_start\n")
 			buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		}
@@ -1817,7 +1817,7 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("    mem_start = _mem()\n")
 		buf.WriteString("    t_start = _now()\n")
 		buf.WriteString("    main()\n")
-		buf.WriteString("    duration_us = div(_now() - t_start, 1000)\n")
+		buf.WriteString("    duration_us = _now() - t_start\n")
 		buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
 		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		buf.WriteString("  end\n")
@@ -3911,7 +3911,7 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    Process.put(:_now_seed, seed)\n")
 	buf.WriteString(pad + "    abs(seed)\n")
 	buf.WriteString(pad + "  else\n")
-	buf.WriteString(pad + "    abs(System.os_time(:nanosecond))\n")
+	buf.WriteString(pad + "    System.monotonic_time(:microsecond)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
