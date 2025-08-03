@@ -18,8 +18,10 @@ import (
 
 	"mochi/parser"
 	ocaml "mochi/transpiler/x/ocaml"
-	"mochi/types"
+        "mochi/types"
 )
+
+var update = flag.Bool("update-rosetta-ocaml", false, "update golden files")
 
 func repoRootDir(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -42,8 +44,7 @@ func repoRootDir(t *testing.T) string {
 
 // shouldUpdate reports whether the -update flag was set.
 func shouldUpdate() bool {
-	f := flag.Lookup("update")
-	return f != nil && f.Value.String() == "true"
+       return *update
 }
 
 func runCase(src, outDir string) ([]byte, error) {
@@ -75,7 +76,7 @@ func runCase(src, outDir string) ([]byte, error) {
 		return nil, err
 	}
 	exe := filepath.Join(outDir, base)
-	if out, err := exec.Command("ocamlc", "-I", "+zarith", "-I", "+sha", "zarith.cma", "sha.cma", codePath, "-o", exe).CombinedOutput(); err != nil {
+       if out, err := exec.Command("ocamlc", "-I", "+zarith", "-I", "+sha", "zarith.cma", "sha.cma", "unix.cma", codePath, "-o", exe).CombinedOutput(); err != nil {
 		_ = os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
 		return nil, err
 	}

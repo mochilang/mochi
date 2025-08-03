@@ -32,6 +32,8 @@ var usesBigInt bool
 var usesBigRat bool
 var usesSHA bool
 var usesGetOutput bool
+var usesGetEnv bool
+var usesEnviron bool
 var usesSplit bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
@@ -1147,15 +1149,15 @@ func (i *IndexOfBuiltin) emit(w io.Writer) {
 func (i *IndexOfBuiltin) emitPrint(w io.Writer) { i.emit(w) }
 
 func (s *SubstringBuiltin) emit(w io.Writer) {
-	io.WriteString(w, "String.sub (")
-	s.Str.emit(w)
-	io.WriteString(w, ") ")
-	s.Start.emit(w)
-	io.WriteString(w, " (")
-	s.End.emit(w)
-	io.WriteString(w, " - ")
-	s.Start.emit(w)
-	io.WriteString(w, ")")
+       io.WriteString(w, "String.sub ")
+       s.Str.emit(w)
+       io.WriteString(w, " (")
+       s.Start.emit(w)
+       io.WriteString(w, ") (")
+       s.End.emit(w)
+       io.WriteString(w, " - ")
+       s.Start.emit(w)
+       io.WriteString(w, ")")
 }
 
 func (s *SubstringBuiltin) emitPrint(w io.Writer) { s.emit(w) }
@@ -1546,9 +1548,11 @@ func (f *FuncCall) emitPrint(w io.Writer) {
 		io.WriteString(w, "Q.to_string (")
 		f.emit(w)
 		io.WriteString(w, ")")
-	default:
-		f.emit(w)
-	}
+       default:
+               io.WriteString(w, "__show (")
+               f.emit(w)
+               io.WriteString(w, ")")
+       }
 }
 
 // FuncExpr represents an anonymous function expression.
@@ -2598,17 +2602,21 @@ func (s *StringLit) emit(w io.Writer)      { fmt.Fprintf(w, "%q", s.Value) }
 func (s *StringLit) emitPrint(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
 
 func isConstExpr(e Expr) bool {
-	switch v := e.(type) {
-	case *IntLit, *FloatLit, *BoolLit, *StringLit:
-		return true
-	case *ListLit:
-		for _, el := range v.Elems {
-			if !isConstExpr(el) {
-				return false
-			}
-		}
-		return true
-	case *MapLit:
+       switch v := e.(type) {
+       case *IntLit, *FloatLit, *BoolLit, *StringLit:
+               return true
+       case *BinaryExpr:
+               return isConstExpr(v.Left) && isConstExpr(v.Right)
+       case *UnaryMinus:
+               return isConstExpr(v.Expr)
+       case *ListLit:
+               for _, el := range v.Elems {
+                       if !isConstExpr(el) {
+                               return false
+                       }
+               }
+               return true
+       case *MapLit:
 		for _, it := range v.Items {
 			if !isConstExpr(it.Key) || !isConstExpr(it.Value) {
 				return false
@@ -2931,6 +2939,18 @@ let _getoutput cmd =
   else buf
 `
 
+const helperGetEnv = `
+let _getenv s =
+  match Sys.getenv_opt s with
+  | Some v -> v
+  | None -> ""
+`
+
+const helperEnviron = `
+let _environ () =
+  Array.to_list (Unix.environment ())
+`
+
 const helperDynMath = `
 let _dyn_add a b =
   if Obj.is_int a && Obj.is_int b then
@@ -3115,14 +3135,22 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMem)
 		buf.WriteString("\n")
 	}
-	if usesGetOutput {
-		buf.WriteString(helperGetOutput)
-		buf.WriteString("\n")
-	}
-	if usesSHA {
-		buf.WriteString(helperSHA)
-		buf.WriteString("\n")
-	}
+        if usesGetOutput {
+                buf.WriteString(helperGetOutput)
+                buf.WriteString("\n")
+        }
+       if usesGetEnv {
+               buf.WriteString(helperGetEnv)
+               buf.WriteString("\n")
+       }
+       if usesEnviron {
+               buf.WriteString(helperEnviron)
+               buf.WriteString("\n")
+       }
+        if usesSHA {
+                buf.WriteString(helperSHA)
+                buf.WriteString("\n")
+        }
 	if usesSplit {
 		buf.WriteString(helperSplit)
 		buf.WriteString("\n")
@@ -3204,16 +3232,20 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 					vars[alias] = VarInfo{typ: "go_testpkg"}
 					return nil, nil
 				}
-				if path == "strings" && st.Import.Auto {
-					vars[alias] = VarInfo{typ: "go_strings"}
-					return nil, nil
-				}
-				if path == "net" && st.Import.Auto {
-					vars[alias] = VarInfo{typ: "go_net"}
-					return nil, nil
-				}
-			}
-		}
+                               if path == "strings" && st.Import.Auto {
+                                       vars[alias] = VarInfo{typ: "go_strings"}
+                                       return nil, nil
+                               }
+                               if path == "net" && st.Import.Auto {
+                                       vars[alias] = VarInfo{typ: "go_net"}
+                                       return nil, nil
+                               }
+                               if path == "os" && st.Import.Auto {
+                                       vars[alias] = VarInfo{typ: "go_os"}
+                                       return nil, nil
+                               }
+                       }
+               }
 		return nil, fmt.Errorf("unsupported import")
 	case st.ExternVar != nil:
 		if st.ExternVar.Type != nil && st.ExternVar.Type.Simple != nil {
@@ -3778,11 +3810,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesDynMath = false
 	usesMem = false
-	usesBigInt = false
-	usesBigRat = false
-	usesSHA = false
-	usesGetOutput = false
-	usesSplit = false
+       usesBigInt = false
+       usesBigRat = false
+       usesSHA = false
+       usesGetOutput = false
+       usesGetEnv = false
+       usesEnviron = false
+       usesSplit = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -4252,21 +4286,47 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 						i++
 						continue
 					}
-				} else if nameTyp == "python_subprocess" {
-					field := op.Field.Name
-					if field == "getoutput" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && len(p.Ops[i+1].Call.Args) == 1 {
-						arg, _, err := convertExpr(p.Ops[i+1].Call.Args[0], env, vars)
-						if err != nil {
-							return nil, "", err
-						}
-						usesGetOutput = true
-						expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
-						typ = "string"
-						i += 2
-						continue
-					}
-				} else if nameTyp == "go_strings" {
-					field := op.Field.Name
+                                } else if nameTyp == "python_subprocess" {
+                                        field := op.Field.Name
+                                        if field == "getoutput" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && len(p.Ops[i+1].Call.Args) == 1 {
+                                                arg, _, err := convertExpr(p.Ops[i+1].Call.Args[0], env, vars)
+                                                if err != nil {
+                                                        return nil, "", err
+                                                }
+                                                usesGetOutput = true
+                                                expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
+                                                typ = "string"
+                                                i += 2
+                                                continue
+                                        }
+                               } else if nameTyp == "go_os" {
+                               field := op.Field.Name
+                               if field == "Getenv" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+                                       call := p.Ops[i+1].Call
+                                       if len(call.Args) == 1 {
+                                               arg, _, err := convertExpr(call.Args[0], env, vars)
+                                               if err != nil {
+                                                       return nil, "", err
+                                               }
+                                               usesGetEnv = true
+                                               expr = &FuncCall{Name: "_getenv", Args: []Expr{arg}, Ret: "string"}
+                                               typ = "string"
+                                               i += 2
+                                               continue
+                                       }
+                               }
+                               if field == "Environ" && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+                                       call := p.Ops[i+1].Call
+                                       if len(call.Args) == 0 {
+                                               usesEnviron = true
+                                               expr = &FuncCall{Name: "_environ", Args: nil, Ret: "list-string"}
+                                               typ = "list-string"
+                                               i += 2
+                                               continue
+                                       }
+                               }
+                                } else if nameTyp == "go_strings" {
+                                        field := op.Field.Name
 					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
 						call := p.Ops[i+1].Call
 						if len(call.Args) == 1 {
@@ -4501,26 +4561,48 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 							i++
 							continue
 						}
-					} else if info.typ == "python_subprocess" {
-						if key, ok := idx.Key.(*StringLit); ok {
-							field := key.Value
-							if field == "getoutput" && len(op.Call.Args) == 1 {
-								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
-								if err != nil {
-									return nil, "", err
-								}
-								usesGetOutput = true
-								expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
-								typ = "string"
-								i++
-								continue
-							}
-						}
-					} else if info.typ == "go_strings" {
-						if key, ok := idx.Key.(*StringLit); ok {
-							field := key.Value
-							if len(op.Call.Args) == 1 {
-								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+                                        } else if info.typ == "python_subprocess" {
+                                                if key, ok := idx.Key.(*StringLit); ok {
+                                                        field := key.Value
+                                                        if field == "getoutput" && len(op.Call.Args) == 1 {
+                                                                arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+                                                                if err != nil {
+                                                                        return nil, "", err
+                                                                }
+                                                                usesGetOutput = true
+                                                                expr = &FuncCall{Name: "_getoutput", Args: []Expr{arg}, Ret: "string"}
+                                                                typ = "string"
+                                                                i++
+                                                                continue
+                                                        }
+                                                }
+                                       } else if info.typ == "go_os" {
+                                               if key, ok := idx.Key.(*StringLit); ok {
+                                                       field := key.Value
+                                                       if field == "Getenv" && len(op.Call.Args) == 1 {
+                                                               arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+                                                               if err != nil {
+                                                                       return nil, "", err
+                                                               }
+                                                               usesGetEnv = true
+                                                               expr = &FuncCall{Name: "_getenv", Args: []Expr{arg}, Ret: "string"}
+                                                               typ = "string"
+                                                               i++
+                                                               continue
+                                                       }
+                                                       if field == "Environ" && len(op.Call.Args) == 0 {
+                                                               usesEnviron = true
+                                                               expr = &FuncCall{Name: "_environ", Args: nil, Ret: "list-string"}
+                                                               typ = "list-string"
+                                                               i++
+                                                               continue
+                                                       }
+                                               }
+                                       } else if info.typ == "go_strings" {
+                                                if key, ok := idx.Key.(*StringLit); ok {
+                                                        field := key.Value
+                                                        if len(op.Call.Args) == 1 {
+                                                                arg, _, err := convertExpr(op.Call.Args[0], env, vars)
 								if err != nil {
 									return nil, "", err
 								}
@@ -5255,8 +5337,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
 		}
 	}
-	if c.Func == "len" && len(c.Args) == 1 {
-		arg, typ, err := convertExpr(c.Args[0], env, vars)
+        if c.Func == "len" && len(c.Args) == 1 {
+                arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
 			return nil, "", err
 		}
@@ -5275,18 +5357,26 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 				}
 			}
 		}
-		switch {
-		case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") ||
-			typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{"):
-			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
-		default:
-			// Fallback to treating the argument as a list. This is
-			// permissive but allows programs that rely on list
-			// concatenation via "+" to compile.
-			return &LenBuiltin{Arg: arg, Typ: "list"}, "int", nil
-		}
-	}
-	if (c.Func == "substring" || c.Func == "substr") && len(c.Args) == 3 {
+                switch {
+                case typ == "string" || typ == "list" || strings.HasPrefix(typ, "list") ||
+                        typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{"):
+                        return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
+                default:
+                        // Fallback to treating the argument as a list. This is
+                        // permissive but allows programs that rely on list
+                        // concatenation via "+" to compile.
+                        return &LenBuiltin{Arg: arg, Typ: "list"}, "int", nil
+                }
+        }
+       if c.Func == "os.Getenv" && len(c.Args) == 1 {
+               arg, _, err := convertExpr(c.Args[0], env, vars)
+               if err != nil {
+                       return nil, "", err
+               }
+               usesGetEnv = true
+               return &FuncCall{Name: "_getenv", Args: []Expr{arg}, Ret: "string"}, "string", nil
+       }
+        if (c.Func == "substring" || c.Func == "substr") && len(c.Args) == 3 {
 		strArg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
 			return nil, "", err
