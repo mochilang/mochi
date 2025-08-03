@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 327/491
+Completed programs: 337/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -351,18 +351,18 @@ Completed programs: 327/491
 | 343 | empty-program | ✓ | 4.0µs | 208B |
 | 344 | empty-string-1 | ✓ | 34.0µs | 208B |
 | 345 | empty-string-2 | ✓ | 29.0µs | 208B |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 | ✓ | 4.0µs | 208B |
-| 351 | enumerations-2 |   |  |  |
-| 352 | enumerations-3 |   |  |  |
-| 353 | enumerations-4 |   |  |  |
-| 354 | environment-variables-1 |   |  |  |
-| 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
+| 346 | enforced-immutability | ✓ | 22.0µs | 240B |
+| 347 | entropy-1 | ✓ | 208.0µs | 3.82KB |
+| 348 | entropy-2 | ✓ | 196.0µs | 4.20KB |
+| 349 | entropy-narcissist | ✓ | 4.0ms | 438.28KB |
+| 350 | enumerations-1 | ✓ | 2.0µs | 208B |
+| 351 | enumerations-2 | ✓ | 0ns | 208B |
+| 352 | enumerations-3 | ✓ | 2.0µs | 208B |
+| 353 | enumerations-4 | ✓ | 2.0µs | 208B |
+| 354 | environment-variables-1 | ✓ | 30.0µs | 208B |
+| 355 | environment-variables-2 | error |  |  |
+| 356 | equal-prime-and-composite-sums | ✓ |  |  |
+| 357 | equilibrium-index | ✓ | 6.83s | 1.12GB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 327/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 22:30 +0700
+Last updated 2025-08-03 23:02 +0700
