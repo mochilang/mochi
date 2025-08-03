@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 313/491
+Completed programs: 314/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -316,7 +316,7 @@ Completed programs: 313/491
 | 308 | distance-and-bearing | error |  |  |
 | 309 | distributed-programming | error |  |  |
 | 310 | diversity-prediction-theorem | ✓ | 125.0µs | 4.12KB |
-| 311 | dns-query | ✓ | 21.0µs | 288B |
+| 311 | dns-query |   |  |  |
 | 312 | documentation | ✓ | 2.0µs | 208B |
 | 313 | doomsday-rule | ✓ | 66.0µs | 2.52KB |
 | 314 | dot-product | ✓ | 106.0µs | 416B |
@@ -336,7 +336,7 @@ Completed programs: 313/491
 | 328 | earliest-difference-between-prime-gaps | ✓ | 320.0µs | 14.66KB |
 | 329 | eban-numbers | error |  |  |
 | 330 | ecdsa-example | error |  |  |
-| 331 | echo-server |   |  |  |
+| 331 | echo-server | ✓ | 142.0µs | 384B |
 | 332 | eertree |   |  |  |
 | 333 | egyptian-division |   |  |  |
 | 334 | ekg-sequence-convergence |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 313/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-02 18:27 +0700
+Last updated 2025-08-03 15:40 +0700
