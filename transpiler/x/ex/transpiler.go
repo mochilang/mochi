@@ -118,6 +118,18 @@ type Program struct {
 
 type Stmt interface{ emit(io.Writer, int) }
 
+// BlockStmt emits a sequence of statements.
+type BlockStmt struct{ Stmts []Stmt }
+
+func (b *BlockStmt) emit(w io.Writer, indent int) {
+	for i, s := range b.Stmts {
+		s.emit(w, indent)
+		if i < len(b.Stmts)-1 {
+			io.WriteString(w, "\n")
+		}
+	}
+}
+
 // VarRef references a variable name or dotted selector.
 type VarRef struct{ Name string }
 
@@ -348,7 +360,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, name)
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
-		io.WriteString(w, v)
+		io.WriteString(w, sanitizeIdent(v))
 	}
 	io.WriteString(w, " ->\n")
 	for i := 0; i < indent+1; i++ {
@@ -393,7 +405,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, name)
 	for _, v := range wst.Vars {
 		io.WriteString(w, ", ")
-		io.WriteString(w, v)
+		io.WriteString(w, sanitizeIdent(v))
 	}
 	io.WriteString(w, ")\n")
 	for i := 0; i < indent+1; i++ {
@@ -406,7 +418,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 	if len(wst.Vars) == 0 {
 		io.WriteString(w, "nil\n")
 	} else if len(wst.Vars) == 1 {
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, "\n")
 	} else {
 		io.WriteString(w, "{")
@@ -414,7 +426,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "}\n")
 	}
@@ -452,7 +464,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		}
 		io.WriteString(w, "end\n")
 	} else if len(wst.Vars) == 1 {
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, " = try do\n")
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
@@ -461,7 +473,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, ".(")
 		io.WriteString(w, name)
 		io.WriteString(w, ", ")
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
@@ -471,9 +483,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, "  ")
 		}
 		io.WriteString(w, "{:break, ")
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, "} -> ")
-		io.WriteString(w, wst.Vars[0])
+		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, "\n")
 		for i := 0; i < indent+1; i++ {
 			io.WriteString(w, "  ")
@@ -485,7 +497,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "} = try do\n")
 		for i := 0; i < indent+2; i++ {
@@ -496,7 +508,7 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, name)
 		for _, v := range wst.Vars {
 			io.WriteString(w, ", ")
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, ")\n")
 		for i := 0; i < indent+1; i++ {
@@ -511,14 +523,14 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "}} -> {")
 		for i, v := range wst.Vars {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			io.WriteString(w, v)
+			io.WriteString(w, sanitizeIdent(v))
 		}
 		io.WriteString(w, "}\n")
 		for i := 0; i < indent+1; i++ {
@@ -570,7 +582,7 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "duration_us = _now() - t_start\n")
+	io.WriteString(w, "duration_us = max(_now() - t_start, 1)\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -578,7 +590,7 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "mem_diff = max(mem_end - mem_start, 0)\n")
+	io.WriteString(w, "mem_diff = abs(mem_end - mem_start)\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1813,9 +1825,9 @@ func Emit(p *Program, benchMain bool) []byte {
 		}
 		if benchMain {
 			buf.WriteString("    mem_end = _mem()\n")
-			buf.WriteString("    duration_us = _now() - t_start\n")
+			buf.WriteString("    duration_us = max(_now() - t_start, 1)\n")
 			buf.WriteString("    :erlang.garbage_collect()\n")
-			buf.WriteString("    mem_diff = max(mem_end - mem_start, 0)\n")
+			buf.WriteString("    mem_diff = abs(mem_end - mem_start)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		}
 		buf.WriteString("  end\n")
@@ -1834,9 +1846,9 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("    t_start = _now()\n")
 		buf.WriteString("    main()\n")
 		buf.WriteString("    mem_end = _mem()\n")
-		buf.WriteString("    duration_us = _now() - t_start\n")
+		buf.WriteString("    duration_us = max(_now() - t_start, 1)\n")
 		buf.WriteString("    :erlang.garbage_collect()\n")
-		buf.WriteString("    mem_diff = max(mem_end - mem_start, 0)\n")
+		buf.WriteString("    mem_diff = abs(mem_end - mem_start)\n")
 		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		buf.WriteString("  end\n")
 	}
@@ -1917,7 +1929,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			return nil, err
 		}
 		if stmt != nil {
-			res.Stmts = append(res.Stmts, stmt)
+			if blk, ok := stmt.(*BlockStmt); ok {
+				res.Stmts = append(res.Stmts, blk.Stmts...)
+			} else {
+				res.Stmts = append(res.Stmts, stmt)
+			}
 		}
 	}
 	_ = env
@@ -2253,7 +2269,60 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.ExternFun != nil:
 		return nil, nil
 	case st.Type != nil:
-		// Type declarations are ignored by this simple transpiler
+		block := &BlockStmt{}
+		var fields []string
+		for _, m := range st.Type.Members {
+			if m.Field != nil {
+				fields = append(fields, m.Field.Name)
+			}
+		}
+		for _, m := range st.Type.Members {
+			if m.Method != nil {
+				child := types.NewEnv(env)
+				locals := map[string]struct{}{"self": {}}
+				child.SetVar("self", types.AnyType{}, false)
+				params := []string{"self"}
+				for _, p := range m.Method.Params {
+					if p.Type != nil {
+						child.SetVar(p.Name, types.ResolveTypeRef(p.Type, env), false)
+					} else {
+						child.SetVar(p.Name, types.AnyType{}, false)
+					}
+					locals[p.Name] = struct{}{}
+					params = append(params, p.Name)
+				}
+				body := make([]Stmt, 0, len(fields)+len(m.Method.Body))
+				for _, f := range fields {
+					fn := sanitizeIdent(f)
+					child.SetVar(fn, types.AnyType{}, false)
+					locals[fn] = struct{}{}
+					idx := &AtomLit{Name: ":" + f}
+					body = append(body, &LetStmt{Name: fn, Value: &IndexExpr{Target: &VarRef{Name: "self"}, Index: idx, UseMapSyntax: true}})
+				}
+				funcDepth++
+				for _, b := range m.Method.Body {
+					if b.Let != nil {
+						locals[b.Let.Name] = struct{}{}
+					} else if b.Var != nil {
+						locals[b.Var.Name] = struct{}{}
+					}
+					bs, err := compileStmt(b, child)
+					if err != nil {
+						funcDepth--
+						return nil, err
+					}
+					if bs != nil {
+						body = append(body, bs)
+					}
+				}
+				funcDepth--
+				fd := &FuncDecl{Name: m.Method.Name, Params: params, Body: body, Locals: locals}
+				block.Stmts = append(block.Stmts, fd)
+			}
+		}
+		if len(block.Stmts) > 0 {
+			return block, nil
+		}
 		return nil, nil
 	default:
 		if st.Test == nil && st.Import == nil && st.Type == nil {
@@ -3235,6 +3304,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		if method == "get" {
 			base := &VarRef{Name: alias}
 			return &CallExpr{Func: "Map.get", Args: append([]Expr{base}, args...)}, nil
+		}
+		if _, err := env.GetVar(alias); err == nil {
+			funcName := sanitizeCallName(method)
+			return &CallExpr{Func: funcName, Args: append([]Expr{&VarRef{Name: alias}}, args...)}, nil
 		}
 		funcName := alias + "." + method
 		return &CallExpr{Func: funcName, Args: args}, nil
