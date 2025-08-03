@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (144/491) - Last updated 2025-08-03 22:10 +0700:
+Checklist of programs that currently transpile and run (148/491) - Last updated 2025-08-03 22:59 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -128,10 +128,10 @@ Checklist of programs that currently transpile and run (144/491) - Last updated 
 | 121 | bitmap-midpoint-circle-algorithm | ✓ | 404us | 1.7 MB |
 | 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 15.23ms | 4.6 MB |
 | 123 | bitmap-read-a-ppm-file | ✓ | 606us | 1.6 MB |
-| 124 | bitmap-read-an-image-through-a-pipe |  |  |  |
-| 125 | bitmap-write-a-ppm-file |  |  |  |
-| 126 | bitmap |  |  |  |
-| 127 | bitwise-io-1 |  |  |  |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 404us | 1.5 MB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 523us | 1.6 MB |
+| 126 | bitmap | ✓ | 10.91ms | 3.4 MB |
+| 127 | bitwise-io-1 | ✓ | 338us | 1.6 MB |
 | 128 | bitwise-io-2 |  |  |  |
 | 129 | bitwise-operations | ✓ | 639us | 11.0 KB |
 | 130 | blum-integer | ✓ | 265us | 10.8 KB |
