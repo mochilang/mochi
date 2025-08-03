@@ -1,0 +1,7 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+WARNING: reference to undefined variable: panic
+580 divided by 34 is 17 with remainder 2

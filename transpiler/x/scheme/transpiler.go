@@ -244,7 +244,7 @@ func header() []byte {
            (let ((addr (sockaddr-name (address-info-address a))))
              (loop (address-info-next a)
                    (if (string-contains addr ":") acc (cons addr acc))))
-          (list (list-sort string<? acc) 'nil))))))
+          (list (list-sort string<? acc) '()))))))
 `
 	}
 	if usesGetEnv || usesEnviron {
@@ -1425,8 +1425,13 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return StringLit(p.Selector.Root), nil
 	case p.Selector != nil:
-		if p.Selector.Root == "testpkg" && len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "FifteenPuzzleExample" {
-			return Symbol("testpkg.FifteenPuzzleExample"), nil
+		if p.Selector.Root == "testpkg" && len(p.Selector.Tail) == 1 {
+			switch p.Selector.Tail[0] {
+			case "FifteenPuzzleExample":
+				return Symbol("testpkg.FifteenPuzzleExample"), nil
+			case "ECDSAExample":
+				return Symbol("testpkg.ECDSAExample"), nil
+			}
 		}
 		var node Node = Symbol(p.Selector.Root)
 		needHash = true
@@ -2623,6 +2628,38 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return nil, err
 		}
 		args[i] = n
+	}
+	// handle testpkg.ECDSAExample which is represented as (hash-table-ref testpkg "ECDSAExample")
+	if l, ok := target.(*List); ok && len(l.Elems) == 3 {
+		if sym, ok := l.Elems[0].(Symbol); ok && sym == "hash-table-ref" {
+			if root, ok := l.Elems[1].(Symbol); ok && root == "testpkg" {
+				if key, ok := l.Elems[2].(StringLit); ok && string(key) == "ECDSAExample" {
+					if len(args) != 0 {
+						return nil, fmt.Errorf("ECDSAExample expects no args")
+					}
+					r := testpkg.ECDSAExample()
+					needHash = true
+					obj := gensym("obj")
+					bindings := &List{Elems: []Node{&List{Elems: []Node{Symbol(obj), &List{Elems: []Node{Symbol("hash-table")}}}}}}
+					stmts := []Node{
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("D"), StringLit(r.D)}},
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("X"), StringLit(r.X)}},
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Y"), StringLit(r.Y)}},
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Hash"), StringLit(r.Hash)}},
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("R"), StringLit(r.R)}},
+						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("S"), StringLit(r.S)}},
+					}
+					valid := Symbol("#f")
+					if r.Valid {
+						valid = Symbol("#t")
+					}
+					stmts = append(stmts, &List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Valid"), valid}})
+					stmts = append(stmts, Symbol(obj))
+					body := append([]Node{Symbol("let"), bindings}, stmts...)
+					return &List{Elems: body}, nil
+				}
+			}
+		}
 	}
 	if sym, ok := target.(Symbol); ok {
 		if ut, ok := currentEnv.FindUnionByVariant(string(sym)); ok {
