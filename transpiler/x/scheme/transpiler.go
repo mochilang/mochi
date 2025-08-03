@@ -1224,6 +1224,11 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		needHash = true
 		node = &List{Elems: []Node{Symbol("hash-table-keys"), node}}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
+	} else if pf.Target.Selector != nil && pf.Target.Selector.Root == "testpkg" && len(pf.Target.Selector.Tail) == 1 {
+		node, err = convertParserPrimary(pf.Target)
+		if err != nil {
+			return nil, err
+		}
 	} else if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
 		objNode, err := convertParserPrimary(rootPrim)
@@ -2640,7 +2645,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 					r := testpkg.ECDSAExample()
 					needHash = true
 					obj := gensym("obj")
-					bindings := &List{Elems: []Node{&List{Elems: []Node{Symbol(obj), &List{Elems: []Node{Symbol("hash-table")}}}}}}
+					bindings := &List{Elems: []Node{&List{Elems: []Node{Symbol(obj), &List{Elems: []Node{Symbol("make-hash-table")}}}}}}
 					stmts := []Node{
 						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("D"), StringLit(r.D)}},
 						&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("X"), StringLit(r.X)}},
@@ -2681,6 +2686,30 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			return &List{Elems: append([]Node{Symbol(string(sym))}, args...)}, nil
 		}
 		switch sym {
+		case "testpkg.ECDSAExample":
+			if len(args) != 0 {
+				return nil, fmt.Errorf("ECDSAExample expects no args")
+			}
+			r := testpkg.ECDSAExample()
+			needHash = true
+			obj := gensym("obj")
+			bindings := &List{Elems: []Node{&List{Elems: []Node{Symbol(obj), &List{Elems: []Node{Symbol("make-hash-table")}}}}}}
+			stmts := []Node{
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("D"), StringLit(r.D)}},
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("X"), StringLit(r.X)}},
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Y"), StringLit(r.Y)}},
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Hash"), StringLit(r.Hash)}},
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("R"), StringLit(r.R)}},
+				&List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("S"), StringLit(r.S)}},
+			}
+			valid := Symbol("#f")
+			if r.Valid {
+				valid = Symbol("#t")
+			}
+			stmts = append(stmts, &List{Elems: []Node{Symbol("hash-table-set!"), Symbol(obj), StringLit("Valid"), valid}})
+			stmts = append(stmts, Symbol(obj))
+			body := append([]Node{Symbol("let"), bindings}, stmts...)
+			return &List{Elems: body}, nil
 		case "print":
 			forms := []Node{Symbol("begin")}
 			for i, a := range args {
