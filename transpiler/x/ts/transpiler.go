@@ -2368,15 +2368,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Let.Name, t, false)
 		}
-		if _, ok := t.(types.BigIntType); ok {
-			if n, ok2 := e.(*NumberLit); ok2 {
-				if !strings.HasSuffix(n.Value, "n") {
-					n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
-				}
-			} else if !isBigIntExpr(e) {
-				e = &CallExpr{Func: "BigInt", Args: []Expr{e}}
-			}
-		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
 		}
@@ -2429,15 +2420,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if transpileEnv != nil {
 			transpileEnv.SetVar(s.Var.Name, t, true)
 		}
-		if _, ok := t.(types.BigIntType); ok {
-			if n, ok2 := e.(*NumberLit); ok2 {
-				if !strings.HasSuffix(n.Value, "n") {
-					n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
-				}
-			} else if !isBigIntExpr(e) {
-				e = &CallExpr{Func: "BigInt", Args: []Expr{e}}
-			}
-		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
 			typeStr = q.ElemType + "[]"
 		}
@@ -2446,17 +2428,6 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		val, err := convertExpr(s.Assign.Value)
 		if err != nil {
 			return nil, err
-		}
-		if transpileEnv != nil {
-			if t, err2 := transpileEnv.GetVar(s.Assign.Name); err2 == nil {
-				if _, ok := t.(types.BigIntType); ok {
-					if n, ok2 := val.(*NumberLit); ok2 {
-						if !strings.HasSuffix(n.Value, "n") {
-							n.Value = strings.TrimSuffix(n.Value, ".0") + "n"
-						}
-					}
-				}
-			}
 		}
 		target := Expr(&NameRef{Name: s.Assign.Name})
 		if len(s.Assign.Index) > 0 {
@@ -4263,10 +4234,8 @@ func literalType(l *parser.Literal) types.Type {
 
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType:
+	case types.IntType, types.Int64Type, types.FloatType, types.BigRatType, types.BigIntType:
 		return "number"
-	case types.BigIntType:
-		return "bigint"
 	case types.BoolType:
 		return "boolean"
 	case types.StringType:
@@ -4515,8 +4484,6 @@ func isBoolExpr(e *parser.Expr) bool {
 
 func isBigIntType(t types.Type) bool {
 	switch tt := t.(type) {
-	case types.BigIntType:
-		return true
 	case types.OptionType:
 		return isBigIntType(tt.Elem)
 	default:

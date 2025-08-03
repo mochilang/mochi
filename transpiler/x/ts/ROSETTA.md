@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-03 09:26 UTC
+Last updated: 2025-08-03 10:29 UTC
 
-## Rosetta Golden Test Checklist (474/491)
+## Rosetta Golden Test Checklist (472/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.088ms | 256.0 KB |
@@ -96,59 +96,59 @@ Last updated: 2025-08-03 09:26 UTC
 | 87 | averages-median-1 | ✓ | 749µs |  |
 | 88 | averages-median-2 | ✓ | 1.592ms | 128.0 KB |
 | 89 | averages-median-3 | ✓ | 1.589ms | 384.0 KB |
-| 90 | averages-mode | ✓ | 687µs |  |
-| 91 | averages-pythagorean-means | ✓ | 1.485ms | 1.1 MB |
-| 92 | averages-root-mean-square | ✓ | 643µs | 128.0 KB |
-| 93 | averages-simple-moving-average | ✓ | 4.851ms | 384.0 KB |
-| 94 | avl-tree | ✓ | 3.924ms | 256.0 KB |
-| 95 | b-zier-curves-intersections | ✓ | 8.869ms | 3.8 MB |
-| 96 | babbage-problem | ✓ | 2.737ms | 1.6 MB |
-| 97 | babylonian-spiral | ✓ | 5.177ms | 512.0 KB |
-| 98 | balanced-brackets | ✓ | 1.951ms |  |
-| 99 | balanced-ternary | ✓ | 2.867ms | 384.0 KB |
-| 100 | barnsley-fern | ✓ | 17.204ms | 9.6 MB |
-| 101 | base64-decode-data | ✓ | 534µs | 1.0 MB |
-| 102 | bell-numbers | ✓ | 4.402ms | 512.0 KB |
-| 103 | benfords-law | ✓ | 6.307ms | 5.4 MB |
-| 104 | bernoulli-numbers | ✓ | 8.189ms | 4.4 MB |
-| 105 | best-shuffle | ✓ | 1.642ms | 128.0 KB |
-| 106 | bifid-cipher | ✓ | 2.754ms | 128.0 KB |
-| 107 | bin-given-limits | ✓ | 3.476ms | 384.0 KB |
-| 108 | binary-digits | ✓ | 1.972ms | 128.0 KB |
-| 109 | binary-search | ✓ | 750µs | 128.0 KB |
-| 110 | binary-strings | ✓ | 1.037ms |  |
-| 111 | bioinformatics-base-count | ✓ | 1.301ms | 128.0 KB |
-| 112 | bioinformatics-global-alignment | ✓ | 124.258ms | 19.0 MB |
-| 113 | bioinformatics-sequence-mutation | ✓ | 4.696ms | 640.0 KB |
-| 114 | biorhythms | ✓ | 3.055ms | 640.0 KB |
-| 115 | bitcoin-address-validation | ✓ | 2.796ms | 640.0 KB |
-| 116 | bitmap-b-zier-curves-cubic | ✓ | 2.746ms | 264.0 KB |
-| 117 | bitmap-b-zier-curves-quadratic | ✓ | 2.369ms | 128.0 KB |
-| 118 | bitmap-bresenhams-line-algorithm | ✓ | 800µs |  |
-| 119 | bitmap-flood-fill | ✓ | 769µs | 128.0 KB |
-| 120 | bitmap-histogram | ✓ | 1.2ms | 128.0 KB |
-| 121 | bitmap-midpoint-circle-algorithm | ✓ | 1.589ms |  |
-| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 72.909ms | 21.8 MB |
-| 123 | bitmap-read-a-ppm-file | ✓ | 737µs | 128.0 KB |
-| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 607µs | 128.0 KB |
-| 125 | bitmap-write-a-ppm-file | ✓ | 1.345ms | 128.0 KB |
-| 126 | bitmap | ✓ | 44.059ms | 14.1 MB |
-| 127 | bitwise-io-1 | ✓ | 795µs | 128.0 KB |
-| 128 | bitwise-io-2 | ✓ | 2.336ms | 1.8 MB |
-| 129 | bitwise-operations | ✓ | 1.679ms | 256.0 KB |
-| 130 | blum-integer | ✓ | 2.941ms | 2.8 MB |
-| 131 | boolean-values | ✓ | 1.085ms |  |
-| 132 | box-the-compass | ✓ | 2.644ms | 640.0 KB |
-| 133 | boyer-moore-string-search | ✓ | 1.316ms | 128.0 KB |
-| 134 | brazilian-numbers | ✓ | 8.144409s | 9.0 MB |
-| 135 | break-oo-privacy | ✓ | 844µs |  |
-| 136 | brilliant-numbers | ✓ | 58.808563s | 129.2 MB |
-| 137 | brownian-tree | ✓ | 17.721714s | 14.4 MB |
-| 138 | bulls-and-cows-player | ✓ | 4.121ms | 3.6 MB |
+| 90 | averages-mode | ✓ | 736µs | 17.6 KB |
+| 91 | averages-pythagorean-means | ✓ | 1.397ms | 29.4 KB |
+| 92 | averages-root-mean-square | ✓ | 662µs | 15.4 KB |
+| 93 | averages-simple-moving-average | ✓ | 2.634ms | 819.7 KB |
+| 94 | avl-tree | ✓ | 3.329ms | 226.7 KB |
+| 95 | b-zier-curves-intersections | ✓ | 9.056ms | 1.1 MB |
+| 96 | babbage-problem | ✓ | 2.085ms | 24.1 KB |
+| 97 | babylonian-spiral |   | 5.177ms | 512.0 KB |
+| 98 | balanced-brackets | ✓ | 2.864ms | 75.0 KB |
+| 99 | balanced-ternary | ✓ | 3.032ms | 298.8 KB |
+| 100 | barnsley-fern |   | 17.204ms | 9.6 MB |
+| 101 | base64-decode-data | ✓ | 2.993ms | 203.3 KB |
+| 102 | bell-numbers | ✓ | 3.683ms | 412.6 KB |
+| 103 | benfords-law | ✓ | 6.873ms | 428.9 KB |
+| 104 | bernoulli-numbers | ✓ | 10.202ms | 999.6 KB |
+| 105 | best-shuffle | ✓ | 1.904ms | 53.9 KB |
+| 106 | bifid-cipher | ✓ | 2.718ms | 151.8 KB |
+| 107 | bin-given-limits | ✓ | 3.063ms | 355.3 KB |
+| 108 | binary-digits | ✓ | 1.675ms | 58.1 KB |
+| 109 | binary-search | ✓ | 1.046ms | 18.5 KB |
+| 110 | binary-strings | ✓ | 1.738ms | 43.1 KB |
+| 111 | bioinformatics-base-count | ✓ | 1.296ms | 327.4 KB |
+| 112 | bioinformatics-global-alignment | ✓ | 118.192ms | 5.4 MB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 5.418ms | 392.5 KB |
+| 114 | biorhythms | ✓ | 3.996ms | 362.7 KB |
+| 115 | bitcoin-address-validation | ✓ | 3.526ms | 62.8 KB |
+| 116 | bitmap-b-zier-curves-cubic | ✓ | 81.198ms | 7.6 MB |
+| 117 | bitmap-b-zier-curves-quadratic | ✓ | 85.943ms | 6.9 MB |
+| 118 | bitmap-bresenhams-line-algorithm | ✓ | 870µs | 32.9 KB |
+| 119 | bitmap-flood-fill | ✓ | 900µs | 28.1 KB |
+| 120 | bitmap-histogram | ✓ | 1.856ms | 30.2 KB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 2.028ms | 114.2 KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 90.305ms | 8.3 MB |
+| 123 | bitmap-read-a-ppm-file | ✓ | 2.405ms | 82.4 KB |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ | 1.777ms | 29.8 KB |
+| 125 | bitmap-write-a-ppm-file | ✓ | 1.544ms | 34.8 KB |
+| 126 | bitmap | ✓ | 42.08ms | 4.6 MB |
+| 127 | bitwise-io-1 | ✓ | 947µs | 20.4 KB |
+| 128 | bitwise-io-2 | ✓ | 4.139ms | 79.3 KB |
+| 129 | bitwise-operations | ✓ | 2.066ms | 570.0 KB |
+| 130 | blum-integer | ✓ | 4.235ms | 317.7 KB |
+| 131 | boolean-values | ✓ | 1.105ms | 35.4 KB |
+| 132 | box-the-compass | ✓ | 4.096ms | 894.4 KB |
+| 133 | boyer-moore-string-search | ✓ | 1.825ms | 62.2 KB |
+| 134 | brazilian-numbers | ✓ | 4.623137s | 594.4 KB |
+| 135 | break-oo-privacy | ✓ | 866µs | 36.1 KB |
+| 136 | brilliant-numbers | ✓ | 1m27.937644s | 101.6 MB |
+| 137 | brownian-tree | ✓ | 29.9788s | 1.6 MB |
+| 138 | bulls-and-cows-player | ✓ | 4.613ms | 382.1 KB |
 | 139 | bulls-and-cows | ✓ | 1.141558s | 512.0 KB |
-| 140 | burrows-wheeler-transform | ✓ | 11.275ms | 7.8 MB |
-| 141 | caesar-cipher-1 | ✓ | 1.236ms | 128.0 KB |
-| 142 | caesar-cipher-2 | ✓ | 1.274ms | 128.0 KB |
+| 140 | burrows-wheeler-transform | ✓ | 12.137ms | 372.1 KB |
+| 141 | caesar-cipher-1 | ✓ | 1.868ms | 568.7 KB |
+| 142 | caesar-cipher-2 | ✓ | 1.927ms | 312.6 KB |
 | 143 | calculating-the-value-of-e | ✓ | 724µs | 128.0 KB |
 | 144 | calendar---for-real-programmers-1 | ✓ | 7.269ms | 3.2 MB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 7.22ms | 3.0 MB |
