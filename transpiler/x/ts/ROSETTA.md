@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-03 10:42 UTC
+Last updated: 2025-08-03 10:53 UTC
 
 ## Rosetta Golden Test Checklist (472/491)
 | Index | Name | Status | Duration | Memory |
@@ -156,7 +156,7 @@ Last updated: 2025-08-03 10:42 UTC
 | 147 | calkin-wilf-sequence | ✓ | 3.01ms | 512.0 KB |
 | 148 | call-a-foreign-language-function | ✓ | 570µs | 128.0 KB |
 | 149 | call-a-function-1 | ✓ | 8µs |  |
-| 150 | call-a-function-10 | ✓ | 63µs |  |
+| 150 | call-a-function-10 | ✓ | 73µs | 3.8 KB |
 | 151 | call-a-function-11 | ✓ | 903µs | 128.0 KB |
 | 152 | call-a-function-12 | ✓ | 740µs | 128.0 KB |
 | 153 | call-a-function-2 | ✓ | 75µs |  |
