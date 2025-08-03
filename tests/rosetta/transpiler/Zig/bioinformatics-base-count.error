@@ -1,5 +1,0 @@
-zig build: exit status 1
-/tmp/bioinformatics-base-count.zig:22:9: error: local variable shadows declaration of 'i'
-/tmp/bioinformatics-base-count.zig:35:1: note: declared here
-/tmp/bioinformatics-base-count.zig:29:19: error: function parameter shadows declaration of 'a'
-/tmp/bioinformatics-base-count.zig:36:1: note: declared here

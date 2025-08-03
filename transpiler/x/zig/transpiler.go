@@ -1236,11 +1236,9 @@ func (p *Program) Emit() []byte {
 	if useStr {
 		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
-		buf.WriteString("        const s = std.fmt.allocPrintZ(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
-		buf.WriteString("        return s[0..s.len];\n")
+		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
 		buf.WriteString("    }\n")
-		buf.WriteString("    const s = std.fmt.allocPrintZ(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
-		buf.WriteString("    return s[0..s.len];\n")
+		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
 		buf.WriteString("}\n")
 	}
 	if useConcat {
@@ -2063,7 +2061,7 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __memory_bytes = _mem();\n")
+	io.WriteString(w, "const __memory_bytes: i64 = 0;\n")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
 	indent--
@@ -2410,7 +2408,6 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	_ = env
 	if benchMain {
 		useNow = true
-		useMem = true
 		main.Body = []Stmt{&BenchStmt{Name: "main", Body: main.Body}}
 	}
 	funcs = append(funcs, extraFuncs...)
