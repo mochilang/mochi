@@ -3170,7 +3170,6 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	localVarStack = append(localVarStack, map[string]bool{})
 	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 
-	startMem := &VarDecl{Name: "_start_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
 	body := make([]Stmt, 0, len(b.Body))
 	for _, st := range b.Body {
@@ -3185,37 +3184,26 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64", Mutable: true}
-	fixCond := &BinaryExpr{Left: &NameRef{Name: "memory_bytes"}, Op: "<=", Right: &NumberLit{Value: "0"}}
-	fixAssign := &AssignStmt{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}}
-	fixIf := &IfStmt{Cond: fixCond, Then: []Stmt{fixAssign}}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
-	stmts := []Stmt{startMem, startDecl}
+	stmts := []Stmt{startDecl}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, endMem, durDecl, memDecl, fixIf, print)
+	stmts = append(stmts, endDecl, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}, nil
 }
 
 func wrapBench(name string, body []Stmt) Stmt {
 	useTime = true
-	startMem := &VarDecl{Name: "_start_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	endMem := &VarDecl{Name: "_end_mem", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
-	memExpr := &BinaryExpr{Left: &NameRef{Name: "_end_mem"}, Op: "-", Right: &NameRef{Name: "_start_mem"}}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64", Mutable: true}
-	fixCond := &BinaryExpr{Left: &NameRef{Name: "memory_bytes"}, Op: "<=", Right: &NumberLit{Value: "0"}}
-	fixAssign := &AssignStmt{Name: "memory_bytes", Expr: &NameRef{Name: "_end_mem"}}
-	fixIf := &IfStmt{Cond: fixCond, Then: []Stmt{fixAssign}}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
-	stmts := []Stmt{startMem, startDecl}
+	stmts := []Stmt{startDecl}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, endMem, durDecl, memDecl, fixIf, print)
+	stmts = append(stmts, endDecl, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}
 }
 
