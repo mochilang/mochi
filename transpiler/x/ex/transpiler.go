@@ -3911,7 +3911,7 @@ func nowHelper(indent int) string {
 	buf.WriteString(pad + "    Process.put(:_now_seed, seed)\n")
 	buf.WriteString(pad + "    abs(seed)\n")
 	buf.WriteString(pad + "  else\n")
-	buf.WriteString(pad + "    System.monotonic_time(:microsecond)\n")
+        buf.WriteString(pad + "    System.monotonic_time(:native) |> System.convert_time_unit(:native, :microsecond)\n")
 	buf.WriteString(pad + "  end\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
@@ -3946,10 +3946,11 @@ func sliceHelper(indent int) string {
 func memHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
-	buf.WriteString(pad + "defp _mem() do\n")
-	buf.WriteString(pad + "  :erlang.memory(:total)\n")
-	buf.WriteString(pad + "end\n")
-	return buf.String()
+        buf.WriteString(pad + "defp _mem() do\n")
+        buf.WriteString(pad + "  {:memory, bytes} = :erlang.process_info(self(), :memory)\n")
+        buf.WriteString(pad + "  bytes\n")
+        buf.WriteString(pad + "end\n")
+        return buf.String()
 }
 
 func lookupHostHelper(indent int) string {
