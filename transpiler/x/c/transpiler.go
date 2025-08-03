@@ -480,6 +480,80 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	if lst, ok := r.Expr.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
+		base := strings.TrimSuffix(currentFuncReturn, "[]")
+		if strings.HasSuffix(base, "[]") {
+			base = strings.TrimSuffix(base, "[]")
+			tmp := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			writeIndent(w, indent)
+			io.WriteString(w, "{\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "static size_t %s_lens[] = {", tmp)
+			for i, e := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if sub, ok := e.(*ListLit); ok {
+					fmt.Fprintf(w, "%d", len(sub.Elems))
+				} else {
+					io.WriteString(w, "0")
+				}
+			}
+			io.WriteString(w, "};\n")
+			for i, e := range lst.Elems {
+				if sub, ok := e.(*ListLit); ok {
+					writeIndent(w, indent+1)
+					fmt.Fprintf(w, "static %s %s_row%d[] = {", base, tmp, i)
+					for j, el := range sub.Elems {
+						if j > 0 {
+							io.WriteString(w, ", ")
+						}
+						el.emitExpr(w)
+					}
+					io.WriteString(w, "};\n")
+				}
+			}
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "static %s* %s_data[] = {", base, tmp)
+			for i := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				fmt.Fprintf(w, "%s_row%d", tmp, i)
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, tmp)
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "return %s_data;\n", tmp)
+			writeIndent(w, indent)
+			io.WriteString(w, "}\n")
+			return
+		}
+		tmp := fmt.Sprintf("__tmp%d", tempCounter)
+		tempCounter++
+		writeIndent(w, indent)
+		io.WriteString(w, "{\n")
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "static %s %s_arr[] = {", base, tmp)
+		for i, e := range lst.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			e.emitExpr(w)
+		}
+		io.WriteString(w, "};\n")
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "return %s_arr;\n", tmp)
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
 	writeIndent(w, indent)
 	io.WriteString(w, "return")
 	if r.Expr != nil {
