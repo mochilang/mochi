@@ -367,7 +367,7 @@ This file is auto-generated from rosetta tests.
 | 360 | esthetic-numbers | ✓ | 937µs | 51.3 KB |
 | 361 | ethiopian-multiplication | ✓ | 246µs | 57.3 KB |
 | 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
+| 363 | euler-method | ✓ | 350µs | 70.5 KB |
 | 364 | eulers-constant-0.5772... |   |  |  |
 | 365 | eulers-identity |   |  |  |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-03 17:07 +0700
+Last updated: 2025-08-03 11:11 +0000
