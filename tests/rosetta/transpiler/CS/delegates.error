@@ -1,4 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden1300507692/001/Program.cs(84,29): error CS0029: Cannot implicitly convert type 'System.Collections.Generic.Dictionary<object, object>' to 'System.Collections.Generic.Dictionary<string, System.Func<string>>' [/tmp/TestCSTranspiler_Rosetta_Golden1300507692/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
