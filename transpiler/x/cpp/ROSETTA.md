@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (265/491) - Last updated 2025-08-03 09:44 +0700:
+Checklist of programs that currently transpile and run (266/491) - Last updated 2025-08-03 10:05 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -32,12 +32,12 @@ Checklist of programs that currently transpile and run (265/491) - Last updated 
 | 25 | accumulator-factory | ✓ | 71.0µs | 12.79MB |
 | 26 | achilles-numbers | ✓ | 21.0ms | 14.59MB |
 | 27 | ackermann-function-2 | ✓ | 52.0µs | 13.44MB |
-| 28 | ackermann-function-3 |   |  |  |
+| 28 | ackermann-function-3 | ✓ |  |  |
 | 29 | ackermann-function | ✓ | 217.0µs | 12.62MB |
 | 30 | active-directory-connect | ✓ | 44.0µs | 12.87MB |
 | 31 | active-directory-search-for-a-user | ✓ | 66.0µs | 12.94MB |
 | 32 | active-object | ✓ | 85.0µs | 13.00MB |
-| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ |  |  |
+| 33 | add-a-variable-to-a-class-instance-at-runtime | ✓ | 262.0µs | 3.77MB |
 | 34 | additive-primes | ✓ | 162.0µs | 13.29MB |
 | 35 | address-of-a-variable | ✓ | 83.0µs | 12.34MB |
 | 36 | adfgvx-cipher |   |  |  |
