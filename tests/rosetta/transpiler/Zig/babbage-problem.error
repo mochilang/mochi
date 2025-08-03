@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/babbage-problem.zig:14:5: error: variable of type 'comptime_int' must be const or comptime
-/tmp/babbage-problem.zig:14:5: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

@@ -1260,22 +1260,16 @@ func (p *Program) Emit() []byte {
 	}
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
-		buf.WriteString("    const path = \"/proc/self/status\";\n")
-		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{ .read = true }) catch return 0;\n")
+		buf.WriteString("    const path = \"/proc/self/statm\";\n")
+		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
 		buf.WriteString("    defer f.close();\n")
-		buf.WriteString("    var buf: [4096]u8 = undefined;\n")
+		buf.WriteString("    var buf: [64]u8 = undefined;\n")
 		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
-		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \"\\n\");\n")
-		buf.WriteString("    while (it.next()) |line| {\n")
-		buf.WriteString("        if (std.mem.startsWith(u8, line, \"VmRSS:\")) {\n")
-		buf.WriteString("            var it2 = std.mem.splitAny(u8, line, &[_]u8{' ', '\\t'});\n")
-		buf.WriteString("            _ = it2.next(); // label\n")
-		buf.WriteString("            while (it2.next()) |tok| {\n")
-		buf.WriteString("                if (tok.len == 0) continue;\n")
-		buf.WriteString("                const kb = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("                return kb * 1024;\n")
-		buf.WriteString("            }\n")
-		buf.WriteString("        }\n")
+		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \" \" );\n")
+		buf.WriteString("    _ = it.next(); // total program size\n")
+		buf.WriteString("    if (it.next()) |tok| {\n")
+		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
+		buf.WriteString("        return pages * std.mem.page_size;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -3133,6 +3127,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	}
 	body := make([]Stmt, 0, len(ws.Body))
 	pushAliasScope()
+	funDepth++
 	// track varDecls before processing the loop so we can remove
 	// any declarations that are scoped within the loop body
 	outerDecls := make(map[string]*VarDecl, len(varDecls))
@@ -3142,6 +3137,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 	for _, s := range ws.Body {
 		st, err := compileStmt(s, prog)
 		if err != nil {
+			funDepth--
 			return nil, err
 		}
 		body = append(body, st)
@@ -3152,6 +3148,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 			delete(varDecls, k)
 		}
 	}
+	funDepth--
 	popAliasScope()
 	return &WhileStmt{Cond: cond, Body: body}, nil
 }
