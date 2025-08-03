@@ -1528,10 +1528,11 @@ func isMapExpr(e Expr, env *types.Env, ctx *context) bool {
 			}
 		}
 		if env != nil {
-			name := v.Func
-			if fn, ok := env.GetFunc(name); ok && fn.Return != nil {
-				if fn.Return.Generic != nil && fn.Return.Generic.Name == "map" {
-					return true
+			if t, err := env.GetVar(v.Func); err == nil {
+				if ft, ok := t.(types.FuncType); ok {
+					if _, ok := ft.Return.(types.MapType); ok {
+						return true
+					}
 				}
 			}
 		}
@@ -3226,7 +3227,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStringVar(st.Let.Name, isStringExpr(e))
 		ctx.setListStrVar(st.Let.Name, isStringListExpr(e))
 		ctx.setFloatVar(st.Let.Name, isFloatExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "float"))
+		exprT := types.ExprType(st.Let.Value, env)
 		isMap := isMapExpr(e, env, ctx) || (st.Let.Type != nil && st.Let.Type.Generic != nil && st.Let.Type.Generic.Name == "map")
+		if !isMap {
+			if _, ok := exprT.(types.MapType); ok {
+				isMap = true
+			}
+		}
 		if !isMap {
 			if t, err := env.GetVar(st.Let.Name); err == nil {
 				if _, ok := t.(types.MapType); ok {
@@ -3268,7 +3275,13 @@ func convertStmt(st *parser.Statement, env *types.Env, ctx *context, top bool) (
 		ctx.setStringVar(st.Var.Name, isStringExpr(e))
 		ctx.setListStrVar(st.Var.Name, isStringListExpr(e))
 		ctx.setFloatVar(st.Var.Name, isFloatExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Simple != nil && *st.Var.Type.Simple == "float"))
+		exprT := types.ExprType(st.Var.Value, env)
 		isMapV := isMapExpr(e, env, ctx) || (st.Var.Type != nil && st.Var.Type.Generic != nil && st.Var.Type.Generic.Name == "map")
+		if !isMapV {
+			if _, ok := exprT.(types.MapType); ok {
+				isMapV = true
+			}
+		}
 		if !isMapV {
 			if t, err := env.GetVar(st.Var.Name); err == nil {
 				if _, ok := t.(types.MapType); ok {
@@ -4506,6 +4519,29 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			return nil, fmt.Errorf("keys expects 0 arg")
 		}
 		return &CallExpr{Func: "maps:keys", Args: []Expr{base}}, nil
+	}
+	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
+		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		call := pf.Ops[0].Call
+		if len(call.Args) == 0 || len(call.Args) > 2 {
+			return nil, fmt.Errorf("get expects 1 or 2 args")
+		}
+		key, err := convertExpr(call.Args[0], env, ctx)
+		if err != nil {
+			return nil, err
+		}
+		args := []Expr{key, base}
+		if len(call.Args) == 2 {
+			def, err := convertExpr(call.Args[1], env, ctx)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, def)
+		}
+		return &CallExpr{Func: "maps:get", Args: args}, nil
 	}
 	if pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "padStart" && len(pf.Ops) == 1 && pf.Ops[0].Call != nil {
 		base, err := convertPrimary(&parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}, env, ctx)
