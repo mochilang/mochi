@@ -5551,17 +5551,22 @@ func writeForStmt(buf *bytes.Buffer, s *ForStmt, indent int) {
 		buf.WriteString("..")
 		s.End.emit(buf)
 	} else {
-		if strings.HasPrefix(s.IterType, "Vec<") {
-			s.Iter.emit(buf)
-			buf.WriteString(".clone()")
-		} else {
-			if s.ByRef {
-				buf.WriteString("&")
-			}
-			s.Iter.emit(buf)
-		}
-	}
-	buf.WriteString(" {\n")
+               if strings.HasPrefix(s.IterType, "Vec<") {
+                       // Avoid cloning the entire vector when iterating. Use
+                       // an iterator and clone elements only if needed.
+                       s.Iter.emit(buf)
+                       buf.WriteString(".iter()")
+                       if !s.ByRef {
+                               buf.WriteString(".cloned()")
+                       }
+               } else {
+                       if s.ByRef {
+                               buf.WriteString("&")
+                       }
+                       s.Iter.emit(buf)
+               }
+       }
+       buf.WriteString(" {\n")
 	for _, st := range s.Body {
 		writeStmt(buf, st, indent+1)
 	}
