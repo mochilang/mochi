@@ -114,6 +114,7 @@ type RecordDef struct {
 type MapItem struct {
 	Key   Expr
 	Value Expr
+	Type  string
 }
 
 type MapLitDef struct {
@@ -640,9 +641,15 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 	default:
 		if c.Type != "" {
-			fmt.Fprintf(w, "%s(", c.Type)
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
+			if (isArrayType(c.Type) || isRecordType(c.Type)) && inferType(c.Expr) == "Variant" {
+				fmt.Fprintf(w, "%s(pointer(PtrUInt(", c.Type)
+				c.Expr.emit(w)
+				io.WriteString(w, "))^)")
+			} else {
+				fmt.Fprintf(w, "%s(", c.Type)
+				c.Expr.emit(w)
+				io.WriteString(w, ")")
+			}
 		} else {
 			c.Expr.emit(w)
 		}
@@ -948,6 +955,7 @@ type MapAssignStmt struct {
 	Name string
 	Key  Expr
 	Expr Expr
+	Type string
 }
 
 func (m *MapAssignStmt) emit(w io.Writer) {
@@ -957,11 +965,20 @@ func (m *MapAssignStmt) emit(w io.Writer) {
 	}
 	io.WriteString(w, ", ")
 	if m.Expr != nil {
-		t := inferType(m.Expr)
+		t := m.Type
+		if t == "" {
+			t = inferType(m.Expr)
+		}
 		if t != "Variant" && t != "any" {
-			io.WriteString(w, "Variant(")
-			m.Expr.emit(w)
-			io.WriteString(w, ")")
+			if strings.HasPrefix(t, "^") || isArrayType(t) || isRecordType(t) {
+				io.WriteString(w, "Variant(PtrUInt(")
+				m.Expr.emit(w)
+				io.WriteString(w, "))")
+			} else {
+				io.WriteString(w, "Variant(")
+				m.Expr.emit(w)
+				io.WriteString(w, ")")
+			}
 		} else {
 			m.Expr.emit(w)
 		}
@@ -1696,7 +1713,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						return nil, err
 					}
 					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-						pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
+						pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex, Type: inferType(ex)})
 					} else {
 						pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
 					}
@@ -2065,7 +2082,7 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 					return nil, err
 				}
 				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-					out = append(out, &MapAssignStmt{Name: name, Key: idx, Expr: ex})
+					out = append(out, &MapAssignStmt{Name: name, Key: idx, Expr: ex, Type: inferType(ex)})
 				} else {
 					out = append(out, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
 				}
@@ -4392,9 +4409,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			if !ok {
 				return nil, fmt.Errorf("unsupported map key")
 			}
-			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val})
+			vType := inferType(val)
+			items = append(items, MapItem{Key: &StringLit{Value: keyStr}, Value: val, Type: vType})
 			collectVarNames(val, varsSet)
-			if inferType(val) != "integer" {
+			if vType != "integer" {
 				allInts = false
 			}
 		}
@@ -5020,11 +5038,26 @@ func addConstructors(p *Program) {
 func addMapConstructors(p *Program) {
 	for _, m := range p.Maps {
 		var body []Stmt
+		var locals []VarDecl
 		body = append(body, &AssignStmt{Name: "Result", Expr: &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", m.KeyType, m.ValType)}})
 		for _, it := range m.Items {
-			body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value})
+			typ := it.Type
+			if strings.HasPrefix(typ, "array of ") {
+				elem := strings.TrimPrefix(typ, "array of ")
+				typ = currProg.addArrayAlias(elem)
+			}
+			if isArrayType(typ) || isRecordType(typ) {
+				anonCounter++
+				ptr := fmt.Sprintf("_ptr%d", anonCounter)
+				locals = append(locals, VarDecl{Name: ptr, Type: "^" + typ})
+				body = append(body, &ExprStmt{Expr: &CallExpr{Name: "New", Args: []Expr{&VarRef{Name: ptr}}}})
+				body = append(body, &AssignStmt{Name: ptr + "^", Expr: it.Value})
+				body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: &VarRef{Name: ptr}, Type: "^" + typ})
+			} else {
+				body = append(body, &MapAssignStmt{Name: "Result", Key: it.Key, Expr: it.Value, Type: typ})
+			}
 		}
-		fn := FunDecl{Name: m.Name, Params: m.Params, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Body: body}
+		fn := FunDecl{Name: m.Name, Params: m.Params, ReturnType: fmt.Sprintf("specialize TFPGMap<%s, %s>", m.KeyType, m.ValType), Locals: locals, Body: body}
 		p.Funs = append([]FunDecl{fn}, p.Funs...)
 		if funcReturns != nil {
 			funcReturns[fn.Name] = fn.ReturnType
@@ -5224,6 +5257,17 @@ func isArrayAlias(t string) bool {
 
 func isArrayType(t string) bool {
 	return strings.HasPrefix(t, "array of ") || isArrayAlias(t)
+}
+
+func isRecordType(t string) bool {
+	if currProg != nil {
+		for _, r := range currProg.Records {
+			if r.Name == t {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func formatParam(name, typ string) string {
