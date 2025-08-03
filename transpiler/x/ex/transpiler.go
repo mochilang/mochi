@@ -566,7 +566,7 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, ":erlang.garbage_collect()\n")
+	io.WriteString(w, "mem_end = _mem()\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -574,7 +574,11 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "mem_diff = abs(_mem() - mem_start)\n")
+	io.WriteString(w, ":erlang.garbage_collect()\n")
+	for i := 0; i < indent; i++ {
+		io.WriteString(w, "  ")
+	}
+	io.WriteString(w, "mem_diff = max(mem_end - mem_start, 0)\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1808,9 +1812,10 @@ func Emit(p *Program, benchMain bool) []byte {
 			buf.WriteString("\n")
 		}
 		if benchMain {
-			buf.WriteString("    :erlang.garbage_collect()\n")
+			buf.WriteString("    mem_end = _mem()\n")
 			buf.WriteString("    duration_us = _now() - t_start\n")
-			buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
+			buf.WriteString("    :erlang.garbage_collect()\n")
+			buf.WriteString("    mem_diff = max(mem_end - mem_start, 0)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		}
 		buf.WriteString("  end\n")
@@ -1828,9 +1833,10 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("    mem_start = _mem()\n")
 		buf.WriteString("    t_start = _now()\n")
 		buf.WriteString("    main()\n")
-		buf.WriteString("    :erlang.garbage_collect()\n")
+		buf.WriteString("    mem_end = _mem()\n")
 		buf.WriteString("    duration_us = _now() - t_start\n")
-		buf.WriteString("    mem_diff = abs(_mem() - mem_start)\n")
+		buf.WriteString("    :erlang.garbage_collect()\n")
+		buf.WriteString("    mem_diff = max(mem_end - mem_start, 0)\n")
 		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
 		buf.WriteString("  end\n")
 	}
