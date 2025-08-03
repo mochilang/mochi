@@ -1,0 +1,7 @@
+An unhandled exception occurred at $000000000046B884:
+EVariantArrayCreateError: Variant array cannot be created
+  $000000000046B884
+  $000000000046874A
+  $00000000004020EA
+  $0000000000402F16
+
