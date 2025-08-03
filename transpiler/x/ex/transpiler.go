@@ -570,7 +570,7 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "t_start = _now()\n")
+	io.WriteString(w, "t_start = _bench_now()\n")
 	for _, st := range bs.Body {
 		st.emit(w, indent)
 		io.WriteString(w, "\n")
@@ -582,7 +582,7 @@ func (bs *BenchStmt) emit(w io.Writer, indent int) {
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
-	io.WriteString(w, "duration_us = max(_now() - t_start, 1)\n")
+	io.WriteString(w, "duration_us = max(_bench_now() - t_start, 1)\n")
 	for i := 0; i < indent; i++ {
 		io.WriteString(w, "  ")
 	}
@@ -1141,12 +1141,6 @@ type BinaryExpr struct {
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
-	isInt := func(e Expr) bool {
-		if n, ok := e.(*NumberLit); ok {
-			return !strings.Contains(n.Value, ".")
-		}
-		return false
-	}
 	isString := func(e Expr) bool {
 		switch t := e.(type) {
 		case *StringLit:
@@ -1167,7 +1161,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return false
 	}
-	if b.Op == "/" && (b.IntDiv || (isInt(b.Left) && isInt(b.Right))) {
+	if b.Op == "/" && (b.IntDiv || (!isFloat(b.Left) && !isFloat(b.Right))) {
 		io.WriteString(w, "div(")
 		b.Left.emit(w)
 		io.WriteString(w, ", ")
@@ -1762,6 +1756,7 @@ func Emit(p *Program, benchMain bool) []byte {
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
 	buf.WriteString(nowHelper(1))
+	buf.WriteString(benchNowHelper(1))
 	buf.WriteString(memHelper(1))
 	buf.WriteString(lookupHostHelper(1))
 	buf.WriteString(sliceHelper(1))
@@ -1809,7 +1804,7 @@ func Emit(p *Program, benchMain bool) []byte {
 		if benchMain {
 			buf.WriteString("    :erlang.garbage_collect()\n")
 			buf.WriteString("    mem_start = _mem()\n")
-			buf.WriteString("    t_start = _now()\n")
+			buf.WriteString("    t_start = _bench_now()\n")
 		}
 		for _, st := range main {
 			if ls, ok := st.(*LetStmt); ok {
@@ -1825,7 +1820,7 @@ func Emit(p *Program, benchMain bool) []byte {
 		}
 		if benchMain {
 			buf.WriteString("    mem_end = _mem()\n")
-			buf.WriteString("    duration_us = max(_now() - t_start, 1)\n")
+			buf.WriteString("    duration_us = max(_bench_now() - t_start, 1)\n")
 			buf.WriteString("    :erlang.garbage_collect()\n")
 			buf.WriteString("    mem_diff = abs(mem_end - mem_start)\n")
 			buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
@@ -1843,10 +1838,10 @@ func Emit(p *Program, benchMain bool) []byte {
 		}
 		buf.WriteString("    :erlang.garbage_collect()\n")
 		buf.WriteString("    mem_start = _mem()\n")
-		buf.WriteString("    t_start = _now()\n")
+		buf.WriteString("    t_start = _bench_now()\n")
 		buf.WriteString("    main()\n")
 		buf.WriteString("    mem_end = _mem()\n")
-		buf.WriteString("    duration_us = max(_now() - t_start, 1)\n")
+		buf.WriteString("    duration_us = max(_bench_now() - t_start, 1)\n")
 		buf.WriteString("    :erlang.garbage_collect()\n")
 		buf.WriteString("    mem_diff = abs(mem_end - mem_start)\n")
 		buf.WriteString("    IO.puts(\"{\\n  \\\"duration_us\\\": #{duration_us},\\n  \\\"memory_bytes\\\": #{mem_diff},\\n  \\\"name\\\": \\\"main\\\"\\n}\")\n")
@@ -4008,6 +4003,15 @@ func nowHelper(indent int) string {
 	return buf.String()
 }
 
+func benchNowHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _bench_now() do\n")
+	buf.WriteString(pad + "  System.monotonic_time(:microsecond)\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
 func sliceHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
@@ -4038,7 +4042,7 @@ func memHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
 	buf.WriteString(pad + "defp _mem() do\n")
-	buf.WriteString(pad + "  :erlang.memory(:total)\n")
+	buf.WriteString(pad + "  :erlang.process_info(self(), :memory) |> elem(1)\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }
