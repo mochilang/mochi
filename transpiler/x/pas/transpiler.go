@@ -180,6 +180,7 @@ type Program struct {
 	NeedBenchNow      bool
 	UseInput          bool
 	UseBigRat         bool
+	UseSHA256         bool
 	NeedPadStart      bool
 	Maps              []MapLitDef
 	VarTypes          map[string]string
@@ -577,17 +578,31 @@ func (v *ValuesExpr) emit(w io.Writer) {
 }
 
 func (r *RecordLit) emit(w io.Writer) {
-	io.WriteString(w, "(")
-	for i, f := range r.Fields {
-		if i > 0 {
-			io.WriteString(w, "; ")
+	if r.Type != "" {
+		fmt.Fprintf(w, "%s((", r.Type)
+		for i, f := range r.Fields {
+			if i > 0 {
+				io.WriteString(w, "; ")
+			}
+			fmt.Fprintf(w, "%s: ", f.Name)
+			if f.Expr != nil {
+				f.Expr.emit(w)
+			}
 		}
-		fmt.Fprintf(w, "%s: ", f.Name)
-		if f.Expr != nil {
-			f.Expr.emit(w)
+		io.WriteString(w, "))")
+	} else {
+		io.WriteString(w, "(")
+		for i, f := range r.Fields {
+			if i > 0 {
+				io.WriteString(w, "; ")
+			}
+			fmt.Fprintf(w, "%s: ", f.Name)
+			if f.Expr != nil {
+				f.Expr.emit(w)
+			}
 		}
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, ")")
 }
 
 // CastExpr represents a simple cast expression, e.g. string to int.
@@ -1063,6 +1078,9 @@ func (p *Program) Emit() []byte {
 	if p.UseFGL {
 		uses = append(uses, "fgl")
 	}
+	if p.UseSHA256 {
+		uses = append(uses, "Unix")
+	}
 	if p.NeedShowList || p.NeedShowList2 {
 		if p.ArrayAliases == nil {
 			p.ArrayAliases = make(map[string]string)
@@ -1081,6 +1099,13 @@ func (p *Program) Emit() []byte {
 	}
 	if len(uses) > 0 {
 		fmt.Fprintf(&buf, "uses %s;\n", strings.Join(uses, ", "))
+	}
+	for _, r := range p.Records {
+		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
+		for _, f := range r.Fields {
+			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
+		}
+		buf.WriteString("end;\n")
 	}
 	if len(p.LateAliases) > 0 {
 		keys := make([]string, 0, len(p.LateAliases))
@@ -1121,6 +1146,9 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseInput {
 		buf.WriteString("function _input(): string;\nvar s: string;\nbegin\n  if EOF(Input) then s := '' else ReadLn(s);\n  _input := s;\nend;\n")
+	}
+	if p.UseSHA256 {
+		buf.WriteString("function _sha256(bs: IntArray): IntArray;\nvar tmp, outFile, hex: string; f: file; t: Text; i: integer; res: IntArray;\nbegin\n  tmp := GetTempFileName('', 'mochi_sha256');\n  Assign(f, tmp);\n  Rewrite(f,1);\n  for i := 0 to Length(bs)-1 do\n    BlockWrite(f, bs[i],1);\n  Close(f);\n  outFile := tmp + '.hash';\n  fpSystem(PChar(AnsiString('sha256sum ' + tmp + ' > ' + outFile)));\n  Assign(t, outFile);\n  Reset(t);\n  ReadLn(t, hex);\n  Close(t);\n  DeleteFile(tmp);\n  DeleteFile(outFile);\n  hex := Trim(hex);\n  SetLength(res, 32);\n  for i := 0 to 31 do\n    res[i] := StrToInt('$'+Copy(hex, i*2+1,2));\n  _sha256 := res;\nend;\n")
 	}
 	if p.UseBigRat {
 		buf.WriteString("type BigRat = record num: int64; den: int64; end;\n")
@@ -1213,13 +1241,6 @@ end;
 	}
 	if p.NeedShowMap {
 		buf.WriteString("procedure show_map(m: specialize TFPGMap<string, Variant>);\nvar i: integer;\nbegin\n  write('map[');\n  for i := 0 to m.Count - 1 do begin\n    write(m.Keys[i]);\n    write(':');\n    write(m.Data[i]);\n    if i < m.Count - 1 then write(' ');\n  end;\n  writeln(']');\nend;\n")
-	}
-	for _, r := range p.Records {
-		fmt.Fprintf(&buf, "type %s = record\n", r.Name)
-		for _, f := range r.Fields {
-			fmt.Fprintf(&buf, "  %s: %s;\n", f.Name, f.Type)
-		}
-		buf.WriteString("end;\n")
 	}
 	if len(p.Vars) > 0 {
 		buf.WriteString("var\n")
@@ -3930,6 +3951,11 @@ func convertPostfix(env *types.Env, pf *parser.PostfixExpr) (Expr, error) {
 						currProg.NeedContains = true
 						expr = &ContainsExpr{Collection: args[0], Value: args[1], Kind: "list"}
 					}
+				} else if name == "sha256" && len(args) == 1 {
+					currProg.UseSysUtils = true
+					currProg.UseSHA256 = true
+					_ = currProg.addArrayAlias("integer")
+					expr = &CallExpr{Name: "_sha256", Args: args}
 				} else {
 					expr = &CallExpr{Name: name, Args: args}
 				}
@@ -4274,6 +4300,11 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			currProg.NeedContains = true
 			return &ContainsExpr{Collection: args[0], Value: args[1], Kind: "list"}, nil
+		} else if name == "sha256" && len(args) == 1 {
+			currProg.UseSysUtils = true
+			currProg.UseSHA256 = true
+			_ = currProg.addArrayAlias("integer")
+			return &CallExpr{Name: "_sha256", Args: args}, nil
 		}
 		return &CallExpr{Name: name, Args: args}, nil
 	case p.List != nil:

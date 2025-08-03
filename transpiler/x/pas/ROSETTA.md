@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (92/491) - updated 2025-08-03 04:07 UTC
+## Rosetta Checklist (93/491) - updated 2025-08-03 04:25 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -119,7 +119,7 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 112 | bioinformatics-global-alignment | ✓ | 641µs | 1.8 KB |
 | 113 | bioinformatics-sequence-mutation | ✓ | 5µs | 64 B |
 | 114 | biorhythms | ✓ | 2µs |  |
-| 115 | bitcoin-address-validation |   |  |  |
+| 115 | bitcoin-address-validation | ✓ | 50µs | 256 B |
 | 116 | bitmap-b-zier-curves-cubic |   |  |  |
 | 117 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 118 | bitmap-bresenhams-line-algorithm |   |  |  |
