@@ -22,14 +22,23 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  List<int> bigTrim(List<int> a) {
+String _substr(String s, num start, num end) {
+  var n = s.length;
+  int s0 = start.toInt();
+  int e0 = end.toInt();
+  if (s0 < 0) s0 += n;
+  if (e0 < 0) e0 += n;
+  if (s0 < 0) s0 = 0;
+  if (s0 > n) s0 = n;
+  if (e0 < 0) e0 = 0;
+  if (e0 > n) e0 = n;
+  if (s0 > e0) s0 = e0;
+  return s.substring(s0, e0);
+}
+
+String _repeat(String s, int n) => List.filled(n, s).join();
+
+List<int> bigTrim(List<int> a) {
   int n = a.length;
   while (n > 1 && a[n - 1] == 0) {
     a = a.sublist(0, n - 1);
@@ -37,11 +46,12 @@ void main() {
   }
   return a;
 }
-  List<int> bigFromInt(int x) {
+
+List<int> bigFromInt(int x) {
   if (x == 0) {
     return [0];
   }
-  List<int> digits = [];
+  List<int> digits = <int>[];
   int n = x;
   while (n > 0) {
     digits = [...digits, n % 10];
@@ -49,7 +59,8 @@ void main() {
   }
   return digits;
 }
-  int bigCmp(List<int> a, List<int> b) {
+
+int bigCmp(List<int> a, List<int> b) {
   if (a.length > b.length) {
     return 1;
   }
@@ -68,8 +79,9 @@ void main() {
   }
   return 0;
 }
-  List<int> bigAdd(List<int> a, List<int> b) {
-  List<int> res = [];
+
+List<int> bigAdd(List<int> a, List<int> b) {
+  List<int> res = <int>[];
   int carry = 0;
   int i = 0;
   while (i < a.length || i < b.length || carry > 0) {
@@ -88,8 +100,9 @@ void main() {
   }
   return bigTrim(res);
 }
-  List<int> bigSub(List<int> a, List<int> b) {
-  List<int> res = [];
+
+List<int> bigSub(List<int> a, List<int> b) {
+  List<int> res = <int>[];
   int borrow = 0;
   int i = 0;
   while (i < a.length) {
@@ -110,11 +123,12 @@ void main() {
   }
   return bigTrim(res);
 }
-  List<int> bigMulSmall(List<int> a, int m) {
+
+List<int> bigMulSmall(List<int> a, int m) {
   if (m == 0) {
     return [0];
   }
-  List<int> res = [];
+  List<int> res = <int>[];
   int carry = 0;
   int i = 0;
   while (i < a.length) {
@@ -129,8 +143,9 @@ void main() {
   }
   return bigTrim(res);
 }
-  List<int> bigMulBig(List<int> a, List<int> b) {
-  List<int> res = [];
+
+List<int> bigMulBig(List<int> a, List<int> b) {
+  List<int> res = <int>[];
   int i = 0;
   while (i < a.length + b.length) {
     res = [...res, 0];
@@ -158,28 +173,31 @@ void main() {
   }
   return bigTrim(res);
 }
-  List<int> bigMulPow10(List<int> a, int k) {
+
+List<int> bigMulPow10(List<int> a, int k) {
   int i = 0;
   while (i < k) {
-    a = [0] + a;
+    a = ([0] + a as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     i = i + 1;
   }
   return a;
 }
-  List<int> bigDivSmall(List<int> a, int m) {
-  List<int> res = [];
+
+List<int> bigDivSmall(List<int> a, int m) {
+  List<int> res = <int>[];
   int rem = 0;
   int i = a.length - 1;
   while (i >= 0) {
     int cur = rem * 10 + a[i];
     int q = cur ~/ m;
     rem = cur % m;
-    res = [q] + res;
+    res = ([q] + res as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
     i = i - 1;
   }
   return bigTrim(res);
 }
-  String bigToString(List<int> a) {
+
+String bigToString(List<int> a) {
   String s = "";
   int i = a.length - 1;
   while (i >= 0) {
@@ -188,7 +206,8 @@ void main() {
   }
   return s;
 }
-  String repeat(String ch, int n) {
+
+String repeat(String ch, int n) {
   String s = "";
   int i = 0;
   while (i < n) {
@@ -197,8 +216,9 @@ void main() {
   }
   return s;
 }
-  List<int> sortInts(List<int> xs) {
-  List<int> res = [];
+
+List<int> sortInts(List<int> xs) {
+  List<int> res = <int>[];
   List<int> tmp = xs;
   while (tmp.length > 0) {
     int min = tmp[0];
@@ -211,12 +231,12 @@ void main() {
   }
     i = i + 1;
   }
-    res = res + [min];
-    List<int> out = [];
+    res = (res + [min] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+    List<int> out = <int>[];
     int j = 0;
     while (j < tmp.length) {
     if (j != idx) {
-    out = out + [tmp[j]];
+    out = (out + [tmp[j]] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
   }
     j = j + 1;
   }
@@ -224,8 +244,9 @@ void main() {
   }
   return res;
 }
-  List<int> primesUpTo(int n) {
-  List<bool> sieve = [];
+
+List<int> primesUpTo(int n) {
+  List<bool> sieve = <bool>[];
   int i = 0;
   while (i <= n) {
     sieve = [...sieve, true];
@@ -242,7 +263,7 @@ void main() {
   }
     p = p + 1;
   }
-  List<int> res = [];
+  List<int> res = <int>[];
   int x = 2;
   while (x <= n) {
     if (sieve[x]) {
@@ -252,9 +273,10 @@ void main() {
   }
   return res;
 }
-  Map<String, int> factorialExp(int n, List<int> primes) {
-  Map<String, int> m = {};
-  for (var p in primes) {
+
+Map<String, int> factorialExp(int n, List<int> primes) {
+  Map<String, int> m = <String, int>{};
+  for (int p in primes) {
     if (p > n) {
     break;
   }
@@ -268,10 +290,11 @@ void main() {
   }
   return m;
 }
-  Map<String, int> factorSmall(int x, List<int> primes) {
-  Map<String, int> f = {};
+
+Map<String, int> factorSmall(int x, List<int> primes) {
+  Map<String, int> f = <String, int>{};
   int n = x;
-  for (var p in primes) {
+  for (int p in primes) {
     if (p * p > n) {
     break;
   }
@@ -285,30 +308,31 @@ void main() {
   }
   }
   if (n > 1) {
-    f[(n).toString()] = f["get"]((n).toString(), 0) + 1;
+    f[(n).toString()] = ((f.containsKey((n).toString()) ? (f[(n).toString()] ?? 0) : 0) + 1).toInt();
   }
   return f;
 }
-  List<int> computeIP(int n, List<int> primes) {
+
+List<int> computeIP(int n, List<int> primes) {
   Map<String, int> exps = factorialExp(6 * n, primes);
-  final Map<String, int> fn = factorialExp(n, primes);
-  for (var k in fn.keys) {
-    exps[k] = exps["get"](k, 0) - 6 * fn[k]!;
+  Map<String, int> fn = factorialExp(n, primes);
+  for (String k in fn.keys) {
+    exps[k] = ((exps.containsKey(k) ? (exps[k] ?? 0) : 0) - 6 * fn[k]!).toInt();
   }
-  exps["2"] = exps["get"]("2", 0) + 5;
-  final int t2 = 532 * n * n + 126 * n + 9;
-  final Map<String, int> ft2 = factorSmall(t2, primes);
-  for (var k in ft2.keys) {
-    exps[k] = exps["get"](k, 0) + ft2[k]!;
+  exps["2"] = ((exps.containsKey("2") ? (exps["2"] ?? 0) : 0) + 5).toInt();
+  int t2 = 532 * n * n + 126 * n + 9;
+  Map<String, int> ft2 = factorSmall(t2, primes);
+  for (String k in ft2.keys) {
+    exps[k] = ((exps.containsKey(k) ? (exps[k] ?? 0) : 0) + ft2[k]!).toInt();
   }
-  exps["3"] = exps["get"]("3", 0) - 1;
-  List<int> keys = [];
+  exps["3"] = ((exps.containsKey("3") ? (exps["3"] ?? 0) : 0) - 1).toInt();
+  List<int> keys = <int>[];
   for (var k in exps.keys) {
-    keys = [...keys, k as int];
+    keys = [...keys, int.parse(k)];
   }
   keys = sortInts(keys);
   List<int> res = bigFromInt(1);
-  for (var p in keys) {
+  for (int p in keys) {
     int e = exps[(p).toString()]!;
     int i = 0;
     while (i < e) {
@@ -318,47 +342,50 @@ void main() {
   }
   return res;
 }
-  String formatTerm(List<int> ip, int pw) {
+
+String formatTerm(List<int> ip, int pw) {
   String s = bigToString(ip);
   if (pw >= s.length) {
-    String frac = repeat("0", pw - s.length) + s;
+    String frac = _repeat("0", pw - s.length) + s;
     if (frac.length < 33) {
-    frac = frac + repeat("0", 33 - frac.length);
+    frac = frac + _repeat("0", 33 - frac.length);
   };
-    return "0." + frac.substring(0, 33);
+    return "0." + _substr(frac, 0, 33);
   }
-  String intpart = s.substring(0, s.length - pw);
-  String frac = s.substring(s.length - pw, s.length);
+  String intpart = _substr(s, 0, s.length - pw);
+  String frac = _substr(s, s.length - pw, s.length);
   if (frac.length < 33) {
-    frac = frac + repeat("0", 33 - frac.length);
+    frac = frac + _repeat("0", 33 - frac.length);
   }
-  return intpart + "." + frac.substring(0, 33);
+  return intpart + "." + _substr(frac, 0, 33);
 }
-  List<int> bigAbsDiff(List<int> a, List<int> b) {
+
+List<int> bigAbsDiff(List<int> a, List<int> b) {
   if (bigCmp(a, b) >= 0) {
     return bigSub(a, b);
   }
   return bigSub(b, a);
 }
-  void main() {
-  final List<int> primes = primesUpTo(2000);
+
+void _main() {
+  List<int> primes = primesUpTo(2000);
   print("N                               Integer Portion  Pow  Nth Term (33 dp)");
-  final String line = repeat("-", 89);
+  dynamic line = _repeat("-", 89);
   print(line);
   List<int> sum = bigFromInt(0);
   List<int> prev = bigFromInt(0);
   int denomPow = 0;
   int n = 0;
   while (true) {
-    final List<int> ip = computeIP(n, primes);
-    final int pw = 6 * n + 3;
+    List<int> ip = computeIP(n, primes);
+    int pw = 6 * n + 3;
     if (pw > denomPow) {
     sum = bigMulPow10(sum, pw - denomPow);
     prev = bigMulPow10(prev, pw - denomPow);
     denomPow = pw;
   }
     if (n < 10) {
-    final String termStr = formatTerm(ip, pw);
+    String termStr = formatTerm(ip, pw);
     String ipStr = bigToString(ip);
     while (ipStr.length < 44) {
     ipStr = " " + ipStr;
@@ -374,15 +401,15 @@ void main() {
     print((n).toString() + "  " + ipStr + "  " + pwStr + "  " + padTerm);
   }
     sum = bigAdd(sum, ip);
-    final List<int> diff = bigAbsDiff(sum, prev);
+    List<int> diff = bigAbsDiff(sum, prev);
     if (denomPow >= 70 && bigCmp(diff, bigMulPow10(bigFromInt(1), denomPow - 70)) < 0) {
     break;
   }
     prev = sum;
     n = n + 1;
   }
-  final int precision = 70;
-  final List<int> target = bigMulPow10(bigFromInt(1), denomPow + 2 * precision);
+  int precision = 70;
+  List<int> target = bigMulPow10(bigFromInt(1), denomPow + 2 * precision);
   List<int> low = bigFromInt(0);
   List<int> high = bigMulPow10(bigFromInt(1), precision + 1);
   while (bigCmp(low, bigSub(high, bigFromInt(1))) < 0) {
@@ -397,19 +424,29 @@ void main() {
   List<int> piInt = low;
   String piStr = bigToString(piInt);
   if (piStr.length <= precision) {
-    piStr = repeat("0", precision - piStr.length + 1) + piStr;
+    piStr = _repeat("0", precision - piStr.length + 1) + piStr;
   }
-  String out = piStr.substring(0, piStr.length - precision) + "." + piStr.substring(piStr.length - precision, piStr.length);
+  String out = _substr(piStr, 0, piStr.length - precision) + "." + _substr(piStr, piStr.length - precision, piStr.length);
   print("");
   print("Pi to 70 decimal places is:");
   print(out);
 }
-  main();
+
+void _start() {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
+  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
