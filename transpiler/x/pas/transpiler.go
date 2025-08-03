@@ -579,17 +579,19 @@ func (v *ValuesExpr) emit(w io.Writer) {
 
 func (r *RecordLit) emit(w io.Writer) {
 	if r.Type != "" {
-		fmt.Fprintf(w, "%s((", r.Type)
+		// Use the generated constructor for typed record literals to ensure
+		// compatibility with FPC which does not support inline typed record
+		// initialization in expressions.
+		fmt.Fprintf(w, "%s(", ctorName(r.Type))
 		for i, f := range r.Fields {
 			if i > 0 {
-				io.WriteString(w, "; ")
+				io.WriteString(w, ", ")
 			}
-			fmt.Fprintf(w, "%s: ", f.Name)
 			if f.Expr != nil {
 				f.Expr.emit(w)
 			}
 		}
-		io.WriteString(w, "))")
+		io.WriteString(w, ")")
 	} else {
 		io.WriteString(w, "(")
 		for i, f := range r.Fields {
@@ -637,7 +639,13 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
 	default:
-		c.Expr.emit(w)
+		if c.Type != "" {
+			fmt.Fprintf(w, "%s(", c.Type)
+			c.Expr.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			c.Expr.emit(w)
+		}
 	}
 }
 
@@ -2077,6 +2085,29 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				}
 				out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
 				break
+			}
+			if len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0 {
+				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") && len(st.Assign.Index) > 1 {
+					idx0, err := convertExpr(env, st.Assign.Index[0].Start)
+					if err != nil {
+						return nil, err
+					}
+					elemType := inferType(ex)
+					arrType := elemType
+					for j := len(st.Assign.Index) - 1; j > 0; j-- {
+						arrType = currProg.addArrayAlias(arrType)
+					}
+					target := Expr(&CastExpr{Expr: &IndexExpr{Target: &VarRef{Name: name}, Index: idx0}, Type: arrType})
+					for _, idx := range st.Assign.Index[1:] {
+						idxExpr, err := convertExpr(env, idx.Start)
+						if err != nil {
+							return nil, err
+						}
+						target = &IndexExpr{Target: target, Index: idxExpr}
+					}
+					out = append(out, &SetStmt{Target: target, Expr: ex})
+					break
+				}
 			}
 			if _, ok := varTypes[name]; !ok {
 				if t := inferType(ex); t != "" {
