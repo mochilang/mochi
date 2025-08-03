@@ -1,0 +1,9 @@
+initial: 1
+zeroval: 1
+zeroptr: 1
+pointer: 0
+{
+  "duration_us": 255,
+  "memory_bytes": 768,
+  "name": "main"
+}
