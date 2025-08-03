@@ -4127,11 +4127,23 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		child = types.NewEnv(env)
 	}
 	itType := inferTypeWithEnv(iter, env)
-	if (itType == "" || itType == "Any") && env != nil {
-		if tt := types.ExprType(fs.Source, env); tt != nil {
-			if s := toScalaTypeFromType(tt); s != "" {
-				itType = s
-			}
+	var tt types.Type
+	if env != nil {
+		tt = types.ExprType(fs.Source, env)
+	}
+	if (itType == "" || itType == "Any") && tt != nil {
+		if s := toScalaTypeFromType(tt); s != "" {
+			itType = s
+		}
+	}
+	if child != nil && tt != nil {
+		switch t := tt.(type) {
+		case types.ListType:
+			child.SetVar(fs.Name, t.Elem, true)
+		case types.MapType:
+			child.SetVar(fs.Name, t.Key, true)
+		default:
+			child.SetVar(fs.Name, t, true)
 		}
 	}
 	if strings.HasPrefix(itType, "ArrayBuffer[") {
