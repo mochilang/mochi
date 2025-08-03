@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 464/491
-Last updated: 2025-08-02 17:58 +0700
+Completed programs: 465/491
+Last updated: 2025-08-03 16:11 +0700
 
 Checklist:
 
@@ -111,7 +111,7 @@ Checklist:
 | 102 | bell-numbers | ✓ | 2.0ms | 188.01KB |
 | 103 | benfords-law | ✓ | 994.0µs | 26.77KB |
 | 104 | bernoulli-numbers | ✓ | 63.0ms | 2.31MB |
-| 105 | best-shuffle |   | 681.0µs | 5.30KB |
+| 105 | best-shuffle | ✓ | 1.0ms | 4.99KB |
 | 106 | bifid-cipher | ✓ | 1.0ms | 74.71KB |
 | 107 | bin-given-limits | ✓ | 463.0µs | 2.43KB |
 | 108 | binary-digits | ✓ | 478.0µs | 1.29KB |
