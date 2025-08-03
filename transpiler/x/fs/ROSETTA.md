@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (365/491)
+## Rosetta Golden Test Checklist (366/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -369,7 +369,7 @@ This file is auto-generated from rosetta tests.
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 350µs | 70.5 KB |
 | 364 | eulers-constant-0.5772... | ✓ | 419µs | 42.4 KB |
-| 365 | eulers-identity |   |  |  |
+| 365 | eulers-identity | ✓ | 393µs | 61.2 KB |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
 | 367 | evaluate-binomial-coefficients |   |  |  |
 | 368 | even-or-odd |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-03 21:12 +0700
+Last updated: 2025-08-03 22:12 +0700
