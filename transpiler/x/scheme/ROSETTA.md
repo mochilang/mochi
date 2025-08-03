@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (409/491)
-Last updated: 2025-08-03 10:57 UTC
+Last updated: 2025-08-03 15:21 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -363,7 +363,7 @@ Last updated: 2025-08-03 10:57 UTC
 | 354 | environment-variables-1 | ✓ | 571.223ms | 12.0 MB |
 | 355 | environment-variables-2 | ✓ | 571.223ms | 12.1 MB |
 | 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index | ✓ |  |  |
+| 357 | equilibrium-index | ✓ | 17.372s | 12.4 MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 571.223ms | 32.8 MB |
 | 360 | esthetic-numbers |   |  |  |
