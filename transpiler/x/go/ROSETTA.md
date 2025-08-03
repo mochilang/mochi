@@ -1,7 +1,7 @@
 # Go Rosetta Transpiler Output
 
-Completed programs: 467/491
-Last updated: 2025-08-03 17:09 +0700
+Completed programs: 468/491
+Last updated: 2025-08-03 17:42 +0700
 
 Checklist:
 
@@ -141,8 +141,8 @@ Checklist:
 | 132 | box-the-compass | ✓ | 572.0µs | 8.31KB |
 | 133 | boyer-moore-string-search | ✓ | 763.0µs | 57.34KB |
 | 134 | brazilian-numbers | ✓ | 4.07s | 2.68KB |
-| 135 | break-oo-privacy | ✓ |  |  |
-| 136 | brilliant-numbers |   |  |  |
+| 135 | break-oo-privacy | ✓ | 790.0µs | 1.27KB |
+| 136 | brilliant-numbers | ✓ | 98.0ms | 8.39MB |
 | 137 | brownian-tree | ✓ | 7.07s | 2.36MB |
 | 138 | bulls-and-cows-player | ✓ | 327.0µs | 172.02KB |
 | 139 | bulls-and-cows | ✓ | 108.0µs | 5.03KB |
