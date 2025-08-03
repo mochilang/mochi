@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 468/491
-Last updated: 2025-08-03 08:50 +0700
+Last updated: 2025-08-03 10:01 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -230,36 +230,36 @@ Last updated: 2025-08-03 08:50 +0700
 | 222 | conditional-structures-8 | ✓ |  |  |
 | 223 | conditional-structures-9 | ✓ |  |  |
 | 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 9.147ms | 11.4MB |
-| 225 | constrained-genericity-1 | ✓ | 1µs |  |
-| 226 | constrained-genericity-2 | ✓ |  |  |
-| 227 | constrained-genericity-3 | ✓ |  |  |
-| 228 | constrained-genericity-4 | ✓ | 6.075ms | 1.2MB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 1.118ms | 837.0KB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 5.704ms | 2.6MB |
-| 231 | continued-fraction | ✓ | 6.824ms | 1.7MB |
-| 232 | convert-decimal-number-to-rational | ✓ | 6.082ms | 1.1MB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 1.042ms | 16.0KB |
-| 234 | convex-hull | ✓ | 804µs | 1.3MB |
-| 235 | conways-game-of-life | ✓ | 11.575ms | 1.2MB |
-| 236 | copy-a-string-1 | ✓ |  |  |
-| 237 | copy-a-string-2 | ✓ | 860µs | 16.0KB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 1.003ms | 24.1KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 1.535ms | 24.1KB |
-| 240 | count-in-factors | ✓ | 923µs | 24.1KB |
-| 241 | count-in-octal-1 | ✓ | 900µs | 24.1KB |
-| 242 | count-in-octal-2 | ✓ | 10.034ms | 17.3MB |
-| 243 | count-in-octal-3 | ✓ | 923µs | 16.0KB |
-| 244 | count-in-octal-4 | ✓ | 895µs | 16.0KB |
-| 245 | count-occurrences-of-a-substring | ✓ | 6.345ms | 1.2MB |
-| 246 | count-the-coins-1 | ✓ | 1.065ms | 16.0KB |
-| 247 | count-the-coins-2 | ✓ | 2.203ms | 3.9MB |
-| 248 | cramers-rule | ✓ | 5.866ms | 1.2MB |
-| 249 | crc-32-1 | ✓ | 6.498ms | 1.3MB |
-| 250 | crc-32-2 | ✓ | 6.899ms | 1.3MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 37µs |  |
-| 252 | create-a-file | ✓ | 891µs | 16.0KB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 8.347ms | 2.5MB |
-| 254 | create-an-html-table | ✓ | 1ms | 16.0KB |
+| 225 | constrained-genericity-1 | ✓ | 1µs | 43.5KB |
+| 226 | constrained-genericity-2 | ✓ | 1µs | 43.5KB |
+| 227 | constrained-genericity-3 | ✓ | 1µs | 43.5KB |
+| 228 | constrained-genericity-4 | ✓ | 8.434ms | 1.1MB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 2.447ms | 835.5KB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 10.387ms | 2.6MB |
+| 231 | continued-fraction | ✓ | 9.917ms | 1.1MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 2.642ms | 19.1KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 2.184ms | 17.1KB |
+| 234 | convex-hull | ✓ | 2.041ms | 1.3MB |
+| 235 | conways-game-of-life | ✓ | 20.227ms | 431.7MB |
+| 236 | copy-a-string-1 | ✓ | 1µs | 43.5KB |
+| 237 | copy-a-string-2 | ✓ | 1.854ms | 13.1KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 2.269ms | 20.7KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 2.231ms | 20.7KB |
+| 240 | count-in-factors | ✓ | 2.296ms | 26.0KB |
+| 241 | count-in-octal-1 | ✓ | 1.977ms | 25.9KB |
+| 242 | count-in-octal-2 | ✓ | 14.351ms | 17.3MB |
+| 243 | count-in-octal-3 | ✓ | 1.829ms | 17.6KB |
+| 244 | count-in-octal-4 | ✓ | 1.823ms | 13.6KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 12.824ms | 2.4MB |
+| 246 | count-the-coins-1 | ✓ | 2.374ms | 18.1KB |
+| 247 | count-the-coins-2 | ✓ | 3.862ms | 3.9MB |
+| 248 | cramers-rule | ✓ | 11.481ms | 1.2MB |
+| 249 | crc-32-1 | ✓ | 9.954ms | 1.3MB |
+| 250 | crc-32-2 | ✓ | 12.562ms | 1.3MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 74µs | 560.0B |
+| 252 | create-a-file | ✓ | 1.867ms | 13.6KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 2.259ms | 18.3KB |
+| 254 | create-an-html-table | ✓ | 2.294ms | 18.5KB |
 | 255 | create-an-object-at-a-given-address | ✓ | 8.626ms | 1.2MB |
 | 256 | csv-data-manipulation | ✓ | 1.443ms | 24.1KB |
 | 257 | csv-to-html-translation-1 | ✓ | 880µs | 16.0KB |
