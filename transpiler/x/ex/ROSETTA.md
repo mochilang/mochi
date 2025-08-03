@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (176/491)
-_Last updated: 2025-08-03 22:49 +0700_
+## Rosetta Test Checklist (186/491)
+_Last updated: 2025-08-03 23:06 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -175,16 +175,16 @@ _Last updated: 2025-08-03 22:49 +0700_
 | 167 | canonicalize-cidr | ✓ | 7.31ms | 458.6 KB |
 | 168 | cantor-set | ✓ | 6.64ms | 520.6 KB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 20.34ms | 269.3 KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 |  |  |  |
-| 171 | cartesian-product-of-two-or-more-lists-2 |  |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 |  |  |  |
-| 174 | case-sensitivity-of-identifiers |  |  |  |
-| 175 | casting-out-nines |  |  |  |
-| 176 | catalan-numbers-1 |  |  |  |
-| 177 | catalan-numbers-2 |  |  |  |
-| 178 | catalan-numbers-pascals-triangle |  |  |  |
-| 179 | catamorphism |  |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 2.61ms | 12.5 KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 3.53ms | 17.3 KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 6.09ms | 9.5 KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 3.46ms | 25.0 KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 153us | 0 B |
+| 175 | casting-out-nines | ✓ | 81.34ms | 32.7 KB |
+| 176 | catalan-numbers-1 | ✓ | 7.34ms | 17.3 KB |
+| 177 | catalan-numbers-2 | ✓ | 6.06ms | 25.0 KB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 5.17ms | 17.3 KB |
+| 179 | catamorphism | ✓ | 6.49ms | 12.5 KB |
 | 180 | catmull-clark-subdivision-surface |  |  |  |
 | 181 | chaocipher |  |  |  |
 | 182 | chaos-game |  |  |  |
