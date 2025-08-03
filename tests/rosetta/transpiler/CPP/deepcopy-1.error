@@ -20,55 +20,21 @@ compile: exit status 1
 /workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:24:251: warning: multi-character character constant [-Wmultichar]
    24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:60:129: warning: multi-character character constant [-Wmultichar]
-   60 |  << ", " << "'m': "<< "{"; bool first_3=true; for(const auto& p: v.m){ if(!first_3) os << ", "; first_3=false; os << p.first << ': ' << p.second; } os << "}"
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:71:129: warning: multi-character character constant [-Wmultichar]
+   71 |  << ", " << "'m': "<< "{"; bool first_3=true; for(const auto& p: v.m){ if(!first_3) os << ", "; first_3=false; os << p.first << ': ' << p.second; } os << "}"
       |                                                                                                                                 ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp: In function ‘std::map<long int, bool> copyMap(const std::map<long int, bool>&)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:85:12: error: no match for ‘operator[]’ (operand types are ‘std::map<long int, bool>’ and ‘std::pair<const long int, bool>’)
-   85 |         out[k] = src.at(k);
-      |            ^
-In file included from /usr/include/c++/13/map:63,
-                 from /workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:5:
-/usr/include/c++/13/bits/stl_map.h:504:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::operator[](const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  504 |       operator[](const key_type& __k)
-      |       ^~~~~~~~
-/usr/include/c++/13/bits/stl_map.h:504:34: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
-  504 |       operator[](const key_type& __k)
-      |                  ~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:524:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::operator[](key_type&&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  524 |       operator[](key_type&& __k)
-      |       ^~~~~~~~
-/usr/include/c++/13/bits/stl_map.h:524:29: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘std::map<long int, bool>::key_type&&’ {aka ‘long int&&’}
-  524 |       operator[](key_type&& __k)
-      |                  ~~~~~~~~~~~^~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:85:24: error: no matching function for call to ‘std::map<long int, bool>::at(std::pair<const long int, bool>&) const’
-   85 |         out[k] = src.at(k);
-      |                  ~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  549 |       at(const key_type& __k)
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
-  549 |       at(const key_type& __k)
-      |          ~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  558 |       at(const key_type& __k) const
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
-  558 |       at(const key_type& __k) const
-      |          ~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:95:38: error: conversion from ‘const std::pair<const long int, bool>’ to non-scalar type ‘std::map<long int, bool>’ requested
+   95 |     for (std::map<int64_t, bool> k : src) {
+      |                                      ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:96:13: error: invalid ‘static_cast’ from type ‘std::map<long int, bool>’ to type ‘size_t’ {aka ‘long unsigned int’}
+   96 |         out[static_cast<size_t>(k)] = ([&](auto& __m){ auto __it = __m.find(static_cast<size_t>(k)); return __it != __m.end() ? __it->second : false; })(src);
+      |             ^~~~~~~~~~~~~~~~~~~~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:112:106: error: no matching function for call to ‘std::map<long int, bool>::at(std::pair<const long int, bool>&) const’
-  112 |  return ss.str(); }())) + std::string(":")) + ([&]{ std::ostringstream ss; ss << std::boolalpha << c.m.at(k); return ss.str(); }()));
-      |                                                                                                    ~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  549 |       at(const key_type& __k)
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
-  549 |       at(const key_type& __k)
-      |          ~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = long int; _Tp = bool; _Compare = std::less<long int>; _Alloc = std::allocator<std::pair<const long int, bool> >; mapped_type = bool; key_type = long int]’
-  558 |       at(const key_type& __k) const
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘std::pair<const long int, bool>’ to ‘const std::map<long int, bool>::key_type&’ {aka ‘const long int&’}
-  558 |       at(const key_type& __k) const
-      |          ~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:96:77: error: invalid ‘static_cast’ from type ‘std::map<long int, bool>’ to type ‘size_t’ {aka ‘long unsigned int’}
+   96 |         out[static_cast<size_t>(k)] = ([&](auto& __m){ auto __it = __m.find(static_cast<size_t>(k)); return __it != __m.end() ? __it->second : false; })(src);
+      |                                                                             ^~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/deepcopy-1.cpp:123:138: error: invalid ‘static_cast’ from type ‘std::pair<const long int, bool>’ to type ‘size_t’ {aka ‘long unsigned int’}
+  123 |  return ss.str(); }())) + std::string(":")) + ([&]{ std::ostringstream ss; ss << std::boolalpha << ([&](auto& __m){ auto __it = __m.find(static_cast<size_t>(k)); return __it != __m.end() ? __it->second : false; })(c.m); return ss.str(); }()));
+      |                                                                                                                                          ^~~~~~~~~~~~~~~~~~~~~~

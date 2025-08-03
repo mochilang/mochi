@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (273/491) - Last updated 2025-08-03 17:09 +0700:
+Checklist of programs that currently transpile and run (284/491) - Last updated 2025-08-03 17:41 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -239,52 +239,52 @@ Checklist of programs that currently transpile and run (273/491) - Last updated 
 | 232 | convert-decimal-number-to-rational | ✓ | 285.0µs | 3.49MB |
 | 233 | convert-seconds-to-compound-duration | ✓ | 262.0µs | 3.75MB |
 | 234 | convex-hull | ✓ | 212.0µs | 3.77MB |
-| 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 |   |  |  |
-| 237 | copy-a-string-2 |   |  |  |
-| 238 | copy-stdin-to-stdout-1 |   |  |  |
-| 239 | copy-stdin-to-stdout-2 |   |  |  |
-| 240 | count-in-factors |   |  |  |
-| 241 | count-in-octal-1 |   |  |  |
-| 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 | ✓ | 247.0µs | 12.94MB |
-| 244 | count-in-octal-4 | ✓ | 149.0µs | 12.80MB |
-| 245 | count-occurrences-of-a-substring | ✓ | 285.0µs | 12.79MB |
-| 246 | count-the-coins-1 | ✓ | 214.0µs | 12.93MB |
-| 247 | count-the-coins-2 | ✓ | 955.0µs | 12.93MB |
-| 248 | cramers-rule | ✓ | 611.0µs | 12.88MB |
-| 249 | crc-32-1 | ✓ | 167.0µs | 13.25MB |
-| 250 | crc-32-2 | ✓ | 198.0µs | 12.80MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 58.0µs | 12.61MB |
-| 252 | create-a-file | ✓ | 198.0µs | 12.68MB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 247.0µs | 13.29MB |
-| 254 | create-an-html-table | ✓ | 215.0µs | 12.80MB |
-| 255 | create-an-object-at-a-given-address | ✓ | 229.0µs | 12.89MB |
-| 256 | csv-data-manipulation | ✓ | 221.0µs | 13.04MB |
-| 257 | csv-to-html-translation-1 | ✓ | 182.0µs | 12.99MB |
-| 258 | csv-to-html-translation-2 | ✓ | 202.0µs | 12.86MB |
-| 259 | csv-to-html-translation-3 | ✓ | 145.0µs | 12.85MB |
-| 260 | csv-to-html-translation-4 | ✓ | 141.0µs | 12.99MB |
-| 261 | csv-to-html-translation-5 | ✓ | 429.0µs | 13.38MB |
+| 235 | conways-game-of-life | ✓ | 16.49s | 3.66MB |
+| 236 | copy-a-string-1 | ✓ | 1.0µs | 3.45MB |
+| 237 | copy-a-string-2 | ✓ | 168.0µs | 3.65MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 184.0µs | 3.41MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 272.0µs | 3.41MB |
+| 240 | count-in-factors | ✓ | 565.0µs | 3.48MB |
+| 241 | count-in-octal-1 | ✓ | 427.0µs | 3.69MB |
+| 242 | count-in-octal-2 | ✓ | 244.0ms | 3.57MB |
+| 243 | count-in-octal-3 | ✓ | 272.0µs | 3.62MB |
+| 244 | count-in-octal-4 | ✓ | 248.0µs | 3.53MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 384.0µs | 3.54MB |
+| 246 | count-the-coins-1 | ✓ | 295.0µs | 3.75MB |
+| 247 | count-the-coins-2 | ✓ | 1.0ms | 3.82MB |
+| 248 | cramers-rule | ✓ | 826.0µs | 3.68MB |
+| 249 | crc-32-1 | ✓ | 231.0µs | 3.59MB |
+| 250 | crc-32-2 | ✓ | 213.0µs | 3.54MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 79.0µs | 3.46MB |
+| 252 | create-a-file | ✓ | 235.0µs | 3.58MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 249.0µs | 3.61MB |
+| 254 | create-an-html-table | ✓ | 336.0µs | 3.62MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 335.0µs | 3.54MB |
+| 256 | csv-data-manipulation | ✓ | 257.0µs | 3.58MB |
+| 257 | csv-to-html-translation-1 | ✓ | 265.0µs | 3.53MB |
+| 258 | csv-to-html-translation-2 | ✓ | 233.0µs | 3.54MB |
+| 259 | csv-to-html-translation-3 | ✓ | 190.0µs | 3.46MB |
+| 260 | csv-to-html-translation-4 | ✓ | 216.0µs | 3.46MB |
+| 261 | csv-to-html-translation-5 | ✓ | 497.0µs | 3.54MB |
 | 262 | cuban-primes |   |  |  |
-| 263 | cullen-and-woodall-numbers |   |  |  |
-| 264 | cumulative-standard-deviation | ✓ |  |  |
-| 265 | currency | ✓ |  |  |
+| 263 | cullen-and-woodall-numbers | ✓ | 891.0µs | 3.82MB |
+| 264 | cumulative-standard-deviation | ✓ | 455.0µs | 3.67MB |
+| 265 | currency | ✓ | 333.0µs | 3.64MB |
 | 266 | currying |   |  |  |
-| 267 | curzon-numbers | ✓ |  |  |
-| 268 | cusip | ✓ |  |  |
+| 267 | curzon-numbers | ✓ | 17.0ms | 3.76MB |
+| 268 | cusip | ✓ | 257.0µs | 3.49MB |
 | 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm | ✓ |  |  |
-| 271 | date-format | ✓ |  |  |
+| 270 | damm-algorithm | ✓ | 427.0µs | 3.62MB |
+| 271 | date-format | ✓ | 299.0µs | 3.62MB |
 | 272 | date-manipulation |   |  |  |
-| 273 | day-of-the-week | ✓ |  |  |
+| 273 | day-of-the-week | ✓ | 262.0µs | 3.53MB |
 | 274 | de-bruijn-sequences |   |  |  |
 | 275 | deal-cards-for-freecell |   |  |  |
-| 276 | death-star |   |  |  |
-| 277 | deceptive-numbers |   |  |  |
-| 278 | deconvolution-1d-2 | ✓ |  |  |
-| 279 | deconvolution-1d-3 | ✓ |  |  |
-| 280 | deconvolution-1d | ✓ |  |  |
+| 276 | death-star | ✓ | 17.0ms | 3.59MB |
+| 277 | deceptive-numbers | ✓ | 28.0ms | 3.86MB |
+| 278 | deconvolution-1d-2 | ✓ | 622.0µs | 3.74MB |
+| 279 | deconvolution-1d-3 | ✓ | 465.0µs | 3.71MB |
+| 280 | deconvolution-1d | ✓ | 389.0µs | 3.61MB |
 | 281 | deepcopy-1 |   |  |  |
 | 282 | define-a-primitive-data-type |   |  |  |
 | 283 | delegates |   |  |  |

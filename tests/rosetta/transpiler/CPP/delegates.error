@@ -1,1 +1,445 @@
-transpile: unsupported call
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:22:181: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:23:209: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:23:295: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:24:189: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:25:183: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:26:215: warning: multi-character character constant [-Wmultichar]
+   26 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:26:251: warning: multi-character character constant [-Wmultichar]
+   26 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:148: warning: multi-character character constant [-Wmultichar]
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                    ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp: In function ‘std::ostream& operator<<(std::ostream&, const Delegator&)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:153: error: no match for ‘operator<<’ (operand types are ‘std::basic_ostream<char>’ and ‘const std::function<std::__cxx11::basic_string<char>()>’)
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                   ~~~~~~~~~~~~~~~~~~~~~ ^~ ~~~~~~~~
+      |                                                                                                                                                 |            |
+      |                                                                                                                                                 |            const std::function<std::__cxx11::basic_string<char>()>
+      |                                                                                                                                                 std::basic_ostream<char>
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:153: note: candidate: ‘operator<<(int, int)’ (built-in)
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                   ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:153: note:   no known conversion for argument 2 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘int’
+In file included from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:2:
+/usr/include/c++/13/ostream:110:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(__ostream_type& (*)(__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  110 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:110:36: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘std::basic_ostream<char>::__ostream_type& (*)(std::basic_ostream<char>::__ostream_type&)’ {aka ‘std::basic_ostream<char>& (*)(std::basic_ostream<char>&)’}
+  110 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
+      |                  ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/ostream:119:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(__ios_type& (*)(__ios_type&)) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>; __ios_type = std::basic_ios<char>]’
+  119 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:119:32: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘std::basic_ostream<char>::__ios_type& (*)(std::basic_ostream<char>::__ios_type&)’ {aka ‘std::basic_ios<char>& (*)(std::basic_ios<char>&)’}
+  119 |       operator<<(__ios_type& (*__pf)(__ios_type&))
+      |                  ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/ostream:129:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::ios_base& (*)(std::ios_base&)) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  129 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:129:30: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘std::ios_base& (*)(std::ios_base&)’
+  129 |       operator<<(ios_base& (*__pf) (ios_base&))
+      |                  ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/ostream:168:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  168 |       operator<<(long __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:168:23: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘long int’
+  168 |       operator<<(long __n)
+      |                  ~~~~~^~~
+/usr/include/c++/13/ostream:172:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  172 |       operator<<(unsigned long __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:172:32: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘long unsigned int’
+  172 |       operator<<(unsigned long __n)
+      |                  ~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:176:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(bool) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  176 |       operator<<(bool __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:176:23: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘bool’
+  176 |       operator<<(bool __n)
+      |                  ~~~~~^~~
+In file included from /usr/include/c++/13/ostream:880:
+/usr/include/c++/13/bits/ostream.tcc:96:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(short int) [with _CharT = char; _Traits = std::char_traits<char>]’
+   96 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/ostream.tcc:97:22: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘short int’
+   97 |     operator<<(short __n)
+      |                ~~~~~~^~~
+/usr/include/c++/13/ostream:183:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(short unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  183 |       operator<<(unsigned short __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:183:33: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘short unsigned int’
+  183 |       operator<<(unsigned short __n)
+      |                  ~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/ostream.tcc:110:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(int) [with _CharT = char; _Traits = std::char_traits<char>]’
+  110 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/ostream.tcc:111:20: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘int’
+  111 |     operator<<(int __n)
+      |                ~~~~^~~
+/usr/include/c++/13/ostream:194:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  194 |       operator<<(unsigned int __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:194:31: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘unsigned int’
+  194 |       operator<<(unsigned int __n)
+      |                  ~~~~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:203:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  203 |       operator<<(long long __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:203:28: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘long long int’
+  203 |       operator<<(long long __n)
+      |                  ~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:207:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long long unsigned int) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  207 |       operator<<(unsigned long long __n)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:207:37: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘long long unsigned int’
+  207 |       operator<<(unsigned long long __n)
+      |                  ~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:222:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(double) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  222 |       operator<<(double __f)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:222:25: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘double’
+  222 |       operator<<(double __f)
+      |                  ~~~~~~~^~~
+/usr/include/c++/13/ostream:226:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(float) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  226 |       operator<<(float __f)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:226:24: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘float’
+  226 |       operator<<(float __f)
+      |                  ~~~~~~^~~
+/usr/include/c++/13/ostream:234:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(long double) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  234 |       operator<<(long double __f)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:234:30: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘long double’
+  234 |       operator<<(long double __f)
+      |                  ~~~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:292:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(const void*) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
+  292 |       operator<<(const void* __p)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:292:30: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘const void*’
+  292 |       operator<<(const void* __p)
+      |                  ~~~~~~~~~~~~^~~
+/usr/include/c++/13/ostream:297:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(std::nullptr_t) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>; std::nullptr_t = std::nullptr_t]’
+  297 |       operator<<(nullptr_t)
+      |       ^~~~~~~~
+/usr/include/c++/13/ostream:297:18: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘std::nullptr_t’
+  297 |       operator<<(nullptr_t)
+      |                  ^~~~~~~~~
+/usr/include/c++/13/bits/ostream.tcc:124:5: note: candidate: ‘std::basic_ostream<_CharT, _Traits>& std::basic_ostream<_CharT, _Traits>::operator<<(__streambuf_type*) [with _CharT = char; _Traits = std::char_traits<char>; __streambuf_type = std::basic_streambuf<char>]’
+  124 |     basic_ostream<_CharT, _Traits>::
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/ostream.tcc:125:34: note:   no known conversion for argument 1 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘std::basic_ostream<char>::__streambuf_type*’ {aka ‘std::basic_streambuf<char>*’}
+  125 |     operator<<(__streambuf_type* __sbin)
+      |                ~~~~~~~~~~~~~~~~~~^~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:43:15: note: candidate: ‘template<class T> std::ostream& operator<<(std::ostream&, const std::vector<T>&)’
+   43 | std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
+      |               ^~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:43:15: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘const std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘const std::vector<T>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40:
+/usr/include/c++/13/string_view:761:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, basic_string_view<_CharT, _Traits>)’
+  761 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:761:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/bits/basic_string.h:4032:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 4032 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:4032:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘const std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:38,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/cstddef:124:5: note: candidate: ‘template<class _IntegerType> constexpr std::__byte_op_t<_IntegerType> std::operator<<(byte, _IntegerType)’
+  124 |     operator<<(byte __b, _IntegerType __shift) noexcept
+      |     ^~~~~~~~
+/usr/include/c++/13/cstddef:124:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:145: note:   cannot convert ‘(& std::operator<< <char, char_traits<char>, allocator<char> >((* & os), p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::first))->std::basic_ostream<char>::operator<<(14880)’ (type ‘std::basic_ostream<char>’) to type ‘std::byte’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                   ~~~~~~~~~~~~~~^~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:339:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const error_code&)’
+  339 |     operator<<(basic_ostream<_CharT, _Traits>& __os, const error_code& __e)
+      |     ^~~~~~~~
+/usr/include/c++/13/system_error:339:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const std::error_code&’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:554:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _CharT)’
+  554 |     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:554:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::function<std::__cxx11::basic_string<char>()>’)
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:564:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, char)’
+  564 |     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:564:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:570:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, char)’
+  570 |     operator<<(basic_ostream<char, _Traits>& __out, char __c)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:570:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:581:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, signed char)’
+  581 |     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:581:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘signed char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:586:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, unsigned char)’
+  586 |     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:586:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘unsigned char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:595:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, wchar_t)’ (deleted)
+  595 |     operator<<(basic_ostream<char, _Traits>&, wchar_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:595:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘wchar_t’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:600:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, char8_t)’ (deleted)
+  600 |     operator<<(basic_ostream<char, _Traits>&, char8_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:600:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘char8_t’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:605:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, char16_t)’ (deleted)
+  605 |     operator<<(basic_ostream<char, _Traits>&, char16_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:605:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘char16_t’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:609:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, char32_t)’ (deleted)
+  609 |     operator<<(basic_ostream<char, _Traits>&, char32_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:609:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘char32_t’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:615:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, char8_t)’ (deleted)
+  615 |     operator<<(basic_ostream<wchar_t, _Traits>&, char8_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:615:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:620:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, char16_t)’ (deleted)
+  620 |     operator<<(basic_ostream<wchar_t, _Traits>&, char16_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:620:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:624:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, char32_t)’ (deleted)
+  624 |     operator<<(basic_ostream<wchar_t, _Traits>&, char32_t) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:624:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:645:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const _CharT*)’
+  645 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:645:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘const _CharT*’ and ‘std::function<std::__cxx11::basic_string<char>()>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/bits/ostream.tcc:307:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const char*)’
+  307 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/ostream.tcc:307:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const char*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:662:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const char*)’
+  662 |     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:662:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const char*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:675:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const signed char*)’
+  675 |     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:675:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const signed char*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:680:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const unsigned char*)’
+  680 |     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:680:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const unsigned char*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:689:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const wchar_t*)’ (deleted)
+  689 |     operator<<(basic_ostream<char, _Traits>&, const wchar_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:689:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const wchar_t*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:694:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const char8_t*)’ (deleted)
+  694 |     operator<<(basic_ostream<char, _Traits>&, const char8_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:694:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const char8_t*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:699:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const char16_t*)’ (deleted)
+  699 |     operator<<(basic_ostream<char, _Traits>&, const char16_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:699:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const char16_t*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:703:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const char32_t*)’ (deleted)
+  703 |     operator<<(basic_ostream<char, _Traits>&, const char32_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:703:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘const char32_t*’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/ostream:709:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, const char8_t*)’ (deleted)
+  709 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char8_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:709:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:714:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, const char16_t*)’ (deleted)
+  714 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char16_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:714:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:718:5: note: candidate: ‘template<class _Traits> std::basic_ostream<wchar_t, _Traits>& std::operator<<(basic_ostream<wchar_t, _Traits>&, const char32_t*)’ (deleted)
+  718 |     operator<<(basic_ostream<wchar_t, _Traits>&, const char32_t*) = delete;
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:718:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   mismatched types ‘wchar_t’ and ‘char’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/ostream:801:5: note: candidate: ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&)’
+  801 |     operator<<(_Ostream&& __os, const _Tp& __x)
+      |     ^~~~~~~~
+/usr/include/c++/13/ostream:801:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/ostream: In substitution of ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = std::function<std::__cxx11::basic_string<char>()>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158:   required from here
+/usr/include/c++/13/ostream:801:5: error: template constraint failure for ‘template<class _Os, class _Tp>  requires (__derived_from_ios_base<_Os>) && requires(_Os& __os, const _Tp& __t) {__os << __t;} using std::__rvalue_stream_insertion_t = _Os&&’
+/usr/include/c++/13/ostream:801:5: note: constraints not satisfied
+/usr/include/c++/13/ostream: In substitution of ‘template<class _Os, class _Tp>  requires (__derived_from_ios_base<_Os>) && requires(_Os& __os, const _Tp& __t) {__os << __t;} using std::__rvalue_stream_insertion_t = _Os&& [with _Os = std::basic_ostream<char>&; _Tp = std::function<std::__cxx11::basic_string<char>()>]’:
+/usr/include/c++/13/ostream:801:5:   required by substitution of ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = std::function<std::__cxx11::basic_string<char>()>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158:   required from here
+/usr/include/c++/13/ostream:768:13:   required for the satisfaction of ‘__derived_from_ios_base<_Os>’ [with _Os = std::basic_ostream<char, std::char_traits<char> >&]
+/usr/include/c++/13/ostream:768:39: note: the expression ‘is_class_v<_Tp> [with _Tp = std::basic_ostream<char, std::char_traits<char> >&]’ evaluated to ‘false’
+  768 |     concept __derived_from_ios_base = is_class_v<_Tp>
+      |                                       ^~~~~~~~~~~~~~~
+In file included from /workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:9:
+/usr/include/c++/13/iomanip:81:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Resetiosflags)’
+   81 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Resetiosflags __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:81:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘std::_Resetiosflags’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/iomanip:111:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Setiosflags)’
+  111 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Setiosflags __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:111:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘std::_Setiosflags’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/iomanip:145:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Setbase)’
+  145 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Setbase __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:145:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘std::_Setbase’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/iomanip:180:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Setfill<_CharT>)’
+  180 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Setfill<_CharT> __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:180:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘std::_Setfill<_CharT>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/iomanip:210:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Setprecision)’
+  210 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Setprecision __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:210:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘std::_Setprecision’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/iomanip:240:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Setw)’
+  240 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Setw __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:240:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   cannot convert ‘p.std::pair<const std::__cxx11::basic_string<char>, std::function<std::__cxx11::basic_string<char>()> >::second’ (type ‘const std::function<std::__cxx11::basic_string<char>()>’) to type ‘std::_Setw’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                            ~~^~~~~~
+/usr/include/c++/13/iomanip:313:5: note: candidate: ‘template<class _CharT, class _Traits, class _MoneyT> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Put_money<_MoneyT>)’
+  313 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Put_money<_MoneyT> __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:313:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘std::_Put_money<_MoneyT>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/usr/include/c++/13/iomanip:365:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _Put_time<_CharT>)’
+  365 |     operator<<(basic_ostream<_CharT, _Traits>& __os, _Put_time<_CharT> __f)
+      |     ^~~~~~~~
+/usr/include/c++/13/iomanip:365:5: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:69:158: note:   ‘std::function<std::__cxx11::basic_string<char>()>’ is not derived from ‘std::_Put_time<_CharT>’
+   69 |     os << '{' << "'delegate': "<< "{"; bool first_0=true; for(const auto& p: v.delegate){ if(!first_0) os << ", "; first_0=false; os << p.first << ': ' << p.second; } os << "}"
+      |                                                                                                                                                              ^~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:68:15: note: candidate: ‘std::ostream& operator<<(std::ostream&, const Delegator&)’
+   68 | std::ostream& operator<<(std::ostream& os, const Delegator& v) {
+      |               ^~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:68:61: note:   no known conversion for argument 2 from ‘const std::function<std::__cxx11::basic_string<char>()>’ to ‘const Delegator&’
+   68 | std::ostream& operator<<(std::ostream& os, const Delegator& v) {
+      |                                            ~~~~~~~~~~~~~~~~~^
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:82:120: error: expected primary-expression before ‘{’ token
+   82 |         return (([&](auto& __m){ auto __it = __m.find(std::string("thing")); return __it != __m.end() ? __it->second : {}; })(d.delegate))();
+      |                                                                                                                        ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/delegates.cpp:82:119: error: expected ‘;’ before ‘{’ token
+   82 |         return (([&](auto& __m){ auto __it = __m.find(std::string("thing")); return __it != __m.end() ? __it->second : {}; })(d.delegate))();
+      |                                                                                                                       ^~
+      |                                                                                                                       ;
