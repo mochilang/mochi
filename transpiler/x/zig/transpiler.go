@@ -3715,6 +3715,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		vd := &VarDecl{Name: alias, Value: expr}
 		varDecls[s.Let.Name] = vd
+		varDecls[alias] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
@@ -3794,6 +3795,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
 		varDecls[s.Var.Name] = vd
+		varDecls[alias] = vd
 		if s.Var.Type != nil {
 			vd.Type = toZigType(s.Var.Type)
 			varTypes[s.Var.Name] = vd.Type
