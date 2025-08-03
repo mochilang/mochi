@@ -1,0 +1,22 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/canonicalize-cidr.kt:1:1: error: conflicting overloads: public fun repeat(s: String, n: Int): String defined in root package in file canonicalize-cidr.kt, public fun repeat(ch: String, n: Int): String defined in root package in file canonicalize-cidr.kt
+fun repeat(s: String, n: Int): String {
+^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/canonicalize-cidr.kt:39:1: error: conflicting overloads: public fun repeat(s: String, n: Int): String defined in root package in file canonicalize-cidr.kt, public fun repeat(ch: String, n: Int): String defined in root package in file canonicalize-cidr.kt
+fun repeat(ch: String, n: Int): String {
+^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/canonicalize-cidr.kt:101:30: error: type mismatch: inferred type is Int but (Int) -> Int was expected
+    var size: (Int) -> Int = Integer.parseInt(parts[1]!!, 10)
+                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/canonicalize-cidr.kt:107:34: error: type mismatch: inferred type is (Int) -> Int but Int was expected
+    binary = binary.substring(0, size) + repeat("0", 32 - size)
+                                 ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/canonicalize-cidr.kt:107:57: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun minus(other: Byte): Int defined in kotlin.Int
+public final operator fun minus(other: Double): Double defined in kotlin.Int
+public final operator fun minus(other: Float): Float defined in kotlin.Int
+public final operator fun minus(other: Int): Int defined in kotlin.Int
+public final operator fun minus(other: Long): Long defined in kotlin.Int
+public final operator fun minus(other: Short): Int defined in kotlin.Int
+    binary = binary.substring(0, size) + repeat("0", 32 - size)
+                                                        ^

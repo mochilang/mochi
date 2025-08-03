@@ -7,32 +7,6 @@ fun _len(v: Any?): Int = when (v) {
     else -> v.toString().length
 }
 
-var _nowSeed = 0L
-var _nowSeeded = false
-fun _now(): Long {
-    if (!_nowSeeded) {
-        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
-            _nowSeed = it
-            _nowSeeded = true
-        }
-    }
-    return if (_nowSeeded) {
-        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed)
-    } else {
-        kotlin.math.abs(System.nanoTime())
-    }
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
-}
-
 fun sqrtApprox(x: Double): Double {
     var guess: Double = x
     var i: Int = 0
@@ -57,22 +31,22 @@ fun unpackSym(m: MutableMap<String, Any?>): MutableList<MutableList<Double>> {
         var row: MutableList<Double> = mutableListOf<Double>()
         var c: Int = 0
         while (c <= r) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((ele as MutableList<Any?>)[idx]) as Double); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((ele as MutableList<Any?>)[idx]) as Double)); _tmp }
             idx = idx + 1
             c = c + 1
         }
         while ((c).toInt() < (n as Number).toDouble()) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(0.0); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add(0.0); _tmp }
             c = c + 1
         }
-        mat = run { val _tmp = mat.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<Double>>
+        mat = run { val _tmp = mat.toMutableList(); _tmp.add(row); _tmp }
         r = r + 1
     }
     r = 0
     while ((r).toInt() < (n as Number).toDouble()) {
         var c: BigInteger = (r + 1).toBigInteger()
         while (c.compareTo((n as Int).toBigInteger()) < 0) {
-            (mat[r]!!)[(c).toInt()] = ((mat[(c).toInt()]!!) as MutableList<Double>)[r]!!
+            (mat[r]!!)[(c).toInt()] = (((mat[(c).toInt()]!!) as MutableList<Double>))[r]!!
             c = c.add((1).toBigInteger())
         }
         r = r + 1
@@ -86,7 +60,7 @@ fun printMat(m: MutableList<MutableList<Double>>): Unit {
         var line: String = ""
         var j: Int = 0
         while (j < (m[i]!!).size) {
-            line = line + (((m[i]!!) as MutableList<Double>)[j]!!).toString()
+            line = line + ((((m[i]!!) as MutableList<Double>))[j]!!).toString()
             if (j < ((m[i]!!).size - 1)) {
                 line = line + " "
             }
@@ -111,15 +85,15 @@ fun printLower(m: MutableMap<String, Any?>): Unit {
         var row: MutableList<Double> = mutableListOf<Double>()
         var c: Int = 0
         while (c <= r) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(((ele as MutableList<Any?>)[idx]) as Double); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add((((ele as MutableList<Any?>)[idx]) as Double)); _tmp }
             idx = idx + 1
             c = c + 1
         }
         while ((c).toInt() < (n as Number).toDouble()) {
-            row = run { val _tmp = row.toMutableList(); _tmp.add(0.0); _tmp } as MutableList<Double>
+            row = run { val _tmp = row.toMutableList(); _tmp.add(0.0); _tmp }
             c = c + 1
         }
-        mat = run { val _tmp = mat.toMutableList(); _tmp.add(row); _tmp } as MutableList<MutableList<Double>>
+        mat = run { val _tmp = mat.toMutableList(); _tmp.add(row); _tmp }
         r = r + 1
     }
     printMat(mat)
@@ -131,7 +105,7 @@ fun choleskyLower(a: MutableMap<String, Any?>): MutableMap<String, Any?> {
     var le: MutableList<Double> = mutableListOf<Double>()
     var idx: Int = 0
     while (idx < _len(ae)) {
-        le = run { val _tmp = le.toMutableList(); _tmp.add(0.0); _tmp } as MutableList<Double>
+        le = run { val _tmp = le.toMutableList(); _tmp.add(0.0); _tmp }
         idx = idx + 1
     }
     var row: Int = 1
@@ -176,18 +150,6 @@ fun demo(a: MutableMap<String, Any?>): Unit {
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        demo(makeSym(3, mutableListOf(25.0, 15.0, 18.0, 0.0 - 5.0, 0.0, 11.0)))
-        demo(makeSym(4, mutableListOf(18.0, 22.0, 70.0, 54.0, 86.0, 174.0, 42.0, 62.0, 134.0, 106.0)))
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
-    }
+    demo(makeSym(3, mutableListOf(25.0, 15.0, 18.0, 0.0 - 5.0, 0.0, 11.0)))
+    demo(makeSym(4, mutableListOf(18.0, 22.0, 70.0, 54.0, 86.0, 174.0, 42.0, 62.0, 134.0, 106.0)))
 }
