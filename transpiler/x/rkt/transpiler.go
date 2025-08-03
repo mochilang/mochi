@@ -310,6 +310,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	for _, st := range b.Body {
 		st.emit(w)
 	}
+	fmt.Fprintln(w, "    (void)")
 	fmt.Fprintln(w, "  ))")
 	fmt.Fprintln(w, "  (let* ([_end (now)] [_end_mem (current-memory-use)]")
 	fmt.Fprintln(w, "         [_dur (- _end _start)]")
