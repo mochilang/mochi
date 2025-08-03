@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 322/491
+Completed programs: 327/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -346,11 +346,11 @@ Completed programs: 322/491
 | 338 | elementary-cellular-automaton | ✓ | 323.0µs | 42.08KB |
 | 339 | elliptic-curve-arithmetic | ✓ | 223.0µs | 19.74KB |
 | 340 | elliptic-curve-digital-signature-algorithm | ✓ | 23.0µs | 208B |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
+| 341 | emirp-primes | ✓ | 99.96s | 1.12GB |
+| 342 | empty-directory | ✓ | 36.0µs | 280B |
+| 343 | empty-program | ✓ | 4.0µs | 208B |
+| 344 | empty-string-1 | ✓ | 34.0µs | 208B |
+| 345 | empty-string-2 | ✓ | 29.0µs | 208B |
 | 346 | enforced-immutability |   |  |  |
 | 347 | entropy-1 |   |  |  |
 | 348 | entropy-2 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 322/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 21:17 +0700
+Last updated 2025-08-03 22:30 +0700
