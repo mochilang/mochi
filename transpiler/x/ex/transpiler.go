@@ -1251,11 +1251,17 @@ func isStringExpr(e Expr) bool {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
-	if c.Var {
-		io.WriteString(w, ".(")
-	} else if strings.Contains(c.Func, ".") && len(c.Func) > 0 && c.Func[0] >= 'a' && c.Func[0] <= 'z' {
-		io.WriteString(w, ".(")
+       if c.Var && c.Func == "str" && len(c.Args) == 1 {
+               io.WriteString(w, "Kernel.to_string(")
+               c.Args[0].emit(w)
+               io.WriteString(w, ")")
+               return
+       }
+       io.WriteString(w, c.Func)
+       if c.Var {
+               io.WriteString(w, ".(")
+       } else if strings.Contains(c.Func, ".") && len(c.Func) > 0 && c.Func[0] >= 'a' && c.Func[0] <= 'z' {
+               io.WriteString(w, ".(")
 	} else {
 		io.WriteString(w, "(")
 	}
@@ -3338,30 +3344,51 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			} else {
 				// ignore unsupported casts for dynamic backend
 			}
-		} else if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
-			idx, err := compileExpr(op.Index.Start, env)
-			if err != nil {
-				return nil, err
-			}
-			switch tt := typ.(type) {
-			case types.StringType:
-				expr = &IndexExpr{Target: expr, Index: idx, IsString: true}
-				typ = types.StringType{}
-			case types.ListType:
-				expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
-				typ = tt.Elem
-			case types.MapType:
-				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
-				typ = tt.Value
-			default:
-				if _, ok := types.TypeOfExpr(op.Index.Start, env).(types.StringType); ok {
-					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
-				} else {
-					expr = &IndexExpr{Target: expr, Index: idx}
-				}
-				typ = types.AnyType{}
-			}
-		} else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
+               } else if op.Call != nil {
+                       if v, ok := expr.(*VarRef); ok {
+                               p := &parser.Primary{Call: &parser.CallExpr{Func: v.Name, Args: op.Call.Args}}
+                               callExpr, err := compilePrimary(p, env)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               expr = callExpr
+                       } else {
+                               args := make([]Expr, len(op.Call.Args)+1)
+                               args[0] = expr
+                               for j, a := range op.Call.Args {
+                                       ce, err := compileExpr(a, env)
+                                       if err != nil {
+                                               return nil, err
+                                       }
+                                       args[j+1] = ce
+                               }
+                               expr = &CallExpr{Func: "", Args: args, Var: true}
+                       }
+                       typ = types.AnyType{}
+               } else if op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil {
+                       idx, err := compileExpr(op.Index.Start, env)
+                       if err != nil {
+                               return nil, err
+                       }
+                       switch tt := typ.(type) {
+                       case types.StringType:
+                               expr = &IndexExpr{Target: expr, Index: idx, IsString: true}
+                               typ = types.StringType{}
+                       case types.ListType:
+                               expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
+                               typ = tt.Elem
+                       case types.MapType:
+                               expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+                               typ = tt.Value
+                       default:
+                               if _, ok := types.TypeOfExpr(op.Index.Start, env).(types.StringType); ok {
+                                       expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+                               } else {
+                                       expr = &IndexExpr{Target: expr, Index: idx}
+                               }
+                               typ = types.AnyType{}
+                       }
+               } else if op.Index != nil && (op.Index.Colon != nil || op.Index.Colon2 != nil) {
 			var start Expr = &NumberLit{Value: "0"}
 			if op.Index.Start != nil {
 				s, err := compileExpr(op.Index.Start, env)

@@ -1,0 +1,14 @@
+Test case base = 10, begin = 1, end = 100:
+Subset:  191018192728363745465455636472738182909199100
+Kaprekar:["1", "9", "45", "55", "99"]
+Valid subset.
+
+Test case base = 17, begin = 10, end = gg:
+Subset:  101f1g2e2f3d3e4c4d5b5c6a6b797a88899798a6a7b5b6c4c5d3d4e2e3f1f2g0g1gg
+Kaprekar:["3d", "d4", "gg"]
+Valid subset.
+{
+  "duration_us": 81344,
+  "memory_bytes": 33480,
+  "name": "main"
+}
