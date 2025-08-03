@@ -1,5 +1,0 @@
-exit status 1
-# command-line-arguments
-../../../tests/rosetta/transpiler/Go/bitwise-operations.go:210:10: too many return values
-	have (nil)
-	want ()
