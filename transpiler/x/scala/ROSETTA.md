@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (429/491)
-_Last updated: 2025-08-03 21:24 +0700_
+_Last updated: 2025-08-03 23:05 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -410,7 +410,7 @@ _Last updated: 2025-08-03 21:24 +0700_
 | 401 | faulhabers-triangle | ✓ | 29µs | 8.7 MB |
 | 402 | feigenbaum-constant-calculation | ✓ | 220µs | 8.7 MB |
 | 403 | fermat-numbers | ✓ | 27µs | 8.7 MB |
-| 404 | fibonacci-n-step-number-sequences | ✓ | 5µs | 8.7 MB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 9µs | 3.5 MB |
 | 405 | fibonacci-sequence-1 | ✓ |  | 8.7 MB |
 | 406 | fibonacci-sequence-2 | ✓ |  | 8.7 MB |
 | 407 | fibonacci-sequence-3 | ✓ |  | 8.7 MB |
