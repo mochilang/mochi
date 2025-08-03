@@ -1,5 +1,4 @@
-;; Generated on 2025-08-01 19:22 +0700
-(import (only (scheme base) call/cc when list-ref list-set!))
+;; Generated on 2025-08-03 00:11 +0700
 (import (rename (scheme base) (list _list)))
 (import (scheme time))
 (import (chibi string))
@@ -7,6 +6,23 @@
 (import (scheme write))
 (import (srfi 69))
 (import (srfi 1))
+(import (chibi time) (srfi 98))
+(define _now_seeded #f)
+(define _now_seed 0)
+(define (now)
+  (when (not _now_seeded)
+    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
+      (when (and s (string->number s))
+        (set! _now_seed (string->number s))
+        (set! _now_seeded #t))))
+  (if _now_seeded
+      (begin
+        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
+        _now_seed)
+      (exact (floor (* (current-second) 1000000000))))
+)
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -84,6 +100,4 @@
                   (loop (_substring r (+ idx (string-length del)) (string-length r))
                         (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))
-(define (toOct n) (call/cc (lambda (ret1) (begin (if (equal? n 0) (begin (ret1 "0")) (quote ())) (let ((digits "01234567")) (begin (let ((out "")) (begin (let ((v n)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (> v 0) (begin (let ((d (modulo v 8))) (begin (set! out (string-append (_substring digits d (+ d 1)) out)) (set! v (quotient v 8)))) (loop2)) (quote ()))))) (loop2)))) (ret1 out)))))))))))
-(define (main) (call/cc (lambda (ret4) (call/cc (lambda (break6) (letrec ((loop5 (lambda (i) (if (< i 128) (begin (begin (_display (to-str (toOct i))) (newline)) (loop5 (+ i 1))) (quote ()))))) (loop5 0)))))))
-(main)
+(let ((start7 (now))) (begin (define (toOct n) (call/cc (lambda (ret1) (begin (if (equal? n 0) (begin (ret1 "0")) (quote ())) (let ((digits "01234567")) (begin (let ((out "")) (begin (let ((v n)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (> v 0) (begin (let ((d (modulo v 8))) (begin (set! out (string-append (_substring digits d (+ d 1)) out)) (set! v (quotient v 8)))) (loop2)) (quote ()))))) (loop2)))) (ret1 out))))))))))) (define (main) (call/cc (lambda (ret4) (call/cc (lambda (break6) (letrec ((loop5 (lambda (i) (if (< i 128) (begin (begin (_display (to-str (toOct i))) (newline)) (loop5 (+ i 1))) (quote ()))))) (loop5 0))))))) (main) (let ((end8 (now))) (let ((dur9 (quotient (- end8 start7) 1000))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur9) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

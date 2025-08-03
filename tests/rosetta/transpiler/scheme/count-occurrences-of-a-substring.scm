@@ -1,5 +1,4 @@
-;; Generated on 2025-08-01 19:22 +0700
-(import (only (scheme base) call/cc when list-ref list-set!))
+;; Generated on 2025-08-03 00:11 +0700
 (import (rename (scheme base) (list _list)))
 (import (scheme time))
 (import (chibi string))
@@ -7,6 +6,23 @@
 (import (scheme write))
 (import (srfi 69))
 (import (srfi 1))
+(import (chibi time) (srfi 98))
+(define _now_seeded #f)
+(define _now_seed 0)
+(define (now)
+  (when (not _now_seeded)
+    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
+      (when (and s (string->number s))
+        (set! _now_seed (string->number s))
+        (set! _now_seeded #t))))
+  (if _now_seeded
+      (begin
+        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
+        _now_seed)
+      (exact (floor (* (current-second) 1000000000))))
+)
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -84,6 +100,4 @@
                   (loop (_substring r (+ idx (string-length del)) (string-length r))
                         (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))
-(define (countOccurrences s sub) (call/cc (lambda (ret1) (begin (if (equal? (cond ((string? sub) (string-length sub)) ((hash-table? sub) (hash-table-size sub)) (else (length sub))) 0) (begin (ret1 (+ (cond ((string? s) (string-length s)) ((hash-table? s) (hash-table-size s)) (else (length s))) 1))) (quote ())) (let ((cnt 0)) (begin (let ((i 0)) (begin (let ((step (cond ((string? sub) (string-length sub)) ((hash-table? sub) (hash-table-size sub)) (else (length sub))))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (_le (+ i step) (cond ((string? s) (string-length s)) ((hash-table? s) (hash-table-size s)) (else (length s)))) (begin (if (string=? (_substring s i (+ i step)) sub) (begin (set! cnt (+ cnt 1)) (set! i (+ i step))) (begin (set! i (+ i 1)))) (loop2)) (quote ()))))) (loop2)))) (ret1 cnt)))))))))))
-(define (main) (call/cc (lambda (ret4) (begin (_display (to-str (to-str (countOccurrences "the three truths" "th")))) (newline) (_display (to-str (to-str (countOccurrences "ababababab" "abab")))) (newline)))))
-(main)
+(let ((start5 (now))) (begin (define (countOccurrences s sub) (call/cc (lambda (ret1) (begin (if (equal? (cond ((string? sub) (string-length sub)) ((hash-table? sub) (hash-table-size sub)) (else (length sub))) 0) (begin (ret1 (+ (cond ((string? s) (string-length s)) ((hash-table? s) (hash-table-size s)) (else (length s))) 1))) (quote ())) (let ((cnt 0)) (begin (let ((i 0)) (begin (let ((step (cond ((string? sub) (string-length sub)) ((hash-table? sub) (hash-table-size sub)) (else (length sub))))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (_le (+ i step) (cond ((string? s) (string-length s)) ((hash-table? s) (hash-table-size s)) (else (length s)))) (begin (if (string=? (_substring s i (+ i step)) sub) (begin (set! cnt (+ cnt 1)) (set! i (+ i step))) (begin (set! i (+ i 1)))) (loop2)) (quote ()))))) (loop2)))) (ret1 cnt))))))))))) (define (main) (call/cc (lambda (ret4) (begin (_display (to-str (to-str (countOccurrences "the three truths" "th")))) (newline) (_display (to-str (to-str (countOccurrences "ababababab" "abab")))) (newline))))) (main) (let ((end6 (now))) (let ((dur7 (quotient (- end6 start5) 1000))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur7) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

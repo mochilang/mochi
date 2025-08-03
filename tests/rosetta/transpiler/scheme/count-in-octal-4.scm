@@ -1,5 +1,4 @@
-;; Generated on 2025-08-01 19:22 +0700
-(import (only (scheme base) call/cc when list-ref list-set!))
+;; Generated on 2025-08-03 00:11 +0700
 (import (rename (scheme base) (list _list)))
 (import (scheme time))
 (import (chibi string))

@@ -1,5 +1,4 @@
-;; Generated on 2025-08-01 19:22 +0700
-(import (only (scheme base) call/cc when list-ref list-set!))
+;; Generated on 2025-08-03 00:11 +0700
 (import (rename (scheme base) (list _list)))
 (import (scheme time))
 (import (chibi string))
@@ -8,6 +7,23 @@
 (import (srfi 69))
 (import (srfi 1))
 (import (chibi io))
+(import (chibi time) (srfi 98))
+(define _now_seeded #f)
+(define _now_seed 0)
+(define (now)
+  (when (not _now_seeded)
+    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
+      (when (and s (string->number s))
+        (set! _now_seed (string->number s))
+        (set! _now_seeded #t))))
+  (if _now_seeded
+      (begin
+        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
+        _now_seed)
+      (exact (floor (* (current-second) 1000000000))))
+)
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -88,4 +104,4 @@
 (define (_input)
   (let ((l (read-line)))
     (if (eof-object? l) "" l)))
-(call/cc (lambda (break2) (letrec ((loop1 (lambda () (if #t (begin (let ((line (_input))) (begin (if (string=? line "") (begin (break2 (quote ()))) (quote ())) (_display (to-str line)) (newline))) (loop1)) (quote ()))))) (loop1))))
+(let ((start3 (now))) (begin (call/cc (lambda (break2) (letrec ((loop1 (lambda () (if #t (begin (let ((line (_input))) (begin (if (string=? line "") (begin (break2 (quote ()))) (quote ())) (_display (to-str line)) (newline))) (loop1)) (quote ()))))) (loop1)))) (let ((end4 (now))) (let ((dur5 (quotient (- end4 start3) 1000))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur5) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
