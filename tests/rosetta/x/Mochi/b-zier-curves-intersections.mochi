@@ -47,6 +47,12 @@ type QuadCurve {
   y: QuadSpline
 }
 
+type TestRes {
+  exclude: bool
+  accept: bool
+  intersect: Point
+}
+
 # Subdivide a quadratic spline using de Casteljau's algorithm.
 fun subdivideQuadSpline(q: QuadSpline, t: float): list<QuadSpline> {
   let s = 1.0 - t
@@ -72,7 +78,7 @@ fun rectsOverlap(xa0: float, ya0: float, xa1: float, ya1: float,
   return xb0 <= xa1 && xa0 <= xb1 && yb0 <= ya1 && ya0 <= yb1
 }
 
-fun testIntersect(p: QuadCurve, q: QuadCurve, tol: float): map<string, any> {
+fun testIntersect(p: QuadCurve, q: QuadCurve, tol: float): TestRes {
   let pxmin = min3(p.x.c0, p.x.c1, p.x.c2)
   let pymin = min3(p.y.c0, p.y.c1, p.y.c2)
   let pxmax = max3(p.x.c0, p.x.c1, p.x.c2)
@@ -83,24 +89,26 @@ fun testIntersect(p: QuadCurve, q: QuadCurve, tol: float): map<string, any> {
   let qxmax = max3(q.x.c0, q.x.c1, q.x.c2)
   let qymax = max3(q.y.c0, q.y.c1, q.y.c2)
 
-  var exclude = true
-  var accept = false
-  var inter = Point { x: 0.0, y: 0.0 }
+  var res = TestRes {
+    exclude: true,
+    accept: false,
+    intersect: Point { x: 0.0, y: 0.0 }
+  }
   if rectsOverlap(pxmin, pymin, pxmax, pymax, qxmin, qymin, qxmax, qymax) {
-    exclude = false
+    res.exclude = false
     let xmin = maxf(pxmin, qxmin)
     let xmax = minf(pxmax, qxmax)
     if xmax - xmin <= tol {
       let ymin = maxf(pymin, qymin)
       let ymax = minf(pymax, qymax)
       if ymax - ymin <= tol {
-        accept = true
-        inter.x = 0.5 * (xmin + xmax)
-        inter.y = 0.5 * (ymin + ymax)
+        res.accept = true
+        res.intersect.x = 0.5 * (xmin + xmax)
+        res.intersect.y = 0.5 * (ymin + ymax)
       }
     }
   }
-  return {"exclude": exclude, "accept": accept, "intersect": inter}
+  return res
 }
 
 fun seemsToBeDuplicate(pts: list<Point>, xy: Point, spacing: float): bool {
@@ -123,9 +131,9 @@ fun findIntersects(p: QuadCurve, q: QuadCurve, tol: float, spacing: float): list
     let work = workload[idx]
     workload = workload[:idx]
     let res = testIntersect(work["p"], work["q"], tol)
-    let excl = res["exclude"]
-    let acc = res["accept"]
-    let inter = res["intersect"] as Point
+    let excl = res.exclude
+    let acc = res.accept
+    let inter = res.intersect
     if acc {
       if !seemsToBeDuplicate(inters, inter, spacing) {
         inters = append(inters, inter)
@@ -137,9 +145,13 @@ fun findIntersects(p: QuadCurve, q: QuadCurve, tol: float, spacing: float): list
       let p1 = ps[1]
       let q0 = qs[0]
       let q1 = qs[1]
-      workload = append(workload, {"p": p0, "q": q0})
-      workload = append(workload, {"p": p0, "q": q1})
-      workload = append(workload, {"p": p1, "q": q0})
+      let p0a = p0
+      let q0a = q0
+      let p1a = p1
+      let q1a = q1
+      workload = append(workload, {"p": p0a, "q": q0a})
+      workload = append(workload, {"p": p0, "q": q1a})
+      workload = append(workload, {"p": p1a, "q": q0})
       workload = append(workload, {"p": p1, "q": q1})
     }
   }

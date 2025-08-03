@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-03 03:08 UTC
+Last updated: 2025-08-03 03:37 UTC
 
-## Rosetta Golden Test Checklist (217/491)
+## Rosetta Golden Test Checklist (218/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 109µs | 3.2 MB |
@@ -101,7 +101,7 @@ Last updated: 2025-08-03 03:08 UTC
 | 92 | averages-root-mean-square | ✓ | 67µs |  |
 | 93 | averages-simple-moving-average | ✓ | 318µs |  |
 | 94 | avl-tree |   |  |  |
-| 95 | b-zier-curves-intersections |   |  |  |
+| 95 | b-zier-curves-intersections | ✓ | 3.263ms | 128.0 KB |
 | 96 | babbage-problem | ✓ | 43µs |  |
 | 97 | babylonian-spiral |   |  |  |
 | 98 | balanced-brackets | ✓ | 87µs |  |

@@ -3171,6 +3171,7 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 	defer func() { localVarStack = localVarStack[:len(localVarStack)-1] }()
 
 	startDecl := &VarDecl{Name: "_start", Expr: &NowExpr{}, Type: "i64"}
+	memStart := &VarDecl{Name: "_mem_start", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	body := make([]Stmt, 0, len(b.Body))
 	for _, st := range b.Body {
 		cs, err := compileStmt(st)
@@ -3182,14 +3183,20 @@ func compileBenchBlock(b *parser.BenchBlock) (Stmt, error) {
 		}
 	}
 	endDecl := &VarDecl{Name: "_end", Expr: &NowExpr{}, Type: "i64"}
+	memEnd := &VarDecl{Name: "_mem_end", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
 	durExpr := &BinaryExpr{Left: &BinaryExpr{Left: &NameRef{Name: "_end"}, Op: "-", Right: &NameRef{Name: "_start"}}, Op: "/", Right: &NumberLit{Value: "1000"}}
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
-	memDecl := &VarDecl{Name: "memory_bytes", Expr: &CallExpr{Func: "_mem"}, Type: "i64"}
+	memDiff := &BinaryExpr{Left: &NameRef{Name: "_mem_end"}, Op: "-", Right: &NameRef{Name: "_mem_start"}}
+	zero := &NumberLit{Value: "0"}
+	neg := &BinaryExpr{Left: memDiff, Op: "<", Right: zero}
+	negDiff := &UnaryExpr{Op: "-", Expr: memDiff}
+	memExpr := &IfExpr{Cond: neg, Then: negDiff, Else: memDiff}
+	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: b.Name}}, Trim: false}
 
-	stmts := []Stmt{startDecl}
+	stmts := []Stmt{startDecl, memStart}
 	stmts = append(stmts, body...)
-	stmts = append(stmts, endDecl, durDecl, memDecl, print)
+	stmts = append(stmts, endDecl, memEnd, durDecl, memDecl, print)
 	return &MultiStmt{Stmts: stmts}, nil
 }
 
@@ -3203,8 +3210,9 @@ func wrapBench(name string, body []Stmt) Stmt {
 	durDecl := &VarDecl{Name: "duration_us", Expr: durExpr, Type: "i64"}
 	memDiff := &BinaryExpr{Left: &NameRef{Name: "_mem_end"}, Op: "-", Right: &NameRef{Name: "_mem_start"}}
 	zero := &NumberLit{Value: "0"}
-	cond := &BinaryExpr{Left: memDiff, Op: "<=", Right: zero}
-	memExpr := &IfExpr{Cond: cond, Then: &NameRef{Name: "_mem_end"}, Else: memDiff}
+	neg := &BinaryExpr{Left: memDiff, Op: "<", Right: zero}
+	negDiff := &UnaryExpr{Op: "-", Expr: memDiff}
+	memExpr := &IfExpr{Cond: neg, Then: negDiff, Else: memDiff}
 	memDecl := &VarDecl{Name: "memory_bytes", Expr: memExpr, Type: "i64"}
 	print := &PrintExpr{Fmt: "{{\n  \"duration_us\": {},\n  \"memory_bytes\": {},\n  \"name\": \"{}\"\n}}", Args: []Expr{&NameRef{Name: "duration_us"}, &NameRef{Name: "memory_bytes"}, &StringLit{Value: name}}, Trim: false}
 	stmts := []Stmt{startDecl, memStart}
@@ -4159,6 +4167,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				vt := inferType(v)
+				if strings.HasPrefix(vt, "&") {
+					base := strings.TrimPrefix(vt, "&")
+					if _, ok := structTypes[base]; ok {
+						v = &MethodCallExpr{Receiver: v, Name: "clone"}
+					}
+				} else if nr, ok := v.(*NameRef); ok {
+					if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+						base := strings.TrimPrefix(pt, "&")
+						if _, ok3 := structTypes[base]; ok3 {
+							v = &MethodCallExpr{Receiver: v, Name: "clone"}
+						}
+					}
+				}
 				entries[i] = MapEntry{Key: k, Value: v}
 			}
 			usesHashMap = true
@@ -4174,6 +4196,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				v, err := compileExpr(it.Value)
 				if err != nil {
 					return nil, err
+				}
+				vt := inferType(v)
+				if strings.HasPrefix(vt, "&") {
+					base := strings.TrimPrefix(vt, "&")
+					if _, ok := structTypes[base]; ok {
+						v = &MethodCallExpr{Receiver: v, Name: "clone"}
+					}
+				} else if nr, ok := v.(*NameRef); ok {
+					if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+						base := strings.TrimPrefix(pt, "&")
+						if _, ok3 := structTypes[base]; ok3 {
+							v = &MethodCallExpr{Receiver: v, Name: "clone"}
+						}
+					}
 				}
 				entries[i] = MapEntry{Key: k, Value: v}
 			}
@@ -4325,6 +4361,20 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			v, err := compileExpr(it.Value)
 			if err != nil {
 				return nil, err
+			}
+			vt := inferType(v)
+			if strings.HasPrefix(vt, "&") {
+				base := strings.TrimPrefix(vt, "&")
+				if _, ok := structTypes[base]; ok {
+					v = &MethodCallExpr{Receiver: v, Name: "clone"}
+				}
+			} else if nr, ok := v.(*NameRef); ok {
+				if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+					base := strings.TrimPrefix(pt, "&")
+					if _, ok3 := structTypes[base]; ok3 {
+						v = &MethodCallExpr{Receiver: v, Name: "clone"}
+					}
+				}
 			}
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
