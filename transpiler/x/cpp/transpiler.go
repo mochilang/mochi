@@ -4366,10 +4366,22 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 					// builtin handled
 				} else if _, ok4 := expr.(*PadStartExpr); ok4 {
 					// builtin handled
-				} else if sel2, ok4 := expr.(*SelectorExpr); ok4 && isStructType(exprType(sel2.Target)) {
-					methodName := exprType(sel2.Target) + "_" + sel2.Field
-					args = append([]Expr{sel2.Target}, args...)
-					expr = &CallExpr{Name: methodName, Args: args}
+				} else if sel2, ok4 := expr.(*SelectorExpr); ok4 {
+					typ := exprType(sel2.Target)
+					if typ == "auto" {
+						if vr, ok := sel2.Target.(*VarRef); ok {
+							if t, ok := localTypes[vr.Name]; ok {
+								typ = t
+							}
+						}
+					}
+					if isStructType(typ) {
+						methodName := typ + "_" + sel2.Field
+						args = append([]Expr{sel2.Target}, args...)
+						expr = &CallExpr{Name: methodName, Args: args}
+					} else {
+						expr = &FuncCallExpr{Fun: expr, Args: args}
+					}
 				} else {
 					expr = &FuncCallExpr{Fun: expr, Args: args}
 				}
@@ -4572,7 +4584,11 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 	for _, p := range fn.Params {
 		if p.Type != nil {
 			if p.Type.Simple != nil {
-				localTypes[p.Name] = cppType(*p.Type.Simple)
+				typ := cppType(*p.Type.Simple)
+				if typ == "auto" {
+					typ = *p.Type.Simple
+				}
+				localTypes[p.Name] = typ
 			} else if p.Type.Generic != nil {
 				localTypes[p.Name] = cppType(typeRefString(&parser.TypeRef{Generic: p.Type.Generic}))
 			}
@@ -6535,7 +6551,7 @@ func typeRefString(t *parser.TypeRef) string {
 
 func defaultValueForType(t string) string {
 	switch t {
-	case "int", "double":
+	case "int", "int64_t", "int32_t", "size_t", "long", "long long", "double", "float":
 		return "0"
 	case "bool":
 		return "false"
