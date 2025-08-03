@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (399/491)
-Last updated: 2025-08-03 01:55 UTC
+Last updated: 2025-08-03 02:58 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -267,38 +267,38 @@ Last updated: 2025-08-03 01:55 UTC
 | 258 | csv-to-html-translation-2 | ✓ | 571.223ms | 11.9 MB |
 | 259 | csv-to-html-translation-3 | ✓ | 571.223ms | 12.2 MB |
 | 260 | csv-to-html-translation-4 | ✓ | 571.223ms | 12.0 MB |
-| 261 | csv-to-html-translation-5 | ✓ |  |  |
+| 261 | csv-to-html-translation-5 | ✓ | 571.223ms | 12.1 MB |
 | 262 | cuban-primes | ✓ |  |  |
-| 263 | cullen-and-woodall-numbers | ✓ |  |  |
+| 263 | cullen-and-woodall-numbers | ✓ | 571.223ms | 12.8 MB |
 | 264 | cumulative-standard-deviation | ✓ | 571.223ms | 12.5 MB |
-| 265 | currency | ✓ |  |  |
-| 266 | currying | ✓ |  |  |
-| 267 | curzon-numbers | ✓ |  |  |
-| 268 | cusip | ✓ |  |  |
+| 265 | currency | ✓ | 571.223ms | 13.8 MB |
+| 266 | currying | ✓ | 571.223ms | 12.3 MB |
+| 267 | curzon-numbers | ✓ | 571.223ms | 12.2 MB |
+| 268 | cusip | ✓ | 571.223ms | 12.2 MB |
 | 269 | cyclops-numbers | ✓ |  |  |
-| 270 | damm-algorithm | ✓ |  |  |
+| 270 | damm-algorithm | ✓ | 571.223ms | 13.1 MB |
 | 271 | date-format | ✓ |  |  |
-| 272 | date-manipulation | ✓ |  |  |
-| 273 | day-of-the-week | ✓ |  |  |
-| 274 | de-bruijn-sequences | ✓ |  |  |
+| 272 | date-manipulation | ✓ | 571.223ms | 14.4 MB |
+| 273 | day-of-the-week | ✓ | 571.223ms | 12.1 MB |
+| 274 | de-bruijn-sequences | ✓ | 571.223ms | 18.0 MB |
 | 275 | deal-cards-for-freecell | ✓ |  |  |
 | 276 | death-star | ✓ |  |  |
-| 277 | deceptive-numbers | ✓ |  |  |
-| 278 | deconvolution-1d-2 | ✓ |  |  |
-| 279 | deconvolution-1d-3 | ✓ |  |  |
-| 280 | deconvolution-1d | ✓ |  |  |
-| 281 | deepcopy-1 | ✓ |  |  |
+| 277 | deceptive-numbers | ✓ | 571.223ms | 12.7 MB |
+| 278 | deconvolution-1d-2 | ✓ | 571.223ms | 12.2 MB |
+| 279 | deconvolution-1d-3 | ✓ | 571.223ms | 13.2 MB |
+| 280 | deconvolution-1d | ✓ | 571.223ms | 12.7 MB |
+| 281 | deepcopy-1 | ✓ | 571.223ms | 12.2 MB |
 | 282 | define-a-primitive-data-type |   |  |  |
 | 283 | delegates |   |  |  |
-| 284 | demings-funnel | ✓ |  |  |
-| 285 | department-numbers | ✓ |  |  |
-| 286 | descending-primes | ✓ |  |  |
-| 287 | detect-division-by-zero | ✓ |  |  |
+| 284 | demings-funnel | ✓ | 571.223ms | 13.5 MB |
+| 285 | department-numbers | ✓ | 571.223ms | 12.4 MB |
+| 286 | descending-primes | ✓ | 571.223ms | 12.5 MB |
+| 287 | detect-division-by-zero | ✓ | 571.223ms | 12.3 MB |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
-| 290 | determine-if-a-string-is-collapsible | ✓ |  |  |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ |  |  |
-| 292 | determine-if-a-string-is-numeric-2 | ✓ |  |  |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 571.223ms | 12.9 MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 571.223ms | 12.4 MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 571.223ms | 12.3 MB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 571.223ms | 12.5 MB |
 | 293 | determine-if-a-string-is-squeezable | ✓ |  |  |
 | 294 | determine-if-only-one-instance-is-running | ✓ |  |  |
 | 295 | determine-if-two-triangles-overlap | ✓ |  |  |
