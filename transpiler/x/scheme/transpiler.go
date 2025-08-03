@@ -37,6 +37,8 @@ var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
+var methodNames map[string]struct{}
+var currentMethodFields map[string]struct{}
 
 // SetBenchMain configures whether the generated main function is wrapped
 // in a benchmark block when emitting code. When enabled, the program will
@@ -901,10 +903,19 @@ func convertStmt(st *parser.Statement) (Node, error) {
 			&List{Elems: append([]Node{Symbol("begin")}, inner...)},
 		}}, nil
 	case st.Type != nil:
+		fields := map[string]struct{}{}
+		for _, m := range st.Type.Members {
+			if m.Field != nil {
+				fields[m.Field.Name] = struct{}{}
+			}
+		}
 		var defs []Node
 		for _, m := range st.Type.Members {
 			if m.Method != nil {
+				methodNames[m.Method.Name] = struct{}{}
+				currentMethodFields = fields
 				fn, err := convertFuncStmt(m.Method, m.Method.Name, true)
+				currentMethodFields = nil
 				if err != nil {
 					return nil, err
 				}
@@ -948,6 +959,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesBench = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
+	methodNames = map[string]struct{}{}
+	currentMethodFields = nil
 	p := &Program{}
 	for _, st := range prog.Statements {
 		form, err := convertStmt(st)
@@ -1226,13 +1239,17 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			}
 			args[j] = n
 		}
-		if _, ok := currentEnv.GetFunc(pf.Target.Selector.Tail[0]); !ok {
-			needHash = true
-			fn := &List{Elems: []Node{Symbol("hash-table-ref"), objNode, StringLit(pf.Target.Selector.Tail[0])}}
-			node = &List{Elems: append([]Node{fn}, args...)}
-		} else {
+		name := pf.Target.Selector.Tail[0]
+		if _, ok := currentEnv.GetFunc(name); ok {
 			args = append([]Node{objNode}, args...)
-			node = &List{Elems: append([]Node{Symbol(pf.Target.Selector.Tail[0])}, args...)}
+			node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+		} else if _, ok := methodNames[name]; ok {
+			args = append([]Node{objNode}, args...)
+			node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+		} else {
+			needHash = true
+			fn := &List{Elems: []Node{Symbol("hash-table-ref"), objNode, StringLit(name)}}
+			node = &List{Elems: append([]Node{fn}, args...)}
 		}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
 	} else {
@@ -1358,13 +1375,17 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 				}
 				args[j] = n
 			}
-			if _, ok := currentEnv.GetFunc(op.Field.Name); !ok {
-				needHash = true
-				fn := &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(op.Field.Name)}}
-				node = &List{Elems: append([]Node{fn}, args...)}
-			} else {
+			name := op.Field.Name
+			if _, ok := currentEnv.GetFunc(name); ok {
 				args = append([]Node{node}, args...)
-				node = &List{Elems: append([]Node{Symbol(op.Field.Name)}, args...)}
+				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+			} else if _, ok := methodNames[name]; ok {
+				args = append([]Node{node}, args...)
+				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+			} else {
+				needHash = true
+				fn := &List{Elems: []Node{Symbol("hash-table-ref"), node, StringLit(name)}}
+				node = &List{Elems: append([]Node{fn}, args...)}
 			}
 			i++
 		default:
@@ -1396,6 +1417,10 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 			}
 			if _, ok := currentEnv.GetFunc(p.Selector.Root); ok {
 				return Symbol(p.Selector.Root), nil
+			}
+			if _, ok := currentMethodFields[p.Selector.Root]; ok {
+				needHash = true
+				return &List{Elems: []Node{Symbol("hash-table-ref"), Symbol("self"), StringLit(p.Selector.Root)}}, nil
 			}
 		}
 		return StringLit(p.Selector.Root), nil
