@@ -3024,11 +3024,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_div"
 				name = "user_div"
 			}
+			if name == "strdup" { // avoid conflict with stdlib
+				funcAliases[name] = "user_strdup"
+				name = "user_strdup"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
 			}
-			funcReturnTypes[st.Fun.Name] = fun.Return
+			funcReturnTypes[name] = fun.Return
 			p.Functions = append(p.Functions, fun)
 			if len(extraFuncs) > 0 {
 				p.Functions = append(p.Functions, extraFuncs...)
@@ -6053,6 +6057,9 @@ func exprIsString(e Expr) bool {
 		}
 		return false
 	case *IndexExpr:
+		if inferExprType(currentEnv, v) == "const char*" {
+			return true
+		}
 		return exprIsString(v.Target)
 	case *FieldExpr:
 		tname := inferExprType(currentEnv, v.Target)
