@@ -196,11 +196,8 @@ func header() []byte {
 	}
 	loc, _ := time.LoadLocation("Asia/Bangkok")
 	prelude := ""
-	if needBase {
-		prelude += "(import (only (scheme base) call/cc when list-ref list-set!))\n"
-		prelude += "(import (rename (scheme base) (list _list)))\n"
-		prelude += "(import (scheme time))\n"
-	}
+	prelude += "(import (rename (scheme base) (list _list)))\n"
+	prelude += "(import (scheme time))\n"
 	// Always import string helpers for functions like string-contains
 	prelude += "(import (chibi string))\n"
 	prelude += "(import (only (scheme char) string-upcase string-downcase))\n"
@@ -2389,19 +2386,19 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 		_, ok := t.(types.ListType)
 		return ok
 	}
-       if op == "/" {
-               if !hasFloat(left) && !hasFloat(right) {
-                       return &List{Elems: []Node{Symbol("quotient"), left, right}}
-               }
-               return &List{Elems: []Node{Symbol("/"), left, right}}
-       }
-       if op == "%" {
-               if !hasFloat(left) && !hasFloat(right) {
-                       return &List{Elems: []Node{Symbol("modulo"), left, right}}
-               }
-               needBase = true
-               return &List{Elems: []Node{Symbol("fmod"), left, right}}
-       }
+	if op == "/" {
+		if !hasFloat(left) && !hasFloat(right) {
+			return &List{Elems: []Node{Symbol("quotient"), left, right}}
+		}
+		return &List{Elems: []Node{Symbol("/"), left, right}}
+	}
+	if op == "%" {
+		if !hasFloat(left) && !hasFloat(right) {
+			return &List{Elems: []Node{Symbol("modulo"), left, right}}
+		}
+		needBase = true
+		return &List{Elems: []Node{Symbol("fmod"), left, right}}
+	}
 	if isStrType(lt) || isStrType(rt) {
 		if isStrType(lt) {
 			if b, ok := right.(BoolLit); ok {
