@@ -1,8 +1,8 @@
-"a"
-[960]
-[97,960]
+a
+π
+aπ
 {
-  "duration_us": 28683,
-  "memory_bytes": 201112,
+  "duration_us": 14733,
+  "memory_bytes": 183376,
   "name": "main"
 }

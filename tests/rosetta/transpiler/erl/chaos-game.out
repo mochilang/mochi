@@ -1,4 +1,8 @@
-**                             
+/workspace/mochi/tests/rosetta/transpiler/erl/chaos-game.erl:42:1: Warning: function mochi_safe_div/2 is unused
+%   42| mochi_safe_div(A, B) ->
+%     | ^
+
+                             **                             
                              ***                            
                             ****                            
                            ******                           
@@ -50,7 +54,7 @@
 *********************************************************** 
                                                             
 {
-  "duration_us": 35404,
-  "memory_bytes": 28704,
+  "duration_us": 26720,
+  "memory_bytes": 168712,
   "name": "main"
 }

@@ -1,16 +1,16 @@
 === To snake_case ===
-                         snakeCase => s_n_a_k_e_c_a_s_e
-                        snake_case => s_n_a_k_e_c_a_s_e
-                        snake-case => s_n_a_k_e_c_a_s_e
-                        snake case => s_n_a_k_e_c_a_s_e
-                        snake CASE => s_n_a_k_e_c_a_s_e
-                        snake.case => s_n_a_k_e_c_a_s_e
-                  variable_10_case => v_a_r_i_a_b_l_e_1_0_c_a_s_e
-                    variable10Case => v_a_r_i_a_b_l_e_1_0_c_a_s_e
-                      ɛrgo rE tHis => ɛ_r_g_o_r_e_t_h_i_s
-                     hurry-up-joe! => h_u_r_r_y_u_p_j_o_e_!
- c://my-docs/happy_Flag-Day/12.doc => c_:_/_/_m_y_d_o_c_s_/_h_a_p_p_y_f_l_a_g_d_a_y_/_1_2_d_o_c
-                           spaces  => s_p_a_c_e_s
+                         snakeCase => snake_case
+                        snake_case => snake_case
+                        snake-case => snake_case
+                        snake case => snake_case
+                        snake CASE => snake_c_a_s_e
+                        snake.case => snake_case
+                  variable_10_case => variable_10_case
+                    variable10Case => variable10_case
+                      ɛrgo rE tHis => ɛrgo_r_e_t_his
+                     hurry-up-joe! => hurry_up_joe!
+ c://my-docs/happy_Flag-Day/12.doc => c://my_docs/happy_flag_day/12_doc
+                           spaces  => spaces
 
 === To camelCase ===
                          snakeCase => snakeCase
@@ -26,7 +26,7 @@
  c://my-docs/happy_Flag-Day/12.doc => c://myDocs/happyFlagDay/12Doc
                            spaces  => spaces
 {
-  "duration_us": 5571,
-  "memory_bytes": 244864,
+  "duration_us": 16085,
+  "memory_bytes": 2717816,
   "name": "main"
 }

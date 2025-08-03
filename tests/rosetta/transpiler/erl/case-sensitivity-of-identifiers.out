@@ -13,7 +13,7 @@ Package sees: Salt Samba Mustard
 Main sees:   Benjamin Samba Bernie
 There are 5 dogs.
 {
-  "duration_us": 11640,
-  "memory_bytes": 460784,
+  "duration_us": 18265,
+  "memory_bytes": 423352,
   "name": "main"
 }

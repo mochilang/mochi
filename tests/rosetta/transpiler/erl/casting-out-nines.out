@@ -1,5 +1,5 @@
-/workspace/mochi/tests/rosetta/transpiler/erl/casting-out-nines.erl:152:24: Warning: the result of evaluating operator '+'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
-%  152|             Sx_2 = (Sx + 1),
+/workspace/mochi/tests/rosetta/transpiler/erl/casting-out-nines.erl:161:24: Warning: the result of evaluating operator '+'/2 is ignored (suppress the warning by assigning the expression to the _ variable)
+%  161|             Sx_2 = (Sx + 1),
 %     |                        ^
 
 
@@ -15,7 +15,7 @@ Kaprekar:["3d","d4","gg"]
 Fail:3d not in subset
 Valid subset.
 {
-  "duration_us": 4237,
-  "memory_bytes": 147312,
+  "duration_us": 14901,
+  "memory_bytes": 638344,
   "name": "main"
 }

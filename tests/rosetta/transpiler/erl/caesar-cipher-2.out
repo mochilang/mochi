@@ -10,3 +10,8 @@ Key 25
   Enciphered: Sgd ehud anwhmf vhyzqcr itlo pthbjkx
   Deciphered: The five boxing wizards jump quickly
 Key 26 invalid
+{
+  "duration_us": 17603,
+  "memory_bytes": 452112,
+  "name": "main"
+}

@@ -1,7 +1,7 @@
 65
-"A"
+A
 {
-  "duration_us": 23576,
-  "memory_bytes": 372272,
+  "duration_us": 17188,
+  "memory_bytes": 425208,
   "name": "main"
 }
