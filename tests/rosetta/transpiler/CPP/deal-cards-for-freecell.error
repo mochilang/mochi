@@ -21,6 +21,6 @@ compile: exit status 1
    24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/deal-cards-for-freecell.cpp: In function ‘void show(const std::vector<long int>&)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/deal-cards-for-freecell.cpp:84:9: error: ‘auto_write’ was not declared in this scope
-   84 |         auto_write(stdout, ((std::string(" ") + nums.substr((c / int64_t(4)), ((c / int64_t(4)) + int64_t(1)) - (c / int64_t(4)))) + suits.substr((c % int64_t(4)), ((c % int64_t(4)) + int64_t(1)) - (c % int64_t(4)))));
+/workspace/mochi/tests/rosetta/transpiler/CPP/deal-cards-for-freecell.cpp:92:9: error: ‘auto_write’ was not declared in this scope
+   92 |         auto_write(stdout, ((std::string(" ") + nums.substr((c / int64_t(4)), ((c / int64_t(4)) + int64_t(1)) - (c / int64_t(4)))) + suits.substr((c % int64_t(4)), ((c % int64_t(4)) + int64_t(1)) - (c % int64_t(4)))));
       |         ^~~~~~~~~~

@@ -21,8 +21,8 @@ compile: exit status 1
    25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/demings-funnel.cpp: In function ‘std::vector<double> funnel(const std::vector<double>&, std::function<double(double, double)>)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/demings-funnel.cpp:81:12: error: could not convert ‘result’ from ‘vector<long int>’ to ‘vector<double>’
-   81 |     return result;
+/workspace/mochi/tests/rosetta/transpiler/CPP/demings-funnel.cpp:89:12: error: could not convert ‘result’ from ‘vector<long int>’ to ‘vector<double>’
+   89 |     return result;
       |            ^~~~~~
       |            |
       |            vector<long int>

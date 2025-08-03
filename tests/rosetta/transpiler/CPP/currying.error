@@ -21,11 +21,11 @@ compile: exit status 1
    25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp:99:79: error: ‘auto_Method’ was not declared in this scope; did you mean ‘Foo_Method’?
-   99 |     std::function<int64_t(Foo, int64_t)> fn2 = [&](Foo f, int64_t b) { return auto_Method(f, b); };
+/workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp:110:79: error: ‘auto_Method’ was not declared in this scope; did you mean ‘Foo_Method’?
+  110 |     std::function<int64_t(Foo, int64_t)> fn2 = [=](Foo f, int64_t b) { return auto_Method(f, b); };
       |                                                                               ^~~~~~~~~~~
       |                                                                               Foo_Method
 /workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp: In function ‘int main()’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp:99:48: error: conversion from ‘main()::<lambda(Foo, int64_t)>’ to non-scalar type ‘std::function<long int(Foo, long int)>’ requested
-   99 |     std::function<int64_t(Foo, int64_t)> fn2 = [&](Foo f, int64_t b) { return auto_Method(f, b); };
+/workspace/mochi/tests/rosetta/transpiler/CPP/currying.cpp:110:48: error: conversion from ‘main()::<lambda(Foo, int64_t)>’ to non-scalar type ‘std::function<long int(Foo, long int)>’ requested
+  110 |     std::function<int64_t(Foo, int64_t)> fn2 = [=](Foo f, int64_t b) { return auto_Method(f, b); };
       |                                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

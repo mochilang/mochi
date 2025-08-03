@@ -21,10 +21,10 @@ compile: exit status 1
    24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp: In function ‘TinyInt TinyInt_Inc(const TinyInt&)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp:90:12: error: ‘Add’ was not declared in this scope
-   90 |     return Add(NewTinyInt(int64_t(1)));
+/workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp:101:12: error: ‘Add’ was not declared in this scope
+  101 |     return Add(NewTinyInt(int64_t(1)));
       |            ^~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp: In function ‘TinyInt TinyInt_Dec(const TinyInt&)’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp:94:12: error: ‘Sub’ was not declared in this scope
-   94 |     return Sub(NewTinyInt(int64_t(1)));
+/workspace/mochi/tests/rosetta/transpiler/CPP/define-a-primitive-data-type.cpp:105:12: error: ‘Sub’ was not declared in this scope
+  105 |     return Sub(NewTinyInt(int64_t(1)));
       |            ^~~

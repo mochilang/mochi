@@ -21,55 +21,157 @@ compile: exit status 1
    35 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
       |                                                                                                                                                                                                                                                           ^~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:233:67: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int64_t’ {aka ‘long int’}
-  233 |                 parts = ([&]{ auto __tmp = parts; __tmp.push_back((int64_t)cur); return __tmp; }());
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:241:67: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int64_t’ {aka ‘long int’}
+  241 |                 parts = ([&]{ auto __tmp = parts; __tmp.push_back((int64_t)cur); return __tmp; }());
       |                                                                   ^~~~~~~~~~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In lambda function:
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:242:59: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int64_t’ {aka ‘long int’}
-  242 |         parts = ([&]{ auto __tmp = parts; __tmp.push_back((int64_t)cur); return __tmp; }());
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:250:59: error: invalid cast from type ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to type ‘int64_t’ {aka ‘long int’}
+  250 |         parts = ([&]{ auto __tmp = parts; __tmp.push_back((int64_t)cur); return __tmp; }());
       |                                                           ^~~~~~~~~~~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In function ‘int main()’:
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:244:30: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, long int>::at(__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type&)’
-  244 |     int64_t month = months.at(parts[int64_t(0)]);
-      |                     ~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:58: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, long int>::find(__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type&)’
+  252 |     int64_t month = ([&](auto& __m){ auto __it = __m.find(parts[int64_t(0)]); return __it != __m.end() ? __it->second : 0; })(months);
+      |                                                  ~~~~~~~~^~~~~~~~~~~~~~~~~~~
 In file included from /usr/include/c++/13/map:63,
                  from /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:4:
-/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; mapped_type = long int; key_type = std::__cxx11::basic_string<char>]’
-  549 |       at(const key_type& __k)
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
-  549 |       at(const key_type& __k)
-      |          ~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; mapped_type = long int; key_type = std::__cxx11::basic_string<char>]’
-  558 |       at(const key_type& __k) const
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
-  558 |       at(const key_type& __k) const
-      |          ~~~~~~~~~~~~~~~~^~~
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:245:33: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
-  245 |     int64_t day = _parse_int_str(parts[int64_t(1)], int64_t(10));
+/usr/include/c++/13/bits/stl_map.h:1225:9: note: candidate: ‘template<class _Kt> decltype (((std::map<_Key, _Tp, _Compare, _Alloc>*)this)->std::map<_Key, _Tp, _Compare, _Alloc>::_M_t._M_find_tr(__x)) std::map<_Key, _Tp, _Compare, _Alloc>::find(const _Kt&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1225 |         find(const _Kt& __x) -> decltype(_M_t._M_find_tr(__x))
+      |         ^~~~
+/usr/include/c++/13/bits/stl_map.h:1225:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_map.h: In substitution of ‘template<class _Kt> decltype (((std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) [with _Kt = long int]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:58:   required from ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_map.h:1225:57: error: no matching function for call to ‘std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(const long int&)’
+ 1225 |         find(const _Kt& __x) -> decltype(_M_t._M_find_tr(__x))
+      |                                          ~~~~~~~~~~~~~~~^~~~~
+In file included from /usr/include/c++/13/map:62:
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1295 |         _M_find_tr(const _Kt& __k)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note:   template argument deduction/substitution failed:
+In file included from /usr/include/c++/13/string:49,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:2:
+/usr/include/c++/13/bits/stl_function.h: In substitution of ‘template<class _Func, class _SfinaeType> using std::__has_is_transparent_t = typename std::__has_is_transparent<_Func, _SfinaeType>::type [with _Func = std::less<std::__cxx11::basic_string<char> >; _SfinaeType = long int]’:
+/usr/include/c++/13/bits/stl_tree.h:1293:9:   required by substitution of ‘template<class _Kt> decltype (((std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) [with _Kt = long int]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:58:   required from ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_function.h:1430:11: error: no type named ‘type’ in ‘struct std::__has_is_transparent<std::less<std::__cxx11::basic_string<char> >, long int, void>’
+ 1430 |     using __has_is_transparent_t
+      |           ^~~~~~~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h: In substitution of ‘template<class _Kt> decltype (((std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) [with _Kt = long int]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:58:   required from ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) const [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1304 |         _M_find_tr(const _Kt& __k) const
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_map.h:1250:9: note: candidate: ‘template<class _Kt> decltype (((const std::map<_Key, _Tp, _Compare, _Alloc>*)this)->std::map<_Key, _Tp, _Compare, _Alloc>::_M_t._M_find_tr(__x)) std::map<_Key, _Tp, _Compare, _Alloc>::find(const _Kt&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1250 |         find(const _Kt& __x) const -> decltype(_M_t._M_find_tr(__x))
+      |         ^~~~
+/usr/include/c++/13/bits/stl_map.h:1250:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_map.h: In substitution of ‘template<class _Kt> decltype (((const std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) const [with _Kt = long int]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:58:   required from ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_map.h:1250:63: error: no matching function for call to ‘std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(const long int&) const’
+ 1250 |         find(const _Kt& __x) const -> decltype(_M_t._M_find_tr(__x))
+      |                                                ~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1295 |         _M_find_tr(const _Kt& __k)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) const [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1304 |         _M_find_tr(const _Kt& __k) const
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:17&)> [with auto:17 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:252:126:   required from here
+/usr/include/c++/13/bits/stl_map.h:1219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::iterator std::map<_Key, _Tp, _Compare, _Alloc>::find(const key_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; iterator = std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::iterator; key_type = std::__cxx11::basic_string<char>]’
+ 1219 |       find(const key_type& __x)
+      |       ^~~~
+/usr/include/c++/13/bits/stl_map.h:1219:28: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+ 1219 |       find(const key_type& __x)
+      |            ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:1244:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::const_iterator std::map<_Key, _Tp, _Compare, _Alloc>::find(const key_type&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; const_iterator = std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::const_iterator; key_type = std::__cxx11::basic_string<char>]’
+ 1244 |       find(const key_type& __x) const
+      |       ^~~~
+/usr/include/c++/13/bits/stl_map.h:1244:28: note:   no known conversion for argument 1 from ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+ 1244 |       find(const key_type& __x) const
+      |            ~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In function ‘int main()’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:253:33: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
+  253 |     int64_t day = _parse_int_str(parts[int64_t(1)], int64_t(10));
       |                   ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:22:47: note: in passing argument 1 of ‘long int _parse_int_str(const std::string&, long int)’
    22 | static long _parse_int_str(const std::string& s, long base) {
       |                            ~~~~~~~~~~~~~~~~~~~^
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:246:34: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
-  246 |     int64_t year = _parse_int_str(parts[int64_t(2)], int64_t(10));
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:254:34: error: invalid initialization of reference of type ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’} from expression of type ‘__gnu_cxx::__alloc_traits<std::allocator<long int>, long int>::value_type’ {aka ‘long int’}
+  254 |     int64_t year = _parse_int_str(parts[int64_t(2)], int64_t(10));
       |                    ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:22:47: note: in passing argument 1 of ‘long int _parse_int_str(const std::string&, long int)’
    22 | static long _parse_int_str(const std::string& s, long base) {
       |                            ~~~~~~~~~~~~~~~~~~~^
-/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:253:42: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, long int>::at(int64_t&)’
-  253 |     int64_t utc = (local - zoneOffsets.at(tz));
-      |                            ~~~~~~~~~~~~~~^~~~
-/usr/include/c++/13/bits/stl_map.h:549:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; mapped_type = long int; key_type = std::__cxx11::basic_string<char>]’
-  549 |       at(const key_type& __k)
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:549:26: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
-  549 |       at(const key_type& __k)
-      |          ~~~~~~~~~~~~~~~~^~~
-/usr/include/c++/13/bits/stl_map.h:558:7: note: candidate: ‘const std::map<_Key, _Tp, _Compare, _Alloc>::mapped_type& std::map<_Key, _Tp, _Compare, _Alloc>::at(const key_type&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; mapped_type = long int; key_type = std::__cxx11::basic_string<char>]’
-  558 |       at(const key_type& __k) const
-      |       ^~
-/usr/include/c++/13/bits/stl_map.h:558:26: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
-  558 |       at(const key_type& __k) const
-      |          ~~~~~~~~~~~~~~~~^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:18&)> [with auto:18 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:118:   required from here
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:65: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, long int>::find(int64_t&)’
+  261 |     int64_t utc = (local - ([&](auto& __m){ auto __it = __m.find(tz); return __it != __m.end() ? __it->second : 0; })(zoneOffsets));
+      |                                                         ~~~~~~~~^~~~
+/usr/include/c++/13/bits/stl_map.h:1225:9: note: candidate: ‘template<class _Kt> decltype (((std::map<_Key, _Tp, _Compare, _Alloc>*)this)->std::map<_Key, _Tp, _Compare, _Alloc>::_M_t._M_find_tr(__x)) std::map<_Key, _Tp, _Compare, _Alloc>::find(const _Kt&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1225 |         find(const _Kt& __x) -> decltype(_M_t._M_find_tr(__x))
+      |         ^~~~
+/usr/include/c++/13/bits/stl_map.h:1225:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_map.h: In substitution of ‘template<class _Kt> decltype (((std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) [with _Kt = long int]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:65:   required from ‘main()::<lambda(auto:18&)> [with auto:18 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:118:   required from here
+/usr/include/c++/13/bits/stl_map.h:1225:57: error: no matching function for call to ‘std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(const long int&)’
+ 1225 |         find(const _Kt& __x) -> decltype(_M_t._M_find_tr(__x))
+      |                                          ~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1295 |         _M_find_tr(const _Kt& __k)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) const [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1304 |         _M_find_tr(const _Kt& __k) const
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:18&)> [with auto:18 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:118:   required from here
+/usr/include/c++/13/bits/stl_map.h:1250:9: note: candidate: ‘template<class _Kt> decltype (((const std::map<_Key, _Tp, _Compare, _Alloc>*)this)->std::map<_Key, _Tp, _Compare, _Alloc>::_M_t._M_find_tr(__x)) std::map<_Key, _Tp, _Compare, _Alloc>::find(const _Kt&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1250 |         find(const _Kt& __x) const -> decltype(_M_t._M_find_tr(__x))
+      |         ^~~~
+/usr/include/c++/13/bits/stl_map.h:1250:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_map.h: In substitution of ‘template<class _Kt> decltype (((const std::map<std::__cxx11::basic_string<char>, long int>*)this)->std::map<std::__cxx11::basic_string<char>, long int>::_M_t.std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(__x)) std::map<std::__cxx11::basic_string<char>, long int>::find(const _Kt&) const [with _Kt = long int]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:65:   required from ‘main()::<lambda(auto:18&)> [with auto:18 = std::map<std::__cxx11::basic_string<char>, long int>]’
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:118:   required from here
+/usr/include/c++/13/bits/stl_map.h:1250:63: error: no matching function for call to ‘std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::_M_find_tr(const long int&) const’
+ 1250 |         find(const _Kt& __x) const -> decltype(_M_t._M_find_tr(__x))
+      |                                                ~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1295 |         _M_find_tr(const _Kt& __k)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1295:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note: candidate: ‘template<class _Kt, class _Req> std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::const_iterator std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>::_M_find_tr(const _Kt&) const [with _Req = _Kt; _Key = std::__cxx11::basic_string<char>; _Val = std::pair<const std::__cxx11::basic_string<char>, long int>; _KeyOfValue = std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >]’
+ 1304 |         _M_find_tr(const _Kt& __k) const
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_tree.h:1304:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp: In instantiation of ‘main()::<lambda(auto:18&)> [with auto:18 = std::map<std::__cxx11::basic_string<char>, long int>]’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/date-manipulation.cpp:261:118:   required from here
+/usr/include/c++/13/bits/stl_map.h:1219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::iterator std::map<_Key, _Tp, _Compare, _Alloc>::find(const key_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; iterator = std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::iterator; key_type = std::__cxx11::basic_string<char>]’
+ 1219 |       find(const key_type& __x)
+      |       ^~~~
+/usr/include/c++/13/bits/stl_map.h:1219:28: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+ 1219 |       find(const key_type& __x)
+      |            ~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:1244:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::const_iterator std::map<_Key, _Tp, _Compare, _Alloc>::find(const key_type&) const [with _Key = std::__cxx11::basic_string<char>; _Tp = long int; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> >; const_iterator = std::_Rb_tree<std::__cxx11::basic_string<char>, std::pair<const std::__cxx11::basic_string<char>, long int>, std::_Select1st<std::pair<const std::__cxx11::basic_string<char>, long int> >, std::less<std::__cxx11::basic_string<char> >, std::allocator<std::pair<const std::__cxx11::basic_string<char>, long int> > >::const_iterator; key_type = std::__cxx11::basic_string<char>]’
+ 1244 |       find(const key_type& __x) const
+      |       ^~~~
+/usr/include/c++/13/bits/stl_map.h:1244:28: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::map<std::__cxx11::basic_string<char>, long int>::key_type&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+ 1244 |       find(const key_type& __x) const
+      |            ~~~~~~~~~~~~~~~~^~~
