@@ -1,5 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden3062193389/001/Program.cs(74,46): error CS0029: Cannot implicitly convert type 'int' to 'string' [/tmp/TestCSTranspiler_Rosetta_Golden3062193389/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden3062193389/001/Program.cs(74,54): error CS0029: Cannot implicitly convert type 'int' to 'string' [/tmp/TestCSTranspiler_Rosetta_Golden3062193389/001/app.csproj]
-
-The build failed. Fix the build errors and run again.

@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 469/491
-Last updated: 2025-08-03 10:20 +0700
+Completed programs: 474/491
+Last updated: 2025-08-03 10:56 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -287,36 +287,36 @@ Last updated: 2025-08-03 10:20 +0700
 | 279 | deconvolution-1d-3 | ✓ | 11.274ms | 1.9MB |
 | 280 | deconvolution-1d | ✓ | 11.27ms | 1.3MB |
 | 281 | deepcopy-1 | ✓ | 8.915ms | 1.1MB |
-| 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates | ✓ | 2.131ms | 13.3KB |
-| 284 | demings-funnel | ✓ | 12.476ms | 2.5MB |
-| 285 | department-numbers | ✓ | 1.8ms | 16.0KB |
-| 286 | descending-primes | ✓ | 8.068ms | 1.1MB |
-| 287 | detect-division-by-zero | ✓ | 2.027ms | 16.0KB |
-| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 2.026ms | 24.1KB |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 11.392ms | 1.2MB |
-| 290 | determine-if-a-string-is-collapsible |   |  |  |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ | 1.958ms | 16.0KB |
-| 292 | determine-if-a-string-is-numeric-2 | ✓ | 2.373ms | 16.0KB |
-| 293 | determine-if-a-string-is-squeezable | ✓ | 1.853ms | 77.0KB |
-| 294 | determine-if-only-one-instance-is-running | ✓ | 1.8ms | 16.0KB |
-| 295 | determine-if-two-triangles-overlap | ✓ | 10.503ms | 1.1MB |
-| 296 | determine-sentence-type | ✓ | 8.411ms | 1.0MB |
-| 297 | dice-game-probabilities-1 | ✓ | 11.753ms | 2.0MB |
-| 298 | dice-game-probabilities-2 | ✓ | 11.576ms | 1.5MB |
-| 299 | digital-root-multiplicative-digital-root |   |  |  |
-| 300 | dijkstras-algorithm |   |  |  |
-| 301 | dinesmans-multiple-dwelling-problem | ✓ | 2.034ms | 16.0KB |
-| 302 | dining-philosophers-1 | ✓ | 1.863ms | 16.0KB |
-| 303 | dining-philosophers-2 | ✓ | 1.757ms | 16.0KB |
-| 304 | disarium-numbers | ✓ | 156.357ms | 10.9MB |
-| 305 | discordian-date | ✓ | 2.327ms | 24.1KB |
-| 306 | display-a-linear-combination | ✓ | 8.45ms | 1.2MB |
+| 282 | define-a-primitive-data-type | ✓ | 17.097ms | 2.7MB |
+| 283 | delegates | ✓ | 2.077ms | 13.3KB |
+| 284 | demings-funnel | ✓ | 12.154ms | 2.3MB |
+| 285 | department-numbers | ✓ | 2.28ms | 19.5KB |
+| 286 | descending-primes | ✓ | 8.728ms | 1.1MB |
+| 287 | detect-division-by-zero | ✓ | 2.253ms | 16.6KB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 2.291ms | 21.5KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 11.527ms | 1.2MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 11.659ms | 2.3MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 2.192ms | 14.5KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 2.195ms | 13.7KB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 2.038ms | 80.5KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 1.793ms | 12.9KB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 10.801ms | 1.1MB |
+| 296 | determine-sentence-type | ✓ | 8.732ms | 1.1MB |
+| 297 | dice-game-probabilities-1 | ✓ | 3.177ms | 66.7KB |
+| 298 | dice-game-probabilities-2 | ✓ | 3.015ms | 13.8KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 3.601ms | 386.7KB |
+| 300 | dijkstras-algorithm | ✓ | 9.404ms | 1.1MB |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 1.984ms | 16.8KB |
+| 302 | dining-philosophers-1 | ✓ | 1.974ms | 16.1KB |
+| 303 | dining-philosophers-2 | ✓ | 1.74ms | 16.1KB |
+| 304 | disarium-numbers | ✓ | 154.23ms | 2.2GB |
+| 305 | discordian-date | ✓ | 2.098ms | 22.0KB |
+| 306 | display-a-linear-combination | ✓ | 9.053ms | 1.2MB |
 | 307 | display-an-outline-as-a-nested-table |   |  |  |
-| 308 | distance-and-bearing | ✓ | 14.33ms | 2.7MB |
-| 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem | ✓ | 10.45ms | 1.7MB |
-| 311 | dns-query | ✓ | 3.195ms | 2.3MB |
+| 308 | distance-and-bearing | ✓ | 14.967ms | 2.9MB |
+| 309 | distributed-programming | ✓ | 1.773ms | 16.5KB |
+| 310 | diversity-prediction-theorem | ✓ | 8.803ms | 1.2MB |
+| 311 | dns-query | ✓ | 944µs | 1.2MB |
 | 312 | documentation | ✓ |  |  |
 | 313 | doomsday-rule | ✓ | 2.062ms | 36.8KB |
 | 314 | dot-product | ✓ | 1.76ms | 16.0KB |
