@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (95/491) - updated 2025-08-03 10:40 UTC
+## Rosetta Checklist (100/491) - updated 2025-08-03 11:08 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -123,13 +123,13 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 116 | bitmap-b-zier-curves-cubic |   |  |  |
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 257µs | 1.4 MB |
 | 118 | bitmap-bresenhams-line-algorithm | ✓ | 1µs |  |
-| 119 | bitmap-flood-fill |   |  |  |
-| 120 | bitmap-histogram |   |  |  |
-| 121 | bitmap-midpoint-circle-algorithm |   |  |  |
-| 122 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
+| 119 | bitmap-flood-fill | ✓ | 1µs | 6.6 KB |
+| 120 | bitmap-histogram | ✓ | 1µs | 64 B |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 2µs | 111.8 KB |
+| 122 | bitmap-ppm-conversion-through-a-pipe | ✓ | 267µs |  |
 | 123 | bitmap-read-a-ppm-file |   |  |  |
 | 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 125 | bitmap-write-a-ppm-file |   |  |  |
+| 125 | bitmap-write-a-ppm-file | ✓ | 1µs |  |
 | 126 | bitmap |   |  |  |
 | 127 | bitwise-io-1 |   |  |  |
 | 128 | bitwise-io-2 |   |  |  |
