@@ -4098,6 +4098,9 @@ func convertLocalFunStmt(f *parser.FunStmt) (Expr, error) {
 		if globals[name] {
 			mutatedGlobal[name] = true
 		}
+		if prevLocals[name] {
+			markMutated(name)
+		}
 	}
 	locals = prevLocals
 
