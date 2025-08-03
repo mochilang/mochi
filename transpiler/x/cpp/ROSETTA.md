@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (285/491) - Last updated 2025-08-03 21:03 +0700:
+Checklist of programs that currently transpile and run (286/491) - Last updated 2025-08-03 21:34 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -290,7 +290,7 @@ Checklist of programs that currently transpile and run (285/491) - Last updated 
 | 283 | delegates |   |  |  |
 | 284 | demings-funnel |   |  |  |
 | 285 | department-numbers | ✓ | 324.0µs | 3.61MB |
-| 286 | descending-primes |   |  |  |
+| 286 | descending-primes | ✓ | 636.0µs | 3.57MB |
 | 287 | detect-division-by-zero | ✓ |  |  |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ |  |  |
 | 289 | determine-if-a-string-has-all-unique-characters | ✓ |  |  |
