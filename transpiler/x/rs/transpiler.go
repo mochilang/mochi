@@ -984,28 +984,30 @@ func (f *FieldExpr) emit(w io.Writer) {
 	f.Receiver.emit(w)
 	io.WriteString(w, ".")
 	io.WriteString(w, rustIdent(f.Name))
-	rt := inferType(f.Receiver)
-	if strings.HasPrefix(rt, "&") {
-		rt = rt[1:]
-		if st, ok := structTypes[rt]; ok {
-			if ft, ok2 := st.Fields[f.Name]; ok2 {
-				if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
-					io.WriteString(w, ".clone()")
-				}
-			}
-		}
-	} else if nr, ok := f.Receiver.(*NameRef); ok {
-		if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
-			rt = pt[1:]
-			if st, ok3 := structTypes[rt]; ok3 {
-				if ft, ok4 := st.Fields[f.Name]; ok4 {
-					if !types.IsNumericType(ft) && !types.IsBoolType(ft) {
-						io.WriteString(w, ".clone()")
-					}
-				}
-			}
-		}
-	}
+       rt := inferType(f.Receiver)
+       if strings.HasPrefix(rt, "&") {
+               rt = strings.TrimPrefix(rt, "&mut ")
+               rt = strings.TrimPrefix(rt, "&")
+               if st, ok := structTypes[rt]; ok {
+                       if ft, ok2 := st.Fields[f.Name]; ok2 {
+                               if !indexLHS && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+                                       io.WriteString(w, ".clone()")
+                               }
+                       }
+               }
+       } else if nr, ok := f.Receiver.(*NameRef); ok {
+               if pt, ok2 := currentParamTypes[nr.Name]; ok2 && strings.HasPrefix(pt, "&") {
+                       rt = strings.TrimPrefix(pt, "&mut ")
+                       rt = strings.TrimPrefix(rt, "&")
+                       if st, ok3 := structTypes[rt]; ok3 {
+                               if ft, ok4 := st.Fields[f.Name]; ok4 {
+                                       if !indexLHS && !types.IsNumericType(ft) && !types.IsBoolType(ft) {
+                                               io.WriteString(w, ".clone()")
+                                       }
+                               }
+                       }
+               }
+       }
 }
 
 // MethodCallExpr represents `receiver.method(args...)`.
@@ -1098,9 +1100,18 @@ func (s *StrExpr) emit(w io.Writer) {
 type ValuesExpr struct{ Map Expr }
 
 func (v *ValuesExpr) emit(w io.Writer) {
-	io.WriteString(w, "{ let mut v = ")
-	v.Map.emit(w)
-	io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); v.sort(); v }")
+       io.WriteString(w, "{ let mut v = ")
+       if nr, ok := v.Map.(*NameRef); ok && !isLocal(nr.Name) && globalVars[nr.Name] {
+               name := nr.Name
+               if newName, ok2 := globalRenames[nr.Name]; ok2 && !isLocal(nr.Name) {
+                       name = newName
+               }
+               io.WriteString(w, name)
+               io.WriteString(w, ".lock().unwrap()")
+       } else {
+               v.Map.emit(w)
+       }
+       io.WriteString(w, ".values().cloned().collect::<Vec<_>>(); v.sort(); v }")
 }
 
 // AppendExpr represents a call to the `append` builtin on a list.
@@ -1706,27 +1717,36 @@ func (s *IndexAssignStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, "]")
 		indexLHS = old
-	} else {
-		s.Target.emit(w)
-	}
-	io.WriteString(w, " = ")
-	typ := inferType(s.Target)
-	if typ == "String" {
-		switch v := s.Value.(type) {
-		case *StringLit:
-			io.WriteString(w, "String::from(")
-			v.emit(w)
-			io.WriteString(w, ")")
-			return
-		case *NameRef:
-			if inferType(s.Value) == "&str" {
-				v.emit(w)
-				io.WriteString(w, ".to_string()")
-				return
-			}
-		}
-	}
-	s.Value.emit(w)
+       } else {
+               old := indexLHS
+               indexLHS = true
+               s.Target.emit(w)
+               indexLHS = old
+       }
+       io.WriteString(w, " = ")
+       typ := inferType(s.Target)
+       if typ == "String" {
+               switch v := s.Value.(type) {
+               case *StringLit:
+                       io.WriteString(w, "String::from(")
+                       v.emit(w)
+                       io.WriteString(w, ")")
+                       return
+               case *NameRef:
+                       if inferType(s.Value) == "&str" {
+                               v.emit(w)
+                               io.WriteString(w, ".to_string()")
+                               return
+                       }
+               }
+       }
+       vtyp := inferType(s.Value)
+       if nr, ok := s.Value.(*NameRef); ok && vtyp != "i64" && vtyp != "bool" && vtyp != "f64" && !strings.HasPrefix(vtyp, "&") {
+               nr.emit(w)
+               io.WriteString(w, ".clone()")
+               return
+       }
+       s.Value.emit(w)
 }
 
 type BinaryExpr struct {
@@ -3429,14 +3449,17 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			} else if !mut {
 				sigType = "&str"
 			}
-		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
-			mut := paramMutated(fn.Body, p.Name)
-			if mut {
-				sigType = typ
-			} else {
-				sigType = "&" + typ
-			}
-		}
+               } else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
+                       mut := paramMutated(fn.Body, p.Name)
+                       assign := paramAssigned(fn.Body, p.Name)
+                       if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
+                               sigType = "&mut " + typ
+                       } else if mut {
+                               sigType = typ
+                       } else {
+                               sigType = "&" + typ
+                       }
+               }
 		params[i] = Param{Name: p.Name, Type: sigType}
 		currentParamTypes[p.Name] = sigType
 		locals[p.Name] = true
@@ -6081,17 +6104,17 @@ func paramAssigned(body []*parser.Statement, name string) bool {
 
 func stmtMutates(st *parser.Statement, name string) (bool, bool) {
 	switch {
-	case st.Assign != nil:
-		if st.Assign.Name == name {
-			if len(st.Assign.Index) > 0 {
-				return true, false
-			}
-			if len(st.Assign.Field) > 0 {
-				return false, true
-			}
-			return false, true
-		}
-		return false, false
+       case st.Assign != nil:
+               if st.Assign.Name == name {
+                       if len(st.Assign.Index) > 0 {
+                               return true, false
+                       }
+                       if len(st.Assign.Field) > 0 {
+                               return true, false
+                       }
+                       return false, true
+               }
+               return false, false
 	case st.For != nil:
 		i, a := stmtsMutate(st.For.Body, name)
 		return i, a
