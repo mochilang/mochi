@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-03 16:06 GMT+7
+Last updated: 2025-08-03 16:25 GMT+7
 
-## Rosetta Golden Test Checklist (486/491)
+## Rosetta Golden Test Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -142,7 +142,7 @@ Last updated: 2025-08-03 16:06 GMT+7
 | 133 | boyer-moore-string-search | ✓ | 71.0µs | 12.98MB |
 | 134 | brazilian-numbers | ✓ |  |  |
 | 135 | break-oo-privacy | ✓ | 542.0µs | 12.81MB |
-| 136 | brilliant-numbers | ✓ |  |  |
+| 136 | brilliant-numbers | error |  |  |
 | 137 | brownian-tree | ✓ |  |  |
 | 138 | bulls-and-cows-player | ✓ |  |  |
 | 139 | bulls-and-cows | ✓ |  |  |
