@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (264/491) - Last updated 2025-08-02 17:26 +0700:
+Checklist of programs that currently transpile and run (266/491) - Last updated 2025-08-03 00:15 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 222.0µs | 13.12MB |
@@ -109,16 +109,16 @@ Checklist of programs that currently transpile and run (264/491) - Last updated 
 | 102 | bell-numbers | ✓ | 4.0ms | 13.18MB |
 | 103 | benfords-law | ✓ | 1.0ms | 13.39MB |
 | 104 | bernoulli-numbers |   | 239.0ms | 13.11MB |
-| 105 | best-shuffle |   | 574.0µs | 13.16MB |
-| 106 | bifid-cipher |   | 1.0ms | 13.99MB |
-| 107 | bin-given-limits | ✓ | 671.0µs | 14.69MB |
-| 108 | binary-digits | ✓ | 877.0µs | 12.86MB |
-| 109 | binary-search | ✓ | 81.0µs | 13.25MB |
-| 110 | binary-strings | ✓ | 108.0µs | 12.98MB |
-| 111 | bioinformatics-base-count | ✓ | 270.0µs | 12.89MB |
-| 112 | bioinformatics-global-alignment | ✓ | 21.85s | 14.07MB |
-| 113 | bioinformatics-sequence-mutation | ✓ | 60.0ms | 14.12MB |
-| 114 | biorhythms | ✓ | 241.0µs | 14.10MB |
+| 105 | best-shuffle | ✓ | 360.0µs | 13.79MB |
+| 106 | bifid-cipher | ✓ | 2.0ms | 14.81MB |
+| 107 | bin-given-limits | ✓ | 331.0µs | 14.11MB |
+| 108 | binary-digits | ✓ | 423.0µs | 12.69MB |
+| 109 | binary-search | ✓ | 200.0µs | 13.05MB |
+| 110 | binary-strings | ✓ | 227.0µs | 13.02MB |
+| 111 | bioinformatics-base-count | ✓ | 341.0µs | 13.24MB |
+| 112 | bioinformatics-global-alignment | ✓ | 20.62s | 14.24MB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 59.0ms | 14.20MB |
+| 114 | biorhythms | ✓ | 802.0µs | 14.48MB |
 | 115 | bitcoin-address-validation | ✓ | 1.0ms | 13.63MB |
 | 116 | bitmap-b-zier-curves-cubic | ✓ | 183.0ms | 14.18MB |
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 187.0ms | 14.15MB |
