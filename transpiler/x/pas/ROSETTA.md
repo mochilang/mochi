@@ -2,7 +2,7 @@
 
 Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pascal`.
 
-## Rosetta Checklist (84/491) - updated 2025-08-03 01:56 UTC
+## Rosetta Checklist (90/491) - updated 2025-08-03 03:14 UTC
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 571.223ms | 128 B |
@@ -111,13 +111,13 @@ Generated Pascal code for Rosetta tasks lives under `tests/rosetta/transpiler/Pa
 | 104 | bernoulli-numbers | ✓ | 46µs | 64 B |
 | 105 | best-shuffle | ✓ | 2µs |  |
 | 106 | bifid-cipher |   |  |  |
-| 107 | bin-given-limits |   |  |  |
-| 108 | binary-digits |   |  |  |
-| 109 | binary-search |   |  |  |
-| 110 | binary-strings |   |  |  |
-| 111 | bioinformatics-base-count |   |  |  |
+| 107 | bin-given-limits | ✓ | 1µs | 96 B |
+| 108 | binary-digits | ✓ | 1µs |  |
+| 109 | binary-search | ✓ | 1µs |  |
+| 110 | binary-strings | ✓ | 1µs | 800 B |
+| 111 | bioinformatics-base-count | ✓ | 1µs | 128 B |
 | 112 | bioinformatics-global-alignment |   |  |  |
-| 113 | bioinformatics-sequence-mutation |   |  |  |
+| 113 | bioinformatics-sequence-mutation | ✓ | 5µs | 64 B |
 | 114 | biorhythms |   |  |  |
 | 115 | bitcoin-address-validation |   |  |  |
 | 116 | bitmap-b-zier-curves-cubic |   |  |  |
