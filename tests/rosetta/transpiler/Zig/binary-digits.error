@@ -1,4 +1,0 @@
-zig build: exit status 1
-/tmp/binary-digits.zig:27:42: error: expected type 'i32', found 'usize'
-/tmp/binary-digits.zig:27:42: note: signed 32-bit int cannot represent all possible unsigned 64-bit values
-/tmp/binary-digits.zig:12:13: note: parameter type declared here

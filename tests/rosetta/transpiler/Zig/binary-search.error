@@ -1,8 +1,0 @@
-type: error[T008]: type mismatch: expected int, got float
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-search.mochi:28:10
-
- 28 |   return mid
-    |          ^
-
-help:
-  Change the value to match the expected type.
