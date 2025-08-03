@@ -1,8 +1,0 @@
-parse: error[P052]: /workspace/mochi/tests/rosetta/x/Mochi/deconvolution-1d-2.mochi:80:86: unexpected token "i" (expected ")")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/deconvolution-1d-2.mochi:80:86
-
- 80 |     if i < len(g) { g2 = append(g2, (g[i] as complex)) } else { g2 = append(g2, 0 + 0i) }
-    |                                                                                      ^
-
-help:
-  Unbalanced parentheses. Check for missing `(` or `)`.

@@ -2,9 +2,9 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-03 09:24 UTC
+Last updated: 2025-08-03 10:12 UTC
 
-## Checklist (485/491)
+## Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 110µs | 36.2 KB |
@@ -257,56 +257,56 @@ Last updated: 2025-08-03 09:24 UTC
 | 248 | cramers-rule | ✓ | 571.223ms | 33.5 KB |
 | 249 | crc-32-1 | ✓ | 571.223ms | 23.2 KB |
 | 250 | crc-32-2 | ✓ | 571.223ms | 23.2 KB |
-| 251 | create-a-file-on-magnetic-tape | ✓ |  |  |
-| 252 | create-a-file | ✓ | 571.223ms | 9.9 KB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 571.223ms | 9.9 KB |
-| 254 | create-an-html-table | ✓ | 571.223ms | 13.0 KB |
-| 255 | create-an-object-at-a-given-address | ✓ | 571.223ms | 18.4 KB |
-| 256 | csv-data-manipulation | ✓ | 571.223ms | 17.5 KB |
-| 257 | csv-to-html-translation-1 | ✓ | 571.223ms | 19.7 KB |
-| 258 | csv-to-html-translation-2 | ✓ | 571.223ms | 20.0 KB |
-| 259 | csv-to-html-translation-3 | ✓ | 571.223ms | 9.6 KB |
-| 260 | csv-to-html-translation-4 | ✓ | 13µs | 9.8 KB |
-| 261 | csv-to-html-translation-5 | ✓ | 256µs | 97.1 KB |
-| 262 | cuban-primes | ✓ | 12.151457s | 224.9 KB |
-| 263 | cullen-and-woodall-numbers | ✓ | 76µs | 30.7 KB |
-| 264 | cumulative-standard-deviation | ✓ | 92µs | 13.0 KB |
-| 265 | currency | ✓ | 62µs | 20.6 KB |
-| 266 | currying | ✓ | 97µs | 12.0 KB |
-| 267 | curzon-numbers | ✓ | 104.244ms | 181.6 KB |
-| 268 | cusip | ✓ | 76µs | 19.8 KB |
-| 269 | cyclops-numbers | ✓ | 4µs | 856 B |
-| 270 | damm-algorithm | ✓ | 55µs | 16.2 KB |
-| 271 | date-format | ✓ | 53µs | 11.4 KB |
-| 272 | date-manipulation | ✓ | 98µs | 24.6 KB |
-| 273 | day-of-the-week | ✓ | 91µs | 13.6 KB |
-| 274 | de-bruijn-sequences | ✓ | 323.141ms | 160.9 KB |
-| 275 | deal-cards-for-freecell | ✓ | 180µs | 76.9 KB |
-| 276 | death-star | ✓ | 29.473ms | 475.8 KB |
-| 277 | deceptive-numbers | ✓ | 41.756ms | -67796 B |
-| 278 | deconvolution-1d-2 |   |  |  |
-| 279 | deconvolution-1d-3 | ✓ | 107µs | 18.0 KB |
-| 280 | deconvolution-1d | ✓ | 61µs | 21.5 KB |
-| 281 | deepcopy-1 | ✓ | 99µs | 19.9 KB |
-| 282 | define-a-primitive-data-type | ✓ | 49µs | 14.1 KB |
-| 283 | delegates | ✓ | 47µs | 10.8 KB |
-| 284 | demings-funnel | ✓ | 877µs | 442.5 KB |
-| 285 | department-numbers | ✓ | 72µs | 16.3 KB |
-| 286 | descending-primes | ✓ | 3.24ms | 107.2 KB |
-| 287 | detect-division-by-zero | ✓ | 56µs | 11.2 KB |
-| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 75µs | 27.4 KB |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 254µs | 86.7 KB |
-| 290 | determine-if-a-string-is-collapsible | ✓ | 208µs | 75.3 KB |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ | 37µs | 13.7 KB |
-| 292 | determine-if-a-string-is-numeric-2 | ✓ | 60µs | 10.2 KB |
-| 293 | determine-if-a-string-is-squeezable | ✓ | 453µs | 112.9 KB |
-| 294 | determine-if-only-one-instance-is-running | ✓ | 21µs | 9.0 KB |
-| 295 | determine-if-two-triangles-overlap | ✓ | 301µs | 56.8 KB |
-| 296 | determine-sentence-type | ✓ | 119µs | 41.8 KB |
-| 297 | dice-game-probabilities-1 | ✓ | 141.908ms | 74.3 KB |
-| 298 | dice-game-probabilities-2 | ✓ | 7.141ms | 9.3 KB |
-| 299 | digital-root-multiplicative-digital-root | ✓ | 10.32ms | 261.3 KB |
-| 300 | dijkstras-algorithm | ✓ | 100µs | 15.6 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 2ms | 992 B |
+| 252 | create-a-file | ✓ | 1ms | 9.9 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 1ms | 9.9 KB |
+| 254 | create-an-html-table | ✓ | 1ms | 13.0 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 1ms | 18.4 KB |
+| 256 | csv-data-manipulation | ✓ | 1ms | 17.5 KB |
+| 257 | csv-to-html-translation-1 | ✓ | 1ms | 19.7 KB |
+| 258 | csv-to-html-translation-2 | ✓ | 1ms | 20.0 KB |
+| 259 | csv-to-html-translation-3 | ✓ | 1ms | 9.6 KB |
+| 260 | csv-to-html-translation-4 | ✓ | 1ms | 9.4 KB |
+| 261 | csv-to-html-translation-5 | ✓ | 1ms | 96.3 KB |
+| 262 | cuban-primes | ✓ | 1ms | 345.4 KB |
+| 263 | cullen-and-woodall-numbers | ✓ | 1ms | 23.6 KB |
+| 264 | cumulative-standard-deviation | ✓ | 1ms | 14.6 KB |
+| 265 | currency | ✓ | 1ms | 20.2 KB |
+| 266 | currying | ✓ | 1ms | 11.6 KB |
+| 267 | curzon-numbers | ✓ | 1ms | 94.5 KB |
+| 268 | cusip | ✓ | 1ms | 19.3 KB |
+| 269 | cyclops-numbers | ✓ | 1ms | 12.2 MB |
+| 270 | damm-algorithm | ✓ | 1ms | 15.8 KB |
+| 271 | date-format | ✓ | 2ms | 11.0 KB |
+| 272 | date-manipulation | ✓ | 1ms | 23.9 KB |
+| 273 | day-of-the-week | ✓ | 1ms | 13.5 KB |
+| 274 | de-bruijn-sequences | ✓ | 1ms | 367.8 KB |
+| 275 | deal-cards-for-freecell | ✓ | 1ms | 39.2 KB |
+| 276 | death-star | ✓ | 1ms | 62.0 KB |
+| 277 | deceptive-numbers | ✓ | 1ms | -63356 B |
+| 278 | deconvolution-1d-2 | ✓ | 1ms | 22.7 KB |
+| 279 | deconvolution-1d-3 | ✓ | 1ms | 15.0 KB |
+| 280 | deconvolution-1d | ✓ | 1ms | 18.4 KB |
+| 281 | deepcopy-1 | ✓ | 1ms | 21.9 KB |
+| 282 | define-a-primitive-data-type | ✓ | 1ms | 14.4 KB |
+| 283 | delegates | ✓ | 1ms | 10.8 KB |
+| 284 | demings-funnel | ✓ | 1ms | 22.4 KB |
+| 285 | department-numbers | ✓ | 1ms | 15.9 KB |
+| 286 | descending-primes | ✓ | 1ms | 106.8 KB |
+| 287 | detect-division-by-zero | ✓ | 1ms | 10.9 KB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 1ms | 27.0 KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 1ms | 86.3 KB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 1ms | 74.9 KB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 1ms | 13.2 KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 1ms | 9.8 KB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 1ms | 112.5 KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 1ms | 8.8 KB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 1ms | 90.8 KB |
+| 296 | determine-sentence-type | ✓ | 1ms | 41.2 KB |
+| 297 | dice-game-probabilities-1 | ✓ | 1ms | 11.2 KB |
+| 298 | dice-game-probabilities-2 | ✓ | 27.001s | 8.8 KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 1ms | 253.6 KB |
+| 300 | dijkstras-algorithm | ✓ | 1ms | 13.9 KB |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ | 61µs | 10.5 KB |
 | 302 | dining-philosophers-1 | ✓ | 48µs | 14.8 KB |
 | 303 | dining-philosophers-2 | ✓ | 51µs | 14.8 KB |

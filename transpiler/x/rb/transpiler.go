@@ -38,7 +38,7 @@ if s && s != ''
 end
 def _now()
   if $now_seeded
-    $now_seed = ($now_seed * 1664525 + 1013904223) % 2147483647
+    $now_seed += 1_000_000
     $now_seed
   else
     Process.clock_gettime(Process::CLOCK_MONOTONIC, :nanosecond)
@@ -1235,12 +1235,18 @@ var (
 	usesMem         bool
 	benchMain       bool
 	loopDepth       int
+	tmpVarCounter   int
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
 // benchmark block when emitting code. When enabled, the program will output a
 // JSON object with duration and memory statistics on completion.
 func SetBenchMain(v bool) { benchMain = v }
+
+func tmpVar() string {
+	tmpVarCounter++
+	return fmt.Sprintf("__tmp%d", tmpVarCounter)
+}
 
 // reserved lists Ruby reserved keywords that cannot be used as identifiers.
 var reserved = map[string]bool{
@@ -1852,14 +1858,27 @@ type ForInStmt struct {
 }
 
 func (f *ForInStmt) emit(e *emitter) {
-	// convertFor already rewrites map iterations to call `.keys` when
-	// necessary, so simply emit the iterable here. If type information was
-	// unavailable the caller is expected to set CharEach accordingly.
+	iterVar := tmpVar()
+	e.writeIndent()
+	io.WriteString(e.w, iterVar+" = ")
 	f.Iterable.emit(e)
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "if "+iterVar+".respond_to?(:keys) && !"+iterVar+".is_a?(String)")
+	e.nl()
+	e.indent++
+	e.writeIndent()
+	io.WriteString(e.w, iterVar+" = "+iterVar+".keys")
+	e.nl()
+	e.indent--
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
 	if f.CharEach {
-		io.WriteString(e.w, ".each_char do |")
+		io.WriteString(e.w, iterVar+".each_char do |")
 	} else {
-		io.WriteString(e.w, ".each do |")
+		io.WriteString(e.w, iterVar+".each do |")
 	}
 	pushScope(f.Name)
 	io.WriteString(e.w, f.Name)

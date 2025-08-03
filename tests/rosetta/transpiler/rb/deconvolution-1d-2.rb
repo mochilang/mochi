@@ -77,48 +77,43 @@ start = _now()
     end
     return s
   end
-  def printColumnMatrix(xs)
-    if xs.length == 0
-      return
-    end
-    puts(_add(_add("⎡", fmt1(xs[0])), "⎤"))
-    i = 1
-    while i < xs.length - 1
-      puts(_add(_add("⎢", fmt1(xs[i])), "⎥"))
+  def listToString1(xs)
+    s = "["
+    i = 0
+    while i < xs.length
+      s = _add(s, fmt1(xs[i]))
+      if i < xs.length - 1
+        s = _add(s, " ")
+      end
       i = _add(i, 1)
     end
-    puts(_add(_add("⎣ ", fmt1(xs[xs.length - 1])), "⎦"))
+    return _add(s, "]")
   end
   def deconv(g, f)
-    h = []
-    n = 0
-    hn = _add(g.length - f.length, 1)
-    while n < hn
-      v = g[n]
-      lower = 0
-      if n >= f.length
-        lower = _add(n - f.length, 1)
+    out = []
+    i = 0
+    while i <= g.length - f.length
+      sum = g[i]
+      j = 1
+      while j < f.length
+        if j <= i
+          sum = sum - out[i - j] * f[j]
+        end
+        j = _add(j, 1)
       end
-      i = lower
-      while i < n
-        v = v - h[i] * f[n - i]
-        i = _add(i, 1)
-      end
-      v = v / f[0]
-      h = (h << v)
-      n = _add(n, 1)
+      out = (out << sum / f[0])
+      i = _add(i, 1)
     end
-    return h
+    return out
   end
   def main()
     h = [-8.0, -9.0, -3.0, -1.0, -6.0, 7.0]
     f = [-3.0, -6.0, -1.0, 8.0, -6.0, 3.0, -1.0, -9.0, -9.0, 3.0, -2.0, 5.0, 2.0, -2.0, -7.0, -1.0]
     g = [24.0, 75.0, 71.0, -34.0, 3.0, 22.0, -45.0, 23.0, 245.0, 25.0, 52.0, 25.0, -67.0, -96.0, 96.0, 31.0, 55.0, 36.0, 29.0, -43.0, -7.0]
-    puts("deconv(g, f) =")
-    printColumnMatrix(deconv(g, f))
-    puts("")
-    puts("deconv(g, h) =")
-    printColumnMatrix(deconv(g, h))
+    puts(listToString1(h))
+    puts(listToString1(deconv(g, f)))
+    puts(listToString1(f))
+    puts(listToString1(deconv(g, h)))
   end
   main()
 end_time = _now()

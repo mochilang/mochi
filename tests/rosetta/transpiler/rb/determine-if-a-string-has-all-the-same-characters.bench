@@ -1,5 +1,5 @@
 {
-  "duration_us": 75,
-  "memory_bytes": 28048,
+  "duration_us": 1000,
+  "memory_bytes": 27616,
   "name": "main"
 }
