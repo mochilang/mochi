@@ -363,8 +363,8 @@ type WhileStmt struct {
 func (wst *WhileStmt) emit(w io.Writer) {
 	io.WriteString(w, "(let/ec _break (let loop ()\n  (if ")
 	wst.Cond.emit(w)
-	io.WriteString(w, " (let ()\n")
-	pushContinue("loop")
+	io.WriteString(w, " (let/ec _cont\n")
+	pushContinue("_cont")
 	for _, st := range wst.Body {
 		io.WriteString(w, "    ")
 		st.emit(w)
@@ -1383,6 +1383,9 @@ func header() string {
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
 	hdr += "(define (panic msg) (error msg))\n"
+	// Provide a minimal stdout object with a write method so that programs
+	// using `stdout.write` for output can run without additional setup.
+	hdr += "(define stdout (hash \"write\" (lambda (s) (display s))))\n"
 	return hdr + "\n"
 }
 
