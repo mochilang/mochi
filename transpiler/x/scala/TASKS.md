@@ -1,3 +1,7 @@
+## Progress (2025-08-03 17:07 +0700)
+- Add C++ output for convert-seconds-to-compound-duration
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-02 20:55 +0700)
 - transpiler/java: support nested list literals
 - Regenerated golden files - 93/105 vm valid programs passing
