@@ -3295,8 +3295,8 @@ func dartType(t types.Type) string {
 		return "int"
 	case types.BigIntType:
 		return "BigInt"
-       case types.FloatType:
-               return "double"
+	case types.FloatType:
+		return "double"
 	case types.BigRatType:
 		useBigRat = true
 		return "BigRat"
@@ -5062,6 +5062,25 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 	for i := 0; i < len(pf.Ops); i++ {
 		op := pf.Ops[i]
 		switch {
+		case op.Call != nil:
+			args := make([]Expr, len(op.Call.Args))
+			for j, a := range op.Call.Args {
+				arg, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = arg
+			}
+			if sel, ok := expr.(*SelectorExpr); ok && sel.Field == "get" && (len(args) == 1 || len(args) == 2) {
+				key := args[0]
+				var def Expr
+				if len(args) == 2 {
+					def = args[1]
+				}
+				expr = &MapGetExpr{Map: sel.Receiver, Key: key, Default: def}
+			} else {
+				expr = &CallExpr{Func: expr, Args: args}
+			}
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.Colon2 != nil || op.Index.End != nil || op.Index.Step != nil {
 				if op.Index.Step != nil || op.Index.Colon2 != nil {
@@ -5356,10 +5375,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if vt == "BigInt" {
 				return &CallExpr{Func: &SelectorExpr{Receiver: v, Field: "toInt"}}, nil
 			}
-			if vt != "String" {
-				return &CastExpr{Value: v, Type: "int"}, nil
+			if vt == "String" || vt == "dynamic" {
+				return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
 			}
-			return &CallExpr{Func: &SelectorExpr{Receiver: &Name{Name: "int"}, Field: "parse"}, Args: []Expr{v}}, nil
+			return &CastExpr{Value: v, Type: "int"}, nil
 		}
 		if p.Call.Func == "parseIntStr" && (len(p.Call.Args) == 1 || len(p.Call.Args) == 2) {
 			arg, err := convertExpr(p.Call.Args[0])

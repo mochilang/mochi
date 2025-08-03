@@ -47,7 +47,7 @@ Compiled and ran: 477/491
 | 38 | algebraic-data-types | ✓ | 13.511ms | 3.4 MB |
 | 39 | align-columns | ✓ | 7.95ms | 232.0 KB |
 | 40 | aliquot-sequence-classifications | ✓ | 40.353ms | 1012.0 KB |
-| 41 | almkvist-giullera-formula-for-pi | ✓ |  |  |
+| 41 | almkvist-giullera-formula-for-pi | ✓ | 285.831ms | 60.3 MB |
 | 42 | almost-prime | ✓ | 7.954ms | 108.0 KB |
 | 43 | amb | ✓ | 5.844ms | 2.6 MB |
 | 44 | amicable-pairs | ✓ | 1.287573s | 11.4 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 477/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 13:31 +0000_
+_Last updated: 2025-08-03 16:02 +0700_
