@@ -170,6 +170,18 @@ func emitExtraArgs(w io.Writer, paramType string, arg Expr) {
 	}
 }
 
+func varBaseType(name string) string {
+	if t, ok := varTypes[name]; ok && t != "" {
+		return strings.TrimSuffix(t, "[]")
+	}
+	if currentEnv != nil {
+		if tt, err := currentEnv.GetVar(name); err == nil {
+			return strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
+		}
+	}
+	return ""
+}
+
 const version = "0.10.32"
 
 // --- Simple C AST ---
@@ -753,7 +765,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			if ds, ok := declStmts[a.Name]; ok {
 				ds.Value = nil
 			}
-			base := strings.TrimSuffix(varTypes[a.Name], "[]")
+			base := varBaseType(a.Name)
 			writeIndent(w, indent)
 			switch base {
 			case "int":
@@ -842,7 +854,17 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, a.Name)
-	for _, idx := range a.Indexes {
+	start := 0
+	if stName := varBaseType(a.Name); stName != "" {
+		if _, ok := structTypes[stName]; ok && len(a.Indexes) > 0 {
+			if s, ok2 := a.Indexes[0].(*StringLit); ok2 {
+				io.WriteString(w, ".")
+				io.WriteString(w, s.Value)
+				start = 1
+			}
+		}
+	}
+	for _, idx := range a.Indexes[start:] {
 		io.WriteString(w, "[")
 		io.WriteString(w, "(int)(")
 		idx.emitExpr(w)
@@ -1456,7 +1478,7 @@ type CallExpr struct {
 func (c *CallExpr) emitExpr(w io.Writer) {
 	if c.Func == "append" && len(c.Args) == 2 {
 		if vr, ok := c.Args[0].(*VarRef); ok {
-			base := strings.TrimSuffix(varTypes[vr.Name], "[]")
+			base := varBaseType(vr.Name)
 			switch base {
 			case "int":
 				needListAppendIntNew = true
@@ -3620,6 +3642,18 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		varTypes[s.Var.Name] = declType
+		if s.Var.Type != nil {
+			env.SetVar(s.Var.Name, types.ResolveTypeRef(s.Var.Type, env), true)
+		} else {
+			switch declType {
+			case "const char*":
+				env.SetVar(s.Var.Name, types.StringType{}, true)
+			case "double":
+				env.SetVar(s.Var.Name, types.FloatType{}, true)
+			default:
+				env.SetVar(s.Var.Name, types.IntType{}, true)
+			}
+		}
 		if _, ok := valExpr.(*FieldExpr); ok && (declType == "MapSS" || declType == "MapSL") {
 			mapKeyTypes[s.Var.Name] = "const char*"
 			if declType == "MapSS" {
