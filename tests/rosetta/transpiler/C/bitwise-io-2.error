@@ -1,52 +1,13 @@
-compile failed: exit status 1: /tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘_mem’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:63:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
-   63 |     struct mallinfo mi = mallinfo();
-      |            ^~~~~~~~
-In file included from /tmp/ctranspile2832550391/bitwise-io-2.mochi.c:5:
-/usr/include/malloc.h:114:24: note: declared here
-  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
-      |                        ^~~~~~~~
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘writeBitsLSB’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:153:18: warning: implicit declaration of function ‘append’ [-Wimplicit-function-declaration]
-  153 |         w.data = append(w.data, b);
-      |                  ^~~~~~
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:153:16: warning: assignment to ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  153 |         w.data = append(w.data, b);
-      |                ^
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘writeBitsMSB’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:165:16: warning: assignment to ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  165 |         w.data = append(w.data, b);
-      |                ^
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘CloseWriter’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:184:16: warning: assignment to ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  184 |         w.data = append(w.data, w.bits % 256LL);
-      |                ^
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘readBitsLSB’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:197:22: warning: implicit declaration of function ‘len’; did you mean ‘mblen’? [-Wimplicit-function-declaration]
-  197 |         if (r.idx >= len(r.data)) {
-      |                      ^~~
-      |                      mblen
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c: In function ‘ord’:
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:281:15: warning: implicit declaration of function ‘indexOf’; did you mean ‘index’? [-Wimplicit-function-declaration]
-  281 |     int idx = indexOf(upper, ch);
-      |               ^~~~~~~
-      |               index
-/tmp/ctranspile2832550391/bitwise-io-2.mochi.c:290:23: warning: implicit declaration of function ‘parseIntStr’ [-Wimplicit-function-declaration]
-  290 |         return 48LL + parseIntStr(ch);
+compile failed: exit status 1: /tmp/ctranspile3625757247/bitwise-io-2.mochi.c: In function ‘ReadBits’:
+/tmp/ctranspile3625757247/bitwise-io-2.mochi.c:215:16: error: incompatible types when returning type ‘Anon2’ but ‘Anon3’ was expected
+  215 |         return readBitsLSB(r, width);
+      |                ^~~~~~~~~~~~~~~~~~~~~
+/tmp/ctranspile3625757247/bitwise-io-2.mochi.c: In function ‘ord’:
+/tmp/ctranspile3625757247/bitwise-io-2.mochi.c:266:21: warning: implicit declaration of function ‘indexOf’; did you mean ‘index’? [-Wimplicit-function-declaration]
+  266 |     long long idx = indexOf(upper, ch);
+      |                     ^~~~~~~
+      |                     index
+/tmp/ctranspile3625757247/bitwise-io-2.mochi.c:275:23: warning: implicit declaration of function ‘parseIntStr’ [-Wimplicit-function-declaration]
+  275 |         return 48LL + parseIntStr(ch);
       |                       ^~~~~~~~~~~
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `writeBitsLSB':
-bitwise-io-2.mochi.c:(.text+0x509): undefined reference to `append'
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `writeBitsMSB':
-bitwise-io-2.mochi.c:(.text+0x5e1): undefined reference to `append'
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `CloseWriter':
-bitwise-io-2.mochi.c:(.text+0x786): undefined reference to `append'
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `readBitsLSB':
-bitwise-io-2.mochi.c:(.text+0x851): undefined reference to `len'
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `readBitsMSB':
-bitwise-io-2.mochi.c:(.text+0x965): undefined reference to `len'
-/usr/bin/ld: /tmp/ccCrLnOo.o: in function `ord':
-bitwise-io-2.mochi.c:(.text+0xda4): undefined reference to `indexOf'
-/usr/bin/ld: bitwise-io-2.mochi.c:(.text+0xdd0): undefined reference to `indexOf'
-/usr/bin/ld: bitwise-io-2.mochi.c:(.text+0xe29): undefined reference to `parseIntStr'
-collect2: error: ld returned 1 exit status
 
