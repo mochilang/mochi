@@ -3019,6 +3019,32 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
+			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
+				structName := ""
+				if t, ok := varTypes[name]; ok {
+					structName = t
+				} else {
+					structName = typeOfExpr(&VarRef{Name: name})
+				}
+				if st, ok := structTypes[structName]; ok {
+					if ft, ok2 := st.Fields[fieldName]; ok2 {
+						if mt, ok3 := ft.(types.MapType); ok3 {
+							mp.KeyType = csTypeFromType(mt.Key)
+							mp.ValType = csTypeFromType(mt.Value)
+						} else {
+							tStr := csTypeFromType(ft)
+							if strings.HasPrefix(tStr, "Dictionary<") && strings.HasSuffix(tStr, ">") {
+								parts := strings.TrimPrefix(strings.TrimSuffix(tStr, ">"), "Dictionary<")
+								arr := strings.Split(parts, ",")
+								if len(arr) == 2 {
+									mp.KeyType = strings.TrimSpace(arr[0])
+									mp.ValType = strings.TrimSpace(arr[1])
+								}
+							}
+						}
+					}
+				}
+			}
 			if isMapExpr(target) {
 				idx := &StringLit{Value: fieldName}
 				return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil

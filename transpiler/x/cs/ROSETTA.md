@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 468/491
-Last updated: 2025-08-03 10:01 +0700
+Completed programs: 469/491
+Last updated: 2025-08-03 10:20 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -288,7 +288,7 @@ Last updated: 2025-08-03 10:01 +0700
 | 280 | deconvolution-1d | ✓ | 11.27ms | 1.3MB |
 | 281 | deepcopy-1 | ✓ | 8.915ms | 1.1MB |
 | 282 | define-a-primitive-data-type |   |  |  |
-| 283 | delegates |   |  |  |
+| 283 | delegates | ✓ | 2.131ms | 13.3KB |
 | 284 | demings-funnel | ✓ | 12.476ms | 2.5MB |
 | 285 | department-numbers | ✓ | 1.8ms | 16.0KB |
 | 286 | descending-primes | ✓ | 8.068ms | 1.1MB |
