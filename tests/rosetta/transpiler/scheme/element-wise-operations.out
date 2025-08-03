@@ -1,0 +1,44 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+m1:
+[ 3.000  1.000  4.000] 
+[ 1.000  5.000  9.000] 
+m2:
+[ 2.000  7.000  1.000] 
+[ 8.000  2.000  8.000] 
+
+m1 + m2:
+[ 5.000  8.000  5.000] 
+[ 9.000  7.000 17.000] 
+m1 - m2:
+[ 1.000 -6.000  3.000] 
+[-7.000  3.000  1.000] 
+m1 * m2:
+[ 6.000  7.000  4.000] 
+[ 8.000 10.000 72.000] 
+m1 / m2:
+[ 1.500  0.143  4.000] 
+[ 0.125  2.500  1.125] 
+m1 ^ m2:
+[ 9.000  1.000  4.000] 
+[ 1.000 25.000 43046721.000] 
+
+s: 0.5
+m1 + s:
+[ 3.500  1.500  4.500] 
+[ 1.500  5.500  9.500] 
+m1 - s:
+[ 2.500  0.500  3.500] 
+[ 0.500  4.500  8.500] 
+m1 * s:
+[ 1.500  0.500  2.000] 
+[ 0.500  2.500  4.500] 
+m1 / s:
+[ 6.000  2.000  8.000] 
+[ 2.000 10.000 18.000] 
+m1 ^ s:
+[ 1.732  1.000  2.000] 
+[ 1.000  2.236  3.000]

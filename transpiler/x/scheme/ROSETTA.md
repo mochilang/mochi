@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (399/491)
-Last updated: 2025-08-03 03:12 UTC
+## Checklist (404/491)
+Last updated: 2025-08-03 03:47 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -315,35 +315,35 @@ Last updated: 2025-08-03 03:12 UTC
 | 306 | display-a-linear-combination | ✓ | 571.223ms | 12.9 MB |
 | 307 | display-an-outline-as-a-nested-table | ✓ | 571.223ms | 13.6 MB |
 | 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming | ✓ | 571.223ms | 12.4 MB |
-| 310 | diversity-prediction-theorem | ✓ | 571.223ms | 13.2 MB |
-| 311 | dns-query |   |  |  |
-| 312 | documentation | ✓ | 571.223ms | 12.1 MB |
-| 313 | doomsday-rule | ✓ | 571.223ms | 12.6 MB |
+| 309 | distributed-programming | ✓ | 571.223ms | 12.2 MB |
+| 310 | diversity-prediction-theorem | ✓ | 571.223ms | 13.0 MB |
+| 311 | dns-query | ✓ | 571.223ms | 12.7 MB |
+| 312 | documentation | ✓ | 571.223ms | 11.9 MB |
+| 313 | doomsday-rule | ✓ | 571.223ms | 12.4 MB |
 | 314 | dot-product | ✓ | 571.223ms | 12.6 MB |
-| 315 | doubly-linked-list-definition-1 | ✓ | 571.223ms | 12.0 MB |
-| 316 | doubly-linked-list-definition-2 |   |  |  |
-| 317 | doubly-linked-list-element-definition |   |  |  |
-| 318 | doubly-linked-list-traversal | ✓ | 571.223ms | 12.4 MB |
-| 319 | dragon-curve | ✓ | 571.223ms | 12.4 MB |
+| 315 | doubly-linked-list-definition-1 | ✓ | 571.223ms | 12.1 MB |
+| 316 | doubly-linked-list-definition-2 | ✓ | 571.223ms | 13.8 MB |
+| 317 | doubly-linked-list-element-definition | ✓ | 571.223ms | 12.1 MB |
+| 318 | doubly-linked-list-traversal | ✓ | 571.223ms | 12.3 MB |
+| 319 | dragon-curve | ✓ | 571.223ms | 12.1 MB |
 | 320 | draw-a-clock | ✓ |  |  |
-| 321 | draw-a-cuboid | ✓ | 571.223ms | 12.6 MB |
-| 322 | draw-a-pixel-1 | ✓ | 571.223ms | 16.6 MB |
+| 321 | draw-a-cuboid | ✓ | 571.223ms | 12.9 MB |
+| 322 | draw-a-pixel-1 | ✓ | 571.223ms | 16.5 MB |
 | 323 | draw-a-rotating-cube | ✓ | 571.223ms | 16.5 MB |
-| 324 | draw-a-sphere | ✓ | 571.223ms | 12.7 MB |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem | ✓ | 731.363ms | 12.6 MB |
-| 327 | dynamic-variable-names | ✓ | 571.223ms | 12.8 MB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 571.223ms | 13.4 MB |
-| 329 | eban-numbers | ✓ | 571.223ms | 12.6 MB |
+| 324 | draw-a-sphere | ✓ | 571.223ms | 12.6 MB |
+| 325 | duffinian-numbers | ✓ | 571.223ms | 16.5 MB |
+| 326 | dutch-national-flag-problem | ✓ | 731.363ms | 12.9 MB |
+| 327 | dynamic-variable-names | ✓ | 571.223ms | 13.3 MB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 571.223ms | 13.2 MB |
+| 329 | eban-numbers | ✓ | 571.223ms | 16.6 MB |
 | 330 | ecdsa-example |   |  |  |
-| 331 | echo-server | ✓ | 571.223ms | 12.1 MB |
+| 331 | echo-server | ✓ | 571.223ms | 12.0 MB |
 | 332 | eertree |   |  |  |
-| 333 | egyptian-division | ✓ | 571.223ms | 12.8 MB |
+| 333 | egyptian-division | ✓ | 571.223ms | 12.5 MB |
 | 334 | ekg-sequence-convergence | ✓ | 571.223ms | 16.5 MB |
-| 335 | element-wise-operations | ✓ | 571.223ms | 13.8 MB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 571.223ms | 12.7 MB |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
+| 335 | element-wise-operations | ✓ | 571.223ms | 13.9 MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 571.223ms | 12.6 MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ |  |  |
 | 338 | elementary-cellular-automaton | ✓ | 571.223ms | 13.0 MB |
 | 339 | elliptic-curve-arithmetic | ✓ | 571.223ms | 12.9 MB |
 | 340 | elliptic-curve-digital-signature-algorithm | ✓ | 571.223ms | 12.5 MB |

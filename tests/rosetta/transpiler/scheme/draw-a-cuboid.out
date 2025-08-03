@@ -1,0 +1,48 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+WARNING: importing already defined binding: display
+WARNING: importing already defined binding: write
+cuboid 2 3 4:
+     +-----------------+
+    /                 /|
+   /                 / |
+  /                 /  |
+ +-----------------+   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   |
+ |                 |   +
+ |                 |  /
+ |                 | /
+ |                 |/
+ +-----------------+
+
+
+cuboid 1 1 1:
+   +--------+
+  /        /|
+ +--------+ |
+ |        | |
+ |        | +
+ |        |/
+ +--------+
+
+
+cuboid 6 2 1:
+    +-----------------------------------------------------+
+   /                                                     /|
+  /                                                     / |
+ +-----------------------------------------------------+  |
+ |                                                     |  +
+ |                                                     | /
+ |                                                     |/
+ +-----------------------------------------------------+
