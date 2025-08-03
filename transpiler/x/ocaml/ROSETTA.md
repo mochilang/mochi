@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 317/491
+Completed programs: 322/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -341,11 +341,11 @@ Completed programs: 317/491
 | 333 | egyptian-division | ✓ | 176.0µs | 1.56KB |
 | 334 | ekg-sequence-convergence | ✓ | 1.12s | 23.76MB |
 | 335 | element-wise-operations | ✓ | 640.0µs | 41.70KB |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 1.0ms | 148.88KB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ | 16.0ms | 4.21MB |
+| 338 | elementary-cellular-automaton | ✓ | 323.0µs | 42.08KB |
+| 339 | elliptic-curve-arithmetic | ✓ | 223.0µs | 19.74KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 23.0µs | 208B |
 | 341 | emirp-primes |   |  |  |
 | 342 | empty-directory |   |  |  |
 | 343 | empty-program |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 317/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 17:48 +0700
+Last updated 2025-08-03 21:17 +0700
