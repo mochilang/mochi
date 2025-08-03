@@ -494,6 +494,9 @@ func mapFieldType(typ, field string) (string, bool) {
 }
 
 func isDynamicMapType(typ string) bool {
+	if typ == "any" || typ == "Obj.t" {
+		return true
+	}
 	if strings.HasPrefix(typ, "map-dyn") || typ == "map" {
 		return true
 	}
@@ -1650,21 +1653,15 @@ func (mi *MapIndexExpr) emit(w io.Writer) {
 	if mi.Dyn {
 		io.WriteString(w, "(Obj.obj (List.assoc (")
 		mi.Key.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, ") (")
 		mi.Map.emit(w)
-		io.WriteString(w, ") : ")
-		if isDynamicMapType(mi.Typ) {
-			io.WriteString(w, "(string * Obj.t) list")
-		} else {
-			io.WriteString(w, ocamlType(mi.Typ))
-		}
-		io.WriteString(w, ")")
+		io.WriteString(w, ") : Obj.t))")
 	} else {
 		io.WriteString(w, "(try List.assoc (")
 		mi.Key.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, ") (")
 		mi.Map.emit(w)
-		io.WriteString(w, " with Not_found -> ")
+		io.WriteString(w, ") with Not_found -> ")
 		defaultValueExpr(mi.Typ).emit(w)
 		io.WriteString(w, ")")
 	}
@@ -1688,21 +1685,21 @@ func (mi *MapIndexExpr) emitPrint(w io.Writer) {
 		case "int":
 			io.WriteString(w, "string_of_int (List.assoc ")
 			mi.Key.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, " (")
 			mi.Map.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ") )")
 		case "float":
 			io.WriteString(w, "string_of_float (List.assoc ")
 			mi.Key.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, " (")
 			mi.Map.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ") )")
 		default:
 			io.WriteString(w, "__show (List.assoc ")
 			mi.Key.emit(w)
-			io.WriteString(w, " ")
+			io.WriteString(w, " (")
 			mi.Map.emit(w)
-			io.WriteString(w, ")")
+			io.WriteString(w, ") )")
 		}
 	}
 }
@@ -1720,7 +1717,7 @@ func (mg *MapGetExpr) emit(w io.Writer) {
 	if mg.Dyn {
 		io.WriteString(w, "(try (Obj.obj (List.assoc (")
 		mg.Key.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, ") (")
 		mg.Map.emit(w)
 		io.WriteString(w, ") : ")
 		if isDynamicMapType(mg.Typ) {
@@ -1734,9 +1731,9 @@ func (mg *MapGetExpr) emit(w io.Writer) {
 	} else {
 		io.WriteString(w, "(try List.assoc (")
 		mg.Key.emit(w)
-		io.WriteString(w, ") ")
+		io.WriteString(w, ") (")
 		mg.Map.emit(w)
-		io.WriteString(w, " with Not_found -> ")
+		io.WriteString(w, ") with Not_found -> ")
 		mg.Default.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -5711,6 +5708,11 @@ func buildListUpdate(list Expr, indexes []Expr, val Expr) Expr {
 	idx := indexes[0]
 	if len(indexes) == 1 {
 		return &ListUpdateExpr{List: list, Index: idx, Value: val}
+	}
+	if _, ok := indexes[1].(*StringLit); ok {
+		mapExpr := &IndexExpr{Col: list, Index: idx, Typ: "map", ColTyp: "list"}
+		inner := buildMapUpdate(mapExpr, indexes[1:], val, "map")
+		return &ListUpdateExpr{List: list, Index: idx, Value: inner}
 	}
 	inner := buildListUpdate(&IndexExpr{Col: list, Index: idx, Typ: "list", ColTyp: "list"}, indexes[1:], val)
 	return &ListUpdateExpr{List: list, Index: idx, Value: inner}
