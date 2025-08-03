@@ -484,9 +484,9 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
 	io.WriteString(w, "defer _tmp.deinit(); _tmp.appendSlice(")
 	ae.List.emit(w)
-	io.WriteString(w, ") catch unreachable; _tmp.append(")
+	io.WriteString(w, ") catch |err| handleError(err); _tmp.append(")
 	ae.Value.emit(w)
-	io.WriteString(w, ") catch unreachable; const _res = _tmp.toOwnedSlice() catch unreachable; break :blk _res; }")
+	io.WriteString(w, ") catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 }
 
 type FieldExpr struct {
@@ -1175,7 +1175,9 @@ func (p *Program) Emit() []byte {
 		}
 	}
 	buf.WriteString(header())
-	buf.WriteString("const std = @import(\"std\");\n\n")
+	buf.WriteString("const std = @import(\"std\");\n")
+	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
+	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
 	for _, st := range p.Structs {
 		st.emit(&buf)
 		buf.WriteString("\n")
@@ -1300,11 +1302,6 @@ func (f *Func) emit(w io.Writer) {
 	}
 	fmt.Fprintf(w, ") %s {\n", ret)
 	aliasStack = append(aliasStack, f.Aliases)
-	for _, p := range f.Params {
-		if varUses[p.Name] == 0 {
-			fmt.Fprintf(w, "    _ = %s;\n", p.Name)
-		}
-	}
 	for _, st := range f.Body {
 		st.emit(w, 1)
 	}
@@ -1362,11 +1359,12 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
+	mut := varMut[v.Name]
 	kw := "const"
-	if v.Mutable {
+	if mut {
 		kw = "var"
 	}
-	if lit, ok := v.Value.(*ListLit); ok && v.Mutable && v.Type == "" {
+	if lit, ok := v.Value.(*ListLit); ok && mut && v.Type == "" {
 		elem := lit.ElemType
 		if elem == "" {
 			elem = "i64"
@@ -1399,7 +1397,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 			fmt.Fprintf(w, ": %s", typ)
 		} else if exprType != "" {
 			fmt.Fprintf(w, ": %s", exprType)
-		} else if v.Mutable {
+		} else if mut {
 			if _, ok := v.Value.(*IntLit); ok {
 				io.WriteString(w, ": i64")
 			}
