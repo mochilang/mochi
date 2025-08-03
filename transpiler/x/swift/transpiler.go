@@ -1107,6 +1107,23 @@ func (c *CastExpr) emit(w io.Writer) {
 				}
 				return
 			}
+			// When casting indexed values from dynamic containers to Int,
+			// use a direct force-cast. The Int(...) initializer can trigger
+			// heavy type-checking and sometimes fails when the expression is
+			// too complex (e.g. nested dictionary lookups), while a direct
+			// `as! Int` keeps the Swift compiler fast and predictable.
+			if _, ok := c.Expr.(*IndexExpr); ok {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as! Int)")
+				return
+			}
+			if _, ok := c.Expr.(*FieldExpr); ok {
+				fmt.Fprint(w, "(")
+				c.Expr.emit(w)
+				fmt.Fprint(w, " as! Int)")
+				return
+			}
 		}
 		if ce, ok := c.Expr.(*CallExpr); ok && t == "String" && ce.Func == "str" {
 			c.Expr.emit(w)
