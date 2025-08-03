@@ -1,31 +1,5 @@
 import java.math.BigInteger
 
-var _nowSeed = 0L
-var _nowSeeded = false
-fun _now(): Long {
-    if (!_nowSeeded) {
-        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
-            _nowSeed = it
-            _nowSeeded = true
-        }
-    }
-    return if (_nowSeeded) {
-        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed)
-    } else {
-        kotlin.math.abs(System.nanoTime())
-    }
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
-}
-
 data class Point(var x: Double = 0.0, var y: Double = 0.0, var z: Double = 0.0)
 data class Edge(var pn1: Int = 0, var pn2: Int = 0, var fn1: Int = 0, var fn2: Int = 0, var cp: Point = Point(x = 0.0, y = 0.0, z = 0.0))
 data class PointEx(var p: Point = Point(x = 0.0, y = 0.0, z = 0.0), var n: Int = 0)
@@ -47,19 +21,19 @@ fun fmt4(x: Double): String {
     } else {
         y = y - 0.5
     }
-    y = ((y.toInt()).toDouble()) / 10000.0
+    y = ((((y.toInt())).toDouble())) / 10000.0
     var s: String = y.toString()
     var dot: Int = s.indexOf(".")
     if (dot == (0 - 1)) {
         s = s + ".0000"
     } else {
         var decs: BigInteger = ((s.length - dot) - 1).toBigInteger()
-        if (decs.compareTo(4.toBigInteger()) > 0) {
+        if (decs.compareTo((4).toBigInteger()) > 0) {
             s = s.substring(0, dot + 5)
         } else {
-            while (decs.compareTo(4.toBigInteger()) < 0) {
+            while (decs.compareTo((4).toBigInteger()) < 0) {
                 s = s + "0"
-                decs = decs.add(1.toBigInteger())
+                decs = decs.add((1).toBigInteger())
             }
         }
     }
@@ -102,8 +76,8 @@ fun getFacePoints(points: MutableList<Point>, faces: MutableList<MutableList<Int
         for (idx in face) {
             fp = sumPoint(fp, points[idx]!!)
         }
-        fp = divPoint(fp, face.size.toDouble())
-        facePoints = run { val _tmp = facePoints.toMutableList(); _tmp.add(fp); _tmp } as MutableList<Point>
+        fp = divPoint(fp, (face.size.toDouble()))
+        facePoints = run { val _tmp = facePoints.toMutableList(); _tmp.add(fp); _tmp }
         i = i + 1
     }
     return facePoints
@@ -124,12 +98,12 @@ fun sortEdges(edges: MutableList<MutableList<Int>>): MutableList<MutableList<Int
             }
             j = j + 1
         }
-        res = run { val _tmp = res.toMutableList(); _tmp.add(min); _tmp } as MutableList<MutableList<Int>>
+        res = run { val _tmp = res.toMutableList(); _tmp.add(min); _tmp }
         var out: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
         var k: Int = 0
         while (k < tmp.size) {
             if (k != idx) {
-                out = run { val _tmp = out.toMutableList(); _tmp.add(tmp[k]!!); _tmp } as MutableList<MutableList<Int>>
+                out = run { val _tmp = out.toMutableList(); _tmp.add(tmp[k]!!); _tmp }
             }
             k = k + 1
         }
@@ -158,7 +132,7 @@ fun getEdgesFaces(points: MutableList<Point>, faces: MutableList<MutableList<Int
                 pn1 = pn2
                 pn2 = tmpn
             }
-            edges = run { val _tmp = edges.toMutableList(); _tmp.add(mutableListOf(pn1, pn2, fnum)); _tmp } as MutableList<MutableList<Int>>
+            edges = run { val _tmp = edges.toMutableList(); _tmp.add(mutableListOf(pn1, pn2, fnum)); _tmp }
             pi = pi + 1
         }
         fnum = fnum + 1
@@ -171,12 +145,12 @@ fun getEdgesFaces(points: MutableList<Point>, faces: MutableList<MutableList<Int
         if (idx < (edges.size - 1)) {
             var e2: MutableList<Int> = edges[idx + 1]!!
             if ((e1[0]!! == e2[0]!!) && (e1[1]!! == e2[1]!!)) {
-                merged = run { val _tmp = merged.toMutableList(); _tmp.add(mutableListOf(e1[0]!!, e1[1]!!, e1[2]!!, e2[2]!!)); _tmp } as MutableList<MutableList<Int>>
+                merged = run { val _tmp = merged.toMutableList(); _tmp.add(mutableListOf(e1[0]!!, e1[1]!!, e1[2]!!, e2[2]!!)); _tmp }
                 idx = idx + 2
                 continue
             }
         }
-        merged = run { val _tmp = merged.toMutableList(); _tmp.add(mutableListOf(e1[0]!!, e1[1]!!, e1[2]!!, 0 - 1)); _tmp } as MutableList<MutableList<Int>>
+        merged = run { val _tmp = merged.toMutableList(); _tmp.add(mutableListOf(e1[0]!!, e1[1]!!, e1[2]!!, 0 - 1)); _tmp }
         idx = idx + 1
     }
     var edgesCenters: MutableList<Edge> = mutableListOf<Edge>()
@@ -184,7 +158,7 @@ fun getEdgesFaces(points: MutableList<Point>, faces: MutableList<MutableList<Int
         var p1: Point = points[me[0]!!]!!
         var p2: Point = points[me[1]!!]!!
         var cp: Point = centerPoint(p1, p2)
-        edgesCenters = run { val _tmp = edgesCenters.toMutableList(); _tmp.add(Edge(pn1 = me[0]!!, pn2 = me[1]!!, fn1 = me[2]!!, fn2 = me[3]!!, cp = cp)); _tmp } as MutableList<Edge>
+        edgesCenters = run { val _tmp = edgesCenters.toMutableList(); _tmp.add(Edge(pn1 = me[0]!!, pn2 = me[1]!!, fn1 = me[2]!!, fn2 = me[3]!!, cp = cp)); _tmp }
     }
     return edgesCenters
 }
@@ -201,7 +175,7 @@ fun getEdgePoints(points: MutableList<Point>, edgesFaces: MutableList<Edge>, fac
             fp2 = facePoints[edge.fn2]!!
         }
         var cfp: Point = centerPoint(fp1, fp2)
-        edgePoints = run { val _tmp = edgePoints.toMutableList(); _tmp.add(centerPoint(cp, cfp)); _tmp } as MutableList<Point>
+        edgePoints = run { val _tmp = edgePoints.toMutableList(); _tmp.add(centerPoint(cp, cfp)); _tmp }
         i = i + 1
     }
     return edgePoints
@@ -212,7 +186,7 @@ fun getAvgFacePoints(points: MutableList<Point>, faces: MutableList<MutableList<
     var temp: MutableList<PointEx> = mutableListOf<PointEx>()
     var i: Int = 0
     while (i < numP) {
-        temp = run { val _tmp = temp.toMutableList(); _tmp.add(PointEx(p = Point(x = 0.0, y = 0.0, z = 0.0), n = 0)); _tmp } as MutableList<PointEx>
+        temp = run { val _tmp = temp.toMutableList(); _tmp.add(PointEx(p = Point(x = 0.0, y = 0.0, z = 0.0), n = 0)); _tmp }
         i = i + 1
     }
     var fnum: Int = 0
@@ -220,7 +194,7 @@ fun getAvgFacePoints(points: MutableList<Point>, faces: MutableList<MutableList<
         var fp: Point = facePoints[fnum]!!
         for (pn in faces[fnum]!!) {
             var tp: PointEx = temp[pn]!!
-            temp[pn] = PointEx(p = sumPoint((tp.p) as Point, fp), n = tp.n + 1)
+            temp[pn] = PointEx(p = sumPoint(((tp.p) as Point), fp), n = tp.n + 1)
         }
         fnum = fnum + 1
     }
@@ -228,7 +202,7 @@ fun getAvgFacePoints(points: MutableList<Point>, faces: MutableList<MutableList<
     var j: Int = 0
     while (j < numP) {
         var tp: PointEx = temp[j]!!
-        avg = run { val _tmp = avg.toMutableList(); _tmp.add(divPoint(tp.p, (tp.n).toDouble())); _tmp } as MutableList<Point>
+        avg = run { val _tmp = avg.toMutableList(); _tmp.add(divPoint(tp.p, ((tp.n).toDouble()))); _tmp }
         j = j + 1
     }
     return avg
@@ -239,7 +213,7 @@ fun getAvgMidEdges(points: MutableList<Point>, edgesFaces: MutableList<Edge>): M
     var temp: MutableList<PointEx> = mutableListOf<PointEx>()
     var i: Int = 0
     while (i < numP) {
-        temp = run { val _tmp = temp.toMutableList(); _tmp.add(PointEx(p = Point(x = 0.0, y = 0.0, z = 0.0), n = 0)); _tmp } as MutableList<PointEx>
+        temp = run { val _tmp = temp.toMutableList(); _tmp.add(PointEx(p = Point(x = 0.0, y = 0.0, z = 0.0), n = 0)); _tmp }
         i = i + 1
     }
     for (edge in edgesFaces) {
@@ -254,7 +228,7 @@ fun getAvgMidEdges(points: MutableList<Point>, edgesFaces: MutableList<Edge>): M
     var j: Int = 0
     while (j < numP) {
         var tp: PointEx = temp[j]!!
-        avg = run { val _tmp = avg.toMutableList(); _tmp.add(divPoint(tp.p, (tp.n).toDouble())); _tmp } as MutableList<Point>
+        avg = run { val _tmp = avg.toMutableList(); _tmp.add(divPoint(tp.p, ((tp.n).toDouble()))); _tmp }
         j = j + 1
     }
     return avg
@@ -264,7 +238,7 @@ fun getPointsFaces(points: MutableList<Point>, faces: MutableList<MutableList<In
     var pf: MutableList<Int> = mutableListOf<Int>()
     var i: Int = 0
     while (i < points.size) {
-        pf = run { val _tmp = pf.toMutableList(); _tmp.add(0); _tmp } as MutableList<Int>
+        pf = run { val _tmp = pf.toMutableList(); _tmp.add(0); _tmp }
         i = i + 1
     }
     var fnum: Int = 0
@@ -281,7 +255,7 @@ fun getNewPoints(points: MutableList<Point>, pf: MutableList<Int>, afp: MutableL
     var newPts: MutableList<Point> = mutableListOf<Point>()
     var i: Int = 0
     while (i < points.size) {
-        var n: Double = (pf[i]!!).toDouble()
+        var n: Double = ((pf[i]!!).toDouble())
         var m1: Double = (n - 3.0) / n
         var m2: Double = 1.0 / n
         var m3: Double = 2.0 / n
@@ -289,7 +263,7 @@ fun getNewPoints(points: MutableList<Point>, pf: MutableList<Int>, afp: MutableL
         var p1: Point = mulPoint(old, m1)
         var p2: Point = mulPoint(afp[i]!!, m2)
         var p3: Point = mulPoint(ame[i]!!, m3)
-        newPts = run { val _tmp = newPts.toMutableList(); _tmp.add(sumPoint(sumPoint(p1, p2), p3)); _tmp } as MutableList<Point>
+        newPts = run { val _tmp = newPts.toMutableList(); _tmp.add(sumPoint(sumPoint(p1, p2), p3)); _tmp }
         i = i + 1
     }
     return newPts
@@ -313,15 +287,15 @@ fun cmcSubdiv(points: MutableList<Point>, faces: MutableList<MutableList<Int>>):
     var facePointNums: MutableList<Int> = mutableListOf<Int>()
     var nextPoint: Int = newPoints.size
     for (fp in facePoints) {
-        newPoints = run { val _tmp = newPoints.toMutableList(); _tmp.add(fp); _tmp } as MutableList<Point>
-        facePointNums = run { val _tmp = facePointNums.toMutableList(); _tmp.add(nextPoint); _tmp } as MutableList<Int>
+        newPoints = run { val _tmp = newPoints.toMutableList(); _tmp.add(fp); _tmp }
+        facePointNums = run { val _tmp = facePointNums.toMutableList(); _tmp.add(nextPoint); _tmp }
         nextPoint = nextPoint + 1
     }
     var edgePointNums: MutableMap<String, Int> = mutableMapOf<String, Int>()
     var idx: Int = 0
     while (idx < edgesFaces.size) {
         var e: Edge = edgesFaces[idx]!!
-        newPoints = run { val _tmp = newPoints.toMutableList(); _tmp.add(edgePoints[idx]!!); _tmp } as MutableList<Point>
+        newPoints = run { val _tmp = newPoints.toMutableList(); _tmp.add(edgePoints[idx]!!); _tmp }
         (edgePointNums)[key(e.pn1, e.pn2)] = nextPoint
         nextPoint = nextPoint + 1
         idx = idx + 1
@@ -340,14 +314,14 @@ fun cmcSubdiv(points: MutableList<Point>, faces: MutableList<MutableList<Int>>):
             var da: Int = (edgePointNums)[key(d, a)] as Int
             var bc: Int = (edgePointNums)[key(b, c)] as Int
             var cd: Int = (edgePointNums)[key(c, d)] as Int
-            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(a, ab, fpnum, da)); _tmp } as MutableList<MutableList<Int>>
-            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(b, bc, fpnum, ab)); _tmp } as MutableList<MutableList<Int>>
-            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(c, cd, fpnum, bc)); _tmp } as MutableList<MutableList<Int>>
-            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(d, da, fpnum, cd)); _tmp } as MutableList<MutableList<Int>>
+            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(a, ab, fpnum, da)); _tmp }
+            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(b, bc, fpnum, ab)); _tmp }
+            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(c, cd, fpnum, bc)); _tmp }
+            newFaces = run { val _tmp = newFaces.toMutableList(); _tmp.add(mutableListOf(d, da, fpnum, cd)); _tmp }
         }
         fnum = fnum + 1
     }
-    return mutableListOf<Any?>(newPoints as Any?, newFaces as Any?)
+    return mutableListOf<Any?>((newPoints as Any?), (newFaces as Any?))
 }
 
 fun formatPoint(p: Point): String {
@@ -376,8 +350,8 @@ fun user_main(): Unit {
     var i: Int = 0
     while (i < 1) {
         var res: MutableList<Any?> = cmcSubdiv(outputPoints, outputFaces)
-        outputPoints = (res[0] as Any?) as MutableList<Point>
-        outputFaces = (res[1] as Any?) as MutableList<MutableList<Int>>
+        outputPoints = ((res[0] as Any?) as MutableList<Point>)
+        outputFaces = ((res[1] as Any?) as MutableList<MutableList<Int>>)
         i = i + 1
     }
     for (p in outputPoints) {
@@ -390,17 +364,5 @@ fun user_main(): Unit {
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        user_main()
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
-    }
+    user_main()
 }

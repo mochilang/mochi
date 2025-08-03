@@ -1,27 +1,7 @@
-var _nowSeed = 0L
-var _nowSeeded = false
-fun _now(): Long {
-    if (!_nowSeeded) {
-        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
-            _nowSeed = it
-            _nowSeeded = true
-        }
-    }
-    return if (_nowSeeded) {
-        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed)
-    } else {
-        kotlin.math.abs(System.nanoTime())
-    }
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
+fun repeat(s: String, n: Int): String {
+    val sb = StringBuilder()
+    repeat(n) { sb.append(s) }
+    return sb.toString()
 }
 
 var tests: MutableList<String> = mutableListOf("87.70.141.1/22", "36.18.154.103/12", "62.62.197.11/29", "67.137.119.181/4", "161.214.74.21/24", "184.232.176.184/18")
@@ -31,7 +11,7 @@ fun split(s: String, sep: String): MutableList<String> {
     var i: Int = 0
     while (i < s.length) {
         if ((((sep.length > 0) && ((i + sep.length) <= s.length) as Boolean)) && (s.substring(i, i + sep.length) == sep)) {
-            parts = run { val _tmp = parts.toMutableList(); _tmp.add(cur); _tmp } as MutableList<String>
+            parts = run { val _tmp = parts.toMutableList(); _tmp.add(cur); _tmp }
             cur = ""
             i = i + sep.length
         } else {
@@ -39,7 +19,7 @@ fun split(s: String, sep: String): MutableList<String> {
             i = i + 1
         }
     }
-    parts = run { val _tmp = parts.toMutableList(); _tmp.add(cur); _tmp } as MutableList<String>
+    parts = run { val _tmp = parts.toMutableList(); _tmp.add(cur); _tmp }
     return parts
 }
 
@@ -79,7 +59,7 @@ fun parseIntStr(str: String): Int {
         n = (n * 10) + (digits)[str.substring(i, i + 1)] as Int
         i = i + 1
     }
-    if (neg as Boolean) {
+    if ((neg as Boolean)) {
         n = 0 - n
     }
     return n
@@ -91,7 +71,7 @@ fun toBinary(n: Int, bits: Int): String {
     var i: Int = 0
     while (i < bits) {
         b = (Math.floorMod(_val, 2)).toString() + b
-        _val = (_val / 2).toInt()
+        _val = ((_val / 2).toInt())
         i = i + 1
     }
     return b
@@ -101,7 +81,7 @@ fun binToInt(bits: String): Int {
     var n: Int = 0
     var i: Int = 0
     while (i < bits.length) {
-        n = (n * 2) + parseIntStr(bits.substring(i, i + 1))
+        n = (n * 2) + Integer.parseInt(bits.substring(i, i + 1), 10)
         i = i + 1
     }
     return n
@@ -118,36 +98,24 @@ fun padRight(s: String, width: Int): String {
 fun canonicalize(cidr: String): String {
     var parts: MutableList<String> = split(cidr, "/")
     var dotted: String = parts[0]!!
-    var size: Int = parseIntStr(parts[1]!!)
+    var size: (Int) -> Int = Integer.parseInt(parts[1]!!, 10)
     var binParts: MutableList<String> = mutableListOf<String>()
     for (p in split(dotted, ".")) {
-        binParts = run { val _tmp = binParts.toMutableList(); _tmp.add(toBinary(parseIntStr(p), 8)); _tmp } as MutableList<String>
+        binParts = run { val _tmp = binParts.toMutableList(); _tmp.add(toBinary(((Integer.parseInt(p, 10)) as Int), 8)); _tmp }
     }
     var binary: String = join(binParts, "")
     binary = binary.substring(0, size) + repeat("0", 32 - size)
     var canonParts: MutableList<String> = mutableListOf<String>()
     var i: Int = 0
     while (i < binary.length) {
-        canonParts = run { val _tmp = canonParts.toMutableList(); _tmp.add(binToInt(binary.substring(i, i + 8)).toString()); _tmp } as MutableList<String>
+        canonParts = run { val _tmp = canonParts.toMutableList(); _tmp.add(binToInt(binary.substring(i, i + 8)).toString()); _tmp }
         i = i + 8
     }
     return (join(canonParts, ".") + "/") + parts[1]!!
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        for (t in tests) {
-            println((padRight(t, 18) + " -> ") + canonicalize(t))
-        }
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
+    for (t in tests) {
+        println((padRight(t, 18) + " -> ") + canonicalize(t))
     }
 }

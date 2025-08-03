@@ -1,0 +1,4 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/chernicks-carmichael-numbers.kt:129:21: error: type mismatch: inferred type is Long but Int was expected
+                m = (m).toLong() + pow2(n - 4)
+                    ^

@@ -39,32 +39,6 @@ fun _sub(a: BigRat, b: BigRat): BigRat = a.sub(b)
 fun _mul(a: BigRat, b: BigRat): BigRat = a.mul(b)
 fun _div(a: BigRat, b: BigRat): BigRat = a.div(b)
 
-var _nowSeed = 0L
-var _nowSeeded = false
-fun _now(): Long {
-    if (!_nowSeeded) {
-        System.getenv("MOCHI_NOW_SEED")?.toLongOrNull()?.let {
-            _nowSeed = it
-            _nowSeeded = true
-        }
-    }
-    return if (_nowSeeded) {
-        _nowSeed = (_nowSeed * 1664525 + 1013904223) % 2147483647
-        kotlin.math.abs(_nowSeed)
-    } else {
-        kotlin.math.abs(System.nanoTime())
-    }
-}
-
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
-}
-
 var testCases: MutableList<MutableList<MutableMap<String, Int>>> = mutableListOf(mutableListOf(mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (2)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (3))), mutableListOf(mutableMapOf<String, Int>("a" to (2), "n" to (1), "d" to (3)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (7))), mutableListOf(mutableMapOf<String, Int>("a" to (4), "n" to (1), "d" to (5)), mutableMapOf<String, Int>("a" to (0 - 1), "n" to (1), "d" to (239))), mutableListOf(mutableMapOf<String, Int>("a" to (5), "n" to (1), "d" to (7)), mutableMapOf<String, Int>("a" to (2), "n" to (3), "d" to (79))), mutableListOf(mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (2)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (5)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (8))), mutableListOf(mutableMapOf<String, Int>("a" to (4), "n" to (1), "d" to (5)), mutableMapOf<String, Int>("a" to (0 - 1), "n" to (1), "d" to (70)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (99))), mutableListOf(mutableMapOf<String, Int>("a" to (5), "n" to (1), "d" to (7)), mutableMapOf<String, Int>("a" to (4), "n" to (1), "d" to (53)), mutableMapOf<String, Int>("a" to (2), "n" to (1), "d" to (4443))), mutableListOf(mutableMapOf<String, Int>("a" to (6), "n" to (1), "d" to (8)), mutableMapOf<String, Int>("a" to (2), "n" to (1), "d" to (57)), mutableMapOf<String, Int>("a" to (1), "n" to (1), "d" to (239))), mutableListOf(mutableMapOf<String, Int>("a" to (8), "n" to (1), "d" to (10)), mutableMapOf<String, Int>("a" to (0 - 1), "n" to (1), "d" to (239)), mutableMapOf<String, Int>("a" to (0 - 4), "n" to (1), "d" to (515))), mutableListOf(mutableMapOf<String, Int>("a" to (12), "n" to (1), "d" to (18)), mutableMapOf<String, Int>("a" to (8), "n" to (1), "d" to (57)), mutableMapOf<String, Int>("a" to (0 - 5), "n" to (1), "d" to (239))), mutableListOf(mutableMapOf<String, Int>("a" to (16), "n" to (1), "d" to (21)), mutableMapOf<String, Int>("a" to (3), "n" to (1), "d" to (239)), mutableMapOf<String, Int>("a" to (4), "n" to (3), "d" to (1042))), mutableListOf(mutableMapOf<String, Int>("a" to (22), "n" to (1), "d" to (28)), mutableMapOf<String, Int>("a" to (2), "n" to (1), "d" to (443)), mutableMapOf<String, Int>("a" to (0 - 5), "n" to (1), "d" to (1393)), mutableMapOf<String, Int>("a" to (0 - 10), "n" to (1), "d" to (11018))), mutableListOf(mutableMapOf<String, Int>("a" to (22), "n" to (1), "d" to (38)), mutableMapOf<String, Int>("a" to (17), "n" to (7), "d" to (601)), mutableMapOf<String, Int>("a" to (10), "n" to (7), "d" to (8149))), mutableListOf(mutableMapOf<String, Int>("a" to (44), "n" to (1), "d" to (57)), mutableMapOf<String, Int>("a" to (7), "n" to (1), "d" to (239)), mutableMapOf<String, Int>("a" to (0 - 12), "n" to (1), "d" to (682)), mutableMapOf<String, Int>("a" to (24), "n" to (1), "d" to (12943))), mutableListOf(mutableMapOf<String, Int>("a" to (88), "n" to (1), "d" to (172)), mutableMapOf<String, Int>("a" to (51), "n" to (1), "d" to (239)), mutableMapOf<String, Int>("a" to (32), "n" to (1), "d" to (682)), mutableMapOf<String, Int>("a" to (44), "n" to (1), "d" to (5357)), mutableMapOf<String, Int>("a" to (68), "n" to (1), "d" to (12943))), mutableListOf(mutableMapOf<String, Int>("a" to (88), "n" to (1), "d" to (172)), mutableMapOf<String, Int>("a" to (51), "n" to (1), "d" to (239)), mutableMapOf<String, Int>("a" to (32), "n" to (1), "d" to (682)), mutableMapOf<String, Int>("a" to (44), "n" to (1), "d" to (5357)), mutableMapOf<String, Int>("a" to (68), "n" to (1), "d" to (12944))))
 fun br(n: Int, d: Int): BigRat {
     return _bigrat(_div(_bigrat(n), _bigrat(_bigrat(d))))
@@ -94,7 +68,7 @@ fun tanEval(coef: Int, f: BigRat): BigRat {
     var ca: Int = coef / 2
     var cb: BigInteger = (coef - ca).toBigInteger()
     var a: BigRat = tanEval(ca, f)
-    var b: BigRat = tanEval(cb.toInt(), f)
+    var b: BigRat = tanEval((cb.toInt()), f)
     return _bigrat(_div(_bigrat(_add(a, b)), _bigrat(_sub(_bigrat(1), (_bigrat(_mul(a, b)))))))
 }
 
@@ -110,19 +84,7 @@ fun tans(m: MutableList<MutableMap<String, Int>>): BigRat {
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        for (ts in testCases) {
-            println((("tan " + format(ts)) + " = ") + tans(ts).toString())
-        }
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
+    for (ts in testCases) {
+        println((("tan " + format(ts)) + " = ") + tans(ts).toString())
     }
 }
