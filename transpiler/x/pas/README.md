@@ -109,4 +109,4 @@ Generated sources for the golden tests live under `tests/transpiler/x/pas`.
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-Last updated: 2025-08-03 10:01 +0700
+Last updated: 2025-08-03 11:14 +0700

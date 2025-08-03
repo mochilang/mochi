@@ -1,3 +1,36 @@
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
+## Progress (2025-08-03 11:14 +0700)
+- pascal: handle contains and if expressions (progress 88/105)
+
 ## Progress (2025-08-03 10:01 +0700)
 - erl: avoid unused fmod helper (progress 88/105)
 
