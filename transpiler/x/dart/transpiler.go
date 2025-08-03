@@ -855,8 +855,10 @@ func stmtCallsMain(st Stmt) bool {
 	switch s := st.(type) {
 	case *ExprStmt:
 		if call, ok := s.Expr.(*CallExpr); ok {
-			if name, ok := call.Func.(*Name); ok && name.Name == "main" && len(call.Args) == 0 {
-				return true
+			if name, ok := call.Func.(*Name); ok && len(call.Args) == 0 {
+				if name.Name == "main" || ((benchMain || renameMain) && name.Name == "_main") {
+					return true
+				}
 			}
 		}
 	case *BenchStmt:
@@ -3295,8 +3297,8 @@ func dartType(t types.Type) string {
 		return "int"
 	case types.BigIntType:
 		return "BigInt"
-       case types.FloatType:
-               return "double"
+	case types.FloatType:
+		return "double"
 	case types.BigRatType:
 		useBigRat = true
 		return "BigRat"
@@ -4337,7 +4339,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 	structMutable = map[string]bool{}
 	methodDefs = nil
 	structMethods = map[string]map[string]bool{}
-	benchMain = bench
+	benchMain = bench && !wrapMain
 	renameMain = false
 	for _, st := range prog.Statements {
 		if st.Fun != nil && st.Fun.Name == "main" {
@@ -4345,7 +4347,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench, wrapMain bool) (*Pro
 			break
 		}
 	}
-	p := &Program{BenchMain: bench, WrapMain: wrapMain}
+	p := &Program{BenchMain: bench && !wrapMain, WrapMain: wrapMain}
 	for _, st := range prog.Statements {
 		s, err := convertStmtInternal(st)
 		if err != nil {

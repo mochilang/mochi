@@ -48,7 +48,7 @@ Compiled and ran: 477/491
 | 39 | align-columns | ✓ | 7.95ms | 232.0 KB |
 | 40 | aliquot-sequence-classifications | ✓ | 40.353ms | 1012.0 KB |
 | 41 | almkvist-giullera-formula-for-pi | ✓ |  |  |
-| 42 | almost-prime | ✓ | 7.954ms | 108.0 KB |
+| 42 | almost-prime | ✓ | 12.876ms | 11.2 MB |
 | 43 | amb | ✓ | 5.844ms | 2.6 MB |
 | 44 | amicable-pairs | ✓ | 1.287573s | 11.4 MB |
 | 45 | anagrams-deranged-anagrams | ✓ | 7.343ms | 164.0 KB |
@@ -499,4 +499,4 @@ Compiled and ran: 477/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-02 13:31 +0000_
+_Last updated: 2025-08-03 16:15 +0700_

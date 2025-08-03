@@ -22,14 +22,21 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-void main() {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  _initNow();
-  {
-  var _benchMem0 = ProcessInfo.currentRss;
-  var _benchSw = Stopwatch()..start();
-  bool kPrime(int n, int k) {
+String _substr(String s, num start, num end) {
+  var n = s.length;
+  int s0 = start.toInt();
+  int e0 = end.toInt();
+  if (s0 < 0) s0 += n;
+  if (e0 < 0) e0 += n;
+  if (s0 < 0) s0 = 0;
+  if (s0 > n) s0 = n;
+  if (e0 < 0) e0 = 0;
+  if (e0 > n) e0 = n;
+  if (s0 > e0) s0 = e0;
+  return s.substring(s0, e0);
+}
+
+bool kPrime(int n, int k) {
   int nf = 0;
   int i = 2;
   while (i <= n) {
@@ -44,8 +51,9 @@ void main() {
   }
   return nf == k;
 }
-  List<int> gen(int k, int count) {
-  List<int> r = [];
+
+List<int> gen(int k, int count) {
+  List<int> r = <int>[];
   int n = 2;
   while (r.length < count) {
     if (kPrime(n, k)) {
@@ -55,19 +63,25 @@ void main() {
   }
   return r;
 }
-  void main() {
+
+void _main() {
   int k = 1;
   while (k <= 5) {
     print((k).toString() + " " + (gen(k, 10)).toString());
     k = k + 1;
   }
 }
-  main();
+
+void _start() {
+  _initNow();
+  {
+  var _benchMem0 = ProcessInfo.currentRss;
+  var _benchSw = Stopwatch()..start();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  _benchSw.stop();
-  var _benchMem1 = ProcessInfo.currentRss;
-  print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
+
+void main() => _start();
