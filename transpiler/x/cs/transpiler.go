@@ -259,6 +259,14 @@ type AssignStmt struct {
 
 func (s *AssignStmt) emit(w io.Writer) {
 	fmt.Fprintf(w, "%s = ", safeName(s.Name))
+	ltype := finalVarTypes[s.Name]
+	rtype := typeOfExpr(s.Value)
+	if ltype != "" && rtype == "object" && ltype != "object" {
+		fmt.Fprintf(w, "(%s)(", ltype)
+		s.Value.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	s.Value.emit(w)
 }
 
