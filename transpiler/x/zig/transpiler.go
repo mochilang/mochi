@@ -79,12 +79,6 @@ func popAliasScope() {
 	if len(aliasStack) == 0 {
 		return
 	}
-	names := namesStack[len(namesStack)-1]
-	for _, n := range names {
-		if c := nameCounts[n]; c > 0 {
-			nameCounts[n] = c - 1
-		}
-	}
 	aliasStack = aliasStack[:len(aliasStack)-1]
 	namesStack = namesStack[:len(namesStack)-1]
 }
@@ -3241,6 +3235,7 @@ func compileWhileStmt(ws *parser.WhileStmt, prog *parser.Program) (Stmt, error) 
 
 func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 	var start, end, iter Expr
+	var elemType string
 	var err error
 	if fs.RangeEnd != nil {
 		start, err = compileExpr(fs.Source)
@@ -3251,14 +3246,25 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
+		elemType = "i64"
 	} else {
 		iter, err = compileExpr(fs.Source)
 		if err != nil {
 			return nil, err
 		}
+		t := zigTypeFromExpr(iter)
+		if strings.HasPrefix(t, "[]") {
+			elemType = t[2:]
+		} else {
+			elemType = "i64"
+		}
 	}
 	body := make([]Stmt, 0, len(fs.Body))
 	pushAliasScope()
+	alias := uniqueName(fs.Name)
+	aliasStack[len(aliasStack)-1][fs.Name] = alias
+	namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], fs.Name)
+	varTypes[alias] = elemType
 	outerDecls := make(map[string]*VarDecl, len(varDecls))
 	for k, v := range varDecls {
 		outerDecls[k] = v
@@ -3276,7 +3282,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		}
 	}
 	popAliasScope()
-	return &ForStmt{Name: fs.Name, Start: start, End: end, Iterable: iter, Body: body}, nil
+	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body}, nil
 }
 
 func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error) {
@@ -3657,6 +3663,8 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 	if fn.Return != nil {
 		ret = toZigType(fn.Return)
 	}
+	funcReturns[name] = ret
+	funcParamTypes[name] = paramTypes
 	body := make([]Stmt, 0, len(fn.Body)+len(preStmts))
 	body = append(body, preStmts...)
 	for _, st := range fn.Body {
@@ -3683,8 +3691,6 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
-	funcReturns[name] = ret
-	funcParamTypes[name] = paramTypes
 	if funDepth > 1 {
 		capturedMap := map[string]bool{}
 		captured := []string{}
@@ -3771,7 +3777,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
 		if lst, ok := expr.(*ListLit); ok {
-			if inferListStruct(s.Let.Name, lst) != "" {
+			if funDepth == 0 && inferListStruct(s.Let.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Let.Name] = "[]" + lst.ElemType
 			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
@@ -3789,9 +3795,13 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if ml, ok := expr.(*MapLit); ok {
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
-				mapVars[s.Let.Name] = false
+				if funDepth == 0 {
+					mapVars[s.Let.Name] = false
+				}
 			} else {
-				mapVars[s.Let.Name] = true
+				if funDepth == 0 {
+					mapVars[s.Let.Name] = true
+				}
 				mapVars[alias] = true
 				if vd.Type != "" {
 					if strings.HasPrefix(vd.Type, "std.StringHashMap(") {
@@ -3811,13 +3821,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
-		if vd.Type != "" && varTypes[s.Let.Name] == "" {
-			varTypes[s.Let.Name] = vd.Type
-		} else if vd.Type == "" {
-			varTypes[s.Let.Name] = zigTypeFromExpr(expr)
+		typ := vd.Type
+		if typ == "" {
+			typ = zigTypeFromExpr(expr)
 		}
-		// also record the alias name for later lookups
-		varTypes[alias] = varTypes[s.Let.Name]
+		if funDepth == 0 {
+			varTypes[s.Let.Name] = typ
+		}
+		varTypes[alias] = typ
 		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			vd.Mutable = true
@@ -3855,10 +3866,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		varDecls[alias] = vd
 		if s.Var.Type != nil {
 			vd.Type = toZigType(s.Var.Type)
-			varTypes[s.Var.Name] = vd.Type
+			if funDepth == 0 {
+				varTypes[s.Var.Name] = vd.Type
+			}
 		}
 		if lst, ok := expr.(*ListLit); ok {
-			if inferListStruct(s.Var.Name, lst) != "" {
+			if funDepth == 0 && inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)
 				varTypes[s.Var.Name] = "[]" + lst.ElemType
 			} else if funDepth == 0 && len(lst.Elems) > 0 && vd.Type == "" {
@@ -3876,9 +3889,13 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if ml, ok := expr.(*MapLit); ok {
 			if ml.StructName != "" {
 				vd.Type = ml.StructName
-				mapVars[s.Var.Name] = false
+				if funDepth == 0 {
+					mapVars[s.Var.Name] = false
+				}
 			} else {
-				mapVars[s.Var.Name] = true
+				if funDepth == 0 {
+					mapVars[s.Var.Name] = true
+				}
 				mapVars[alias] = true
 				if vd.Type != "" {
 					if strings.HasPrefix(vd.Type, "std.StringHashMap(") {
@@ -3904,13 +3921,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if qc, ok := expr.(*QueryComp); ok {
 			vd.Type = "[]" + qc.ElemType
 		}
-		if vd.Type != "" && varTypes[s.Var.Name] == "" {
-			varTypes[s.Var.Name] = vd.Type
-		} else if vd.Type == "" {
-			varTypes[s.Var.Name] = zigTypeFromExpr(expr)
+		typ := vd.Type
+		if typ == "" {
+			typ = zigTypeFromExpr(expr)
 		}
-		// record alias name as well so later lookups succeed
-		varTypes[alias] = varTypes[s.Var.Name]
+		if funDepth == 0 {
+			varTypes[s.Var.Name] = typ
+		}
+		varTypes[alias] = typ
 		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})
