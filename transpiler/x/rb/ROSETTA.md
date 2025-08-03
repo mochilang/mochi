@@ -2,7 +2,7 @@
 
 Generated Ruby code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/rb`.
 
-Last updated: 2025-08-03 08:56 UTC
+Last updated: 2025-08-03 09:24 UTC
 
 ## Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -216,56 +216,56 @@ Last updated: 2025-08-03 08:56 UTC
 | 207 | comma-quibbling | ✓ | 36µs | 10.9 KB |
 | 208 | compiler-virtual-machine-interpreter | ✓ | 372µs | 154.0 KB |
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ |  |  |
-| 210 | compound-data-type | ✓ | 25µs | 1.2 KB |
-| 211 | concurrent-computing-1 | ✓ | 25µs | 9.0 KB |
-| 212 | concurrent-computing-2 | ✓ | 24µs | 9.0 KB |
-| 213 | concurrent-computing-3 | ✓ | 30µs | 9.4 KB |
-| 214 | conditional-structures-1 | ✓ | 2µs | 472 B |
-| 215 | conditional-structures-10 | ✓ | 18µs | 8.9 KB |
-| 216 | conditional-structures-2 | ✓ | 3µs | 472 B |
-| 217 | conditional-structures-3 | ✓ | 2µs | 472 B |
-| 218 | conditional-structures-4 | ✓ | 8µs | 600 B |
-| 219 | conditional-structures-5 | ✓ | 3µs | 472 B |
-| 220 | conditional-structures-6 | ✓ | 3µs | 472 B |
-| 221 | conditional-structures-7 | ✓ | 3µs | 600 B |
-| 222 | conditional-structures-8 | ✓ | 3µs | 472 B |
-| 223 | conditional-structures-9 | ✓ | 2µs | 472 B |
-| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 571.223ms | 869.4 KB |
-| 225 | constrained-genericity-1 | ✓ | 24µs | 1.1 KB |
-| 226 | constrained-genericity-2 | ✓ | 26µs | 1.1 KB |
-| 227 | constrained-genericity-3 | ✓ | 22µs | 1.1 KB |
-| 228 | constrained-genericity-4 | ✓ | 87µs | 12.7 KB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 3.614ms | 1.0 MB |
-| 230 | constrained-random-points-on-a-circle-2 | ✓ | 5.981ms | 1.7 MB |
-| 231 | continued-fraction | ✓ | 113µs | 30.5 KB |
-| 232 | convert-decimal-number-to-rational | ✓ | 61µs | 14.3 KB |
-| 233 | convert-seconds-to-compound-duration | ✓ | 49µs | 10.5 KB |
-| 234 | convex-hull | ✓ | 294µs | 26.5 KB |
-| 235 | conways-game-of-life | ✓ | 1.860947s | 1.4 MB |
-| 236 | copy-a-string-1 | ✓ | 2µs | 512 B |
-| 237 | copy-a-string-2 | ✓ | 24µs | 9.4 KB |
-| 238 | copy-stdin-to-stdout-1 | ✓ | 37µs | 17.3 KB |
-| 239 | copy-stdin-to-stdout-2 | ✓ | 50µs | 17.4 KB |
-| 240 | count-in-factors | ✓ | 2.675ms | 29.2 KB |
-| 241 | count-in-octal-1 | ✓ | 262µs | 55.6 KB |
-| 242 | count-in-octal-2 | ✓ | 286.097ms | -24260 B |
-| 243 | count-in-octal-3 | ✓ | 78µs | 19.1 KB |
-| 244 | count-in-octal-4 | ✓ | 47µs | 13.1 KB |
-| 245 | count-occurrences-of-a-substring | ✓ | 46µs | 10.5 KB |
-| 246 | count-the-coins-1 | ✓ | 31µs | 10.7 KB |
-| 247 | count-the-coins-2 | ✓ | 15.539ms | 3.9 MB |
-| 248 | cramers-rule | ✓ | 349µs | 103.7 KB |
-| 249 | crc-32-1 | ✓ | 6.735ms | 304.5 KB |
-| 250 | crc-32-2 | ✓ | 5.906ms | 304.6 KB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 15µs | 1.4 KB |
-| 252 | create-a-file | ✓ | 54µs | 10.4 KB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 92µs | 10.8 KB |
-| 254 | create-an-html-table | ✓ | 33µs | 13.4 KB |
-| 255 | create-an-object-at-a-given-address | ✓ | 126µs | 19.9 KB |
-| 256 | csv-data-manipulation | ✓ | 47µs | 17.7 KB |
-| 257 | csv-to-html-translation-1 | ✓ | 37µs | 20.3 KB |
-| 258 | csv-to-html-translation-2 | ✓ | 42µs | 20.6 KB |
-| 259 | csv-to-html-translation-3 | ✓ | 43µs | 10.0 KB |
+| 210 | compound-data-type | ✓ | 571.223ms | 832 B |
+| 211 | concurrent-computing-1 | ✓ | 410.002ms | 8.8 KB |
+| 212 | concurrent-computing-2 | ✓ | 410.002ms | 8.8 KB |
+| 213 | concurrent-computing-3 | ✓ | 16.729ms | 9.2 KB |
+| 214 | conditional-structures-1 | ✓ | 571.223ms | 40 B |
+| 215 | conditional-structures-10 | ✓ | 571.223ms | 8.7 KB |
+| 216 | conditional-structures-2 | ✓ | 571.223ms | 40 B |
+| 217 | conditional-structures-3 | ✓ | 571.223ms | 40 B |
+| 218 | conditional-structures-4 | ✓ | 571.223ms | 168 B |
+| 219 | conditional-structures-5 | ✓ | 571.223ms | 40 B |
+| 220 | conditional-structures-6 | ✓ | 571.223ms | 40 B |
+| 221 | conditional-structures-7 | ✓ | 571.223ms | 168 B |
+| 222 | conditional-structures-8 | ✓ | 571.223ms | 40 B |
+| 223 | conditional-structures-9 | ✓ | 571.223ms | 40 B |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 571.223ms | 873.1 KB |
+| 225 | constrained-genericity-1 | ✓ | 571.223ms | 728 B |
+| 226 | constrained-genericity-2 | ✓ | 571.223ms | 728 B |
+| 227 | constrained-genericity-3 | ✓ | 571.223ms | 728 B |
+| 228 | constrained-genericity-4 | ✓ | 571.223ms | 12.3 KB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ |  |  |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 362.979ms | 305.7 KB |
+| 231 | continued-fraction | ✓ | 571.223ms | 20.1 KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 571.223ms | 13.9 KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 571.223ms | 10.3 KB |
+| 234 | convex-hull | ✓ | 571.223ms | 104.9 KB |
+| 235 | conways-game-of-life | ✓ | 571.223ms | 1.4 MB |
+| 236 | copy-a-string-1 | ✓ | 571.223ms | 80 B |
+| 237 | copy-a-string-2 | ✓ | 571.223ms | 9.0 KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 571.223ms | 16.9 KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 571.223ms | 17.2 KB |
+| 240 | count-in-factors | ✓ | 571.223ms | 29.0 KB |
+| 241 | count-in-octal-1 | ✓ | 571.223ms | 55.2 KB |
+| 242 | count-in-octal-2 | ✓ | 571.223ms | -7452 B |
+| 243 | count-in-octal-3 | ✓ | 571.223ms | 18.7 KB |
+| 244 | count-in-octal-4 | ✓ | 571.223ms | 12.7 KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 571.223ms | 10.0 KB |
+| 246 | count-the-coins-1 | ✓ | 571.223ms | 9.3 KB |
+| 247 | count-the-coins-2 | ✓ | 571.223ms | 20.7 KB |
+| 248 | cramers-rule | ✓ | 571.223ms | 33.5 KB |
+| 249 | crc-32-1 | ✓ | 571.223ms | 23.2 KB |
+| 250 | crc-32-2 | ✓ | 571.223ms | 23.2 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ |  |  |
+| 252 | create-a-file | ✓ | 571.223ms | 9.9 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 571.223ms | 9.9 KB |
+| 254 | create-an-html-table | ✓ | 571.223ms | 13.0 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 571.223ms | 18.4 KB |
+| 256 | csv-data-manipulation | ✓ | 571.223ms | 17.5 KB |
+| 257 | csv-to-html-translation-1 | ✓ | 571.223ms | 19.7 KB |
+| 258 | csv-to-html-translation-2 | ✓ | 571.223ms | 20.0 KB |
+| 259 | csv-to-html-translation-3 | ✓ | 571.223ms | 9.6 KB |
 | 260 | csv-to-html-translation-4 | ✓ | 13µs | 9.8 KB |
 | 261 | csv-to-html-translation-5 | ✓ | 256µs | 97.1 KB |
 | 262 | cuban-primes | ✓ | 12.151457s | 224.9 KB |
