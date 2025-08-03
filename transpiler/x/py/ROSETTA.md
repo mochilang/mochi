@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-02 17:56 GMT+7
+Last updated: 2025-08-03 16:06 GMT+7
 
 ## Rosetta Golden Test Checklist (486/491)
 | Index | Name | Status | Duration | Memory |
@@ -134,7 +134,7 @@ Last updated: 2025-08-02 17:56 GMT+7
 | 125 | bitmap-write-a-ppm-file | ✓ | 136.0µs | 13.86MB |
 | 126 | bitmap | ✓ | 264.0ms | 20.99MB |
 | 127 | bitwise-io-1 | ✓ | 1.0ms | 13.48MB |
-| 128 | bitwise-io-2 | ✓ |  |  |
+| 128 | bitwise-io-2 | ✓ | 2.0ms | 14.43MB |
 | 129 | bitwise-operations | ✓ | 146.0µs | 13.86MB |
 | 130 | blum-integer | ✓ | 313.0µs | 13.26MB |
 | 131 | boolean-values | ✓ | 18.0µs | 12.62MB |

@@ -3424,15 +3424,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 					idx := &StringLit{Value: field}
 					p.Stmts = append(p.Stmts, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 				} else {
-					if n, ok := target.(*Name); ok {
-						if currentImports != nil {
-							currentImports["dataclasses"] = true
-						}
-						repl := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "replace"}, Args: []Expr{&Name{Name: n.Name}, &KeywordArg{Name: field, Value: val}}}
-						p.Stmts = append(p.Stmts, &AssignStmt{Name: n.Name, Expr: repl})
-					} else {
-						p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: target, Field: field, Value: val})
-					}
+					p.Stmts = append(p.Stmts, &FieldAssignStmt{Target: target, Field: field, Value: val})
 				}
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
@@ -3899,15 +3891,7 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 					idx := &StringLit{Value: field}
 					out = append(out, &IndexAssignStmt{Target: target, Index: idx, Value: val})
 				} else {
-					if n, ok := target.(*Name); ok {
-						if currentImports != nil {
-							currentImports["dataclasses"] = true
-						}
-						repl := &CallExpr{Func: &FieldExpr{Target: &Name{Name: "dataclasses"}, Name: "replace"}, Args: []Expr{&Name{Name: n.Name}, &KeywordArg{Name: field, Value: val}}}
-						out = append(out, &AssignStmt{Name: n.Name, Expr: repl})
-					} else {
-						out = append(out, &FieldAssignStmt{Target: target, Field: field, Value: val})
-					}
+					out = append(out, &FieldAssignStmt{Target: target, Field: field, Value: val})
 				}
 			} else {
 				return nil, fmt.Errorf("unsupported assignment")
