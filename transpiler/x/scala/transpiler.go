@@ -1060,13 +1060,20 @@ type IndexExpr struct {
 func (idx *IndexExpr) emit(w io.Writer) {
 	container := idx.Container
 	if container == "" {
-		if n, ok := idx.Value.(*Name); ok {
-			if t, ok2 := localVarTypes[n.Name]; ok2 {
+		switch v := idx.Value.(type) {
+		case *Name:
+			if t, ok2 := localVarTypes[v.Name]; ok2 {
 				container = t
 			} else {
 				container = "Any"
 			}
-		} else {
+		case *CastExpr:
+			if v.Type != "" {
+				container = v.Type
+			} else {
+				container = "Any"
+			}
+		default:
 			container = "Any"
 		}
 	}
@@ -2354,17 +2361,17 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					right = &CastExpr{Value: right, Type: "Int"}
 				} else if rt == "Int" && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "Int"}
-				} else if lt == "BigInt" && (rt == "Any" || rt == "") {
+				} else if (lt == "BigInt" || isBigIntExpr(left)) && (rt == "Any" || rt == "") {
 					right = &CastExpr{Value: right, Type: "BigInt"}
-				} else if rt == "BigInt" && (lt == "Any" || lt == "") {
+				} else if (rt == "BigInt" || isBigIntExpr(right)) && (lt == "Any" || lt == "") {
 					left = &CastExpr{Value: left, Type: "BigInt"}
-				} else if lt == "Int" && rt == "BigInt" {
+				} else if lt == "Int" && (rt == "BigInt" || isBigIntExpr(right)) {
 					left = &CastExpr{Value: left, Type: "BigInt"}
-				} else if rt == "Int" && lt == "BigInt" {
+				} else if rt == "Int" && (lt == "BigInt" || isBigIntExpr(left)) {
 					right = &CastExpr{Value: right, Type: "BigInt"}
-				} else if lt == "BigInt" && (rt == "Double" || rt == "Float") {
+				} else if (lt == "BigInt" || isBigIntExpr(left)) && (rt == "Double" || rt == "Float") {
 					left = &CastExpr{Value: left, Type: "Double"}
-				} else if rt == "BigInt" && (lt == "Double" || lt == "Float") {
+				} else if (rt == "BigInt" || isBigIntExpr(right)) && (lt == "Double" || lt == "Float") {
 					right = &CastExpr{Value: right, Type: "Double"}
 				} else if (lt == "Any" || lt == "") && (rt == "Any" || rt == "") {
 					left = &CastExpr{Value: left, Type: "String"}
@@ -3103,7 +3110,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				}
 			}
 			if tval == "Any" {
-				val = &CastExpr{Value: val, Type: "String"}
+				val = &CastExpr{Value: val, Type: "ArrayBuffer[Any]"}
 			}
 			return &LenExpr{Value: val}, nil
 		}

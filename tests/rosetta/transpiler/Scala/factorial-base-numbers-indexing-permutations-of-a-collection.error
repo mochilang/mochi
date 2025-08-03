@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/factorial-base-numbers-indexing-permutations-of-a-collection.scala:197: error: type mismatch;
- found   : scala.math.BigInt
- required: Int
-    println(joinInts((factNums.asInstanceOf[ArrayBuffer[Any]](i)).asInstanceOf[ArrayBuffer[BigInt]], ".") + " -> " + joinInts(perms((i).toInt), ""))
-                                                              ^
-one error found
