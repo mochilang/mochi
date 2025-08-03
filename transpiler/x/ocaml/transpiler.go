@@ -3144,19 +3144,29 @@ func (p *Program) Emit() []byte {
 	}
 
 	var body []Stmt
+	inBody := false
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
 		case *FunStmt:
 			funs = append(funs, st)
 		case *VarStmt:
-			flushFuns()
-			st.emitTop(&buf)
+			if inBody {
+				body = append(body, st)
+			} else {
+				flushFuns()
+				st.emitTop(&buf)
+			}
 		case *LetStmt:
-			flushFuns()
-			st.emitTop(&buf)
+			if inBody {
+				body = append(body, st)
+			} else {
+				flushFuns()
+				st.emitTop(&buf)
+			}
 		default:
 			flushFuns()
 			body = append(body, st)
+			inBody = true
 		}
 	}
 	flushFuns()
@@ -3785,18 +3795,27 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		usesMem = true
 		var defs []Stmt
 		var body []Stmt
+		inBody := false
 		for _, st := range pr.Stmts {
 			switch s := st.(type) {
-			case *FunStmt, *VarStmt:
+			case *FunStmt:
 				defs = append(defs, st)
+			case *VarStmt:
+				if inBody {
+					body = append(body, st)
+				} else {
+					defs = append(defs, st)
+				}
 			case *LetStmt:
-				if isConstExpr(s.Expr) {
+				if !inBody && isConstExpr(s.Expr) {
 					defs = append(defs, st)
 				} else {
 					body = append(body, st)
+					inBody = true
 				}
 			default:
 				body = append(body, st)
+				inBody = true
 			}
 		}
 		pr.Stmts = append(defs, &BenchStmt{Name: "main", Body: body})
