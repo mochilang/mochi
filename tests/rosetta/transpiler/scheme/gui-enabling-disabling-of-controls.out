@@ -1,0 +1,24 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+value=0 entry=1 inc=1 dec=0
+value=1 entry=0 inc=1 dec=1
+value=2 entry=0 inc=1 dec=1
+value=3 entry=0 inc=1 dec=1
+value=4 entry=0 inc=1 dec=1
+value=5 entry=0 inc=1 dec=1
+value=6 entry=0 inc=1 dec=1
+value=7 entry=0 inc=1 dec=1
+value=8 entry=0 inc=1 dec=1
+value=9 entry=0 inc=1 dec=1
+value=10 entry=0 inc=0 dec=1
+value=9 entry=0 inc=1 dec=1
+value=8 entry=0 inc=1 dec=1
+value=7 entry=0 inc=1 dec=1
+value=6 entry=0 inc=1 dec=1
+value=5 entry=0 inc=1 dec=1
+value=4 entry=0 inc=1 dec=1
+value=3 entry=0 inc=1 dec=1
+value=2 entry=0 inc=1 dec=1
+value=1 entry=0 inc=1 dec=1
+value=0 entry=1 inc=1 dec=0

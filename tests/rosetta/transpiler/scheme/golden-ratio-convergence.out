@@ -1,0 +1,6 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+Final value of phi : 1.6180327868852458
+Number of iterations : 14
+Error (approx) : -1.2018646491362972e-06

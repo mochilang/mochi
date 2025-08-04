@@ -34,6 +34,7 @@ var usesEnviron bool
 var usesJSON bool
 var usesBench bool
 var usesSubprocess bool
+var usesFetch bool
 var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
@@ -258,14 +259,17 @@ func header() []byte {
 	if usesEnviron {
 		prelude += "(define (_environ)\n  (map (lambda (p) (string-append (car p) \"=\" (cdr p)))\n       (get-environment-variables)))\n"
 	}
-	if usesSubprocess {
-		prelude += "(import (chibi process))\n"
-		prelude += "(define (subprocess.getoutput cmd) (process->string cmd))\n"
-	}
-	if usesJSON {
-		prelude += "(import (chibi json))\n"
-	}
-	prelude += `(define (to-str x)
+        if usesSubprocess {
+                prelude += "(import (chibi process))\n"
+                prelude += "(define (subprocess.getoutput cmd) (process->string cmd))\n"
+        }
+        if usesJSON {
+                prelude += "(import (chibi json))\n"
+        }
+        if usesFetch {
+                prelude += "(define (_fetch url) (let ((d (string->json (process->string (string-append \"curl -s \" url))))) (if (and (list? d) (pair? d) (pair? (car d))) (alist->hash-table (map (lambda (p) (cons (symbol->string (car p)) (cdr p))) d)) d)))\n"
+        }
+        prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((hash-table? x)
@@ -977,11 +981,12 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesGetEnv = false
 	usesEnviron = false
-	usesBench = false
-	usesSubprocess = false
-	unionConsts = map[string]int{}
-	unionConstOrder = nil
-	methodNames = map[string]struct{}{}
+        usesBench = false
+        usesSubprocess = false
+        usesFetch = false
+        unionConsts = map[string]int{}
+        unionConstOrder = nil
+        methodNames = map[string]struct{}{}
 	currentMethodFields = nil
 	externFuncs = map[string]struct{}{}
 	forms, err := convertStmts(prog.Statements)
@@ -1557,21 +1562,30 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		needHash = true
 		pairs := []Node{Symbol("_list")}
-		for _, f := range p.Struct.Fields {
-			v, err := convertParserExpr(f.Value)
-			if err != nil {
-				return nil, err
-			}
-			pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
-			pairs = append(pairs, pair)
-		}
-		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
-	case p.Query != nil:
-		if n, err := convertGroupByJoinQuery(p.Query); err == nil {
-			return n, nil
-		}
-		if n, err := convertGroupByQuery(p.Query); err == nil {
-			return n, nil
+                for _, f := range p.Struct.Fields {
+                        v, err := convertParserExpr(f.Value)
+                        if err != nil {
+                                return nil, err
+                        }
+                        pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
+                        pairs = append(pairs, pair)
+                }
+                return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+       case p.Fetch != nil:
+               url, err := convertParserExpr(p.Fetch.URL)
+               if err != nil {
+                       return nil, err
+               }
+               usesJSON = true
+               usesSubprocess = true
+               usesFetch = true
+               return &List{Elems: []Node{Symbol("_fetch"), url}}, nil
+       case p.Query != nil:
+                if n, err := convertGroupByJoinQuery(p.Query); err == nil {
+                        return n, nil
+                }
+                if n, err := convertGroupByQuery(p.Query); err == nil {
+                        return n, nil
 		}
 		if n, err := convertRightJoinQuery(p.Query); err == nil {
 			return n, nil

@@ -1,0 +1,23 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+Tokens remaining 12
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 8
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 4
+
+How many tokens 1, 2 or 3?
+  Computer takes 3 tokens
+
+
+Tokens remaining 0
+  Computer wins!

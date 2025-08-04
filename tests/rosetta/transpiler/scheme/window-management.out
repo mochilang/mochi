@@ -1,0 +1,11 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+Start: pos=(100,100) size=(640x480) max=0 icon=0 visible=1
+Maximize: pos=(100,100) size=(800x600) max=1 icon=0 visible=1
+Unmaximize: pos=(100,100) size=(640x480) max=0 icon=0 visible=1
+Iconify: pos=(100,100) size=(640x480) max=0 icon=1 visible=0
+Deiconify: pos=(100,100) size=(640x480) max=0 icon=0 visible=1
+Hide: pos=(100,100) size=(640x480) max=0 icon=0 visible=0
+Show: pos=(100,100) size=(640x480) max=0 icon=0 visible=1
+Move: pos=(110,110) size=(640x480) max=0 icon=0 visible=1
