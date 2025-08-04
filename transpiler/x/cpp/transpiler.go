@@ -3752,7 +3752,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 			}
+			if isIndexExpr(stmt.For.Source) {
+				fs.IsMap = false
+			}
 			gtyp := guessType(stmt.For.Source)
+			if isIndexExpr(stmt.For.Source) && strings.HasPrefix(gtyp, "std::map<") {
+				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
+				parts := strings.SplitN(inner, ",", 2)
+				if len(parts) == 2 {
+					gtyp = strings.TrimSpace(parts[1])
+				}
+			}
 			if vr, ok := start.(*VarRef); ok {
 				if lt, ok2 := localTypes[vr.Name]; ok2 {
 					gtyp = lt
@@ -3776,6 +3786,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			if isIndexExpr(stmt.For.Source) {
 				varType = elementTypeFromListType(varType)
+				fs.IsMap = false
 			}
 			if vr, ok := start.(*VarRef); ok {
 				if _, ok3 := localTypes[vr.Name]; !ok3 {
