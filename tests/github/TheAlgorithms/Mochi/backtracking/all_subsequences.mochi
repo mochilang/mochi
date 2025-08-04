@@ -1,30 +1,28 @@
-fun createStateSpaceTreeInt(sequence: list<int>, current: list<int>, index: int): void {
+/*
+Generate all possible subsequences of a given sequence using backtracking.
+At each position, the algorithm explores two choices: exclude the current
+item or include it in the growing subsequence. This forms a binary
+state-space tree with 2^n leaves for a sequence of length n.
+Depth-first traversal of this tree prints every subsequence.
+Time complexity: O(2^n) and space complexity: O(n) for recursion stack.
+*/
+
+fun create_state_space_tree(sequence: list<any>, current: list<any>, index: int): void {
   if index == len(sequence) {
     print(current)
     return
   }
-  createStateSpaceTreeInt(sequence, current, index + 1)
-  let withElem = append(current, sequence[index])
-  createStateSpaceTreeInt(sequence, withElem, index + 1)
+  create_state_space_tree(sequence, current, index + 1)
+  let with_elem = append(current, sequence[index])
+  create_state_space_tree(sequence, with_elem, index + 1)
 }
 
-fun generateAllSubsequencesInt(sequence: list<int>): void {
-  createStateSpaceTreeInt(sequence, [], 0)
+fun generate_all_subsequences(sequence: list<any>): void {
+  create_state_space_tree(sequence, [] as list<any>, 0)
 }
 
-fun createStateSpaceTreeString(sequence: list<string>, current: list<string>, index: int): void {
-  if index == len(sequence) {
-    print(current)
-    return
-  }
-  createStateSpaceTreeString(sequence, current, index + 1)
-  let withElem = append(current, sequence[index])
-  createStateSpaceTreeString(sequence, withElem, index + 1)
-}
+let seq: list<any> = [1, 2, 3]
+generate_all_subsequences(seq)
 
-fun generateAllSubsequencesString(sequence: list<string>): void {
-  createStateSpaceTreeString(sequence, [], 0)
-}
-
-generateAllSubsequencesInt([1, 2, 3])
-generateAllSubsequencesString(["A", "B", "C"])
+let seq2: list<any> = ["A", "B", "C"]
+generate_all_subsequences(seq2)
