@@ -1,0 +1,723 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M /workspace/mochi/tests/rosetta/transpiler/Clojure/calendar.clj
+                                [SNOOPY]
+
+                                  1969
+
+       January             false
+       February            false
+        March              false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
+
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 30 false
+ 31 false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+        April              false
+         May               false
+         June              false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+      false
+    false
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+      false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+      false
+
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+      false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+      false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+      false
+
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+      false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+      false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+      false
+
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+      false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+      false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+      false
+
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+    false
+    false
+    false
+      false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+      false
+ 29 false
+ 30 false
+    false
+    false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+         July              false
+        August             false
+      September            false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+      false
+    false
+    false
+    false
+    false
+    false
+  1 false
+  2 false
+      false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+      false
+
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+      false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+      false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+      false
+
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+      false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+      false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+      false
+
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+      false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+      false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+      false
+
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+    false
+      false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+      false
+ 28 false
+ 29 false
+ 30 false
+    false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 31 false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+
+
+       October             false
+       November            false
+       December            false
+
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+ Su false
+ Mo false
+ Tu false
+ We false
+ Th false
+ Fr false
+ Sa false
+      false
+
+    false
+    false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+  1 false
+      false
+    false
+  1 false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+      false
+
+  5 false
+  6 false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+      false
+  2 false
+  3 false
+  4 false
+  5 false
+  6 false
+  7 false
+  8 false
+      false
+  7 false
+  8 false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+      false
+
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+      false
+  9 false
+ 10 false
+ 11 false
+ 12 false
+ 13 false
+ 14 false
+ 15 false
+      false
+ 14 false
+ 15 false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+      false
+
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+      false
+ 16 false
+ 17 false
+ 18 false
+ 19 false
+ 20 false
+ 21 false
+ 22 false
+      false
+ 21 false
+ 22 false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+      false
+
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+      false
+ 23 false
+ 24 false
+ 25 false
+ 26 false
+ 27 false
+ 28 false
+ 29 false
+      false
+ 28 false
+ 29 false
+ 30 false
+ 31 false
+    false
+    false
+    false
+      false
+
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+ 30 false
+    false
+    false
+    false
+    false
+    false
+    false
+      false
+    false
+    false
+    false
+    false
+    false
+    false
+    false
+      false

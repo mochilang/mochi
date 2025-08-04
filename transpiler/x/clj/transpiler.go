@@ -2786,11 +2786,11 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 		}
 	}
 	switch *t.Simple {
-	case "int":
-		if isStringNode(n) {
-			return &List{Elems: []Node{Symbol("Integer/parseInt"), n}}, nil
-		}
-		return &List{Elems: []Node{Symbol("int"), n}}, nil
+       case "int":
+               if isStringNode(n) {
+                       return &List{Elems: []Node{Symbol("Long/parseLong"), n}}, nil
+               }
+               return &List{Elems: []Node{Symbol("long"), n}}, nil
 	case "float":
 		if isStringNode(n) {
 			return &List{Elems: []Node{Symbol("Double/parseDouble"), n}}, nil
