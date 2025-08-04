@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 09:36 +0700
+Last updated: 2025-08-04 10:22 +0700
 
-Completed tasks: **311/491**
+Completed tasks: **321/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -254,18 +254,18 @@ Completed tasks: **311/491**
 | 243 | count-in-octal-3 | ✓ | 11.31ms | 121.6 KB |
 | 244 | count-in-octal-4 | ✓ | 10.10ms | 121.6 KB |
 | 245 | count-occurrences-of-a-substring | ✓ | 8.15ms | 130.3 KB |
-| 246 | count-the-coins-1 |  |  |  |
+| 246 | count-the-coins-1 | ✓ | 18.74ms | 132.8 KB |
 | 247 | count-the-coins-2 | ✓ | 38.64ms | 92.5 KB |
 | 248 | cramers-rule | ✓ | 10.09ms | 130.8 KB |
-| 249 | crc-32-1 |  |  |  |
-| 250 | crc-32-2 |  |  |  |
-| 251 | create-a-file-on-magnetic-tape |  |  |  |
-| 252 | create-a-file |  |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |  |  |  |
-| 254 | create-an-html-table |  |  |  |
-| 255 | create-an-object-at-a-given-address |  |  |  |
-| 256 | csv-data-manipulation |  |  |  |
-| 257 | csv-to-html-translation-1 |  |  |  |
+| 249 | crc-32-1 | ✓ | 13.12ms | 138.4 KB |
+| 250 | crc-32-2 | ✓ | 14.07ms | 138.3 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 13.23ms | 137.2 KB |
+| 252 | create-a-file | ✓ | 9.78ms | 140.1 KB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 16.13ms | 134.5 KB |
+| 254 | create-an-html-table | ✓ | 17.48ms | 132.5 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 18.33ms | 133.7 KB |
+| 256 | csv-data-manipulation | ✓ | 7.11ms | 142.9 KB |
+| 257 | csv-to-html-translation-1 | ✓ | 23.20ms | 127.3 KB |
 | 258 | csv-to-html-translation-2 |  |  |  |
 | 259 | csv-to-html-translation-3 |  |  |  |
 | 260 | csv-to-html-translation-4 |  |  |  |

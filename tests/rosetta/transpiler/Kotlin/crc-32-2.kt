@@ -126,7 +126,7 @@ fun crc32(s: String): Int {
 fun user_main(): Unit {
     var s: String = "The quick brown fox jumps over the lazy dog"
     var result: Int = crc32(s)
-    var hex: String = toHex(result)
+    var hex: String = toHex(result).toLowerCase()
     println(hex)
 }
 
