@@ -665,7 +665,6 @@ var stringListVars map[string]bool
 var renameVars map[string]string
 var currentFun string
 var declVars map[string]bool
-var globalVarInits map[string]Node
 var localVars map[string]bool
 var currentStruct *types.StructType
 var currentSelf string
@@ -703,7 +702,6 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	stringVars = nil
 	renameVars = nil
 	declVars = make(map[string]bool)
-	globalVarInits = make(map[string]Node)
 	currentStruct = nil
 	currentSelf = ""
 	outerVarStack = nil
@@ -718,7 +716,6 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		stringVars = nil
 		renameVars = nil
 		declVars = nil
-		globalVarInits = nil
 		currentStruct = nil
 		currentSelf = ""
 		outerVarStack = nil
@@ -893,13 +890,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		sort.Strings(names)
 		defs := []Node{}
 		for _, n := range names {
-			init := Node(Symbol("nil"))
-			if globalVarInits != nil {
-				if v, ok := globalVarInits[n]; ok {
-					init = v
-				}
-			}
-			defs = append(defs, &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(n), init}})
+			defs = append(defs, &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(n), Symbol("nil")}})
 		}
 		if varDeclIndex <= len(pr.Forms) {
 			pr.Forms = append(pr.Forms[:varDeclIndex], append(defs, pr.Forms[varDeclIndex:]...)...)
@@ -961,6 +952,9 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			stringListVars[name] = true
 		}
 		if funDepth > 0 {
+			if funDepth == 1 && currentFun == "main" {
+				return &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(name), v}}, nil
+			}
 			if declVars != nil {
 				declVars[name] = true
 			}
@@ -1013,13 +1007,7 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			return &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}, nil
 		}
 		if funDepth == 1 && currentFun == "main" {
-			if declVars != nil {
-				declVars[name] = true
-			}
-			if globalVarInits != nil {
-				globalVarInits[name] = v
-			}
-			return nil, nil
+			return &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(name), v}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
