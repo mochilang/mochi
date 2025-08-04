@@ -1203,48 +1203,60 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" || c.Type == "Int" {
-		if (c.Type == "int" || c.Type == "Int") && inferType(c.Value) == "Double" {
+	if c.Type == "bigint" || c.Type == "BigInt" {
+		needsBigInt = true
+		if il, ok := c.Value.(*IntLit); ok {
+			if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
+				fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
+			} else {
+				fmt.Fprintf(w, "BigInt(%d)", il.Value)
+			}
+		} else if isBigIntExpr(c.Value) {
+			c.Value.emit(w)
+		} else {
+			typ := inferType(c.Value)
+			fmt.Fprint(w, "BigInt(")
+			switch c.Value.(type) {
+			case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+				c.Value.emit(w)
+			default:
+				fmt.Fprint(w, "(")
+				c.Value.emit(w)
+				fmt.Fprint(w, ")")
+			}
+			if typ == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else if typ == "Any" || typ == "" {
+				fmt.Fprint(w, ".toString.toDouble.toInt")
+			} else {
+				fmt.Fprint(w, ".toInt")
+			}
+			fmt.Fprint(w, ")")
+		}
+		return
+	} else if c.Type == "int" || c.Type == "Int" {
+		if inferType(c.Value) == "Double" {
 			fmt.Fprint(w, "(")
 			c.Value.emit(w)
 			fmt.Fprint(w, ").toInt")
 		} else {
-			needsBigInt = true
-			if il, ok := c.Value.(*IntLit); ok {
-				if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
-					fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
-				} else {
-					fmt.Fprintf(w, "BigInt(%d)", il.Value)
-				}
-			} else if isBigIntExpr(c.Value) {
+			switch c.Value.(type) {
+			case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
 				c.Value.emit(w)
-			} else {
-				typ := inferType(c.Value)
-				fmt.Fprint(w, "BigInt(")
-				switch c.Value.(type) {
-				case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
-					c.Value.emit(w)
-				default:
-					fmt.Fprint(w, "(")
-					c.Value.emit(w)
-					fmt.Fprint(w, ")")
-				}
-				if typ == "String" {
-					fmt.Fprint(w, ".charAt(0).toInt")
-				} else if typ == "Any" || typ == "" {
-					// Fallback for unknown types: convert to string, then to Double before Int.
-					// This avoids runtime errors when the value is a floating point like "2.0".
-					fmt.Fprint(w, ".toString.toDouble.toInt")
-				} else {
-					fmt.Fprint(w, ".toInt")
-				}
+			default:
+				fmt.Fprint(w, "(")
+				c.Value.emit(w)
 				fmt.Fprint(w, ")")
 			}
+			typ := inferType(c.Value)
+			if typ == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else if typ == "Any" || typ == "" {
+				fmt.Fprint(w, ".toString.toDouble.toInt")
+			} else if typ != "Int" {
+				fmt.Fprint(w, ".toInt")
+			}
 		}
-		return
-	} else if c.Type == "Int" {
-		c.Value.emit(w)
-		fmt.Fprint(w, ".toInt")
 		return
 	}
 	switch c.Value.(type) {

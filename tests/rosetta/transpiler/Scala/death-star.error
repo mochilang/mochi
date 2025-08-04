@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/death-star.scala:147: error: type mismatch;
- found   : scala.math.BigInt
- required: Int
-            intensity = (shades).size - BigInt(1)
-                                      ^
-one error found
