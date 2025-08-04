@@ -1,0 +1,13 @@
+For primes < 1 million:
+
+Longest run(s) of primes with ascending differences is 1 :
+2 (140730755598366)  0
+140730755598368
+2 (140730755598366)  0
+140730755598368
+
+Longest run(s) of primes with descending differences is 1 :
+2 (140730755598382)  0
+140730755598384
+2 (140730755598382)  0
+140730755598384
