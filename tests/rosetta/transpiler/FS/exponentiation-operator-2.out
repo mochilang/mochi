@@ -1,0 +1,21 @@
+expI tests
+2^10: 1024
+2^-10: negative power not allowed
+-2^10: 1024
+-2^11: -2048
+11^0: 1
+overflow undetected
+10^10: 1410065408
+
+expF tests:
+2^10: 1024
+2^-10: 0.0009765625
+-2^10: 1024
+-2^11: -2048
+11^0: 1
+disallowed in expI, allowed here
+0^-1: +Inf
+other interesting cases for 32 bit float type
+10^39: 1E+39
+10^-39: 1E-39
+-10^39: -1E+39

@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (374/491)
+## Rosetta Golden Test Checklist (385/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -381,17 +381,17 @@ This file is auto-generated from rosetta tests.
 | 374 | execute-a-markov-algorithm | ✓ | 361µs | 36.1 KB |
 | 375 | execute-a-system-command | ✓ | 398µs | 51.1 KB |
 | 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
+| 377 | execute-computer-zero-1 | ✓ | 329µs | 70.0 KB |
+| 378 | execute-computer-zero | ✓ | 273µs | 44.8 KB |
+| 379 | execute-hq9+ | ✓ | 344µs | 43.3 KB |
+| 380 | execute-snusp | ✓ | 237µs | 41.6 KB |
+| 381 | exponentiation-operator-2 | ✓ | 271µs | 59.5 KB |
+| 382 | exponentiation-operator | ✓ | 277µs | 43.1 KB |
+| 383 | exponentiation-order | ✓ | 240µs | 46.1 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 244µs | 57.5 KB |
+| 385 | extend-your-language | ✓ | 245µs | 42.1 KB |
+| 386 | extensible-prime-generator | ✓ | 7.717ms | 88.5 KB |
+| 387 | extreme-floating-point-values | ✓ | 314µs | 48.1 KB |
 | 388 | faces-from-a-mesh-2 |   |  |  |
 | 389 | faces-from-a-mesh |   |  |  |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 17:04 +0700
+Last updated: 2025-08-04 20:03 +0700
