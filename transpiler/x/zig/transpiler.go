@@ -61,6 +61,7 @@ var localMutablesStack []map[string]bool
 var globalNames map[string]bool
 var variantTags map[string]int
 var globalInits []Stmt
+var currentReturnType string
 var zigKeywords = map[string]bool{
 	"fn":       true,
 	"const":    true,
@@ -126,9 +127,8 @@ func toSnakeCase(s string) string {
 }
 
 func zigIdent(s string) string {
-	s = toSnakeCase(s)
-	var buf strings.Builder
-	for i, r := range s {
+        var buf strings.Builder
+        for i, r := range s {
 		if unicode.IsLetter(r) || r == '_' || (unicode.IsDigit(r) && i > 0) {
 			buf.WriteRune(r)
 		} else if unicode.IsDigit(r) && i == 0 {
@@ -153,33 +153,41 @@ func isIntType(t string) bool {
 }
 
 func valueTag(t string) string {
-	switch t {
-	case "i64":
-		return "Int"
-	case "f64":
-		return "Float"
-	case "[]const u8":
-		return "Str"
-	case "bool":
-		return "Bool"
-	default:
-		return "Int"
-	}
+        switch t {
+        case "i64":
+                return "Int"
+        case "f64":
+                return "Float"
+        case "[]const u8":
+                return "Str"
+        case "bool":
+                return "Bool"
+       case "[][]i64":
+               return "List"
+       case "[][]const u8":
+               return "StrList"
+        default:
+                return "Int"
+        }
 }
 
 func valueAccess(t string) string {
-	switch t {
-	case "i64":
-		return ".Int"
-	case "f64":
-		return ".Float"
-	case "[]const u8":
-		return ".Str"
-	case "bool":
-		return ".Bool"
-	default:
-		return ""
-	}
+        switch t {
+        case "i64":
+                return ".Int"
+        case "f64":
+                return ".Float"
+        case "[]const u8":
+                return ".Str"
+        case "bool":
+                return ".Bool"
+       case "[][]i64":
+               return ".List"
+       case "[][]const u8":
+               return ".StrList"
+        default:
+                return ""
+        }
 }
 
 // Program represents a Zig source file with one or more functions.
@@ -789,8 +797,8 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]const u8"
 	case *BoolLit:
 		return "bool"
-	case *NullLit:
-		return "f64"
+       case *NullLit:
+               return "Value"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -800,11 +808,20 @@ func zigTypeFromExpr(e Expr) string {
 			return t
 		}
 		return "i64"
-	case *MapLit:
-		if m := e.(*MapLit); m.StructName != "" {
-			return m.StructName
-		}
-		return "std.StringHashMap(i64)"
+       case *MapLit:
+               if m := e.(*MapLit); m.StructName != "" {
+                       return m.StructName
+               }
+               m := e.(*MapLit)
+               val := m.ValType
+               if val == "" {
+                       val = "i64"
+               }
+               key := m.KeyType
+               if key == "" || key == "[]const u8" {
+                       return fmt.Sprintf("std.StringHashMap(%s)", val)
+               }
+               return fmt.Sprintf("std.AutoHashMap(%s, %s)", key, val)
 	case *ListLit:
 		if l := e.(*ListLit); l.ElemType != "" {
 			return "[]" + l.ElemType
@@ -1015,7 +1032,7 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
-	fmt.Fprintf(w, "blk: { const m = %s.init(std.heap.page_allocator);", mapType)
+       fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -1254,9 +1271,9 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
-	if useValue {
-		buf.WriteString("const Value = union(enum) { Int: i64, Float: f64, Str: []const u8, Bool: bool, };\n")
-	}
+       if useValue {
+               buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: [][]i64, StrList: [][]const u8, };\n")
+       }
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
 	for _, st := range p.Structs {
@@ -1417,13 +1434,15 @@ func (f *Func) emit(w io.Writer) {
 	if ret == "" {
 		ret = "void"
 	}
-	fmt.Fprintf(w, ") %s {\n", ret)
-	aliasStack = append(aliasStack, f.Aliases)
-	for _, st := range f.Body {
-		st.emit(w, 1)
-	}
-	aliasStack = aliasStack[:len(aliasStack)-1]
-	fmt.Fprintln(w, "}")
+       fmt.Fprintf(w, ") %s {\n", ret)
+       currentReturnType = ret
+       aliasStack = append(aliasStack, f.Aliases)
+       for _, st := range f.Body {
+               st.emit(w, 1)
+       }
+       aliasStack = aliasStack[:len(aliasStack)-1]
+       currentReturnType = ""
+       fmt.Fprintln(w, "}")
 }
 
 func writeIndent(w io.Writer, n int) {
@@ -1716,10 +1735,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
-	lt := zigTypeFromExpr(b.Left)
-	rt := zigTypeFromExpr(b.Right)
-	if lt == "[]const u8" && rt == "[]const u8" {
-		switch b.Op {
+       lt := zigTypeFromExpr(b.Left)
+       rt := zigTypeFromExpr(b.Right)
+       if (b.Op == "==" || b.Op == "!=") && lt == "Value" && rt == "Value" {
+               if _, ok := b.Right.(*NullLit); ok {
+                       b.Left.emit(w)
+                       fmt.Fprintf(w, " %s .Null", b.Op)
+                       return
+               }
+               if _, ok := b.Left.(*NullLit); ok {
+                       b.Right.emit(w)
+                       fmt.Fprintf(w, " %s .Null", b.Op)
+                       return
+               }
+       }
+       if lt == "[]const u8" && rt == "[]const u8" {
+               switch b.Op {
 		case "==", "!=":
 			if b.Op == "==" {
 				io.WriteString(w, "std.mem.eql(u8, ")
@@ -1972,12 +2003,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
-	if sli.Start != nil {
-		io.WriteString(w, "@intCast(")
-		sli.Start.emit(w)
-		io.WriteString(w, ")")
-	}
-	io.WriteString(w, "..")
+       if sli.Start != nil {
+               io.WriteString(w, "@intCast(")
+               sli.Start.emit(w)
+               io.WriteString(w, ")")
+       } else {
+               io.WriteString(w, "0")
+       }
+       io.WriteString(w, "..")
 	if sli.End != nil {
 		io.WriteString(w, "@intCast(")
 		sli.End.emit(w)
@@ -2040,7 +2073,11 @@ func (b *BoolLit) emit(w io.Writer) {
 }
 
 func (n *NullLit) emit(w io.Writer) {
-	io.WriteString(w, "0")
+       if useValue {
+               io.WriteString(w, "Value{.Null = {}}");
+       } else {
+               io.WriteString(w, "0")
+       }
 }
 
 func (i *IfStmt) emit(w io.Writer, indent int) {
@@ -2146,13 +2183,16 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
-	writeIndent(w, indent)
-	io.WriteString(w, "return")
-	if r.Value != nil {
-		io.WriteString(w, " ")
-		r.Value.emit(w)
-	}
-	io.WriteString(w, ";\n")
+        writeIndent(w, indent)
+        io.WriteString(w, "return")
+        if r.Value != nil {
+               io.WriteString(w, " ")
+               if list, ok := r.Value.(*ListLit); ok && list.ElemType == "" && strings.HasPrefix(currentReturnType, "[]") {
+                       list.ElemType = currentReturnType[2:]
+               }
+               r.Value.emit(w)
+        }
+        io.WriteString(w, ";\n")
 }
 
 func (b *BenchStmt) emit(w io.Writer, indent int) {
@@ -2357,14 +2397,17 @@ func (c *CallExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-			if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
-				exp := params[i]
-				at := zigTypeFromExpr(a)
-				if v, ok := a.(*VarRef); ok {
-					if vd, ok2 := varDecls[v.Name]; ok2 && strings.HasPrefix(vd.Type, "[") {
-						at = vd.Type
-					}
-				}
+                       if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
+                               exp := params[i]
+                               if lit, ok := a.(*ListLit); ok && lit.ElemType == "" && exp == "Value" {
+                                       lit.ElemType = "[]i64"
+                               }
+                               at := zigTypeFromExpr(a)
+                               if v, ok := a.(*VarRef); ok {
+                                       if vd, ok2 := varDecls[v.Name]; ok2 && strings.HasPrefix(vd.Type, "[") {
+                                               at = vd.Type
+                                       }
+                               }
 				if exp != at {
 					switch {
 					case at == "Value":

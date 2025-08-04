@@ -1,2 +1,0 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencase-sensitivity-of-identifiers265861479/001/prog.zig:17:156: error: expected ',' after initializer
