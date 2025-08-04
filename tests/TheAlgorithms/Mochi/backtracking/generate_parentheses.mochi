@@ -1,0 +1,30 @@
+// Generate all combinations of well-formed parentheses for n pairs.
+
+fun backtrack(partial: string, open_count: int, close_count: int, n: int): list<string> {
+  if len(partial) == 2 * n {
+    return [partial]
+  }
+
+  var res: list<string> = []
+  if open_count < n {
+    for p in backtrack(partial + "(", open_count + 1, close_count, n) {
+      res = append(res, p)
+    }
+  }
+  if close_count < open_count {
+    for p in backtrack(partial + ")", open_count, close_count + 1, n) {
+      res = append(res, p)
+    }
+  }
+  return res
+}
+
+fun generate_parentheses(n: int): list<string> {
+  return backtrack("", 0, 0, n)
+}
+
+print(generate_parentheses(3))
+
+test "example n=2" {
+  expect generate_parentheses(2) == ["(())", "()()"]
+}
