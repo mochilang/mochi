@@ -181,6 +181,14 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 			}
 		}
 		return &Node{Kind: "type", Text: "any"}, nil
+	case "cast":
+		if len(n.Children) < 2 || n.Children[1].Kind != "type" {
+			return nil, errCastMissingType(n)
+		}
+		if _, err := inferType(n.Children[0], env); err != nil {
+			return nil, err
+		}
+		return cloneNode(n.Children[1]), nil
 	case "group":
 		if len(n.Children) != 1 {
 			return nil, errGroupOneChild(n)
