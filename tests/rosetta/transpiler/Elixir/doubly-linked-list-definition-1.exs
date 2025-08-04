@@ -116,77 +116,10 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def node_(value, next, prev) do
-    try do
-      throw {:return, %{"value" => value, "next" => next, "prev" => prev}}
-    catch
-      {:return, val} -> val
-    end
-  end
   def main() do
-    try do
-      a = node_("A", nil, nil)
-      b = node_("B", nil, a)
-      a = Map.put(a, "next", b)
-      c = node_("C", nil, b)
-      b = Map.put(b, "next", c)
-      p = a
-      line = ""
-      while_fun = fn while_fun, line, p ->
-        if p != nil do
-          line = (line <> (p["value"]))
-          p = p["next"]
-          {line} = if p != nil do
-            line = (line <> " ")
-            {line}
-          else
-            {line}
-          end
-          while_fun.(while_fun, line, p)
-        else
-          {line, p}
-        end
-      end
-      {line, p} = try do
-          while_fun.(while_fun, line, p)
-        catch
-          {:break, {line, p}} -> {line, p}
-        end
-
-      IO.puts(line)
-      p = c
-      line = ""
-      while_fun_2 = fn while_fun_2, line, p ->
-        if p != nil do
-          line = (line <> (p["value"]))
-          p = p["prev"]
-          {line} = if p != nil do
-            line = (line <> " ")
-            {line}
-          else
-            {line}
-          end
-          while_fun_2.(while_fun_2, line, p)
-        else
-          {line, p}
-        end
-      end
-      {line, p} = try do
-          while_fun_2.(while_fun_2, line, p)
-        catch
-          {:break, {line, p}} -> {line, p}
-        end
-
-      IO.puts(line)
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -194,4 +127,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

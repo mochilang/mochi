@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (253/491)
-_Last updated: 2025-08-04 15:00 +0700_
+## Rosetta Test Checklist (256/491)
+_Last updated: 2025-08-04 15:16 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -320,13 +320,13 @@ _Last updated: 2025-08-04 15:00 +0700_
 | 312 | documentation | ✓ | 1us | 0 B |
 | 313 | doomsday-rule |  |  |  |
 | 314 | dot-product | ✓ | 114us | 0 B |
-| 315 | doubly-linked-list-definition-1 |  |  |  |
+| 315 | doubly-linked-list-definition-1 | ✓ | 1us | 0 B |
 | 316 | doubly-linked-list-definition-2 |  |  |  |
-| 317 | doubly-linked-list-element-definition |  |  |  |
+| 317 | doubly-linked-list-element-definition | ✓ | 138us | 0 B |
 | 318 | doubly-linked-list-traversal |  |  |  |
 | 319 | dragon-curve |  |  |  |
 | 320 | draw-a-clock |  |  |  |
-| 321 | draw-a-cuboid |  |  |  |
+| 321 | draw-a-cuboid | ✓ | 1.72ms | 12.5 KB |
 | 322 | draw-a-pixel-1 |  |  |  |
 | 323 | draw-a-rotating-cube |  |  |  |
 | 324 | draw-a-sphere |  |  |  |
