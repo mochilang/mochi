@@ -930,11 +930,15 @@ type IntLit struct {
 }
 
 func (i *IntLit) emit(w io.Writer) {
-	needsBigInt = true
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
+	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 || i.Long {
+		needsBigInt = true
+		if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+			fmt.Fprintf(w, "BigInt(\"%d\")", i.Value)
+		} else {
+			fmt.Fprintf(w, "BigInt(%d)", i.Value)
+		}
 	} else {
-		fmt.Fprintf(w, "BigInt(%d)", i.Value)
+		fmt.Fprintf(w, "%d", i.Value)
 	}
 }
 
@@ -2142,6 +2146,12 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if typ != "" {
 			localVarTypes[st.Var.Name] = typ
+		}
+		if e != nil {
+			valType := inferTypeWithEnv(e, env)
+			if typ != "" && typ != "Any" && valType != "" && valType != typ {
+				e = &CastExpr{Value: e, Type: typ}
+			}
 		}
 		if ml, ok := e.(*MapLit); ok {
 			mt := make(map[string]string)
@@ -4860,7 +4870,7 @@ func usesAssignedVar(e Expr) bool {
 func isBigIntExpr(e Expr) bool {
 	switch v := e.(type) {
 	case *IntLit:
-		return true
+		return v.Value > math.MaxInt32 || v.Value < math.MinInt32 || v.Long
 	case *Name:
 		return localVarTypes[v.Name] == "BigInt"
 	case *IndexExpr:
