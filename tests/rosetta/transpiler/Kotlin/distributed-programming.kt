@@ -1,3 +1,5 @@
+fun panic(msg: String): Nothing { throw RuntimeException(msg) }
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -24,8 +26,8 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-val amount: Int = 300
-val result: Int = tax(amount)
+var amount: Int = 300
+var result: Int = tax(amount)
 fun tax(cents: Int): Int {
     if (cents < 0) {
         panic("Negative amounts not allowed")
