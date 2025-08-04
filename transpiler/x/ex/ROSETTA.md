@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (205/491)
-_Last updated: 2025-08-04 10:05 +0700_
+## Rosetta Test Checklist (219/491)
+_Last updated: 2025-08-04 10:22 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -255,21 +255,21 @@ _Last updated: 2025-08-04 10:05 +0700_
 | 247 | count-the-coins-2 | ✓ | 61.44ms | 130.8 KB |
 | 248 | cramers-rule | ✓ | 2.22ms | 25.0 KB |
 | 249 | crc-32-1 | ✓ | 407us | 45.2 KB |
-| 250 | crc-32-2 |  |  |  |
-| 251 | create-a-file-on-magnetic-tape |  |  |  |
-| 252 | create-a-file |  |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |  |  |  |
-| 254 | create-an-html-table |  |  |  |
-| 255 | create-an-object-at-a-given-address |  |  |  |
+| 250 | crc-32-2 | ✓ | 11.02ms | 45.2 KB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 1.90ms | 0 B |
+| 252 | create-a-file | ✓ | 212us | 0 B |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 113us | 0 B |
+| 254 | create-an-html-table | ✓ | 3.34ms | 17.3 KB |
+| 255 | create-an-object-at-a-given-address | ✓ | 6.93ms | 17.3 KB |
 | 256 | csv-data-manipulation |  |  |  |
-| 257 | csv-to-html-translation-1 |  |  |  |
-| 258 | csv-to-html-translation-2 |  |  |  |
-| 259 | csv-to-html-translation-3 |  |  |  |
-| 260 | csv-to-html-translation-4 |  |  |  |
-| 261 | csv-to-html-translation-5 |  |  |  |
-| 262 | cuban-primes |  |  |  |
-| 263 | cullen-and-woodall-numbers |  |  |  |
-| 264 | cumulative-standard-deviation |  |  |  |
+| 257 | csv-to-html-translation-1 | ✓ | 128us | 0 B |
+| 258 | csv-to-html-translation-2 | ✓ | 180us | 0 B |
+| 259 | csv-to-html-translation-3 | ✓ | 390us | 0 B |
+| 260 | csv-to-html-translation-4 | ✓ | 174us | 0 B |
+| 261 | csv-to-html-translation-5 | ✓ | 6.70ms | 130.8 KB |
+| 262 | cuban-primes | ✓ | 2.98s | 65.4 KB |
+| 263 | cullen-and-woodall-numbers | ✓ | 5.10ms | 25.0 KB |
+| 264 | cumulative-standard-deviation | ✓ | 1.74ms | 12.6 KB |
 | 265 | currency |  |  |  |
 | 266 | currying |  |  |  |
 | 267 | curzon-numbers |  |  |  |
