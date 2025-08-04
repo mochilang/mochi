@@ -1413,6 +1413,19 @@ func isBoolExpr(e Expr) bool {
 	return typeOfExpr(e) == "bool"
 }
 
+func isUnit(t *parser.TypeRef) bool {
+	if t == nil {
+		return true
+	}
+	if t.Simple != nil && *t.Simple == "unit" {
+		return true
+	}
+	if t.Simple == nil && t.Generic == nil && t.Fun == nil {
+		return true
+	}
+	return false
+}
+
 func csType(t *parser.TypeRef) string {
 	if t == nil {
 		return "object"
@@ -1447,7 +1460,7 @@ func csType(t *parser.TypeRef) string {
 		switch t.Generic.Name {
 		case "list":
 			if len(t.Generic.Args) == 1 {
-				if a := t.Generic.Args[0]; a.Fun != nil && a.Fun.Return == nil {
+				if a := t.Generic.Args[0]; a.Fun != nil && isUnit(a.Fun.Return) {
 					return "Func<object>[]"
 				}
 				return fmt.Sprintf("%s[]", csType(t.Generic.Args[0]))
