@@ -1,0 +1,65 @@
+/*
+Graph coloring assigns colors to vertices of a graph so that no two
+adjacent vertices share the same color.  The graph is given as an
+adjacency matrix and we search for a valid assignment using
+backtracking.  For each vertex we try every color, recursively advance
+when the partial assignment satisfies adjacency constraints and
+backtrack when no color leads to a solution.
+
+This example demonstrates a 3‑coloring of a small graph and shows that
+only two colors are insufficient.
+*/
+
+fun valid_coloring(neighbours: list<int>, colored_vertices: list<int>, color: int): bool {
+  var i = 0
+  while i < len(neighbours) {
+    if neighbours[i] == 1 && colored_vertices[i] == color {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun util_color(graph: list<list<int>>, max_colors: int, colored_vertices: list<int>, index: int): bool {
+  if index == len(graph) {
+    return true
+  }
+  var c = 0
+  while c < max_colors {
+    if valid_coloring(graph[index], colored_vertices, c) {
+      colored_vertices[index] = c
+      if util_color(graph, max_colors, colored_vertices, index + 1) {
+        return true
+      }
+      colored_vertices[index] = -1
+    }
+    c = c + 1
+  }
+  return false
+}
+
+fun color(graph: list<list<int>>, max_colors: int): list<int> {
+  var colored_vertices: list<int> = []
+  var i = 0
+  while i < len(graph) {
+    colored_vertices = append(colored_vertices, -1)
+    i = i + 1
+  }
+  if util_color(graph, max_colors, colored_vertices, 0) {
+    return colored_vertices
+  }
+  return []
+}
+
+let graph = [
+  [0, 1, 0, 0, 0],
+  [1, 0, 1, 0, 1],
+  [0, 1, 0, 1, 0],
+  [0, 1, 1, 0, 0],
+  [0, 1, 0, 0, 0],
+]
+
+print(color(graph, 3))
+print("\n")
+print(len(color(graph, 2)))
