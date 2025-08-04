@@ -47,6 +47,7 @@ var needsSubprocess bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
+var fieldStructs map[string]string
 var varDecls map[string]*VarStmt
 var returnTypeStack []string
 var funCtxStack []bool
@@ -1329,6 +1330,21 @@ func (f *FieldExpr) emit(w io.Writer) {
 		fmt.Fprint(w, ".toInt")
 		return
 	}
+	if !isMap {
+		recType := ""
+		switch r := f.Receiver.(type) {
+		case *Name:
+			recType = localVarTypes[r.Name]
+		case *IndexExpr:
+			recType = r.Type
+		}
+		if recType == "" || recType == "Any" {
+			if st, ok := fieldStructs[f.Name]; ok && st != "" {
+				fmt.Fprintf(w, ".asInstanceOf[%s].%s", st, escapeName(f.Name))
+				return
+			}
+		}
+	}
 	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
 		fmt.Fprintf(w, "(\"%s\")", f.Name)
 	} else {
@@ -1893,6 +1909,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
+	fieldStructs = make(map[string]string)
 	varDecls = make(map[string]*VarStmt)
 	assignedVars = make(map[string]bool)
 	gatherAssigned(prog.Statements, assignedVars)
@@ -1971,6 +1988,15 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		sc.Stmts = append(pre, &BenchStmt{Name: "main", Body: body})
 	}
 	if len(typeDecls) > 0 {
+		for _, td := range typeDecls {
+			for _, f := range td.Fields {
+				if prev, ok := fieldStructs[f.Name]; ok && prev != td.Name {
+					fieldStructs[f.Name] = ""
+				} else if !ok {
+					fieldStructs[f.Name] = td.Name
+				}
+			}
+		}
 		stmts := make([]Stmt, 0, len(typeDecls)+len(sc.Stmts))
 		for _, d := range typeDecls {
 			stmts = append(stmts, d)
