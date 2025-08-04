@@ -1,0 +1,37 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:45:38: error: type mismatch: inferred type is Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ but (Any?) -> Any? was expected
+    return ({ f: Church -> ((compose(f, ((n((f as Any?))) as (Any?) -> Any?))) as Church) } as Church)
+                                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:45:46: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    return ({ f: Church -> ((compose(f, ((n((f as Any?))) as (Any?) -> Any?))) as Church) } as Church)
+                                             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:49:43: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    return ({ f: Church -> ((compose(((m((f as Any?))) as (Any?) -> Any?), ((n((f as Any?))) as (Any?) -> Any?))) as Church) } as Church)
+                                          ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:49:81: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    return ({ f: Church -> ((compose(((m((f as Any?))) as (Any?) -> Any?), ((n((f as Any?))) as (Any?) -> Any?))) as Church) } as Church)
+                                                                                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:53:22: error: type mismatch: inferred type is Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ but (Any?) -> Any? was expected
+    return ((compose(m, n)) as Church)
+                     ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:53:25: error: type mismatch: inferred type is Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ but (Any?) -> Any? was expected
+    return ((compose(m, n)) as Church)
+                        ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:57:17: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    return ((n((m as Any?))) as Church)
+                ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:67:8: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    x((::fCounter as Any?))(::id)
+       ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:78:8: error: type mismatch: inferred type is Any? but (Any?) -> Any? was expected
+    x((::fCounter as Any?))(::id)
+       ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:83:32: error: type mismatch: inferred type is (Any?) -> Any? but Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ was expected
+    println("zero = " + toInt(((zero()) as (Any?) -> Any?)).toString())
+                               ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:86:29: error: type mismatch: inferred type is (Any?) -> Any? but Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ was expected
+    var two: Church = succ(((succ(((zero()) as (Any?) -> Any?))) as (Any?) -> Any?))
+                            ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/church-numerals-2.kt:86:36: error: type mismatch: inferred type is (Any?) -> Any? but Church /* = ((Any?) -> Any?) -> (Any?) -> Any? */ was expected
+    var two: Church = succ(((succ(((zero()) as (Any?) -> Any?))) as (Any?) -> Any?))
+                                   ^

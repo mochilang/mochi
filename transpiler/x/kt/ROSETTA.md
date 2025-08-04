@@ -2,7 +2,7 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-03 23:38 +0700
+Last updated: 2025-08-04 00:33 +0700
 
 Completed tasks: **273/491**
 
@@ -209,7 +209,7 @@ Completed tasks: **273/491**
 | 198 | chinese-zodiac | ✓ | 7.59ms | 124.1 KB |
 | 199 | cholesky-decomposition-1 | ✓ | 21.51ms | 101.2 KB |
 | 200 | cholesky-decomposition | ✓ | 20.36ms | 113.2 KB |
-| 201 | chowla-numbers | ✓ | 6.77ms | 130.8 KB |
+| 201 | chowla-numbers | ✓ | 7.43ms | 130.8 KB |
 | 202 | church-numerals-1 | ✓ | 10.17ms | 130.3 KB |
 | 203 | church-numerals-2 |  |  |  |
 | 204 | circles-of-given-radius-through-two-points |  |  |  |
