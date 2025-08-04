@@ -138,6 +138,8 @@ func valueTag(t string) string {
 		return "Int"
 	case "[]const u8":
 		return "Str"
+	case "bool":
+		return "Bool"
 	default:
 		return "Int"
 	}
@@ -149,6 +151,8 @@ func valueAccess(t string) string {
 		return ".Int"
 	case "[]const u8":
 		return ".Str"
+	case "bool":
+		return ".Bool"
 	default:
 		return ""
 	}
@@ -824,20 +828,20 @@ func zigTypeFromExpr(e Expr) string {
 		}
 	case *CastExpr:
 		ce := e.(*CastExpr)
+		ct := ce.Type
+		if ct != "" {
+			switch ct {
+			case "int":
+				return "i64"
+			case "string":
+				return "[]const u8"
+			default:
+				return ct
+			}
+		}
 		vt := zigTypeFromExpr(ce.Value)
 		if vt == "Value" {
 			return "Value"
-		}
-		ct := ce.Type
-		switch ct {
-		case "int":
-			return "i64"
-		case "string":
-			return "[]const u8"
-		default:
-			if ct != "" {
-				return ct
-			}
 		}
 		return vt
 	case *IfExpr:
@@ -987,7 +991,15 @@ func (m *MapLit) emit(w io.Writer) {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
 		io.WriteString(w, ", ")
-		e.Value.emit(w)
+		if valType == "Value" && zigTypeFromExpr(e.Value) != "Value" {
+			io.WriteString(w, "Value{.")
+			io.WriteString(w, valueTag(zigTypeFromExpr(e.Value)))
+			io.WriteString(w, " = ")
+			e.Value.emit(w)
+			io.WriteString(w, "}")
+		} else {
+			e.Value.emit(w)
+		}
 		io.WriteString(w, ") catch unreachable;")
 	}
 	io.WriteString(w, " break :blk m; }")
@@ -1214,7 +1226,7 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
 	if useValue {
-		buf.WriteString("const Value = union(enum) { Int: i64, Str: []const u8, };\n")
+		buf.WriteString("const Value = union(enum) { Int: i64, Str: []const u8, Bool: bool, };\n")
 	}
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
@@ -1366,7 +1378,11 @@ func (f *Func) emit(w io.Writer) {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		fmt.Fprintf(w, "%s: %s", p.Name, p.Type)
+		name := p.Name
+		if varUses[p.Name] == 0 {
+			name = "_"
+		}
+		fmt.Fprintf(w, "%s: %s", name, p.Type)
 	}
 	ret := f.ReturnType
 	if ret == "" {
@@ -1972,6 +1988,9 @@ func (c *CastExpr) emit(w io.Writer) {
 		}
 	default:
 		c.Value.emit(w)
+		if zigTypeFromExpr(c.Value) == "Value" {
+			io.WriteString(w, valueAccess(c.Type))
+		}
 	}
 }
 
@@ -1999,6 +2018,9 @@ func (i *IfStmt) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, "if (")
 	i.Cond.emit(w)
+	if zigTypeFromExpr(i.Cond) == "Value" {
+		io.WriteString(w, ".Bool")
+	}
 	io.WriteString(w, ") {\n")
 	for _, st := range i.Then {
 		st.emit(w, indent+1)
@@ -2788,6 +2810,10 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				expr = &CallExpr{Func: name, Args: args}
 				continue
 			}
+			if fe, ok := expr.(*FieldExpr); ok {
+				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
+				continue
+			}
 			return nil, fmt.Errorf("unsupported call target")
 		}
 		if op.Field != nil {
@@ -3100,24 +3126,26 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			entries[i] = MapEntry{Key: k, Value: v}
 		}
 		ml := &MapLit{Entries: entries}
-		if fields, ok := mapFields(ml); ok && len(fields) > 0 {
-			simple := true
-			for _, e := range ml.Entries {
-				if k, ok2 := e.Key.(*StringLit); ok2 {
-					if len(k.Value) == 1 {
-						continue
+		if len(entries) > 0 {
+			ml.KeyType = zigTypeFromExpr(entries[0].Key)
+			valType := zigTypeFromExpr(entries[0].Value)
+			mixed := false
+			for _, e := range entries[1:] {
+				t := zigTypeFromExpr(e.Value)
+				if t != valType {
+					if (valType == "i64" && t == "f64") || (valType == "f64" && t == "i64") {
+						valType = "f64"
+					} else {
+						mixed = true
+						break
 					}
 				}
-				simple = false
-				break
 			}
-			if !simple {
-				structName := fmt.Sprintf("Map%d", len(structDefs))
-				if _, exists := structDefs[structName]; !exists {
-					structDefs[structName] = &StructDef{Name: structName, Fields: fields}
-				}
-				ml.StructName = structName
+			if mixed {
+				valType = "Value"
+				useValue = true
 			}
+			ml.ValType = valType
 		}
 		return ml, nil
 	case p.Struct != nil:
@@ -3925,6 +3953,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			varTypes[s.Let.Name] = typ
 		}
 		varTypes[alias] = typ
+		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+			mapVars[s.Let.Name] = true
+			mapVars[alias] = true
+		}
 		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			vd.Mutable = true
@@ -4025,6 +4057,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			varTypes[s.Var.Name] = typ
 		}
 		varTypes[alias] = typ
+		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
+			mapVars[s.Var.Name] = true
+			mapVars[alias] = true
+		}
 		if funDepth <= 1 && !isConstExpr(expr) {
 			vd.Value = nil
 			globalInits = append(globalInits, &AssignStmt{Name: alias, Value: expr})

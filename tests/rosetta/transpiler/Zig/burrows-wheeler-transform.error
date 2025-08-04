@@ -1,3 +1,0 @@
-zig build: exit status 1
-/tmp/burrows-wheeler-transform.zig:49:9: error: local variable is never mutated
-/tmp/burrows-wheeler-transform.zig:49:9: note: consider using 'const'

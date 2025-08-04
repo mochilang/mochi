@@ -1,5 +1,0 @@
-zig build: exit status 1
-/tmp/caesar-cipher-2.zig:30:19: error: expected 3 argument(s), found 2
-/tmp/zig-0.12.0/lib/std/mem.zig:3148:5: note: function declared here
-/tmp/caesar-cipher-2.zig:82:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/caesar-cipher-2.zig:82:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
