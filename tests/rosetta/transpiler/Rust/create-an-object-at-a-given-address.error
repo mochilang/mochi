@@ -1,0 +1,131 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:51:2
+   |
+51 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:60:2
+   |
+60 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:80:2
+   |
+80 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:42:11
+   |
+42 |     while (i < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     while (i < (xs.len() as i64)) {
+42 +     while i < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:44:12
+   |
+44 |         if (i < ((xs.len() as i64) - 1)) {
+   |            ^                           ^
+   |
+help: remove these parentheses
+   |
+44 -         if (i < ((xs.len() as i64) - 1)) {
+44 +         if i < ((xs.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:47:13
+   |
+47 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+47 -         i = (i + 1);
+47 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:73:11
+   |
+73 |     while (idx < (data.len() as i64)) {
+   |           ^                         ^
+   |
+help: remove these parentheses
+   |
+73 -     while (idx < (data.len() as i64)) {
+73 +     while idx < (data.len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:75:15
+   |
+75 |         idx = (idx + 1);
+   |               ^       ^
+   |
+help: remove these parentheses
+   |
+75 -         idx = (idx + 1);
+75 +         idx = idx + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:85:28
+   |
+85 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+85 -     let duration_us: i64 = ((_end - _start) / 1000);
+85 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:39:16
+   |
+39 |     fn listStr(mut xs: Vec<i64>) -> String {
+   |                ----^^
+   |                |
+   |                help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:71:9
+   |
+71 |     let mut data: Vec<i64> = vec![65, 32, 115, 116, 114, 105, 110, 103, 46];
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+error[E0382]: borrow of moved value: `a`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/create-an-object-at-a-given-address.rs:70:53
+   |
+63 |     let mut a: Vec<i64> = vec![];
+   |         ----- move occurs because `a` has type `Vec<i64>`, which does not implement the `Copy` trait
+...
+67 |     let mut s: Vec<i64> = a;
+   |                           - value moved here
+...
+70 |     println!("{}", format!("{}{}", "\ta: ", listStr(a.clone())));
+   |                                                     ^ value borrowed here after move
+   |
+help: consider cloning the value if the performance cost is acceptable
+   |
+67 |     let mut s: Vec<i64> = a.clone();
+   |                            ++++++++
+
+error: aborting due to 1 previous error; 11 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.

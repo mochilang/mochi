@@ -35,21 +35,46 @@ fn _mem() -> i64 {
     0
 }
 static mut g_rows: Vec<Vec<String>> = Vec::new();
+static mut g_headings: bool = false;
 fn main() {
     unsafe {
         g_rows = vec![];
+        g_headings = true;
                 let _start: i64 = _now();
         let mut c: String = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Character,Speech\n", "The multitude,The messiah! Show us the messiah!\n"), "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"), "The multitude,Who are you?\n"), "Brians mother,I'm his mother; that's who!\n"), "The multitude,Behold his mother! Behold his mother!").clone();
         for line in c.split("\n").map(|x| x.to_string()).collect::<Vec<String>>() {
             g_rows = { let mut _v = g_rows.clone().clone(); _v.push(line.split(",").map(|x| x.to_string()).collect::<Vec<String>>()); _v };
         }
         println!("{}", "<table>");
-        for row in g_rows.clone().iter() {
-            let mut cells: String = String::from("").clone();
-            for cell in row {
-                cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
+        if g_headings {
+            if ((g_rows.clone().len() as i64) > 0) {
+                let mut th: String = String::from("").clone();
+                for h in g_rows.clone()[0 as usize].clone().iter().cloned() {
+                    th = format!("{}{}", format!("{}{}", format!("{}{}", th, "<th>"), h), "</th>");
+                }
+                println!("{}", "   <thead>");
+                println!("{}", format!("{}{}", format!("{}{}", "      <tr>", th), "</tr>"));
+                println!("{}", "   </thead>");
+                println!("{}", "   <tbody>");
+                let mut i: i64 = 1;
+                while (i < (g_rows.clone().len() as i64)) {
+                    let mut cells: String = String::from("").clone();
+                    for cell in g_rows.clone()[i as usize].clone().iter().cloned() {
+                        cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
+                    }
+                    println!("{}", format!("{}{}", format!("{}{}", "      <tr>", cells), "</tr>"));
+                    i = (i + 1);
+                }
+                println!("{}", "   </tbody>");
             }
-            println!("{}", format!("{}{}", format!("{}{}", "    <tr>", cells), "</tr>"));
+        } else {
+            for row in g_rows.clone().iter() {
+                let mut cells: String = String::from("").clone();
+                for cell in row {
+                    cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
+                }
+                println!("{}", format!("{}{}", format!("{}{}", "    <tr>", cells), "</tr>"));
+            }
         }
         println!("{}", "</table>");
         let _end: i64 = _now();

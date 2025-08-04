@@ -34,24 +34,13 @@ fn _mem() -> i64 {
     }
     0
 }
-static mut g_rows: Vec<Vec<String>> = Vec::new();
+static mut g_src: String = String::new();
+static mut g_dst: String = String::new();
 fn main() {
     unsafe {
-        g_rows = vec![];
+        g_src = String::from("Hello").clone();
+        g_dst = g_src.clone();
                 let _start: i64 = _now();
-        let mut c: String = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Character,Speech\n", "The multitude,The messiah! Show us the messiah!\n"), "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"), "The multitude,Who are you?\n"), "Brians mother,I'm his mother; that's who!\n"), "The multitude,Behold his mother! Behold his mother!").clone();
-        for line in c.split("\n").map(|x| x.to_string()).collect::<Vec<String>>() {
-            g_rows = { let mut _v = g_rows.clone().clone(); _v.push(line.split(",").map(|x| x.to_string()).collect::<Vec<String>>()); _v };
-        }
-        println!("{}", "<table>");
-        for row in g_rows.clone().iter() {
-            let mut cells: String = String::from("").clone();
-            for cell in row {
-                cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
-            }
-            println!("{}", format!("{}{}", format!("{}{}", "    <tr>", cells), "</tr>"));
-        }
-        println!("{}", "</table>");
         let _end: i64 = _now();
         let duration_us: i64 = ((_end - _start) / 1000);
         let memory_bytes: i64 = _mem();

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 18:39 UTC
+Last updated: 2025-08-04 19:03 UTC
 
-## Rosetta Golden Test Checklist (285/491)
+## Rosetta Golden Test Checklist (312/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -236,36 +236,36 @@ Last updated: 2025-08-04 18:39 UTC
 | 227 | constrained-genericity-3 |   |  |  |
 | 228 | constrained-genericity-4 |   |  |  |
 | 229 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 231 | continued-fraction |   |  |  |
-| 232 | convert-decimal-number-to-rational |   |  |  |
-| 233 | convert-seconds-to-compound-duration |   |  |  |
-| 234 | convex-hull |   |  |  |
-| 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 |   |  |  |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 150.416ms | 2.5 MB |
+| 231 | continued-fraction | ✓ | 280µs | 2.1 MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 34µs | 2.0 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 34µs | 2.1 MB |
+| 234 | convex-hull | ✓ | 82µs | 2.0 MB |
+| 235 | conways-game-of-life | ✓ | 1.631183s | 2.4 MB |
+| 236 | copy-a-string-1 | ✓ |  | 1.9 MB |
 | 237 | copy-a-string-2 |   |  |  |
-| 238 | copy-stdin-to-stdout-1 |   |  |  |
-| 239 | copy-stdin-to-stdout-2 |   |  |  |
-| 240 | count-in-factors |   |  |  |
-| 241 | count-in-octal-1 |   |  |  |
-| 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 |   |  |  |
-| 244 | count-in-octal-4 |   |  |  |
-| 245 | count-occurrences-of-a-substring |   |  |  |
-| 246 | count-the-coins-1 |   |  |  |
-| 247 | count-the-coins-2 |   |  |  |
-| 248 | cramers-rule |   |  |  |
-| 249 | crc-32-1 |   |  |  |
-| 250 | crc-32-2 |   |  |  |
-| 251 | create-a-file-on-magnetic-tape |   |  |  |
-| 252 | create-a-file |   |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 254 | create-an-html-table |   |  |  |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 73µs | 2.1 MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 85µs | 2.0 MB |
+| 240 | count-in-factors | ✓ | 180µs | 2.0 MB |
+| 241 | count-in-octal-1 | ✓ | 126µs | 2.1 MB |
+| 242 | count-in-octal-2 | ✓ | 70.156ms | 1.8 MB |
+| 243 | count-in-octal-3 | ✓ | 108µs | 2.0 MB |
+| 244 | count-in-octal-4 | ✓ | 22µs | 2.1 MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 23µs | 2.0 MB |
+| 246 | count-the-coins-1 | ✓ | 36µs | 2.1 MB |
+| 247 | count-the-coins-2 | ✓ | 420µs | 2.1 MB |
+| 248 | cramers-rule | ✓ | 118µs | 2.0 MB |
+| 249 | crc-32-1 | ✓ | 347µs | 2.1 MB |
+| 250 | crc-32-2 | ✓ | 287µs | 2.1 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 19µs | 2.1 MB |
+| 252 | create-a-file | ✓ | 42µs | 2.1 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 53µs | 2.1 MB |
+| 254 | create-an-html-table | ✓ | 71µs | 2.0 MB |
 | 255 | create-an-object-at-a-given-address |   |  |  |
-| 256 | csv-data-manipulation |   |  |  |
-| 257 | csv-to-html-translation-1 | ✓ | 55µs |  |
-| 258 | csv-to-html-translation-2 |   |  |  |
-| 259 | csv-to-html-translation-3 |   |  |  |
+| 256 | csv-data-manipulation | ✓ | 73µs | 2.1 MB |
+| 257 | csv-to-html-translation-1 | ✓ | 54µs | 2.1 MB |
+| 258 | csv-to-html-translation-2 | ✓ | 85µs | 2.1 MB |
+| 259 | csv-to-html-translation-3 | ✓ | 20µs | 1.9 MB |
 | 260 | csv-to-html-translation-4 |   |  |  |
 | 261 | csv-to-html-translation-5 |   |  |  |
 | 262 | cuban-primes |   |  |  |

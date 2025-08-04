@@ -67,6 +67,7 @@ var useLazy bool
 var useRefCell bool
 var useFetch bool
 var currentStructFields map[string]bool
+var topLevelNonConstLet bool
 
 // lockedMap indicates a global HashMap currently locked for update.
 // When set, IndexExpr will reference the temporary `_map` variable instead of
@@ -403,7 +404,11 @@ func (p *PrintExpr) emit(w io.Writer) {
 
 type StringLit struct{ Value string }
 
-func (s *StringLit) emit(w io.Writer) { fmt.Fprintf(w, "%q", s.Value) }
+func (s *StringLit) emit(w io.Writer) {
+	q := strconv.Quote(s.Value)
+	q = strings.ReplaceAll(q, "\\f", "\\u{000c}")
+	io.WriteString(w, q)
+}
 
 type NumberLit struct{ Value string }
 
@@ -2639,6 +2644,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	globalVars = make(map[string]bool)
 	unsafeFuncs = make(map[string]bool)
 	funcDepth = 0
+	topLevelNonConstLet = false
 	typeDecls = nil
 	structForMap = make(map[*parser.MapLiteral]string)
 	structForList = make(map[*parser.ListLiteral]string)
@@ -2911,6 +2917,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			}
 		}
 		mut := true
+		if typ == "" {
+			typ = inferType(e)
+		}
 		vd := &VarDecl{Name: stmt.Let.Name, Expr: e, Type: typ, Mutable: mut}
 		global := funcDepth == 0 && len(localVarStack) == 0 && isConstExpr(e)
 		if global {
@@ -2920,11 +2929,15 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Let.Name
 			vd.Name = newName
 			globalVars[stmt.Let.Name] = true
+			varTypes[newName] = typ
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
 			}
 		} else {
+			if funcDepth == 0 && len(localVarStack) == 0 {
+				topLevelNonConstLet = true
+			}
 			if len(localVarStack) > 0 {
 				localVarStack[len(localVarStack)-1][stmt.Let.Name] = true
 			}
@@ -3050,6 +3063,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			}
 		}
+		if typ == "" {
+			typ = inferType(e)
+		}
 		vd := &VarDecl{Name: stmt.Var.Name, Expr: e, Type: typ, Mutable: true}
 		if funcDepth == 0 && len(localVarStack) == 0 {
 			vd.Global = true
@@ -3058,6 +3074,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			globalRenameBack[newName] = stmt.Var.Name
 			vd.Name = newName
 			globalVars[stmt.Var.Name] = true
+			varTypes[newName] = typ
 			if strings.HasPrefix(typ, "HashMap") {
 				useLazy = true
 				useRefCell = true
@@ -3636,7 +3653,7 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 }
 
 func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
-	nested := funcDepth > 0
+	nested := funcDepth > 0 || (funcDepth == 0 && topLevelNonConstLet)
 	funcDepth++
 	prevVarTypes := varTypes
 	prevMapVars := mapVars
@@ -3867,12 +3884,12 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 	mvCopy := copyBoolMap(mapVars)
 	if nested {
 		flit := &FunLit{Params: params, Return: ret, Body: body}
-		vd := &VarDecl{Name: fn.Name, Expr: flit}
+		vd := &VarDecl{Name: name, Expr: flit}
 		if len(localVarStack) > 0 {
-			localVarStack[len(localVarStack)-1][fn.Name] = true
+			localVarStack[len(localVarStack)-1][name] = true
 		}
 		if currentFuncLocals != nil {
-			currentFuncLocals[fn.Name] = true
+			currentFuncLocals[name] = true
 		}
 		currentFuncLocals = nil
 		return vd, nil
@@ -4473,6 +4490,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if isFunctionExpr(ex) {
 				ex = &NumberLit{Value: "0"}
+			}
+			if nr, ok := ex.(*NameRef); ok && globalVars[nr.Name] {
+				if t := varTypes[nr.Name]; t == "String" || strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") {
+					ex = &MethodCallExpr{Receiver: ex, Name: "clone"}
+				}
 			}
 			elems[i] = ex
 		}
