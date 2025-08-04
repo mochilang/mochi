@@ -1,0 +1,40 @@
+Analyzing '' which has a length of 0:
+  All characters in the string are the same.
+
+Analyzing '   ' which has a length of 3:
+  All characters in the string are the same.
+
+Analyzing '2' which has a length of 1:
+  All characters in the string are the same.
+
+Analyzing '333' which has a length of 3:
+  All characters in the string are the same.
+
+Analyzing '.55' which has a length of 3:
+  Not all characters in the string are the same.
+  '5' (0x35) is different at position 2.
+
+Analyzing 'tttTTT' which has a length of 6:
+  Not all characters in the string are the same.
+  'T' (0x54) is different at position 4.
+
+Analyzing '4444 444k' which has a length of 9:
+  Not all characters in the string are the same.
+  ' ' (0x20) is different at position 5.
+
+Analyzing 'pépé' which has a length of 4:
+  Not all characters in the string are the same.
+  'é' (0xe9) is different at position 2.
+
+Analyzing '🐶🐶🐺🐶' which has a length of 4:
+  Not all characters in the string are the same.
+  '🐺' (0x1f43a) is different at position 3.
+
+Analyzing '🎄🎄🎄🎄' which has a length of 4:
+  All characters in the string are the same.
+
+{
+  "duration_us": 2213,
+  "memory_bytes": 17672,
+  "name": "main"
+}

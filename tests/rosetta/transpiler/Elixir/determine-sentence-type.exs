@@ -116,158 +116,127 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def powInt(base, exp) do
+  def indexOf(s, ch) do
     try do
-      r = 1
-      b = base
-      e = exp
-      while_fun = fn while_fun, b, e, r ->
-        if e > 0 do
-          {r} = if rem(e, 2) == 1 do
-            r = r * b
-            {r}
-          else
-            {r}
+      i = 0
+      while_fun = fn while_fun, i ->
+        if i < _len(s) do
+          if _slice(s, i, i + 1 - (i)) == ch do
+            throw {:return, i}
           end
-          b = b * b
-          e = div(e, trunc(2))
-          while_fun.(while_fun, b, e, r)
-        else
-          {b, e, r}
-        end
-      end
-      {b, e, r} = try do
-          while_fun.(while_fun, b, e, r)
-        catch
-          {:break, {b, e, r}} -> {b, e, r}
-        end
-
-      throw {:return, r}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def minInt(x, y) do
-    try do
-      throw {:return, ((if x < y, do: x, else: y))}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def throwDie(nSides, nDice, s, counts) do
-    try do
-      {counts} = if nDice == 0 do
-        counts = List.replace_at(counts, s, Enum.at(counts, s) + 1)
-        throw {:return, nil}
-        {counts}
-      else
-        {counts}
-      end
-      i = 1
-      while_fun_2 = fn while_fun_2, i ->
-        if i <= nSides do
-          throwDie(nSides, nDice - 1, s + i, counts)
           i = i + 1
-          while_fun_2.(while_fun_2, i)
+          while_fun.(while_fun, i)
         else
           i
         end
       end
       i = try do
-          while_fun_2.(while_fun_2, i)
+          while_fun.(while_fun, i)
         catch
           {:break, i} -> i
         end
 
+      throw {:return, -1}
     catch
       {:return, val} -> val
     end
   end
-  def beatingProbability(nSides1, nDice1, nSides2, nDice2) do
+  def join(xs, sep) do
     try do
-      len1 = (nSides1 + 1) * nDice1
-      c1 = []
+      res = ""
       i = 0
-      while_fun_3 = fn while_fun_3, c1, i ->
-        if i < len1 do
-          c1 = (c1 ++ [0])
-          i = i + 1
-          while_fun_3.(while_fun_3, c1, i)
-        else
-          {c1, i}
-        end
-      end
-      {c1, i} = try do
-          while_fun_3.(while_fun_3, c1, i)
-        catch
-          {:break, {c1, i}} -> {c1, i}
-        end
-
-      throwDie(nSides1, nDice1, 0, c1)
-      len2 = (nSides2 + 1) * nDice2
-      c2 = []
-      j = 0
-      while_fun_4 = fn while_fun_4, c2, j ->
-        if j < len2 do
-          c2 = (c2 ++ [0])
-          j = j + 1
-          while_fun_4.(while_fun_4, c2, j)
-        else
-          {c2, j}
-        end
-      end
-      {c2, j} = try do
-          while_fun_4.(while_fun_4, c2, j)
-        catch
-          {:break, {c2, j}} -> {c2, j}
-        end
-
-      throwDie(nSides2, nDice2, 0, c2)
-      p12 = (powInt(nSides1, nDice1)) * (powInt(nSides2, nDice2))
-      tot = 0.0
-      i = 0
-      while_fun_5 = fn while_fun_5, i, j, tot ->
-        if i < len1 do
-          j = 0
-          m = minInt(i, len2)
-          while_fun_6 = fn while_fun_6, j, tot ->
-            if j < m do
-              tot = tot + (Enum.at(c1, i) * Enum.at(c2, j)) / p12
-              j = j + 1
-              while_fun_6.(while_fun_6, j, tot)
-            else
-              {j, tot}
-            end
+      while_fun_2 = fn while_fun_2, i, res ->
+        if i < _len(xs) do
+          {res} = if i > 0 do
+            res = (res <> sep)
+            {res}
+          else
+            {res}
           end
-          {j, tot} = try do
-              while_fun_6.(while_fun_6, j, tot)
-            catch
-              {:break, {j, tot}} -> {j, tot}
-            end
-
+          res = (res <> Enum.at(xs, i))
           i = i + 1
-          while_fun_5.(while_fun_5, i, j, tot)
+          while_fun_2.(while_fun_2, i, res)
         else
-          {i, j, tot}
+          {i, res}
         end
       end
-      {i, j, tot} = try do
-          while_fun_5.(while_fun_5, i, j, tot)
+      {i, res} = try do
+          while_fun_2.(while_fun_2, i, res)
         catch
-          {:break, {i, j, tot}} -> {i, j, tot}
+          {:break, {i, res}} -> {i, res}
         end
 
-      throw {:return, tot}
+      throw {:return, res}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def sentenceType(s) do
+    try do
+      if _len(s) == 0 do
+        throw {:return, ""}
+      end
+      types = []
+      i = 0
+      while_fun_3 = fn while_fun_3, i, types ->
+        if i < _len(s) do
+          ch = _slice(s, i, i + 1 - (i))
+          {types} = if ch == "?" do
+            types = (types ++ ["Q"])
+            {types}
+          else
+            {types} = if ch == "!" do
+              types = (types ++ ["E"])
+              {types}
+            else
+              {types} = if ch == "." do
+                types = (types ++ ["S"])
+                {types}
+              else
+                {types}
+              end
+              {types}
+            end
+            {types}
+          end
+          i = i + 1
+          while_fun_3.(while_fun_3, i, types)
+        else
+          {i, types}
+        end
+      end
+      {i, types} = try do
+          while_fun_3.(while_fun_3, i, types)
+        catch
+          {:break, {i, types}} -> {i, types}
+        end
+
+      last = _slice(s, _len(s) - 1, _len(s) - (_len(s) - 1))
+      {types} = if indexOf("?!.", last) == (-1) do
+        types = (types ++ ["N"])
+        {types}
+      else
+        {types}
+      end
+      throw {:return, join(types, "|")}
     catch
       {:return, val} -> val
     end
   end
   def main() do
+    try do
+      s = "hi there, how are you today? I'd like to present to you the washing machine 9001. You have been nominated to win one of these! Just make sure you don't break it"
+      result = sentenceType(s)
+      IO.puts(result)
+    catch
+      {:return, val} -> val
+    end
+  end
+  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(Kernel.inspect(beatingProbability(4, 9, 6, 6)))
-    IO.puts(Kernel.inspect(beatingProbability(10, 5, 7, 6)))
+    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -275,4 +244,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.main()
+Main.bench_main()

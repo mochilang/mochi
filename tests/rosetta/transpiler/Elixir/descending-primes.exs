@@ -116,158 +116,105 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def powInt(base, exp) do
+  def isPrime(n) do
     try do
-      r = 1
-      b = base
-      e = exp
-      while_fun = fn while_fun, b, e, r ->
-        if e > 0 do
-          {r} = if rem(e, 2) == 1 do
-            r = r * b
-            {r}
-          else
-            {r}
+      if n < 2 do
+        throw {:return, false}
+      end
+      if rem(n, 2) == 0 do
+        throw {:return, n == 2}
+      end
+      d = 3
+      while_fun = fn while_fun, d ->
+        if d * d <= n do
+          if rem(n, d) == 0 do
+            throw {:return, false}
           end
-          b = b * b
-          e = div(e, trunc(2))
-          while_fun.(while_fun, b, e, r)
+          d = d + 2
+          while_fun.(while_fun, d)
         else
-          {b, e, r}
+          d
         end
       end
-      {b, e, r} = try do
-          while_fun.(while_fun, b, e, r)
+      d = try do
+          while_fun.(while_fun, d)
         catch
-          {:break, {b, e, r}} -> {b, e, r}
+          {:break, d} -> d
         end
 
-      throw {:return, r}
+      throw {:return, true}
     catch
       {:return, val} -> val
     end
   end
-  def minInt(x, y) do
+  def gen(idx, cur, used) do
     try do
-      throw {:return, ((if x < y, do: x, else: y))}
+      if idx == _len(Process.get(:digits)) do
+        if used && isPrime(cur) do
+          throw {:return, [cur]}
+        end
+        throw {:return, []}
+      end
+      with = gen(idx + 1, cur * 10 + Enum.at(Process.get(:digits), idx), true)
+      without = gen(idx + 1, cur, used)
+      throw {:return, (with ++ without)}
     catch
       {:return, val} -> val
     end
   end
-  def throwDie(nSides, nDice, s, counts) do
+  def pad(n, width) do
     try do
-      {counts} = if nDice == 0 do
-        counts = List.replace_at(counts, s, Enum.at(counts, s) + 1)
-        throw {:return, nil}
-        {counts}
-      else
-        {counts}
-      end
-      i = 1
-      while_fun_2 = fn while_fun_2, i ->
-        if i <= nSides do
-          throwDie(nSides, nDice - 1, s + i, counts)
-          i = i + 1
-          while_fun_2.(while_fun_2, i)
+      s = Kernel.to_string(n)
+      while_fun_2 = fn while_fun_2, s ->
+        if _len(s) < width do
+          s = (" " <> s)
+          while_fun_2.(while_fun_2, s)
         else
-          i
+          s
         end
       end
-      i = try do
-          while_fun_2.(while_fun_2, i)
+      s = try do
+          while_fun_2.(while_fun_2, s)
         catch
-          {:break, i} -> i
+          {:break, s} -> s
         end
 
+      throw {:return, s}
     catch
       {:return, val} -> val
     end
   end
-  def beatingProbability(nSides1, nDice1, nSides2, nDice2) do
-    try do
-      len1 = (nSides1 + 1) * nDice1
-      c1 = []
-      i = 0
-      while_fun_3 = fn while_fun_3, c1, i ->
-        if i < len1 do
-          c1 = (c1 ++ [0])
-          i = i + 1
-          while_fun_3.(while_fun_3, c1, i)
-        else
-          {c1, i}
-        end
-      end
-      {c1, i} = try do
-          while_fun_3.(while_fun_3, c1, i)
-        catch
-          {:break, {c1, i}} -> {c1, i}
-        end
-
-      throwDie(nSides1, nDice1, 0, c1)
-      len2 = (nSides2 + 1) * nDice2
-      c2 = []
-      j = 0
-      while_fun_4 = fn while_fun_4, c2, j ->
-        if j < len2 do
-          c2 = (c2 ++ [0])
-          j = j + 1
-          while_fun_4.(while_fun_4, c2, j)
-        else
-          {c2, j}
-        end
-      end
-      {c2, j} = try do
-          while_fun_4.(while_fun_4, c2, j)
-        catch
-          {:break, {c2, j}} -> {c2, j}
-        end
-
-      throwDie(nSides2, nDice2, 0, c2)
-      p12 = (powInt(nSides1, nDice1)) * (powInt(nSides2, nDice2))
-      tot = 0.0
-      i = 0
-      while_fun_5 = fn while_fun_5, i, j, tot ->
-        if i < len1 do
-          j = 0
-          m = minInt(i, len2)
-          while_fun_6 = fn while_fun_6, j, tot ->
-            if j < m do
-              tot = tot + (Enum.at(c1, i) * Enum.at(c2, j)) / p12
-              j = j + 1
-              while_fun_6.(while_fun_6, j, tot)
-            else
-              {j, tot}
-            end
-          end
-          {j, tot} = try do
-              while_fun_6.(while_fun_6, j, tot)
-            catch
-              {:break, {j, tot}} -> {j, tot}
-            end
-
-          i = i + 1
-          while_fun_5.(while_fun_5, i, j, tot)
-        else
-          {i, j, tot}
-        end
-      end
-      {i, j, tot} = try do
-          while_fun_5.(while_fun_5, i, j, tot)
-        catch
-          {:break, {i, j, tot}} -> {i, j, tot}
-        end
-
-      throw {:return, tot}
-    catch
-      {:return, val} -> val
-    end
-  end
+  Process.put(:digits, [9, 8, 7, 6, 5, 4, 3, 2, 1])
+  Process.put(:i, 0)
+  Process.put(:line, "")
   def main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(Kernel.inspect(beatingProbability(4, 9, 6, 6)))
-    IO.puts(Kernel.inspect(beatingProbability(10, 5, 7, 6)))
+    Process.put(:primes, gen(0, 0, false))
+    IO.puts((("There are " <> Kernel.inspect(_len(Process.get(:primes)))) <> " descending primes, namely:"))
+    while_fun_3 = fn while_fun_3 ->
+      if Process.get(:i) < _len(Process.get(:primes)) do
+        Process.put(:line, ((Process.get(:line) <> pad(Enum.at(Process.get(:primes), Process.get(:i)), 8)) <> " "))
+        if rem((Process.get(:i) + 1), 10) == 0 do
+          IO.puts(Kernel.inspect(_slice(Process.get(:line), 0, _len(Process.get(:line)) - 1 - (0))))
+          Process.put(:line, "")
+        end
+        Process.put(:i, Process.get(:i) + 1)
+        while_fun_3.(while_fun_3)
+      else
+        nil
+      end
+    end
+    try do
+      while_fun_3.(while_fun_3)
+    catch
+      :break -> nil
+    end
+
+    if _len(Process.get(:line)) > 0 do
+      IO.puts(Kernel.inspect(_slice(Process.get(:line), 0, _len(Process.get(:line)) - 1 - (0))))
+    end
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
