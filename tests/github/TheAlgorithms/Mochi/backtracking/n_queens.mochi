@@ -1,0 +1,110 @@
+/*
+Solve the classic N-Queens puzzle using backtracking on a 2D board.
+Each queen must be placed so that no two queens share a row, column,
+or diagonal.  A recursive search explores row by row.  For each row the
+algorithm tries every column and calls `is_safe` to verify that no
+existing queen conflicts.  When a full board is constructed it is
+printed and counted as a solution.  The brute-force nature means the
+search tree can grow exponentially; in the worst case the time
+complexity is O(N!), the number of possible placements, though pruning
+invalid positions early reduces actual work.
+*/
+
+fun create_board(n: int): list<list<int>> {
+  var board: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    board = append(board, row)
+    i = i + 1
+  }
+  return board
+}
+
+fun is_safe(board: list<list<int>>, row: int, column: int): bool {
+  let n = len(board)
+  var i = 0
+  // check same column
+  while i < row {
+    if board[i][column] == 1 {
+      return false
+    }
+    i = i + 1
+  }
+  // check upper left diagonal
+  i = row - 1
+  var j = column - 1
+  while i >= 0 && j >= 0 {
+    if board[i][j] == 1 {
+      return false
+    }
+    i = i - 1
+    j = j - 1
+  }
+  // check upper right diagonal
+  i = row - 1
+  j = column + 1
+  while i >= 0 && j < n {
+    if board[i][j] == 1 {
+      return false
+    }
+    i = i - 1
+    j = j + 1
+  }
+  return true
+}
+
+fun row_string(row: list<int>): string {
+  var s = ""
+  var j = 0
+  while j < len(row) {
+    if row[j] == 1 {
+      s = s + "Q "
+    } else {
+      s = s + ". "
+    }
+    j = j + 1
+  }
+  return s
+}
+
+fun printboard(board: list<list<int>>) {
+  var i = 0
+  while i < len(board) {
+    print(row_string(board[i]))
+    i = i + 1
+  }
+}
+
+fun solve(board: list<list<int>>, row: int): int {
+  if row >= len(board) {
+    printboard(board)
+    print("")
+    return 1
+  }
+  var count = 0
+  var i = 0
+  while i < len(board) {
+    if is_safe(board, row, i) {
+      board[row][i] = 1
+      count = count + solve(board, row + 1)
+      board[row][i] = 0
+    }
+    i = i + 1
+  }
+  return count
+}
+
+fun n_queens(n: int): int {
+  let board = create_board(n)
+  let total = solve(board, 0)
+  print("The total number of solutions are: " + str(total))
+  return total
+}
+
+n_queens(4)
