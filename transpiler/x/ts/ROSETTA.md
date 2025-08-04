@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-03 10:53 UTC
+Last updated: 2025-08-04 08:33 UTC
 
 ## Rosetta Golden Test Checklist (472/491)
 | Index | Name | Status | Duration | Memory |
@@ -154,16 +154,16 @@ Last updated: 2025-08-03 10:53 UTC
 | 145 | calendar---for-real-programmers-2 | ✓ | 7.22ms | 3.0 MB |
 | 146 | calendar | ✓ | 5.892ms | 3.0 MB |
 | 147 | calkin-wilf-sequence | ✓ | 3.01ms | 512.0 KB |
-| 148 | call-a-foreign-language-function | ✓ | 570µs | 128.0 KB |
-| 149 | call-a-function-1 | ✓ | 8µs |  |
-| 150 | call-a-function-10 | ✓ | 73µs | 3.8 KB |
-| 151 | call-a-function-11 | ✓ | 903µs | 128.0 KB |
-| 152 | call-a-function-12 | ✓ | 740µs | 128.0 KB |
-| 153 | call-a-function-2 | ✓ | 75µs |  |
-| 154 | call-a-function-3 | ✓ | 74µs |  |
-| 155 | call-a-function-4 | ✓ | 35µs |  |
-| 156 | call-a-function-5 | ✓ | 771µs | 128.0 KB |
-| 157 | call-a-function-6 | ✓ | 651µs | 128.0 KB |
+| 148 | call-a-foreign-language-function | ✓ | 990µs | 14.5 KB |
+| 149 | call-a-function-1 | ✓ | 8µs | 3.3 KB |
+| 150 | call-a-function-10 | ✓ | 63µs | 3.8 KB |
+| 151 | call-a-function-11 | ✓ | 806µs | 23.0 KB |
+| 152 | call-a-function-12 | ✓ | 632µs | 18.7 KB |
+| 153 | call-a-function-2 | ✓ | 45µs | 4.1 KB |
+| 154 | call-a-function-3 | ✓ | 40µs | 4.2 KB |
+| 155 | call-a-function-4 | ✓ | 51µs | 3.9 KB |
+| 156 | call-a-function-5 | ✓ | 624µs | 15.0 KB |
+| 157 | call-a-function-6 | ✓ | 704µs | 15.3 KB |
 | 158 | call-a-function-7 | ✓ | 65µs |  |
 | 159 | call-a-function-8 | ✓ | 184µs |  |
 | 160 | call-a-function-9 | ✓ | 153µs |  |
