@@ -4374,7 +4374,6 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	if n, ok := iter.(*Name); ok && env != nil {
 		if typ, err := env.GetVar(n.Name); err == nil {
 			if mt, ok := typ.(types.MapType); ok {
-				iter = &FieldExpr{Receiver: iter, Name: "keys"}
 				localVarTypes[fs.Name] = toScalaTypeFromType(mt.Key)
 			} else if _, ok := typ.(types.GroupType); ok {
 				iter = &IndexExpr{Value: iter, Index: &StringLit{Value: "items"}, Container: toScalaTypeFromType(typ)}
@@ -4383,7 +4382,6 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	} else if env != nil {
 		t := inferTypeWithEnv(iter, env)
 		if strings.HasPrefix(t, "Map[") || strings.HasPrefix(t, "scala.collection.mutable.Map[") {
-			iter = &FieldExpr{Receiver: iter, Name: "keys"}
 			parts := strings.TrimSuffix(t[strings.Index(t, "[")+1:], "]")
 			kv := strings.SplitN(parts, ",", 2)
 			if len(kv) == 2 {

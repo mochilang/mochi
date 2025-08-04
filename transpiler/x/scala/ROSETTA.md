@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (447/491)
-_Last updated: 2025-08-04 21:57 +0700_
+## Golden Test Checklist (448/491)
+_Last updated: 2025-08-04 22:53 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -306,7 +306,7 @@ _Last updated: 2025-08-04 21:57 +0700_
 | 297 | dice-game-probabilities-1 | ✓ | 64µs | 3.5 MB |
 | 298 | dice-game-probabilities-2 | ✓ | 318µs | 3.5 MB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 40µs | 3.5 MB |
-| 300 | dijkstras-algorithm | error |  |  |
+| 300 | dijkstras-algorithm | ✓ | 12µs | 8.7 MB |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ | 4µs | 8.7 MB |
 | 302 | dining-philosophers-1 | ✓ | 7µs | 8.7 MB |
 | 303 | dining-philosophers-2 | ✓ | 6µs | 8.7 MB |
