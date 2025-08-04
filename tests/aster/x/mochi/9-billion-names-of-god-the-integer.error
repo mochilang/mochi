@@ -1,8 +1,8 @@
-error[A011]: numeric op with non-numeric
-  --> /workspace/mochi/tests/rosetta/x/Mochi/9-billion-names-of-god-the-integer.mochi:63:20
+error[A024]: unknown function count
+  --> /workspace/mochi/tests/rosetta/x/Mochi/9-billion-names-of-god-the-integer.mochi:4:11
 
- 63 |   var i = count(a) - 1
-    |                    ^
+  4 |   var n = count(a)
+    |           ^
 
 help:
-  Use numeric operands
+  Declare count before use

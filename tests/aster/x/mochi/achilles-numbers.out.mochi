@@ -29,7 +29,7 @@ fun totient(n: int): int {
   return tot
 }
 var pps: map<int, bool>
-fun getPerfectPowers(maxExp: int): any {
+fun getPerfectPowers(maxExp: int): void {
   let upper: int = pow10(maxExp)
   var i: int = 2
   while ((i * i) < upper) {
@@ -102,7 +102,7 @@ fun pad(n: int, width: int): string {
   }
   return s
 }
-fun main(): any {
+fun main(): void {
   let maxDigits: int = 15
   getPerfectPowers(5)
   let achSet: map<int, bool> = getAchilles(1, 5)

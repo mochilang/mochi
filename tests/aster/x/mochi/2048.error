@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/2048.mochi:277:13
+
+277 |   let cmd = input()
+    |             ^
+
+help:
+  Declare input before use

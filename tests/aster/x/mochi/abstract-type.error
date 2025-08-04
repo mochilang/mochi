@@ -1,8 +1,8 @@
-error[A002]: type mismatch for d: Beast vs Dog
-  --> /workspace/mochi/tests/rosetta/x/Mochi/abstract-type.mochi:34:3
+error[A028]: return type mismatch: expected string, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abstract-type.mochi:9:3
 
- 34 |   let d: Beast = Dog { kind: "labrador", name: "Max" }
+  9 |   return match b {
     |   ^
 
 help:
-  Ensure d matches
+  Ensure return value matches

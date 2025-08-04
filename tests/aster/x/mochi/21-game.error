@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/21-game.mochi:64:22
+
+ 64 |           let line = input()
+    |                      ^
+
+help:
+  Declare input before use

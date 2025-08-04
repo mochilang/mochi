@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abundant-odd-numbers.mochi:41:10
+
+ 41 |   return substring(s, 0, len(s) - 3)
+    |          ^
+
+help:
+  Declare substring before use

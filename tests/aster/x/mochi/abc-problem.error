@@ -1,0 +1,8 @@
+error[A024]: unknown function lower
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abc-problem.mochi:26:11
+
+ 26 |   let c = lower(word[0:1])
+    |           ^
+
+help:
+  Declare lower before use
