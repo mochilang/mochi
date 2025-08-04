@@ -147,6 +147,10 @@ func (v *VarRef) emit(w io.Writer) {
 		io.WriteString(w, sanitizeIdent(v.Name))
 		return
 	}
+	if strings.HasPrefix(v.Name, "_") {
+		fmt.Fprintf(w, "Main.%s", sanitizeIdent(v.Name))
+		return
+	}
 	io.WriteString(w, sanitizeIdent(v.Name))
 }
 
@@ -1303,7 +1307,11 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	io.WriteString(w, c.Func)
+	name := c.Func
+	if !moduleMode && strings.HasPrefix(name, "_") {
+		name = "Main." + name
+	}
+	io.WriteString(w, name)
 	if c.Var {
 		io.WriteString(w, ".(")
 	} else if strings.Contains(c.Func, ".") && len(c.Func) > 0 && c.Func[0] >= 'a' && c.Func[0] <= 'z' {
@@ -1900,6 +1908,7 @@ func Emit(p *Program, benchMain bool) []byte {
 		buf.WriteString("  end\n")
 	}
 	buf.WriteString("end\n")
+	moduleMode = false
 	if hasMain && len(main) > 0 {
 		for _, st := range main {
 			if ls, ok := st.(*LetStmt); ok {
@@ -1919,7 +1928,6 @@ func Emit(p *Program, benchMain bool) []byte {
 	} else {
 		buf.WriteString("Main.main()\n")
 	}
-	moduleMode = false
 	out := buf.Bytes()
 	re := regexp.MustCompile(`(@[A-Z][A-Z0-9_]* )([0-9]+)`)
 	out = re.ReplaceAll(out, []byte("$1= $2"))
@@ -4139,7 +4147,7 @@ func header() string {
 func nowHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
-	buf.WriteString(pad + "defp _now() do\n")
+	buf.WriteString(pad + "def _now() do\n")
 	buf.WriteString(pad + "  seeded = Process.get(:_now_seeded, false)\n")
 	buf.WriteString(pad + "  seed = Process.get(:_now_seed, 0)\n")
 	buf.WriteString(pad + "  if !seeded do\n")

@@ -1,1 +1,6 @@
 SHELL not found
+{
+  "duration_us": 785,
+  "memory_bytes": 275800,
+  "name": "main"
+}
