@@ -1,0 +1,7 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+x = -5 e = 2 | -x.p(e) = -25 | -(x).p(e) = -25 | (-x).p(e) =  25 | -(x.p(e)) = -25
+x = -5 e = 3 | -x.p(e) =  125 | -(x).p(e) =  125 | (-x).p(e) =  125 | -(x.p(e)) =  125
+x =  5 e = 2 | -x.p(e) = -25 | -(x).p(e) = -25 | (-x).p(e) =  25 | -(x.p(e)) = -25
+x =  5 e = 3 | -x.p(e) = -125 | -(x).p(e) = -125 | (-x).p(e) = -125 | -(x.p(e)) = -125

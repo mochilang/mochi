@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (420/491)
-Last updated: 2025-08-04 02:01 UTC
+## Checklist (430/491)
+Last updated: 2025-08-04 02:36 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -381,16 +381,16 @@ Last updated: 2025-08-04 02:01 UTC
 | 372 | exceptions | ✓ |  |  |
 | 373 | executable-library | ✓ | 1m28.238s | 12.4 MB |
 | 374 | execute-a-markov-algorithm | ✓ | 29ms | 14.5 MB |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
+| 375 | execute-a-system-command | ✓ | 14ms | 12.4 MB |
+| 376 | execute-brain- | ✓ | 12ms | 13.3 MB |
+| 377 | execute-computer-zero-1 | ✓ | 74ms | 16.6 MB |
+| 378 | execute-computer-zero | ✓ | 2ms | 13.4 MB |
+| 379 | execute-hq9+ | ✓ | 3ms | 12.7 MB |
+| 380 | execute-snusp | ✓ |  |  |
+| 381 | exponentiation-operator-2 | ✓ | 2ms | 12.6 MB |
+| 382 | exponentiation-operator | ✓ | 3ms | 12.9 MB |
+| 383 | exponentiation-order | ✓ |  |  |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 1ms | 13.0 MB |
 | 385 | extend-your-language |   |  |  |
 | 386 | extensible-prime-generator |   |  |  |
 | 387 | extreme-floating-point-values |   |  |  |
