@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (445/491)
-_Last updated: 2025-08-04 21:10 +0700_
+## Golden Test Checklist (446/491)
+_Last updated: 2025-08-04 21:31 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -276,21 +276,21 @@ _Last updated: 2025-08-04 21:10 +0700_
 | 267 | curzon-numbers | ✓ | 562µs | 8.7 MB |
 | 268 | cusip | error |  |  |
 | 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm | ✓ | 9µs | 8.7 MB |
+| 270 | damm-algorithm | ✓ | 8µs | 8.7 MB |
 | 271 | date-format | ✓ | 6µs | 8.7 MB |
 | 272 | date-manipulation | ✓ | 15µs | 8.7 MB |
 | 273 | day-of-the-week | ✓ | 18µs | 8.7 MB |
 | 274 | de-bruijn-sequences | ✓ | 830µs | 8.8 MB |
 | 275 | deal-cards-for-freecell | ✓ | 18µs | 8.7 MB |
-| 276 | death-star | error |  |  |
-| 277 | deceptive-numbers | ✓ | 173µs | 8.7 MB |
-| 278 | deconvolution-1d-2 | ✓ | 11µs | 8.7 MB |
-| 279 | deconvolution-1d-3 | ✓ | 12µs | 8.7 MB |
-| 280 | deconvolution-1d | ✓ | 10µs | 8.7 MB |
-| 281 | deepcopy-1 | ✓ | 9µs | 8.7 MB |
-| 282 | define-a-primitive-data-type | ✓ | 4µs | 8.7 MB |
-| 283 | delegates | ✓ | 4µs | 8.7 MB |
-| 284 | demings-funnel | ✓ | 38µs | 8.7 MB |
+| 276 | death-star | ✓ | 83µs | 8.8 MB |
+| 277 | deceptive-numbers | ✓ | 159µs | 8.7 MB |
+| 278 | deconvolution-1d-2 | ✓ | 7µs | 8.7 MB |
+| 279 | deconvolution-1d-3 | ✓ | 7µs | 8.7 MB |
+| 280 | deconvolution-1d | ✓ | 7µs | 8.7 MB |
+| 281 | deepcopy-1 | ✓ | 7µs | 8.7 MB |
+| 282 | define-a-primitive-data-type | ✓ | 3µs | 8.7 MB |
+| 283 | delegates | ✓ | 3µs | 8.7 MB |
+| 284 | demings-funnel | ✓ | 15µs | 8.7 MB |
 | 285 | department-numbers | ✓ | 5µs | 8.7 MB |
 | 286 | descending-primes | ✓ | 38µs | 8.7 MB |
 | 287 | detect-division-by-zero | ✓ | 4µs | 8.7 MB |
