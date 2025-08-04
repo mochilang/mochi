@@ -3,7 +3,19 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 424/491
-Last updated: 2025-08-04 08:55 +0700
+Last updated: 2025-08-04 09:36 +0700
+
+## Progress Checklist
+- [15] a+b
+- [16] abbreviations-automatic
+- [17] abbreviations-easy
+- [18] abbreviations-simple
+- [19] abc-problem
+- [20] abelian-sandpile-model-identity
+- [21] abelian-sandpile-model
+- [22] abstract-type
+- [23] abundant-deficient-and-perfect-number-classifications
+- [24] abundant-odd-numbers
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -21,16 +33,16 @@ Last updated: 2025-08-04 08:55 +0700
 | 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
 | 13 | 99-bottles-of-beer-2 | ✓ | 32.737ms | 3.1 MB |
 | 14 | 99-bottles-of-beer | ✓ | 502µs | 3.2 MB |
-| 15 | a+b | ✓ | 404µs | 3.2 MB |
-| 16 | abbreviations-automatic | ✓ | 27.126ms | 3.1 MB |
-| 17 | abbreviations-easy | ✓ | 11.509ms | 3.2 MB |
-| 18 | abbreviations-simple | ✓ | 16.815ms | 3.4 MB |
-| 19 | abc-problem | ✓ | 1.544ms | 3.5 MB |
-| 20 | abelian-sandpile-model-identity | ✓ | 556µs | 3.1 MB |
-| 21 | abelian-sandpile-model | ✓ | 562µs | 3.2 MB |
-| 22 | abstract-type | ✓ | 239µs | 2.9 MB |
-| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 2.534971s | 3.2 MB |
-| 24 | abundant-odd-numbers | ✓ | 2.749635s | 3.2 MB |
+| 15 | a+b | ✓ | 306µs | 3.2 MB |
+| 16 | abbreviations-automatic | ✓ | 16.598ms | 3.3 MB |
+| 17 | abbreviations-easy | ✓ | 6.207ms | 3.1 MB |
+| 18 | abbreviations-simple | ✓ | 9.007ms | 3.2 MB |
+| 19 | abc-problem | ✓ | 894µs | 2.9 MB |
+| 20 | abelian-sandpile-model-identity | ✓ | 294µs | 3.2 MB |
+| 21 | abelian-sandpile-model | ✓ | 262µs | 3.1 MB |
+| 22 | abstract-type | ✓ | 299µs | 3.4 MB |
+| 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 581.22ms | 3.2 MB |
+| 24 | abundant-odd-numbers | ✓ | 824.624ms | 3.2 MB |
 | 25 | accumulator-factory | ✓ | 346µs | 3.4 MB |
 | 26 | achilles-numbers | ✓ | 16.911ms | 3.2 MB |
 | 27 | ackermann-function-2 | ✓ | 264µs | 2.9 MB |
