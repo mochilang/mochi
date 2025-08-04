@@ -1,0 +1,37 @@
+/*
+Backtracking algorithm that enumerates all subsequences of a sequence.
+
+At each index, the algorithm recurses on two branches: one excluding
+the current element and one including it. This builds every possible
+subsequence. The time complexity is O(2^n) for a sequence of length n.
+*/
+fun createStateSpaceTreeInt(sequence: list<int>, current: list<int>, index: int): void {
+  if index == len(sequence) {
+    print(current)
+    return
+  }
+  createStateSpaceTreeInt(sequence, current, index + 1)
+  let withElem = append(current, sequence[index])
+  createStateSpaceTreeInt(sequence, withElem, index + 1)
+}
+
+fun generateAllSubsequencesInt(sequence: list<int>): void {
+  createStateSpaceTreeInt(sequence, [], 0)
+}
+
+fun createStateSpaceTreeString(sequence: list<string>, current: list<string>, index: int): void {
+  if index == len(sequence) {
+    print(current)
+    return
+  }
+  createStateSpaceTreeString(sequence, current, index + 1)
+  let withElem = append(current, sequence[index])
+  createStateSpaceTreeString(sequence, withElem, index + 1)
+}
+
+fun generateAllSubsequencesString(sequence: list<string>): void {
+  createStateSpaceTreeString(sequence, [], 0)
+}
+
+generateAllSubsequencesInt([1, 2, 3])
+generateAllSubsequencesString(["A", "B", "C"])
