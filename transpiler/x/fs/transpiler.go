@@ -2804,7 +2804,6 @@ func Emit(prog *Program) []byte {
 	}
 	if prog.UseReturn {
 		buf.WriteString("exception Return\n")
-		buf.WriteString("let mutable __ret = ()\n\n")
 	}
 	if prog.UseNow {
 		buf.WriteString(helperNow)
