@@ -15,15 +15,6 @@ fun _now(): Long {
     }
 }
 
-fun toJson(v: Any?): String = when (v) {
-    null -> "null"
-    is String -> "\"" + v.replace("\"", "\\\"") + "\""
-    is Boolean, is Number -> v.toString()
-    is Map<*, *> -> v.entries.joinToString(prefix = "{", postfix = "}") { toJson(it.key.toString()) + ":" + toJson(it.value) }
-    is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
-    else -> toJson(v.toString())
-}
-
 fun roll(nDice: Int, nSides: Int): Int {
     var sum: Int = 0
     var i: Int = 0
@@ -43,22 +34,10 @@ fun beats(n1: Int, s1: Int, n2: Int, s2: Int, trials: Int): Double {
         }
         i = i + 1
     }
-    return wins.toDouble() / trials.toDouble()
+    return ((wins.toDouble())) / ((trials.toDouble()))
 }
 
 fun main() {
-    run {
-        System.gc()
-        val _startMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _start = _now()
-        println(beats(9, 4, 6, 6, 1000).toString())
-        println(beats(5, 10, 7, 6, 1000).toString())
-        System.gc()
-        val _end = _now()
-        val _endMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()
-        val _durationUs = (_end - _start) / 1000
-        val _memDiff = kotlin.math.abs(_endMem - _startMem)
-        val _res = mapOf("duration_us" to _durationUs, "memory_bytes" to _memDiff, "name" to "main")
-        println(toJson(_res))
-    }
+    println(beats(9, 4, 6, 6, 1000).toString())
+    println(beats(5, 10, 7, 6, 1000).toString())
 }

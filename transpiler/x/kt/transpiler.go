@@ -343,6 +343,60 @@ func (s *IndexAssignStmt) emit(w io.Writer, indentLevel int) {
 		s.Target.emit(w)
 	}
 	io.WriteString(w, " = ")
+	if ce, ok := s.Value.(*CastExpr); ok {
+		if ml, ok2 := ce.Value.(*MapLit); ok2 && len(ml.Items) == 0 && strings.HasPrefix(ce.Type, "MutableMap<") {
+			part := strings.TrimSuffix(strings.TrimPrefix(ce.Type, "MutableMap<"), ">")
+			if idx := strings.Index(part, ","); idx >= 0 {
+				k := strings.TrimSpace(part[:idx])
+				v := strings.TrimSpace(part[idx+1:])
+				io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+				return
+			}
+		}
+	}
+	if fe, ok := s.Target.(*FieldExpr); ok {
+		if fe.Type != "" {
+			if ml, ok2 := s.Value.(*MapLit); ok2 && len(ml.Items) == 0 && strings.HasPrefix(fe.Type, "MutableMap<") {
+				part := strings.TrimSuffix(strings.TrimPrefix(fe.Type, "MutableMap<"), ">")
+				if idx := strings.Index(part, ","); idx >= 0 {
+					k := strings.TrimSpace(part[:idx])
+					v := strings.TrimSpace(part[idx+1:])
+					io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+					return
+				}
+			}
+		}
+	} else if ix, ok := s.Target.(*IndexExpr); ok {
+		if ix.Type != "" {
+			if ml, ok2 := s.Value.(*MapLit); ok2 && len(ml.Items) == 0 && strings.HasPrefix(ix.Type, "MutableMap<") {
+				part := strings.TrimSuffix(strings.TrimPrefix(ix.Type, "MutableMap<"), ">")
+				if idx := strings.Index(part, ","); idx >= 0 {
+					k := strings.TrimSpace(part[:idx])
+					v := strings.TrimSpace(part[idx+1:])
+					io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+					return
+				}
+			}
+		}
+	} else if ce, ok := s.Target.(*CastExpr); ok {
+		if ix, ok2 := ce.Value.(*IndexExpr); ok2 {
+			typ := ce.Type
+			if typ == "" {
+				typ = ix.Type
+			}
+			if typ != "" {
+				if ml, ok3 := s.Value.(*MapLit); ok3 && len(ml.Items) == 0 && strings.HasPrefix(typ, "MutableMap<") {
+					part := strings.TrimSuffix(strings.TrimPrefix(typ, "MutableMap<"), ">")
+					if idx := strings.Index(part, ","); idx >= 0 {
+						k := strings.TrimSpace(part[:idx])
+						v := strings.TrimSpace(part[idx+1:])
+						io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+						return
+					}
+				}
+			}
+		}
+	}
 	s.Value.emit(w)
 }
 
@@ -923,6 +977,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			return
 		}
 	}
+	if ml, ok := c.Value.(*MapLit); ok && len(ml.Items) == 0 && strings.HasPrefix(c.Type, "MutableMap<") {
+		part := strings.TrimSuffix(strings.TrimPrefix(c.Type, "MutableMap<"), ">")
+		if idx := strings.Index(part, ","); idx >= 0 {
+			k := strings.TrimSpace(part[:idx])
+			v := strings.TrimSpace(part[idx+1:])
+			io.WriteString(w, "mutableMapOf<"+k+", "+v+">()")
+			return
+		}
+	}
 	io.WriteString(w, "(")
 	needParens := false
 	switch c.Value.(type) {
@@ -1000,7 +1063,7 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 	if u.Right != nil {
 		u.Right.emit(w)
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ").toMutableList()")
 }
 
 type ExceptExpr struct{ Left, Right Expr }
@@ -3727,6 +3790,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 					if strings.HasPrefix(tgt, "MutableMap<") && !strings.HasSuffix(typ, "?") {
 						typ += "?"
 					}
+					if typ != "" && typ != guessType(v) {
+						v = &CastExpr{Value: v, Type: typ}
+					}
+				} else {
+					if typ != "" && typ != guessType(v) {
+						v = &CastExpr{Value: v, Type: typ}
+					}
 				}
 			}
 			if _, ok := v.(*NullLit); ok {
@@ -3880,6 +3950,11 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			if ix, ok := target.(*IndexExpr); ok {
 				if ix.Type != "" && ix.Type != guessType(v) {
 					v = &CastExpr{Value: v, Type: ix.Type}
+				}
+			}
+			if fe, ok := target.(*FieldExpr); ok {
+				if fe.Type != "" && fe.Type != guessType(v) {
+					v = &CastExpr{Value: v, Type: fe.Type}
 				}
 			}
 			out = append(out, &IndexAssignStmt{Target: target, Value: v})
@@ -4230,8 +4305,9 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 				tname = kotlinTypeFromType(tt.Elem)
 				curType = tt.Elem
 			case types.MapType:
+				tname = kotlinTypeFromType(tt.Value)
 				curType = tt.Value
-				force = false
+				force = true
 			}
 		}
 		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}
@@ -4263,8 +4339,9 @@ func buildAccessTarget(env *types.Env, name string, idx []*parser.IndexOp, field
 				tname = kotlinTypeFromType(tt.Elem)
 				curType = tt.Elem
 			case types.MapType:
+				tname = kotlinTypeFromType(tt.Value)
 				curType = tt.Value
-				force = false
+				force = true
 			}
 		}
 		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}

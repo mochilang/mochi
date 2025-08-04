@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 15:22 +0700
+Last updated: 2025-08-04 15:54 +0700
 
-Completed tasks: **342/491**
+Completed tasks: **358/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -290,31 +290,31 @@ Completed tasks: **342/491**
 | 279 | deconvolution-1d-3 | ✓ | 26.41ms | 97.6 KB |
 | 280 | deconvolution-1d | ✓ | 20.02ms | 113.6 KB |
 | 281 | deepcopy-1 | ✓ | 6.37ms | 133.8 KB |
-| 282 | define-a-primitive-data-type |  |  |  |
-| 283 | delegates |  |  |  |
-| 284 | demings-funnel |  |  |  |
-| 285 | department-numbers |  |  |  |
-| 286 | descending-primes |  |  |  |
-| 287 | detect-division-by-zero |  |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |  |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |  |  |  |
-| 290 | determine-if-a-string-is-collapsible |  |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |  |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |  |  |  |
-| 293 | determine-if-a-string-is-squeezable |  |  |  |
-| 294 | determine-if-only-one-instance-is-running |  |  |  |
-| 295 | determine-if-two-triangles-overlap |  |  |  |
-| 296 | determine-sentence-type |  |  |  |
-| 297 | dice-game-probabilities-1 | ✓ | 25.89ms | 33.1 KB |
-| 298 | dice-game-probabilities-2 | ✓ | 12.89ms | 124.1 KB |
-| 299 | digital-root-multiplicative-digital-root | ✓ | 51.76ms | 829.9 KB |
-| 300 | dijkstras-algorithm |  |  |  |
-| 301 | dinesmans-multiple-dwelling-problem | ✓ | 8.30ms | 133.8 KB |
-| 302 | dining-philosophers-1 | ✓ | 13.78ms | 123.1 KB |
-| 303 | dining-philosophers-2 | ✓ | 12.41ms | 123.1 KB |
-| 304 | disarium-numbers | ✓ | 976.28ms | 828.0 KB |
-| 305 | discordian-date | ✓ | 5.90ms | 124.4 KB |
-| 306 | display-a-linear-combination | ✓ | 10.62ms | 123.2 KB |
+| 282 | define-a-primitive-data-type | ✓ | 8.38ms | 129.5 KB |
+| 283 | delegates | ✓ | 8.07ms | 130.6 KB |
+| 284 | demings-funnel | ✓ | 13.93ms | 119.9 KB |
+| 285 | department-numbers | ✓ | 5.78ms | 133.8 KB |
+| 286 | descending-primes | ✓ | 8.05ms | 133.8 KB |
+| 287 | detect-division-by-zero | ✓ | 8.19ms | 130.5 KB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 17.71ms | 113.9 KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 18.47ms | 114.5 KB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 16.48ms | 122.6 KB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 16.35ms | 123.4 KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 7.00ms | 130.4 KB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 10.81ms | 133.1 KB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 4.60ms | 134.1 KB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 24.63ms | 99.7 KB |
+| 296 | determine-sentence-type | ✓ | 23.04ms | 117.9 KB |
+| 297 | dice-game-probabilities-1 | ✓ | 36.63ms | 24.1 KB |
+| 298 | dice-game-probabilities-2 | ✓ | 17.19ms | 124.1 KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 89.17ms | 830.6 KB |
+| 300 | dijkstras-algorithm | ✓ | 19.08ms | 109.9 KB |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 4.72ms | 133.8 KB |
+| 302 | dining-philosophers-1 | ✓ | 17.16ms | 123.1 KB |
+| 303 | dining-philosophers-2 | ✓ | 18.53ms | 123.1 KB |
+| 304 | disarium-numbers | ✓ | 1.44s | 828.2 KB |
+| 305 | discordian-date | ✓ | 8.09ms | 123.9 KB |
+| 306 | display-a-linear-combination | ✓ | 15.58ms | 123.1 KB |
 | 307 | display-an-outline-as-a-nested-table |  |  |  |
 | 308 | distance-and-bearing |  |  |  |
 | 309 | distributed-programming |  |  |  |
