@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-04 09:11 UTC
+Last updated: 2025-08-04 10:11 UTC
 
-## Rosetta Golden Test Checklist (472/491)
+## Rosetta Golden Test Checklist (473/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.088ms | 256.0 KB |
@@ -317,7 +317,7 @@ Last updated: 2025-08-04 09:11 UTC
 | 308 | distance-and-bearing | ✓ | 1.408ms | 2.8 MB |
 | 309 | distributed-programming | ✓ | 286µs |  |
 | 310 | diversity-prediction-theorem | ✓ | 556µs | 256.0 KB |
-| 311 | dns-query |   |  |  |
+| 311 | dns-query | ✓ | 338.919ms | 31.2 KB |
 | 312 | documentation | ✓ | 3µs |  |
 | 313 | doomsday-rule | ✓ | 582µs |  |
 | 314 | dot-product | ✓ | 332µs | 128.0 KB |
