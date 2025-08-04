@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 424/491
-Last updated: 2025-08-04 11:07 +0700
+Completed: 426/491
+Last updated: 2025-08-04 15:16 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -26,7 +26,7 @@ Last updated: 2025-08-04 11:07 +0700
 | 17 | abbreviations-easy | ✓ | 11.509ms | 3.2 MB |
 | 18 | abbreviations-simple | ✓ | 16.815ms | 3.4 MB |
 | 19 | abc-problem | ✓ | 1.544ms | 3.5 MB |
-| 20 | abelian-sandpile-model-identity | ✓ | 556µs | 3.1 MB |
+| 20 | abelian-sandpile-model-identity | ✓ | 718µs | 3.4 MB |
 | 21 | abelian-sandpile-model | ✓ | 562µs | 3.2 MB |
 | 22 | abstract-type | ✓ | 239µs | 2.9 MB |
 | 23 | abundant-deficient-and-perfect-number-classifications | ✓ | 2.534971s | 3.2 MB |
@@ -460,8 +460,8 @@ Last updated: 2025-08-04 11:07 +0700
 | 451 | floyd-warshall-algorithm2 | ✓ | 613µs | 3.1 MB |
 | 452 | floyds-triangle | ✓ | 573µs | 3.1 MB |
 | 453 | forest-fire | ✓ | 101.181ms | 3.4 MB |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
+| 454 | fork-2 | ✓ | 218µs | 3.2 MB |
+| 455 | fork | ✓ | 215µs | 3.2 MB |
 | 456 | formal-power-series |   |  |  |
 | 457 | formatted-numeric-output | ✓ | 463µs | 3.2 MB |
 | 458 | forward-difference | ✓ | 541µs | 3.1 MB |
