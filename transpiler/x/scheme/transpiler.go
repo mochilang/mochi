@@ -187,10 +187,56 @@ func EmitString(p *Program) []byte {
 }
 
 func Format(src []byte) []byte {
-	if len(src) > 0 && src[len(src)-1] != '\n' {
-		src = append(src, '\n')
+	var out bytes.Buffer
+	indent := 0
+	inStr := false
+	for i := 0; i < len(src); i++ {
+		c := src[i]
+		switch c {
+		case '"':
+			out.WriteByte(c)
+			if i == 0 || src[i-1] != '\\' {
+				inStr = !inStr
+			}
+		case '(':
+			out.WriteByte(c)
+			if !inStr {
+				indent++
+				out.WriteByte('\n')
+				writeIndent(&out, indent)
+			}
+		case ')':
+			if !inStr {
+				indent--
+				out.WriteByte('\n')
+				writeIndent(&out, indent)
+				out.WriteByte(')')
+				if i+1 < len(src) && src[i+1] != ')' && src[i+1] != '\n' {
+					out.WriteByte('\n')
+					writeIndent(&out, indent)
+				}
+			} else {
+				out.WriteByte(')')
+			}
+		case '\n':
+			out.WriteByte('\n')
+			if !inStr {
+				writeIndent(&out, indent)
+			}
+		default:
+			out.WriteByte(c)
+		}
 	}
-	return append(header(), src...)
+	if out.Len() > 0 && out.Bytes()[out.Len()-1] != '\n' {
+		out.WriteByte('\n')
+	}
+	return append(header(), out.Bytes()...)
+}
+
+func writeIndent(buf *bytes.Buffer, n int) {
+	for i := 0; i < n; i++ {
+		buf.WriteString("  ")
+	}
 }
 
 func header() []byte {
