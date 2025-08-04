@@ -89,15 +89,15 @@ var (
 	needInput               bool
 	needSubstring           bool
 	needAtoi                bool
-        needCharAt              bool
-        needSliceInt            bool
-        needSliceDouble         bool
-        needSliceStr            bool
-       needRepeat              bool
-       needParseIntStr         bool
-        needGMP                 bool
-        needStrBigInt           bool
-        needListAppendBigRat    bool
+	needCharAt              bool
+	needSliceInt            bool
+	needSliceDouble         bool
+	needSliceStr            bool
+	needRepeat              bool
+	needParseIntStr         bool
+	needGMP                 bool
+	needStrBigInt           bool
+	needListAppendBigRat    bool
 
 	currentFuncName   string
 	currentFuncReturn string
@@ -159,54 +159,54 @@ func emitLensExpr(w io.Writer, e Expr) {
 }
 
 func emitExtraArgs(w io.Writer, paramType string, arg Expr) {
-        if strings.HasSuffix(paramType, "[][]") {
-                io.WriteString(w, ", ")
-                emitLenExpr(w, arg)
-                io.WriteString(w, ", ")
-                emitLensExpr(w, arg)
-                io.WriteString(w, ", ")
-                emitLenExpr(w, arg)
-        } else if strings.HasSuffix(paramType, "[]") {
-                io.WriteString(w, ", ")
-                emitLenExpr(w, arg)
-        }
+	if strings.HasSuffix(paramType, "[][]") {
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+		io.WriteString(w, ", ")
+		emitLensExpr(w, arg)
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+	} else if strings.HasSuffix(paramType, "[]") {
+		io.WriteString(w, ", ")
+		emitLenExpr(w, arg)
+	}
 }
 
 func emitBigIntInt(w io.Writer, e Expr) {
-       io.WriteString(w, "mpz_get_si(")
-       switch e.(type) {
-       case *CallExpr:
-               e.emitExpr(w)
-       default:
-               io.WriteString(w, "*")
-               e.emitExpr(w)
-       }
-       io.WriteString(w, ")")
+	io.WriteString(w, "mpz_get_si(")
+	switch e.(type) {
+	case *CallExpr:
+		e.emitExpr(w)
+	default:
+		io.WriteString(w, "*")
+		e.emitExpr(w)
+	}
+	io.WriteString(w, ")")
 }
 
 func emitStrExpr(w io.Writer, e Expr) {
-       if exprIsString(e) {
-               e.emitExpr(w)
-               return
-       }
-       if exprIsBool(e) {
-               needStrBool = true
-               io.WriteString(w, "str_bool(")
-               e.emitExpr(w)
-               io.WriteString(w, ")")
-               return
-       }
-       if exprIsFloat(e) || inferExprType(currentEnv, e) == "double" {
-               needStrFloat = true
-               io.WriteString(w, "str_float(")
-               e.emitExpr(w)
-               io.WriteString(w, ")")
-               return
-       }
-       needStrInt = true
-       io.WriteString(w, "str_int(")
-       e.emitExpr(w)
-       io.WriteString(w, ")")
+	if exprIsString(e) {
+		e.emitExpr(w)
+		return
+	}
+	if exprIsBool(e) {
+		needStrBool = true
+		io.WriteString(w, "str_bool(")
+		e.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if exprIsFloat(e) || inferExprType(currentEnv, e) == "double" {
+		needStrFloat = true
+		io.WriteString(w, "str_float(")
+		e.emitExpr(w)
+		io.WriteString(w, ")")
+		return
+	}
+	needStrInt = true
+	io.WriteString(w, "str_int(")
+	e.emitExpr(w)
+	io.WriteString(w, ")")
 }
 
 func varBaseType(name string) string {
@@ -703,22 +703,26 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		}
 		if lst, ok := d.Value.(*ListLit); ok {
 			if len(lst.Elems) > 0 {
-				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 {
-					fmt.Fprintf(w, "%s %s[%d][%d] = {", base, d.Name, len(lst.Elems), len(sub.Elems))
+				if _, ok2 := lst.Elems[0].(*ListLit); ok2 {
 					for i, e := range lst.Elems {
-						if i > 0 {
-							io.WriteString(w, ", ")
-						}
 						if sl, ok3 := e.(*ListLit); ok3 {
-							io.WriteString(w, "{")
+							fmt.Fprintf(w, "%s %s_%d[%d] = {", base, d.Name, i, len(sl.Elems))
 							for j, se := range sl.Elems {
 								if j > 0 {
 									io.WriteString(w, ", ")
 								}
 								se.emitExpr(w)
 							}
-							io.WriteString(w, "}")
+							io.WriteString(w, "};\n")
+							writeIndent(w, indent)
 						}
+					}
+					fmt.Fprintf(w, "%s *%s[] = {", base, d.Name)
+					for i := range lst.Elems {
+						if i > 0 {
+							io.WriteString(w, ", ")
+						}
+						fmt.Fprintf(w, "%s_%d", d.Name, i)
 					}
 					io.WriteString(w, "};\n")
 					writeIndent(w, indent)
@@ -1775,16 +1779,16 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
-       if (c.Func == "num" || c.Func == "denom") && len(c.Args) == 1 {
-               needGMP = true
-               io.WriteString(w, "mpz_get_si(")
-               io.WriteString(w, c.Func)
-               io.WriteString(w, "(")
-               c.Args[0].emitExpr(w)
-               io.WriteString(w, "))")
-               return
-       }
-       if c.Func == "str" && len(c.Args) == 1 {
+	if (c.Func == "num" || c.Func == "denom") && len(c.Args) == 1 {
+		needGMP = true
+		io.WriteString(w, "mpz_get_si(")
+		io.WriteString(w, c.Func)
+		io.WriteString(w, "(")
+		c.Args[0].emitExpr(w)
+		io.WriteString(w, "))")
+		return
+	}
+	if c.Func == "str" && len(c.Args) == 1 {
 		arg := c.Args[0]
 		if exprIsBool(arg) {
 			needStrBool = true
@@ -1839,33 +1843,33 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					emitLenExpr(w, arg)
 					io.WriteString(w, ")")
 				}
-                       return
-               }
-       }
-       if c.Func == "repeat" && len(c.Args) == 2 {
-               needRepeat = true
-               funcReturnTypes["repeat"] = "const char*"
-               io.WriteString(w, "repeat(")
-               c.Args[0].emitExpr(w)
-               io.WriteString(w, ", ")
-               c.Args[1].emitExpr(w)
-               io.WriteString(w, ")")
-               return
-       }
-       if c.Func == "parseIntStr" && (len(c.Args) == 1 || len(c.Args) == 2) {
-               needParseIntStr = true
-               funcReturnTypes["parseIntStr"] = "int"
-               io.WriteString(w, "parseIntStr(")
-               c.Args[0].emitExpr(w)
-               if len(c.Args) == 1 {
-                       io.WriteString(w, ", 10")
-               } else {
-                       io.WriteString(w, ", ")
-                       c.Args[1].emitExpr(w)
-               }
-               io.WriteString(w, ")")
-               return
-       }
+				return
+			}
+		}
+		if c.Func == "repeat" && len(c.Args) == 2 {
+			needRepeat = true
+			funcReturnTypes["repeat"] = "const char*"
+			io.WriteString(w, "repeat(")
+			c.Args[0].emitExpr(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emitExpr(w)
+			io.WriteString(w, ")")
+			return
+		}
+		if c.Func == "parseIntStr" && (len(c.Args) == 1 || len(c.Args) == 2) {
+			needParseIntStr = true
+			funcReturnTypes["parseIntStr"] = "int"
+			io.WriteString(w, "parseIntStr(")
+			c.Args[0].emitExpr(w)
+			if len(c.Args) == 1 {
+				io.WriteString(w, ", 10")
+			} else {
+				io.WriteString(w, ", ")
+				c.Args[1].emitExpr(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 		if t == "double" {
 			needStrFloat = true
 			io.WriteString(w, "str_float(")
@@ -2113,36 +2117,36 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 			return
 		}
 	}
-       lt := inferExprType(currentEnv, b.Left)
-       rt := inferExprType(currentEnv, b.Right)
-       if (b.Op == "/" || b.Op == "%") && lt == "bigint" && rt == "bigint" {
-               needGMP = true
-               emitBigIntInt(w, b.Left)
-               io.WriteString(w, " ")
-               io.WriteString(w, b.Op)
-               io.WriteString(w, " ")
-               emitBigIntInt(w, b.Right)
-               return
-       }
-       if (b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "bigint" || rt == "bigint") {
-               needGMP = true
-               if lt == "bigint" {
-                       emitBigIntInt(w, b.Left)
-               } else {
-                       b.Left.emitExpr(w)
-               }
-               fmt.Fprintf(w, " %s ", b.Op)
-               if rt == "bigint" {
-                       emitBigIntInt(w, b.Right)
-               } else {
-                       b.Right.emitExpr(w)
-               }
-               return
-       }
-       if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
-               if lt == "bigrat" || rt == "bigrat" {
-                        needGMP = true
-                        op := "_add"
+	lt := inferExprType(currentEnv, b.Left)
+	rt := inferExprType(currentEnv, b.Right)
+	if (b.Op == "/" || b.Op == "%") && lt == "bigint" && rt == "bigint" {
+		needGMP = true
+		emitBigIntInt(w, b.Left)
+		io.WriteString(w, " ")
+		io.WriteString(w, b.Op)
+		io.WriteString(w, " ")
+		emitBigIntInt(w, b.Right)
+		return
+	}
+	if (b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") && (lt == "bigint" || rt == "bigint") {
+		needGMP = true
+		if lt == "bigint" {
+			emitBigIntInt(w, b.Left)
+		} else {
+			b.Left.emitExpr(w)
+		}
+		fmt.Fprintf(w, " %s ", b.Op)
+		if rt == "bigint" {
+			emitBigIntInt(w, b.Right)
+		} else {
+			b.Right.emitExpr(w)
+		}
+		return
+	}
+	if b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" {
+		if lt == "bigrat" || rt == "bigrat" {
+			needGMP = true
+			op := "_add"
 			switch b.Op {
 			case "-":
 				op = "_sub"
@@ -2180,15 +2184,15 @@ func (b *BinaryExpr) emitExpr(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-       if b.Op == "+" && (exprIsString(b.Left) || exprIsString(b.Right)) {
-               needStrConcat = true
-               io.WriteString(w, "str_concat(")
-               emitStrExpr(w, b.Left)
-               io.WriteString(w, ", ")
-               emitStrExpr(w, b.Right)
-               io.WriteString(w, ")")
-               return
-       }
+	if b.Op == "+" && (exprIsString(b.Left) || exprIsString(b.Right)) {
+		needStrConcat = true
+		io.WriteString(w, "str_concat(")
+		emitStrExpr(w, b.Left)
+		io.WriteString(w, ", ")
+		emitStrExpr(w, b.Right)
+		io.WriteString(w, ")")
+		return
+	}
 	if (exprIsString(b.Left) || exprIsString(b.Right) || inferExprType(currentEnv, b.Left) == "const char*" || inferExprType(currentEnv, b.Right) == "const char*") &&
 		(b.Op == "==" || b.Op == "!=" || b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
 		io.WriteString(w, "strcmp(")
@@ -2384,7 +2388,7 @@ func (p *Program) Emit() []byte {
 	if needSHA256 || needMD5Hex {
 		buf.WriteString("#include <unistd.h>\n")
 	}
-       if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
+	if needStrConcat || needStrInt || needStrFloat || needStrBool || needStrListInt || needStrListStr || needSubstring || needAtoi || needCharAt || needSliceInt || needSliceDouble || needSliceStr || needRepeat || needParseIntStr || needInput || needNow || needUpper || needLower || needPadStart || needListAppendInt || needListAppendStr || needListAppendPtr || needListAppendDoublePtr || needListAppendDoubleNew || needListAppendStrPtr || needListAppendSizeT || needListAppendStrNew || len(needListAppendStruct) > 0 || len(needListAppendStructNew) > 0 || needSHA256 || needMD5Hex {
 		buf.WriteString("#include <stdlib.h>\n")
 	}
 	if needMem {
@@ -2574,37 +2578,37 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out;\n")
 		buf.WriteString("}\n\n")
 	}
-        if needPadStart {
-                buf.WriteString("static char* _padStart(const char *s, int width, const char *pad) {\n")
-                buf.WriteString("    size_t slen = strlen(s);\n")
-                buf.WriteString("    size_t plen = strlen(pad);\n")
-                buf.WriteString("    if ((int)slen >= width || plen == 0) return strdup(s);\n")
-                buf.WriteString("    size_t padlen = width - slen;\n")
-                buf.WriteString("    char *out = malloc(width + 1);\n")
-                buf.WriteString("    size_t pos = 0;\n")
-                buf.WriteString("    for (size_t i = 0; i < padlen; i++) out[pos++] = pad[i % plen];\n")
-                buf.WriteString("    memcpy(out + pos, s, slen);\n")
-                buf.WriteString("    out[padlen + slen] = 0;\n")
-                buf.WriteString("    return out;\n")
-                buf.WriteString("}\n\n")
-        }
-       if needRepeat {
-               buf.WriteString("static char* repeat(const char *s, int n) {\n")
-               buf.WriteString("    size_t len = strlen(s);\n")
-               buf.WriteString("    char *out = malloc(len * n + 1);\n")
-               buf.WriteString("    for (int i = 0; i < n; i++) memcpy(out + i * len, s, len);\n")
-               buf.WriteString("    out[len * n] = 0;\n")
-               buf.WriteString("    return out;\n")
-               buf.WriteString("}\n\n")
-       }
-       if needParseIntStr {
-               buf.WriteString("static long parseIntStr(const char *s, int base) {\n")
-               buf.WriteString("    return strtol(s, NULL, base);\n")
-               buf.WriteString("}\n\n")
-       }
-        if needMapGetSL {
-                buf.WriteString("typedef struct { const char **keys; const char ***vals; size_t *lens; size_t len; } MapSL;\n\n")
-        }
+	if needPadStart {
+		buf.WriteString("static char* _padStart(const char *s, int width, const char *pad) {\n")
+		buf.WriteString("    size_t slen = strlen(s);\n")
+		buf.WriteString("    size_t plen = strlen(pad);\n")
+		buf.WriteString("    if ((int)slen >= width || plen == 0) return strdup(s);\n")
+		buf.WriteString("    size_t padlen = width - slen;\n")
+		buf.WriteString("    char *out = malloc(width + 1);\n")
+		buf.WriteString("    size_t pos = 0;\n")
+		buf.WriteString("    for (size_t i = 0; i < padlen; i++) out[pos++] = pad[i % plen];\n")
+		buf.WriteString("    memcpy(out + pos, s, slen);\n")
+		buf.WriteString("    out[padlen + slen] = 0;\n")
+		buf.WriteString("    return out;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needRepeat {
+		buf.WriteString("static char* repeat(const char *s, int n) {\n")
+		buf.WriteString("    size_t len = strlen(s);\n")
+		buf.WriteString("    char *out = malloc(len * n + 1);\n")
+		buf.WriteString("    for (int i = 0; i < n; i++) memcpy(out + i * len, s, len);\n")
+		buf.WriteString("    out[len * n] = 0;\n")
+		buf.WriteString("    return out;\n")
+		buf.WriteString("}\n\n")
+	}
+	if needParseIntStr {
+		buf.WriteString("static long parseIntStr(const char *s, int base) {\n")
+		buf.WriteString("    return strtol(s, NULL, base);\n")
+		buf.WriteString("}\n\n")
+	}
+	if needMapGetSL {
+		buf.WriteString("typedef struct { const char **keys; const char ***vals; size_t *lens; size_t len; } MapSL;\n\n")
+	}
 	if needMapGetSS || needMapSetSS {
 		buf.WriteString("typedef struct { const char **keys; const char **vals; size_t len; } MapSS;\n\n")
 	}
@@ -3233,17 +3237,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needMD5Hex = false
 	needNow = false
 	needMem = false
-        needInput = false
-        needSubstring = false
-        needAtoi = false
-        needCharAt = false
-        needSliceInt = false
-        needSliceDouble = false
-        needSliceStr = false
-       needRepeat = false
-       needParseIntStr = false
-        needGMP = false
-        needStrBigInt = false
+	needInput = false
+	needSubstring = false
+	needAtoi = false
+	needCharAt = false
+	needSliceInt = false
+	needSliceDouble = false
+	needSliceStr = false
+	needRepeat = false
+	needParseIntStr = false
+	needGMP = false
+	needStrBigInt = false
 	needListAppendBigRat = false
 	datasetWhereEnabled = false
 	joinMultiEnabled = false
@@ -5352,15 +5356,15 @@ func convertUnary(u *parser.Unary) Expr {
 			if op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
 				sliceStart = convertExpr(op.Index.Start)
 				sliceEnd = convertExpr(op.Index.End)
-                               typ := inferExprType(currentEnv, current)
-                               if typ == "const char*" {
-                                       if sliceEnd == nil {
-                                               sliceEnd = &CallExpr{Func: "strlen", Args: []Expr{current}}
-                                       }
-                                       needSubstring = true
-                                       funcReturnTypes["_substring"] = "const char*"
-                                       current = &CallExpr{Func: "_substring", Args: []Expr{current, sliceStart, sliceEnd}}
-                               } else if typ == "int[]" {
+				typ := inferExprType(currentEnv, current)
+				if typ == "const char*" {
+					if sliceEnd == nil {
+						sliceEnd = &CallExpr{Func: "strlen", Args: []Expr{current}}
+					}
+					needSubstring = true
+					funcReturnTypes["_substring"] = "const char*"
+					current = &CallExpr{Func: "_substring", Args: []Expr{current, sliceStart, sliceEnd}}
+				} else if typ == "int[]" {
 					if vr, ok := current.(*VarRef); ok {
 						if sliceEnd == nil {
 							sliceEnd = &VarRef{Name: vr.Name + "_len"}
@@ -5771,13 +5775,13 @@ func convertUnary(u *parser.Unary) Expr {
 			}
 			return &CallExpr{Func: "str", Args: []Expr{arg}}
 		}
-               if (call.Func == "num" || call.Func == "denom") && len(call.Args) == 1 {
-                       arg := convertExpr(call.Args[0])
-                       needGMP = true
-                       funcReturnTypes[call.Func] = "long long"
-                       return &CallExpr{Func: call.Func, Args: []Expr{arg}}
-               }
-               if call.Func == "upper" && len(call.Args) == 1 {
+		if (call.Func == "num" || call.Func == "denom") && len(call.Args) == 1 {
+			arg := convertExpr(call.Args[0])
+			needGMP = true
+			funcReturnTypes[call.Func] = "long long"
+			return &CallExpr{Func: call.Func, Args: []Expr{arg}}
+		}
+		if call.Func == "upper" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
 			needUpper = true
 			funcReturnTypes["str_upper"] = "const char*"
@@ -5789,47 +5793,47 @@ func convertUnary(u *parser.Unary) Expr {
 			funcReturnTypes["str_lower"] = "const char*"
 			return &CallExpr{Func: "str_lower", Args: []Expr{arg}}
 		}
-                if call.Func == "padStart" && len(call.Args) == 3 {
-                        arg0 := convertExpr(call.Args[0])
-                        arg1 := convertExpr(call.Args[1])
-                        arg2 := convertExpr(call.Args[2])
-                        if arg0 == nil || arg1 == nil || arg2 == nil {
-                                return nil
-                        }
-                        needPadStart = true
-                        funcReturnTypes["_padStart"] = "const char*"
-                        return &CallExpr{Func: "_padStart", Args: []Expr{arg0, arg1, arg2}}
-                }
-               if call.Func == "repeat" && len(call.Args) == 2 {
-                       arg0 := convertExpr(call.Args[0])
-                       arg1 := convertExpr(call.Args[1])
-                       if arg0 == nil || arg1 == nil {
-                               return nil
-                       }
-                       needRepeat = true
-                       funcReturnTypes["repeat"] = "const char*"
-                       return &CallExpr{Func: "repeat", Args: []Expr{arg0, arg1}}
-               }
-               if call.Func == "parseIntStr" && (len(call.Args) == 1 || len(call.Args) == 2) {
-                       arg0 := convertExpr(call.Args[0])
-                       var arg1 Expr
-                       if len(call.Args) == 1 {
-                               arg1 = &IntLit{Value: 10}
-                       } else {
-                               arg1 = convertExpr(call.Args[1])
-                       }
-                       if arg0 == nil || arg1 == nil {
-                               return nil
-                       }
-                       needParseIntStr = true
-                       funcReturnTypes["parseIntStr"] = "int"
-                       return &CallExpr{Func: "parseIntStr", Args: []Expr{arg0, arg1}}
-               }
-                if call.Func == "json" && len(call.Args) == 1 {
-                        if val, ok := valueFromExpr(convertExpr(call.Args[0])); ok {
-                                b, err := json.Marshal(val)
-                                if err == nil {
-                                        return &StringLit{Value: string(b)}
+		if call.Func == "padStart" && len(call.Args) == 3 {
+			arg0 := convertExpr(call.Args[0])
+			arg1 := convertExpr(call.Args[1])
+			arg2 := convertExpr(call.Args[2])
+			if arg0 == nil || arg1 == nil || arg2 == nil {
+				return nil
+			}
+			needPadStart = true
+			funcReturnTypes["_padStart"] = "const char*"
+			return &CallExpr{Func: "_padStart", Args: []Expr{arg0, arg1, arg2}}
+		}
+		if call.Func == "repeat" && len(call.Args) == 2 {
+			arg0 := convertExpr(call.Args[0])
+			arg1 := convertExpr(call.Args[1])
+			if arg0 == nil || arg1 == nil {
+				return nil
+			}
+			needRepeat = true
+			funcReturnTypes["repeat"] = "const char*"
+			return &CallExpr{Func: "repeat", Args: []Expr{arg0, arg1}}
+		}
+		if call.Func == "parseIntStr" && (len(call.Args) == 1 || len(call.Args) == 2) {
+			arg0 := convertExpr(call.Args[0])
+			var arg1 Expr
+			if len(call.Args) == 1 {
+				arg1 = &IntLit{Value: 10}
+			} else {
+				arg1 = convertExpr(call.Args[1])
+			}
+			if arg0 == nil || arg1 == nil {
+				return nil
+			}
+			needParseIntStr = true
+			funcReturnTypes["parseIntStr"] = "int"
+			return &CallExpr{Func: "parseIntStr", Args: []Expr{arg0, arg1}}
+		}
+		if call.Func == "json" && len(call.Args) == 1 {
+			if val, ok := valueFromExpr(convertExpr(call.Args[0])); ok {
+				b, err := json.Marshal(val)
+				if err == nil {
+					return &StringLit{Value: string(b)}
 				}
 			}
 		}
@@ -5962,9 +5966,15 @@ func convertUnary(u *parser.Unary) Expr {
 		}
 		return &IntLit{Value: v}
 	}
-	if lit.Float != nil && len(u.Ops) == 0 {
+	if lit.Float != nil {
+		val := *lit.Float
+		for _, op := range u.Ops {
+			if op == "-" {
+				val = -val
+			}
+		}
 		markMath()
-		return &FloatLit{Value: *lit.Float}
+		return &FloatLit{Value: val}
 	}
 	if lit.Bool != nil && len(u.Ops) == 0 {
 		if bool(*lit.Bool) {
@@ -6425,7 +6435,7 @@ func exprIsString(e Expr) bool {
 		_, ok := constStrings[v.Name]
 		return ok
 	case *CallExpr:
-               if v.Func == "str" || v.Func == "substring" || v.Func == "substr" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" || v.Func == "repeat" {
+		if v.Func == "str" || v.Func == "substring" || v.Func == "substr" || v.Func == "_substring" || v.Func == "json" || v.Func == "padStart" || v.Func == "_padStart" || v.Func == "repeat" {
 			return true
 		}
 		if fn, ok := currentEnv.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
@@ -6611,17 +6621,17 @@ func inferExprType(env *types.Env, e Expr) string {
 			return "const char*"
 		}
 	case *CallExpr:
-               switch v.Func {
-               case "str", "substring", "substr", "json", "padStart", "_padStart", "repeat":
-                       return "const char*"
-               case "len":
-                       return "long long"
-               case "parseIntStr":
-                       return "long long"
-               case "num", "denom":
-                       return "long long"
-               case "_bigrat", "_add", "_sub", "_mul", "_div":
-                       return "bigrat"
+		switch v.Func {
+		case "str", "substring", "substr", "json", "padStart", "_padStart", "repeat":
+			return "const char*"
+		case "len":
+			return "long long"
+		case "parseIntStr":
+			return "long long"
+		case "num", "denom":
+			return "long long"
+		case "_bigrat", "_add", "_sub", "_mul", "_div":
+			return "bigrat"
 		default:
 			if t, ok := funcReturnTypes[v.Func]; ok {
 				return t
@@ -6690,6 +6700,26 @@ func inferExprType(env *types.Env, e Expr) string {
 
 func inferCType(env *types.Env, name string, e Expr) string {
 	if t := inferExprType(env, e); t != "" {
+		// If inference reports a one-dimensional int slice but the
+		// literal actually contains nested lists of floating point
+		// values, upgrade the type to a two-dimensional float slice.
+		if t == "int[]" {
+			if lst, ok := e.(*ListLit); ok && len(lst.Elems) > 0 {
+				if sub, ok2 := lst.Elems[0].(*ListLit); ok2 {
+					hasFloat := false
+					for _, it := range sub.Elems {
+						if _, okf := it.(*FloatLit); okf {
+							hasFloat = true
+							break
+						}
+					}
+					if hasFloat {
+						return "double[][]"
+					}
+					return "long long[][]"
+				}
+			}
+		}
 		return t
 	}
 	if t, err := env.GetVar(name); err == nil {
