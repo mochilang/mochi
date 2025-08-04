@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 334/491
+Completed programs: 345/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -366,26 +366,26 @@ Completed programs: 334/491
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 621.0ms | 28.99MB |
 | 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
+| 361 | ethiopian-multiplication | ✓ | 73.0µs | 256B |
 | 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
+| 363 | euler-method | ✓ | 2.0ms | 287.52KB |
+| 364 | eulers-constant-0.5772... | ✓ | 7.0ms | 4.58MB |
+| 365 | eulers-identity | ✓ | 154.0µs | 3.56KB |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
+| 367 | evaluate-binomial-coefficients | ✓ | 56.0µs | 256B |
+| 368 | even-or-odd | ✓ | 208.0µs | 6.97KB |
+| 369 | events | ✓ | 32.0µs | 256B |
+| 370 | evolutionary-algorithm | ✓ | 55.0ms | 22.60MB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 16.0µs | 240B |
+| 372 | exceptions | ✓ | 96.0µs | 368B |
+| 373 | executable-library | ✓ | 11.38s | 16.24GB |
 | 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command | ✓ | 488.0µs | 10.90KB |
+| 375 | execute-a-system-command | ✓ | 486.0µs | 10.90KB |
 | 376 | execute-brain- | ✓ | 1.0ms | 244.05KB |
-| 377 | execute-computer-zero-1 | ✓ | 3.0ms | 441.38KB |
-| 378 | execute-computer-zero | ✓ | 423.0µs | 67.36KB |
-| 379 | execute-hq9+ | ✓ | 402.0µs | 22.66KB |
-| 380 | execute-snusp | ✓ | 21.0µs | 208B |
+| 377 | execute-computer-zero-1 | ✓ | 1.0ms | 344.98KB |
+| 378 | execute-computer-zero | ✓ | 461.0µs | 67.36KB |
+| 379 | execute-hq9+ | ✓ | 384.0µs | 22.66KB |
+| 380 | execute-snusp | ✓ | 17.0µs | 208B |
 | 381 | exponentiation-operator-2 | ✓ | 234.0µs | 11.77KB |
 | 382 | exponentiation-operator | ✓ | 252.0µs | 11.12KB |
 | 383 | exponentiation-order | ✓ | 136.0µs | 344B |
@@ -497,4 +497,4 @@ Completed programs: 334/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-03 16:55 UTC
+Last updated 2025-08-04 07:36 +0700

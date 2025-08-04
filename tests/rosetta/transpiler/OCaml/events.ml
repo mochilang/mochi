@@ -30,7 +30,16 @@ exception Return
 let rec main () =
   let __ret = ref (Obj.magic 0) in
   (try
-  print_endline ("Hello World!");
+  print_endline ("program start");
+  let ev = ref ([("set", Obj.repr (false))]) in
+  print_endline ("program sleeping");
+  print_endline ("task start");
+  ev := (("set", Obj.repr (true)) :: List.remove_assoc ("set") (Obj.magic (!ev) : (string * Obj.t) list));
+  print_endline ("program signaling event");
+  if (Obj.obj (List.assoc ("set") (!ev) : Obj.t)) then (
+  print_endline ("event reset by task");
+  ev := (("set", Obj.repr (false)) :: List.remove_assoc ("set") (Obj.magic (!ev) : (string * Obj.t) list));
+  );
     !__ret
   with Return -> !__ret)
 

@@ -25,12 +25,40 @@ let rec __show v =
 
 let nil = Obj.repr 0
 
+exception Break
+exception Continue
+
 exception Return
 
-let rec main () =
+let rec binom n k =
+  let __ret = ref (Z.of_int 0) in
+  (try
+  let n = (Obj.magic n : int) in
+  let k = (Obj.magic k : int) in
+  if ((k < 0) || (k > n)) then (
+  __ret := (Obj.magic ((Z.of_int (0))) : Z.t); raise Return
+  );
+  let kk = ref (k) in
+  if (!kk > (n - !kk)) then (
+  kk := (n - !kk);
+  );
+  let res = ref ((Z.of_int (1))) in
+  let i = ref (0) in
+  (try while (!i < !kk) do
+    try
+  res := (Z.mul (!res) ((Z.of_int ((n - !i)))));
+  i := (!i + 1);
+  res := (Z.div (!res) ((Z.of_int (!i))));
+    with Continue -> ()
+  done with Break -> ());
+  __ret := (Obj.magic (!res) : Z.t); raise Return
+  with Return -> !__ret)
+
+and main () =
   let __ret = ref (Obj.magic 0) in
   (try
-  print_endline ("Hello World!");
+  print_endline ((Z.to_string (binom (Obj.repr (5)) (Obj.repr (3)))));
+  print_endline ((Z.to_string (binom (Obj.repr (60)) (Obj.repr (30)))));
     !__ret
   with Return -> !__ret)
 
