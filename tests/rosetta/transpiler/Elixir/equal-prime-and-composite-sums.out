@@ -7,3 +7,8 @@ Sum        | Prime Index | Composite Index
 " 1,503,397 |         660 |           1,582"
 "18,859,052 |       2,143 |           5,699"
 "93,952,013 |       4,556 |          12,821"
+{
+  "duration_us": 42050888,
+  "memory_bytes": 10535128,
+  "name": "main"
+}

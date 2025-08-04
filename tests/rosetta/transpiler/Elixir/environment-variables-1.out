@@ -1,1 +1,6 @@
 nil
+{
+  "duration_us": 150,
+  "memory_bytes": 0,
+  "name": "main"
+}

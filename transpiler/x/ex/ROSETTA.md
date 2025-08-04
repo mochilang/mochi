@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (277/491)
-_Last updated: 2025-08-04 16:53 +0700_
+## Rosetta Test Checklist (279/491)
+_Last updated: 2025-08-04 17:03 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -354,15 +354,15 @@ _Last updated: 2025-08-04 16:53 +0700_
 | 346 | enforced-immutability | ✓ | 2.36ms | 24 B |
 | 347 | entropy-1 | ✓ | 8.29ms | 25.0 KB |
 | 348 | entropy-2 | ✓ | 1.77ms | 25.1 KB |
-| 349 | entropy-narcissist |  |  |  |
-| 350 | enumerations-1 | ✓ |  |  |
-| 351 | enumerations-2 | ✓ |  |  |
-| 352 | enumerations-3 | ✓ |  |  |
-| 353 | enumerations-4 | ✓ |  |  |
-| 354 | environment-variables-1 | ✓ |  |  |
-| 355 | environment-variables-2 | ✓ |  |  |
-| 356 | equal-prime-and-composite-sums | ✓ |  |  |
-| 357 | equilibrium-index |  |  |  |
+| 349 | entropy-narcissist | ✓ | 82.35ms | 249.1 KB |
+| 350 | enumerations-1 | ✓ | 1us | 0 B |
+| 351 | enumerations-2 | ✓ | 1us | 0 B |
+| 352 | enumerations-3 | ✓ | 1us | 0 B |
+| 353 | enumerations-4 | ✓ | 1us | 0 B |
+| 354 | environment-variables-1 | ✓ | 150us | 0 B |
+| 355 | environment-variables-2 | ✓ | 785us | 269.3 KB |
+| 356 | equal-prime-and-composite-sums | ✓ | 42.05s | 10.0 MB |
+| 357 | equilibrium-index | ✓ | 835.44ms | 1.1 MB |
 | 358 | erd-s-nicolas-numbers |  |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |  |  |  |
 | 360 | esthetic-numbers | ✓ |  |  |
