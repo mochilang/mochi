@@ -45,7 +45,22 @@ func (k Keyword) Emit(w io.Writer) {
 type StringLit string
 
 func (s StringLit) Emit(w io.Writer) {
-	fmt.Fprintf(w, "%q", string(s))
+	esc := strconv.Quote(string(s))
+	if strings.Contains(esc, "\\x") {
+		var b strings.Builder
+		for i := 0; i < len(esc); i++ {
+			if i+3 < len(esc) && esc[i] == '\\' && esc[i+1] == 'x' {
+				b.WriteString("\\u00")
+				b.WriteByte(esc[i+2])
+				b.WriteByte(esc[i+3])
+				i += 3
+				continue
+			}
+			b.WriteByte(esc[i])
+		}
+		esc = b.String()
+	}
+	io.WriteString(w, esc)
 }
 
 // IntLit represents an integer literal.
