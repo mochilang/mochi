@@ -1,3 +1,7 @@
+## Progress (2025-08-05 01:14 +0700)
+- fs transpiler: support int64 literals
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-05 00:29 +0700)
 - fs transpiler: handle static fields and string iteration
 - Generated F# for 103/105 programs (103 passing)
