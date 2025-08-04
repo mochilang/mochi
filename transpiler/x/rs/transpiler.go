@@ -752,6 +752,33 @@ type SliceExpr struct {
 }
 
 func (s *SliceExpr) emit(w io.Writer) {
+	tgt := inferType(s.Target)
+	if tgt == "String" {
+		s.Target.emit(w)
+		io.WriteString(w, ".chars().skip(")
+		if s.Start != nil {
+			s.Start.emit(w)
+		} else {
+			io.WriteString(w, "0")
+		}
+		io.WriteString(w, " as usize).take(")
+		if s.End != nil {
+			if s.Start != nil {
+				io.WriteString(w, "(")
+				s.End.emit(w)
+				io.WriteString(w, " - ")
+				s.Start.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				s.End.emit(w)
+			}
+		} else {
+			io.WriteString(w, "usize::MAX")
+		}
+		io.WriteString(w, " as usize).collect::<String>()")
+		return
+	}
+
 	s.Target.emit(w)
 	io.WriteString(w, "[")
 	if s.Start != nil {
@@ -765,7 +792,6 @@ func (s *SliceExpr) emit(w io.Writer) {
 		io.WriteString(w, " as usize")
 	}
 	io.WriteString(w, "]")
-	tgt := inferType(s.Target)
 	if strings.HasPrefix(tgt, "Vec<") {
 		io.WriteString(w, ".to_vec()")
 	} else {
