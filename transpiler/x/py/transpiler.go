@@ -1410,7 +1410,13 @@ func structFromDataClass(dc *DataClassDef, env *types.Env) types.StructType {
 	for _, f := range dc.Fields {
 		fields[f.Name] = pyTypeToType(f.Type, env)
 	}
-	return types.StructType{Name: dc.Name, Fields: fields}
+	st := types.StructType{Name: dc.Name, Fields: fields}
+	if env != nil {
+		if existing, ok := env.GetStruct(dc.Name); ok {
+			st.Methods = existing.Methods
+		}
+	}
+	return st
 }
 
 func typeRefSimpleName(t *parser.TypeRef) string {
@@ -1863,6 +1869,12 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 				}
 			case "Fraction":
 				return types.BigRatType{}
+			}
+		} else if fe, ok := ex.Func.(*FieldExpr); ok {
+			if st, ok := inferPyType(fe.Target, env).(types.StructType); ok {
+				if m, ok := st.Methods[fe.Name]; ok {
+					return m.Type.Return
+				}
 			}
 		}
 		return types.AnyType{}
@@ -3713,6 +3725,9 @@ func convertStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
 						return nil, err
 					}
 					typ = inferTypeFromExpr(s.Let.Value)
+					if _, ok := typ.(types.AnyType); ok {
+						typ = inferPyType(e, env)
+					}
 					env.SetVar(s.Let.Name, typ, false)
 					if list, ok := e.(*ListLit); ok {
 						if dc, elems := maybeDataClassList(s.Let.Name, list, env); dc != nil {
@@ -4422,6 +4437,9 @@ func convertSelector(sel *parser.SelectorExpr, method bool) Expr {
 					if _, ok2 := st.Fields[sel.Root]; ok2 {
 						return &FieldExpr{Target: &Name{Name: "self"}, Name: sel.Root}
 					}
+					if _, ok2 := st.Methods[sel.Root]; ok2 {
+						return &FieldExpr{Target: &Name{Name: "self"}, Name: sel.Root}
+					}
 				}
 			}
 		}
@@ -4726,6 +4744,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 					call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
 					return &LambdaExpr{Params: names, Expr: call}, nil
+				}
+			}
+			if t, err := currentEnv.GetVar("self"); err == nil {
+				if st, ok := t.(types.StructType); ok {
+					if _, ok := st.Methods[p.Call.Func]; ok {
+						return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
+					}
 				}
 			}
 		}
