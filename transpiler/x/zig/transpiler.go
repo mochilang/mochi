@@ -1508,11 +1508,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, ";")
 	if indent > 0 && varUses[v.Name] == 0 && !varMut[v.Name] {
-		if v.Mutable {
-			io.WriteString(w, " _ = ")
-			io.WriteString(w, v.Name)
-			io.WriteString(w, ";")
-		}
+		io.WriteString(w, " _ = ")
+		io.WriteString(w, v.Name)
+		io.WriteString(w, ";")
 	}
 	io.WriteString(w, "\n")
 }
