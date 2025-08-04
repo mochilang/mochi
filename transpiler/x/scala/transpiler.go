@@ -899,9 +899,14 @@ type CallExpr struct {
 }
 
 // LenExpr represents len(x) which becomes x.length in Scala.
+// The Mochi `len` builtin returns an integer. In Scala, we treat all
+// Mochi integers as `BigInt`, so we must convert the length result to
+// `BigInt` explicitly.
 type LenExpr struct{ Value Expr }
 
 func (l *LenExpr) emit(w io.Writer) {
+	needsBigInt = true
+	fmt.Fprint(w, "BigInt(")
 	fmt.Fprint(w, "(")
 	l.Value.emit(w)
 	t := inferTypeWithEnv(l.Value, nil)
@@ -910,6 +915,7 @@ func (l *LenExpr) emit(w io.Writer) {
 	} else {
 		fmt.Fprint(w, ").size")
 	}
+	fmt.Fprint(w, ")")
 }
 
 func (c *CallExpr) emit(w io.Writer) {
@@ -931,6 +937,13 @@ type StringLit struct{ Value string }
 
 func (s *StringLit) emit(w io.Writer) {
 	fmt.Fprint(w, quoteScalaString(s.Value))
+}
+
+// CharLit represents a single character literal.
+type CharLit struct{ Value string }
+
+func (c *CharLit) emit(w io.Writer) {
+	fmt.Fprintf(w, "'%s'", strings.Trim(quoteScalaString(c.Value), "\""))
 }
 
 type IntLit struct {
@@ -1393,9 +1406,29 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		e.emit(w)
 	}
-	emitChild(b.Left, false)
+	left, rightExpr := b.Left, b.Right
+	if b.Op == "<" || b.Op == ">" || b.Op == "<=" || b.Op == ">=" {
+		if sl, ok := left.(*StringLit); ok && len(sl.Value) == 1 {
+			t := inferTypeWithEnv(rightExpr, nil)
+			if t == "String" {
+				left = &CharLit{Value: sl.Value}
+				rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+			} else {
+				left = &CharLit{Value: sl.Value}
+			}
+		} else if sl, ok := rightExpr.(*StringLit); ok && len(sl.Value) == 1 {
+			t := inferTypeWithEnv(left, nil)
+			if t == "String" {
+				rightExpr = &CharLit{Value: sl.Value}
+				left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
+			} else {
+				rightExpr = &CharLit{Value: sl.Value}
+			}
+		}
+	}
+	emitChild(left, false)
 	fmt.Fprintf(w, " %s ", b.Op)
-	emitChild(b.Right, true)
+	emitChild(rightExpr, true)
 }
 
 type queryFrom struct {
@@ -4701,7 +4734,7 @@ func inferType(e Expr) string {
 	case *StructLit:
 		return ex.Name
 	case *LenExpr:
-		return "Int"
+		return "BigInt"
 	case *AppendExpr:
 		listType := inferType(ex.List)
 		if strings.HasPrefix(listType, "ArrayBuffer[") {
@@ -4970,6 +5003,8 @@ func isBigIntExpr(e Expr) bool {
 			return true
 		}
 		return isBigIntExpr(v.Value)
+	case *LenExpr:
+		return true
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			lt := inferType(v.Left)
