@@ -2951,17 +2951,11 @@ func transpileWhileStmt(w *parser.WhileStmt) (Node, error) {
 	condElems := []Node{}
 	other := []Node{}
 	pre := []Node{}
-	condFound := false
 	for _, n := range bodyNodes {
 		if c, b, ok := condRecur(n); ok {
-			if condFound {
-				other = append(other, n)
-				continue
-			}
-			condFound = true
 			condElems = append(condElems, c, b)
 		} else {
-			if !condFound {
+			if len(condElems) == 0 {
 				pre = append(pre, n)
 			} else {
 				other = append(other, n)
@@ -3072,13 +3066,11 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 	condElems := []Node{}
 	other := []Node{}
 	pre := []Node{}
-	condFound := false
 	for _, n := range bodyNodes {
 		if c, b, ok := condRecur(n); ok {
-			condFound = true
 			condElems = append(condElems, c, b)
 		} else {
-			if !condFound {
+			if len(condElems) == 0 {
 				pre = append(pre, n)
 			} else {
 				other = append(other, n)
@@ -3097,14 +3089,14 @@ func transpileForStmt(f *parser.ForStmt) (Node, error) {
 	condElems = append(condElems, Keyword("else"), elseNode)
 
 	condForm := &List{Elems: append([]Node{Symbol("cond")}, condElems...)}
-	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, condForm}}
-	var body Node
+	var inner Node
 	if len(pre) == 0 {
-		body = letForm
+		inner = condForm
 	} else {
-		body = &List{Elems: append([]Node{Symbol("do")}, append(pre, letForm)...)}
+		inner = &List{Elems: append([]Node{Symbol("do")}, append(pre, condForm)...)}
 	}
-	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, body}}
+	letForm := &List{Elems: []Node{Symbol("let"), iterBinding, inner}}
+	loopBody := &List{Elems: []Node{Symbol("when"), &List{Elems: []Node{Symbol("seq"), Symbol(seqSym)}}, letForm}}
 	return &List{Elems: []Node{Symbol("loop"), binding, loopBody}}, nil
 }
 
