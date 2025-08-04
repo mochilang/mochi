@@ -1,9 +1,10 @@
-// Generated 2025-07-30 21:05 +0700
+// Generated 2025-08-04 20:44 +0700
 
 exception Break
 exception Continue
 
 exception Return
+let mutable __ret = ()
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -41,14 +42,14 @@ let rec splitLines (s: string) =
         let mutable lines: string array = [||]
         let mutable start: int = 0
         let mutable i: int = 0
-        while i < (String.length s) do
+        while i < (String.length (s)) do
             if (_substring s i (i + 1)) = "\n" then
                 lines <- Array.append lines [|_substring s start i|]
                 i <- i + 1
                 start <- i
             else
                 i <- i + 1
-        lines <- Array.append lines [|_substring s start (String.length s)|]
+        lines <- Array.append lines [|_substring s start (String.length (s))|]
         __ret <- lines
         raise Return
         __ret
@@ -62,22 +63,22 @@ and parseFasta (text: string) =
         let mutable ``val``: string = ""
         let mutable out: string array = [||]
         try
-            for line in splitLines text do
+            for line in splitLines (text) do
                 try
                     if line = "" then
                         raise Continue
                     if (_substring line 0 1) = ">" then
                         if key <> "" then
                             out <- Array.append out [|(key + ": ") + ``val``|]
-                        let mutable hdr: string = _substring line 1 (String.length line)
+                        let mutable hdr: string = _substring line 1 (String.length (line))
                         let mutable idx: int = 0
-                        while (idx < (String.length hdr)) && ((_substring hdr idx (idx + 1)) <> " ") do
+                        while (idx < (String.length (hdr))) && ((_substring hdr idx (idx + 1)) <> " ") do
                             idx <- idx + 1
                         key <- _substring hdr 0 idx
                         ``val`` <- ""
                     else
                         if key = "" then
-                            printfn "%s" "missing header"
+                            printfn "%s" ("missing header")
                             __ret <- Array.empty<string>
                             raise Return
                         ``val`` <- ``val`` + line
@@ -99,9 +100,9 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        let res: string array = parseFasta FASTA
+        let res: string array = parseFasta (FASTA)
         for line in res do
-            printfn "%s" line
+            printfn "%s" (line)
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

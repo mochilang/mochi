@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (387/491)
+## Rosetta Golden Test Checklist (396/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -394,16 +394,16 @@ This file is auto-generated from rosetta tests.
 | 387 | extreme-floating-point-values | ✓ | 314µs | 48.1 KB |
 | 388 | faces-from-a-mesh-2 | ✓ | 361µs | 63.6 KB |
 | 389 | faces-from-a-mesh | ✓ | 353µs | 53.8 KB |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ | 330µs | 42.0 KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | ✓ | 444µs | 53.5 KB |
+| 391 | factorial-primes | ✓ | 355µs | 45.1 KB |
+| 392 | factorial | ✓ | 508µs | 42.9 KB |
+| 393 | factorions | ✓ | 3.889ms | 52.0 KB |
+| 394 | factors-of-a-mersenne-number | ✓ | 108.542ms | 53.5 KB |
+| 395 | factors-of-an-integer | ✓ | 439µs | 53.6 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 692.437ms | 59.3 KB |
+| 397 | farey-sequence | ✓ | 440µs | 54.0 KB |
+| 398 | fast-fourier-transform | ✓ | 496µs | 79.6 KB |
+| 399 | fasta-format | ✓ | 364µs | 55.1 KB |
 | 400 | faulhabers-formula | ✓ | 415µs | 62.4 KB |
 | 401 | faulhabers-triangle | ✓ | 449µs | 43.1 KB |
 | 402 | feigenbaum-constant-calculation | ✓ | 425µs | 77.1 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 20:23 +0700
+Last updated: 2025-08-04 20:44 +0700
