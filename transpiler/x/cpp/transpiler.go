@@ -43,6 +43,7 @@ var useBigRat bool
 var useRepeat bool
 var useSplit bool
 var usesPanic bool
+var usesSubprocess bool
 var reserved = map[string]bool{
 	"this":   true,
 	"new":    true,
@@ -61,6 +62,7 @@ var reserved = map[string]bool{
 	"or_eq":  true,
 	"xor":    true,
 	"xor_eq": true,
+	"asm":    true,
 }
 var currentReturnType string
 var inReturn bool
@@ -149,6 +151,7 @@ type Program struct {
 	UseSplit       bool
 	UseBenchNow    bool
 	UsePanic       bool
+	UseSubprocess  bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -636,6 +639,9 @@ func (p *Program) write(w io.Writer) {
 	if p.UseSHA256 {
 		p.addInclude("<openssl/sha.h>")
 	}
+	if p.UseSubprocess {
+		p.addInclude("<cstdio>")
+	}
 	if p.UsePanic {
 		p.addInclude("<stdexcept>")
 	}
@@ -733,6 +739,18 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    res.push_back(ips);")
 		fmt.Fprintln(w, "    res.push_back(std::any());")
 		fmt.Fprintln(w, "    return res;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseSubprocess {
+		fmt.Fprintln(w, "static std::string _subprocess_getoutput(const std::string& cmd) {")
+		fmt.Fprintln(w, "    std::string result;")
+		fmt.Fprintln(w, "    FILE* pipe = popen(cmd.c_str(), \"r\");")
+		fmt.Fprintln(w, "    if (!pipe) return result;")
+		fmt.Fprintln(w, "    char buf[128];")
+		fmt.Fprintln(w, "    while (fgets(buf, sizeof(buf), pipe)) result += buf;")
+		fmt.Fprintln(w, "    pclose(pipe);")
+		fmt.Fprintln(w, "    if (!result.empty() && result.back() == '\\n') result.pop_back();")
+		fmt.Fprintln(w, "    return result;")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseSHA256 {
@@ -1815,8 +1833,8 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, c.Type+"{}")
 		return
 	}
-	if c.Type == "int" && valType == "std::string" {
-		io.WriteString(w, "std::stoi(")
+	if (c.Type == "int" || c.Type == "int64_t") && valType == "std::string" {
+		io.WriteString(w, "std::stoll(")
 		c.Value.emit(w)
 		io.WriteString(w, ")")
 		return
@@ -2767,9 +2785,21 @@ func (s *LetStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, pt+" "+p.Name)
 		}
 		io.WriteString(w, ") mutable {\n")
+		prev := localTypes
+		nt := map[string]string{}
+		for k, v := range prev {
+			nt[k] = v
+		}
+		for _, p := range bl.Params {
+			if p.Type != "" {
+				nt[p.Name] = p.Type
+			}
+		}
+		localTypes = nt
 		for _, st := range bl.Body {
 			st.emit(w, indent+1)
 		}
+		localTypes = prev
 		io.WriteString(w, strings.Repeat("    ", indent)+"}")
 		io.WriteString(w, ";\n")
 		if localTypes != nil {
@@ -3327,6 +3357,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIndexOf = false
 	usesParseIntStr = false
 	usesPanic = false
+	usesSubprocess = false
 	useBigInt = false
 	useBigRat = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
@@ -3800,6 +3831,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseSplit = useSplit
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
+	cp.UseSubprocess = usesSubprocess
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -4264,6 +4296,11 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					}
 					return nil, nil
 				}
+				if path == "subprocess" {
+					builtinAliases[alias] = "python_subprocess"
+					usesSubprocess = true
+					return nil, nil
+				}
 			case "go":
 				if path == "strings" {
 					builtinAliases[alias] = "go_strings"
@@ -4567,6 +4604,12 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								if sel.Field == "LookupHost" && len(args) == 1 {
 									usesLookupHost = true
 									expr = &CallExpr{Name: "_lookup_host", Args: args}
+									break
+								}
+							case "python_subprocess":
+								if sel.Field == "getoutput" && len(args) == 1 {
+									usesSubprocess = true
+									expr = &CallExpr{Name: "_subprocess_getoutput", Args: args}
 									break
 								}
 							}

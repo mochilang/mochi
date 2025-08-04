@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (330/491) - Last updated 2025-08-04 14:59 +0700:
+Checklist of programs that currently transpile and run (350/491) - Last updated 2025-08-04 15:15 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -364,26 +364,26 @@ Checklist of programs that currently transpile and run (330/491) - Last updated 
 | 357 | equilibrium-index | ✓ | 288.0ms | 3.88MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes | ✓ | 10.0ms | 3.84MB |
-| 360 | esthetic-numbers |   |  |  |
-| 361 | ethiopian-multiplication |   |  |  |
-| 362 | euclid-mullin-sequence |   |  |  |
-| 363 | euler-method |   |  |  |
-| 364 | eulers-constant-0.5772... |   |  |  |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
-| 375 | execute-a-system-command |   |  |  |
-| 376 | execute-brain- |   |  |  |
-| 377 | execute-computer-zero-1 |   |  |  |
-| 378 | execute-computer-zero |   |  |  |
-| 379 | execute-hq9+ |   |  |  |
+| 360 | esthetic-numbers | ✓ | 1.45s | 4.91MB |
+| 361 | ethiopian-multiplication | ✓ | 184.0µs | 3.68MB |
+| 362 | euclid-mullin-sequence | ✓ | 48.0ms | 3.61MB |
+| 363 | euler-method | ✓ | 1.0ms | 3.74MB |
+| 364 | eulers-constant-0.5772... | ✓ | 573.0µs | 3.82MB |
+| 365 | eulers-identity | ✓ | 365.0µs | 3.61MB |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 596.0ms | 6.93MB |
+| 367 | evaluate-binomial-coefficients | ✓ | 260.0µs | 3.81MB |
+| 368 | even-or-odd | ✓ | 327.0µs | 3.75MB |
+| 369 | events | ✓ | 182.0µs | 3.63MB |
+| 370 | evolutionary-algorithm | ✓ | 96.0ms | 3.53MB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 165.0µs | 3.46MB |
+| 372 | exceptions | ✓ | 231.0µs | 3.62MB |
+| 373 | executable-library | ✓ | 3.75s | 3.84MB |
+| 374 | execute-a-markov-algorithm | ✓ | 7.0ms | 3.59MB |
+| 375 | execute-a-system-command | ✓ | 80.0µs | 3.58MB |
+| 376 | execute-brain- | ✓ | 718.0µs | 3.66MB |
+| 377 | execute-computer-zero-1 | ✓ | 2.0ms | 3.75MB |
+| 378 | execute-computer-zero | ✓ | 245.0µs | 3.61MB |
+| 379 | execute-hq9+ | ✓ | 1.0ms | 3.63MB |
 | 380 | execute-snusp |   |  |  |
 | 381 | exponentiation-operator-2 |   |  |  |
 | 382 | exponentiation-operator |   |  |  |
