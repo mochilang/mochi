@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"mochi/parser"
 	"mochi/runtime/data"
@@ -542,7 +543,11 @@ type FieldExpr struct {
 
 func (fe *FieldExpr) emit(w io.Writer) {
 	fe.Target.emit(w)
-	fmt.Fprintf(w, ".%s", toSnakeCase(fe.Name))
+	name := fe.Name
+	if r, _ := utf8.DecodeRuneInString(name); unicode.IsLower(r) {
+		name = toSnakeCase(name)
+	}
+	fmt.Fprintf(w, ".%s", name)
 }
 
 type QueryComp struct {
@@ -1379,7 +1384,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * std.heap.page_size_min;\n")
+		buf.WriteString("        return pages * std.mem.page_size;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -2941,6 +2946,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
+		// Track function signature for later type inference.
+		paramTypes := make([]string, len(params))
+		for i, p := range params {
+			paramTypes[i] = p.Type
+		}
+		funcParamTypes[name] = paramTypes
+		varTypes[name] = fmt.Sprintf("*const fn(%s) %s", strings.Join(paramTypes, ", "), ret)
 		funcReturns[name] = ret
 		if funDepth > 0 {
 			captured := []string{}
@@ -3081,13 +3093,30 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 					return &ListLit{Elems: elems}, nil
 				}
 				if v, ok := args[0].(*VarRef); ok {
-					if vt, ok2 := varTypes[v.Name]; ok2 && vt == "[]i64" {
-						elemT := zigTypeFromExpr(args[1])
-						varTypes[v.Name] = "[]" + elemT
-						if vd, ok3 := varDecls[v.Name]; ok3 {
-							vd.Type = "[]" + elemT
-							if lst, ok4 := vd.Value.(*ListLit); ok4 {
-								lst.ElemType = elemT
+					if vt, ok2 := varTypes[v.Name]; ok2 {
+						elemT := ""
+						if strings.HasPrefix(vt, "[]") {
+							elemT = vt[2:]
+						}
+						if elemT != "" {
+							if vd, ok3 := varDecls[v.Name]; ok3 && vt == "[]i64" && vd.Type == "" {
+								// update element type only when not explicitly typed
+								elemT = zigTypeFromExpr(args[1])
+								varTypes[v.Name] = "[]" + elemT
+								vd.Type = "[]" + elemT
+								if lst, ok4 := vd.Value.(*ListLit); ok4 {
+									lst.ElemType = elemT
+								}
+							} else {
+								valT := zigTypeFromExpr(args[1])
+								if valT == "Value" && elemT != "Value" {
+									field := map[string]string{"i64": "Int", "f64": "Float", "[]const u8": "Str", "bool": "Bool"}[elemT]
+									if field != "" {
+										args[1] = &FieldExpr{Target: args[1], Name: field}
+										valT = elemT
+									}
+								}
+								return &AppendExpr{List: args[0], Value: args[1], ElemType: elemT}, nil
 							}
 						}
 					}
@@ -3747,7 +3776,9 @@ func toZigType(t *parser.TypeRef) string {
 		if t.Fun.Return != nil {
 			ret = toZigType(t.Fun.Return)
 		}
-		return fmt.Sprintf("fn(%s) %s", strings.Join(params, ", "), ret)
+		// Use a function pointer type so functions can be passed around
+		// as first-class values at runtime.
+		return fmt.Sprintf("*const fn(%s) %s", strings.Join(params, ", "), ret)
 	}
 	if t.Simple != nil {
 		if alias, ok := typeAliases[*t.Simple]; ok {
@@ -4533,9 +4564,11 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			for _, a := range t.Args {
 				walkExpr(a)
 			}
-			if _, ok := varDecls[t.Func]; ok {
-				uses[t.Func]++
-			}
+			// Count uses of the called function name even if it
+			// isn't present in varDecls. This ensures that
+			// parameters with function types are treated as used
+			// and not renamed to '_' during emission.
+			uses[t.Func]++
 		case *IfExpr:
 			walkExpr(t.Cond)
 			if t.Then != nil {
