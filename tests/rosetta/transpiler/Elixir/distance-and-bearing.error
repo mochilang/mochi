@@ -1,0 +1,87 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:15:15: Main._now/0
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │       {n, sum, term} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:135:8: Main.sinApprox/1
+
+     warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │       {n, sum, term} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:135:16: Main.sinApprox/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 162 │       {n, sum, term} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:162:8: Main.cosApprox/1
+
+     warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 162 │       {n, sum, term} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:162:16: Main.cosApprox/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 222 │       {guess, i} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:222:15: Main.sqrtApprox/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 308 │       {i, p} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:308:8: Main.pow10/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 345 │           {arr, j} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:345:17: Main.sortByDistance/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 357 │       {arr, i} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:357:13: Main.sortByDistance/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 397 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:397:7: Main.main/0
+
+     error: imported Kernel.floor/1 conflicts with local function
+     │
+ 281 │   def floor(x) do
+     │       ^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs:281:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/rosetta/transpiler/Elixir/distance-and-bearing.exs: cannot compile module Main (errors have been logged)
+

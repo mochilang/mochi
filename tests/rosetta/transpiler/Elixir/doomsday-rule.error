@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /workspace/mochi/tests/rosetta/transpiler/Elixir/doomsday-rule.exs:131:19:
+     error: unexpected token: ":" (column 19, code point U+003A)
+     │
+ 131 │       digits = %{0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9}
+     │                   ^
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/doomsday-rule.exs:131:19
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
