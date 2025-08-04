@@ -4841,10 +4841,30 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 							return nil, fmt.Errorf("unsupported call")
 						}
 					} else {
-						expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+						t := inferType(fe)
+						switch {
+						case strings.HasPrefix(t, "fn(") || strings.HasPrefix(t, "java.util.function.Function"):
+							expr = &MethodCallExpr{Target: fe, Name: "apply", Args: args}
+						case strings.HasPrefix(t, "java.util.function.Supplier"):
+							expr = &MethodCallExpr{Target: fe, Name: "get", Args: args}
+						case strings.HasPrefix(t, "java.util.function.Consumer"), strings.HasPrefix(t, "java.util.function.BiConsumer"):
+							expr = &MethodCallExpr{Target: fe, Name: "accept", Args: args}
+						default:
+							expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+						}
 					}
 				} else {
-					expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+					t := inferType(fe)
+					switch {
+					case strings.HasPrefix(t, "fn(") || strings.HasPrefix(t, "java.util.function.Function"):
+						expr = &MethodCallExpr{Target: fe, Name: "apply", Args: args}
+					case strings.HasPrefix(t, "java.util.function.Supplier"):
+						expr = &MethodCallExpr{Target: fe, Name: "get", Args: args}
+					case strings.HasPrefix(t, "java.util.function.Consumer"), strings.HasPrefix(t, "java.util.function.BiConsumer"):
+						expr = &MethodCallExpr{Target: fe, Name: "accept", Args: args}
+					default:
+						expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
+					}
 				}
 			} else if v, ok := expr.(*VarExpr); ok {
 				if v.Name == "int" && len(args) == 1 {
@@ -6264,10 +6284,14 @@ func typeRefString(tr *parser.TypeRef) string {
 		return ""
 	}
 	if tr.Simple != nil {
-		if *tr.Simple == "any" {
-			return "Object"
-		}
 		name := *tr.Simple
+		switch name {
+		case "any":
+			return "Object"
+		case "int", "bool", "boolean", "string", "float", "float64", "double", "void", "bigint", "bigrat":
+			// Primitive types should not consult the environment
+			return name
+		}
 		if topEnv != nil {
 			if t, ok := topEnv.LookupType(name); ok {
 				switch tt := t.(type) {

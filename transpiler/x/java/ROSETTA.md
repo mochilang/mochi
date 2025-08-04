@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-02 23:25 GMT+7
+Last updated: 2025-08-04 15:36 GMT+7
 
-## Rosetta Checklist (414/491)
+## Rosetta Checklist (424/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -456,16 +456,16 @@ Last updated: 2025-08-02 23:25 GMT+7
 | 448 | flow-control-structures-3 | ✓ | 16.0ms | 448B |
 | 449 | flow-control-structures-4 | ✓ | 12.0ms | 512B |
 | 450 | floyd-warshall-algorithm |   | 56.0ms | 108.69KB |
-| 451 | floyd-warshall-algorithm2 |   |  |  |
-| 452 | floyds-triangle |   |  |  |
-| 453 | forest-fire |   |  |  |
-| 454 | fork-2 |   |  |  |
-| 455 | fork |   |  |  |
-| 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 451 | floyd-warshall-algorithm2 | ✓ | 59.0ms | 105.66KB |
+| 452 | floyds-triangle | ✓ | 52.0ms | 87.74KB |
+| 453 | forest-fire | ✓ | 73.0ms | 98.86KB |
+| 454 | fork-2 | ✓ | 35.0ms | 37.80KB |
+| 455 | fork | ✓ | 31.0ms | 37.80KB |
+| 456 | formal-power-series | ✓ | 58.0ms | 113.58KB |
+| 457 | formatted-numeric-output | ✓ | 44.0ms | 79.37KB |
+| 458 | forward-difference | ✓ | 20.0ms | 656B |
+| 459 | four-bit-adder-1 | ✓ | 51.0ms | 94.77KB |
+| 460 | four-is-magic | ✓ | 62.0ms | 101.70KB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 462 | fractal-tree |   |  |  |
 | 463 | fractran |   |  |  |
