@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 224/491
-Last updated: 2025-08-04 16:09 +0700
+Completed: 234/491
+Last updated: 2025-08-04 16:52 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -236,16 +236,16 @@ Last updated: 2025-08-04 16:09 +0700
 | 229 | constrained-random-points-on-a-circle-1 | ✓ | 56.389ms | 20.3 MB |
 | 230 | constrained-random-points-on-a-circle-2 | ✓ | 62.186ms | 20.7 MB |
 | 231 | continued-fraction | ✓ | 33.341ms | 21.2 MB |
-| 232 | convert-decimal-number-to-rational |   |  |  |
-| 233 | convert-seconds-to-compound-duration |   |  |  |
-| 234 | convex-hull |   |  |  |
-| 235 | conways-game-of-life |   |  |  |
-| 236 | copy-a-string-1 |   |  |  |
-| 237 | copy-a-string-2 |   |  |  |
-| 238 | copy-stdin-to-stdout-1 |   |  |  |
-| 239 | copy-stdin-to-stdout-2 |   |  |  |
-| 240 | count-in-factors |   |  |  |
-| 241 | count-in-octal-1 |   |  |  |
+| 232 | convert-decimal-number-to-rational | ✓ | 35.275ms | 20.8 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 33.953ms | 18.1 MB |
+| 234 | convex-hull | ✓ | 39.342ms | 24.1 MB |
+| 235 | conways-game-of-life | ✓ | 34.108451s | 22.7 MB |
+| 236 | copy-a-string-1 | ✓ | 30.877ms | 17.6 MB |
+| 237 | copy-a-string-2 | ✓ | 29.445ms | 18.1 MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 33.377ms | 17.8 MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 35.627ms | 18.1 MB |
+| 240 | count-in-factors | ✓ | 59.78ms | 19.8 MB |
+| 241 | count-in-octal-1 | ✓ | 44.245ms | 18.6 MB |
 | 242 | count-in-octal-2 |   |  |  |
 | 243 | count-in-octal-3 |   |  |  |
 | 244 | count-in-octal-4 |   |  |  |
