@@ -13,6 +13,7 @@ var builtinFns = map[string]string{
 	"bool":   "bool",
 	"now":    "int",
 	"str":    "string",
+	"print":  "void",
 }
 
 // Decorate performs a simple type inference on the program and makes all
@@ -240,6 +241,42 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 					}
 					return cloneNode(f.Children[0]), nil
 				}
+			}
+			if fname == "append" {
+				if len(n.Children) != 2 {
+					return nil, errFuncArgCount(fname, 2, len(n.Children), n)
+				}
+				listT, err := inferType(n.Children[0], env)
+				if err != nil {
+					return nil, err
+				}
+				if listT.Text != "list" || len(listT.Children) == 0 {
+					want := &Node{Kind: "type", Text: "list"}
+					return nil, errFuncArgTypeMismatch(1, fname, want, listT, n.Children[0])
+				}
+				elem := listT.Children[0]
+				argT, err := inferType(n.Children[1], env)
+				if err != nil {
+					return nil, err
+				}
+				if !typeEqual(elem, argT) {
+					return nil, errFuncArgTypeMismatch(2, fname, elem, argT, n.Children[1])
+				}
+				return cloneNode(listT), nil
+			}
+			if fname == "expect" {
+				if len(n.Children) != 1 {
+					return nil, errFuncArgCount(fname, 1, len(n.Children), n)
+				}
+				argT, err := inferType(n.Children[0], env)
+				if err != nil {
+					return nil, err
+				}
+				boolT := &Node{Kind: "type", Text: "bool"}
+				if !typeEqual(boolT, argT) {
+					return nil, errFuncArgTypeMismatch(1, fname, boolT, argT, n.Children[0])
+				}
+				return boolT, nil
 			}
 			if bt, ok := builtinFns[fname]; ok {
 				return &Node{Kind: "type", Text: bt}, nil
