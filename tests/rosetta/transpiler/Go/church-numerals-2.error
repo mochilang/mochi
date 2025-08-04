@@ -1,9 +1,3 @@
 exit status 1
 # command-line-arguments
 ../../../tests/rosetta/transpiler/Go/church-numerals-2.go:71:9: cannot use n(m) (value of interface type any) as func(any) any value in return statement: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:109:43: cannot use two (variable of interface type any) as func(any) any value in argument to toInt: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:110:22: cannot use two (variable of interface type any) as func(any) any value in argument to plus: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:112:45: cannot use three (variable of interface type any) as func(any) any value in argument to toInt: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:113:15: cannot use two (variable of interface type any) as func(any) any value in argument to mult: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:116:15: cannot use two (variable of interface type any) as func(any) any value in argument to exp: need type assertion
-../../../tests/rosetta/transpiler/Go/church-numerals-2.go:116:20: cannot use three (variable of interface type any) as func(any) any value in argument to exp: need type assertion

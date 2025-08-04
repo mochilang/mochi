@@ -1392,12 +1392,12 @@ func (lh *LookupHostExpr) emit(w io.Writer) {
 type IntCastExpr struct{ Expr Expr }
 
 func (ic *IntCastExpr) emit(w io.Writer) {
-	io.WriteString(w, "int(")
+	io.WriteString(w, "any(")
 	ic.Expr.emit(w)
 	if _, ok := ic.Expr.(*BigBinaryExpr); ok {
 		io.WriteString(w, ".Int64()")
 	}
-	io.WriteString(w, ")")
+	io.WriteString(w, ").(int)")
 }
 
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
@@ -1937,6 +1937,14 @@ type AssertExpr struct {
 }
 
 func (a *AssertExpr) emit(w io.Writer) {
+	if strings.HasPrefix(a.Type, "func(") {
+		io.WriteString(w, "any(")
+		a.Expr.emit(w)
+		io.WriteString(w, ").(")
+		io.WriteString(w, a.Type)
+		io.WriteString(w, ")")
+		return
+	}
 	if a.Type == "bool" {
 		if ix, ok := a.Expr.(*IndexExpr); ok {
 			if vr, ok2 := ix.X.(*VarRef); ok2 && topEnv != nil {
@@ -5098,13 +5106,13 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				}
 				if ft, ok := t.(types.FuncType); ok && j < len(ft.Params) {
 					paramT := ft.Params[j]
+					argT := types.ExprType(a, env)
 					if _, isFunc := paramT.(types.FuncType); isFunc {
-						ex = &AssertExpr{Expr: ex, Type: toGoTypeFromType(paramT)}
-					} else {
-						argT := types.ExprType(a, env)
-						if !types.IsAnyType(paramT) && types.IsAnyType(argT) {
+						if types.IsAnyType(argT) {
 							ex = &AssertExpr{Expr: ex, Type: toGoTypeFromType(paramT)}
 						}
+					} else if !types.IsAnyType(paramT) && types.IsAnyType(argT) {
+						ex = &AssertExpr{Expr: ex, Type: toGoTypeFromType(paramT)}
 					}
 				}
 				args[j] = ex
@@ -5149,12 +5157,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						switch expr.(type) {
-						case *BinaryExpr, *CallExpr, *IntLit, *FloatLit:
-							expr = &IntCastExpr{Expr: expr}
-						default:
-							expr = &AssertExpr{Expr: expr, Type: "int"}
-						}
+						expr = &IntCastExpr{Expr: expr}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true
