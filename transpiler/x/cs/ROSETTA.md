@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
 Completed programs: 477/491
-Last updated: 2025-08-04 16:54 +0700
+Last updated: 2025-08-04 18:30 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -166,7 +166,7 @@ Last updated: 2025-08-04 16:54 +0700
 | 158 | call-a-function-7 | ✓ | 19µs |  |
 | 159 | call-a-function-8 | ✓ | 16.063ms | 1.9MB |
 | 160 | call-a-function-9 | ✓ | 6.581ms | 1.7MB |
-| 161 | call-an-object-method-1 | ✓ | 11µs |  |
+| 161 | call-an-object-method-1 | ✓ | 8µs | 48.0B |
 | 162 | call-an-object-method-2 | ✓ | 1µs | 336.0B |
 | 163 | call-an-object-method-3 | ✓ | 9µs |  |
 | 164 | call-an-object-method | ✓ | 9µs |  |
