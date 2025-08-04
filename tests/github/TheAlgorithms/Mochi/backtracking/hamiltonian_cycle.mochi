@@ -1,0 +1,73 @@
+/*
+Hamiltonian Cycle
+-----------------
+Given an undirected graph, a Hamiltonian cycle is a cycle that visits
+each vertex exactly once and returns to the starting vertex. The
+algorithm below uses backtracking to construct such a cycle. At every
+step a candidate vertex is checked to ensure it is adjacent to the last
+vertex in the current path and has not already been used. If all
+vertices are included and the last one connects back to the start, a
+Hamiltonian cycle has been found; otherwise the search backtracks and
+tries alternative vertices.
+*/
+
+fun valid_connection(graph: list<list<int>>, next_ver: int, curr_ind: int, path: list<int>): bool {
+  if graph[path[curr_ind - 1]][next_ver] == 0 {
+    return false
+  }
+  for v in path {
+    if v == next_ver {
+      return false
+    }
+  }
+  return true
+}
+
+fun util_hamilton_cycle(graph: list<list<int>>, path: list<int>, curr_ind: int): bool {
+  if curr_ind == len(graph) {
+    return graph[path[curr_ind - 1]][path[0]] == 1
+  }
+  var next_ver = 0
+  while next_ver < len(graph) {
+    if valid_connection(graph, next_ver, curr_ind, path) {
+      path[curr_ind] = next_ver
+      if util_hamilton_cycle(graph, path, curr_ind + 1) {
+        return true
+      }
+      path[curr_ind] = -1
+    }
+    next_ver = next_ver + 1
+  }
+  return false
+}
+
+fun hamilton_cycle(graph: list<list<int>>, start_index: int): list<int> {
+  var path: list<int>
+  var i = 0
+  while i < len(graph) + 1 {
+    path[i] = -1
+    i = i + 1
+  }
+  path[0] = start_index
+  var last: int = len(path) - 1
+  path[last] = start_index
+  if util_hamilton_cycle(graph, path, 1) {
+    return path
+  }
+  return []
+}
+
+test "case 1" {
+  let graph = [[0,1,0,1,0], [1,0,1,1,1], [0,1,0,0,1], [1,1,0,0,1], [0,1,1,1,0]]
+  expect hamilton_cycle(graph, 0) == [0,1,2,4,3,0]
+}
+
+test "case 2" {
+  let graph = [[0,1,0,1,0], [1,0,1,1,1], [0,1,0,0,1], [1,1,0,0,1], [0,1,1,1,0]]
+  expect hamilton_cycle(graph, 3) == [3,0,1,2,4,3]
+}
+
+test "case 3" {
+  let graph = [[0,1,0,1,0], [1,0,1,1,1], [0,1,0,0,1], [1,1,0,0,0], [0,1,1,0,0]]
+  expect hamilton_cycle(graph, 4) == []
+}

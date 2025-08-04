@@ -1,0 +1,4 @@
+[94;1mtests/github/TheAlgorithms/Mochi/backtracking/hamiltonian_cycle.mochi[0;22m
+   [33mtest[0m case 1                         ... [32mok[0m (2.0ms)
+   [33mtest[0m case 2                         ... [32mok[0m (977.0µs)
+   [33mtest[0m case 3                         ... [32mok[0m (829.0µs)
