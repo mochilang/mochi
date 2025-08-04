@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (439/491)
-Last updated: 2025-08-04 10:00 UTC
+## Checklist (454/491)
+Last updated: 2025-08-04 10:19 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -480,21 +480,21 @@ Last updated: 2025-08-04 10:00 UTC
 | 471 | general-fizzbuzz | ✓ |  |  |
 | 472 | generic-swap | ✓ | 1ms | 12.4 MB |
 | 473 | get-system-command-output | ✓ |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
-| 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
+| 474 | giuga-numbers | ✓ | 1ms | 12.8 MB |
+| 475 | globally-replace-text-in-several-files | ✓ |  |  |
+| 476 | goldbachs-comet | ✓ | 99ms | 12.5 MB |
+| 477 | golden-ratio-convergence | ✓ |  |  |
+| 478 | graph-colouring | ✓ |  |  |
+| 479 | gray-code | ✓ | 6ms | 12.9 MB |
+| 480 | gui-component-interaction | ✓ |  |  |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 1ms | 12.6 MB |
+| 482 | gui-maximum-window-dimensions | ✓ | 1ms | 12.9 MB |
+| 483 | http | ✓ | 65ms | 12.6 MB |
+| 484 | image-noise | ✓ | 776ms | 12.7 MB |
 | 485 | loops-increment-loop-index-within-loop-body |   |  |  |
 | 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
+| 487 | nim-game | ✓ |  |  |
+| 488 | plasma-effect | ✓ | 487ms | 13.3 MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ |  |  |
+| 490 | window-management | ✓ | 1ms | 12.5 MB |
 | 491 | zumkeller-numbers |   |  |  |

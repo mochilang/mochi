@@ -1,0 +1,12 @@
+exit status 70
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR on line 93 of file /workspace/mochi/tests/rosetta/transpiler/scheme/md5.scm: undefined variable: testpkg
+  called from loop1 on line 93 of file /workspace/mochi/tests/rosetta/transpiler/scheme/md5.scm
+  called from call-with-current-continuation on line 848 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 93 of file /workspace/mochi/tests/rosetta/transpiler/scheme/md5.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+Searching for modules exporting testpkg ...
+... none found.
