@@ -1,5 +1,1 @@
-{
-  "duration_us": 1,
-  "memory_bytes": 0,
-  "name": "main"
-}
+{"name":"main","duration_us":1,"memory_bytes":44512}
