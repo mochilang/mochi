@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (292/491) - Last updated 2025-08-04 08:11 +0700:
+Checklist of programs that currently transpile and run (293/491) - Last updated 2025-08-04 09:18 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -309,7 +309,7 @@ Checklist of programs that currently transpile and run (292/491) - Last updated 
 | 302 | dining-philosophers-1 |   |  |  |
 | 303 | dining-philosophers-2 |   |  |  |
 | 304 | disarium-numbers |   |  |  |
-| 305 | discordian-date |   |  |  |
+| 305 | discordian-date | ✓ | 389.0µs | 3.70MB |
 | 306 | display-a-linear-combination |   |  |  |
 | 307 | display-an-outline-as-a-nested-table |   |  |  |
 | 308 | distance-and-bearing |   |  |  |
