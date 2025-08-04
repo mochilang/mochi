@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/distributed-programming.scala:35: error: not found: value panic
-    panic("Negative amounts not allowed")
-    ^
-one error found

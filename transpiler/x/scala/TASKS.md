@@ -1,3 +1,11 @@
+## Progress (2025-08-05 01:41 +0700)
+- scala: handle dynamic field access
+- Regenerated golden files - 93/105 vm valid programs passing
+
+## Progress (2025-08-05 01:41 +0700)
+- scala: handle dynamic field access
+- Regenerated golden files - 93/105 vm valid programs passing
+
 ## Progress (2025-08-04 21:40 +0700)
 - remove stale death-star error
 - Regenerated golden files - 93/105 vm valid programs passing

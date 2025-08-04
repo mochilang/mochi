@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (448/491)
-_Last updated: 2025-08-05 01:28 +0700_
+## Golden Test Checklist (451/491)
+_Last updated: 2025-08-05 02:01 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -315,7 +315,7 @@ _Last updated: 2025-08-05 01:28 +0700_
 | 306 | display-a-linear-combination | ✓ | 11µs | 8.7 MB |
 | 307 | display-an-outline-as-a-nested-table | ✓ | 14µs | 8.7 MB |
 | 308 | distance-and-bearing | ✓ | 16µs | 3.5 MB |
-| 309 | distributed-programming | ✓ |  |  |
+| 309 | distributed-programming | ✓ | 3µs | 8.7 MB |
 | 310 | diversity-prediction-theorem | ✓ | 8µs | 8.7 MB |
 | 311 | dns-query | ✓ | 501µs | 8.7 MB |
 | 312 | documentation | ✓ | 1µs | 8.7 MB |
@@ -323,17 +323,17 @@ _Last updated: 2025-08-05 01:28 +0700_
 | 314 | dot-product | ✓ | 5µs | 8.7 MB |
 | 315 | doubly-linked-list-definition-1 | ✓ |  | 8.7 MB |
 | 316 | doubly-linked-list-definition-2 | error |  |  |
-| 317 | doubly-linked-list-element-definition | error | 3µs | 8.7 MB |
+| 317 | doubly-linked-list-element-definition | ✓ | 3µs | 8.7 MB |
 | 318 | doubly-linked-list-traversal | error |  |  |
 | 319 | dragon-curve | ✓ | 15µs | 8.7 MB |
 | 320 | draw-a-clock | ✓ | 8µs | 8.7 MB |
 | 321 | draw-a-cuboid | ✓ | 14µs | 8.7 MB |
 | 322 | draw-a-pixel-1 | ✓ | 147µs | 8.7 MB |
-| 323 | draw-a-rotating-cube | error | 51µs | 8.7 MB |
-| 324 | draw-a-sphere | ✓ |  |  |
+| 323 | draw-a-rotating-cube | ✓ | 51µs | 8.7 MB |
+| 324 | draw-a-sphere | error |  |  |
 | 325 | duffinian-numbers | ✓ | 451µs | 8.8 MB |
-| 326 | dutch-national-flag-problem | error | 12µs | 8.7 MB |
-| 327 | dynamic-variable-names | error | 19µs | 8.7 MB |
+| 326 | dutch-national-flag-problem | ✓ | 12µs | 8.7 MB |
+| 327 | dynamic-variable-names | ✓ | 19µs | 8.7 MB |
 | 328 | earliest-difference-between-prime-gaps | ✓ | 11µs | 8.7 MB |
 | 329 | eban-numbers |   |  |  |
 | 330 | ecdsa-example | ✓ | 10µs | 8.7 MB |
