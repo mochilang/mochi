@@ -1,0 +1,13 @@
+var result: string = ""
+for i in 1..101 {
+  var j: int = 1
+  while ((j * j) < i) {
+    j = (j + 1)
+  }
+  if ((j * j) == i) {
+    result = (result + "O")
+  } else {
+    result = (result + "-")
+  }
+}
+print(result)

@@ -1,0 +1,5 @@
+error[D003]: undefined variable cells
+  --> /workspace/mochi/tests/rosetta/x/Mochi/2048.mochi:6:3
+
+  6 |   cells: list<list<int>>
+    |   ^
