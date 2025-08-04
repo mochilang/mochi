@@ -1,0 +1,72 @@
+/*
+Given a pattern string and an input string, determine if the pattern can be mapped to the string such that each unique character in the pattern corresponds to a distinct substring and the pattern expands to the entire string.
+This is solved via backtracking by attempting all possible substring assignments for unassigned pattern characters while ensuring no substring is reused.
+*/
+
+fun get_value(keys: list<string>, values: list<string>, key: string): string {
+  var i = 0
+  while i < len(keys) {
+    if keys[i] == key {
+      return values[i]
+    }
+    i = i + 1
+  }
+  return null
+}
+
+fun contains_value(values: list<string>, value: string): bool {
+  var i = 0
+  while i < len(values) {
+    if values[i] == value {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun backtrack(pattern: string, input_string: string, pi: int, si: int, keys: list<string>, values: list<string>): bool {
+  if pi == len(pattern) && si == len(input_string) {
+    return true
+  }
+  if pi == len(pattern) || si == len(input_string) {
+    return false
+  }
+  let ch = substring(pattern, pi, pi + 1)
+  let mapped = get_value(keys, values, ch)
+  if mapped != null {
+    if substring(input_string, si, si + len(mapped)) == mapped {
+      return backtrack(pattern, input_string, pi + 1, si + len(mapped), keys, values)
+    }
+    return false
+  }
+  var end = si + 1
+  while end <= len(input_string) {
+    let substr = substring(input_string, si, end)
+    if contains_value(values, substr) {
+      end = end + 1
+      continue
+    }
+    let new_keys = append(keys, ch)
+    let new_values = append(values, substr)
+    if backtrack(pattern, input_string, pi + 1, end, new_keys, new_values) {
+      return true
+    }
+    end = end + 1
+  }
+  return false
+}
+
+fun match_word_pattern(pattern: string, input_string: string): bool {
+  let keys: list<string> = []
+  let values: list<string> = []
+  return backtrack(pattern, input_string, 0, 0, keys, values)
+}
+
+fun main() {
+  print(match_word_pattern("aba", "GraphTreesGraph"))
+  print(match_word_pattern("xyx", "PythonRubyPython"))
+  print(match_word_pattern("GG", "PythonJavaPython"))
+}
+
+main()
