@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (155/491) - Last updated 2025-08-04 11:06 +0700:
+Checklist of programs that currently transpile and run (165/491) - Last updated 2025-08-04 15:00 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -185,19 +185,19 @@ Checklist of programs that currently transpile and run (155/491) - Last updated 
 | 178 | catalan-numbers-pascals-triangle | ✓ | 219us | 1.6 MB |
 | 179 | catamorphism | ✓ | 209us | 1.6 MB |
 | 180 | catmull-clark-subdivision-surface |  |  |  |
-| 181 | chaocipher |  |  |  |
-| 182 | chaos-game |  |  |  |
-| 183 | character-codes-1 |  |  |  |
-| 184 | character-codes-2 |  |  |  |
-| 185 | character-codes-3 |  |  |  |
-| 186 | character-codes-4 |  |  |  |
-| 187 | character-codes-5 |  |  |  |
+| 181 | chaocipher | ✓ | 465us | 1.6 MB |
+| 182 | chaos-game | ✓ | 859us | 1.7 MB |
+| 183 | character-codes-1 | ✓ | 303us | 1.5 MB |
+| 184 | character-codes-2 | ✓ | 394us | 1.6 MB |
+| 185 | character-codes-3 | ✓ | 431us | 1.5 MB |
+| 186 | character-codes-4 | ✓ | 121us | 1.5 MB |
+| 187 | character-codes-5 | ✓ | 148us | 1.6 MB |
 | 188 | chat-server |  |  |  |
 | 189 | check-machin-like-formulas |  |  |  |
 | 190 | check-that-file-exists |  |  |  |
-| 191 | checkpoint-synchronization-1 |  |  |  |
-| 192 | checkpoint-synchronization-2 |  |  |  |
-| 193 | checkpoint-synchronization-3 |  |  |  |
+| 191 | checkpoint-synchronization-1 | ✓ | 436us | 1.5 MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 229us | 1.5 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 716us | 1.5 MB |
 | 194 | checkpoint-synchronization-4 |  |  |  |
 | 195 | chernicks-carmichael-numbers |  |  |  |
 | 196 | cheryls-birthday |  |  |  |

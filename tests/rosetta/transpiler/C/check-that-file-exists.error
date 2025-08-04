@@ -1,0 +1,21 @@
+compile failed: exit status 1: /tmp/ctranspile1297663932/check-that-file-exists.mochi.c: In function ‘printStat’:
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:78:22: error: ‘fs_keys’ undeclared (first use in this function)
+   78 |     if (contains_str(fs_keys, fs_len, path)) {
+      |                      ^~~~~~~
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:78:22: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:78:31: error: ‘fs_len’ undeclared (first use in this function)
+   78 |     if (contains_str(fs_keys, fs_len, path)) {
+      |                               ^~~~~~
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:79:33: error: ‘fs_vals’ undeclared (first use in this function)
+   79 |         if (map_get_si(fs_keys, fs_vals, fs_len, path)) {
+      |                                 ^~~~~~~
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c: In function ‘user_main’:
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:100:23: error: incompatible type for argument 1 of ‘printStat’
+  100 |             printStat(fs, p);
+      |                       ^~
+      |                       |
+      |                       MapSI
+/tmp/ctranspile1297663932/check-that-file-exists.mochi.c:77:20: note: expected ‘int’ but argument is of type ‘MapSI’
+   77 | void printStat(int fs, const char* path) {
+      |                ~~~~^~
+
