@@ -2964,9 +2964,19 @@ func newVarRef(env *types.Env, name string) *VarRef {
 		if t, err := env.GetVar(name); err == nil {
 			typ = kotlinTypeFromType(t)
 			hasVar = true
-			if _, ok := t.(types.FuncType); ok && localFuncs[name] {
-				isFunc = true
+			if _, ok := t.(types.FuncType); ok {
+				if vs, ok := varDecls[name]; ok && vs.Type != "" {
+					typ = vs.Type
+				} else if localFuncs[name] {
+					isFunc = true
+				}
 			}
+		}
+	}
+	if !hasVar {
+		if vs, ok := varDecls[name]; ok && vs.Type != "" {
+			typ = vs.Type
+			hasVar = true
 		}
 	}
 	if !hasVar && localFuncs[name] {
@@ -3179,12 +3189,14 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 			}
+			letStmt := &LetStmt{Name: st.Let.Name, Type: typ, Value: val}
 			if seenStmt {
-				p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+				p.Stmts = append(p.Stmts, letStmt)
 				seenStmt = true
 			} else {
-				p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+				p.Globals = append(p.Globals, letStmt)
 			}
+			varDecls[st.Let.Name] = &VarStmt{Name: st.Let.Name, Type: typ, Value: val}
 			if env != nil {
 				var tt types.Type
 				if st.Let.Type != nil {
@@ -3230,6 +3242,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				if typ == "" {
 					typ = guessType(val)
+				} else if strings.Contains(typ, "->") {
+					if gt := guessType(val); gt != "" && gt != "Any" && !strings.Contains(gt, "->") {
+						typ = gt
+					}
 				}
 				if typ == "Int" {
 					if lit, ok := val.(*IntLit); ok {
@@ -5176,7 +5192,21 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 				args[i] = ex
 			}
-			expr = &InvokeExpr{Callee: expr, Args: args}
+			if fe, ok := expr.(*FieldExpr); ok {
+				if vr, ok2 := fe.Receiver.(*VarRef); ok2 && vr.Name == "stdout" {
+					if fe.Name == "write" && len(args) == 1 {
+						expr = &CallExpr{Func: "print", Args: args}
+					} else if fe.Name == "writeln" && len(args) == 1 {
+						expr = &CallExpr{Func: "println", Args: args}
+					} else {
+						expr = &InvokeExpr{Callee: expr, Args: args}
+					}
+				} else {
+					expr = &InvokeExpr{Callee: expr, Args: args}
+				}
+			} else {
+				expr = &InvokeExpr{Callee: expr, Args: args}
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}

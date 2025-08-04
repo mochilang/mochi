@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 11:07 +0700
+Last updated: 2025-08-04 11:46 +0700
 
-Completed tasks: **332/491**
+Completed tasks: **340/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -278,16 +278,16 @@ Completed tasks: **332/491**
 | 267 | curzon-numbers | ✓ | 576.56ms | 829.1 KB |
 | 268 | cusip | ✓ | 25.60ms | 126.7 KB |
 | 269 | cyclops-numbers |  |  |  |
-| 270 | damm-algorithm |  |  |  |
-| 271 | date-format |  |  |  |
+| 270 | damm-algorithm | ✓ | 20.40ms | 119.3 KB |
+| 271 | date-format | ✓ | 17.82ms | 113.3 KB |
 | 272 | date-manipulation |  |  |  |
-| 273 | day-of-the-week |  |  |  |
-| 274 | de-bruijn-sequences |  |  |  |
-| 275 | deal-cards-for-freecell |  |  |  |
+| 273 | day-of-the-week | ✓ | 12.70ms | 121.4 KB |
+| 274 | de-bruijn-sequences | ✓ | 1.46s | 837.3 KB |
+| 275 | deal-cards-for-freecell | ✓ | 19.68ms | 116.4 KB |
 | 276 | death-star |  |  |  |
-| 277 | deceptive-numbers |  |  |  |
-| 278 | deconvolution-1d-2 |  |  |  |
-| 279 | deconvolution-1d-3 |  |  |  |
+| 277 | deceptive-numbers | ✓ | 233.96ms | 829.0 KB |
+| 278 | deconvolution-1d-2 | ✓ | 26.43ms | 106.8 KB |
+| 279 | deconvolution-1d-3 | ✓ | 26.41ms | 97.6 KB |
 | 280 | deconvolution-1d |  |  |  |
 | 281 | deepcopy-1 |  |  |  |
 | 282 | define-a-primitive-data-type |  |  |  |
