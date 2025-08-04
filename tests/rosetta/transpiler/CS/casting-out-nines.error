@@ -1,8 +1,0 @@
-dotnet run: exit status 134
-
-Test case base = 10, begin = 1, end = 100:
-Subset:  [1 9 10 18 19 27 28 36 37 45 46 54 55 63 64 72 73 81 82 90 91 99 100]
-Kaprekar:[1 9 45 55 99]
-Unhandled exception. System.IndexOutOfRangeException: Index was outside the bounds of the array.
-   at CallSite.Target(Closure, CallSite, Object, Int64)
-   at Program.Main() in /tmp/TestCSTranspiler_Rosetta_Golden4043110318/001/Program.cs:line 137

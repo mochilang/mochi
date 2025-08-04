@@ -100,6 +100,7 @@ var varAliases map[string]string
 var aliasCounter int
 var usesFmt bool
 var usesRepeat bool
+var usesLen bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -2231,9 +2232,9 @@ func (l *LenExpr) emit(w io.Writer) {
 		l.Arg.emit(w)
 		fmt.Fprint(w, ".Count")
 	} else if t == "" || t == "object" {
-		fmt.Fprint(w, "Convert.ToString(")
+		fmt.Fprint(w, "_len(")
 		l.Arg.emit(w)
-		fmt.Fprint(w, ").Length")
+		fmt.Fprint(w, ")")
 	} else {
 		l.Arg.emit(w)
 		fmt.Fprint(w, ".Length")
@@ -2396,6 +2397,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesMem = false
 	usesFmt = false
 	usesRepeat = false
+	usesLen = false
 	usesBigInt = false
 	usesBigRat = false
 	globalDecls = make(map[string]*Global)
@@ -3902,6 +3904,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "len":
 			if len(args) == 1 {
+				usesLen = true
 				return &LenExpr{Arg: args[0]}, nil
 			}
 		case "sum":
@@ -4772,6 +4775,14 @@ func Emit(prog *Program) []byte {
 	if usesMem {
 		buf.WriteString("\tstatic long _mem() {\n")
 		buf.WriteString("\t\treturn GC.GetTotalAllocatedBytes(true);\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesLen {
+		buf.WriteString("\tstatic long _len(object v) {\n")
+		buf.WriteString("\t\tif (v is Array a) return a.Length;\n")
+		buf.WriteString("\t\tif (v is string s) return s.Length;\n")
+		buf.WriteString("\t\tif (v is System.Collections.ICollection c) return c.Count;\n")
+		buf.WriteString("\t\treturn Convert.ToString(v).Length;\n")
 		buf.WriteString("\t}\n")
 	}
 	if usesSHA256 {
