@@ -1,0 +1,55 @@
+/*
+Sum of Subsets Problem
+Given a set of non-negative integers and a target sum M, find all subsets whose
+sum equals M. The algorithm constructs a state-space tree and explores it using
+depth-first search with backtracking. A branch is pruned if the current sum
+exceeds the target or if even adding all remaining numbers cannot reach the
+target. Each time the running sum matches the target, the current subset is
+recorded.
+*/
+
+fun list_sum(nums: list<int>): int {
+  var i = 0
+  var total = 0
+  while i < len(nums) {
+    total = total + nums[i]
+    i = i + 1
+  }
+  return total
+}
+
+fun create_state_space_tree(
+  nums: list<int>,
+  max_sum: int,
+  num_index: int,
+  path: list<int>,
+  result: list<list<int>>,
+  remaining_nums_sum: int
+): list<list<int>> {
+  let current_sum = list_sum(path)
+  if current_sum > max_sum || (remaining_nums_sum + current_sum) < max_sum {
+    return result
+  }
+  if current_sum == max_sum {
+    return append(result, path)
+  }
+  var res = result
+  var index = num_index
+  while index < len(nums) {
+    let next_path = append(path, nums[index])
+    res = create_state_space_tree(nums, max_sum, index + 1, next_path, res, remaining_nums_sum - nums[index])
+    index = index + 1
+  }
+  return res
+}
+
+fun generate_sum_of_subsets_solutions(nums: list<int>, max_sum: int): list<list<int>> {
+  let result: list<list<int>> = []
+  let path: list<int> = []
+  let remaining = list_sum(nums)
+  return create_state_space_tree(nums, max_sum, 0, path, result, remaining)
+}
+
+print(str(generate_sum_of_subsets_solutions([3, 34, 4, 12, 5, 2], 9)))
+print(str(generate_sum_of_subsets_solutions([3, 34, 4, 12, 5, 2], 3)))
+print(str(generate_sum_of_subsets_solutions([3, 34, 4, 12, 5, 2], 1)))
