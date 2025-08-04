@@ -1167,12 +1167,16 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 			if force {
-				// Use Int(...) constructor for all expressions to prevent
+				// Use Int(...) constructor for most expressions to prevent
 				// runtime crashes when the underlying value is a Double.
 				// Using `as! Int` here can trigger an illegal instruction
 				// if the value isn't already an Int. Int(...) performs a
 				// safe numeric conversion instead.
-				if c.FromString {
+				if _, ok := c.Expr.(*IndexExpr); ok {
+					fmt.Fprint(w, "(")
+					c.Expr.emit(w)
+					fmt.Fprint(w, " as? Int ?? 0)")
+				} else if c.FromString {
 					fmt.Fprint(w, "Int(")
 					c.Expr.emit(w)
 					fmt.Fprint(w, ")!")
@@ -1184,17 +1188,17 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 			// When casting indexed values from dynamic containers to Int,
-			// use Int(...) as well to avoid unsafe force casts.
+			// convert using optional cast with default.
 			if _, ok := c.Expr.(*IndexExpr); ok {
-				fmt.Fprint(w, "Int(")
+				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
+				fmt.Fprint(w, " as? Int ?? 0)")
 				return
 			}
 			if _, ok := c.Expr.(*FieldExpr); ok {
-				fmt.Fprint(w, "Int(")
+				fmt.Fprint(w, "(")
 				c.Expr.emit(w)
-				fmt.Fprint(w, ")")
+				fmt.Fprint(w, " as? Int ?? 0)")
 				return
 			}
 		}
