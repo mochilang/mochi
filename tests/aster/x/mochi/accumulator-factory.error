@@ -1,0 +1,8 @@
+error[A027]: missing return type
+  --> /workspace/mochi/tests/rosetta/x/Mochi/accumulator-factory.mochi:10:3
+
+ 10 |   return add
+    |   ^
+
+help:
+  Specify a return type

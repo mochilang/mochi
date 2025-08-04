@@ -45,7 +45,7 @@ fun handlePile(pile: list<list<int>>, x: int, y: int): list<list<int>> {
   }
   return pile
 }
-fun drawPile(pile: list<list<int>>, d: int): any {
+fun drawPile(pile: list<list<int>>, d: int): void {
   let chars: list<string> = [" ", "░", "▓", "█"]
   var row: int = 0
   while (row < d) {
@@ -63,7 +63,7 @@ fun drawPile(pile: list<list<int>>, d: int): any {
     row = (row + 1)
   }
 }
-fun main(): any {
+fun main(): void {
   var pile: list<list<int>> = newPile(16)
   let hdim: int = 7
   pile[hdim][hdim] = 16

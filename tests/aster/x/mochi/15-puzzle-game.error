@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:77:13
+
+ 77 |     let s = input()
+    |             ^
+
+help:
+  Declare input before use

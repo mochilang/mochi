@@ -34,6 +34,12 @@ var Errors = map[string]diagnostic.Template{
 	"A020": {Code: "A020", Message: "unknown field %s on %s", Help: "Check the struct definition"},
 	"A021": {Code: "A021", Message: "%s is not a struct", Help: "Field access is only valid on structs"},
 	"A022": {Code: "A022", Message: "cast expects a type", Help: "Provide a type after 'as'"},
+	"A023": {Code: "A023", Message: "parameter %s missing type", Help: "Add a type for %s"},
+	"A024": {Code: "A024", Message: "unknown function %s", Help: "Declare %s before use"},
+	"A025": {Code: "A025", Message: "function %s expects %d arguments, got %d", Help: "Call %s with the correct number of arguments"},
+	"A026": {Code: "A026", Message: "argument %d to %s type mismatch: %s vs %s", Help: "Ensure arguments match parameter types"},
+	"A027": {Code: "A027", Message: "missing return type", Help: "Specify a return type"},
+	"A028": {Code: "A028", Message: "return type mismatch: expected %s, got %s", Help: "Ensure return value matches"},
 }
 
 func pos(n *Node) lexer.Position {
@@ -150,4 +156,41 @@ func errNotStruct(typ *Node, n *Node) error {
 
 func errCastMissingType(n *Node) error {
 	return Errors["A022"].New(pos(n))
+}
+
+func errParamMissingType(name string, n *Node) error {
+	tmpl := Errors["A023"]
+	msg := fmt.Sprintf(tmpl.Message, name, name)
+	help := fmt.Sprintf(tmpl.Help, name)
+	return diagnostic.New(tmpl.Code, pos(n), msg, help)
+}
+
+func errUnknownFunction(name string, n *Node) error {
+	tmpl := Errors["A024"]
+	msg := fmt.Sprintf(tmpl.Message, name)
+	help := fmt.Sprintf(tmpl.Help, name)
+	return diagnostic.New(tmpl.Code, pos(n), msg, help)
+}
+
+func errFuncArgCount(name string, expected, actual int, n *Node) error {
+	tmpl := Errors["A025"]
+	msg := fmt.Sprintf(tmpl.Message, name, expected, actual, name)
+	help := fmt.Sprintf(tmpl.Help, name)
+	return diagnostic.New(tmpl.Code, pos(n), msg, help)
+}
+
+func errFuncArgTypeMismatch(idx int, name string, want, got *Node, n *Node) error {
+	tmpl := Errors["A026"]
+	msg := fmt.Sprintf(tmpl.Message, idx, name, typeString(want), typeString(got))
+	return diagnostic.New(tmpl.Code, pos(n), msg, tmpl.Help)
+}
+
+func errMissingReturnType(n *Node) error {
+	return Errors["A027"].New(pos(n))
+}
+
+func errReturnTypeMismatch(want, got *Node, n *Node) error {
+	tmpl := Errors["A028"]
+	msg := fmt.Sprintf(tmpl.Message, typeString(want), typeString(got))
+	return diagnostic.New(tmpl.Code, pos(n), msg, tmpl.Help)
 }

@@ -25,7 +25,7 @@ fun ackermann2(m: int, n: int): int {
   }
   return ackermann2((m - 1), ackermann2(m, (n - 1)))
 }
-fun main(): any {
+fun main(): void {
   print(("A(0, 0) = " + str(ackermann2(0, 0))))
   print(("A(1, 2) = " + str(ackermann2(1, 2))))
   print(("A(2, 4) = " + str(ackermann2(2, 4))))
