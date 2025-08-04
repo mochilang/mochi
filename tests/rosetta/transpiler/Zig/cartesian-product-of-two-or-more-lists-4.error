@@ -1,3 +1,0 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencartesian-product-of-two-or-more-lists-4445150544/001/prog.zig:91:44: error: expected type 'i32', found pointer
-/tmp/TestMochiZigGoldencartesian-product-of-two-or-more-lists-4445150544/001/prog.zig:91:44: note: address-of operator always returns a pointer

@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-05 00:37 +0700
+Last updated: 2025-08-05 01:53 +0700
 
-## Program Checklist (114/491)
+## Program Checklist (117/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -178,9 +178,9 @@ Last updated: 2025-08-05 00:37 +0700
 | 169 | carmichael-3-strong-pseudoprimes |   |  |  |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.456ms | 512.0 KB |
 | 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 174 | case-sensitivity-of-identifiers |   |  |  |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 10.211ms | 3.5 MB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 9.53ms | 3.2 MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 1.047ms | 512.0 KB |
 | 175 | casting-out-nines |   |  |  |
 | 176 | catalan-numbers-1 |   |  |  |
 | 177 | catalan-numbers-2 |   |  |  |
