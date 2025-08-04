@@ -1,5 +1,5 @@
-## Progress (2025-08-04 22:33 +0700)
-- Commit c3757bb23d: remove stray formal-power-series error
+## Progress (2025-08-05 01:42 +0700)
+- Commit 248281caf4: cpp: handle membership expression
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
