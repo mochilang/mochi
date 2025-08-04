@@ -6930,6 +6930,35 @@ func anyToExpr(v any) Expr {
 			}
 			fields = append(fields, StructField{Name: k, Value: ex})
 		}
+		// Attempt to match fields to an existing struct definition
+		for _, st := range currentEnv.Structs() {
+			if len(st.Fields) != len(keys) {
+				continue
+			}
+			match := true
+			for _, k := range keys {
+				if _, ok := st.Fields[k]; !ok {
+					match = false
+					break
+				}
+			}
+			if match {
+				// Reorder fields to match the struct's declared order
+				ordered := make([]StructField, 0, len(st.Order))
+				for _, nm := range st.Order {
+					if val, ok := t[nm]; ok {
+						ex := anyToExpr(val)
+						if ex == nil {
+							return nil
+						}
+						ordered = append(ordered, StructField{Name: nm, Value: ex})
+					}
+				}
+				structTypes = currentEnv.Structs()
+				return &StructLit{Name: st.Name, Fields: ordered}
+			}
+		}
+
 		key := strings.Join(keys, ",")
 		name, ok := anonStructs[key]
 		if !ok {
