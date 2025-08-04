@@ -3232,8 +3232,10 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if f.End == nil {
-		if !f.IsMap && strings.HasPrefix(f.SrcType, "std::map<") {
-			f.IsMap = true
+		if f.IsMap && f.ElemType == "char" {
+			f.IsMap = false
+		}
+		if f.IsMap && f.ElemType == "" && strings.HasPrefix(f.SrcType, "std::map<") {
 			inner := strings.TrimSuffix(strings.TrimPrefix(f.SrcType, "std::map<"), ">")
 			parts := strings.SplitN(inner, ",", 2)
 			if len(parts) == 2 {
@@ -3733,6 +3735,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			}
 			body = append(body, us)
 		case stmt.For != nil:
+			isIdx := isIndexExpr(stmt.For.Source)
 			start, err := convertExpr(stmt.For.Source)
 			if err != nil {
 				return nil, err
@@ -3752,11 +3755,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					}
 				}
 			}
-			if isIndexExpr(stmt.For.Source) {
+			if isIdx {
 				fs.IsMap = false
 			}
 			gtyp := guessType(stmt.For.Source)
-			if isIndexExpr(stmt.For.Source) && strings.HasPrefix(gtyp, "std::map<") {
+			if isIdx && strings.HasPrefix(gtyp, "std::map<") {
 				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
@@ -3768,12 +3771,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					gtyp = lt
 				}
 			}
-			fs.SrcType = gtyp
 			varType := elementTypeFromListType(gtyp)
 			if varType == "auto" {
 				varType = gtyp
 			}
-			if strings.HasPrefix(gtyp, "std::map<") {
+			if strings.HasPrefix(gtyp, "std::map<") && !isIdx {
 				fs.IsMap = true
 				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 				parts := strings.SplitN(inner, ",", 2)
@@ -3784,10 +3786,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if gtyp == "std::string" {
 				varType = "char"
 			}
-			if isIndexExpr(stmt.For.Source) {
+			if isIdx {
 				varType = elementTypeFromListType(varType)
 				fs.IsMap = false
 			}
+			fs.SrcType = gtyp
 			if vr, ok := start.(*VarRef); ok {
 				if _, ok3 := localTypes[vr.Name]; !ok3 {
 					if t, ok2 := currentProgram.ListTypes[vr.Name]; ok2 {
