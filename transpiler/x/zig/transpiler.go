@@ -2128,15 +2128,19 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	indent++
 	writeIndent(w, indent)
 	io.WriteString(w, "const __start = _now();\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __start_mem: i64 = _mem();\n")
 	for _, st := range b.Body {
 		st.emit(w, indent)
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
+	io.WriteString(w, "const __end_mem: i64 = _mem();\n")
+	writeIndent(w, indent)
 	io.WriteString(w, "const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __memory_bytes: i64 = 0;\n")
+	io.WriteString(w, "const __memory_bytes: i64 = std.math.absInt(__end_mem - __start_mem);\n")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
 	indent--
@@ -2493,6 +2497,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	_ = env
 	if benchMain {
 		useNow = true
+		useMem = true
 		main.Body = []Stmt{&BenchStmt{Name: "main", Body: main.Body}}
 	}
 	funcs = append(funcs, extraFuncs...)
