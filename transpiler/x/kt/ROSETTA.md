@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 11:46 +0700
+Last updated: 2025-08-04 15:22 +0700
 
-Completed tasks: **340/491**
+Completed tasks: **342/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -288,8 +288,8 @@ Completed tasks: **340/491**
 | 277 | deceptive-numbers | ✓ | 233.96ms | 829.0 KB |
 | 278 | deconvolution-1d-2 | ✓ | 26.43ms | 106.8 KB |
 | 279 | deconvolution-1d-3 | ✓ | 26.41ms | 97.6 KB |
-| 280 | deconvolution-1d |  |  |  |
-| 281 | deepcopy-1 |  |  |  |
+| 280 | deconvolution-1d | ✓ | 20.02ms | 113.6 KB |
+| 281 | deepcopy-1 | ✓ | 6.37ms | 133.8 KB |
 | 282 | define-a-primitive-data-type |  |  |  |
 | 283 | delegates |  |  |  |
 | 284 | demings-funnel |  |  |  |

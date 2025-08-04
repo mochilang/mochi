@@ -4098,29 +4098,27 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	var elem types.Type = types.AnyType{}
 	if name := simpleVarName(fs.Source); name != "" {
 		if t, err := env.GetVar(name); err == nil {
-			if lt, ok := t.(types.ListType); ok {
-				elem = lt.Elem
-			} else if _, ok := t.(types.StringType); ok {
+			switch tt := t.(type) {
+			case types.ListType:
+				elem = tt.Elem
+			case types.StringType:
 				elem = types.StringType{}
+			case types.MapType:
+				elem = tt.Key
+				iter = &FieldExpr{Receiver: iter, Name: "keys"}
 			}
 		}
 	} else {
 		if t := types.CheckExprType(fs.Source, env); t != nil {
-			if lt, ok := t.(types.ListType); ok {
-				elem = lt.Elem
-			} else if _, ok := t.(types.StringType); ok {
+			switch tt := t.(type) {
+			case types.ListType:
+				elem = tt.Elem
+			case types.StringType:
 				elem = types.StringType{}
+			case types.MapType:
+				elem = tt.Key
+				iter = &FieldExpr{Receiver: iter, Name: "keys"}
 			}
-		}
-	}
-	if types.IsMapExpr(fs.Source, env) {
-		// If the source expression is a map variable itself we iterate
-		// over the key set. However map indexing like `m[k]` should be
-		// treated as a list value and not converted to `keys`.
-		if fs.Source != nil && fs.Source.Binary != nil &&
-			fs.Source.Binary.Left != nil && fs.Source.Binary.Left.Value != nil &&
-			len(fs.Source.Binary.Left.Value.Ops) == 0 {
-			iter = &FieldExpr{Receiver: iter, Name: "keys"}
 		}
 	}
 	bodyEnv := types.NewEnv(env)
