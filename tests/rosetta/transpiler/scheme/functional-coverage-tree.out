@@ -1,0 +1,51 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+TOP COVERAGE = 0.409167
+
+NAME HIERARCHY                 | WEIGHT | COVERAGE |
+cleaning                        |    1   | 0.409167 |
+    house1                      |   40   | 0.331250 |
+        bedrooms                |    1   | 0.250000 |
+        bathrooms               |    1   | 0.500000 |
+            bathroom1           |    1   | 0.500000 |
+            bathroom2           |    1   | 0.000000 |
+            outside_lavatory    |    1   | 1.000000 |
+        attic                   |    1   | 0.750000 |
+        kitchen                 |    1   | 0.100000 |
+        living_rooms            |    1   | 0.250000 |
+            lounge              |    1   | 0.000000 |
+            dining_room         |    1   | 0.000000 |
+            conservatory        |    1   | 0.000000 |
+            playroom            |    1   | 1.000000 |
+        basement                |    1   | 0.000000 |
+        garage                  |    1   | 0.000000 |
+        garden                  |    1   | 0.800000 |
+    house2                      |   60   | 0.461111 |
+        upstairs                |    1   | 0.150000 |
+            bedrooms            |    1   | 0.000000 |
+                suite_1         |    1   | 0.000000 |
+                suite_2         |    1   | 0.000000 |
+                bedroom_3       |    1   | 0.000000 |
+                bedroom_4       |    1   | 0.000000 |
+            bathroom            |    1   | 0.000000 |
+            toilet              |    1   | 0.000000 |
+            attics              |    1   | 0.600000 |
+        groundfloor             |    1   | 0.316667 |
+            kitchen             |    1   | 0.000000 |
+            living_rooms        |    1   | 0.000000 |
+                lounge          |    1   | 0.000000 |
+                dining_room     |    1   | 0.000000 |
+                conservatory    |    1   | 0.000000 |
+                playroom        |    1   | 0.000000 |
+            wet_room_&_toilet   |    1   | 0.000000 |
+            garage              |    1   | 0.000000 |
+            garden              |    1   | 0.900000 |
+            hot_tub_suite       |    1   | 1.000000 |
+        basement                |    1   | 0.916667 |
+            cellars             |    1   | 1.000000 |
+            wine_cellar         |    1   | 1.000000 |
+            cinema              |    1   | 0.750000 |
+
+If the coverage of the Cinema node were increased from 0.75 to 1
+the top level coverage would increase by 0.016667 to 0.425833

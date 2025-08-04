@@ -1,0 +1,13 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+func 4
+len 3
+fmt.Println 3
+make 2
+f.Offset 2
+import 1
+ioutil.ReadFile 1
+token.NewFileSet 1
+parser.ParseFile 1
+fs.File 1
