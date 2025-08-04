@@ -920,8 +920,25 @@ func (p *Program) write(w io.Writer) {
 				} else {
 					fmt.Fprintf(w, "<< \"[\"; for(size_t i=0;i<v.%s.size();++i){ if(i>0) os << \", \"; os << v.%s[i]; } os << \"]\"", f.Name, f.Name)
 				}
+			case f.Type == "std::any":
+				fmt.Fprintf(w, "; any_to_stream(os, v.%s); os", f.Name)
 			case strings.HasPrefix(f.Type, "std::map<"):
-				fmt.Fprintf(w, "<< \"{\"; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << \", \"; first_%d=false; os << p.first << ': ' << p.second; } os << \"}\"", i, f.Name, i, i)
+				parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(f.Type, "std::map<"), ">"), ",", 2)
+				kt := strings.TrimSpace(parts[0])
+				vt := strings.TrimSpace(parts[1])
+				fmt.Fprintf(w, "<< \"{\"; bool first_%d=true; for(const auto& p: v.%s){ if(!first_%d) os << \", \"; first_%d=false; ", i, f.Name, i, i)
+				if kt == "std::any" {
+					fmt.Fprint(w, "any_to_stream(os, p.first);")
+				} else {
+					fmt.Fprint(w, "os << p.first;")
+				}
+				fmt.Fprint(w, " os << ': ';")
+				if vt == "std::any" {
+					fmt.Fprint(w, " any_to_stream(os, p.second);")
+				} else {
+					fmt.Fprint(w, " os << p.second;")
+				}
+				fmt.Fprint(w, " } os << \"}\"")
 			case strings.HasPrefix(f.Type, "std::function<"):
 				fmt.Fprint(w, "<< \"<fn>\"")
 			default:
@@ -2922,7 +2939,7 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 	}
 
 	io.WriteString(w, ind)
-	if baseType == "std::any" || (strings.HasPrefix(baseType, "std::map<") && strings.Contains(baseType, "std::any")) {
+	if baseType == "std::any" {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
 		}
