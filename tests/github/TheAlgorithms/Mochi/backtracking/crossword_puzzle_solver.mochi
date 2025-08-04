@@ -1,0 +1,70 @@
+/*
+Crossword Puzzle Solver using backtracking.
+Given an empty crossword grid and a list of words,
+place each word either vertically or horizontally without overlaps or out-of-bound placement.
+The algorithm tries all positions recursively, backtracking when a word cannot be placed,
+until all words fit or no solution exists.
+Functions:
+- is_valid: check if a word fits at a given position.
+- place_word/remove_word: modify the grid.
+- solve_crossword: recursively attempt to fill the grid using unused words.
+*/
+fun is_valid(puzzle: list<list<string>>, word: string, row: int, col: int, vertical: bool): bool {
+  for i in 0..len(word) {
+    if vertical {
+      if row + i >= len(puzzle) || puzzle[row + i][col] != "" { return false }
+    } else {
+      if col + i >= len(puzzle[0]) || puzzle[row][col + i] != "" { return false }
+    }
+  }
+  return true
+}
+
+fun place_word(puzzle: list<list<string>>, word: string, row: int, col: int, vertical: bool): void {
+  for i in 0..len(word) {
+    let ch: string = word[i]
+    if vertical { puzzle[row + i][col] = ch } else { puzzle[row][col + i] = ch }
+  }
+}
+
+fun remove_word(puzzle: list<list<string>>, word: string, row: int, col: int, vertical: bool): void {
+  for i in 0..len(word) {
+    if vertical { puzzle[row + i][col] = "" } else { puzzle[row][col + i] = "" }
+  }
+}
+
+fun solve_crossword(puzzle: list<list<string>>, words: list<string>, used: list<bool>): bool {
+  for row in 0..len(puzzle) {
+    for col in 0..len(puzzle[0]) {
+      if puzzle[row][col] == "" {
+        for i in 0..len(words) {
+          if !used[i] {
+            let word: string = words[i]
+            for vertical in [true, false] {
+              if is_valid(puzzle, word, row, col, vertical) {
+                place_word(puzzle, word, row, col, vertical)
+                used[i] = true
+                if solve_crossword(puzzle, words, used) { return true }
+                used[i] = false
+                remove_word(puzzle, word, row, col, vertical)
+              }
+            }
+          }
+        }
+        return false
+      }
+    }
+  }
+  return true
+}
+
+var puzzle: list<list<string>> = [["", "", ""], ["", "", ""], ["", "", ""]]
+var words: list<string> = ["cat", "dog", "car"]
+var used: list<bool> = [false, false, false]
+
+if solve_crossword(puzzle, words, used) {
+  print("Solution found:")
+  for row in puzzle { print(row) }
+} else {
+  print("No solution found:")
+}
