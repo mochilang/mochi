@@ -1,11 +1,11 @@
 public class Main {
-    static double PI = 3.141592653589793;
-    static double L = 10.0;
-    static double G = 9.81;
-    static double dt = 0.2;
-    static double phi0 = PI / 4.0;
-    static double omega = sqrtApprox(G / L);
-    static double t = 0.0;
+    static double PI;
+    static double L;
+    static double G;
+    static double dt;
+    static double phi0;
+    static double omega;
+    static double t;
 
     static double sinApprox(double x) {
         double term = x;
@@ -21,16 +21,16 @@ public class Main {
     }
 
     static double cosApprox(double x) {
-        double term = 1.0;
-        double sum = 1.0;
-        int n = 1;
-        while (n <= 10) {
-            double denom = ((Number)(((2 * n - 1) * (2 * n)))).doubleValue();
-            term = -term * x * x / denom;
-            sum = sum + term;
-            n = n + 1;
+        double term_1 = 1.0;
+        double sum_1 = 1.0;
+        int n_1 = 1;
+        while (n_1 <= 10) {
+            double denom_1 = ((Number)(((2 * n_1 - 1) * (2 * n_1)))).doubleValue();
+            term_1 = -term_1 * x * x / denom_1;
+            sum_1 = sum_1 + term_1;
+            n_1 = n_1 + 1;
         }
-        return sum;
+        return sum_1;
     }
 
     static double sqrtApprox(double x) {
@@ -43,44 +43,22 @@ public class Main {
         return guess;
     }
     public static void main(String[] args) {
-        {
-            long _benchStart = _now();
-            long _benchMem = _mem();
-            for (int step = 0; step < 10; step++) {
-                double phi = phi0 * cosApprox(omega * t);
-                int pos = ((Number)((10.0 * sinApprox(phi) + 0.5))).intValue();
-                System.out.println(String.valueOf(pos));
-                t = t + dt;
-            }
-            long _benchDuration = _now() - _benchStart;
-            long _benchMemory = _mem() - _benchMem;
-            System.out.println("{");
-            System.out.println("  \"duration_us\": " + _benchDuration + ",");
-            System.out.println("  \"memory_bytes\": " + _benchMemory + ",");
-            System.out.println("  \"name\": \"main\"");
-            System.out.println("}");
-            return;
+        PI = 3.141592653589793;
+        L = 10.0;
+        G = 9.81;
+        dt = 0.2;
+        phi0 = PI / 4.0;
+        omega = sqrtApprox(G / L);
+        t = 0.0;
+        for (int step = 0; step < 10; step++) {
+            double phi = phi0 * cosApprox(omega * t);
+            int pos = ((Number)((10.0 * sinApprox(phi) + 0.5))).intValue();
+            System.out.println(_p(pos));
+            t = t + dt;
         }
     }
 
-    static boolean _nowSeeded = false;
-    static int _nowSeed;
-    static int _now() {
-        if (!_nowSeeded) {
-            String s = System.getenv("MOCHI_NOW_SEED");
-            if (s != null && !s.isEmpty()) {
-                try { _nowSeed = Integer.parseInt(s); _nowSeeded = true; } catch (Exception e) {}
-            }
-        }
-        if (_nowSeeded) {
-            _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
-            return _nowSeed;
-        }
-        return (int)(System.nanoTime() / 1000);
-    }
-
-    static long _mem() {
-        Runtime rt = Runtime.getRuntime();
-        return rt.totalMemory() - rt.freeMemory();
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

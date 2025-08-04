@@ -17,15 +17,19 @@ public class Main {
     }
 
     static void main() {
-        for (var i : new int[]{-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) {
+        for (int i : new int[]{-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}) {
             if (i < 0) {
-                System.out.println(String.valueOf("fib(" + String.valueOf(i)) + ") returned error: negative n is forbidden");
+                System.out.println("fib(" + _p(i) + ") returned error: negative n is forbidden");
             } else {
-                System.out.println(String.valueOf(String.valueOf("fib(" + String.valueOf(i)) + ") = ") + String.valueOf(fib(i)));
+                System.out.println("fib(" + _p(i) + ") = " + _p(fib(i)));
             }
         }
     }
     public static void main(String[] args) {
         main();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }
