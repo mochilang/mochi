@@ -1,5 +1,5 @@
-## Progress (2025-08-02 01:20 +0700)
-- swift transpiler: fix struct field access and rosetta case
+## Progress (2025-08-04 21:23 +0700)
+- remove obsolete http error
 - Generated golden tests for 102/105 programs
 - Updated README checklist and output artifacts
 

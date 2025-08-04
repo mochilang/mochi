@@ -2893,7 +2893,68 @@ func convertImport(im *parser.ImportStmt) Stmt {
 		lang = *im.Lang
 	}
 	if lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg" {
-		return &RawStmt{Code: fmt.Sprintf("struct %s {\n    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }\n    static let Pi = 3.14\n    static let Answer = 42\n    static func FifteenPuzzleExample() -> String { return \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\" }\n    static func ECDSAExample() -> (D: Any?, X: Any?, Y: Any?, Hash: Any?, R: Any?, S: Any?, Valid: Any?) { return (nil, nil, nil, nil, nil, nil, nil) }\n}\n", alias)}
+		return &RawStmt{Code: fmt.Sprintf(`struct %s {
+    static func Add(_ a: Int, _ b: Int) -> Int { return a + b }
+    static let Pi = 3.14
+    static let Answer = 42
+    static func FifteenPuzzleExample() -> String { return "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd" }
+    static func ECDSAExample() -> (D: Any?, X: Any?, Y: Any?, Hash: Any?, R: Any?, S: Any?, Valid: Any?) { return (nil, nil, nil, nil, nil, nil, nil) }
+    static func MD5Hex(_ s: String) -> String {
+        var msg = [UInt8](s.utf8)
+        let bitLen = UInt64(msg.count) * 8
+        msg.append(0x80)
+        while (msg.count %% 64) != 56 { msg.append(0) }
+        for i in 0..<8 { msg.append(UInt8((bitLen >> (8 * UInt64(i))) & 0xff)) }
+        var a0: UInt32 = 0x67452301
+        var b0: UInt32 = 0xefcdab89
+        var c0: UInt32 = 0x98badcfe
+        var d0: UInt32 = 0x10325476
+        let s: [UInt32] = [7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21]
+        let K: [UInt32] = (0..<64).map { UInt32(abs(sin(Double($0+1))) * 4294967296.0) }
+        func leftrotate(_ x: UInt32, _ c: UInt32) -> UInt32 { return (x << c) | (x >> (32 - c)) }
+        for chunkOffset in stride(from: 0, to: msg.count, by: 64) {
+            var M = [UInt32](repeating: 0, count: 16)
+            for i in 0..<16 {
+                let j = chunkOffset + i*4
+                M[i] = UInt32(msg[j]) | UInt32(msg[j+1])<<8 | UInt32(msg[j+2])<<16 | UInt32(msg[j+3])<<24
+            }
+            var A = a0
+            var B = b0
+            var C = c0
+            var D = d0
+            for i in 0..<64 {
+                var F: UInt32 = 0
+                var g = 0
+                if i < 16 {
+                    F = (B & C) | ((~B) & D)
+                    g = i
+                } else if i < 32 {
+                    F = (D & B) | ((~D) & C)
+                    g = (5*i + 1) %% 16
+                } else if i < 48 {
+                    F = B ^ C ^ D
+                    g = (3*i + 5) %% 16
+                } else {
+                    F = C ^ (B | (~D))
+                    g = (7*i) %% 16
+                }
+                let temp = D
+                D = C
+                C = B
+                B = B &+ leftrotate(A &+ F &+ K[i] &+ M[g], s[i])
+                A = temp
+            }
+            a0 = a0 &+ A
+            b0 = b0 &+ B
+            c0 = c0 &+ C
+            d0 = d0 &+ D
+        }
+        func toBytes(_ v: UInt32) -> [UInt8] { return [UInt8(v & 0xff), UInt8((v >> 8) & 0xff), UInt8((v >> 16) & 0xff), UInt8((v >> 24) & 0xff)] }
+        let digest = toBytes(a0) + toBytes(b0) + toBytes(c0) + toBytes(d0)
+        return digest.map { String(format: "%%02x", $0) }.joined()
+    }
+}
+`, alias)}
 	}
 	if lang == "python" && im.Path == "math" {
 		if im.Auto {
