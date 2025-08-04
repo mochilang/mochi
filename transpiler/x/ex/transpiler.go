@@ -1184,7 +1184,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return false
 	}
 	if b.Op == "/" {
-		if b.IntDiv {
+		if b.IntDiv || (!b.FloatOp && !isFloat(b.Left) && !isFloat(b.Right)) {
 			io.WriteString(w, "div(")
 			b.Left.emit(w)
 			io.WriteString(w, ", ")
@@ -1777,16 +1777,9 @@ type CastExpr struct {
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
 	case "int":
-		switch c.Expr.(type) {
-		case *StringLit:
-			io.WriteString(w, "String.to_integer(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		default:
-			io.WriteString(w, "trunc(")
-			c.Expr.emit(w)
-			io.WriteString(w, ")")
-		}
+		io.WriteString(w, "(fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "bigrat":
 		io.WriteString(w, "_bigrat(")
 		c.Expr.emit(w)
