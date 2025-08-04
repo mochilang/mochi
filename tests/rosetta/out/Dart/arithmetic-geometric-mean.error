@@ -1,4 +1,0 @@
-run: exit status 254
-/tmp/arithmetic-geometric-mean.dart:4:12: Error: A value of type 'num' can't be returned from a function with return type 'double'.
-    return -(x as num);
-           ^

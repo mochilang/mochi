@@ -22,27 +22,29 @@ int _now() {
   return DateTime.now().microsecondsSinceEpoch;
 }
 
-String _substr(String s, int start, int end) {
+String _substr(String s, num start, num end) {
   var n = s.length;
-  if (start < 0) start += n;
-  if (end < 0) end += n;
-  if (start < 0) start = 0;
-  if (start > n) start = n;
-  if (end < 0) end = 0;
-  if (end > n) end = n;
-  if (start > end) start = end;
-  return s.substring(start, end);
+  int s0 = start.toInt();
+  int e0 = end.toInt();
+  if (s0 < 0) s0 += n;
+  if (e0 < 0) e0 += n;
+  if (s0 < 0) s0 = 0;
+  if (s0 > n) s0 = n;
+  if (e0 < 0) e0 = 0;
+  if (e0 > n) e0 = n;
+  if (s0 > e0) s0 = e0;
+  return s.substring(s0, e0);
 }
 
-num abs(num x) {
+double abs(double x) {
   if (x < 0.0) {
     return -x;
   }
   return x;
 }
 
-num sqrtApprox(num x) {
-  num guess = x;
+double sqrtApprox(double x) {
+  double guess = x;
   int i = 0;
   while (i < 20) {
     guess = (guess + x / guess) / 2.0;
@@ -51,18 +53,18 @@ num sqrtApprox(num x) {
   return guess;
 }
 
-num agm(num a, num g) {
-  num eps = 0.00000000000001;
-  while ((a - g).abs() > a.abs() * eps) {
-    num newA = (a + g) / 2.0;
-    num newG = sqrtApprox(a * g);
+double agm(double a, double g) {
+  double eps = 0.00000000000001;
+  while ((a - g).abs().compareTo(a.abs() * eps) > 0) {
+    double newA = (a + g) / 2.0;
+    double newG = sqrtApprox(a * g);
     a = newA;
     g = newG;
   }
   return a;
 }
 
-void main() {
+void _main() {
   print((agm(1.0, 1.0 / sqrtApprox(2.0))).toString());
 }
 
@@ -73,13 +75,14 @@ void _start() {
   {
   var _benchMem0 = ProcessInfo.currentRss;
   var _benchSw = Stopwatch()..start();
-  main();
+  _main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "main"}));
 }
-  main();
   _benchSw.stop();
   var _benchMem1 = ProcessInfo.currentRss;
   print(jsonEncode({"duration_us": _benchSw.elapsedMicroseconds, "memory_bytes": (_benchMem1 - _benchMem0).abs(), "name": "_start"}));
 }
+
+void main() => _start();
