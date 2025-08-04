@@ -1271,7 +1271,11 @@ func (l *ListLit) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	if len(m.Keys) == 0 {
-		fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
+		if m.KeyType == "auto" && m.ValueType == "auto" {
+			io.WriteString(w, "{}")
+		} else {
+			fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
+		}
 		return
 	}
 	if m.ValueType == "std::any" && currentProgram != nil {
@@ -1565,11 +1569,22 @@ func (s *SliceExpr) emit(w io.Writer) {
 }
 
 func (c *ContainsExpr) emit(w io.Writer) {
+	t := exprType(c.Value)
 	io.WriteString(w, "(")
-	c.Value.emit(w)
-	io.WriteString(w, ".find(")
-	c.Sub.emit(w)
-	io.WriteString(w, ") != std::string::npos")
+	switch {
+	case strings.HasPrefix(t, "std::map<"):
+		c.Value.emit(w)
+		io.WriteString(w, ".find(")
+		c.Sub.emit(w)
+		io.WriteString(w, ") != ")
+		c.Value.emit(w)
+		io.WriteString(w, ".end()")
+	default:
+		c.Value.emit(w)
+		io.WriteString(w, ".find(")
+		c.Sub.emit(w)
+		io.WriteString(w, ") != std::string::npos")
+	}
 	io.WriteString(w, ")")
 }
 
