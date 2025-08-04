@@ -1,0 +1,8 @@
+error[A003]: undefined variable name
+  --> /workspace/mochi/tests/rosetta/x/Mochi/ftp.mochi:44:27
+
+ 44 |     let content = dataDir[name]
+    |                           ^
+
+help:
+  Declare name before use

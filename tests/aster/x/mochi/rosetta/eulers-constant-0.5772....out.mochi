@@ -1,0 +1,38 @@
+fun ln(x: float): float {
+  var k: float = 0
+  var v: float = x
+  while (v >= 2) {
+    v = (v / 2)
+    k = (k + 1)
+  }
+  while (v < 1) {
+    v = (v * 2)
+    k = (k - 1)
+  }
+  let z: float = (((v - 1)) / ((v + 1)))
+  var zpow: float = z
+  var sum: float = z
+  var i: int = 3
+  while (i <= 9) {
+    zpow = ((zpow * z) * z)
+    sum = (sum + (zpow / (i as float)))
+    i = (i + 2)
+  }
+  let ln2: float = 0.6931471805599453
+  return (((k * ln2)) + (2 * sum))
+}
+fun harmonic(n: int): float {
+  var sum: float = 0
+  var i: int = 1
+  while (i <= n) {
+    sum = (sum + (1 / (i as float)))
+    i = (i + 1)
+  }
+  return sum
+}
+fun main(): void {
+  let n: int = 100000
+  let gamma: float = (harmonic(n) - ln(n as float))
+  print(str(gamma))
+}
+main()

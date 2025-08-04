@@ -1,0 +1,8 @@
+error[A002]: type mismatch for n: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/fractran.mochi:35:3
+
+ 35 |   var n: bigint = 2
+    |   ^
+
+help:
+  Ensure n matches

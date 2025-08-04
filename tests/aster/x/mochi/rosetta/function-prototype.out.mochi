@@ -1,0 +1,6 @@
+fun a(): void {
+}
+fun b(x: int, y: int): void {
+}
+fun c(nums: list<int>): void {
+}

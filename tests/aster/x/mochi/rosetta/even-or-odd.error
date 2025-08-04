@@ -1,0 +1,8 @@
+error[A002]: type mismatch for n: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/even-or-odd.mochi:10:3
+
+ 10 |   var n: bigint = 0
+    |   ^
+
+help:
+  Ensure n matches

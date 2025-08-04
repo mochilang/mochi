@@ -1,0 +1,17 @@
+var memo: map<int, int> = {0: 0, 1: 1}
+fun fib(n: int): int {
+  if (n in memo) {
+    return memo[n]
+  }
+  let v: int = (fib((n - 1)) + fib((n - 2)))
+  memo[n] = v
+  return v
+}
+fun main(): void {
+  var i: int = 1
+  while (i <= 30) {
+    print(str(fib(i)))
+    i = (i + 1)
+  }
+}
+main()

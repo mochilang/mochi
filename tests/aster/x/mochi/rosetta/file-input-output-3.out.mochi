@@ -1,0 +1,13 @@
+var fs: map<string, string> = {"input.txt": "example"}
+fun copyFile(out: string, inp: string): void {
+  var s: string = ""
+  for ch in fs[inp] {
+    s = (s + ch)
+  }
+  fs[out] = s
+}
+fun main(): void {
+  copyFile("output.txt", "input.txt")
+  print(fs["output.txt"])
+}
+main()

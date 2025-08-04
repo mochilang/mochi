@@ -1,0 +1,17 @@
+fun fibonacciWord(n: int): string {
+  var a: string = "1"
+  var b: string = "0"
+  var i: int = 1
+  while (i < n) {
+    let tmp: string = b
+    b = (b + a)
+    a = tmp
+    i = (i + 1)
+  }
+  return a
+}
+fun main(): void {
+  let wf: string = fibonacciWord(23)
+  print(str(len(wf)))
+}
+main()

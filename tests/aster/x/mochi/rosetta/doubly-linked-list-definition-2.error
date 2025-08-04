@@ -1,0 +1,8 @@
+error[A006]: invalid map entry
+  --> /workspace/mochi/tests/rosetta/x/Mochi/doubly-linked-list-definition-2.mochi:8:11
+
+  8 |   return {"nodes": {}, "head": 0, "tail": 0, "nextID": 1}
+    |           ^
+
+help:
+  Map entries require key and value

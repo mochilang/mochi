@@ -1,0 +1,3 @@
+let apple: int = 0
+let banana: int = (apple + 1)
+let cherry: int = (banana + 1)

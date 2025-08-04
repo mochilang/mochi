@@ -1,0 +1,8 @@
+error[A012]: invalid string operation
+  --> /workspace/mochi/tests/rosetta/x/Mochi/draw-a-cuboid.mochi:12:33
+
+ 12 |   var line = repeat(" ", n + 1) + cde[0:1]
+    |                                 ^
+
+help:
+  Only concatenation is supported

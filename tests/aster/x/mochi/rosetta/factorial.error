@@ -1,0 +1,8 @@
+error[A002]: type mismatch for r: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/factorial.mochi:2:3
+
+  2 |   var r: bigint = 1
+    |   ^
+
+help:
+  Ensure r matches

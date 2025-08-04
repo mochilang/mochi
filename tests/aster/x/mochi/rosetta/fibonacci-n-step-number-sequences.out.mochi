@@ -1,0 +1,36 @@
+fun show(xs: list<int>): string {
+  var s: string = ""
+  var i: int = 0
+  while (i < len(xs)) {
+    s = (s + str(xs[i]))
+    if (i < (len(xs) - 1)) {
+      s = (s + " ")
+    }
+    i = (i + 1)
+  }
+  return s
+}
+fun gen(init: list<int>, n: int): list<int> {
+  var b: list<int> = init
+  var res: list<int>
+  var sum: int = 0
+  for x in b {
+    res = append(res, x)
+    sum = (sum + x)
+  }
+  while (len(res) < n) {
+    var next: int = sum
+    res = append(res, next)
+    sum = ((sum + next) - b[0])
+    b = append(slice(b, 1, len(b)), next)
+  }
+  return res
+}
+fun main(): void {
+  let n: int = 10
+  print((" Fibonacci: " + show(gen([1, 1], n))))
+  print(("Tribonacci: " + show(gen([1, 1, 2], n))))
+  print(("Tetranacci: " + show(gen([1, 1, 2, 4], n))))
+  print(("     Lucas: " + show(gen([2, 1], n))))
+}
+main()

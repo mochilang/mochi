@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected list<int>, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/forward-difference.mochi:14:3
+
+ 14 |   return a[0:len(a)-ord]
+    |   ^
+
+help:
+  Ensure return value matches

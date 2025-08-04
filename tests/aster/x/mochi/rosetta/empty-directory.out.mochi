@@ -1,0 +1,16 @@
+fun isEmptyDir(fs: map<string, list<string>>, name: string): bool {
+  if (name in fs) {
+    return (len(fs[name]) == 0)
+  }
+  return true
+}
+fun main(): void {
+  var fs: map<string, list<string>>
+  fs["/var"] = ["log"]
+  if isEmptyDir(fs, "/tmp") {
+    print("/tmp is empty")
+  } else {
+    print("/tmp is not empty")
+  }
+}
+main()

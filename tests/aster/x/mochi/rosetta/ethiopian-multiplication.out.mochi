@@ -1,0 +1,23 @@
+fun halve(i: int): int {
+  return (i / 2)
+}
+fun double(i: int): int {
+  return (i * 2)
+}
+fun isEven(i: int): bool {
+  return ((i % 2) == 0)
+}
+fun ethMulti(i: int, j: int): int {
+  var r: int = 0
+  var x: int = i
+  var y: int = j
+  while (x > 0) {
+    if !isEven(x) {
+      r = (r + y)
+    }
+    x = halve(x)
+    y = double(y)
+  }
+  return r
+}
+print(("17 ethiopian 34 = " + str(ethMulti(17, 34))))

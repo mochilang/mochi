@@ -1,0 +1,7 @@
+var fs: map<string, string> = {"input.txt": "example"}
+fun main(): void {
+  let data: string = fs["input.txt"]
+  fs["output.txt"] = data
+  print(fs["output.txt"])
+}
+main()

@@ -1,0 +1,63 @@
+let n: int = 64
+fun pow2(k: int): int {
+  var v: int = 1
+  var i: int = 0
+  while (i < k) {
+    v = (v * 2)
+    i = (i + 1)
+  }
+  return v
+}
+fun ruleBit(ruleNum: int, idx: int): int {
+  var r: int = ruleNum
+  var i: int = 0
+  while (i < idx) {
+    r = (r / 2)
+    i = (i + 1)
+  }
+  return (r % 2)
+}
+fun evolve(state: list<int>, ruleNum: int): list<int> {
+  var out: list<int>
+  var p: int = 0
+  while (p < 10) {
+    var b: int = 0
+    var q: int = 7
+    while (q >= 0) {
+      let st: list<int> = state
+      b = (b + (st[0] * pow2(q)))
+      var next: list<int>
+      var i: int = 0
+      while (i < n) {
+        var lidx: int = (i - 1)
+        if (lidx < 0) {
+          lidx = (n - 1)
+        }
+        let left: int = st[lidx]
+        let center: int = st[i]
+        let ridx: int = (i + 1)
+        if (ridx >= n) {
+          ridx = 0
+        }
+        let right: int = st[ridx]
+        let index: int = (((left * 4) + (center * 2)) + right)
+        next = append(next, ruleBit(ruleNum, index))
+        i = (i + 1)
+      }
+      state = next
+      q = (q - 1)
+    }
+    out = append(out, b)
+    p = (p + 1)
+  }
+  return out
+}
+var init: list<int>
+var i: int = 0
+while (i < n) {
+  init = append(init, 0)
+  i = (i + 1)
+}
+init[0] = 1
+let bytes: list<int> = evolve(init, 30)
+print(str(bytes))

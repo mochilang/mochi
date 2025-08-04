@@ -1,0 +1,10 @@
+var fs: map<string, int> = {"input.txt": 0}
+fun main(): void {
+  let old: int = fs["input.txt"]
+  print(("mod time was: " + str(old)))
+  var mtime: int = now()
+  mtime = now()
+  fs["input.txt"] = mtime as int
+  print(("mod time now: " + str(mtime)))
+}
+main()

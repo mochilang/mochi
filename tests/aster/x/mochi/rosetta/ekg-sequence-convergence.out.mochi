@@ -1,0 +1,108 @@
+fun contains(xs: list<int>, n: int): bool {
+  var i: int = 0
+  while (i < len(xs)) {
+    if (xs[i] == n) {
+      return true
+    }
+    i = (i + 1)
+  }
+  return false
+}
+fun gcd(a: int, b: int): int {
+  var x: int = a
+  var y: int = b
+  while (y != 0) {
+    let t: int = (x % y)
+    x = y
+    y = t
+  }
+  if (x < 0) {
+    x = -x
+  }
+  return x
+}
+fun sortInts(xs: list<int>): list<int> {
+  var arr: list<int> = xs
+  var n: int = len(arr)
+  var i: int = 0
+  while (i < n) {
+    var j: int = 0
+    while (j < (n - 1)) {
+      if (arr[j] > arr[(j + 1)]) {
+        let tmp: int = arr[j]
+        arr[j] = arr[(j + 1)]
+        arr[(j + 1)] = tmp
+      }
+      j = (j + 1)
+    }
+    i = (i + 1)
+  }
+  return arr
+}
+fun areSame(s: list<int>, t: list<int>): bool {
+  if (len(s) != len(t)) {
+    return false
+  }
+  var a: list<int> = sortInts(s)
+  var b: list<int> = sortInts(t)
+  var i: int = 0
+  while (i < len(a)) {
+    if (a[i] != b[i]) {
+      return false
+    }
+    i = (i + 1)
+  }
+  return true
+}
+fun printSlice(start: int, seq: list<int>): void {
+  var first: list<int>
+  var i: int = 0
+  while (i < 30) {
+    first = append(first, seq[i])
+    i = (i + 1)
+  }
+  var pad: string = ""
+  if (start < 10) {
+    pad = " "
+  }
+  print((((("EKG(" + pad) + str(start)) + "): ") + str(first)))
+}
+fun main(): void {
+  let limit: int = 100
+  let starts: list<int> = [2, 5, 7, 9, 10]
+  var ekg: list<list<int>>
+  var s: int = 0
+  while (s < len(starts)) {
+    var seq: list<int> = [1, starts[s]]
+    var n: int = 2
+    while (n < limit) {
+      var i: int = 2
+      var done: bool = false
+      while !done {
+        if (!contains(seq, i) && (gcd(seq[(n - 1)], i) > 1)) {
+          seq = append(seq, i)
+          done = true
+        }
+        i = (i + 1)
+      }
+      n = (n + 1)
+    }
+    ekg = append(ekg, seq)
+    printSlice(starts[s], seq)
+    s = (s + 1)
+  }
+  var i: int = 2
+  var found: bool = false
+  while (i < limit) {
+    if ((ekg[1][i] == ekg[2][i]) && areSame(ekg[1][end], ekg[2][end])) {
+      print(("\nEKG(5) and EKG(7) converge at term " + str((i + 1))))
+      found = true
+      break
+    }
+    i = (i + 1)
+  }
+  if !found {
+    print((("\nEKG5(5) and EKG(7) do not converge within " + str(limit)) + " terms"))
+  }
+}
+main()

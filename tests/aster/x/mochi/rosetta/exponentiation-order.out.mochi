@@ -1,0 +1,15 @@
+fun powInt(b: int, p: int): int {
+  var r: int = 1
+  var i: int = 0
+  while (i < p) {
+    r = (r * b)
+    i = (i + 1)
+  }
+  return r
+}
+let a: int = powInt(5, powInt(3, 2))
+let b: int = powInt(powInt(5, 3), 2)
+let c: int = powInt(5, powInt(3, 2))
+print(("5^3^2   = " + str(a)))
+print(("(5^3)^2 = " + str(b)))
+print(("5^(3^2) = " + str(c)))

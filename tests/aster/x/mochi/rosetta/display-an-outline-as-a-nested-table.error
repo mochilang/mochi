@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected string, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/display-an-outline-as-a-nested-table.mochi:36:3
+
+ 36 |   return s[i:len(s)]
+    |   ^
+
+help:
+  Ensure return value matches

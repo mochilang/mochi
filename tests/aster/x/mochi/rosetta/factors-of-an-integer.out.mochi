@@ -1,0 +1,55 @@
+fun printFactors(n: int): void {
+  if (n < 1) {
+    print((("\nFactors of " + str(n)) + " not computed"))
+  }
+  print((("\nFactors of " + str(n)) + ": "))
+  var fs: list<int> = [1]
+  fun apf(p: int, e: int): void {
+    var orig: int = len(fs)
+    var pp: int = p
+    var i: int = 0
+    while (i < e) {
+      var j: int = 0
+      while (j < orig) {
+        fs = append(fs, (fs[j] * pp))
+        j = (j + 1)
+      }
+      i = (i + 1)
+      pp = (pp * p)
+    }
+  }
+  var e: int = 0
+  var m: int = n
+  while ((m % 2) == 0) {
+    m = ((m / 2)) as int
+    e = (e + 1)
+  }
+  apf(2, e)
+  var d: int = 3
+  while (m > 1) {
+    if ((d * d) > m) {
+      d = m
+    }
+    e = 0
+    while ((m % d) == 0) {
+      m = ((m / d)) as int
+      e = (e + 1)
+    }
+    if (e > 0) {
+      apf(d, e)
+    }
+    d = (d + 2)
+  }
+  print(str(fs))
+  print(("Number of factors = " + str(len(fs))))
+}
+printFactors(-1)
+printFactors(0)
+printFactors(1)
+printFactors(2)
+printFactors(3)
+printFactors(53)
+printFactors(45)
+printFactors(64)
+printFactors(600851475143)
+printFactors(999999999999999989)

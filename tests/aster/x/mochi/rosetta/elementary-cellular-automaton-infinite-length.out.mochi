@@ -1,0 +1,78 @@
+fun pow2(n: int): int {
+  var p: int = 1
+  var i: int = 0
+  while (i < n) {
+    p = (p * 2)
+    i = (i + 1)
+  }
+  return p
+}
+fun btoi(b: bool): int {
+  if b {
+    return 1
+  }
+  return 0
+}
+fun addNoCells(cells: string): string {
+  var l: string = "O"
+  var r: string = "O"
+  if (substring(cells, 0, 1) == "O") {
+    l = "."
+  }
+  if (substring(cells, (len(cells) - 1), len(cells)) == "O") {
+    r = "."
+  }
+  cells = ((l + cells) + r)
+  cells = ((l + cells) + r)
+  return cells
+}
+fun step(cells: string, ruleVal: int): string {
+  var newCells: string = ""
+  var i: int = 0
+  while (i < (len(cells) - 2)) {
+    var bin: int = 0
+    var b: int = 2
+    var n: int = i
+    while (n < (i + 3)) {
+      bin = (bin + (btoi((substring(cells, n, (n + 1)) == "O")) * pow2(b)))
+      b = (b - 1)
+      n = (n + 1)
+    }
+    var a: string = "."
+    if (((((ruleVal / pow2(bin))) % 2) == 1)) {
+      a = "O"
+    }
+    newCells = (newCells + a)
+    i = (i + 1)
+  }
+  return newCells
+}
+fun repeat(ch: string, n: int): string {
+  var s: string = ""
+  var i: int = 0
+  while (i < n) {
+    s = (s + ch)
+    i = (i + 1)
+  }
+  return s
+}
+fun evolve(l: int, ruleVal: int): void {
+  print(((" Rule #" + str(ruleVal)) + ":"))
+  var cells: string = "O"
+  var x: int = 0
+  while (x < l) {
+    cells = addNoCells(cells)
+    var width: int = (40 + ((len(cells) / 2)))
+    var spaces: string = repeat(" ", (width - len(cells)))
+    print((spaces + cells))
+    cells = step(cells, ruleVal)
+    x = (x + 1)
+  }
+}
+fun main(): void {
+  for r in [90, 30] {
+    evolve(25, r)
+    print("")
+  }
+}
+main()

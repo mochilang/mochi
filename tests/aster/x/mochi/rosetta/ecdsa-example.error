@@ -1,0 +1,8 @@
+error[A024]: unknown function ECDSAExample
+  --> /workspace/mochi/tests/rosetta/x/Mochi/ecdsa-example.mochi:3:31
+
+  3 | let res = testpkg.ECDSAExample()
+    |                               ^
+
+help:
+  Declare ECDSAExample before use

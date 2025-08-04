@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/factorial-base-numbers-indexing-permutations-of-a-collection.mochi:101:10
+
+101 |   return [results, count]
+    |          ^
+
+help:
+  Ensure all list elements share a type

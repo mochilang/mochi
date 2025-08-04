@@ -1,0 +1,8 @@
+error[A024]: unknown function f
+  --> /workspace/mochi/tests/rosetta/x/Mochi/euler-method.mochi:66:18
+
+ 66 |   return y + h * f(x, y)
+    |                  ^
+
+help:
+  Declare f before use

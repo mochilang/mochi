@@ -1,0 +1,8 @@
+error[A002]: type mismatch for zero: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/euclid-mullin-sequence.mochi:1:1
+
+  1 | var zero: bigint = 0
+    | ^
+
+help:
+  Ensure zero matches

@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected string, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/execute-a-markov-algorithm.mochi:28:3
+
+ 28 |   return s[start:end]
+    |   ^
+
+help:
+  Ensure return value matches

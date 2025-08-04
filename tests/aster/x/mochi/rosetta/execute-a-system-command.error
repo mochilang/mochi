@@ -1,0 +1,8 @@
+error[A024]: unknown function getoutput
+  --> /workspace/mochi/tests/rosetta/x/Mochi/execute-a-system-command.mochi:7:31
+
+  7 | let out = subprocess.getoutput("ls -l")
+    |                               ^
+
+help:
+  Declare getoutput before use

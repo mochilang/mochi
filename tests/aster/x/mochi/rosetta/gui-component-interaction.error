@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/gui-component-interaction.mochi:30:14
+
+ 30 |   let line = input()
+    |              ^
+
+help:
+  Declare input before use

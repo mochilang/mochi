@@ -1,0 +1,8 @@
+error[A024]: unknown function MD5Hex
+  --> /workspace/mochi/tests/rosetta/x/Mochi/md5.mochi:13:27
+
+ 13 |   let sum = testpkg.MD5Hex(pair[1])
+    |                           ^
+
+help:
+  Declare MD5Hex before use

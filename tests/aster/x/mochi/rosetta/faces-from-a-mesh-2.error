@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/faces-from-a-mesh-2.mochi:134:15
+
+134 |   return perim[:len(perim)-1]
+    |               ^
+
+help:
+  Use an int index

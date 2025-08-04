@@ -1,0 +1,86 @@
+type Pt {
+  x: float
+  y: float
+  inf: bool
+}
+let bCoeff: float = 7
+fun zero(): Pt {
+  return Pt {x: 0, y: 0, inf: true}
+}
+fun isZero(p: Pt): bool {
+  return p.inf
+}
+fun neg(p: Pt): Pt {
+  return Pt {x: p.x, y: -p.y, inf: p.inf}
+}
+fun dbl(p: Pt): Pt {
+  if isZero(p) {
+    return p
+  }
+  let L: float = ((((3 * p.x) * p.x)) / ((2 * p.y)))
+  let x: float = ((L * L) - (2 * p.x))
+  return Pt {x: x, y: ((L * ((p.x - x))) - p.y), inf: false}
+}
+fun add(p: Pt, q: Pt): Pt {
+  if isZero(p) {
+    return q
+  }
+  if isZero(q) {
+    return p
+  }
+  if (p.x == q.x) {
+    if (p.y == q.y) {
+      return dbl(p)
+    }
+    return zero()
+  }
+  let L: float = (((q.y - p.y)) / ((q.x - p.x)))
+  let x: float = (((L * L) - p.x) - q.x)
+  return Pt {x: x, y: ((L * ((p.x - x))) - p.y), inf: false}
+}
+fun mul(p: Pt, n: int): Pt {
+  var r: Pt = zero()
+  var q: Pt = p
+  var k: int = n
+  while (k > 0) {
+    if ((k % 2) == 1) {
+      r = add(r, q)
+    }
+    q = dbl(q)
+    k = (k / 2)
+  }
+  return r
+}
+fun cbrtApprox(x: float): float {
+  var guess: float = x
+  var i: int = 0
+  while (i < 40) {
+    guess = ((((2 * guess) + (x / ((guess * guess))))) / 3)
+    i = (i + 1)
+  }
+  return guess
+}
+fun fromY(y: float): Pt {
+  return Pt {x: cbrtApprox(((y * y) - bCoeff)), y: y, inf: false}
+}
+fun show(s: string, p: Pt): void {
+  if isZero(p) {
+    print((s + "Zero"))
+  } else {
+    print((((((s + "(") + str(p.x)) + ", ") + str(p.y)) + ")"))
+  }
+}
+fun main(): void {
+  let a: Pt = fromY(1)
+  let b: Pt = fromY(2)
+  show("a = ", a)
+  show("b = ", b)
+  let c: Pt = add(a, b)
+  show("c = a + b = ", c)
+  let d: Pt = neg(c)
+  show("d = -c = ", d)
+  show("c + d = ", add(c, d))
+  show("a + b + d = ", add(a, add(b, d)))
+  show("a * 12345 = ", mul(a, 12345))
+}
+main()

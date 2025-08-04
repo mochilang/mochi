@@ -1,0 +1,104 @@
+fun digitSumMod(n: int, base: int): int {
+  var sum: int = 0
+  var j: int = n
+  while (j > 0) {
+    sum = (sum + (j % base))
+    j = (j / base)
+  }
+  return (sum % base)
+}
+fun fairshareList(n: int, base: int): list<int> {
+  var res: list<int>
+  var i: int = 0
+  while (i < n) {
+    res = append(res, digitSumMod(i, base))
+    i = (i + 1)
+  }
+  return res
+}
+fun sortInts(xs: list<int>): list<int> {
+  var arr: list<int> = xs
+  var i: int = 0
+  while (i < len(arr)) {
+    var j: int = 0
+    while (j < (len(arr) - 1)) {
+      if (arr[j] > arr[(j + 1)]) {
+        let t: int = arr[j]
+        arr[j] = arr[(j + 1)]
+        arr[(j + 1)] = t
+      }
+      j = (j + 1)
+    }
+    i = (i + 1)
+  }
+  return arr
+}
+fun turns(n: int, base: int): string {
+  var counts: list<int>
+  var i: int = 0
+  while (i < base) {
+    counts = append(counts, 0)
+    i = (i + 1)
+  }
+  i = 0
+  while (i < n) {
+    let v: int = digitSumMod(i, base)
+    counts[v] = (counts[v] + 1)
+    i = (i + 1)
+  }
+  var freq: map<int, int>
+  var fkeys: list<int>
+  i = 0
+  while (i < base) {
+    let c: int = counts[i]
+    if (c > 0) {
+      if (c in freq) {
+        freq[c] = (freq[c] + 1)
+      } else {
+        freq[c] = 1
+        fkeys = append(fkeys, c)
+      }
+    }
+    i = (i + 1)
+  }
+  var total: int = 0
+  i = 0
+  while (i < len(fkeys)) {
+    total = (total + freq[fkeys[i]])
+    i = (i + 1)
+  }
+  if (total != base) {
+    return (("only " + str(total)) + " have a turn")
+  }
+  fkeys = sortInts(fkeys)
+  var res: string = ""
+  i = 0
+  while (i < len(fkeys)) {
+    if (i > 0) {
+      res = (res + " or ")
+    }
+    res = (res + str(fkeys[i]))
+    i = (i + 1)
+  }
+  return res
+}
+fun main(): void {
+  var bases1: list<int> = [2, 3, 5, 11]
+  var i: int = 0
+  while (i < len(bases1)) {
+    let b: int = bases1[i]
+    print(((str(b).padStart(2, " ") + " : ") + str(fairshareList(25, b))))
+    i = (i + 1)
+  }
+  print("")
+  print("How many times does each get a turn in 50000 iterations?")
+  var bases2: list<int> = [191, 1377, 49999, 50000, 50001]
+  i = 0
+  while (i < len(bases2)) {
+    let b: int = bases2[i]
+    let t: string = turns(50000, b)
+    print(((("  With " + str(b)) + " people: ") + t))
+    i = (i + 1)
+  }
+}
+main()

@@ -1,0 +1,37 @@
+var seed: int = (now() % 2147483647)
+fun randN(n: int): int {
+  seed = ((((seed * 1664525) + 1013904223)) % 2147483647)
+  return (seed % n)
+}
+fun eqIndices(xs: list<int>): list<int> {
+  var r: int = 0
+  var i: int = 0
+  while (i < len(xs)) {
+    r = (r + xs[i])
+    i = (i + 1)
+  }
+  var l: int = 0
+  var eq: list<int>
+  i = 0
+  while (i < len(xs)) {
+    r = (r - xs[i])
+    if (l == r) {
+      eq = append(eq, i)
+    }
+    l = (l + xs[i])
+    i = (i + 1)
+  }
+  return eq
+}
+fun main(): void {
+  print(eqIndices([-7, 1, 5, 2, -4, 3, 0]))
+  var verylong: list<int>
+  var i: int = 0
+  while (i < 10000) {
+    seed = ((((seed * 1664525) + 1013904223)) % 2147483647)
+    verylong = append(verylong, ((seed % 1001) - 500))
+    i = (i + 1)
+  }
+  print(eqIndices(verylong))
+}
+main()

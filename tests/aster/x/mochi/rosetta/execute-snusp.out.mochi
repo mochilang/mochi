@@ -1,0 +1,4 @@
+fun main(): void {
+  print("Hello World!")
+}
+main()

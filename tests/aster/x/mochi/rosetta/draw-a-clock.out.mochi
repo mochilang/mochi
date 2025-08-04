@@ -1,0 +1,52 @@
+fun pow2(exp: int): int {
+  var r: int = 1
+  var i: int = 0
+  while (i < exp) {
+    r = (r * 2)
+    i = (i + 1)
+  }
+  return r
+}
+fun bin(n: int, digits: int): string {
+  var s: string = ""
+  var i: int = (digits - 1)
+  while (i >= 0) {
+    let p: int = pow2(i)
+    if (n >= p) {
+      s = (s + "x")
+      n = (n - p)
+    } else {
+      s = (s + " ")
+    }
+    if (i > 0) {
+      s = (s + "|")
+    }
+    i = (i - 1)
+  }
+  return s
+}
+let t: int = (now() / 1000000000)
+let sec: int = (t % 60)
+let mins: int = (t / 60)
+let min: int = (mins % 60)
+let hour: int = (((mins / 60)) % 24)
+print(bin(hour, 8))
+print("")
+print(bin(min, 8))
+print("")
+var xs: string = ""
+var i: int = 0
+while (i < sec) {
+  xs = (xs + "x")
+  i = (i + 1)
+}
+var out: string = ""
+var j: int = 0
+while (j < len(xs)) {
+  out = (out + substring(xs, j, (j + 1)))
+  if (((((j + 1)) % 5) == 0) && ((j + 1) < len(xs))) {
+    out = (out + "|")
+  }
+  j = (j + 1)
+}
+print(out)

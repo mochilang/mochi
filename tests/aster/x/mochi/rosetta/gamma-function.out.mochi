@@ -1,0 +1,46 @@
+fun ln(x: float): float {
+  var k: float = 0
+  var v: float = x
+  while (v >= 2) {
+    v = (v / 2)
+    k = (k + 1)
+  }
+  while (v < 1) {
+    v = (v * 2)
+    k = (k - 1)
+  }
+  let z: float = (((v - 1)) / ((v + 1)))
+  var zpow: float = z
+  var sum: float = z
+  var i: int = 3
+  while (i <= 9) {
+    zpow = ((zpow * z) * z)
+    sum = (sum + (zpow / (i as float)))
+    i = (i + 2)
+  }
+  let ln2: float = 0.6931471805599453
+  return (((k * ln2)) + (2 * sum))
+}
+fun expf(x: float): float {
+  var term: float = 1
+  var sum: float = 1
+  var i: int = 1
+  while (i < 20) {
+    term = ((term * x) / float(i))
+    sum = (sum + term)
+    i = (i + 1)
+  }
+  return sum
+}
+fun powf(base: float, exp: float): float {
+  return expf((exp * ln(base)))
+}
+fun lanczos7(z: float): float {
+  let t: float = (z + 6.5)
+  let x: float = ((((((((0.9999999999998099 + (676.5203681218851 / z)) - (1259.1392167224028 / ((z + 1)))) + (771.3234287776531 / ((z + 2)))) - (176.6150291621406 / ((z + 3)))) + (12.507343278686905 / ((z + 4)))) - (0.13857109526572012 / ((z + 5)))) + (9.984369578019572e-06 / ((z + 6)))) + (1.5056327351493116e-07 / ((z + 7))))
+  return (((2.5066282746310002 * powf(t, (z - 0.5))) * powf(2.718281828459045, -t)) * x)
+}
+let xs: list<float> = [-0.5, 0.1, 0.5, 1, 1.5, 2, 3, 10, 140, 170]
+for x in xs {
+  print(((str(x) + " ") + str(lanczos7(x))))
+}

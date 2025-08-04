@@ -1,0 +1,17 @@
+fun foo(): string {
+  print("let's foo...")
+  var a: list<int>
+  if (12 >= len(a)) {
+    return ("runtime error: index out of range [12] with length " + str(len(a)))
+  }
+  a[12] = 0
+  return ""
+}
+fun main(): void {
+  let err: string = foo()
+  if (len(err) > 0) {
+    print(("Recovered from " + err))
+  }
+  print("glad that's over.")
+}
+main()

@@ -1,0 +1,10 @@
+fun main(): void {
+  var s: string
+  var s2: string = ""
+  s = ""
+  print((s == ""))
+  print((len(s) == 0))
+  print((s != ""))
+  print((len(s) != 0))
+}
+main()

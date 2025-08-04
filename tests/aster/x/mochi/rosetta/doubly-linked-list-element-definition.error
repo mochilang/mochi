@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/doubly-linked-list-element-definition.mochi:5:28
+
+  5 |   return { "value": value, "next": next, "prev": prev }
+    |                            ^
+
+help:
+  Ensure map keys and values share types

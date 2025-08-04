@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/fasta-format.mochi:40:17
+
+ 40 |       var hdr = substring(line, 1, len(line))
+    |                 ^
+
+help:
+  Declare substring before use

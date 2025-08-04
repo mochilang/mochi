@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/execute-computer-zero-1.mochi:20:10
+
+ 20 |   return substring(s, start, end)
+    |          ^
+
+help:
+  Declare substring before use

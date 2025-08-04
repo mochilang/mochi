@@ -1,0 +1,49 @@
+fun hailstone(n: int): list<int> {
+  var seq: list<int>
+  var x: int = n
+  seq = append(seq, x)
+  while (x > 1) {
+    if ((x % 2) == 0) {
+      x = (x / 2)
+    } else {
+      x = ((3 * x) + 1)
+    }
+    seq = append(seq, x)
+  }
+  return seq
+}
+fun listString(xs: list<int>): string {
+  var s: string = "["
+  var i: int = 0
+  while (i < len(xs)) {
+    s = (s + str(xs[i]))
+    if (i < (len(xs) - 1)) {
+      s = (s + " ")
+    }
+    i = (i + 1)
+  }
+  s = (s + "]")
+  return s
+}
+fun libMain(): void {
+  let seq: list<int> = hailstone(27)
+  print("")
+  print("Hailstone sequence for the number 27:")
+  print((("  has " + str(len(seq))) + " elements"))
+  print(("  starts with " + listString(seq[0:4])))
+  print(("  ends with " + listString(seq[(len(seq) - 4):len(seq)])))
+  var longest: int = 0
+  var length: int = 0
+  var i: int = 1
+  while (i < 100000) {
+    let l: int = len(hailstone(i))
+    if (l > length) {
+      longest = i
+      length = l
+    }
+    i = (i + 1)
+  }
+  print("")
+  print((((str(longest) + " has the longest Hailstone sequence, its length being ") + str(length)) + "."))
+}
+libMain()

@@ -1,0 +1,48 @@
+fun eulerSum(): list<int> {
+  var pow5: list<int>
+  var i: int = 0
+  while (i < 250) {
+    pow5 = append(pow5, ((((i * i) * i) * i) * i))
+    i = (i + 1)
+  }
+  var sums: map<int, list<int>>
+  var x2: int = 2
+  while (x2 < 250) {
+    var x3: int = 1
+    while (x3 < x2) {
+      let s: int = (pow5[x2] + pow5[x3])
+      if !((s in sums)) {
+        sums[s] = [x2, x3]
+      }
+      x3 = (x3 + 1)
+    }
+    x2 = (x2 + 1)
+  }
+  var x0: int = 4
+  while (x0 < 250) {
+    var x1: int = 3
+    while (x1 < x0) {
+      var y: int = (x0 + 1)
+      while (y < 250) {
+        let rem: int = ((pow5[y] - pow5[x0]) - pow5[x1])
+        if (rem in sums) {
+          let pair: list<int> = sums[rem]
+          let a: int = pair[0]
+          let b: int = pair[1]
+          if ((x1 > a) && (a > b)) {
+            return [x0, x1, a, b, y]
+          }
+        }
+        y = (y + 1)
+      }
+      x1 = (x1 + 1)
+    }
+    x0 = (x0 + 1)
+  }
+  return [0, 0, 0, 0, 0]
+}
+fun main(): void {
+  let r: list<int> = eulerSum()
+  print(((((((((str(r[0]) + " ") + str(r[1])) + " ") + str(r[2])) + " ") + str(r[3])) + " ") + str(r[4])))
+}
+main()

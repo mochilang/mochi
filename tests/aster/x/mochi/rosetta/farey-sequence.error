@@ -1,0 +1,8 @@
+error[A025]: function gen expects 4 arguments, got 3%!(EXTRA string=gen)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/farey-sequence.mochi:48:15
+
+ 48 |     var seq = gen(l, r, n, [])
+    |               ^
+
+help:
+  Call gen with the correct number of arguments

@@ -1,0 +1,24 @@
+fun main(): void {
+  let philosophers: list<string> = ["Aristotle", "Kant", "Spinoza", "Marx", "Russell"]
+  let hunger: int = 3
+  print("table empty")
+  for p in philosophers {
+    print((p + " seated"))
+  }
+  var i: int = 0
+  while (i < len(philosophers)) {
+    let name: string = philosophers[i]
+    var h: int = 0
+    while (h < hunger) {
+      print((name + " hungry"))
+      print((name + " eating"))
+      print((name + " thinking"))
+      h = (h + 1)
+    }
+    print((name + " satisfied"))
+    print((name + " left the table"))
+    i = (i + 1)
+  }
+  print("table empty")
+}
+main()

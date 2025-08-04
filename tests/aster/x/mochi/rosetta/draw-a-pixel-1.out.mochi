@@ -1,0 +1,17 @@
+let width: int = 320
+let height: int = 240
+var img: list<list<string>>
+var y: int = 0
+while (y < height) {
+  var row: list<string>
+  var x: int = 0
+  while (x < width) {
+    row = append(row, "green")
+    x = (x + 1)
+  }
+  img = append(img, row)
+  y = (y + 1)
+}
+img[100][100] = "red"
+print((("The color of the pixel at (  0,   0) is " + img[0][0]) + "."))
+print((("The color of the pixel at (100, 100) is " + img[100][100]) + "."))

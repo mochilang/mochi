@@ -1,0 +1,11 @@
+fun echo(idx: int, msgs: list<string>): void {
+  print((str(idx) + ": 127.0.0.1:12321 <-> 127.0.0.1"))
+  for msg in msgs {
+    print(msg)
+  }
+  print((str(idx) + ": closed"))
+}
+fun main(): void {
+  echo(0, ["hello"])
+}
+main()

@@ -1,0 +1,60 @@
+fun expI(b: int, p: int): int {
+  var r: int = 1
+  var i: int = 0
+  while (i < p) {
+    r = (r * b)
+    i = (i + 1)
+  }
+  return r
+}
+fun expF(b: float, p: int): float {
+  var r: float = 1
+  var pow: float = b
+  var n: int = p
+  var neg: bool = false
+  if (p < 0) {
+    n = -p
+    neg = true
+  }
+  while (n > 0) {
+    if ((n % 2) == 1) {
+      r = (r * pow)
+    }
+    pow = (pow * pow)
+    n = (n / 2)
+  }
+  if neg {
+    r = (1 / r)
+  }
+  return r
+}
+fun printExpF(b: float, p: int): void {
+  if ((b == 0) && (p < 0)) {
+    print((((str(b) + "^") + str(p)) + ": +Inf"))
+  } else {
+    print(((((str(b) + "^") + str(p)) + ": ") + str(expF(b, p))))
+  }
+}
+fun main(): void {
+  print("expI tests")
+  for pair in [[2, 10], [2, -10], [-2, 10], [-2, 11], [11, 0]] {
+    if (pair[1] < 0) {
+      print((((str(pair[0]) + "^") + str(pair[1])) + ": negative power not allowed"))
+    } else {
+      print(((((str(pair[0]) + "^") + str(pair[1])) + ": ") + str(expI(pair[0], pair[1]))))
+    }
+  }
+  print("overflow undetected")
+  print(("10^10: " + str(expI(10, 10))))
+  print("\nexpF tests:")
+  for pair in [[2, 10], [2, -10], [-2, 10], [-2, 11], [11, 0]] {
+    printExpF(pair[0], pair[1])
+  }
+  print("disallowed in expI, allowed here")
+  printExpF(0, -1)
+  print("other interesting cases for 32 bit float type")
+  printExpF(10, 39)
+  printExpF(10, -39)
+  printExpF(-10, 39)
+}
+main()

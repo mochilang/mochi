@@ -1,0 +1,8 @@
+error[A003]: undefined variable x
+  --> /workspace/mochi/tests/rosetta/x/Mochi/exponentiation-with-infix-operators-in-or-operating-on-the-base.mochi:17:16
+
+ 17 |     let a = -p(x, e)
+    |                ^
+
+help:
+  Declare x before use

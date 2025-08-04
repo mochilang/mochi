@@ -1,0 +1,8 @@
+error[A003]: undefined variable entry
+  --> /workspace/mochi/tests/rosetta/x/Mochi/earliest-difference-between-prime-gaps.mochi:29:24
+
+ 29 |     let pm = commatize(entry["pm"])
+    |                        ^
+
+help:
+  Declare entry before use

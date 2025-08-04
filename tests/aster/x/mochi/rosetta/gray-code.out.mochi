@@ -1,0 +1,61 @@
+fun xor(a: int, b: int): int {
+  var res: int = 0
+  var bit: int = 1
+  var x: int = a
+  var y: int = b
+  while ((x > 0) || (y > 0)) {
+    if ((((((x % 2) + (y % 2))) % 2) == 1)) {
+      res = (res + bit)
+    }
+    x = (x / 2)
+    y = (y / 2)
+    bit = (bit * 2)
+  }
+  return res
+}
+fun enc(b: int): int {
+  return xor(b, (b / 2))
+}
+fun dec(g: int): int {
+  var b: int = 0
+  var x: int = g
+  while (x > 0) {
+    b = xor(b, x)
+    x = (x / 2)
+  }
+  return b
+}
+fun binary(n: int): string {
+  if (n == 0) {
+    return "0"
+  }
+  var s: string = ""
+  var x: int = n
+  while (x > 0) {
+    if ((x % 2) == 1) {
+      s = ("1" + s)
+    } else {
+      s = ("0" + s)
+    }
+    x = (x / 2)
+  }
+  return s
+}
+fun pad5(s: string): string {
+  var p: string = s
+  while (len(p) < 5) {
+    p = ("0" + p)
+  }
+  return p
+}
+fun main(): void {
+  print("decimal  binary   gray    decoded")
+  var b: int = 0
+  while (b < 32) {
+    let g: int = enc(b)
+    let d: int = dec(g)
+    print(((((((("  " + pad5(binary(b))) + "   ") + pad5(binary(g))) + "   ") + pad5(binary(d))) + "  ") + str(d)))
+    b = (b + 1)
+  }
+}
+main()

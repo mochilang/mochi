@@ -1,0 +1,62 @@
+fun isPrime(n: int): bool {
+  if (n < 2) {
+    return false
+  }
+  if ((n % 2) == 0) {
+    return (n == 2)
+  }
+  if ((n % 3) == 0) {
+    return (n == 3)
+  }
+  var d: int = 5
+  while ((d * d) <= n) {
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 2)
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 4)
+  }
+  return true
+}
+fun commatize(n: int): string {
+  var s: string = str(n)
+  var i: int = (len(s) - 3)
+  while (i >= 1) {
+    s = ((s[0:i] + ",") + s[i:len(s)])
+    i = (i - 3)
+  }
+  return s
+}
+fun padLeft(s: string, w: int): string {
+  var out: string = s
+  while (len(out) < w) {
+    out = (" " + out)
+  }
+  return out
+}
+fun padRight(s: string, w: int): string {
+  var out: string = s
+  while (len(out) < w) {
+    out = (out + " ")
+  }
+  return out
+}
+let limit: int = 42
+fun main(): void {
+  var i: int = limit
+  var n: int = 0
+  while (n < limit) {
+    if isPrime(i) {
+      n = (n + 1)
+      let nStr: string = padRight(str(n), 2)
+      let pStr: string = padLeft(commatize(i), 19)
+      print(((("n = " + nStr) + "  ") + pStr))
+      i = ((i + i) - 1)
+    }
+    i = (i + 1)
+  }
+}
+main()
