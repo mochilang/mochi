@@ -1091,43 +1091,34 @@ func (c *CastExpr) emit(w io.Writer) {
 				return
 			}
 			if force {
-				switch c.Expr.(type) {
-				case *NameExpr, *IndexExpr, *FieldExpr:
-					fmt.Fprint(w, "(")
+				// Use Int(...) constructor for all expressions to prevent
+				// runtime crashes when the underlying value is a Double.
+				// Using `as! Int` here can trigger an illegal instruction
+				// if the value isn't already an Int. Int(...) performs a
+				// safe numeric conversion instead.
+				if c.FromString {
+					fmt.Fprint(w, "Int(")
 					c.Expr.emit(w)
-					fmt.Fprint(w, " as! Int)")
-				default:
-					if c.FromString {
-						fmt.Fprint(w, "Int(")
-						c.Expr.emit(w)
-						fmt.Fprint(w, ")!")
-					} else {
-						// Use Int(...) constructor rather than force casting to
-						// avoid runtime crashes when converting numeric types.
-						// Previous code generated `(expr as! Int)` which can
-						// produce illegal instructions when `expr` is a Double.
-						fmt.Fprint(w, "Int(")
-						c.Expr.emit(w)
-						fmt.Fprint(w, ")")
-					}
+					fmt.Fprint(w, ")!")
+				} else {
+					fmt.Fprint(w, "Int(")
+					c.Expr.emit(w)
+					fmt.Fprint(w, ")")
 				}
 				return
 			}
 			// When casting indexed values from dynamic containers to Int,
-			// use a direct force-cast. The Int(...) initializer can trigger
-			// heavy type-checking and sometimes fails when the expression is
-			// too complex (e.g. nested dictionary lookups), while a direct
-			// `as! Int` keeps the Swift compiler fast and predictable.
+			// use Int(...) as well to avoid unsafe force casts.
 			if _, ok := c.Expr.(*IndexExpr); ok {
-				fmt.Fprint(w, "(")
+				fmt.Fprint(w, "Int(")
 				c.Expr.emit(w)
-				fmt.Fprint(w, " as! Int)")
+				fmt.Fprint(w, ")")
 				return
 			}
 			if _, ok := c.Expr.(*FieldExpr); ok {
-				fmt.Fprint(w, "(")
+				fmt.Fprint(w, "Int(")
 				c.Expr.emit(w)
-				fmt.Fprint(w, " as! Int)")
+				fmt.Fprint(w, ")")
 				return
 			}
 		}
