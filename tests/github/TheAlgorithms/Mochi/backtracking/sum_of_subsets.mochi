@@ -1,10 +1,18 @@
 /*
-Given a set of non-negative integers and a target sum, find all subsets
-whose elements add up exactly to the target. We perform a depth-first
-search on a state-space tree where each level decides whether to include
-the next element. Branches are pruned when the current sum exceeds the
-target or even the maximal possible sum including remaining elements
-cannot reach the target.
+Given a set of non‑negative integers and a target value M,
+the sum of subsets problem asks for all subsets of the set
+whose elements add up exactly to M. Each element may be used
+at most once.
+
+We build a state‑space tree where each level decides whether
+to include the next element from the input list. The search
+is depth‑first and branches are pruned when:
+  * the accumulated sum already exceeds M, or
+  * even if we add all remaining numbers the target cannot be
+    reached.
+
+Valid subsets are collected whenever the running sum equals
+M.
 */
 
 fun sum_list(nums: list<int>): int {
@@ -15,7 +23,8 @@ fun sum_list(nums: list<int>): int {
   return s
 }
 
-fun create_state_space_tree(nums: list<int>, max_sum: int, num_index: int, path: list<int>, curr_sum: int, remaining_sum: int): list<list<int>> {
+fun create_state_space_tree(nums: list<int>, max_sum: int, num_index: int,
+    path: list<int>, curr_sum: int, remaining_sum: int): list<list<int>> {
   var result: list<list<int>> = []
   if curr_sum > max_sum || curr_sum + remaining_sum < max_sum { return result }
   if curr_sum == max_sum {
@@ -25,7 +34,9 @@ fun create_state_space_tree(nums: list<int>, max_sum: int, num_index: int, path:
   var index = num_index
   while index < len(nums) {
     let value = nums[index]
-    let subres = create_state_space_tree(nums, max_sum, index + 1, append(path, value), curr_sum + value, remaining_sum - value)
+    let subres = create_state_space_tree(
+      nums, max_sum, index + 1, append(path, value),
+      curr_sum + value, remaining_sum - value)
     var j = 0
     while j < len(subres) {
       result = append(result, subres[j])
@@ -46,4 +57,3 @@ fun main() {
 }
 
 main()
-
