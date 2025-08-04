@@ -1,0 +1,71 @@
+fun contains(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun repeat(s: string, times: int): string {
+  var result = ""
+  var i = 0
+  while i < times {
+    result = result + s
+    i = i + 1
+  }
+  return result
+}
+
+fun build_board(pos: list<int>, n: int): list<string> {
+  var board: list<string> = []
+  var i = 0
+  while i < len(pos) {
+    let col = pos[i]
+    let line = repeat(". ", col) + "Q " + repeat(". ", n - 1 - col)
+    board = append(board, line)
+    i = i + 1
+  }
+  return board
+}
+
+fun depth_first_search(pos: list<int>, dr: list<int>, dl: list<int>, n: int): list<list<string>> {
+  let row = len(pos)
+  if row == n {
+    var single: list<list<string>> = []
+    single = append(single, build_board(pos, n))
+    return single
+  }
+  var boards: list<list<string>> = []
+  var col = 0
+  while col < n {
+    if contains(pos, col) || contains(dr, row - col) || contains(dl, row + col) {
+      col = col + 1
+      continue
+    }
+    let result = depth_first_search(append(pos, col), append(dr, row - col), append(dl, row + col), n)
+    boards = concat(boards, result)
+    col = col + 1
+  }
+  return boards
+}
+
+fun n_queens_solution(n: int): int {
+  let boards = depth_first_search([] as list<int>, [] as list<int>, [] as list<int>, n)
+  var i = 0
+  while i < len(boards) {
+    var j = 0
+    while j < len(boards[i]) {
+      print(boards[i][j])
+      j = j + 1
+    }
+    print("")
+    i = i + 1
+  }
+  print(len(boards), "solutions were found.")
+  return len(boards)
+}
+
+n_queens_solution(4)
