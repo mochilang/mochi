@@ -3137,6 +3137,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "" {
 					if t := types.CheckExprType(st.Let.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
+						if strings.Contains(typ, "->") {
+							typ = strings.TrimSpace(typ[strings.LastIndex(typ, "->")+2:])
+						}
 					}
 				}
 				if typ == "" {
@@ -3175,11 +3178,17 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 			}
+			ls := &LetStmt{Name: st.Let.Name, Type: typ, Value: val}
+			if strings.Contains(ls.Type, "->") {
+				if _, ok := val.(*CallExpr); ok {
+					ls.Type = ""
+				}
+			}
 			if seenStmt {
-				p.Stmts = append(p.Stmts, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+				p.Stmts = append(p.Stmts, ls)
 				seenStmt = true
 			} else {
-				p.Globals = append(p.Globals, &LetStmt{Name: st.Let.Name, Type: typ, Value: val})
+				p.Globals = append(p.Globals, ls)
 			}
 			if env != nil {
 				var tt types.Type
@@ -3217,6 +3226,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "" {
 					if t := types.CheckExprType(st.Var.Value, env); t != nil {
 						typ = kotlinTypeFromType(t)
+						if strings.Contains(typ, "->") {
+							typ = strings.TrimSpace(typ[strings.LastIndex(typ, "->")+2:])
+						}
 						if typ == "Any?" || typ == "MutableList<Any?>" || typ == "MutableMap<Any?, Any?>" {
 							if gt := guessType(val); gt != "" && gt != "Any?" && gt != "MutableList<Any?>" && gt != "MutableMap<Any?, Any?>" {
 								typ = gt
@@ -3244,6 +3256,11 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 			}
 			vs := &VarStmt{Name: st.Var.Name, Type: typ, Value: val}
+			if strings.Contains(vs.Type, "->") {
+				if _, ok := val.(*CallExpr); ok {
+					vs.Type = ""
+				}
+			}
 			varDecls[st.Var.Name] = vs
 			if seenStmt {
 				p.Stmts = append(p.Stmts, vs)
