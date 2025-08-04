@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error (UnsupportedOperationException) compiling recur at (/workspace/mochi/tests/rosetta/transpiler/Clojure/camel-case-and-snake-case.clj:27:755).
-Can only recur from tail position
-
-Full report at:
-/tmp/clojure-4575189575091220159.edn

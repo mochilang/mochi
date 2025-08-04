@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 195/491
-Last updated: 2025-08-04 10:06 +0700
+Completed: 199/491
+Last updated: 2025-08-04 10:31 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -169,12 +169,12 @@ Last updated: 2025-08-04 10:06 +0700
 | 162 | call-an-object-method-2 | ✓ | 42.826ms | 19.7 MB |
 | 163 | call-an-object-method-3 |   | 42.852ms | 18.6 MB |
 | 164 | call-an-object-method |   | 35.811ms | 18.7 MB |
-| 165 | camel-case-and-snake-case |   |  |  |
-| 166 | canny-edge-detector | ✓ | 78.031ms | 23.6 MB |
-| 167 | canonicalize-cidr |   |  |  |
-| 168 | cantor-set |   | 66.965ms | 23.5 MB |
+| 165 | camel-case-and-snake-case | ✓ | 71.572ms | 24.0 MB |
+| 166 | canny-edge-detector | ✓ | 52.989ms | 23.3 MB |
+| 167 | canonicalize-cidr | ✓ | 70.943ms | 24.1 MB |
+| 168 | cantor-set | ✓ | 53.392ms | 23.4 MB |
 | 169 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 170 | cartesian-product-of-two-or-more-lists-1 |   | 48.147ms | 20.7 MB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 54.247ms | 20.6 MB |
 | 171 | cartesian-product-of-two-or-more-lists-2 |   | 55.999ms | 24.2 MB |
 | 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
