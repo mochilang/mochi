@@ -3,7 +3,7 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 424/491
-Last updated: 2025-08-04 11:01 +0700
+Last updated: 2025-08-04 11:07 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -14,11 +14,11 @@ Last updated: 2025-08-04 11:01 +0700
 | 5 | 15-puzzle-game | ✓ | 4.487ms | 3.0 MB |
 | 6 | 15-puzzle-solver | ✓ | 160µs | 3.2 MB |
 | 7 | 2048 | ✓ | 1.584ms | 3.5 MB |
-| 8 | 21-game | ✓ |  |  |
-| 9 | 24-game-solve | ✓ |  |  |
-| 10 | 24-game | ✓ |  |  |
+| 8 | 21-game | ✓ | 702µs | 3.1 MB |
+| 9 | 24-game-solve | ✓ | 13.034ms | 3.0 MB |
+| 10 | 24-game | ✓ | 902µs | 3.3 MB |
 | 11 | 4-rings-or-4-squares-puzzle | ✓ | 937.179ms | 3.9 MB |
-| 12 | 9-billion-names-of-god-the-integer | ✓ |  |  |
+| 12 | 9-billion-names-of-god-the-integer | ✓ | 16.301042s | 286.5 MB |
 | 13 | 99-bottles-of-beer-2 | ✓ | 32.737ms | 3.1 MB |
 | 14 | 99-bottles-of-beer | ✓ | 502µs | 3.2 MB |
 | 15 | a+b | ✓ | 404µs | 3.2 MB |
