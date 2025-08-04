@@ -776,6 +776,32 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	}}
 	pr.Forms = append(pr.Forms, padStartFn)
 
+	indexOfFn := &Defn{
+		Name:   "indexOf",
+		Params: []Node{Symbol("s"), Symbol("sub")},
+		Body: []Node{
+			&List{Elems: []Node{
+				Symbol("let"),
+				&Vector{Elems: []Node{
+					Symbol("idx"),
+					&List{Elems: []Node{Symbol("clojure.string/index-of"), Symbol("s"), Symbol("sub")}},
+				}},
+				&List{Elems: []Node{
+					Symbol("if"),
+					&List{Elems: []Node{Symbol("nil?"), Symbol("idx")}},
+					IntLit(-1),
+					Symbol("idx"),
+				}},
+			}},
+		},
+	}
+	pr.Forms = append(pr.Forms, indexOfFn)
+
+	splitFn := &Defn{Name: "split", Params: []Node{Symbol("s"), Symbol("sep")}, Body: []Node{
+		&List{Elems: []Node{Symbol("clojure.string/split"), Symbol("s"), &List{Elems: []Node{Symbol("re-pattern"), Symbol("sep")}}}},
+	}}
+	pr.Forms = append(pr.Forms, splitFn)
+
 	if env != nil {
 		structs := env.Structs()
 		names := make([]string, 0, len(structs))

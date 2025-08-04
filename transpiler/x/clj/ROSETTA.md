@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 234/491
-Last updated: 2025-08-04 16:52 +0700
+Completed: 253/491
+Last updated: 2025-08-04 17:16 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -246,26 +246,26 @@ Last updated: 2025-08-04 16:52 +0700
 | 239 | copy-stdin-to-stdout-2 | ✓ | 35.627ms | 18.1 MB |
 | 240 | count-in-factors | ✓ | 59.78ms | 19.8 MB |
 | 241 | count-in-octal-1 | ✓ | 44.245ms | 18.6 MB |
-| 242 | count-in-octal-2 |   |  |  |
-| 243 | count-in-octal-3 |   |  |  |
-| 244 | count-in-octal-4 |   |  |  |
-| 245 | count-occurrences-of-a-substring |   |  |  |
-| 246 | count-the-coins-1 |   |  |  |
-| 247 | count-the-coins-2 | ✓ | 58.829ms | 19.6 MB |
-| 248 | cramers-rule |   |  |  |
-| 249 | crc-32-1 |   |  |  |
-| 250 | crc-32-2 |   |  |  |
-| 251 | create-a-file-on-magnetic-tape |   |  |  |
-| 252 | create-a-file |   |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |   |  |  |
-| 254 | create-an-html-table |   |  |  |
-| 255 | create-an-object-at-a-given-address |   |  |  |
-| 256 | csv-data-manipulation |   |  |  |
-| 257 | csv-to-html-translation-1 |   |  |  |
-| 258 | csv-to-html-translation-2 |   |  |  |
-| 259 | csv-to-html-translation-3 |   |  |  |
-| 260 | csv-to-html-translation-4 |   |  |  |
-| 261 | csv-to-html-translation-5 |   |  |  |
+| 242 | count-in-octal-2 | ✓ | 2.046505s | 19.1 MB |
+| 243 | count-in-octal-3 | ✓ | 50.487ms | 19.0 MB |
+| 244 | count-in-octal-4 | ✓ | 51.203ms | 19.0 MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 49.29ms | 19.3 MB |
+| 246 | count-the-coins-1 | ✓ | 44.154ms | 19.3 MB |
+| 247 | count-the-coins-2 | ✓ | 83.007ms | 19.5 MB |
+| 248 | cramers-rule | ✓ | 63.371ms | 21.9 MB |
+| 249 | crc-32-1 | ✓ | 65.584ms | 56.1 MB |
+| 250 | crc-32-2 | ✓ | 69.474ms | 56.1 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 55.025ms | 23.8 MB |
+| 252 | create-a-file | ✓ | 45.143ms | 18.7 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 44.592ms | 19.4 MB |
+| 254 | create-an-html-table | ✓ | 44.56ms | 19.7 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 54.103ms | 19.6 MB |
+| 256 | csv-data-manipulation | ✓ | 53.793ms | 21.0 MB |
+| 257 | csv-to-html-translation-1 | ✓ | 52.712ms | 19.8 MB |
+| 258 | csv-to-html-translation-2 | ✓ | 47.543ms | 21.4 MB |
+| 259 | csv-to-html-translation-3 | ✓ | 53.768ms | 18.2 MB |
+| 260 | csv-to-html-translation-4 | ✓ | 40.717ms | 18.1 MB |
+| 261 | csv-to-html-translation-5 | ✓ | 69.401ms | 21.2 MB |
 | 262 | cuban-primes |   |  |  |
 | 263 | cullen-and-woodall-numbers |   |  |  |
 | 264 | cumulative-standard-deviation |   |  |  |
