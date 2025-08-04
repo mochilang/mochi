@@ -44,6 +44,8 @@ var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 var currentUpdated map[string]bool
 var currentAnyUpdated map[string]bool
+var classStructs map[string]bool
+var nonCodableStructs map[string]bool
 
 var swiftKeywords = map[string]struct{}{
 	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
@@ -156,8 +158,10 @@ func (fe *FieldExpr) emit(w io.Writer) {
 
 // StructDef represents a simple struct type declaration.
 type StructDef struct {
-	Name   string
-	Fields []StructField
+	Name    string
+	Fields  []StructField
+	Class   bool
+	Codable bool
 }
 
 // StructField defines a single field within a struct.
@@ -171,6 +175,23 @@ type StructField struct {
 // struct types so that structs can be instantiated without specifying every
 // field explicitly.
 func defaultValueForType(t string) string {
+	if strings.Contains(t, "->") {
+		// Function type: generate a closure returning the zero value of the return type.
+		parts := strings.SplitN(t, "->", 2)
+		params := strings.TrimSpace(parts[0])
+		ret := strings.TrimSpace(parts[1])
+		params = strings.TrimPrefix(params, "(")
+		params = strings.TrimSuffix(params, ")")
+		var args []string
+		if strings.TrimSpace(params) != "" {
+			ps := strings.Split(params, ",")
+			for i, p := range ps {
+				p = strings.TrimSpace(p)
+				args = append(args, fmt.Sprintf("_ arg%d: %s", i, p))
+			}
+		}
+		return fmt.Sprintf("{ (%s) -> %s in %s }", strings.Join(args, ", "), ret, defaultValueForType(ret))
+	}
 	switch t {
 	case "Int", "Int64", "Int32", "UInt", "UInt64", "UInt32", "Double", "Float":
 		return "0"
@@ -190,7 +211,15 @@ func defaultValueForType(t string) string {
 }
 
 func (sd *StructDef) emit(w io.Writer) {
-	fmt.Fprintf(w, "struct %s: Codable {\n", sd.Name)
+	kind := "struct"
+	if sd.Class {
+		kind = "class"
+	}
+	codable := ""
+	if sd.Codable {
+		codable = ": Codable"
+	}
+	fmt.Fprintf(w, "%s %s%s {\n", kind, sd.Name, codable)
 	for _, f := range sd.Fields {
 		fmt.Fprintf(w, "    var %s: %s\n", f.Name, f.Type)
 	}
@@ -206,7 +235,11 @@ func (sd *StructDef) emit(w io.Writer) {
 			if i > 0 {
 				fmt.Fprint(w, ", ")
 			}
-			fmt.Fprintf(w, "%s: %s", f.Name, f.Type)
+			esc := ""
+			if strings.Contains(f.Type, "->") {
+				esc = "@escaping "
+			}
+			fmt.Fprintf(w, "%s: %s%s", f.Name, esc, f.Type)
 		}
 		fmt.Fprint(w, ") {\n")
 		for _, f := range sd.Fields {
@@ -2104,6 +2137,8 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
+	classStructs = map[string]bool{}
+	nonCodableStructs = map[string]bool{}
 	p := &Program{}
 	stmts, err := convertStmts(env, prog.Statements)
 	if err != nil {
@@ -2764,6 +2799,11 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		}
 		child.SetVar(p.Name, pt, true)
 		useInOut := m && (types.IsListType(pt) || types.IsMapType(pt) || types.IsStructType(pt) || types.IsUnionType(pt))
+		if st, ok := pt.(types.StructType); ok {
+			if classStructs[st.Name] {
+				useInOut = false
+			}
+		}
 		inFlags[i] = useInOut
 		esc := isFuncTypeRef(p.Type) || isFuncType(pt)
 		fn.Params = append(fn.Params, Param{Name: p.Name, Type: toSwiftType(p.Type), InOut: useInOut, Escaping: esc})
@@ -3075,11 +3115,23 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 	}
 	var fields []StructField
 	fieldTypes := map[string]types.Type{}
+	hasFunc := false
+	nonCodable := false
 	for _, m := range td.Members {
 		if m.Field != nil {
 			t := types.ResolveTypeRef(m.Field.Type, env)
-			fields = append(fields, StructField{Name: m.Field.Name, Type: swiftTypeOf(t)})
+			swiftT := swiftTypeOf(t)
+			fields = append(fields, StructField{Name: m.Field.Name, Type: swiftT})
 			fieldTypes[m.Field.Name] = t
+			if isFuncType(t) {
+				hasFunc = true
+				nonCodable = true
+			}
+			if st2, ok := t.(types.StructType); ok {
+				if nonCodableStructs[st2.Name] {
+					nonCodable = true
+				}
+			}
 		}
 	}
 	var methods []Stmt
@@ -3100,7 +3152,14 @@ func convertTypeDecl(env *types.Env, td *parser.TypeDecl) (Stmt, error) {
 			methods = append(methods, md)
 		}
 	}
-	stmts := []Stmt{&StructDef{Name: td.Name, Fields: fields}}
+	sd := &StructDef{Name: td.Name, Fields: fields, Class: hasFunc, Codable: !nonCodable}
+	if hasFunc {
+		classStructs[td.Name] = true
+	}
+	if nonCodable {
+		nonCodableStructs[td.Name] = true
+	}
+	stmts := []Stmt{sd}
 	stmts = append(stmts, methods...)
 	return &BlockStmt{Stmts: stmts}, nil
 }
@@ -3964,8 +4023,10 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				if n, ok2 := fe.Target.(*NameExpr); ok2 && env != nil {
 					if vt, err := env.GetVar(n.Name); err == nil {
 						if st, ok3 := vt.(types.StructType); ok3 {
-							fnName = fmt.Sprintf("%s_%s", st.Name, fe.Name)
-							ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: n.Name}}}
+							if _, okm := st.Methods[fe.Name]; okm {
+								fnName = fmt.Sprintf("%s_%s", st.Name, fe.Name)
+								ce = &CallExpr{Func: fnName, Args: []Expr{&NameExpr{Name: n.Name}}}
+							}
 						}
 					}
 				}
@@ -4029,6 +4090,12 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					pt := swiftTypeOf(paramTypes[j])
 					if lit, ok := ae.(*LitExpr); ok && lit.Value == "nil" && pt == "Any" {
 						ae = &RawStmt{Code: "nil as Any?"}
+					} else if pt == "Int" {
+						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+						if srcT != "Int" {
+							ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
+							usesInt = true
+						}
 					} else if pt != "Any" && !(j < len(mutInfo) && mutInfo[j]) {
 						srcT := swiftTypeOf(types.TypeOfExpr(a, env))
 						if srcT != pt {
@@ -4722,7 +4789,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			if env != nil && j < len(paramTypes) {
 				pt := swiftTypeOf(paramTypes[j])
-				if pt != "Any" {
+				if pt == "Int" {
+					srcT := swiftTypeOf(types.TypeOfExpr(a, env))
+					if srcT != "Int" {
+						ae = &CallExpr{Func: "_int", Args: []Expr{ae}}
+						usesInt = true
+					}
+				} else if pt != "Any" {
 					ae = &CastExpr{Expr: ae, Type: pt + "!"}
 				}
 			}

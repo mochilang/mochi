@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 426/491
-Last updated: 2025-08-04 15:16 +0700
+Completed: 427/491
+Last updated: 2025-08-04 16:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -462,7 +462,7 @@ Last updated: 2025-08-04 15:16 +0700
 | 453 | forest-fire | ✓ | 101.181ms | 3.4 MB |
 | 454 | fork-2 | ✓ | 218µs | 3.2 MB |
 | 455 | fork | ✓ | 215µs | 3.2 MB |
-| 456 | formal-power-series |   |  |  |
+| 456 | formal-power-series | ✓ | 583µs | 3.5 MB |
 | 457 | formatted-numeric-output | ✓ | 463µs | 3.2 MB |
 | 458 | forward-difference | ✓ | 541µs | 3.1 MB |
 | 459 | four-bit-adder-1 | ✓ | 353µs | 2.8 MB |
