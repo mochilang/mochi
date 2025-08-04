@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-04 15:38 GMT+7
+Last updated: 2025-08-04 16:07 GMT+7
 
 ## Rosetta Golden Test Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -307,16 +307,16 @@ Last updated: 2025-08-04 15:38 GMT+7
 | 298 | dice-game-probabilities-2 | ✓ | 9.0ms | 12.23MB |
 | 299 | digital-root-multiplicative-digital-root | ✓ | 14.0ms | 12.84MB |
 | 300 | dijkstras-algorithm | ✓ | 31.0µs | 12.94MB |
-| 301 | dinesmans-multiple-dwelling-problem | ✓ |  |  |
-| 302 | dining-philosophers-1 | ✓ | 36.0µs | 12.90MB |
-| 303 | dining-philosophers-2 | ✓ | 36.0µs | 12.74MB |
-| 304 | disarium-numbers | ✓ | 7.44s | 13.05MB |
-| 305 | discordian-date | ✓ | 48.0µs | 13.43MB |
-| 306 | display-a-linear-combination | ✓ | 72.0µs | 13.30MB |
-| 307 | display-an-outline-as-a-nested-table | ✓ | 211.0µs | 13.88MB |
-| 308 | distance-and-bearing | ✓ | 422.0µs | 14.59MB |
-| 309 | distributed-programming | ✓ | 11.0µs | 12.42MB |
-| 310 | diversity-prediction-theorem | ✓ | 35.0µs | 13.19MB |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 21.0µs | 12.42MB |
+| 302 | dining-philosophers-1 | ✓ | 73.0µs | 12.87MB |
+| 303 | dining-philosophers-2 | ✓ | 81.0µs | 12.81MB |
+| 304 | disarium-numbers | ✓ | 7.69s | 13.12MB |
+| 305 | discordian-date | ✓ | 57.0µs | 13.50MB |
+| 306 | display-a-linear-combination | ✓ | 71.0µs | 12.81MB |
+| 307 | display-an-outline-as-a-nested-table | ✓ | 241.0µs | 14.23MB |
+| 308 | distance-and-bearing | ✓ | 441.0µs | 14.36MB |
+| 309 | distributed-programming | ✓ | 10.0µs | 12.61MB |
+| 310 | diversity-prediction-theorem | ✓ | 34.0µs | 12.96MB |
 | 311 | dns-query | ✓ | 935.0ms | 12.56MB |
 | 312 | documentation | ✓ | 2.0µs | 11.60MB |
 | 313 | doomsday-rule | ✓ | 51.0µs | 13.06MB |
