@@ -1038,11 +1038,31 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	if nr, ok := m.Receiver.(*NameRef); ok && nr.Name == "math" {
 		io.WriteString(w, "math::")
 		io.WriteString(w, m.Name)
-	} else {
-		m.Receiver.emit(w)
-		io.WriteString(w, ".")
-		io.WriteString(w, m.Name)
+		io.WriteString(w, "(")
+		for i, a := range m.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
 	}
+	if rt := inferType(m.Receiver); rt != "" {
+		if _, ok := structTypes[rt]; ok {
+			fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
+			m.Receiver.emit(w)
+			for _, a := range m.Args {
+				io.WriteString(w, ", ")
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
+	}
+	m.Receiver.emit(w)
+	io.WriteString(w, ".")
+	io.WriteString(w, m.Name)
 	io.WriteString(w, "(")
 	for i, a := range m.Args {
 		if i > 0 {
@@ -3428,6 +3448,42 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 	}
 	typeDecls = append(typeDecls, &StructDecl{Name: t.Name, Fields: fields})
 	structTypes[t.Name] = st
+	var methods []Stmt
+	for _, m := range t.Members {
+		if m.Method != nil {
+			fn := *m.Method
+			fn.Name = t.Name + "_" + fn.Name
+			selfParam := &parser.Param{Name: "self", Type: &parser.TypeRef{Simple: &t.Name}}
+			fn.Params = append([]*parser.Param{selfParam}, fn.Params...)
+			s, err := compileFunStmt(&fn)
+			if err != nil {
+				return nil, err
+			}
+			if fd, ok := s.(*FuncDecl); ok {
+				if len(fd.Params) > 0 {
+					fd.Params[0].Name = "self_"
+					fd.Params[0].Type = t.Name
+					if fd.ParamTypes == nil {
+						fd.ParamTypes = map[string]string{}
+					}
+					fd.ParamTypes["self_"] = t.Name
+					delete(fd.ParamTypes, "self")
+					if fd.VarTypes != nil {
+						fd.VarTypes["self_"] = t.Name
+						delete(fd.VarTypes, "self")
+					}
+					if pts, ok2 := funParamTypes[fd.Name]; ok2 && len(pts) > 0 {
+						pts[0] = t.Name
+						funParamTypes[fd.Name] = pts
+					}
+				}
+				methods = append(methods, fd)
+			}
+		}
+	}
+	if len(methods) > 0 {
+		return &MultiStmt{Stmts: methods}, nil
+	}
 	return nil, nil
 }
 
