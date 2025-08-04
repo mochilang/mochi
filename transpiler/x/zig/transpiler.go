@@ -51,6 +51,7 @@ var useAscii bool
 var useMem bool
 var usePrint bool
 var useSplit bool
+var useValue bool
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -128,6 +129,28 @@ func zigIdent(s string) string {
 
 func isIntType(t string) bool {
 	return strings.HasPrefix(t, "i") || strings.HasPrefix(t, "u")
+}
+
+func valueTag(t string) string {
+	switch t {
+	case "i64":
+		return "Int"
+	case "[]const u8":
+		return "Str"
+	default:
+		return "Int"
+	}
+}
+
+func valueAccess(t string) string {
+	switch t {
+	case "i64":
+		return ".Int"
+	case "[]const u8":
+		return ".Str"
+	default:
+		return ""
+	}
 }
 
 // Program represents a Zig source file with one or more functions.
@@ -799,7 +822,12 @@ func zigTypeFromExpr(e Expr) string {
 			return "i64"
 		}
 	case *CastExpr:
-		ct := e.(*CastExpr).Type
+		ce := e.(*CastExpr)
+		vt := zigTypeFromExpr(ce.Value)
+		if vt == "Value" {
+			return "Value"
+		}
+		ct := ce.Type
 		switch ct {
 		case "int":
 			return "i64"
@@ -810,7 +838,7 @@ func zigTypeFromExpr(e Expr) string {
 				return ct
 			}
 		}
-		return zigTypeFromExpr(e.(*CastExpr).Value)
+		return vt
 	case *IfExpr:
 		ie := e.(*IfExpr)
 		tType := zigTypeFromExpr(ie.Then)
@@ -1182,6 +1210,9 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
+	if useValue {
+		buf.WriteString("const Value = union(enum) { Int: i64, Str: []const u8, };\n")
+	}
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
 	for _, st := range p.Structs {
@@ -1404,33 +1435,26 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "};\n")
 		return
 	}
+	targetType := v.Type
+	if targetType == "" {
+		if t, ok := varTypes[v.Name]; ok && t != "" {
+			targetType = t
+		} else {
+			targetType = zigTypeFromExpr(v.Value)
+		}
+	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
-	if v.Type != "" {
-		typ := v.Type
+	if targetType != "" {
+		typ := targetType
 		if kw == "const" && strings.HasPrefix(typ, "const ") {
 			typ = strings.TrimPrefix(typ, "const ")
 		}
 		fmt.Fprintf(w, ": %s", typ)
-	} else {
-		exprType := zigTypeFromExpr(v.Value)
-		if t, ok := varTypes[v.Name]; ok && t != "" {
-			typ := t
-			if kw == "const" && strings.HasPrefix(typ, "const ") {
-				typ = strings.TrimPrefix(typ, "const ")
-			}
-			fmt.Fprintf(w, ": %s", typ)
-		} else if exprType != "" {
-			fmt.Fprintf(w, ": %s", exprType)
-		} else if mut {
-			if _, ok := v.Value.(*IntLit); ok {
-				io.WriteString(w, ": i64")
-			}
-		}
 	}
 	io.WriteString(w, " = ")
 	if v.Value == nil {
-		if t, ok := varTypes[v.Name]; ok && strings.HasPrefix(t, "[]") {
-			base := t[2:]
+		if strings.HasPrefix(targetType, "[]") {
+			base := targetType[2:]
 			if strings.HasPrefix(base, "const ") {
 				base = base[len("const "):]
 			}
@@ -1440,6 +1464,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		}
 	} else {
 		v.Value.emit(w)
+		if zigTypeFromExpr(v.Value) == "Value" {
+			io.WriteString(w, valueAccess(targetType))
+		}
 	}
 	io.WriteString(w, ";")
 	if indent > 0 && varUses[v.Name] == 0 {
@@ -1456,6 +1483,11 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "%s = ", a.Name)
 	a.Value.emit(w)
+	if zigTypeFromExpr(a.Value) == "Value" {
+		if suf := valueAccess(varTypes[a.Name]); suf != "" {
+			io.WriteString(w, suf)
+		}
+	}
 	io.WriteString(w, ";\n")
 }
 
@@ -1807,8 +1839,15 @@ func (l *ListLit) emit(w io.Writer) {
 		fmt.Fprintf(w, "%s: { var %s = std.heap.page_allocator.alloc(%s, %d) catch unreachable;", lbl, tmp, et, len(l.Elems))
 		for i, e := range l.Elems {
 			fmt.Fprintf(w, " %s[%d] = ", tmp, i)
-			e.emit(w)
-			io.WriteString(w, ";")
+			if l.ElemType == "Value" {
+				t := zigTypeFromExpr(e)
+				fmt.Fprintf(w, "Value{.%s = ", valueTag(t))
+				e.emit(w)
+				io.WriteString(w, "};")
+			} else {
+				e.emit(w)
+				io.WriteString(w, ";")
+			}
 		}
 		fmt.Fprintf(w, " break :%s %s; }", lbl, tmp)
 		return
@@ -2293,6 +2332,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useMem = false
 	usePrint = false
 	useSplit = false
+	useValue = false
 	aliasStack = nil
 	namesStack = nil
 	nameCounts = map[string]int{}
@@ -2987,16 +3027,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		var elemType string
 		if len(elems) > 0 {
 			elemType = zigTypeFromExpr(elems[0])
+			mixed := false
 			for _, e := range elems[1:] {
 				t := zigTypeFromExpr(e)
 				if t != elemType {
 					if (elemType == "i64" && t == "f64") || (elemType == "f64" && t == "i64") {
 						elemType = "f64"
 					} else {
-						elemType = ""
+						mixed = true
 						break
 					}
 				}
+			}
+			if mixed {
+				elemType = "Value"
+				useValue = true
 			}
 		}
 		return &ListLit{Elems: elems, ElemType: elemType}, nil
@@ -3588,7 +3633,8 @@ func toZigType(t *parser.TypeRef) string {
 		case "string":
 			return "[]const u8"
 		case "any":
-			return "f64"
+			useValue = true
+			return "Value"
 		}
 	}
 	if t.Generic != nil {
