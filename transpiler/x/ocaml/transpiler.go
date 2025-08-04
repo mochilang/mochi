@@ -35,6 +35,7 @@ var usesGetOutput bool
 var usesGetEnv bool
 var usesEnviron bool
 var usesSplit bool
+var usesDynLen bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -1082,6 +1083,13 @@ type LenBuiltin struct {
 }
 
 func (l *LenBuiltin) emit(w io.Writer) {
+	if l.Typ == "dyn" {
+		usesDynLen = true
+		io.WriteString(w, "_len (")
+		l.Arg.emit(w)
+		io.WriteString(w, ")")
+		return
+	}
 	var fn string
 	switch l.Typ {
 	case "string":
@@ -3027,6 +3035,15 @@ let _split s sep =
   String.split_on_char c s
 `
 
+const helperLen = `
+let _len v =
+  let r = Obj.repr v in
+  if Obj.is_int r then 0 else
+    match Obj.tag r with
+    | 252 -> String.length (Obj.magic v : string)
+    | _ -> List.length (Obj.magic v)
+`
+
 const helperShow = `
 let rec __show v =
   let open Obj in
@@ -3175,6 +3192,10 @@ func (p *Program) Emit() []byte {
 	}
 	if usesSHA {
 		buf.WriteString(helperSHA)
+		buf.WriteString("\n")
+	}
+	if usesDynLen {
+		buf.WriteString(helperLen)
 		buf.WriteString("\n")
 	}
 	if usesSplit {
@@ -3843,6 +3864,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesGetEnv = false
 	usesEnviron = false
 	usesSplit = false
+	usesDynLen = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -5397,10 +5419,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			typ == "map" || strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "map{"):
 			return &LenBuiltin{Arg: arg, Typ: typ}, "int", nil
 		default:
-			// Fallback to treating the argument as a list. This is
-			// permissive but allows programs that rely on list
-			// concatenation via "+" to compile.
-			return &LenBuiltin{Arg: arg, Typ: "list"}, "int", nil
+			usesDynLen = true
+			return &LenBuiltin{Arg: arg, Typ: "dyn"}, "int", nil
 		}
 	}
 	if c.Func == "os.Getenv" && len(c.Args) == 1 {
