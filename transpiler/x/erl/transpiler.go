@@ -4857,6 +4857,10 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			}
 			return call, nil
 		}
+		if builtinFunc(p.Selector.Root) {
+			name := sanitizeFuncName(p.Selector.Root)
+			return &NameRef{Name: name}, nil
+		}
 		if t, err := env.GetVar(p.Selector.Root); err == nil {
 			if ft, ok := t.(types.FuncType); ok && !ctx.isGlobal(p.Selector.Root) && ctx.alias[p.Selector.Root] == "" {
 				if fn, ok := env.GetFunc(p.Selector.Root); ok {
