@@ -2668,11 +2668,17 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			}
 		}
 	}
+	// Separate global variable declarations from main body to avoid
+	// re-declaring them inside `main`.
+	var body []Stmt
 	for _, st := range prog.Stmts {
 		if vd, ok := st.(*VarDecl); ok && vd.Global {
 			prog.Globals = append(prog.Globals, vd)
+			continue
 		}
+		body = append(body, st)
 	}
+	prog.Stmts = body
 	if len(prog.Globals) > 0 {
 		for _, st := range prog.Stmts {
 			if fd, ok := st.(*FuncDecl); ok {
@@ -3327,7 +3333,10 @@ func compileForStmt(n *parser.ForStmt) (Stmt, error) {
 		} else if strings.HasPrefix(elem, "Vec<") || strings.HasPrefix(elem, "HashMap<") {
 			byRef = true
 		} else if _, ok := structTypes[elem]; ok {
-			byRef = true
+			// Iterate by value for struct elements to avoid
+			// mismatched reference types when calling helper
+			// functions or pushing into vectors.
+			byRef = false
 		}
 	} else if strings.HasPrefix(itType, "HashMap<") {
 		parts := strings.TrimPrefix(itType, "HashMap<")

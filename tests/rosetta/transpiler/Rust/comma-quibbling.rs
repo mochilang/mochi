@@ -36,7 +36,35 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    println!("{}", "chowla( 1) = 0\nchowla( 2) = 0\nchowla( 3) = 0\nchowla( 4) = 2\nchowla( 5) = 0\nchowla( 6) = 5\nchowla( 7) = 0\nchowla( 8) = 6\nchowla( 9) = 3\nchowla(10) = 7\nchowla(11) = 0\nchowla(12) = 15\nchowla(13) = 0\nchowla(14) = 9\nchowla(15) = 8\nchowla(16) = 14\nchowla(17) = 0\nchowla(18) = 20\nchowla(19) = 0\nchowla(20) = 21\nchowla(21) = 10\nchowla(22) = 13\nchowla(23) = 0\nchowla(24) = 35\nchowla(25) = 5\nchowla(26) = 15\nchowla(27) = 12\nchowla(28) = 27\nchowla(29) = 0\nchowla(30) = 41\nchowla(31) = 0\nchowla(32) = 30\nchowla(33) = 14\nchowla(34) = 19\nchowla(35) = 12\nchowla(36) = 54\nchowla(37) = 0\n\nCount of primes up to 100        = 25\nCount of primes up to 1,000      = 168\nCount of primes up to 10,000     = 1,229\nCount of primes up to 100,000    = 9,592\nCount of primes up to 1,000,000  = 78,498\nCount of primes up to 10,000,000 = 664,579\n\n6 is a perfect number\n28 is a perfect number\n496 is a perfect number\n8,128 is a perfect number\n33,550,336 is a perfect number\nThere are 5 perfect numbers <= 35,000,000");
+    fn quibble(mut items: Vec<String>) -> String {
+    let mut n = (items.len() as i64);
+    if (n == 0) {
+        return String::from("{}")
+    } else if (n == 1) {
+        return format!("{}{}", format!("{}{}", "{", items[0 as usize].clone()), "}")
+    } else if (n == 2) {
+        return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "{", items[0 as usize].clone()), " and "), items[1 as usize].clone()), "}")
+    } else {
+        let mut prefix: String = String::from("").clone();
+        for i in 0..(n - 1) {
+            if (i == (n - 1)) {
+                break
+            }
+            if (i > 0) {
+                prefix = format!("{}{}", prefix, ", ");
+            }
+            prefix = format!("{}{}", prefix, items[i as usize].clone());
+        }
+        return format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "{", prefix), " and "), items[(n - 1) as usize].clone()), "}")
+    }
+};
+    fn mochi_main() {
+    println!("{}", quibble(vec![]));
+    println!("{}", quibble(vec![String::from("ABC")]));
+    println!("{}", quibble(vec![String::from("ABC"), String::from("DEF")]));
+    println!("{}", quibble(vec![String::from("ABC"), String::from("DEF"), String::from("G"), String::from("H")]));
+};
+    mochi_main();
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

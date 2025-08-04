@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 17:47 UTC
+Last updated: 2025-08-04 18:39 UTC
 
-## Rosetta Golden Test Checklist (271/491)
+## Rosetta Golden Test Checklist (285/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -202,36 +202,36 @@ Last updated: 2025-08-04 17:47 UTC
 | 193 | checkpoint-synchronization-3 | ✓ | 181µs | 2.2 MB |
 | 194 | checkpoint-synchronization-4 | ✓ | 328µs | 2.0 MB |
 | 195 | chernicks-carmichael-numbers | ✓ | 202.106ms | 2.1 MB |
-| 196 | cheryls-birthday |   |  |  |
-| 197 | chinese-remainder-theorem |   |  |  |
-| 198 | chinese-zodiac |   |  |  |
+| 196 | cheryls-birthday | ✓ | 58µs | 2.1 MB |
+| 197 | chinese-remainder-theorem | ✓ | 32µs | 2.0 MB |
+| 198 | chinese-zodiac | ✓ | 50µs | 2.0 MB |
 | 199 | cholesky-decomposition-1 |   |  |  |
-| 200 | cholesky-decomposition | ✓ | 60µs |  |
-| 201 | chowla-numbers | ✓ | 18µs |  |
+| 200 | cholesky-decomposition | ✓ | 107µs | 2.1 MB |
+| 201 | chowla-numbers | ✓ | 72µs | 1.8 MB |
 | 202 | church-numerals-1 |   |  |  |
 | 203 | church-numerals-2 |   |  |  |
 | 204 | circles-of-given-radius-through-two-points |   |  |  |
-| 205 | circular-primes |   |  |  |
+| 205 | circular-primes | ✓ | 427µs | 2.0 MB |
 | 206 | cistercian-numerals |   |  |  |
-| 207 | comma-quibbling |   |  |  |
+| 207 | comma-quibbling | ✓ | 18µs | 2.1 MB |
 | 208 | compiler-virtual-machine-interpreter |   |  |  |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
-| 210 | compound-data-type |   |  |  |
-| 211 | concurrent-computing-1 |   |  |  |
-| 212 | concurrent-computing-2 |   |  |  |
-| 213 | concurrent-computing-3 |   |  |  |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 9.257183s | 2.1 MB |
+| 210 | compound-data-type | ✓ |  | 1.9 MB |
+| 211 | concurrent-computing-1 | ✓ | 21µs | 2.0 MB |
+| 212 | concurrent-computing-2 | ✓ | 18µs | 2.0 MB |
+| 213 | concurrent-computing-3 | ✓ | 29µs | 2.1 MB |
 | 214 | conditional-structures-1 |   |  |  |
-| 215 | conditional-structures-10 |   |  |  |
+| 215 | conditional-structures-10 | ✓ | 21µs | 2.0 MB |
 | 216 | conditional-structures-2 |   |  |  |
 | 217 | conditional-structures-3 |   |  |  |
-| 218 | conditional-structures-4 |   |  |  |
+| 218 | conditional-structures-4 | ✓ |  | 2.2 MB |
 | 219 | conditional-structures-5 |   |  |  |
 | 220 | conditional-structures-6 |   |  |  |
 | 221 | conditional-structures-7 |   |  |  |
 | 222 | conditional-structures-8 |   |  |  |
-| 223 | conditional-structures-9 |   |  |  |
+| 223 | conditional-structures-9 | ✓ |  | 2.0 MB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 |   |  |  |
+| 225 | constrained-genericity-1 | ✓ |  | 1.9 MB |
 | 226 | constrained-genericity-2 |   |  |  |
 | 227 | constrained-genericity-3 |   |  |  |
 | 228 | constrained-genericity-4 |   |  |  |
