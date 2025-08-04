@@ -1,0 +1,59 @@
+/*
+Generate all permutations of a sequence using backtracking.
+A state space tree is explored with depth-first search. At each level,
+choose an unused element, append it to the current permutation, and
+recurse. When the permutation length equals the input length, output it.
+This approach visits n! permutations and each permutation requires O(n)
+work to build, giving overall time complexity O(n! * n).
+*/
+
+fun repeat_bool(times: int): list<bool> {
+  var res: list<bool> = []
+  var i = 0
+  while i < times {
+    res = append(res, false)
+    i = i + 1
+  }
+  return res
+}
+
+fun set_bool(xs: list<bool>, idx: int, value: bool): list<bool> {
+  var res: list<bool> = []
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun create_state_space_tree(sequence: list<any>, current: list<any>, used: list<bool>) {
+  if len(current) == len(sequence) {
+    print(str(current))
+    return
+  }
+  var i = 0
+  while i < len(sequence) {
+    if !used[i] {
+      let next_current = append(current, sequence[i])
+      let next_used = set_bool(used, i, true)
+      create_state_space_tree(sequence, next_current, next_used)
+    }
+    i = i + 1
+  }
+}
+
+fun generate_all_permutations(sequence: list<any>) {
+  let used = repeat_bool(len(sequence))
+  create_state_space_tree(sequence, [] as list<any>, used)
+}
+
+let sequence: list<any> = [3, 1, 2, 4]
+generate_all_permutations(sequence)
+
+let sequence_2: list<any> = ["A", "B", "C"]
+generate_all_permutations(sequence_2)
