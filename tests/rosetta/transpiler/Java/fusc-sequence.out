@@ -1,0 +1,10 @@
+The first 61 fusc numbers are:
+[I@73d16e93
+
+The fusc numbers whose length > any previous fusc number length are:
+      0 (index          0)
+     11 (index         37)
+    108 (index      1,173)
+  1,076 (index     35,499)
+ 10,946 (index    699,051)
+103,682 (index 19,573,419)

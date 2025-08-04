@@ -666,7 +666,25 @@ func inferType(e Expr) string {
 			}
 		}
 	case *MapLit:
-		return "map"
+		if len(ex.Keys) > 0 {
+			kt := inferType(ex.Keys[0])
+			vt := inferType(ex.Values[0])
+			sameK, sameV := true, true
+			for i := 1; i < len(ex.Keys); i++ {
+				if t := inferType(ex.Keys[i]); t != "" && t != kt {
+					sameK = false
+				}
+				if t := inferType(ex.Values[i]); t != "" && t != vt {
+					sameV = false
+				}
+			}
+			if sameK && sameV {
+				ex.KeyType = kt
+				ex.ValueType = vt
+				return fmt.Sprintf("java.util.Map<%s, %s>", javaType(kt), javaType(vt))
+			}
+		}
+		return "java.util.Map"
 	case *LambdaExpr:
 		return "fn"
 	case *UnaryExpr:
@@ -1982,11 +2000,6 @@ func (m *MapLit) emit(w io.Writer) {
 		valType = javaBoxType(m.ValueType)
 		if strings.Contains(valType, "<") && !strings.HasSuffix(valType, ">") {
 			valType += ">"
-		}
-	} else if len(m.Values) > 0 {
-		vt := javaBoxType(inferType(m.Values[0]))
-		if vt != "" {
-			valType = vt
 		}
 	}
 	keyType := "String"
@@ -4115,12 +4128,25 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 				}
 			}
 			if t := inferType(e); t != "" {
-				if cur, ok := varTypes[alias]; !ok || ((cur == "int[]" || cur == "Object[]") && t != cur && !(cur == "Object[]" && strings.Contains(t, "Map"))) {
+				if cur, ok := varTypes[alias]; !ok {
 					varTypes[alias] = t
 					if vdecl != nil {
 						vdecl.Type = t
 						if ll, ok2 := vdecl.Expr.(*ListLit); ok2 && strings.HasSuffix(t, "[]") {
 							ll.ElemType = strings.TrimSuffix(t, "[]")
+						}
+					}
+				} else {
+					curJ, tJ := javaType(cur), javaType(t)
+					if tJ == "Object" && curJ != "Object" {
+						varTypes[alias] = "Object"
+						if vdecl != nil {
+							vdecl.Type = "Object"
+						}
+					} else if curJ != tJ && tJ != "Object" && tJ != "Object[]" {
+						varTypes[alias] = "Object"
+						if vdecl != nil {
+							vdecl.Type = "Object"
 						}
 					}
 				}

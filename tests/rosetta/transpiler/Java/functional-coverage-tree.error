@@ -1,0 +1,13 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenfunctional-coverage-tree1250698143/001/Main.java:98: error: method appendObj in class Main cannot be applied to given types;
+            cs = appendObj(cs, node);
+                 ^
+  required: T[],T
+  found:    Object,Map<String,Object>
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+Note: /tmp/TestJavaTranspiler_Rosetta_Goldenfunctional-coverage-tree1250698143/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 error

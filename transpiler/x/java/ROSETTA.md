@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-04 15:36 GMT+7
+Last updated: 2025-08-04 16:14 GMT+7
 
-## Rosetta Checklist (424/491)
+## Rosetta Checklist (443/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -467,27 +467,27 @@ Last updated: 2025-08-04 15:36 GMT+7
 | 459 | four-bit-adder-1 | ✓ | 51.0ms | 94.77KB |
 | 460 | four-is-magic | ✓ | 62.0ms | 101.70KB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
+| 462 | fractal-tree | ✓ | 43.0ms | 61.75KB |
+| 463 | fractran | ✓ | 3.49s | 87.14KB |
+| 464 | french-republican-calendar | ✓ | 35.0ms | 86.27KB |
+| 465 | ftp | ✓ | 40.0ms | 104.96KB |
 | 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
+| 467 | function-prototype | ✓ | 14.0ms | 0B |
 | 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
+| 469 | fusc-sequence | ✓ | 43.0ms | 96.20KB |
+| 470 | gamma-function | ✓ | 36.0ms | 87.33KB |
+| 471 | general-fizzbuzz | ✓ | 21.0ms | 33.53KB |
+| 472 | generic-swap | ✓ | 31.0ms | 77.78KB |
+| 473 | get-system-command-output | ✓ | 12.0ms | 528B |
+| 474 | giuga-numbers | ✓ | 25.0ms | 46.32KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 16.0ms | 568B |
+| 476 | goldbachs-comet | ✓ | 40.0ms | 80.14KB |
+| 477 | golden-ratio-convergence | ✓ | 23.0ms | 47.95KB |
+| 478 | graph-colouring | ✓ | 16.0ms | 528B |
+| 479 | gray-code | ✓ | 40.0ms | 89.54KB |
+| 480 | gui-component-interaction | ✓ | 18.0ms | 6.06KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 38.0ms | 86.52KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 32.0ms | 78.64KB |
 | 483 | http |   |  |  |
 | 484 | image-noise |   |  |  |
 | 485 | loops-increment-loop-index-within-loop-body |   |  |  |
