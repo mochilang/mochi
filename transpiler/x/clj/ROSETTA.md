@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 204/491
-Last updated: 2025-08-04 10:54 +0700
+Completed: 214/491
+Last updated: 2025-08-04 15:31 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -216,16 +216,16 @@ Last updated: 2025-08-04 10:54 +0700
 | 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |   |  |  |
 | 210 | compound-data-type |   | 51.33ms | 18.0 MB |
 | 211 | concurrent-computing-1 | ✓ | 44.295ms | 19.4 MB |
-| 212 | concurrent-computing-2 |   |  |  |
-| 213 | concurrent-computing-3 |   |  |  |
-| 214 | conditional-structures-1 |   |  |  |
-| 215 | conditional-structures-10 |   |  |  |
-| 216 | conditional-structures-2 |   |  |  |
-| 217 | conditional-structures-3 |   |  |  |
-| 218 | conditional-structures-4 |   |  |  |
-| 219 | conditional-structures-5 |   |  |  |
-| 220 | conditional-structures-6 |   |  |  |
-| 221 | conditional-structures-7 |   |  |  |
+| 212 | concurrent-computing-2 | ✓ | 38.426ms | 19.3 MB |
+| 213 | concurrent-computing-3 | ✓ | 31.609ms | 19.6 MB |
+| 214 | conditional-structures-1 | ✓ | 29.546ms | 18.5 MB |
+| 215 | conditional-structures-10 | ✓ | 30.864ms | 18.7 MB |
+| 216 | conditional-structures-2 | ✓ | 31.318ms | 18.1 MB |
+| 217 | conditional-structures-3 | ✓ | 26.347ms | 18.2 MB |
+| 218 | conditional-structures-4 | ✓ | 35.513ms | 18.8 MB |
+| 219 | conditional-structures-5 | ✓ | 29.846ms | 18.3 MB |
+| 220 | conditional-structures-6 | ✓ | 25.058ms | 18.4 MB |
+| 221 | conditional-structures-7 | ✓ | 33.216ms | 19.0 MB |
 | 222 | conditional-structures-8 |   |  |  |
 | 223 | conditional-structures-9 |   |  |  |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
