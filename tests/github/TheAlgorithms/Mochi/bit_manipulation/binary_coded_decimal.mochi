@@ -1,0 +1,51 @@
+/*
+Binary Coded Decimal
+
+This program converts a non-negative integer into its Binary Coded Decimal (BCD) representation. BCD encodes each decimal digit individually using four bits. For example, decimal 12 becomes "0001 0010".
+
+Algorithm:
+1. Clamp negative inputs to zero since BCD is defined for non-negative numbers.
+2. Convert the number to a string so that each character represents a decimal digit.
+3. For each digit character:
+   a. Cast the character to an integer.
+   b. Convert the integer to a 4-bit binary string by repeated division by two and left-padding with zeros.
+4. Concatenate the binary strings for all digits and prefix with "0b".
+
+This mirrors the Python implementation where each digit is individually converted to binary and joined together.
+*/
+
+fun to_binary4(n: int): string {
+  var result = ""
+  var x = n
+  while x > 0 {
+    result = str(x % 2) + result
+    x = x / 2
+  }
+  while len(result) < 4 {
+    result = "0" + result
+  }
+  return result
+}
+
+fun binary_coded_decimal(number: int): string {
+  var n = number
+  if n < 0 { n = 0 }
+  let digits = str(n)
+  var out = "0b"
+  var i = 0
+  while i < len(digits) {
+    let d = digits[i]
+    let d_int = d as int
+    out = out + to_binary4(d_int)
+    i = i + 1
+  }
+  return out
+}
+
+print(binary_coded_decimal(-2))
+print(binary_coded_decimal(-1))
+print(binary_coded_decimal(0))
+print(binary_coded_decimal(3))
+print(binary_coded_decimal(2))
+print(binary_coded_decimal(12))
+print(binary_coded_decimal(987))
