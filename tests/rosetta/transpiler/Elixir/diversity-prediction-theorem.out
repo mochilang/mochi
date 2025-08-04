@@ -1,0 +1,13 @@
+Average-error :  3.000
+Crowd-error   :  0.111
+Diversity     :  2.889
+
+Average-error : 14.500
+Crowd-error   :  4.000
+Diversity     : 10.500
+
+{
+  "duration_us": 432,
+  "memory_bytes": 26056,
+  "name": "main"
+}

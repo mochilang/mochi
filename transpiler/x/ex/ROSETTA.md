@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (248/491)
-_Last updated: 2025-08-04 11:46 +0700_
+## Rosetta Test Checklist (253/491)
+_Last updated: 2025-08-04 15:00 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -311,15 +311,15 @@ _Last updated: 2025-08-04 11:46 +0700_
 | 303 | dining-philosophers-2 | ✓ | 2.03ms | 17.3 KB |
 | 304 | disarium-numbers | ✓ | 4.40s | 12.5 KB |
 | 305 | discordian-date | ✓ | 5.18ms | 17.3 KB |
-| 306 | display-a-linear-combination |  |  |  |
+| 306 | display-a-linear-combination | ✓ | 3.59ms | 25.0 KB |
 | 307 | display-an-outline-as-a-nested-table |  |  |  |
 | 308 | distance-and-bearing |  |  |  |
 | 309 | distributed-programming |  |  |  |
-| 310 | diversity-prediction-theorem |  |  |  |
-| 311 | dns-query |  |  |  |
-| 312 | documentation |  |  |  |
+| 310 | diversity-prediction-theorem | ✓ | 432us | 25.4 KB |
+| 311 | dns-query | ✓ | 487.17ms | 12.5 KB |
+| 312 | documentation | ✓ | 1us | 0 B |
 | 313 | doomsday-rule |  |  |  |
-| 314 | dot-product |  |  |  |
+| 314 | dot-product | ✓ | 114us | 0 B |
 | 315 | doubly-linked-list-definition-1 |  |  |  |
 | 316 | doubly-linked-list-definition-2 |  |  |  |
 | 317 | doubly-linked-list-element-definition |  |  |  |
