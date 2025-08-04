@@ -33,12 +33,14 @@ var usesGetEnv bool
 var usesEnviron bool
 var usesJSON bool
 var usesBench bool
+var usesSubprocess bool
 var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
 var unionConstOrder []string
 var methodNames map[string]struct{}
 var currentMethodFields map[string]struct{}
+var externFuncs map[string]struct{}
 
 // SetBenchMain configures whether the generated main function is wrapped
 // in a benchmark block when emitting code. When enabled, the program will
@@ -255,6 +257,10 @@ func header() []byte {
 	}
 	if usesEnviron {
 		prelude += "(define (_environ)\n  (map (lambda (p) (string-append (car p) \"=\" (cdr p)))\n       (get-environment-variables)))\n"
+	}
+	if usesSubprocess {
+		prelude += "(import (chibi process))\n"
+		prelude += "(define (subprocess.getoutput cmd) (process->string cmd))\n"
 	}
 	if usesJSON {
 		prelude += "(import (chibi json))\n"
@@ -934,6 +940,16 @@ func convertStmt(st *parser.Statement) (Node, error) {
 	case st.Import != nil:
 		// imports have no effect in the Scheme transpiler
 		return nil, nil
+	case st.ExternFun != nil:
+		name := st.ExternFun.Root
+		if len(st.ExternFun.Tail) > 0 {
+			name += "." + strings.Join(st.ExternFun.Tail, ".")
+		}
+		externFuncs[name] = struct{}{}
+		if st.ExternFun.Root == "subprocess" && len(st.ExternFun.Tail) == 1 && st.ExternFun.Tail[0] == "getoutput" {
+			usesSubprocess = true
+		}
+		return nil, nil
 	case st.Break != nil:
 		if len(breakStack) == 0 {
 			return nil, fmt.Errorf("break outside loop")
@@ -962,12 +978,34 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesGetEnv = false
 	usesEnviron = false
 	usesBench = false
+	usesSubprocess = false
 	unionConsts = map[string]int{}
 	unionConstOrder = nil
 	methodNames = map[string]struct{}{}
 	currentMethodFields = nil
+	externFuncs = map[string]struct{}{}
 	p := &Program{}
+	// hoist function declarations before other statements
 	for _, st := range prog.Statements {
+		if st.Fun == nil {
+			continue
+		}
+		form, err := convertStmt(st)
+		if err != nil {
+			return nil, err
+		}
+		if form != nil {
+			if lst, ok := form.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
+				p.Forms = append(p.Forms, lst.Elems[1:]...)
+			} else {
+				p.Forms = append(p.Forms, form)
+			}
+		}
+	}
+	for _, st := range prog.Statements {
+		if st.Fun != nil {
+			continue
+		}
 		form, err := convertStmt(st)
 		if err != nil {
 			return nil, err
@@ -1187,6 +1225,13 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 			return &List{Elems: []Node{Symbol("_environ")}}, nil
 		}
 	}
+	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0 && len(pf.Ops) > 0 && pf.Ops[0].Field != nil {
+		name := pf.Target.Selector.Root + "." + pf.Ops[0].Field.Name
+		if _, ok := externFuncs[name]; ok {
+			node = Symbol(name)
+			pf.Ops = pf.Ops[1:]
+		}
+	}
 	// handle selector like `x.contains()` parsed as part of target
 	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && pf.Target.Selector.Tail[0] == "get" && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
@@ -1248,33 +1293,46 @@ func convertParserPostfix(pf *parser.PostfixExpr) (Node, error) {
 		}
 	} else if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
 		rootPrim := &parser.Primary{Selector: &parser.SelectorExpr{Root: pf.Target.Selector.Root}}
-		objNode, err := convertParserPrimary(rootPrim)
-		if err != nil {
-			return nil, err
-		}
 		call := pf.Ops[0].Call
-		args := make([]Node, len(call.Args))
-		for j, a := range call.Args {
-			n, err := convertParserExpr(a)
+		full := pf.Target.Selector.Root + "." + pf.Target.Selector.Tail[0]
+		if _, ok := externFuncs[full]; ok {
+			args := make([]Node, len(call.Args))
+			for j, a := range call.Args {
+				n, err := convertParserExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = n
+			}
+			node = &List{Elems: append([]Node{Symbol(full)}, args...)}
+		} else {
+			objNode, err := convertParserPrimary(rootPrim)
 			if err != nil {
 				return nil, err
 			}
-			args[j] = n
-		}
-		name := pf.Target.Selector.Tail[0]
-		if _, ok := currentEnv.GetFunc(name); ok {
-			args = append([]Node{objNode}, args...)
-			node = &List{Elems: append([]Node{Symbol(name)}, args...)}
-		} else if _, ok := methodNames[name]; ok {
-			args = append([]Node{objNode}, args...)
-			node = &List{Elems: append([]Node{Symbol(name)}, args...)}
-		} else {
-			needHash = true
-			fn := &List{Elems: []Node{Symbol("hash-table-ref"), objNode, StringLit(name)}}
-			node = &List{Elems: append([]Node{fn}, args...)}
+			args := make([]Node, len(call.Args))
+			for j, a := range call.Args {
+				n, err := convertParserExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args[j] = n
+			}
+			name := pf.Target.Selector.Tail[0]
+			if _, ok := currentEnv.GetFunc(name); ok {
+				args = append([]Node{objNode}, args...)
+				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+			} else if _, ok := methodNames[name]; ok {
+				args = append([]Node{objNode}, args...)
+				node = &List{Elems: append([]Node{Symbol(name)}, args...)}
+			} else {
+				needHash = true
+				fn := &List{Elems: []Node{Symbol("hash-table-ref"), objNode, StringLit(name)}}
+				node = &List{Elems: append([]Node{fn}, args...)}
+			}
 		}
 		pf = &parser.PostfixExpr{Target: rootPrim, Ops: pf.Ops[1:]}
-	} else {
+	} else if node == nil {
 		node, err = convertParserPrimary(pf.Target)
 		if err != nil {
 			return nil, err
@@ -1447,6 +1505,13 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		return StringLit(p.Selector.Root), nil
 	case p.Selector != nil:
+		full := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			full += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if _, ok := externFuncs[full]; ok {
+			return Symbol(full), nil
+		}
 		if p.Selector.Root == "testpkg" && len(p.Selector.Tail) == 1 {
 			switch p.Selector.Tail[0] {
 			case "FifteenPuzzleExample":

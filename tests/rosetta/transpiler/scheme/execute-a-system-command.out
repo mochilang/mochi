@@ -1,0 +1,11 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+total 160
+-rw-r--r-- 1 root root  2429 Aug  4 02:31 README.md
+-rw-r--r-- 1 root root 27443 Aug  4 02:31 ROSETTA.md
+-rw-r--r-- 1 root root  1852 Aug  4 02:31 TASKS.md
+-rw-r--r-- 1 root root  6726 Aug  4 00:59 rosetta_test.go
+-rw-r--r-- 1 root root 90178 Aug  4 02:32 transpiler.go
+-rw-r--r-- 1 root root 16347 Aug  4 00:59 transpiler_test.go
+-rw-r--r-- 1 root root  6010 Aug  4 00:59 vm_valid_golden_test.go
