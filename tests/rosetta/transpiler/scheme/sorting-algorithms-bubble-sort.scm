@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 21:29 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,5 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (bubbleSort a) (call/cc (lambda (ret1) (let ((arr a)) (begin (let ((itemCount (- (_len arr) 1))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if #t (begin (let ((hasChanged #f)) (begin (let ((index 0)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< index itemCount) (begin (if (> (list-ref arr index) (list-ref arr (+ index 1))) (begin (let ((tmp (list-ref arr index))) (begin (list-set! arr index (list-ref arr (+ index 1))) (list-set! arr (+ index 1) tmp) (set! hasChanged #t)))) (quote ())) (set! index (+ index 1)) (loop4)) (quote ()))))) (loop4)))) (if (not hasChanged) (begin (break3 (quote ()))) (quote ())) (set! itemCount (- itemCount 1)))))) (loop2)) (quote ()))))) (loop2)))) (ret1 arr))))))))
-(let ((list (_list 31 41 59 26 53 58 97 93 23 84))) (begin (_display (to-str (string-append "unsorted: " (to-str list)))) (newline) (set! list (bubbleSort list)) (_display (to-str (string-append "sorted!  " (to-str list)))) (newline)))
+(let ((start6 (current-jiffy)) (jps9 (jiffies-per-second))) (begin (define (bubbleSort a) (call/cc (lambda (ret1) (let ((arr a)) (begin (let ((itemCount (- (_len arr) 1))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if #t (begin (let ((hasChanged #f)) (begin (let ((index 0)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< index itemCount) (begin (if (> (list-ref arr index) (list-ref arr (+ index 1))) (begin (let ((tmp (list-ref arr index))) (begin (list-set! arr index (list-ref arr (+ index 1))) (list-set! arr (+ index 1) tmp) (set! hasChanged #t)))) (quote ())) (set! index (+ index 1)) (loop4)) (quote ()))))) (loop4)))) (if (not hasChanged) (begin (break3 (quote ()))) (quote ())) (set! itemCount (- itemCount 1)))))) (loop2)) (quote ()))))) (loop2)))) (ret1 arr)))))))) (let ((list (_list 31 41 59 26 53 58 97 93 23 84))) (begin (_display (to-str (string-append "unsorted: " (to-str list)))) (newline) (set! list (bubbleSort list)) (_display (to-str (string-append "sorted!  " (to-str list)))) (newline))) (let ((end7 (current-jiffy))) (let ((dur8 (quotient (* (- end7 start6) 1000000) jps9))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur8) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
