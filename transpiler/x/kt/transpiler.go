@@ -1241,6 +1241,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				cast(e, "Double")
 				return
 			}
+			if (lt == "Any" || lt == "Any?") && (rt == "Any" || rt == "Any?") {
+				cast(e, "Double")
+				return
+			}
 			if (rt == "Any" || rt == "Any?") && (lt == "Double" || lt == "Int") {
 				cast(e, lt)
 				return
