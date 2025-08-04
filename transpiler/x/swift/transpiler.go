@@ -40,6 +40,8 @@ var usesLen bool
 var usesSplit bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
+var currentUpdated map[string]bool
+var currentAnyUpdated map[string]bool
 
 var swiftKeywords = map[string]struct{}{
 	"associatedtype": {}, "class": {}, "deinit": {}, "enum": {}, "extension": {},
@@ -2074,7 +2076,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	return p, nil
 }
 
-func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]bool) {
+func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]bool, anyVars map[string]bool) {
 	var scanExpr func(*parser.Expr)
 
 	scanCall := func(fn string, args []*parser.Expr) {
@@ -2158,31 +2160,56 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 			vars[st.Update.Target] = true
 		case st.Assign != nil:
 			vars[st.Assign.Name] = true
+			if anyVars != nil {
+				if t := types.TypeOfExpr(st.Assign.Value, env); t == (types.AnyType{}) {
+					if rootNameExpr(st.Assign.Value) != st.Assign.Name {
+						anyVars[st.Assign.Name] = true
+					}
+				}
+			}
 		case st.Expr != nil:
 			scanExpr(st.Expr.Expr)
 		case st.Return != nil:
 			scanExpr(st.Return.Value)
 		case st.Let != nil:
 			scanExpr(st.Let.Value)
+			if env != nil {
+				var t types.Type = types.AnyType{}
+				if st.Let.Type != nil {
+					t = types.ResolveTypeRef(st.Let.Type, env)
+				} else if st.Let.Value != nil {
+					t = types.TypeOfExpr(st.Let.Value, env)
+				}
+				env.SetVar(st.Let.Name, t, false)
+			}
 		case st.Var != nil:
 			scanExpr(st.Var.Value)
+			if env != nil {
+				var t types.Type = types.AnyType{}
+				if st.Var.Type != nil {
+					t = types.ResolveTypeRef(st.Var.Type, env)
+				} else if st.Var.Value != nil {
+					t = types.TypeOfExpr(st.Var.Value, env)
+				}
+				env.SetVar(st.Var.Name, t, true)
+			}
 		case st.If != nil:
-			findUpdatedVars(env, st.If.Then, vars)
+			findUpdatedVars(env, st.If.Then, vars, anyVars)
 			if st.If.Else != nil {
-				findUpdatedVars(env, st.If.Else, vars)
+				findUpdatedVars(env, st.If.Else, vars, anyVars)
 			}
 			if st.If.ElseIf != nil {
 				child := &parser.Statement{If: st.If.ElseIf}
-				findUpdatedVars(env, []*parser.Statement{child}, vars)
+				findUpdatedVars(env, []*parser.Statement{child}, vars, anyVars)
 			}
 		case st.For != nil:
-			findUpdatedVars(env, st.For.Body, vars)
+			findUpdatedVars(env, st.For.Body, vars, anyVars)
 		case st.While != nil:
-			findUpdatedVars(env, st.While.Body, vars)
+			findUpdatedVars(env, st.While.Body, vars, anyVars)
 		case st.Test != nil:
-			findUpdatedVars(env, st.Test.Body, vars)
+			findUpdatedVars(env, st.Test.Body, vars, anyVars)
 		case st.Fun != nil:
-			findUpdatedVars(env, st.Fun.Body, vars)
+			findUpdatedVars(env, st.Fun.Body, vars, anyVars)
 		}
 	}
 }
@@ -2227,7 +2254,13 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 		}
 	}
 	updated := map[string]bool{}
-	findUpdatedVars(env, list, updated)
+	anyUpdated := map[string]bool{}
+	findUpdatedVars(env, list, updated, anyUpdated)
+	prev := currentUpdated
+	prevAny := currentAnyUpdated
+	currentUpdated = updated
+	currentAnyUpdated = anyUpdated
+	defer func() { currentUpdated = prev; currentAnyUpdated = prevAny }()
 	var out []Stmt
 	for _, st := range list {
 		cs, err := convertStmt(env, st)
@@ -2388,15 +2421,23 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			typ = toSwiftType(st.Var.Type)
 		}
 		if env != nil {
-			var varT types.Type = types.AnyType{}
-			if st.Var.Type != nil {
+			var varT types.Type
+			if vt, err := env.GetVar(st.Var.Name); err == nil {
+				varT = vt
+			} else if st.Var.Type != nil {
 				varT = types.ResolveTypeRef(st.Var.Type, env)
 			} else if st.Var.Value != nil {
 				varT = types.TypeOfExpr(st.Var.Value, env)
 				if typ == "[String: Any?]" {
 					varT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 				}
+			} else {
+				varT = types.AnyType{}
 			}
+			if st.Var.Type == nil && currentAnyUpdated != nil && currentAnyUpdated[st.Var.Name] {
+				varT = types.AnyType{}
+			}
+			typ = swiftTypeOf(varT)
 			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
 			if okU {
 				env.SetVar(st.Var.Name, ut, true)
@@ -2407,7 +2448,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			if okU {
 				swiftT = ut.Name
 			}
-			if swiftT != "Any" {
+			if swiftT != "Any" && st.Var.Value != nil {
 				srcSwiftT := swiftTypeOf(types.TypeOfExpr(st.Var.Value, env))
 				if srcSwiftT == swiftT {
 					// no cast needed
@@ -2602,7 +2643,7 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
 	updated := map[string]bool{}
-	findUpdatedVars(env, f.Body, updated)
+	findUpdatedVars(env, f.Body, updated, nil)
 	// register function type for calls (and recursion)
 	if env != nil {
 		var params []types.Type

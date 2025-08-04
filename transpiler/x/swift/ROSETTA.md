@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 405/491
-Last updated: 2025-08-04 00:31 +0700
+Completed: 415/491
+Last updated: 2025-08-04 08:03 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -478,16 +478,16 @@ Last updated: 2025-08-04 00:31 +0700
 | 469 | fusc-sequence | ✓ | 423µs | 3.2 MB |
 | 470 | gamma-function | ✓ | 425µs | 3.4 MB |
 | 471 | general-fizzbuzz | ✓ | 282µs | 3.2 MB |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
+| 472 | generic-swap | ✓ | 627µs | 3.2 MB |
+| 473 | get-system-command-output | ✓ | 223µs | 3.0 MB |
+| 474 | giuga-numbers | ✓ | 525µs | 3.1 MB |
+| 475 | globally-replace-text-in-several-files | ✓ | 267µs | 3.0 MB |
+| 476 | goldbachs-comet | ✓ | 1.035ms | 3.3 MB |
+| 477 | golden-ratio-convergence | ✓ | 484µs | 3.5 MB |
+| 478 | graph-colouring | ✓ | 204µs | 3.2 MB |
+| 479 | gray-code | ✓ | 362µs | 3.3 MB |
+| 480 | gui-component-interaction | ✓ | 573µs | 3.1 MB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 304µs | 3.1 MB |
 | 482 | gui-maximum-window-dimensions |   |  |  |
 | 483 | http |   |  |  |
 | 484 | image-noise |   |  |  |
