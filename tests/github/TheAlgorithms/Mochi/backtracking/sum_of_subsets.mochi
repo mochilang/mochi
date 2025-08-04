@@ -1,0 +1,49 @@
+/*
+Given a set of non-negative integers and a target sum, find all subsets
+whose elements add up exactly to the target. We perform a depth-first
+search on a state-space tree where each level decides whether to include
+the next element. Branches are pruned when the current sum exceeds the
+target or even the maximal possible sum including remaining elements
+cannot reach the target.
+*/
+
+fun sum_list(nums: list<int>): int {
+  var s = 0
+  for n in nums {
+    s = s + n
+  }
+  return s
+}
+
+fun create_state_space_tree(nums: list<int>, max_sum: int, num_index: int, path: list<int>, curr_sum: int, remaining_sum: int): list<list<int>> {
+  var result: list<list<int>> = []
+  if curr_sum > max_sum || curr_sum + remaining_sum < max_sum { return result }
+  if curr_sum == max_sum {
+    result = append(result, path)
+    return result
+  }
+  var index = num_index
+  while index < len(nums) {
+    let value = nums[index]
+    let subres = create_state_space_tree(nums, max_sum, index + 1, append(path, value), curr_sum + value, remaining_sum - value)
+    var j = 0
+    while j < len(subres) {
+      result = append(result, subres[j])
+      j = j + 1
+    }
+    index = index + 1
+  }
+  return result
+}
+
+fun generate_sum_of_subsets_solutions(nums: list<int>, max_sum: int): list<list<int>> {
+  let total = sum_list(nums)
+  return create_state_space_tree(nums, max_sum, 0, [], 0, total)
+}
+
+fun main() {
+  json(generate_sum_of_subsets_solutions([3,34,4,12,5,2], 9))
+}
+
+main()
+
