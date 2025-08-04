@@ -42,6 +42,7 @@ var useBench bool
 var useStdout bool
 var useHas bool
 var useFetch bool
+var useLookupHost bool
 var useStr bool
 var funcDepth int
 var returnOutsideFunc bool
@@ -169,8 +170,9 @@ type ForInStmt struct {
 // BenchStmt represents a benchmark block that measures execution time
 // of its body and prints a JSON summary similar to the VM output.
 type BenchStmt struct {
-	Name string
-	Body []Stmt
+	Name  string
+	Body  []Stmt
+	Async bool
 }
 
 // IIFEStmt wraps a series of statements in an immediately invoked
@@ -1579,7 +1581,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 			io.WriteString(w, "\n")
 		}
 	}
-	if useFetch {
+	if b.Async {
 		io.WriteString(w, "(async () => {\n")
 	} else {
 		io.WriteString(w, "(() => {\n")
@@ -2050,6 +2052,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useStdout = false
 	useHas = false
 	useFetch = false
+	useLookupHost = false
 	useStr = false
 	funcDepth = 0
 	returnOutsideFunc = false
@@ -2068,6 +2071,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useStdout = false
 		useHas = false
 		useFetch = false
+		useLookupHost = false
 		useStr = false
 		funcDepth = 0
 		returnOutsideFunc = false
@@ -2146,7 +2150,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 				mainStmts = append(mainStmts, &ExprStmt{Expr: &CallExpr{Func: "main"}})
 			}
 		}
-		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: mainStmts}}
+		tsProg.Stmts = []Stmt{&BenchStmt{Name: "main", Body: mainStmts, Async: useFetch}}
 		useBench = true
 		useNow = true
 	}
@@ -2280,6 +2284,19 @@ function sha256(bs: number[]): number[] {
     process.stdout.write(s);
   } else {
     console.log(s);
+  }
+}`})
+	}
+	if useLookupHost {
+		prelude = append(prelude, &RawStmt{Code: `async function _lookupHost(name: string): Promise<any[]> {
+  try {
+    if (typeof Deno !== 'undefined' && 'resolveDns' in Deno) {
+      return [await Deno.resolveDns(name, 'A'), null];
+    }
+    const dns = require('dns').promises;
+    return [await dns.resolve4(name), null];
+  } catch (e) {
+    return [[], e];
   }
 }`})
 	}
@@ -2500,7 +2517,9 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				expr := &RawExpr{Code: "{ ToUpper: (s:string)=>s.toUpperCase(), TrimSpace: (s:string)=>s.trim() }"}
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "net":
-				expr := &RawExpr{Code: "{ LookupHost: (_host:string)=>[[], null] }"}
+				expr := &RawExpr{Code: "{ LookupHost: (host:string)=>_lookupHost(host) }"}
+				useLookupHost = true
+				useFetch = true
 				return &VarDecl{Name: alias, Expr: expr, Const: true}, nil
 			case "os":
 				expr := &RawExpr{Code: `{
@@ -2609,7 +2628,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		useNow = true
 		useBench = true
-		return &BenchStmt{Name: s.Bench.Name, Body: body}, nil
+		return &BenchStmt{Name: s.Bench.Name, Body: body, Async: useFetch}, nil
 	case s.Update != nil:
 		up, err := convertUpdate(s.Update, transpileEnv)
 		if err != nil {
@@ -3571,6 +3590,14 @@ func convertPostfix(p *parser.PostfixExpr) (expr Expr, err error) {
 					case lit.Value == "write":
 						expr = &CallExpr{Func: "_stdout_write", Args: args}
 						useStdout = true
+					case lit.Value == "LookupHost" && len(args) == 1:
+						if nr, ok3 := idx.Target.(*NameRef); ok3 && nr.Name == "net" {
+							useLookupHost = true
+							useFetch = true
+							expr = &AwaitExpr{X: &CallExpr{Func: "_lookupHost", Args: args}}
+						} else {
+							expr = &InvokeExpr{Callee: expr, Args: args}
+						}
 					default:
 						expr = &InvokeExpr{Callee: expr, Args: args}
 					}
