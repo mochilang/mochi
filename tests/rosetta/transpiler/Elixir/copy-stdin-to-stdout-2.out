@@ -1,0 +1,7 @@
+foo
+bar
+{
+  "duration_us": 1650,
+  "memory_bytes": 17672,
+  "name": "main"
+}
