@@ -1154,6 +1154,8 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 			io.WriteString(w, "{ std::ostringstream __ss; ")
 			emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: "__tmp"}, Index: &VarRef{Name: "i"}}, indent)
 			io.WriteString(w, " "+stream+" << __ss.str(); }")
+		} else if elem == "std::any" {
+			io.WriteString(w, "any_to_stream("+stream+", __tmp[i])")
 		} else {
 			io.WriteString(w, stream+" << __tmp[i]")
 		}
@@ -6981,6 +6983,11 @@ func exprType(e Expr) string {
 		}
 		return exprType(v.Expr)
 	case *CallExpr:
+		if currentEnv != nil {
+			if fn, ok := currentEnv.GetFunc(v.Name); ok {
+				return cppTypeFrom(types.ResolveTypeRef(fn.Return, currentEnv))
+			}
+		}
 		if currentProgram != nil {
 			for _, fn := range currentProgram.Functions {
 				if fn.Name == v.Name {
@@ -6993,6 +7000,11 @@ func exprType(e Expr) string {
 			return "BigRat"
 		case "_num", "_denom":
 			return "boost::multiprecision::cpp_int"
+		case "_repeat":
+			if len(v.Args) > 0 {
+				return exprType(v.Args[0])
+			}
+			return "auto"
 		}
 		return "auto"
 	case *FuncCallExpr:
