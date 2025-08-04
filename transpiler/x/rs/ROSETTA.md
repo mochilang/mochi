@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 10:14 UTC
+Last updated: 2025-08-04 11:41 UTC
 
-## Rosetta Golden Test Checklist (256/491)
+## Rosetta Golden Test Checklist (257/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -167,7 +167,7 @@ Last updated: 2025-08-04 10:14 UTC
 | 158 | call-a-function-7 | ✓ | 1µs | 2.0 MB |
 | 159 | call-a-function-8 | ✓ | 9µs | 2.0 MB |
 | 160 | call-a-function-9 | ✓ | 2µs | 1.9 MB |
-| 161 | call-an-object-method-1 |   |  |  |
+| 161 | call-an-object-method-1 | ✓ |  | 2.1 MB |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
