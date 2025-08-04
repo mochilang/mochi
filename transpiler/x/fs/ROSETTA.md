@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (402/491)
+## Rosetta Golden Test Checklist (403/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -436,7 +436,7 @@ This file is auto-generated from rosetta tests.
 | 429 | find-the-last-sunday-of-each-month | ✓ | 337µs | 60.0 KB |
 | 430 | find-the-missing-permutation | ✓ | 338µs | 41.7 KB |
 | 431 | first-class-environments | ✓ | 336µs | 45.9 KB |
-| 432 | first-class-functions-use-numbers-analogously | ✓ | 313µs | 42.7 KB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 463µs | 50.7 KB |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
 | 434 | five-weekends | ✓ | 375µs | 41.1 KB |
 | 435 | fivenum-1 | ✓ | 346µs | 42.5 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-05 01:14 +0700
+Last updated: 2025-08-05 01:50 +0700
