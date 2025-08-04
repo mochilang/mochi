@@ -2567,6 +2567,38 @@ func kotlinTypeFromType(t types.Type) string {
 	return ""
 }
 
+func typeRefUsesName(t *parser.TypeRef, name string) bool {
+	if t == nil {
+		return false
+	}
+	if t.Simple != nil {
+		return *t.Simple == name
+	}
+	if t.Fun != nil {
+		for _, p := range t.Fun.Params {
+			if typeRefUsesName(p, name) {
+				return true
+			}
+		}
+		return typeRefUsesName(t.Fun.Return, name)
+	}
+	if t.Generic != nil {
+		for _, a := range t.Generic.Args {
+			if typeRefUsesName(a, name) {
+				return true
+			}
+		}
+	}
+	if t.Struct != nil {
+		for _, f := range t.Struct.Fields {
+			if typeRefUsesName(f.Type, name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func kotlinZeroValue(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, *types.IntType, types.Int64Type, *types.Int64Type:
@@ -3315,12 +3347,15 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			p.Stmts = append(p.Stmts, &ContinueStmt{})
 		case st.Type != nil:
 			if st.Type.Alias != nil {
-				typ := kotlinTypeFromType(types.ResolveTypeRef(st.Type.Alias, env))
+				typ := kotlinType(st.Type.Alias)
+				if typeRefUsesName(st.Type.Alias, st.Type.Name) {
+					typ = kotlinTypeFromType(types.ResolveTypeRef(st.Type.Alias, env))
+				}
 				extraAliases = append(extraAliases, &TypeAlias{Name: st.Type.Name, Type: typ})
 			} else if len(st.Type.Variants) == 1 && len(st.Type.Variants[0].Fields) == 0 {
 				vname := st.Type.Variants[0].Name
 				tref := &parser.TypeRef{Simple: &vname}
-				typ := kotlinTypeFromType(types.ResolveTypeRef(tref, env))
+				typ := kotlinType(tref)
 				if typ == "" {
 					typ = vname
 				}
@@ -3851,12 +3886,15 @@ func convertStmts(env *types.Env, list []*parser.Statement) ([]Stmt, error) {
 			out = append(out, &ContinueStmt{})
 		case s.Type != nil:
 			if s.Type.Alias != nil {
-				typ := kotlinTypeFromType(types.ResolveTypeRef(s.Type.Alias, env))
+				typ := kotlinType(s.Type.Alias)
+				if typeRefUsesName(s.Type.Alias, s.Type.Name) {
+					typ = kotlinTypeFromType(types.ResolveTypeRef(s.Type.Alias, env))
+				}
 				extraAliases = append(extraAliases, &TypeAlias{Name: s.Type.Name, Type: typ})
 			} else if len(s.Type.Variants) == 1 && len(s.Type.Variants[0].Fields) == 0 {
 				vname := s.Type.Variants[0].Name
 				tref := &parser.TypeRef{Simple: &vname}
-				typ := kotlinTypeFromType(types.ResolveTypeRef(tref, env))
+				typ := kotlinType(tref)
 				if typ == "" {
 					typ = vname
 				}
