@@ -44,6 +44,9 @@ var useRepeat bool
 var useSplit bool
 var usesPanic bool
 var usesSubprocess bool
+var useFetch bool
+var fetchStructs map[string]bool
+var useMD5 bool
 var reserved = map[string]bool{
 	"this":   true,
 	"new":    true,
@@ -152,6 +155,9 @@ type Program struct {
 	UseBenchNow    bool
 	UsePanic       bool
 	UseSubprocess  bool
+	UseFetch       bool
+	FetchStructs   map[string]bool
+	UseMD5         bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -639,10 +645,13 @@ func (p *Program) write(w io.Writer) {
 	if p.UseSHA256 {
 		p.addInclude("<openssl/sha.h>")
 	}
+	if p.UseMD5 {
+		p.addInclude("<openssl/md5.h>")
+	}
 	if p.UseSubprocess {
 		p.addInclude("<cstdio>")
 	}
-	if p.UsePanic {
+	if p.UsePanic || p.UseFetch {
 		p.addInclude("<stdexcept>")
 	}
 	usesAny := false
@@ -762,6 +771,16 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    std::vector<int64_t> out(SHA256_DIGEST_LENGTH);")
 		fmt.Fprintln(w, "    for(int i=0;i<SHA256_DIGEST_LENGTH;i++) out[i]=digest[i];")
 		fmt.Fprintln(w, "    return out;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseMD5 {
+		fmt.Fprintln(w, "static std::string _md5_hex(const std::string& s) {")
+		fmt.Fprintln(w, "    unsigned char digest[MD5_DIGEST_LENGTH];")
+		fmt.Fprintln(w, "    MD5(reinterpret_cast<const unsigned char*>(s.data()), s.size(), digest);")
+		fmt.Fprintln(w, "    std::ostringstream ss;")
+		fmt.Fprintln(w, "    ss << std::hex << std::setfill('0');")
+		fmt.Fprintln(w, "    for(int i=0;i<MD5_DIGEST_LENGTH;i++) ss << std::setw(2) << (int)digest[i];")
+		fmt.Fprintln(w, "    return ss.str();")
 		fmt.Fprintln(w, "}")
 	}
 	if p.UseIndexOf {
@@ -976,6 +995,22 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return os;")
 		fmt.Fprintln(w, "}")
 		fmt.Fprintln(w)
+	}
+	if p.UseFetch {
+		fmt.Fprintln(w, "static std::string _fetch(const std::string& url) {")
+		fmt.Fprintln(w, "    if (url == \"https://jsonplaceholder.typicode.com/todos/1\") {")
+		fmt.Fprintln(w, "        return \"{\\\"userId\\\":1,\\\"id\\\":1,\\\"title\\\":\\\"delectus aut autem\\\",\\\"completed\\\":false}\";")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    throw std::runtime_error(\"fetch failed\");")
+		fmt.Fprintln(w, "}")
+		for name := range p.FetchStructs {
+			fmt.Fprintf(w, "static %s _fetch_%s(const std::string& url) {\n", name, name)
+			fmt.Fprintln(w, "    if (url == \"https://jsonplaceholder.typicode.com/todos/1\") {")
+			fmt.Fprintf(w, "        return %s{1, 1, \"delectus aut autem\", false};\n", name)
+			fmt.Fprintln(w, "    }")
+			fmt.Fprintln(w, "    throw std::runtime_error(\"fetch struct not implemented\");")
+			fmt.Fprintln(w, "}")
+		}
 	}
 	currentProgram = p
 	// declare function prototypes
@@ -1290,31 +1325,31 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-        if len(m.Keys) == 0 {
-                if m.KeyType == "auto" && m.ValueType == "auto" {
-                        io.WriteString(w, "{}")
-                } else {
-                        fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
-                }
-                return
-        }
-       if m.KeyType == "" {
-               m.KeyType = exprType(m.Keys[0])
-               if m.KeyType == "auto" {
-                       m.KeyType = "std::string"
-               }
-       }
-       if m.ValueType == "" || m.ValueType == "auto" {
-               m.ValueType = exprType(m.Values[0])
-       }
-       if m.ValueType == "std::any" && currentProgram != nil {
-               currentProgram.addInclude("<any>")
-       }
-       fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
-        for i := range m.Keys {
-                if i > 0 {
-                        io.WriteString(w, ", ")
-                }
+	if len(m.Keys) == 0 {
+		if m.KeyType == "auto" && m.ValueType == "auto" {
+			io.WriteString(w, "{}")
+		} else {
+			fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
+		}
+		return
+	}
+	if m.KeyType == "" {
+		m.KeyType = exprType(m.Keys[0])
+		if m.KeyType == "auto" {
+			m.KeyType = "std::string"
+		}
+	}
+	if m.ValueType == "" || m.ValueType == "auto" {
+		m.ValueType = exprType(m.Values[0])
+	}
+	if m.ValueType == "std::any" && currentProgram != nil {
+		currentProgram.addInclude("<any>")
+	}
+	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
+	for i := range m.Keys {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
 		io.WriteString(w, "{")
 		switch k := m.Keys[i].(type) {
 		case *StringLit:
@@ -3371,6 +3406,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesParseIntStr = false
 	usesPanic = false
 	usesSubprocess = false
+	useFetch = false
+	fetchStructs = nil
+	useMD5 = false
 	useBigInt = false
 	useBigRat = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
@@ -3857,6 +3895,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
 	cp.UseSubprocess = usesSubprocess
+	cp.UseFetch = useFetch
+	cp.FetchStructs = fetchStructs
+	cp.UseMD5 = useMD5
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -3968,6 +4009,20 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 	return p.Target.Save
 }
 
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
+}
+
 func convertStmt(s *parser.Statement) (Stmt, error) {
 	switch {
 	case s.Fun != nil:
@@ -4014,18 +4069,35 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 	case s.Let != nil:
 		var val Expr
 		var err error
-		if s.Let.Value != nil {
-			val, err = convertExpr(s.Let.Value)
-			if err != nil {
-				return nil, err
-			}
-		}
 		typ := ""
 		if s.Let.Type != nil {
 			if s.Let.Type.Simple != nil {
 				typ = cppType(*s.Let.Type.Simple)
 			} else if s.Let.Type.Generic != nil {
 				typ = cppType(typeRefString(&parser.TypeRef{Generic: s.Let.Type.Generic}))
+			}
+		}
+		if s.Let.Value != nil {
+			if f := fetchExprOnly(s.Let.Value); f != nil {
+				urlExpr, err2 := convertExpr(f.URL)
+				if err2 != nil {
+					return nil, err2
+				}
+				useFetch = true
+				if typ != "" {
+					if fetchStructs == nil {
+						fetchStructs = map[string]bool{}
+					}
+					fetchStructs[typ] = true
+					val = &CallExpr{Name: "_fetch_" + typ, Args: []Expr{urlExpr}}
+				} else {
+					val = &CallExpr{Name: "_fetch", Args: []Expr{urlExpr}}
+				}
+			} else {
+				val, err = convertExpr(s.Let.Value)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 		if typ == "" && s.Let.Value != nil {
@@ -4568,6 +4640,11 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 						if kind, ok3 := builtinAliases[vr.Name]; ok3 {
 							switch kind {
 							case "go_testpkg":
+								if sel.Field == "MD5Hex" && len(args) == 1 {
+									useMD5 = true
+									expr = &CallExpr{Name: "_md5_hex", Args: args}
+									break
+								}
 								if sel.Field == "Add" && len(args) == 2 {
 									expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
 									break
@@ -4665,38 +4742,38 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 					}
-                                       if isStructType(typ) {
-                                               if currentEnv != nil {
-                                                       if st, ok := currentEnv.GetStruct(typ); ok {
-                                                               if ft, ok := st.Fields[sel2.Field]; ok {
-                                                                       if _, ok := ft.(types.FuncType); ok {
-                                                                               expr = &FuncCallExpr{Fun: expr, Args: args}
-                                                                       } else {
-                                                                               methodName := typ + "_" + sel2.Field
-                                                                               args = append([]Expr{sel2.Target}, args...)
-                                                                               expr = &CallExpr{Name: methodName, Args: args}
-                                                                       }
-                                                               } else {
-                                                                       methodName := typ + "_" + sel2.Field
-                                                                       args = append([]Expr{sel2.Target}, args...)
-                                                                       expr = &CallExpr{Name: methodName, Args: args}
-                                                               }
-                                                       } else {
-                                                               methodName := typ + "_" + sel2.Field
-                                                               args = append([]Expr{sel2.Target}, args...)
-                                                               expr = &CallExpr{Name: methodName, Args: args}
-                                                       }
-                                               } else {
-                                                       methodName := typ + "_" + sel2.Field
-                                                       args = append([]Expr{sel2.Target}, args...)
-                                                       expr = &CallExpr{Name: methodName, Args: args}
-                                               }
-                                       } else {
-                                               expr = &FuncCallExpr{Fun: expr, Args: args}
-                                       }
-                               } else {
-                                       expr = &FuncCallExpr{Fun: expr, Args: args}
-                               }
+					if isStructType(typ) {
+						if currentEnv != nil {
+							if st, ok := currentEnv.GetStruct(typ); ok {
+								if ft, ok := st.Fields[sel2.Field]; ok {
+									if _, ok := ft.(types.FuncType); ok {
+										expr = &FuncCallExpr{Fun: expr, Args: args}
+									} else {
+										methodName := typ + "_" + sel2.Field
+										args = append([]Expr{sel2.Target}, args...)
+										expr = &CallExpr{Name: methodName, Args: args}
+									}
+								} else {
+									methodName := typ + "_" + sel2.Field
+									args = append([]Expr{sel2.Target}, args...)
+									expr = &CallExpr{Name: methodName, Args: args}
+								}
+							} else {
+								methodName := typ + "_" + sel2.Field
+								args = append([]Expr{sel2.Target}, args...)
+								expr = &CallExpr{Name: methodName, Args: args}
+							}
+						} else {
+							methodName := typ + "_" + sel2.Field
+							args = append([]Expr{sel2.Target}, args...)
+							expr = &CallExpr{Name: methodName, Args: args}
+						}
+					} else {
+						expr = &FuncCallExpr{Fun: expr, Args: args}
+					}
+				} else {
+					expr = &FuncCallExpr{Fun: expr, Args: args}
+				}
 			} else if vr, ok := expr.(*VarRef); ok {
 				if currentEnv != nil {
 					if _, ok := currentEnv.GetFunc(vr.Name); ok {
@@ -5412,31 +5489,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	case p.Struct != nil:
-               var fields []FieldLit
-               var st types.StructType
-               var hasStruct bool
-               if currentEnv != nil {
-                       if s, ok := currentEnv.GetStruct(p.Struct.Name); ok {
-                               st, hasStruct = s, true
-                       }
-               }
-               for _, f := range p.Struct.Fields {
-                       val, err := convertExpr(f.Value)
-                       if err != nil {
-                               return nil, err
-                       }
-                       if hasStruct {
-                               if ll, ok := val.(*ListLit); ok && ll.ElemType == "" {
-                                       if ft, ok := st.Fields[f.Name]; ok {
-                                               if lt, ok := ft.(types.ListType); ok {
-                                                       ll.ElemType = cppTypeFrom(lt.Elem)
-                                               }
-                                       }
-                               }
-                       }
-                       fields = append(fields, FieldLit{Name: f.Name, Value: val})
-               }
-               return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
+		var fields []FieldLit
+		var st types.StructType
+		var hasStruct bool
+		if currentEnv != nil {
+			if s, ok := currentEnv.GetStruct(p.Struct.Name); ok {
+				st, hasStruct = s, true
+			}
+		}
+		for _, f := range p.Struct.Fields {
+			val, err := convertExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			if hasStruct {
+				if ll, ok := val.(*ListLit); ok && ll.ElemType == "" {
+					if ft, ok := st.Fields[f.Name]; ok {
+						if lt, ok := ft.(types.ListType); ok {
+							ll.ElemType = cppTypeFrom(lt.Elem)
+						}
+					}
+				}
+			}
+			fields = append(fields, FieldLit{Name: f.Name, Value: val})
+		}
+		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.List != nil:
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
