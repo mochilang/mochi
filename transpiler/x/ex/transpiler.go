@@ -3939,9 +3939,6 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
-				if s, ok := k.(*StringLit); ok {
-					k = &AtomLit{Name: s.Value}
-				}
 			}
 			v, err := compileExpr(it.Value, env)
 			if err != nil {
@@ -4199,6 +4196,9 @@ func lenHelper(indent int) string {
 func bigRatHelper(indent int) string {
 	var buf bytes.Buffer
 	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _bigrat({n, d}) do\n")
+	buf.WriteString(pad + "  _bigrat(n, d)\n")
+	buf.WriteString(pad + "end\n")
 	buf.WriteString(pad + "defp _bigrat(v) do\n")
 	buf.WriteString(pad + "  _bigrat(v, 1)\n")
 	buf.WriteString(pad + "end\n")

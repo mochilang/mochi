@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (253/491)
-_Last updated: 2025-08-04 15:00 +0700_
+## Rosetta Test Checklist (263/491)
+_Last updated: 2025-08-04 15:16 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -188,16 +188,16 @@ _Last updated: 2025-08-04 15:00 +0700_
 | 180 | catmull-clark-subdivision-surface |  |  |  |
 | 181 | chaocipher | ✓ | 8.46ms | 25.0 KB |
 | 182 | chaos-game |  |  |  |
-| 183 | character-codes-1 |  |  |  |
-| 184 | character-codes-2 |  |  |  |
-| 185 | character-codes-3 |  |  |  |
-| 186 | character-codes-4 |  |  |  |
-| 187 | character-codes-5 |  |  |  |
-| 188 | chat-server |  |  |  |
-| 189 | check-machin-like-formulas |  |  |  |
-| 190 | check-that-file-exists |  |  |  |
-| 191 | checkpoint-synchronization-1 |  |  |  |
-| 192 | checkpoint-synchronization-2 |  |  |  |
+| 183 | character-codes-1 | ✓ | 1.67ms | 12.5 KB |
+| 184 | character-codes-2 | ✓ | 4.77ms | 12.5 KB |
+| 185 | character-codes-3 | ✓ | 0.36ms | 0 B |
+| 186 | character-codes-4 | ✓ | 2.05ms | 17.3 KB |
+| 187 | character-codes-5 | ✓ | 2.50ms | 12.5 KB |
+| 188 | chat-server | ✓ | 0.21ms | 0 B |
+| 189 | check-machin-like-formulas | ✓ | 30.60ms | 17.3 KB |
+| 190 | check-that-file-exists | ✓ | 0.22ms | 0 B |
+| 191 | checkpoint-synchronization-1 | ✓ | 5.39ms | 25.0 KB |
+| 192 | checkpoint-synchronization-2 | ✓ | 7.12ms | 17.3 KB |
 | 193 | checkpoint-synchronization-3 |  |  |  |
 | 194 | checkpoint-synchronization-4 |  |  |  |
 | 195 | chernicks-carmichael-numbers |  |  |  |
