@@ -1107,7 +1107,19 @@ func (idx *IndexExpr) emit(w io.Writer) {
 	if (strings.HasPrefix(container, "Map[") || strings.HasPrefix(container, "scala.collection.mutable.Map[")) && container != "Any" {
 		idx.Value.emit(w)
 		fmt.Fprint(w, ".getOrElse(")
-		emitIndex()
+		keyType := ""
+		if i := strings.Index(container, "["); i >= 0 {
+			inner := container[i+1:]
+			if j := strings.Index(inner, ","); j >= 0 {
+				keyType = strings.TrimSpace(inner[:j])
+			}
+		}
+		if keyType == "String" && inferType(idx.Index) != "String" {
+			idx.Index.emit(w)
+			fmt.Fprint(w, ".toString")
+		} else {
+			emitIndex()
+		}
 		fmt.Fprint(w, ", ")
 		if def := defaultExpr(idx.Type); def != nil {
 			def.emit(w)
@@ -1191,16 +1203,11 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" {
-		if c.Type == "int" && inferType(c.Value) == "Double" {
-			if _, ok := c.Value.(*BinaryExpr); ok {
-				fmt.Fprint(w, "(")
-				c.Value.emit(w)
-				fmt.Fprint(w, ").toInt")
-			} else {
-				c.Value.emit(w)
-				fmt.Fprint(w, ".toInt")
-			}
+	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" || c.Type == "Int" {
+		if (c.Type == "int" || c.Type == "Int") && inferType(c.Value) == "Double" {
+			fmt.Fprint(w, "(")
+			c.Value.emit(w)
+			fmt.Fprint(w, ").toInt")
 		} else {
 			needsBigInt = true
 			if il, ok := c.Value.(*IntLit); ok {
@@ -1820,6 +1827,7 @@ func Emit(p *Program) []byte {
 	code := formatScala(buf.Bytes())
 	code = bytes.ReplaceAll(code, []byte("keys()"), []byte("keys"))
 	code = bytes.ReplaceAll(code, []byte("values()"), []byte("values"))
+	code = bytes.ReplaceAll(code, []byte("stdout.write"), []byte("print"))
 	if len(code) == 0 || code[len(code)-1] != '\n' {
 		code = append(code, '\n')
 	}
@@ -2261,6 +2269,12 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		} else if targetType == "Int" && valType == "BigInt" {
 			e = &FieldExpr{Receiver: e, Name: "toInt"}
+		}
+		if n, ok := target.(*Name); ok && valType != "" && valType != "Any" {
+			localVarTypes[n.Name] = valType
+			if vs, ok2 := varDecls[n.Name]; ok2 {
+				vs.Type = valType
+			}
 		}
 		return &AssignStmt{Target: target, Value: e}, nil
 	case st.Fun != nil:
@@ -3189,6 +3203,10 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		list := &CallExpr{Fn: &Name{Name: "List"}, Args: args}
 		join := &CallExpr{Fn: &FieldExpr{Receiver: list, Name: "mkString"}, Args: []Expr{&StringLit{Value: " "}}}
 		return &CallExpr{Fn: &Name{Name: "println"}, Args: []Expr{join}}, nil
+	case "stdout.write":
+		if len(args) == 1 {
+			return &CallExpr{Fn: &Name{Name: "print"}, Args: args}, nil
+		}
 	case "json":
 		if len(args) == 1 {
 			needsJSON = true
@@ -3344,6 +3362,9 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			needsParseIntStr = true
 			if len(args) == 1 {
 				args = append(args, &IntLit{Value: 10})
+			}
+			if inferTypeWithEnv(args[0], env) != "String" {
+				args[0] = &FieldExpr{Receiver: args[0], Name: "toString"}
 			}
 			return &CallExpr{Fn: &Name{Name: "_parseIntStr"}, Args: args[:2]}, nil
 		}
@@ -4672,8 +4693,19 @@ func inferType(e Expr) string {
 	case *LenExpr:
 		return "Int"
 	case *AppendExpr:
-		if t := inferType(ex.List); strings.HasPrefix(t, "ArrayBuffer[") {
-			return t
+		listType := inferType(ex.List)
+		if strings.HasPrefix(listType, "ArrayBuffer[") {
+			if listType == "ArrayBuffer[Any]" {
+				elemType := inferType(ex.Elem)
+				if elemType != "" && elemType != "Any" {
+					return fmt.Sprintf("ArrayBuffer[%s]", elemType)
+				}
+			}
+			return listType
+		}
+		elemType := inferType(ex.Elem)
+		if elemType != "" && elemType != "Any" {
+			return fmt.Sprintf("ArrayBuffer[%s]", elemType)
 		}
 		return "ArrayBuffer[Any]"
 	case *IndexExpr:

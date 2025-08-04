@@ -1,12 +1,7 @@
 exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/death-star.scala:142: error: type mismatch;
- found   : Double
- required: Int
-              var intensity: Int = (1.0 - b) * ((shades).size).toString.toDouble.toInt
-                                             ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/death-star.scala:144: error: type mismatch;
+/workspace/mochi/tests/rosetta/transpiler/Scala/death-star.scala:147: error: type mismatch;
  found   : scala.math.BigInt
  required: Int
-                intensity = BigInt(0)
-                                  ^
-two errors found
+            intensity = (shades).size - BigInt(1)
+                                      ^
+one error found
