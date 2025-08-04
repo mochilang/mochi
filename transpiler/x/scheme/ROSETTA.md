@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (457/491)
-Last updated: 2025-08-04 17:54 UTC
+Last updated: 2025-08-04 18:19 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -57,7 +57,7 @@ Last updated: 2025-08-04 17:54 UTC
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 196µs | 12.8 MB |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 3.789ms | 13.0 MB |
 | 50 | animate-a-pendulum | ✓ | 191µs | 12.7 MB |
-| 51 | animation | ✓ | 649µs | 12.3 MB |
+| 51 | animation | ✓ | 5ms | 12.6 MB |
 | 52 | anonymous-recursion-1 | ✓ | 337µs | 12.7 MB |
 | 53 | anonymous-recursion-2 | ✓ | 305µs | 12.6 MB |
 | 54 | anonymous-recursion | ✓ | 4.272ms | 12.5 MB |

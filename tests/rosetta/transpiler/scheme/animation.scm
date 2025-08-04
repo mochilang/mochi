@@ -1,23 +1,12 @@
-;; Generated on 2025-07-26 21:32 +0700
-(import (only (scheme base) call/cc when list-ref list-set!))
-(import (rename (scheme base) (list _list)))
+;; Generated on 2025-08-05 01:15 +0700
+(import (scheme base))
 (import (scheme time))
 (import (chibi string))
 (import (only (scheme char) string-upcase string-downcase))
-(import (chibi time) (srfi 98))
-(define _now_seeded #f)
-(define _now_seed 0)
-(define (now)
-  (when (not _now_seeded)
-    (let ((s (get-environment-variable "MOCHI_NOW_SEED")))
-      (when (and s (string->number s))
-        (set! _now_seed (string->number s))
-        (set! _now_seeded #t))))
-  (if _now_seeded
-      (begin
-        (set! _now_seed (modulo (+ (* _now_seed 1664525) 1013904223) 2147483647))
-        _now_seed)
-      (inexact->exact (* (current-second) 1000000000))))(import (chibi time))
+(import (srfi 69))
+(import (srfi 1))
+(define _list list)
+(import (chibi time))
 (define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi json))
 (define (to-str x)
@@ -40,142 +29,342 @@
 (define (_lt a b) (cond ((and (number? a) (number? b)) (< a b)) ((and (string? a) (string? b)) (string<? a b)) (else (< a b))))
 (define (_ge a b) (cond ((and (number? a) (number? b)) (>= a b)) ((and (string? a) (string? b)) (string>=? a b)) (else (>= a b))))
 (define (_le a b) (cond ((and (number? a) (number? b)) (<= a b)) ((and (string? a) (string? b)) (string<=? a b)) (else (<= a b))))
-(let ((start5 (now)
-)
-)
- (begin (define msg "Hello World! ")
- (define shift 0)
- (define inc 1)
- (define clicks 0)
- (define frames 0)
- (call/cc (lambda (break2)
- (letrec ((loop1 (lambda ()
- (if (< clicks 5)
- (begin (let ((line "")
-)
- (begin (let ((i 0)
-)
- (begin (call/cc (lambda (break4)
- (letrec ((loop3 (lambda ()
- (if (< i (cond ((string? msg)
- (string-length msg)
-)
- ((hash-table? msg)
- (hash-table-size msg)
-)
- (else (length msg)
-)
-)
-)
- (begin (let ((idx (modulo (+ shift i)
- (cond ((string? msg)
- (string-length msg)
-)
- ((hash-table? msg)
- (hash-table-size msg)
-)
- (else (length msg)
-)
-)
-)
-)
-)
- (begin (set! line (string-append line (substring msg idx (+ idx 1)
-)
-)
-)
- (set! i (+ i 1)
-)
-)
-)
- (loop3)
-)
- (quote ()
-)
-)
-)
-)
-)
- (loop3)
-)
-)
-)
- (display (to-str line)
-)
- (newline)
- (set! shift (modulo (+ shift inc)
- (cond ((string? msg)
- (string-length msg)
-)
- ((hash-table? msg)
- (hash-table-size msg)
-)
- (else (length msg)
-)
-)
-)
-)
- (set! frames (+ frames 1)
-)
- (if (equal? (modulo frames (cond ((string? msg)
- (string-length msg)
-)
- ((hash-table? msg)
- (hash-table-size msg)
-)
- (else (length msg)
-)
-)
-)
- 0)
- (begin (set! inc (- (cond ((string? msg)
- (string-length msg)
-)
- ((hash-table? msg)
- (hash-table-size msg)
-)
- (else (length msg)
-)
-)
- inc)
-)
- (set! clicks (+ clicks 1)
-)
-)
- (quote ()
-)
-)
-)
-)
-)
-)
- (loop1)
-)
- (quote ()
-)
-)
-)
-)
-)
- (loop1)
-)
-)
-)
- (let ((end6 (now)
-)
-)
- (let ((dur7 (quotient (- end6 start5)
- 1000)
-)
-)
- (begin (display (string-append "{\n  \"duration_us\": " (number->string dur7)
- ",\n  \"memory_bytes\": " (number->string (_mem)
-)
- ",\n  \"name\": \"main\"\n}")
-)
- (newline)
-)
-)
-)
-)
+(define (_add a b)
+  (cond ((and (number? a) (number? b)) (+ a b))
+        ((string? a) (string-append a (to-str b)))
+        ((string? b) (string-append (to-str a) b))
+        ((and (list? a) (list? b)) (append a b))
+        (else (+ a b))))
+(define (indexOf s sub) (let ((cur (string-contains s sub)))   (if cur (string-cursor->index s cur) -1)))
+(define (_display . args) (apply display args))
+(define (padStart s width pad)
+  (let loop ((out s))
+    (if (< (string-length out) width)
+        (loop (string-append pad out))
+        out)))
+(define (_substring s start end)
+  (let* ((len (string-length s))
+         (s0 (max 0 (min len start)))
+         (e0 (max s0 (min len end))))
+    (substring s s0 e0)))
+(define (_repeat s n)
+  (let loop ((i 0) (out ""))
+    (if (< i n)
+        (loop (+ i 1) (string-append out s))
+        out)))
+(define (slice seq start end)
+  (let* ((len (if (string? seq) (string-length seq) (length seq)))
+         (s (if (< start 0) (+ len start) start))
+         (e (if (< end 0) (+ len end) end)))
+    (set! s (max 0 (min len s)))
+    (set! e (max 0 (min len e)))
+    (when (< e s) (set! e s))
+    (if (string? seq)
+        (_substring seq s e)
+        (take (drop seq s) (- e s)))))
+(define (_parseIntStr s base)
+  (let* ((b (if (number? base) base 10))
+         (n (string->number (if (list? s) (list->string s) s) b)))
+    (if n (inexact->exact (truncate n)) 0)))
+(define (_split s sep)
+  (let* ((str (if (string? s) s (list->string s)))
+         (del (cond ((char? sep) sep)
+                     ((string? sep) (if (= (string-length sep) 1)
+                                       (string-ref sep 0)
+                                       sep))
+                     (else sep))))
+    (cond
+     ((and (string? del) (string=? del ""))
+      (map string (string->list str)))
+     ((char? del)
+      (string-split str del))
+     (else
+        (let loop ((r str) (acc '()))
+          (let ((cur (string-contains r del)))
+            (if cur
+                (let ((idx (string-cursor->index r cur)))
+                  (loop (_substring r (+ idx (string-length del)) (string-length r))
+                        (cons (_substring r 0 idx) acc)))
+                (reverse (cons r acc)))))))))
+(define (_len x)
+  (cond ((string? x) (string-length x))
+        ((hash-table? x) (hash-table-size x))
+        (else (length x))))
+(
+  let (
+    (
+      start5 (
+        current-jiffy
+      )
+    )
+     (
+      jps8 (
+        jiffies-per-second
+      )
+    )
+  )
+   (
+    begin (
+      let (
+        (
+          msg "Hello World! "
+        )
+      )
+       (
+        begin (
+          let (
+            (
+              shift 0
+            )
+          )
+           (
+            begin (
+              let (
+                (
+                  inc 1
+                )
+              )
+               (
+                begin (
+                  let (
+                    (
+                      clicks 0
+                    )
+                  )
+                   (
+                    begin (
+                      let (
+                        (
+                          frames 0
+                        )
+                      )
+                       (
+                        begin (
+                          call/cc (
+                            lambda (
+                              break2
+                            )
+                             (
+                              letrec (
+                                (
+                                  loop1 (
+                                    lambda (
+                                      
+                                    )
+                                     (
+                                      if (
+                                        < clicks 5
+                                      )
+                                       (
+                                        begin (
+                                          let (
+                                            (
+                                              line ""
+                                            )
+                                          )
+                                           (
+                                            begin (
+                                              let (
+                                                (
+                                                  i 0
+                                                )
+                                              )
+                                               (
+                                                begin (
+                                                  call/cc (
+                                                    lambda (
+                                                      break4
+                                                    )
+                                                     (
+                                                      letrec (
+                                                        (
+                                                          loop3 (
+                                                            lambda (
+                                                              
+                                                            )
+                                                             (
+                                                              if (
+                                                                < i (
+                                                                  _len msg
+                                                                )
+                                                              )
+                                                               (
+                                                                begin (
+                                                                  let (
+                                                                    (
+                                                                      idx (
+                                                                        modulo (
+                                                                          + shift i
+                                                                        )
+                                                                         (
+                                                                          _len msg
+                                                                        )
+                                                                      )
+                                                                    )
+                                                                  )
+                                                                   (
+                                                                    begin (
+                                                                      set! line (
+                                                                        string-append line (
+                                                                          _substring msg idx (
+                                                                            + idx 1
+                                                                          )
+                                                                        )
+                                                                      )
+                                                                    )
+                                                                     (
+                                                                      set! i (
+                                                                        + i 1
+                                                                      )
+                                                                    )
+                                                                  )
+                                                                )
+                                                                 (
+                                                                  loop3
+                                                                )
+                                                              )
+                                                               (
+                                                                quote (
+                                                                  
+                                                                )
+                                                              )
+                                                            )
+                                                          )
+                                                        )
+                                                      )
+                                                       (
+                                                        loop3
+                                                      )
+                                                    )
+                                                  )
+                                                )
+                                                 (
+                                                  _display (
+                                                    to-str line
+                                                  )
+                                                )
+                                                 (
+                                                  newline
+                                                )
+                                                 (
+                                                  set! shift (
+                                                    modulo (
+                                                      + shift inc
+                                                    )
+                                                     (
+                                                      _len msg
+                                                    )
+                                                  )
+                                                )
+                                                 (
+                                                  set! frames (
+                                                    + frames 1
+                                                  )
+                                                )
+                                                 (
+                                                  if (
+                                                    equal? (
+                                                      modulo frames (
+                                                        _len msg
+                                                      )
+                                                    )
+                                                     0
+                                                  )
+                                                   (
+                                                    begin (
+                                                      set! inc (
+                                                        - (
+                                                          _len msg
+                                                        )
+                                                         inc
+                                                      )
+                                                    )
+                                                     (
+                                                      set! clicks (
+                                                        + clicks 1
+                                                      )
+                                                    )
+                                                  )
+                                                   (
+                                                    quote (
+                                                      
+                                                    )
+                                                  )
+                                                )
+                                              )
+                                            )
+                                          )
+                                        )
+                                         (
+                                          loop1
+                                        )
+                                      )
+                                       (
+                                        quote (
+                                          
+                                        )
+                                      )
+                                    )
+                                  )
+                                )
+                              )
+                               (
+                                loop1
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+     (
+      let (
+        (
+          end6 (
+            current-jiffy
+          )
+        )
+      )
+       (
+        let (
+          (
+            dur7 (
+              quotient (
+                * (
+                  - end6 start5
+                )
+                 1000000
+              )
+               jps8
+            )
+          )
+        )
+         (
+          begin (
+            _display (
+              string-append "{\n  \"duration_us\": " (
+                number->string dur7
+              )
+               ",\n  \"memory_bytes\": " (
+                number->string (
+                  _mem
+                )
+              )
+               ",\n  \"name\": \"main\"\n}"
+            )
+          )
+           (
+            newline
+          )
+        )
+      )
+    )
+  )
 )
