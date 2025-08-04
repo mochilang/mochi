@@ -4823,6 +4823,11 @@ func compileClosure(env *types.Env, name string, params []Param, inner *parser.F
 	if err != nil {
 		return nil, err
 	}
+	// propagate any new structs defined within the apply function
+	for n, st := range applyEnv.Structs() {
+		env.SetStruct(n, st)
+	}
+	structTypes = env.Structs()
 	extraFuncs = append(extraFuncs, applyFun)
 	closureApply[closureName] = applyName
 	funcReturnTypes[applyName] = applyFun.Return

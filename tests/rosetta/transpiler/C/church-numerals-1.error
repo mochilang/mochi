@@ -1,198 +1,150 @@
-compile failed: exit status 1: /tmp/ctranspile1309842070/church-numerals-1.mochi.c:73:6: error: expected identifier or ‘(’ before ‘)’ token
-   73 | int(*)(int)(*)(int(*)(int)) z = 0;
+compile failed: exit status 1: /tmp/ctranspile1989656863/church-numerals-1.mochi.c:85:6: error: expected identifier or ‘(’ before ‘)’ token
+   85 | int(*)(int)(*)(int(*)(int)) z = 0;
       |      ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:81:1: error: unknown type name ‘SuccClosure_callClosure’
-   81 | SuccClosure_callClosure SuccClosure_call(int(*f)(int));
-      | ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:84:1: error: unknown type name ‘AddClosure_callClosure’
-   84 | AddClosure_callClosure AddClosure_call(int(*f)(int));
-      | ^~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:87:1: error: unknown type name ‘MulClosure_callClosure’
-   87 | MulClosure_callClosure MulClosure_call(int(*f)(int));
-      | ^~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:88:6: error: expected identifier or ‘(’ before ‘)’ token
-   88 | int(*)(int)(*)(int(*)(int)) pow(int(*c)(int), int(*d)(int));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:100:6: error: expected identifier or ‘(’ before ‘)’ token
+  100 | int(*)(int)(*)(int(*)(int)) pow(int(*c)(int), int(*d)(int));
       |      ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:91:6: error: expected identifier or ‘(’ before ‘)’ token
-   91 | int(*)(int)(*)(int(*)(int)) intToChurch(long long i);
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:103:6: error: expected identifier or ‘(’ before ‘)’ token
+  103 | int(*)(int)(*)(int(*)(int)) intToChurch(long long i);
       |      ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘SuccClosure_callClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:107:12: warning: implicit declaration of function ‘f’ [-Wimplicit-function-declaration]
-  107 |     return f(c(f));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: In function ‘SuccClosure_callClosure_call’:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:119:12: warning: implicit declaration of function ‘f’ [-Wimplicit-function-declaration]
+  119 |     return f(c(f));
       |            ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:107:14: warning: implicit declaration of function ‘c’ [-Wimplicit-function-declaration]
-  107 |     return f(c(f));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:119:14: warning: implicit declaration of function ‘c’ [-Wimplicit-function-declaration]
+  119 |     return f(c(f));
       |              ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: At top level:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:110:1: error: unknown type name ‘SuccClosure_callClosure’
-  110 | SuccClosure_callClosure SuccClosure_call(int(*f)(int)) {
-      | ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘SuccClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:111:13: error: ‘SuccClosure_callClosure’ undeclared (first use in this function); did you mean ‘SuccClosure_callClosure_call’?
-  111 |     return (SuccClosure_callClosure){};
-      |             ^~~~~~~~~~~~~~~~~~~~~~~
-      |             SuccClosure_callClosure_call
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:111:13: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:111:37: error: expected ‘;’ before ‘{’ token
-  111 |     return (SuccClosure_callClosure){};
-      |                                     ^
-      |                                     ;
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘AddClosure_callClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:119:14: error: ‘f’ undeclared (first use in this function)
-  119 |     return c(f);
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: In function ‘AddClosure_callClosure_call’:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:131:14: error: ‘f’ undeclared (first use in this function)
+  131 |     return c(f);
       |              ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: At top level:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:122:1: error: unknown type name ‘AddClosure_callClosure’
-  122 | AddClosure_callClosure AddClosure_call(int(*f)(int)) {
-      | ^~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘AddClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:123:13: error: ‘AddClosure_callClosure’ undeclared (first use in this function); did you mean ‘AddClosure_callClosure_call’?
-  123 |     return (AddClosure_callClosure){};
-      |             ^~~~~~~~~~~~~~~~~~~~~~
-      |             AddClosure_callClosure_call
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:123:36: error: expected ‘;’ before ‘{’ token
-  123 |     return (AddClosure_callClosure){};
-      |                                    ^
-      |                                    ;
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘MulClosure_callClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:131:14: warning: implicit declaration of function ‘d’ [-Wimplicit-function-declaration]
-  131 |     return c(d(f));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:131:14: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: In function ‘MulClosure_callClosure_call’:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:143:14: warning: implicit declaration of function ‘d’ [-Wimplicit-function-declaration]
+  143 |     return c(d(f));
       |              ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:131:16: error: ‘f’ undeclared (first use in this function)
-  131 |     return c(d(f));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:143:16: error: ‘f’ undeclared (first use in this function)
+  143 |     return c(d(f));
       |                ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: At top level:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:134:1: error: unknown type name ‘MulClosure_callClosure’
-  134 | MulClosure_callClosure MulClosure_call(int(*f)(int)) {
-      | ^~~~~~~~~~~~~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘MulClosure_call’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:135:13: error: ‘MulClosure_callClosure’ undeclared (first use in this function); did you mean ‘MulClosure_callClosure_call’?
-  135 |     return (MulClosure_callClosure){};
-      |             ^~~~~~~~~~~~~~~~~~~~~~
-      |             MulClosure_callClosure_call
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:135:36: error: expected ‘;’ before ‘{’ token
-  135 |     return (MulClosure_callClosure){};
-      |                                    ^
-      |                                    ;
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: At top level:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:138:6: error: expected identifier or ‘(’ before ‘)’ token
-  138 | int(*)(int)(*)(int(*)(int)) pow(int(*c)(int), int(*d)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: At top level:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:150:6: error: expected identifier or ‘(’ before ‘)’ token
+  150 | int(*)(int)(*)(int(*)(int)) pow(int(*c)(int), int(*d)(int)) {
       |      ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘toInt’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:154:14: warning: passing argument 1 of ‘c’ makes integer from pointer without a cast [-Wint-conversion]
-  154 |     return c(incr);
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: In function ‘toInt’:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:166:14: warning: passing argument 1 of ‘c’ makes integer from pointer without a cast [-Wint-conversion]
+  166 |     return c(incr);
       |              ^~~~
       |              |
       |              int (*)(int)
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:154:14: note: expected ‘int’ but argument is of type ‘int (*)(int)’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: At top level:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:157:6: error: expected identifier or ‘(’ before ‘)’ token
-  157 | int(*)(int)(*)(int(*)(int)) intToChurch(long long i) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:166:14: note: expected ‘int’ but argument is of type ‘int (*)(int)’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: At top level:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:169:6: error: expected identifier or ‘(’ before ‘)’ token
+  169 | int(*)(int)(*)(int(*)(int)) intToChurch(long long i) {
       |      ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c: In function ‘main’:
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:167:9: error: ‘z’ undeclared (first use in this function)
-  167 |         z = zero;
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c: In function ‘main’:
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:179:9: error: ‘z’ undeclared (first use in this function)
+  179 |         z = zero;
       |         ^
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:169:21: error: incompatible type for argument 1 of ‘succ’
-  169 |         four = succ(three);
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:181:21: error: incompatible type for argument 1 of ‘succ’
+  181 |         four = succ(three);
       |                     ^~~~~
       |                     |
       |                     SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:102:23: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  102 | SuccClosure succ(int(*c)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:114:23: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  114 | SuccClosure succ(int(*c)(int)) {
       |                  ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:170:59: error: incompatible type for argument 1 of ‘toInt’
-  170 |         puts(str_concat("three        -> ", str_int(toInt(three))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:182:59: error: incompatible type for argument 1 of ‘toInt’
+  182 |         puts(str_concat("three        -> ", str_int(toInt(three))));
       |                                                           ^~~~~
       |                                                           |
       |                                                           SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:153:22: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  153 | long long toInt(int(*c)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:165:22: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  165 | long long toInt(int(*c)(int)) {
       |                 ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:171:59: error: incompatible type for argument 1 of ‘toInt’
-  171 |         puts(str_concat("four         -> ", str_int(toInt(four))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:183:59: error: incompatible type for argument 1 of ‘toInt’
+  183 |         puts(str_concat("four         -> ", str_int(toInt(four))));
       |                                                           ^~~~
       |                                                           |
       |                                                           SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:153:22: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  153 | long long toInt(int(*c)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:165:22: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  165 | long long toInt(int(*c)(int)) {
       |                 ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:172:63: error: incompatible type for argument 1 of ‘add’
-  172 |         puts(str_concat("three + four -> ", str_int(toInt(add(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:184:63: error: incompatible type for argument 1 of ‘add’
+  184 |         puts(str_concat("three + four -> ", str_int(toInt(add(three, four)))));
       |                                                               ^~~~~
       |                                                               |
       |                                                               SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:114:21: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  114 | AddClosure add(int(*c)(int), int(*d)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:126:21: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  126 | AddClosure add(int(*c)(int), int(*d)(int)) {
       |                ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:172:70: error: incompatible type for argument 2 of ‘add’
-  172 |         puts(str_concat("three + four -> ", str_int(toInt(add(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:184:70: error: incompatible type for argument 2 of ‘add’
+  184 |         puts(str_concat("three + four -> ", str_int(toInt(add(three, four)))));
       |                                                                      ^~~~
       |                                                                      |
       |                                                                      SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:114:35: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  114 | AddClosure add(int(*c)(int), int(*d)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:126:35: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  126 | AddClosure add(int(*c)(int), int(*d)(int)) {
       |                              ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:173:63: error: incompatible type for argument 1 of ‘mul’
-  173 |         puts(str_concat("three * four -> ", str_int(toInt(mul(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:185:63: error: incompatible type for argument 1 of ‘mul’
+  185 |         puts(str_concat("three * four -> ", str_int(toInt(mul(three, four)))));
       |                                                               ^~~~~
       |                                                               |
       |                                                               SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:126:21: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  126 | MulClosure mul(int(*c)(int), int(*d)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:138:21: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  138 | MulClosure mul(int(*c)(int), int(*d)(int)) {
       |                ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:173:70: error: incompatible type for argument 2 of ‘mul’
-  173 |         puts(str_concat("three * four -> ", str_int(toInt(mul(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:185:70: error: incompatible type for argument 2 of ‘mul’
+  185 |         puts(str_concat("three * four -> ", str_int(toInt(mul(three, four)))));
       |                                                                      ^~~~
       |                                                                      |
       |                                                                      SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:126:35: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
-  126 | MulClosure mul(int(*c)(int), int(*d)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:138:35: note: expected ‘int (*)(int)’ but argument is of type ‘SuccClosure’
+  138 | MulClosure mul(int(*c)(int), int(*d)(int)) {
       |                              ~~~~~^~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:59: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
-  174 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:59: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
+  186 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
       |                                                           ^~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:26:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:26:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
    25 | #include <time.h>
   +++ |+#include <math.h>
    26 | #include <stdlib.h>
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:59: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
-  174 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:59: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
+  186 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
       |                                                           ^~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:59: note: include ‘<math.h>’ or provide a declaration of ‘pow’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:63: error: incompatible type for argument 1 of ‘pow’
-  174 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:59: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:63: error: incompatible type for argument 1 of ‘pow’
+  186 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
       |                                                               ^~~~~
       |                                                               |
       |                                                               SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:63: note: expected ‘double’ but argument is of type ‘SuccClosure’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:70: error: incompatible type for argument 2 of ‘pow’
-  174 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:63: note: expected ‘double’ but argument is of type ‘SuccClosure’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:70: error: incompatible type for argument 2 of ‘pow’
+  186 |         puts(str_concat("three ^ four -> ", str_int(toInt(pow(three, four)))));
       |                                                                      ^~~~
       |                                                                      |
       |                                                                      SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:174:70: note: expected ‘double’ but argument is of type ‘SuccClosure’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:175:63: error: incompatible type for argument 1 of ‘pow’
-  175 |         puts(str_concat("four ^ three -> ", str_int(toInt(pow(four, three)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:186:70: note: expected ‘double’ but argument is of type ‘SuccClosure’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:187:63: error: incompatible type for argument 1 of ‘pow’
+  187 |         puts(str_concat("four ^ three -> ", str_int(toInt(pow(four, three)))));
       |                                                               ^~~~
       |                                                               |
       |                                                               SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:175:63: note: expected ‘double’ but argument is of type ‘SuccClosure’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:175:69: error: incompatible type for argument 2 of ‘pow’
-  175 |         puts(str_concat("four ^ three -> ", str_int(toInt(pow(four, three)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:187:63: note: expected ‘double’ but argument is of type ‘SuccClosure’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:187:69: error: incompatible type for argument 2 of ‘pow’
+  187 |         puts(str_concat("four ^ three -> ", str_int(toInt(pow(four, three)))));
       |                                                                     ^~~~~
       |                                                                     |
       |                                                                     SuccClosure
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:175:69: note: expected ‘double’ but argument is of type ‘SuccClosure’
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:176:59: warning: implicit declaration of function ‘intToChurch’ [-Wimplicit-function-declaration]
-  176 |         puts(str_concat("5 -> five    -> ", str_int(toInt(intToChurch(5LL)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:187:69: note: expected ‘double’ but argument is of type ‘SuccClosure’
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:188:59: warning: implicit declaration of function ‘intToChurch’ [-Wimplicit-function-declaration]
+  188 |         puts(str_concat("5 -> five    -> ", str_int(toInt(intToChurch(5LL)))));
       |                                                           ^~~~~~~~~~~
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:176:59: warning: passing argument 1 of ‘toInt’ makes pointer from integer without a cast [-Wint-conversion]
-  176 |         puts(str_concat("5 -> five    -> ", str_int(toInt(intToChurch(5LL)))));
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:188:59: warning: passing argument 1 of ‘toInt’ makes pointer from integer without a cast [-Wint-conversion]
+  188 |         puts(str_concat("5 -> five    -> ", str_int(toInt(intToChurch(5LL)))));
       |                                                           ^~~~~~~~~~~~~~~~
       |                                                           |
       |                                                           int
-/tmp/ctranspile1309842070/church-numerals-1.mochi.c:153:22: note: expected ‘int (*)(int)’ but argument is of type ‘int’
-  153 | long long toInt(int(*c)(int)) {
+/tmp/ctranspile1989656863/church-numerals-1.mochi.c:165:22: note: expected ‘int (*)(int)’ but argument is of type ‘int’
+  165 | long long toInt(int(*c)(int)) {
       |                 ~~~~~^~~~~~~
 
