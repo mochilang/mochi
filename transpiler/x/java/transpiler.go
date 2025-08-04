@@ -465,6 +465,12 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 	}
 	jt := javaType(typ)
 	if jt == "String" && !isStringExpr(e) {
+		if se, ok := e.(*SliceExpr); ok && isArrayExpr(se.Value) {
+			fmt.Fprint(w, "String.join(\"\", ")
+			se.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 		if it := inferType(e); it == "" || it == "Object" {
 			fmt.Fprint(w, "(String)(")
 			e.emit(w)
@@ -2192,6 +2198,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		if lt == "double" || rt == "double" {
 			typ = "double"
+		}
+		if lt == "" && rt == "" && (b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=") {
+			fmt.Fprint(w, "String.valueOf(")
+			b.Left.emit(w)
+			fmt.Fprint(w, ").compareTo(String.valueOf(")
+			b.Right.emit(w)
+			fmt.Fprint(w, ")) ")
+			switch b.Op {
+			case "<":
+				fmt.Fprint(w, "< 0")
+			case "<=":
+				fmt.Fprint(w, "<= 0")
+			case ">":
+				fmt.Fprint(w, "> 0")
+			case ">=":
+				fmt.Fprint(w, ">= 0")
+			}
+			return
 		}
 		if big {
 			emitBigIntOperand := func(e Expr, t string) {
@@ -5220,7 +5244,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			return &MethodCallExpr{Target: args[0], Name: "toLowerCase", Args: nil}, nil
 		}
 		if name == "indexOf" && len(args) == 2 {
-			return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
+			if topEnv == nil {
+				return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
+			}
+			if _, ok := topEnv.GetFunc("indexOf"); !ok {
+				return &MethodCallExpr{Target: args[0], Name: "indexOf", Args: []Expr{args[1]}}, nil
+			}
 		}
 		if name == "parseIntStr" && (len(args) == 1 || len(args) == 2) {
 			if len(args) == 1 {
