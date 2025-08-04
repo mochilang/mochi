@@ -897,7 +897,6 @@ func (m *MapLit) emit(w io.Writer) {
 	neededOpens["System.Collections.Generic"] = true
 	io.WriteString(w, "_dictCreate")
 	same := true
-	valType := ""
 	if len(m.Types) == 0 {
 		m.Types = make([]string, len(m.Items))
 		prev := ""
@@ -918,12 +917,6 @@ func (m *MapLit) emit(w io.Writer) {
 				break
 			}
 		}
-		if same && prev != "obj" {
-			valType = fsTypeFromString(prev)
-		}
-	}
-	if valType != "" {
-		fmt.Fprintf(w, "<%s>", valType)
 	}
 	io.WriteString(w, " [")
 	for i, kv := range m.Items {
@@ -2602,45 +2595,45 @@ func (s *SliceExpr) emit(w io.Writer) {
 		start = &IntLit{Value: 0}
 	}
 	t := inferType(s.Target)
-	if !s.IsString && t != "string" {
-		io.WriteString(w, "Array.sub ")
+	if s.IsString || t == "string" || t == "" {
 		s.Target.emit(w)
-		io.WriteString(w, " ")
-		if needsParen(start) {
-			io.WriteString(w, "(")
-			start.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			start.emit(w)
-		}
-		io.WriteString(w, " ")
-		var endLen Expr
+		io.WriteString(w, ".Substring(")
+		start.emit(w)
+		io.WriteString(w, ", ")
+		var length Expr
 		if s.End != nil {
-			endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+			length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
 		} else {
-			endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+			length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
 		}
-		if needsParen(endLen) {
-			io.WriteString(w, "(")
-			endLen.emit(w)
-			io.WriteString(w, ")")
-		} else {
-			endLen.emit(w)
-		}
+		length.emit(w)
+		io.WriteString(w, ")")
 		return
 	}
+	io.WriteString(w, "Array.sub ")
 	s.Target.emit(w)
-	io.WriteString(w, ".Substring(")
-	start.emit(w)
-	io.WriteString(w, ", ")
-	var length Expr
-	if s.End != nil {
-		length = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+	io.WriteString(w, " ")
+	if needsParen(start) {
+		io.WriteString(w, "(")
+		start.emit(w)
+		io.WriteString(w, ")")
 	} else {
-		length = &BinaryExpr{Left: &CallExpr{Func: "String.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+		start.emit(w)
 	}
-	length.emit(w)
-	io.WriteString(w, ")")
+	io.WriteString(w, " ")
+	var endLen Expr
+	if s.End != nil {
+		endLen = &BinaryExpr{Left: s.End, Op: "-", Right: start}
+	} else {
+		endLen = &BinaryExpr{Left: &CallExpr{Func: "Array.length", Args: []Expr{s.Target}}, Op: "-", Right: start}
+	}
+	if needsParen(endLen) {
+		io.WriteString(w, "(")
+		endLen.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		endLen.emit(w)
+	}
 }
 
 // CastExpr represents expr as type.
