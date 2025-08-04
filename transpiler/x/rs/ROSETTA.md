@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 02:25 UTC
+Last updated: 2025-08-04 08:32 UTC
 
-## Rosetta Golden Test Checklist (237/491)
+## Rosetta Golden Test Checklist (243/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -147,12 +147,12 @@ Last updated: 2025-08-04 02:25 UTC
 | 138 | bulls-and-cows-player | ✓ | 369.677ms | 2.6 MB |
 | 139 | bulls-and-cows |   |  |  |
 | 140 | burrows-wheeler-transform | ✓ | 9.406ms | 2.2 MB |
-| 141 | caesar-cipher-1 |   |  |  |
-| 142 | caesar-cipher-2 |   |  |  |
-| 143 | calculating-the-value-of-e |   |  |  |
-| 144 | calendar---for-real-programmers-1 |   |  |  |
-| 145 | calendar---for-real-programmers-2 |   |  |  |
-| 146 | calendar |   |  |  |
+| 141 | caesar-cipher-1 | ✓ | 107µs | 2.0 MB |
+| 142 | caesar-cipher-2 | ✓ | 159µs | 2.1 MB |
+| 143 | calculating-the-value-of-e | ✓ | 32µs | 1.9 MB |
+| 144 | calendar---for-real-programmers-1 | ✓ | 463µs | 2.0 MB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 762µs | 2.3 MB |
+| 146 | calendar | ✓ | 477µs | 2.1 MB |
 | 147 | calkin-wilf-sequence |   |  |  |
 | 148 | call-a-foreign-language-function |   |  |  |
 | 149 | call-a-function-1 |   |  |  |
