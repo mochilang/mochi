@@ -1608,7 +1608,7 @@ type CallExpr struct {
 }
 
 func (c *CallExpr) emitExpr(w io.Writer) {
-	if c.Func == "append" && len(c.Args) == 2 {
+	if c.Func == "append" && len(c.Args) >= 2 {
 		if vr, ok := c.Args[0].(*VarRef); ok {
 			base := varBaseType(vr.Name)
 			switch base {
@@ -1640,7 +1640,9 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 					fmt.Fprintf(w, "list_append_int_new(%s, %s_len, ", vr.Name, vr.Name)
 				}
 			}
-			c.Args[1].emitExpr(w)
+			if len(c.Args) > 1 && c.Args[1] != nil {
+				c.Args[1].emitExpr(w)
+			}
 			io.WriteString(w, ")")
 			return
 		}
@@ -1864,15 +1866,19 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 
 	io.WriteString(w, fn)
 	io.WriteString(w, "(")
+	first := true
 	for i, a := range c.Args {
-		if i > 0 {
+		if a == nil {
+			continue
+		}
+		if !first {
 			io.WriteString(w, ", ")
 		}
 		var paramType string
 		if types, ok := funcParamTypes[c.Func]; ok && i < len(types) {
 			paramType = types[i]
 		}
-		if i == 0 && tmpName != "" {
+		if first && tmpName != "" {
 			io.WriteString(w, tmpName)
 			if strings.HasSuffix(paramType, "[][]") {
 				io.WriteString(w, ", ")
@@ -1885,6 +1891,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 				io.WriteString(w, ", ")
 				io.WriteString(w, firstCall+"_len")
 			}
+			first = false
 			continue
 		}
 		if strings.HasPrefix(paramType, "struct ") && strings.HasSuffix(paramType, "*") {
@@ -1892,6 +1899,7 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		}
 		a.emitExpr(w)
 		emitExtraArgs(w, paramType, a)
+		first = false
 	}
 	io.WriteString(w, ")")
 
@@ -3206,6 +3214,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 			if name == "strdup" { // avoid conflict with stdlib
 				funcAliases[name] = "user_strdup"
 				name = "user_strdup"
+			}
+			if name == "bigrat" { // avoid conflict with type alias
+				funcAliases[name] = "user_bigrat"
+				name = "user_bigrat"
 			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
