@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (409/491)
-Last updated: 2025-08-04 00:53 UTC
+## Checklist (410/491)
+Last updated: 2025-08-04 01:13 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -370,7 +370,7 @@ Last updated: 2025-08-04 00:53 UTC
 | 361 | ethiopian-multiplication | ✓ | 1ms | 12.4 MB |
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 12ms | 13.6 MB |
-| 364 | eulers-constant-0.5772... |   |  |  |
+| 364 | eulers-constant-0.5772... | ✓ | 37ms | 12.7 MB |
 | 365 | eulers-identity |   |  |  |
 | 366 | eulers-sum-of-powers-conjecture |   |  |  |
 | 367 | evaluate-binomial-coefficients |   |  |  |
