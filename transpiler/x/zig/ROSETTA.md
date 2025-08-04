@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 00:29 +0700
+Last updated: 2025-08-04 15:16 +0700
 
-## Program Checklist (92/491)
+## Program Checklist (94/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -120,8 +120,8 @@ Last updated: 2025-08-04 00:29 +0700
 | 111 | bioinformatics-base-count | ✓ | 2.593ms |  |
 | 112 | bioinformatics-global-alignment | ✓ | 4.195821s |  |
 | 113 | bioinformatics-sequence-mutation | ✓ | 99.046ms |  |
-| 114 | biorhythms |   |  |  |
-| 115 | bitcoin-address-validation |   |  |  |
+| 114 | biorhythms | ✓ | 6.257ms |  |
+| 115 | bitcoin-address-validation | ✓ | 1.597ms |  |
 | 116 | bitmap-b-zier-curves-cubic |   |  |  |
 | 117 | bitmap-b-zier-curves-quadratic |   |  |  |
 | 118 | bitmap-bresenhams-line-algorithm |   |  |  |

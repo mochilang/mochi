@@ -1,2 +1,0 @@
-zig build: exit status 1
-/tmp/biorhythms.zig:103:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

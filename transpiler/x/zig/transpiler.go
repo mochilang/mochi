@@ -52,6 +52,7 @@ var useMem bool
 var usePrint bool
 var useSplit bool
 var useValue bool
+var useSha256 bool
 var aliasStack []map[string]string
 var namesStack [][]string
 var nameCounts map[string]int
@@ -979,7 +980,7 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
-	fmt.Fprintf(w, "blk: { const m = %s.init(std.heap.page_allocator);", mapType)
+	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -1299,6 +1300,20 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out[0..s.len];\n")
 		buf.WriteString("}\n")
 	}
+	if useSha256 {
+		buf.WriteString("\nfn _sha256(bs: []i64) []i64 {\n")
+		buf.WriteString("    var data = std.heap.page_allocator.alloc(u8, bs.len) catch unreachable;\n")
+		buf.WriteString("    defer std.heap.page_allocator.free(data);\n")
+		buf.WriteString("    var i: usize = 0;\n")
+		buf.WriteString("    while (i < bs.len) { data[i] = @intCast(bs[i]); i += 1; }\n")
+		buf.WriteString("    var digest: [32]u8 = undefined;\n")
+		buf.WriteString("    std.crypto.hash.sha2.Sha256.hash(data, &digest, .{});\n")
+		buf.WriteString("    var out = std.heap.page_allocator.alloc(i64, 32) catch unreachable;\n")
+		buf.WriteString("    i = 0;\n")
+		buf.WriteString("    while (i < 32) { out[i] = digest[i]; i += 1; }\n")
+		buf.WriteString("    return out;\n")
+		buf.WriteString("}\n")
+	}
 	if useInput {
 		buf.WriteString("\nfn _input() []const u8 {\n")
 		buf.WriteString("    var reader = std.io.bufferedReaderSize(4096, std.io.getStdIn().reader());\n")
@@ -1415,6 +1430,17 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 func (v *VarDecl) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	mut := varMut[v.Name]
+	targetType := v.Type
+	if targetType == "" {
+		if t, ok := varTypes[v.Name]; ok && t != "" {
+			targetType = t
+		} else {
+			targetType = zigTypeFromExpr(v.Value)
+		}
+	}
+	if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
+		mut = true
+	}
 	kw := "const"
 	if mut {
 		kw = "var"
@@ -1435,14 +1461,6 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		io.WriteString(w, "};\n")
 		return
 	}
-	targetType := v.Type
-	if targetType == "" {
-		if t, ok := varTypes[v.Name]; ok && t != "" {
-			targetType = t
-		} else {
-			targetType = zigTypeFromExpr(v.Value)
-		}
-	}
 	fmt.Fprintf(w, "%s %s", kw, v.Name)
 	if targetType != "" {
 		typ := targetType
@@ -1453,7 +1471,9 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 	}
 	io.WriteString(w, " = ")
 	if v.Value == nil {
-		if strings.HasPrefix(targetType, "[]") {
+		if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
+			fmt.Fprintf(w, "%s.init(std.heap.page_allocator)", targetType)
+		} else if strings.HasPrefix(targetType, "[]") {
 			base := targetType[2:]
 			if strings.HasPrefix(base, "const ") {
 				base = base[len("const "):]
@@ -1469,7 +1489,7 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 		}
 	}
 	io.WriteString(w, ";")
-	if indent > 0 && varUses[v.Name] == 0 {
+	if indent > 0 && varUses[v.Name] == 0 && !varMut[v.Name] {
 		if v.Mutable {
 			io.WriteString(w, " _ = ")
 			io.WriteString(w, v.Name)
@@ -2333,6 +2353,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usePrint = false
 	useSplit = false
 	useValue = false
+	useSha256 = false
 	aliasStack = nil
 	namesStack = nil
 	nameCounts = map[string]int{}
@@ -2912,6 +2933,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			useSplit = true
 			return &CallExpr{Func: "_split_string", Args: args}, nil
+		case "sha256":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("sha256 expects one argument")
+			}
+			useSha256 = true
+			funcReturns["_sha256"] = "[]i64"
+			return &CallExpr{Func: "_sha256", Args: args}, nil
 		case "print":
 			if len(args) == 0 {
 				return nil, fmt.Errorf("print expects at least one argument")
@@ -3063,11 +3091,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		ml := &MapLit{Entries: entries}
 		if fields, ok := mapFields(ml); ok && len(fields) > 0 {
-			structName := fmt.Sprintf("Map%d", len(structDefs))
-			if _, exists := structDefs[structName]; !exists {
-				structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+			simple := true
+			for _, e := range ml.Entries {
+				if k, ok2 := e.Key.(*StringLit); ok2 {
+					if len(k.Value) == 1 {
+						continue
+					}
+				}
+				simple = false
+				break
 			}
-			ml.StructName = structName
+			if !simple {
+				structName := fmt.Sprintf("Map%d", len(structDefs))
+				if _, exists := structDefs[structName]; !exists {
+					structDefs[structName] = &StructDef{Name: structName, Fields: fields}
+				}
+				ml.StructName = structName
+			}
 		}
 		return ml, nil
 	case p.Struct != nil:
@@ -3737,7 +3777,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
-	if funDepth > 1 {
+	if funDepth > 2 {
 		capturedMap := map[string]bool{}
 		captured := []string{}
 		for i := 0; i < len(aliasStack)-1; i++ {
