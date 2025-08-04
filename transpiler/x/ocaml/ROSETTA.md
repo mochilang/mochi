@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 360/491
+Completed programs: 370/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -447,12 +447,12 @@ Completed programs: 360/491
 | 439 | fixed-length-records-2 | ✓ | 36.0µs | 344B |
 | 440 | fizzbuzz-1 | ✓ | 107.0µs | 1.03KB |
 | 441 | fizzbuzz-2 | ✓ | 194.0µs | 14.27KB |
-| 442 | fizzbuzz |   |  |  |
-| 443 | flatten-a-list-1 |   |  |  |
-| 444 | flatten-a-list-2 |   |  |  |
-| 445 | flipping-bits-game |   |  |  |
-| 446 | flow-control-structures-1 |   |  |  |
-| 447 | flow-control-structures-2 |   |  |  |
+| 442 | fizzbuzz | ✓ | 254.0µs | 1.03KB |
+| 443 | flatten-a-list-1 | ✓ | 150.0µs | 1.98KB |
+| 444 | flatten-a-list-2 | ✓ | 11.0µs | 208B |
+| 445 | flipping-bits-game | ✓ | 418.0µs | 18.40KB |
+| 446 | flow-control-structures-1 | ✓ | 14.0µs | 208B |
+| 447 | flow-control-structures-2 | ✓ | 20.0µs | 208B |
 | 448 | flow-control-structures-3 | ✓ | 17.0µs | 208B |
 | 449 | flow-control-structures-4 | ✓ | 8.0µs | 208B |
 | 450 | floyd-warshall-algorithm | ✓ | 400.0µs | 29.65KB |
@@ -461,10 +461,10 @@ Completed programs: 360/491
 | 453 | forest-fire | ✓ | 6.0ms | 629.40KB |
 | 454 | fork-2 | ✓ | 146.0µs | 312B |
 | 455 | fork | ✓ | 136.0µs | 312B |
-| 456 | formal-power-series | error |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
+| 456 | formal-power-series | ✓ | 404.0µs | 14.01KB |
+| 457 | formatted-numeric-output | ✓ | 114.0µs | 432B |
+| 458 | forward-difference | ✓ | 259.0µs | 16.34KB |
+| 459 | four-bit-adder-1 | ✓ | 164.0µs | 1.78KB |
 | 460 | four-is-magic |   |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
 | 462 | fractal-tree |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 360/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 15:16 +0700
+Last updated 2025-08-04 16:02 +0700
