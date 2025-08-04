@@ -120,103 +120,84 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def pow10(n) do
     try do
+      r = 1.0
       i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
+      while_fun = fn while_fun, i, r ->
+        if i < n do
+          r = r * 10.0
           i = i + 1
-          while_fun.(while_fun, i, n)
+          while_fun.(while_fun, i, r)
         else
-          {i, n}
+          {i, r}
         end
       end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
+      {i, r} = try do
+          while_fun.(while_fun, i, r)
         catch
-          {:break, {i, n}} -> {i, n}
+          {:break, {i, r}} -> {i, r}
         end
 
-      throw {:return, %{n: n, ok: false}}
+      throw {:return, r}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def formatFloat(f, prec) do
+    try do
+      scale = pow10(prec)
+      scaled = (f * scale) + 0.5
+      n = ((fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).(scaled))
+      digits = Kernel.to_string(n)
+      while_fun_2 = fn while_fun_2, digits ->
+        if _len(digits) <= prec do
+          digits = ("0" <> digits)
+          while_fun_2.(while_fun_2, digits)
+        else
+          digits
+        end
+      end
+      digits = try do
+          while_fun_2.(while_fun_2, digits)
+        catch
+          {:break, {digits}} -> digits
+        end
+
+      intPart = _slice(digits, 0, _len(digits) - prec - (0))
+      fracPart = _slice(digits, _len(digits) - prec, _len(digits) - (_len(digits) - prec))
+      throw {:return, ((intPart <> ".") <> fracPart)}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def padLeftZeros(s, width) do
+    try do
+      out = s
+      while_fun_3 = fn while_fun_3, out ->
+        if _len(out) < width do
+          out = ("0" <> out)
+          while_fun_3.(while_fun_3, out)
+        else
+          out
+        end
+      end
+      out = try do
+          while_fun_3.(while_fun_3, out)
+        catch
+          {:break, {out}} -> out
+        end
+
+      throw {:return, out}
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
-            else
-              {m, pow}
-            end
-          end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
-            catch
-              {:break, {m, pow}} -> {m, pow}
-            end
-
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        else
-          {count, line, n, primes}
-        end
-      end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
-        end
-
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    IO.puts(Kernel.inspect(padLeftZeros(formatFloat(7.125, 3), 9)))
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -224,4 +205,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

@@ -120,103 +120,75 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def floyd(n) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
+      IO.puts((("Floyd " <> Kernel.to_string(n)) <> ":"))
+      lowerLeftCorner = div(n * (n - 1), 2) + 1
+      lastInColumn = lowerLeftCorner
+      lastInRow = 1
+      i = 1
+      row = 1
+      line = ""
+      while_fun = fn while_fun, i, lastInColumn, lastInRow, line, row ->
+        if row <= n do
+          w = _len(Kernel.to_string(lastInColumn))
+          {lastInColumn, lastInRow, line, row} = if i < lastInRow do
+            line = ((line <> pad(Kernel.to_string(i), w)) <> " ")
+            lastInColumn = lastInColumn + 1
+            {lastInColumn, lastInRow, line, row}
           else
-            {n}
+            line = (line <> pad(Kernel.to_string(i), w))
+            IO.puts(line)
+            line = ""
+            row = row + 1
+            lastInRow = lastInRow + row
+            lastInColumn = lowerLeftCorner
+            {lastInColumn, lastInRow, line, row}
           end
           i = i + 1
-          while_fun.(while_fun, i, n)
+          while_fun.(while_fun, i, lastInColumn, lastInRow, line, row)
         else
-          {i, n}
+          {i, lastInColumn, lastInRow, line, row}
         end
       end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
+      {i, lastInColumn, lastInRow, line, row} = try do
+          while_fun.(while_fun, i, lastInColumn, lastInRow, line, row)
         catch
-          {:break, {i, n}} -> {i, n}
+          {:break, {i, lastInColumn, lastInRow, line, row}} -> {i, lastInColumn, lastInRow, line, row}
         end
 
-      throw {:return, %{n: n, ok: false}}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def pad(s, w) do
+    try do
+      t = s
+      while_fun_2 = fn while_fun_2, t ->
+        if _len(t) < w do
+          t = (" " <> t)
+          while_fun_2.(while_fun_2, t)
+        else
+          t
+        end
+      end
+      t = try do
+          while_fun_2.(while_fun_2, t)
+        catch
+          {:break, {t}} -> t
+        end
+
+      throw {:return, t}
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
-            else
-              {m, pow}
-            end
-          end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
-            catch
-              {:break, {m, pow}} -> {m, pow}
-            end
-
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        else
-          {count, line, n, primes}
-        end
-      end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
-        end
-
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    floyd(5)
+    floyd(14)
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -224,4 +196,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

@@ -120,99 +120,139 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def pad(n) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
+      s = Kernel.to_string(n)
+      while_fun = fn while_fun, s ->
+        if _len(s) < 4 do
+          s = (" " <> s)
+          while_fun.(while_fun, s)
         else
-          {i, n}
+          s
         end
       end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
+      s = try do
+          while_fun.(while_fun, s)
         catch
-          {:break, {i, n}} -> {i, n}
+          {:break, {s}} -> s
         end
 
-      throw {:return, %{n: n, ok: false}}
+      throw {:return, s}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def hail(seq, cnt) do
+    try do
+      out = pad(seq)
+      {cnt, seq} = if seq != 1 do
+        cnt = cnt + 1
+        seq = (if rem(seq, 2) != 0, do: 3 * seq + 1, else: div(seq, 2))
+        {cnt, seq}
+      else
+        {cnt, seq}
+      end
+      throw {:return, %{seq: seq, cnt: cnt, out: out}}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
+      seqs = []
+      cnts = []
+      {cnts, seqs} = Enum.reduce((0..(Process.get(:jobs) - 1)), {cnts, seqs}, fn i, {cnts, seqs} ->
+        seqs = (seqs ++ [i + 1])
+        cnts = (cnts ++ [0])
+        {cnts, seqs}
+      end)
+      while_fun_2 = fn while_fun_2, cnts, seqs ->
+        if true do
+          line = ""
+          i = 0
+          while_fun_3 = fn while_fun_3, cnts, i, line, seqs ->
+            if i < Process.get(:jobs) do
+              res = hail(Enum.at(seqs, i), Enum.at(cnts, i))
+              seqs = List.replace_at(seqs, i, res.seq)
+              cnts = List.replace_at(cnts, i, res.cnt)
+              line = (line <> res.out)
+              i = i + 1
+              while_fun_3.(while_fun_3, cnts, i, line, seqs)
             else
-              {m, pow}
+              {cnts, i, line, seqs}
             end
           end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
+          {cnts, i, line, seqs} = try do
+              while_fun_3.(while_fun_3, cnts, i, line, seqs)
             catch
-              {:break, {m, pow}} -> {m, pow}
+              {:break, {cnts, i, line, seqs}} -> {cnts, i, line, seqs}
             end
 
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
+          IO.puts(line)
+          done = true
+          j = 0
+          while_fun_4 = fn while_fun_4, done, j ->
+            if j < Process.get(:jobs) do
+              {done} = if Enum.at(seqs, j) != 1 do
+                done = false
+                {done}
+              else
+                {done}
+              end
+              j = j + 1
+              while_fun_4.(while_fun_4, done, j)
+            else
+              {done, j}
+            end
           end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
+          {done, j} = try do
+              while_fun_4.(while_fun_4, done, j)
+            catch
+              {:break, {done, j}} -> {done, j}
+            end
+
+          if done do
+            throw {:break, {cnts, seqs}}
+          end
+          while_fun_2.(while_fun_2, cnts, seqs)
         else
-          {count, line, n, primes}
+          {cnts, seqs}
         end
       end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
+      {cnts, seqs} = try do
+          while_fun_2.(while_fun_2, cnts, seqs)
         catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
+          {:break, {cnts, seqs}} -> {cnts, seqs}
         end
 
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
+      IO.puts("")
+      IO.puts("COUNTS:")
+      counts = ""
+      k = 0
+      while_fun_5 = fn while_fun_5, counts, k ->
+        if k < Process.get(:jobs) do
+          counts = (counts <> pad(Enum.at(cnts, k)))
+          k = k + 1
+          while_fun_5.(while_fun_5, counts, k)
+        else
+          {counts, k}
+        end
       end
+      {counts, k} = try do
+          while_fun_5.(while_fun_5, counts, k)
+        catch
+          {:break, {counts, k}} -> {counts, k}
+        end
+
+      IO.puts(counts)
+      IO.puts("")
     catch
       {:return, val} -> val
     end
   end
+  Process.put(:jobs, 12)
   def bench_main() do
+    Process.put(:jobs, 12)
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()

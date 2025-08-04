@@ -120,103 +120,99 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def qsel(a, k) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
-        else
-          {i, n}
-        end
-      end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
-        catch
-          {:break, {i, n}} -> {i, n}
-        end
-
-      throw {:return, %{n: n, ok: false}}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def main() do
-    try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
+      arr = a
+      while_fun = fn while_fun, arr, k ->
+        if _len(arr) > 1 do
+          px = rem(_now(), _len(arr))
+          pv = Enum.at(arr, px)
+          last = _len(arr) - 1
+          tmp = Enum.at(arr, px)
+          arr = List.replace_at(arr, px, Enum.at(arr, last))
+          arr = List.replace_at(arr, last, tmp)
+          px = 0
+          i = 0
+          while_fun_2 = fn while_fun_2, arr, i, px ->
+            if i < last do
+              v = Enum.at(arr, i)
+              {arr, px} = if v < pv do
+                t = Enum.at(arr, px)
+                arr = List.replace_at(arr, px, Enum.at(arr, i))
+                arr = List.replace_at(arr, i, t)
+                px = px + 1
+                {arr, px}
+              else
+                {arr, px}
+              end
+              i = i + 1
+              while_fun_2.(while_fun_2, arr, i, px)
             else
-              {m, pow}
+              {arr, i, px}
             end
           end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
+          {arr, i, px} = try do
+              while_fun_2.(while_fun_2, arr, i, px)
             catch
-              {:break, {m, pow}} -> {m, pow}
+              {:break, {arr, i, px}} -> {arr, i, px}
             end
 
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
+          arr = List.replace_at(arr, px, pv)
+          if px == k do
+            throw {:return, pv}
           end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
+          {arr, k} = if k < px do
+            arr = _slice(arr, 0, px - 0)
+            {arr, k}
+          else
+            arr = _slice(arr, (px + 1), _len(arr) - (px + 1))
+            k = k - (px + 1)
+            {arr, k}
+          end
+          while_fun.(while_fun, arr, k)
         else
-          {count, line, n, primes}
+          {arr, k}
         end
       end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
+      {arr, k} = try do
+          while_fun.(while_fun, arr, k)
         catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
+          {:break, {arr, k}} -> {arr, k}
         end
 
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+      throw {:return, Enum.at(arr, 0)}
     catch
       {:return, val} -> val
     end
   end
-  def bench_main() do
+  def fivenum(a) do
+    try do
+      last = _len(a) - 1
+      m = div(last, 2)
+      n5 = []
+      n5 = (n5 ++ [qsel(_slice(a, 0, m - 0), 0)])
+      n5 = (n5 ++ [qsel(_slice(a, 0, m - 0), div(_len(a), 4))])
+      n5 = (n5 ++ [qsel(a, m)])
+      arr2 = _slice(a, m, _len(a) - m)
+      q3 = last - m - div(_len(a), 4)
+      n5 = (n5 ++ [qsel(arr2, q3)])
+      arr2 = _slice(arr2, q3, _len(arr2) - q3)
+      n5 = (n5 ++ [qsel(arr2, _len(arr2) - 1)])
+      throw {:return, n5}
+    catch
+      {:return, val} -> val
+    end
+  end
+  Process.put(:x1, [36.0, 40.0, 7.0, 39.0, 41.0, 15.0])
+  Process.put(:x2, [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0])
+  def main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    Process.put(:x3, [0.14082834, 0.0974879, 1.73131507, 0.87636009, -1.95059594, 0.73438555, -0.03035726, 1.4667597, -0.74621349, -0.72588772, 0.6390516, 0.61501527, -0.9898378, -1.00447874, -0.62759469, 0.66206163, 1.04312009, -0.10305385, 0.75775634, 0.32566578])
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x1))))
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x2))))
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x3))))
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -224,4 +220,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

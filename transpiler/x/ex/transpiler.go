@@ -3417,7 +3417,19 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 			base := &VarRef{Name: alias}
 			return &CallExpr{Func: "Map.get", Args: append([]Expr{base}, args...)}, nil
 		}
-		if _, err := env.GetVar(alias); err == nil {
+		if typ, err := env.GetVar(alias); err == nil {
+			if st, ok := typ.(types.StructType); ok {
+				if ft, ok := st.Fields[method]; ok {
+					if _, ok := ft.(types.FuncType); ok {
+						base := &IndexExpr{Target: &VarRef{Name: alias}, Index: &AtomLit{Name: ":" + method}, UseMapSyntax: true}
+						return &CallExpr{Func: "", Args: append([]Expr{base}, args...), Var: true}, nil
+					}
+				}
+				if _, ok := st.Methods[method]; ok {
+					funcName := sanitizeCallName(method)
+					return &CallExpr{Func: funcName, Args: append([]Expr{&VarRef{Name: alias}}, args...)}, nil
+				}
+			}
 			funcName := sanitizeCallName(method)
 			return &CallExpr{Func: funcName, Args: append([]Expr{&VarRef{Name: alias}}, args...)}, nil
 		}

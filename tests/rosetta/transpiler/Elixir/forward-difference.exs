@@ -120,103 +120,51 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def fd(a, ord) do
     try do
       i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
-        else
-          {i, n}
-        end
-      end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
-        catch
-          {:break, {i, n}} -> {i, n}
-        end
-
-      throw {:return, %{n: n, ok: false}}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def main() do
-    try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
+      while_fun = fn while_fun, i ->
+        if i < ord do
+          j = 0
+          while_fun_2 = fn while_fun_2, j ->
+            if j < _len(a) - i - 1 do
+              a = List.replace_at(a, j, Enum.at(a, j + 1) - Enum.at(a, j))
+              j = j + 1
+              while_fun_2.(while_fun_2, j)
             else
-              {m, pow}
+              j
             end
           end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
+          j = try do
+              while_fun_2.(while_fun_2, j)
             catch
-              {:break, {m, pow}} -> {m, pow}
+              {:break, {j}} -> j
             end
 
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
+          i = i + 1
+          while_fun.(while_fun, i)
         else
-          {count, line, n, primes}
+          i
         end
       end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
+      i = try do
+          while_fun.(while_fun, i)
         catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
+          {:break, {i}} -> i
         end
 
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+      throw {:return, _slice(a, 0, (_len(a) - ord) - 0)}
     catch
       {:return, val} -> val
     end
   end
-  def bench_main() do
+  Process.put(:a, [90, 47, 58, 29, 22, 32, 55, 5, 55, 73])
+  def main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    IO.puts(String.replace(IO.iodata_to_binary(:io_lib.format("~w", [Process.get(:a)])), ",", " "))
+    IO.puts(Kernel.inspect(fd(Process.get(:a), 9)))
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -224,4 +172,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()
