@@ -1,15 +1,5 @@
-How many integer variables do you want to create (max 5) : 
-OK, enter the variable names and their values, below
-
-
-  Variable 1
-
-    Name  : 
-    Value : 
-
-Enter q to quit
-
-Which variable do you want to inspect : 
-It's value is 42
-
-Which variable do you want to inspect :
+{
+  "duration_us": 125,
+  "memory_bytes": 13950976,
+  "name": "main"
+}
