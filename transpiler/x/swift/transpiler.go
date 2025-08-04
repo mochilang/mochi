@@ -2679,11 +2679,12 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 }
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
-	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
-	updated := map[string]bool{}
-	findUpdatedVars(env, f.Body, updated, nil)
-	// register function type for calls (and recursion)
-	if env != nil {
+        fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+        child := types.NewEnv(env)
+        updated := map[string]bool{}
+        findUpdatedVars(child, f.Body, updated, nil)
+        // register function type for calls (and recursion)
+        if env != nil {
 		var params []types.Type
 		for _, p := range f.Params {
 			if p.Type != nil {
@@ -2700,14 +2701,13 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		env.SetFunc(f.Name, f)
 	}
 
-	child := types.NewEnv(env)
-	var retT types.Type
-	if f.Return != nil {
-		retT = types.ResolveTypeRef(f.Return, env)
-	} else {
-		retT = types.VoidType{}
-	}
-	child.SetVar("$retType", retT, false)
+        var retT types.Type
+        if f.Return != nil {
+                retT = types.ResolveTypeRef(f.Return, env)
+        } else {
+                retT = types.VoidType{}
+        }
+        child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
 	inFlags := make([]bool, len(f.Params))
 	for i, p := range f.Params {
