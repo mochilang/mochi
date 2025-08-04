@@ -694,11 +694,13 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 // provided Mochi type. This ensures empty list literals inherit the correct
 // element type when used in a typed context (e.g. struct fields).
 func updateListLitType(ll *ListLit, t types.Type) {
-	lt, ok := t.(types.ListType)
-	if !ok {
-		return
+	var elem types.Type
+	if lt, ok := t.(types.ListType); ok {
+		elem = lt.Elem
+	} else {
+		elem = t
 	}
-	target := toGoTypeFromType(lt.Elem)
+	target := toGoTypeFromType(elem)
 	if target == "" {
 		target = "any"
 	}
@@ -710,9 +712,9 @@ func updateListLitType(ll *ListLit, t types.Type) {
 	for _, el := range ll.Elems {
 		switch inner := el.(type) {
 		case *ListLit:
-			updateListLitType(inner, lt.Elem)
+			updateListLitType(inner, elem)
 		case *MapLit:
-			updateMapLitTypes(inner, lt.Elem)
+			updateMapLitTypes(inner, elem)
 		}
 	}
 }
@@ -1463,13 +1465,13 @@ func (u *UnionAllExpr) emit(w io.Writer) {
 	if et == "" {
 		et = "any"
 	}
-	fmt.Fprintf(w, "func() []%s { res := make([]%s, len(", et, et)
+	fmt.Fprintf(w, "func() []%s { tmp := make([]%s, len(", et, et)
 	u.Left.emit(w)
-	fmt.Fprint(w, ")); copy(res, ")
+	fmt.Fprint(w, ")); copy(tmp, ")
 	u.Left.emit(w)
-	fmt.Fprint(w, "); res = append(res, ")
+	fmt.Fprint(w, "); tmp = append(tmp, ")
 	u.Right.emit(w)
-	fmt.Fprint(w, "...); return res }()")
+	fmt.Fprint(w, "...); return tmp }()")
 }
 
 type ExceptExpr struct {
@@ -4926,6 +4928,20 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 				return &LookupHostExpr{Arg: args[0]}, nil
 			}
 			return &CallExpr{Func: full, Args: args}, nil
+		}
+		if pf.Target != nil && pf.Target.Selector != nil {
+			if t, err := env.GetVar(pf.Target.Selector.Root); err == nil {
+				if mt, ok := t.(types.MapType); ok && len(args) == 0 {
+					switch method {
+					case "keys":
+						usesSort = true
+						return &KeysExpr{Map: expr, KeyType: toGoTypeFromType(mt.Key)}, nil
+					case "values":
+						usesSort = true
+						return &ValuesExpr{Map: expr, ValueType: toGoTypeFromType(mt.Value)}, nil
+					}
+				}
+			}
 		}
 		recv := expr
 		if pf.Target != nil && pf.Target.Selector != nil {
