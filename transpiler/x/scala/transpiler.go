@@ -47,6 +47,7 @@ var needsSubprocess bool
 var mapEntryTypes map[string]map[string]string
 var builtinAliases map[string]string
 var localVarTypes map[string]string
+var varDecls map[string]*VarStmt
 var returnTypeStack []string
 var funCtxStack []bool
 var assignedVars map[string]bool
@@ -1249,36 +1250,36 @@ type FieldExpr struct {
 }
 
 func (f *FieldExpr) emit(w io.Writer) {
-       isMap := false
-       switch r := f.Receiver.(type) {
-       case *Name:
-               if typ, ok := localVarTypes[r.Name]; ok {
-                       if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
-                               isMap = true
-                       }
-               }
-       case *IndexExpr:
-               if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
-                       isMap = true
-               }
-       }
-       needParens := false
-       switch f.Receiver.(type) {
-       case *BinaryExpr, *CallExpr:
-               needParens = true
-       }
-       if needParens {
-               fmt.Fprint(w, "(")
-       }
-       f.Receiver.emit(w)
-       if needParens {
-               fmt.Fprint(w, ")")
-       }
-       if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
-               fmt.Fprint(w, ".toInt")
-               return
-       }
-       if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
+	isMap := false
+	switch r := f.Receiver.(type) {
+	case *Name:
+		if typ, ok := localVarTypes[r.Name]; ok {
+			if strings.HasPrefix(typ, "Map[") || strings.HasPrefix(typ, "scala.collection.mutable.Map[") {
+				isMap = true
+			}
+		}
+	case *IndexExpr:
+		if strings.HasPrefix(r.Type, "Map[") || strings.HasPrefix(r.Type, "scala.collection.mutable.Map[") {
+			isMap = true
+		}
+	}
+	needParens := false
+	switch f.Receiver.(type) {
+	case *BinaryExpr, *CallExpr:
+		needParens = true
+	}
+	if needParens {
+		fmt.Fprint(w, "(")
+	}
+	f.Receiver.emit(w)
+	if needParens {
+		fmt.Fprint(w, ")")
+	}
+	if f.Name == "asInstanceOf[Int]" && isBigIntExpr(f.Receiver) {
+		fmt.Fprint(w, ".toInt")
+		return
+	}
+	if isMap && f.Name != "contains" && f.Name != "update" && f.Name != "keys" && f.Name != "values" {
 		fmt.Fprintf(w, "(\"%s\")", f.Name)
 	} else {
 		fmt.Fprintf(w, ".%s", escapeName(f.Name))
@@ -1821,6 +1822,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	mapEntryTypes = make(map[string]map[string]string)
 	builtinAliases = map[string]string{}
 	localVarTypes = make(map[string]string)
+	varDecls = make(map[string]*VarStmt)
 	assignedVars = make(map[string]bool)
 	gatherAssigned(prog.Statements, assignedVars)
 	for _, st := range prog.Statements {
@@ -2030,7 +2032,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 		}
 		if assignedVars != nil && assignedVars[st.Let.Name] {
-			return &VarStmt{Name: st.Let.Name, Type: typ, Value: e}, nil
+			vs := &VarStmt{Name: st.Let.Name, Type: typ, Value: e}
+			if varDecls != nil {
+				varDecls[st.Let.Name] = vs
+			}
+			return vs, nil
 		}
 		// Defer global-hoisting decision to a later pass.
 		return &LetStmt{Name: st.Let.Name, Type: typ, Value: e, Global: false}, nil
@@ -2149,7 +2155,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			mapEntryTypes[st.Var.Name] = mt
 		}
 		// Variables default to local; a later pass may mark them global if safe.
-		return &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: false}, nil
+		vs := &VarStmt{Name: st.Var.Name, Type: typ, Value: e, Global: false}
+		if varDecls != nil {
+			varDecls[st.Var.Name] = vs
+		}
+		return vs, nil
 	case st.Type != nil:
 		if len(st.Type.Variants) > 0 {
 			if len(st.Type.Variants) == 1 && st.Type.Variants[0].Name == "int" && len(st.Type.Variants[0].Fields) == 0 {
@@ -2209,7 +2219,16 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		targetType := inferTypeWithEnv(target, env)
 		valType := inferTypeWithEnv(e, env)
 		if targetType != "" && targetType != "Any" && (valType == "" || valType == "Any") {
-			e = &CastExpr{Value: e, Type: targetType}
+			if n, ok := target.(*Name); ok {
+				if vs, ok2 := varDecls[n.Name]; ok2 {
+					vs.Type = "Any"
+					localVarTypes[n.Name] = "Any"
+					targetType = "Any"
+				}
+			}
+			if targetType != "Any" {
+				e = &CastExpr{Value: e, Type: targetType}
+			}
 		} else if targetType == "Int" && valType == "BigInt" {
 			e = &FieldExpr{Receiver: e, Name: "toInt"}
 		}
@@ -4067,10 +4086,21 @@ func copyMap(m map[string]string) map[string]string {
 	return n
 }
 
+func copyVarDecls(m map[string]*VarStmt) map[string]*VarStmt {
+	n := make(map[string]*VarStmt, len(m))
+	for k, v := range m {
+		n[k] = v
+	}
+	return n
+}
+
 func convertFunStmt(fs *parser.FunStmt, env *types.Env) (Stmt, error) {
 	saved := localVarTypes
 	localVarTypes = copyMap(localVarTypes)
 	defer func() { localVarTypes = saved }()
+	savedDecls := varDecls
+	varDecls = copyVarDecls(varDecls)
+	defer func() { varDecls = savedDecls }()
 
 	// Track assignments within this function to decide between `val` and `var` for locals.
 	assignedSaved := assignedVars
