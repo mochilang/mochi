@@ -1827,6 +1827,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "<" || b.Op == "<=" || b.Op == ">" || b.Op == ">=" || b.Op == "==" || b.Op == "!=" {
 		lt := inferType(b.Left)
 		rt := inferType(b.Right)
+		if lt == "String" && rt == "bool" {
+			if bl, ok := b.Right.(*BoolLit); ok {
+				b.Right = &StringLit{Value: strconv.FormatBool(bl.Value)}
+				rt = "String"
+			}
+		} else if lt == "bool" && rt == "String" {
+			if bl, ok := b.Left.(*BoolLit); ok {
+				b.Left = &StringLit{Value: strconv.FormatBool(bl.Value)}
+				lt = "String"
+			}
+		}
 		if lt == "String" && rt == "String" {
 			io.WriteString(w, "(")
 			b.Left.emit(w)
