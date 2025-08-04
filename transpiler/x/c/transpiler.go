@@ -588,14 +588,13 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 		writeIndent(w, indent)
 		io.WriteString(w, "{\n")
 		writeIndent(w, indent+1)
-		fmt.Fprintf(w, "static %s %s_arr[] = {", base, tmp)
+		fmt.Fprintf(w, "static %s %s_arr[%d];\n", base, tmp, len(lst.Elems))
 		for i, e := range lst.Elems {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
+			writeIndent(w, indent+1)
+			fmt.Fprintf(w, "%s_arr[%d] = ", tmp, i)
 			e.emitExpr(w)
+			io.WriteString(w, ";\n")
 		}
-		io.WriteString(w, "};\n")
 		writeIndent(w, indent+1)
 		fmt.Fprintf(w, "%s_len = %d;\n", currentFuncName, len(lst.Elems))
 		writeIndent(w, indent+1)
@@ -1047,6 +1046,31 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		a.Value.emitExpr(w)
 	}
 	io.WriteString(w, ";\n")
+
+	if lst, ok := a.Value.(*ListLit); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vt, ok := varTypes[a.Name]; ok && strings.HasSuffix(vt, "[][]") {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
+			writeIndent(w, indent)
+			io.WriteString(w, fmt.Sprintf("%s_lens = (size_t[]){", a.Name))
+			for i, e := range lst.Elems {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				if sl, ok2 := e.(*ListLit); ok2 {
+					fmt.Fprintf(w, "%d", len(sl.Elems))
+				} else {
+					io.WriteString(w, "0")
+				}
+			}
+			io.WriteString(w, "};\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_lens_len = %d;\n", a.Name, len(lst.Elems))
+		} else if ok {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_len = %d;\n", a.Name, len(lst.Elems))
+		}
+	}
 
 	if call, ok := a.Value.(*CallExpr); ok {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
@@ -5360,6 +5384,9 @@ func convertUnary(u *parser.Unary) Expr {
 			if op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil {
 				sliceStart = convertExpr(op.Index.Start)
 				sliceEnd = convertExpr(op.Index.End)
+				if sliceStart == nil {
+					sliceStart = &IntLit{Value: 0}
+				}
 				typ := inferExprType(currentEnv, current)
 				if typ == "const char*" {
 					if sliceEnd == nil {

@@ -1,0 +1,16 @@
+compile failed: exit status 1: /tmp/ctranspile38263352/chat-server.mochi.c: In function ‘user_main’:
+/tmp/ctranspile38263352/chat-server.mochi.c:67:5: warning: implicit declaration of function ‘add’ [-Wimplicit-function-declaration]
+   67 |     add("Alice");
+      |     ^~~
+/tmp/ctranspile38263352/chat-server.mochi.c:69:5: warning: implicit declaration of function ‘send’ [-Wimplicit-function-declaration]
+   69 |     send("Alice", "Hello Bob!");
+      |     ^~~~
+/tmp/ctranspile38263352/chat-server.mochi.c:73:5: warning: implicit declaration of function ‘broadcast’ [-Wimplicit-function-declaration]
+   73 |     broadcast("Server stopping!\n");
+      |     ^~~~~~~~~
+/usr/bin/ld: /tmp/ccvLNEUu.o: in function `user_main':
+chat-server.mochi.c:(.text+0x311): undefined reference to `add'
+/usr/bin/ld: chat-server.mochi.c:(.text+0x325): undefined reference to `add'
+/usr/bin/ld: chat-server.mochi.c:(.text+0x393): undefined reference to `broadcast'
+collect2: error: ld returned 1 exit status
+
