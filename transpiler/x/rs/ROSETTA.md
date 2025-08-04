@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 14:49 UTC
+Last updated: 2025-08-04 15:57 UTC
 
-## Rosetta Golden Test Checklist (266/491)
+## Rosetta Golden Test Checklist (268/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -177,16 +177,16 @@ Last updated: 2025-08-04 14:49 UTC
 | 168 | cantor-set | ✓ | 355µs | 2.0 MB |
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 330µs | 2.0 MB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 2.1 MB |
-| 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
-| 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 302µs | 2.0 MB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
 | 174 | case-sensitivity-of-identifiers | ✓ | 62µs | 2.0 MB |
 | 175 | casting-out-nines | ✓ | 1.271ms | 2.1 MB |
 | 176 | catalan-numbers-1 | ✓ | 27µs |  |
 | 177 | catalan-numbers-2 | ✓ | 38µs |  |
 | 178 | catalan-numbers-pascals-triangle | ✓ | 51µs |  |
 | 179 | catamorphism | ✓ | 22µs |  |
-| 180 | catmull-clark-subdivision-surface | ✓ | 579µs |  |
+| 180 | catmull-clark-subdivision-surface |   | 579µs |  |
 | 181 | chaocipher | ✓ | 98µs |  |
 | 182 | chaos-game | ✓ | 313.773ms | 528.0 KB |
 | 183 | character-codes-1 | ✓ | 51µs |  |

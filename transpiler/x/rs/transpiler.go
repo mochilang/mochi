@@ -137,6 +137,43 @@ func isConstExpr(e Expr) bool {
 	return false
 }
 
+func optionInner(t string) string {
+	if strings.HasPrefix(t, "Option<") {
+		return strings.TrimSuffix(strings.TrimPrefix(t, "Option<"), ">")
+	}
+	return ""
+}
+
+func inferAnyParamType(body []*parser.Statement, name string) string {
+	for _, st := range body {
+		if st.Let != nil {
+			if ct := castTypeFromExpr(st.Let.Value, name); ct != "" {
+				return ct
+			}
+		}
+	}
+	return ""
+}
+
+func castTypeFromExpr(e *parser.Expr, name string) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return ""
+	}
+	u := e.Binary.Left
+	if u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if p.Target != nil && p.Target.Selector != nil && p.Target.Selector.Root == name && len(p.Target.Selector.Tail) == 0 {
+		for _, op := range p.Ops {
+			if op.Cast != nil {
+				return rustTypeRef(op.Cast.Type)
+			}
+		}
+	}
+	return ""
+}
+
 func handleImport(im *parser.ImportStmt, env *types.Env) bool {
 	if im.Lang == nil {
 		return false
@@ -1506,6 +1543,23 @@ func (f *FloatCastExpr) emit(w io.Writer) {
 	}
 }
 
+// SomeExpr wraps a value in `Some(...)`.
+type SomeExpr struct{ Expr Expr }
+
+func (s *SomeExpr) emit(w io.Writer) {
+	io.WriteString(w, "Some(")
+	s.Expr.emit(w)
+	io.WriteString(w, ")")
+}
+
+// UnwrapExpr unwraps an `Option` value.
+type UnwrapExpr struct{ Expr Expr }
+
+func (u *UnwrapExpr) emit(w io.Writer) {
+	u.Expr.emit(w)
+	io.WriteString(w, ".clone().unwrap()")
+}
+
 // NowExpr expands to a deterministic timestamp similar to the VM's now() builtin.
 type NowExpr struct{}
 
@@ -1895,6 +1949,16 @@ func (b *BinaryExpr) emit(w io.Writer) {
 				io.WriteString(w, "!")
 				expr.emit(w)
 				io.WriteString(w, ".is_empty()")
+			}
+			return
+		}
+		if strings.HasPrefix(t, "Option<") {
+			if b.Op == "==" {
+				expr.emit(w)
+				io.WriteString(w, ".is_none()")
+			} else {
+				expr.emit(w)
+				io.WriteString(w, ".is_some()")
 			}
 			return
 		}
@@ -3609,6 +3673,12 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		sigType := typ
 		origAny := p.Type != nil && p.Type.Simple != nil && *p.Type.Simple == "any"
+		if origAny {
+			if it := inferAnyParamType(fn.Body, p.Name); it != "" {
+				typ = it
+				sigType = "Option<" + it + ">"
+			}
+		}
 		if typ == "fn" && p.Type != nil && p.Type.Fun != nil {
 			var pts []string
 			for _, pa := range p.Type.Fun.Params {
@@ -3627,7 +3697,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 			typ = fmt.Sprintf("impl FnMut(%s) -> %s", strings.Join(pts, ", "), rt)
 			sigType = "&mut " + typ
-		} else if strings.HasPrefix(typ, "Vec<") {
+		} else if strings.HasPrefix(typ, "Vec<") && !(origAny && strings.HasPrefix(sigType, "Option<")) {
 			mut := paramMutated(fn.Body, p.Name)
 			assign := paramAssigned(fn.Body, p.Name)
 			if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
@@ -3636,11 +3706,11 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		} else if typ == "String" {
 			mut := paramMutated(fn.Body, p.Name)
 			if origAny {
-				sigType = "String"
+				sigType = sigType
 			} else if !mut {
 				sigType = "&str"
 			}
-		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" {
+		} else if typ != "" && typ != "i64" && typ != "bool" && typ != "f64" && typ != "String" && !(origAny && strings.HasPrefix(sigType, "Option<")) {
 			mut := paramMutated(fn.Body, p.Name)
 			assign := paramAssigned(fn.Body, p.Name)
 			if mut && !assign && (fn.Return == nil || rustTypeRef(fn.Return) != typ) {
@@ -3659,6 +3729,8 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		if typ != "" {
 			if sigType == "&str" {
 				varTypes[p.Name] = "&str"
+			} else if strings.HasPrefix(sigType, "Option<") {
+				varTypes[p.Name] = sigType
 			} else {
 				varTypes[p.Name] = typ
 			}
@@ -4056,8 +4128,11 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			case "String":
 				expr = &StringCastExpr{Expr: expr}
 			default:
-				if ct != "" && ct != inferType(expr) {
-					// unsupported cast target; ignore
+				if ct != "" {
+					t := inferType(expr)
+					if strings.HasPrefix(t, "Option<") && optionInner(t) == ct {
+						expr = &UnwrapExpr{Expr: expr}
+					}
 				}
 			}
 		default:
@@ -4082,6 +4157,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			ex, err := compileExpr(a)
 			if err != nil {
 				return nil, err
+			}
+			if hasPts && i < len(pts) && strings.HasPrefix(pts[i], "Option<") {
+				if _, ok := ex.(*NullLit); !ok && inferType(ex) != pts[i] {
+					ex = &SomeExpr{Expr: ex}
+				}
 			}
 			args[i] = ex
 		}
@@ -5172,6 +5252,14 @@ func inferType(e Expr) string {
 		return "String"
 	case *StringCastExpr:
 		return "String"
+	case *SomeExpr:
+		return "Option<" + inferType(ex.Expr) + ">"
+	case *UnwrapExpr:
+		t := inferType(ex.Expr)
+		if strings.HasPrefix(t, "Option<") {
+			return optionInner(t)
+		}
+		return ""
 	case *ListLit:
 		if len(ex.Elems) > 0 {
 			for _, el := range ex.Elems {
@@ -6538,9 +6626,14 @@ func primaryUsesNameInCall(pr *parser.Primary, name string) bool {
 		return false
 	}
 	if pr.Call != nil {
-		for _, a := range pr.Call.Args {
-			if exprIsName(a, name) || exprUsesNameInCall(a, name) {
-				return true
+		switch pr.Call.Func {
+		case "len", "str", "print", "int", "float":
+			// known pure functions
+		default:
+			for _, a := range pr.Call.Args {
+				if exprIsName(a, name) || exprUsesNameInCall(a, name) {
+					return true
+				}
 			}
 		}
 	}
