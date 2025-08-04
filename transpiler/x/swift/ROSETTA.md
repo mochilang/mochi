@@ -3,7 +3,7 @@
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
 Completed: 424/491
-Last updated: 2025-08-04 10:43 +0700
+Last updated: 2025-08-04 11:01 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -13,7 +13,7 @@ Last updated: 2025-08-04 10:43 +0700
 | 4 | 100-prisoners | ✓ | 561.214ms | 3.0 MB |
 | 5 | 15-puzzle-game | ✓ | 4.487ms | 3.0 MB |
 | 6 | 15-puzzle-solver | ✓ | 160µs | 3.2 MB |
-| 7 | 2048 | ✓ |  |  |
+| 7 | 2048 | ✓ | 1.584ms | 3.5 MB |
 | 8 | 21-game | ✓ |  |  |
 | 9 | 24-game-solve | ✓ |  |  |
 | 10 | 24-game | ✓ |  |  |
