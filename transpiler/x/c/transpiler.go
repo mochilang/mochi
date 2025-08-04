@@ -747,7 +747,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 							writeIndent(w, indent)
 						}
 					}
-					fmt.Fprintf(w, "%s *%s[] = {", base, d.Name)
+					fmt.Fprintf(w, "%s *%s_init[%d] = {", base, d.Name, len(lst.Elems))
 					for i := range lst.Elems {
 						if i > 0 {
 							io.WriteString(w, ", ")
@@ -756,9 +756,11 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 					}
 					io.WriteString(w, "};\n")
 					writeIndent(w, indent)
+					fmt.Fprintf(w, "%s **%s = %s_init;\n", base, d.Name, d.Name)
+					writeIndent(w, indent)
 					fmt.Fprintf(w, "size_t %s_len = %d;\n", d.Name, len(lst.Elems))
 					writeIndent(w, indent)
-					fmt.Fprintf(w, "size_t %s_lens[] = {", d.Name)
+					fmt.Fprintf(w, "size_t %s_lens_init[%d] = {", d.Name, len(lst.Elems))
 					for i, e := range lst.Elems {
 						if i > 0 {
 							io.WriteString(w, ", ")
@@ -766,10 +768,12 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 						if sl, ok3 := e.(*ListLit); ok3 {
 							fmt.Fprintf(w, "%d", len(sl.Elems))
 						} else {
-							io.WriteString(w, "0")
+							emitLenExpr(w, e)
 						}
 					}
 					io.WriteString(w, "};\n")
+					writeIndent(w, indent)
+					fmt.Fprintf(w, "size_t *%s_lens = %s_lens_init;\n", d.Name, d.Name)
 					writeIndent(w, indent)
 					fmt.Fprintf(w, "size_t %s_lens_len = %d;\n", d.Name, len(lst.Elems))
 					return
@@ -1097,7 +1101,7 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 				if sl, ok2 := e.(*ListLit); ok2 {
 					fmt.Fprintf(w, "%d", len(sl.Elems))
 				} else {
-					io.WriteString(w, "0")
+					emitLenExpr(w, e)
 				}
 			}
 			io.WriteString(w, "};\n")
@@ -1817,12 +1821,13 @@ func (c *CallExpr) emitExpr(w io.Writer) {
 		return
 	}
 	if c.Func == "len" && len(c.Args) == 1 {
+		if vr, ok := c.Args[0].(*VarRef); ok {
+			io.WriteString(w, vr.Name+"_len")
+			return
+		}
 		t := inferExprType(currentEnv, c.Args[0])
 		if strings.HasSuffix(t, "[]") {
 			switch v := c.Args[0].(type) {
-			case *VarRef:
-				io.WriteString(w, v.Name+"_len")
-				return
 			case *CallExpr:
 				io.WriteString(w, "(")
 				v.emitExpr(w)
@@ -3043,31 +3048,42 @@ func (p *Program) Emit() []byte {
 		st := structTypes[name]
 		fmt.Fprintf(&buf, "struct %s {\n", name)
 		for _, field := range st.Order {
-			typ := "int"
 			if ft, ok := st.Fields[field]; ok {
-				typ = cTypeFromMochiType(ft)
+				ft = types.ResolveTypeRef(ft, currentEnv)
+				if ffunc, ok2 := ft.(types.FuncType); ok2 {
+					var params []string
+					for _, p := range ffunc.Params {
+						params = append(params, cTypeFromMochiType(p))
+					}
+					ret := cTypeFromMochiType(ffunc.Return)
+					fmt.Fprintf(&buf, "    %s (*%s)(%s);\n", ret, field, strings.Join(params, ", "))
+					continue
+				}
+				typ := cTypeFromMochiType(ft)
 				if typ == "MapSS" {
 					needMapGetSS = true
 				}
 				if typ == "MapSL" {
 					needMapGetSL = true
 				}
-			}
-			if strings.HasSuffix(typ, "[]") {
-				if strings.HasSuffix(typ, "[][]") {
-					base := strings.TrimSuffix(typ, "[][]")
-					fmt.Fprintf(&buf, "    %s **%s;\n", base, field)
-					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
-					fmt.Fprintf(&buf, "    size_t *%s_lens;\n", field)
-					fmt.Fprintf(&buf, "    size_t %s_lens_len;\n", field)
+				if strings.HasSuffix(typ, "[]") {
+					if strings.HasSuffix(typ, "[][]") {
+						base := strings.TrimSuffix(typ, "[][]")
+						fmt.Fprintf(&buf, "    %s **%s;\n", base, field)
+						fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+						fmt.Fprintf(&buf, "    size_t *%s_lens;\n", field)
+						fmt.Fprintf(&buf, "    size_t %s_lens_len;\n", field)
+					} else {
+						base := strings.TrimSuffix(typ, "[]")
+						fmt.Fprintf(&buf, "    %s *%s;\n", base, field)
+						fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+					}
 				} else {
-					base := strings.TrimSuffix(typ, "[]")
-					fmt.Fprintf(&buf, "    %s *%s;\n", base, field)
-					fmt.Fprintf(&buf, "    size_t %s_len;\n", field)
+					fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
 				}
-			} else {
-				fmt.Fprintf(&buf, "    %s %s;\n", typ, field)
+				continue
 			}
+			fmt.Fprintf(&buf, "    int %s;\n", field)
 		}
 		fmt.Fprintf(&buf, "};\n\n")
 	}
