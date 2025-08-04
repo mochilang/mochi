@@ -430,7 +430,7 @@ This file is auto-generated from rosetta tests.
 | 423 | find-duplicate-files | ✓ | 470µs | 57.2 KB |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 893µs | 45.9 KB |
 | 425 | find-limit-of-recursion | ✓ | 350µs | 49.8 KB |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ |  |  |
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 359µs | 42.4 KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 366µs | 48.9 KB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 337µs | 60.0 KB |
