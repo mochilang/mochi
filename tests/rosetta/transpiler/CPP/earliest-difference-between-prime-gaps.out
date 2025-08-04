@@ -1,0 +1,32 @@
+Earliest difference > 10 between adjacent prime gap starting primes:
+Gap 4 starts at 7, gap 6 starts at 23, difference is 16.
+
+Earliest difference > 100 between adjacent prime gap starting primes:
+Gap 14 starts at 113, gap 16 starts at 1,831, difference is 1,718.
+
+Earliest difference > 1,000 between adjacent prime gap starting primes:
+Gap 14 starts at 113, gap 16 starts at 1,831, difference is 1,718.
+
+Earliest difference > 10,000 between adjacent prime gap starting primes:
+Gap 36 starts at 9,551, gap 38 starts at 30,593, difference is 21,042.
+
+Earliest difference > 100,000 between adjacent prime gap starting primes:
+Gap 70 starts at 173,359, gap 72 starts at 31,397, difference is 141,962.
+
+Earliest difference > 1,000,000 between adjacent prime gap starting primes:
+Gap 100 starts at 396,733, gap 102 starts at 1,444,309, difference is 1,047,576.
+
+Earliest difference > 10,000,000 between adjacent prime gap starting primes:
+Gap 148 starts at 2,010,733, gap 150 starts at 13,626,257, difference is 11,615,524.
+
+Earliest difference > 100,000,000 between adjacent prime gap starting primes:
+Gap 198 starts at 46,006,769, gap 200 starts at 378,043,979, difference is 332,037,210.
+
+Earliest difference > 1,000,000,000 between adjacent prime gap starting primes:
+Gap 276 starts at 649,580,171, gap 278 starts at 4,260,928,601, difference is 3,611,348,430.
+
+Earliest difference > 10,000,000,000 between adjacent prime gap starting primes:
+Gap 332 starts at 5,893,180,121, gap 334 starts at 30,827,138,509, difference is 24,933,958,388.
+
+Earliest difference > 100,000,000,000 between adjacent prime gap starting primes:
+Gap 386 starts at 35,238,645,587, gap 388 starts at 156,798,792,223, difference is 121,560,146,636.

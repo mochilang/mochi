@@ -1,0 +1,231 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:21:181: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:22:209: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:22:295: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:23:189: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:24:183: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:25:215: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:25:251: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp: In function ‘std::map<std::__cxx11::basic_string<char>, std::any> newNode(int64_t)’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:66:109: error: wrong number of template arguments (1, should be at least 2)
+   66 |     return std::map<std::string, std::any>{{"length", std::any(len)}, {"edges", std::any(std::map<auto, auto>{})}, {"suffix", std::any(int64_t(0))}};
+      |                                                                                                             ^
+In file included from /usr/include/c++/13/map:63,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:5:
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:66:148: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, std::any>::map(<brace-enclosed initializer list>)’
+   66 |     return std::map<std::string, std::any>{{"length", std::any(len)}, {"edges", std::any(std::map<auto, auto>{})}, {"suffix", std::any(int64_t(0))}};
+      |                                                                                                                                                    ^
+/usr/include/c++/13/bits/stl_map.h:302:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  302 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:302:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:66:148: note:   couldn’t deduce template parameter ‘_InputIterator’
+   66 |     return std::map<std::string, std::any>{{"length", std::any(len)}, {"edges", std::any(std::map<auto, auto>{})}, {"suffix", std::any(int64_t(0))}};
+      |                                                                                                                                                    ^
+/usr/include/c++/13/bits/stl_map.h:285:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  285 |         map(_InputIterator __first, _InputIterator __last)
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:285:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:66:148: note:   candidate expects 2 arguments, 3 provided
+   66 |     return std::map<std::string, std::any>{{"length", std::any(len)}, {"edges", std::any(std::map<auto, auto>{})}, {"suffix", std::any(int64_t(0))}};
+      |                                                                                                                                                    ^
+/usr/include/c++/13/bits/stl_map.h:268:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  268 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:66:148: note:   couldn’t deduce template parameter ‘_InputIterator’
+   66 |     return std::map<std::string, std::any>{{"length", std::any(len)}, {"edges", std::any(std::map<auto, auto>{})}, {"suffix", std::any(int64_t(0))}};
+      |                                                                                                                                                    ^
+/usr/include/c++/13/bits/stl_map.h:262:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:262:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:256:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:256:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:252:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:252:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:248:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  248 |       map(const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:240:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  240 |       map(initializer_list<value_type> __l,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:240:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  240 |       map(initializer_list<value_type> __l,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  227 |       map(map&&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  219 |       map(const map&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:219:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:206:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  206 |       map(const _Compare& __comp,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:206:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:197:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map() [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  197 |       map() = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note:   candidate expects 0 arguments, 3 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:71:189: error: wrong number of template arguments (1, should be at least 2)
+   71 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(int64_t(0))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                             ^
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:71:194: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, std::any>::map(<brace-enclosed initializer list>)’
+   71 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(int64_t(0))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                  ^
+/usr/include/c++/13/bits/stl_map.h:302:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  302 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:302:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:71:194: note:   couldn’t deduce template parameter ‘_InputIterator’
+   71 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(int64_t(0))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                  ^
+/usr/include/c++/13/bits/stl_map.h:285:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  285 |         map(_InputIterator __first, _InputIterator __last)
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:285:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:71:194: note:   candidate expects 2 arguments, 3 provided
+   71 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(int64_t(0))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                  ^
+/usr/include/c++/13/bits/stl_map.h:268:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  268 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:71:194: note:   couldn’t deduce template parameter ‘_InputIterator’
+   71 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(int64_t(0))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                  ^
+/usr/include/c++/13/bits/stl_map.h:262:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:262:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:256:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:256:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:252:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:252:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:248:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  248 |       map(const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:240:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  240 |       map(initializer_list<value_type> __l,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:240:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  240 |       map(initializer_list<value_type> __l,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  227 |       map(map&&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  219 |       map(const map&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:219:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:206:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  206 |       map(const _Compare& __comp,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:206:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:197:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map() [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  197 |       map() = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note:   candidate expects 0 arguments, 3 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp: In lambda function:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:72:190: error: wrong number of template arguments (1, should be at least 2)
+   72 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(-int64_t(1))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                              ^
+/usr/include/c++/13/bits/stl_map.h:102:11: note: provided for ‘template<class _Key, class _Tp, class _Compare, class _Alloc> class std::map’
+  102 |     class map
+      |           ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:72:195: error: no matching function for call to ‘std::map<std::__cxx11::basic_string<char>, std::any>::map(<brace-enclosed initializer list>)’
+   72 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(-int64_t(1))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                   ^
+/usr/include/c++/13/bits/stl_map.h:302:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  302 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:302:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:72:195: note:   couldn’t deduce template parameter ‘_InputIterator’
+   72 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(-int64_t(1))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                   ^
+/usr/include/c++/13/bits/stl_map.h:285:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  285 |         map(_InputIterator __first, _InputIterator __last)
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:285:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:72:195: note:   candidate expects 2 arguments, 3 provided
+   72 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(-int64_t(1))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                   ^
+/usr/include/c++/13/bits/stl_map.h:268:9: note: candidate: ‘template<class _InputIterator> std::map<_Key, _Tp, _Compare, _Alloc>::map(_InputIterator, _InputIterator, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  268 |         map(_InputIterator __first, _InputIterator __last,
+      |         ^~~
+/usr/include/c++/13/bits/stl_map.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/eertree.cpp:72:195: note:   couldn’t deduce template parameter ‘_InputIterator’
+   72 |     tree = ([&]{ auto __tmp = tree; __tmp.push_back(std::map<std::string, std::any>{{"length", std::any(-int64_t(1))}, {"suffix", std::any(ODD_ROOT)}, {"edges", std::any(std::map<auto, auto>{})}}); return __tmp; }());
+      |                                                                                                                                                                                                   ^
+/usr/include/c++/13/bits/stl_map.h:262:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  262 |       map(initializer_list<value_type> __l, const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:262:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:256:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  256 |       map(map&& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:256:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:252:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; std::__type_identity_t<_Alloc> = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  252 |       map(const map& __m, const __type_identity_t<allocator_type>& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:252:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:248:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  248 |       map(const allocator_type& __a)
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:248:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:240:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::initializer_list<std::pair<const _Key, _Tp> >, const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  240 |       map(initializer_list<value_type> __l,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:240:40: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::initializer_list<std::pair<const std::__cxx11::basic_string<char>, std::any> >’
+  240 |       map(initializer_list<value_type> __l,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(std::map<_Key, _Tp, _Compare, _Alloc>&&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  227 |       map(map&&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:227:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:219:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const std::map<_Key, _Tp, _Compare, _Alloc>&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  219 |       map(const map&) = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:219:7: note:   candidate expects 1 argument, 3 provided
+/usr/include/c++/13/bits/stl_map.h:206:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map(const _Compare&, const allocator_type&) [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >; allocator_type = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  206 |       map(const _Compare& __comp,
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:206:7: note:   candidate expects 2 arguments, 3 provided
+/usr/include/c++/13/bits/stl_map.h:197:7: note: candidate: ‘std::map<_Key, _Tp, _Compare, _Alloc>::map() [with _Key = std::__cxx11::basic_string<char>; _Tp = std::any; _Compare = std::less<std::__cxx11::basic_string<char> >; _Alloc = std::allocator<std::pair<const std::__cxx11::basic_string<char>, std::any> >]’
+  197 |       map() = default;
+      |       ^~~
+/usr/include/c++/13/bits/stl_map.h:197:7: note:   candidate expects 0 arguments, 3 provided

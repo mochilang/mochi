@@ -38,6 +38,7 @@ var benchMain bool
 var usesSHA256 bool
 var usesIndexOf bool
 var usesParseIntStr bool
+var useBigInt bool
 var useBigRat bool
 var useRepeat bool
 var useSplit bool
@@ -142,6 +143,7 @@ type Program struct {
 	UseSHA256      bool
 	UseIndexOf     bool
 	UseParseIntStr bool
+	UseBigInt      bool
 	UseBigRat      bool
 	UseRepeat      bool
 	UseSplit       bool
@@ -453,6 +455,7 @@ type ForStmt struct {
 	Body       []Stmt
 	IsMap      bool
 	ElemType   string
+	SrcType    string
 }
 
 type IfStmt struct {
@@ -608,6 +611,9 @@ func (p *Program) write(w io.Writer) {
 	p.addInclude("<vector>")
 	p.addInclude("<any>")
 	p.addInclude("<type_traits>")
+	if p.UseBigInt || p.UseBigRat {
+		p.addInclude("<boost/multiprecision/cpp_int.hpp>")
+	}
 	if p.UseNow {
 		p.addInclude("<cstdlib>")
 		p.addInclude("<chrono>")
@@ -1265,7 +1271,7 @@ func (l *ListLit) emit(w io.Writer) {
 
 func (m *MapLit) emit(w io.Writer) {
 	if len(m.Keys) == 0 {
-		io.WriteString(w, "{}")
+		fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
 		return
 	}
 	if m.ValueType == "std::any" && currentProgram != nil {
@@ -3181,9 +3187,9 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if f.End == nil {
-		if !f.IsMap && strings.HasPrefix(f.ElemType, "std::map<") {
+		if !f.IsMap && strings.HasPrefix(f.SrcType, "std::map<") {
 			f.IsMap = true
-			inner := strings.TrimSuffix(strings.TrimPrefix(f.ElemType, "std::map<"), ">")
+			inner := strings.TrimSuffix(strings.TrimPrefix(f.SrcType, "std::map<"), ">")
 			parts := strings.SplitN(inner, ",", 2)
 			if len(parts) == 2 {
 				f.ElemType = strings.TrimSpace(parts[0])
@@ -3306,6 +3312,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesIndexOf = false
 	usesParseIntStr = false
 	usesPanic = false
+	useBigInt = false
+	useBigRat = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -3704,16 +3712,14 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					gtyp = lt
 				}
 			}
+			fs.SrcType = gtyp
 			varType := elementTypeFromListType(gtyp)
 			if varType == "auto" {
 				varType = gtyp
 			}
-			if idx := strings.Index(gtyp, "std::map<"); idx >= 0 {
+			if strings.HasPrefix(gtyp, "std::map<") {
 				fs.IsMap = true
-				inner := gtyp[idx+len("std::map<"):]
-				if end := strings.Index(inner, ">"); end >= 0 {
-					inner = inner[:end]
-				}
+				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
 					varType = strings.TrimSpace(parts[0])
@@ -3773,6 +3779,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseSHA256 = usesSHA256
 	cp.UseIndexOf = usesIndexOf
 	cp.UseParseIntStr = usesParseIntStr
+	cp.UseBigInt = useBigInt
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
 	cp.UseSplit = useSplit
@@ -4128,9 +4135,23 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 		}
 		gtyp := guessType(s.For.Source)
+		if vr, ok := start.(*VarRef); ok {
+			if lt, ok2 := localTypes[vr.Name]; ok2 {
+				gtyp = lt
+			}
+		}
+		fs.SrcType = gtyp
 		varType := elementTypeFromListType(gtyp)
 		if varType == "auto" {
 			varType = gtyp
+		}
+		if strings.HasPrefix(gtyp, "std::map<") {
+			fs.IsMap = true
+			inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
+			parts := strings.SplitN(inner, ",", 2)
+			if len(parts) == 2 {
+				varType = strings.TrimSpace(parts[0])
+			}
 		}
 		if isIndexExpr(s.For.Source) {
 			varType = elementTypeFromListType(varType)
@@ -6342,14 +6363,9 @@ func cppType(t string) string {
 	case "string":
 		return "std::string"
 	case "bigint":
-		if currentProgram != nil {
-			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
-		}
+		useBigInt = true
 		return "boost::multiprecision::cpp_int"
 	case "bigrat":
-		if currentProgram != nil {
-			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
-		}
 		useBigRat = true
 		return "BigRat"
 	}
@@ -6430,14 +6446,9 @@ func cppTypeFrom(tp types.Type) string {
 	case types.Int64Type:
 		return "int64_t"
 	case types.BigIntType:
-		if currentProgram != nil {
-			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
-		}
+		useBigInt = true
 		return "boost::multiprecision::cpp_int"
 	case types.BigRatType:
-		if currentProgram != nil {
-			currentProgram.addInclude("<boost/multiprecision/cpp_int.hpp>")
-		}
 		useBigRat = true
 		return "BigRat"
 	case types.FloatType:
