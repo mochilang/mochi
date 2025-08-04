@@ -30,7 +30,7 @@ fun listStr(xs: MutableList<Int>): String {
     var s: String = "["
     var i: Int = 0
     while (i < xs.size) {
-        s = s + (xs[i]).toString()
+        s = s + (xs[i]!!).toString()
         if (i < (xs.size - 1)) {
             s = s + " "
         }
@@ -44,13 +44,13 @@ fun ordered(xs: MutableList<Int>): Boolean {
     if (xs.size == 0) {
         return true
     }
-    var prev: Int = xs[0]
+    var prev: Int = xs[0]!!
     var i: Int = 1
     while (i < xs.size) {
-        if (xs[i] < prev) {
+        if (xs[i]!! < prev) {
             return false
         }
-        prev = xs[i]
+        prev = xs[i]!!
         i = i + 1
     }
     return true
@@ -65,7 +65,7 @@ fun outOfOrder(n: Int): MutableList<Int> {
         r = mutableListOf<Int>()
         var i: Int = 0
         while (i < n) {
-            r = run { val _tmp = r.toMutableList(); _tmp.add(Math.floorMod(_now(), 3)); _tmp } as MutableList<Int>
+            r = run { val _tmp = r.toMutableList(); _tmp.add(Math.floorMod(_now(), 3)); _tmp }
             i = i + 1
         }
         if (!ordered(r)) {
@@ -78,12 +78,12 @@ fun outOfOrder(n: Int): MutableList<Int> {
 fun sort3(a: MutableList<Int>): MutableList<Int> {
     var lo: Int = 0
     var mid: Int = 0
-    var hi: BigInteger = (a.size - 1).toBigInteger()
-    while ((mid).toBigInteger().compareTo(hi) <= 0) {
-        val v: Int = a[mid]
+    var hi: BigInteger = ((a.size - 1).toBigInteger())
+    while ((mid).toBigInteger().compareTo((hi)) <= 0) {
+        var v: Int = a[mid]!!
         if (v == 0) {
-            val tmp: Int = a[lo]
-            a[lo] = a[mid]
+            var tmp: Int = a[lo]!!
+            a[lo] = a[mid]!!
             a[mid] = tmp
             lo = lo + 1
             mid = mid + 1
@@ -91,10 +91,10 @@ fun sort3(a: MutableList<Int>): MutableList<Int> {
             if (v == 1) {
                 mid = mid + 1
             } else {
-                val tmp: Int = a[mid]
-                a[mid] = a[(hi).toInt()]
+                var tmp: Int = a[mid]!!
+                a[mid] = a[(hi).toInt()]!!
                 a[(hi).toInt()] = tmp
-                hi = hi.subtract(1.toBigInteger())
+                hi = hi.subtract((1).toBigInteger())
             }
         }
     }

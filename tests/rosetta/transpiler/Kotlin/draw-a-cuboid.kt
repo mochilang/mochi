@@ -38,10 +38,10 @@ fun repeat(ch: String, n: Int): String {
 
 fun cubLine(n: Int, dx: Int, dy: Int, cde: String): Unit {
     var line: String = repeat(" ", n + 1) + cde.substring(0, 1)
-    var d: BigInteger = ((9 * dx) - 1).toBigInteger()
-    while (d.compareTo(0.toBigInteger()) > 0) {
+    var d: BigInteger = (((9 * dx) - 1).toBigInteger())
+    while (d.compareTo((0).toBigInteger()) > 0) {
         line = line + cde.substring(1, 2)
-        d = d.subtract(1.toBigInteger())
+        d = d.subtract((1).toBigInteger())
     }
     line = line + cde.substring(0, 1)
     line = (line + repeat(" ", dy)) + cde.substring(2, cde.length)
@@ -57,10 +57,10 @@ fun cuboid(dx: Int, dy: Int, dz: Int): Unit {
         i = i + 1
     }
     cubLine(0, dx, dy, "+-|")
-    var j: BigInteger = (((4 * dz) - dy) - 2).toBigInteger()
-    while (j.compareTo(0.toBigInteger()) > 0) {
+    var j: BigInteger = ((((4 * dz) - dy) - 2).toBigInteger())
+    while (j.compareTo((0).toBigInteger()) > 0) {
         cubLine(0, dx, dy, "| |")
-        j = j.subtract(1.toBigInteger())
+        j = j.subtract((1).toBigInteger())
     }
     cubLine(0, dx, dy, "| +")
     i = 1
