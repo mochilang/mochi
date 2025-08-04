@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (295/491) - Last updated 2025-08-04 10:15 +0700:
+Checklist of programs that currently transpile and run (304/491) - Last updated 2025-08-04 10:36 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -311,17 +311,17 @@ Checklist of programs that currently transpile and run (295/491) - Last updated 
 | 304 | disarium-numbers | ✓ | 6.62s | 3.49MB |
 | 305 | discordian-date | ✓ | 389.0µs | 3.70MB |
 | 306 | display-a-linear-combination | ✓ | 325.0µs | 3.48MB |
-| 307 | display-an-outline-as-a-nested-table |   |  |  |
-| 308 | distance-and-bearing |   |  |  |
-| 309 | distributed-programming |   |  |  |
-| 310 | diversity-prediction-theorem |   |  |  |
-| 311 | dns-query |   |  |  |
-| 312 | documentation |   |  |  |
-| 313 | doomsday-rule |   |  |  |
-| 314 | dot-product |   |  |  |
-| 315 | doubly-linked-list-definition-1 | ✓ | 2.0µs | 3.34MB |
+| 307 | display-an-outline-as-a-nested-table | ✓ | 1.0ms | 3.77MB |
+| 308 | distance-and-bearing | ✓ | 931.0µs | 3.83MB |
+| 309 | distributed-programming | ✓ | 194.0µs | 3.73MB |
+| 310 | diversity-prediction-theorem | ✓ | 251.0µs | 3.71MB |
+| 311 | dns-query | ✓ | 174.0µs | 3.88MB |
+| 312 | documentation | ✓ | 1.0µs | 3.43MB |
+| 313 | doomsday-rule | ✓ | 174.0µs | 3.50MB |
+| 314 | dot-product | ✓ | 516.0µs | 3.74MB |
+| 315 | doubly-linked-list-definition-1 | ✓ | 1.0µs | 3.36MB |
 | 316 | doubly-linked-list-definition-2 |   |  |  |
-| 317 | doubly-linked-list-element-definition |   |  |  |
+| 317 | doubly-linked-list-element-definition | ✓ | 227.0µs | 3.49MB |
 | 318 | doubly-linked-list-traversal |   |  |  |
 | 319 | dragon-curve |   |  |  |
 | 320 | draw-a-clock |   |  |  |

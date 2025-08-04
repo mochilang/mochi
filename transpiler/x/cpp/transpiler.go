@@ -1192,12 +1192,13 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 
 func (l *LenExpr) emit(w io.Writer) {
 	if exprType(l.Value) == "std::any" {
-		io.WriteString(w, "std::any_cast<std::string>(")
+		io.WriteString(w, "static_cast<int64_t>(std::any_cast<std::string>(")
 		l.Value.emit(w)
-		io.WriteString(w, ").size()")
+		io.WriteString(w, ").size())")
 	} else {
+		io.WriteString(w, "static_cast<int64_t>(")
 		l.Value.emit(w)
-		io.WriteString(w, ".size()")
+		io.WriteString(w, ".size())")
 	}
 }
 
@@ -3181,16 +3182,6 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if f.End == nil {
-		if !f.IsMap && strings.HasPrefix(f.ElemType, "std::map<") {
-			f.IsMap = true
-			inner := strings.TrimSuffix(strings.TrimPrefix(f.ElemType, "std::map<"), ">")
-			parts := strings.SplitN(inner, ",", 2)
-			if len(parts) == 2 {
-				f.ElemType = strings.TrimSpace(parts[0])
-			} else {
-				f.ElemType = "auto"
-			}
-		}
 		if f.IsMap {
 			io.WriteString(w, "for (const auto& __p : ")
 			f.Start.emit(w)
@@ -3708,12 +3699,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			if varType == "auto" {
 				varType = gtyp
 			}
-			if idx := strings.Index(gtyp, "std::map<"); idx >= 0 {
+			if strings.HasPrefix(gtyp, "std::map<") {
 				fs.IsMap = true
-				inner := gtyp[idx+len("std::map<"):]
-				if end := strings.Index(inner, ">"); end >= 0 {
-					inner = inner[:end]
-				}
+				inner := strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">")
 				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
 					varType = strings.TrimSpace(parts[0])
@@ -5277,7 +5265,19 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			currentProgram.addInclude("<map>")
 		}
 		if len(p.Map.Items) == 0 {
-			return &MapLit{KeyType: "auto", ValueType: "auto"}, nil
+			kt, vt := "std::any", "std::any"
+			if currentEnv != nil {
+				if t := types.TypeOfPrimary(p, currentEnv); t != nil {
+					if mt, ok := t.(types.MapType); ok {
+						kt = cppTypeFrom(mt.Key)
+						vt = cppTypeFrom(mt.Value)
+					}
+				}
+			}
+			if currentProgram != nil && (kt == "std::any" || vt == "std::any") {
+				currentProgram.addInclude("<any>")
+			}
+			return &MapLit{KeyType: kt, ValueType: vt}, nil
 		}
 		kt := guessType(p.Map.Items[0].Key)
 		vt := guessType(p.Map.Items[0].Value)
@@ -6801,7 +6801,10 @@ func exprType(e Expr) string {
 			}
 			return "std::vector<std::any>"
 		}
-		return "std::vector<int64_t>"
+		if currentProgram != nil {
+			currentProgram.addInclude("<any>")
+		}
+		return "std::vector<std::any>"
 	case *MapLit:
 		if len(v.Keys) > 0 {
 			kt := exprType(v.Keys[0])
