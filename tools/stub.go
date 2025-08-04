@@ -1,4 +1,4 @@
-//go:build !slow
+//go:build tools && !slow
 
 package main
 
