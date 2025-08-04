@@ -1,8 +1,0 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51: lexer: invalid input text "; cur = \"\" }\n   ..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows-player.mochi:22:51
-
- 22 |       if len(cur) > 0 { words = append(words, cur); cur = "" }
-    |                                                   ^
-
-help:
-  String literals must be properly closed with a `"`.

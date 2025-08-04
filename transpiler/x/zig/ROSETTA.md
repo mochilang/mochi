@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 15:16 +0700
+Last updated: 2025-08-04 16:06 +0700
 
-## Program Checklist (94/491)
+## Program Checklist (95/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -144,7 +144,7 @@ Last updated: 2025-08-04 15:16 +0700
 | 135 | break-oo-privacy |   |  |  |
 | 136 | brilliant-numbers |   |  |  |
 | 137 | brownian-tree |   |  |  |
-| 138 | bulls-and-cows-player |   |  |  |
+| 138 | bulls-and-cows-player | ✓ | 546.149ms |  |
 | 139 | bulls-and-cows |   |  |  |
 | 140 | burrows-wheeler-transform |   |  |  |
 | 141 | caesar-cipher-1 |   |  |  |

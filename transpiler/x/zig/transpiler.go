@@ -853,6 +853,8 @@ func zigTypeFromExpr(e Expr) string {
 		switch ce.Func {
 		case "len", "count", "exists":
 			return "i64"
+		case "int":
+			return "i64"
 		case "sum":
 			if len(ce.Args) > 0 {
 				t := zigTypeFromExpr(ce.Args[0])
@@ -2173,6 +2175,14 @@ func (c *CallExpr) emit(w io.Writer) {
 				io.WriteString(w, ".len")
 			}
 			io.WriteString(w, "))")
+		} else {
+			io.WriteString(w, "0")
+		}
+	case "int":
+		if len(c.Args) == 1 {
+			io.WriteString(w, "std.fmt.parseInt(i64, ")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", 10) catch 0")
 		} else {
 			io.WriteString(w, "0")
 		}
