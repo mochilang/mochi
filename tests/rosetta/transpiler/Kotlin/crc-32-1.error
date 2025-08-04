@@ -1,7 +1,0 @@
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/crc-32-1.kt:65:11: error: type mismatch: inferred type is Any? but Int was expected
-    idx = lower.indexOf(ch) as Any?
-          ^
-/workspace/mochi/tests/rosetta/transpiler/Kotlin/crc-32-1.kt:119:12: error: type mismatch: inferred type is Long but Int was expected
-    return 4294967295L - crc
-           ^
