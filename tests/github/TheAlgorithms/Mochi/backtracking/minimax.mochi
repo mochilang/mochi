@@ -1,0 +1,42 @@
+/*
+  Evaluate a complete binary game tree using the minimax algorithm.
+
+  Each element in `scores` represents a terminal node. The tree is traversed
+  depth‑first where players alternate between maximizing and minimizing the
+  reachable score. The height of the tree is derived from the length of the
+  score list and is used to stop the recursion when a leaf is reached.
+
+  The algorithm explores both child branches at every step and returns the
+  optimal value assuming perfect play from both players.
+*/
+fun minimax(depth: int, node_index: int, is_max: bool, scores: list<int>, height: int): int {
+  if depth < 0 { panic("Depth cannot be less than 0") }
+  if len(scores) == 0 { panic("Scores cannot be empty") }
+  if depth == height { return scores[node_index] }
+  if is_max {
+    let left = minimax(depth + 1, node_index * 2, false, scores, height)
+    let right = minimax(depth + 1, node_index * 2 + 1, false, scores, height)
+    if left > right { return left } else { return right }
+  }
+  let left = minimax(depth + 1, node_index * 2, true, scores, height)
+  let right = minimax(depth + 1, node_index * 2 + 1, true, scores, height)
+  if left < right { return left } else { return right }
+}
+
+fun tree_height(n: int): int {
+  var h = 0
+  var v = n
+  while v > 1 {
+    v = v / 2
+    h = h + 1
+  }
+  return h
+}
+
+fun main() {
+  let scores = [90, 23, 6, 33, 21, 65, 123, 34423]
+  let height = tree_height(len(scores))
+  print("Optimal value : " + str(minimax(0, 0, true, scores, height)))
+}
+
+main()
