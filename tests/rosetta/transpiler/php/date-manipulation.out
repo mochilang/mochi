@@ -2,7 +2,7 @@ Input:              March 7 2009 7:30pm EST
 +12 hrs:            2009-03-08 08:30:00 -0400 EDT
 +12 hrs in Arizona: 2009-03-08 05:30:00 -0700 MST
 {
-  "duration_us": 140,
-  "memory_bytes": 128,
+  "duration_us": 200,
+  "memory_bytes": 72448,
   "name": "main"
 }

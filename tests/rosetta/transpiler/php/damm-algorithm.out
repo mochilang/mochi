@@ -3,7 +3,7 @@
 112946  true
 112949  false
 {
-  "duration_us": 80,
-  "memory_bytes": 96,
+  "duration_us": 107,
+  "memory_bytes": 36912,
   "name": "main"
 }

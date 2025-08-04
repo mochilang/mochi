@@ -2,7 +2,7 @@
 
 Generated PHP code from Mochi Rosetta tasks lives in `tests/rosetta/transpiler/php`.
 
-Last updated: 2025-08-03 17:43 +0700
+Last updated: 2025-08-04 15:16 +0700
 
 ## Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -276,17 +276,17 @@ Last updated: 2025-08-03 17:43 +0700
 | 267 | curzon-numbers | ✓ | 323.429ms | 96 B |
 | 268 | cusip | ✓ | 80µs | 160 B |
 | 269 | cyclops-numbers | ✓ |  |  |
-| 270 | damm-algorithm | ✓ | 80µs | 96 B |
-| 271 | date-format | ✓ | 76µs | 96 B |
-| 272 | date-manipulation | ✓ | 140µs | 128 B |
-| 273 | day-of-the-week | ✓ | 244µs | 96 B |
-| 274 | de-bruijn-sequences | ✓ | 305.865ms | 96 B |
-| 275 | deal-cards-for-freecell | ✓ | 354µs | 192 B |
-| 276 | death-star | ✓ | 4.082ms | 96 B |
-| 277 | deceptive-numbers | ✓ | 220.889ms | 96 B |
-| 278 | deconvolution-1d-2 | ✓ | 108µs | 96 B |
-| 279 | deconvolution-1d-3 | ✓ | 167µs | 96 B |
-| 280 | deconvolution-1d | ✓ | 82µs | 96 B |
+| 270 | damm-algorithm | ✓ | 107µs | 36.0 KB |
+| 271 | date-format | ✓ | 118µs | 35.9 KB |
+| 272 | date-manipulation | ✓ | 200µs | 70.8 KB |
+| 273 | day-of-the-week | ✓ | 303µs | 40.3 KB |
+| 274 | de-bruijn-sequences | ✓ | 430.712ms | 1.5 MB |
+| 275 | deal-cards-for-freecell | ✓ | 375µs | 39.3 KB |
+| 276 | death-star | ✓ | 6.741ms | 36.1 KB |
+| 277 | deceptive-numbers | ✓ | 323.32ms | 96.8 KB |
+| 278 | deconvolution-1d-2 | ✓ | 174µs | 36.9 KB |
+| 279 | deconvolution-1d-3 | ✓ | 151µs | 37.4 KB |
+| 280 | deconvolution-1d | ✓ | 136µs | 36.7 KB |
 | 281 | deepcopy-1 | ✓ | 137µs | 968 B |
 | 282 | define-a-primitive-data-type | ✓ | 158µs | 96 B |
 | 283 | delegates | ✓ | 66µs | 1.6 KB |
