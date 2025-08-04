@@ -1,2 +1,0 @@
-zig build: exit status 1
-/tmp/bitcoin-address-validation.zig:71:19: error: use of undeclared identifier 'sha256'
