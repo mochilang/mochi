@@ -2215,8 +2215,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 		} else {
 			i.Target.emit(w)
 		}
-		io.WriteString(w, " ")
+		io.WriteString(w, " (")
 		i.Index.emit(w)
+		io.WriteString(w, ")")
 		return
 	}
 	if t == "string" {
@@ -2747,28 +2748,15 @@ func (c *CastExpr) emit(w io.Writer) {
 			io.WriteString(w, "Array.empty<")
 			io.WriteString(w, elem)
 			io.WriteString(w, ">")
-		} else if ll, ok := c.Expr.(*ListLit); ok && strings.HasSuffix(c.Type, " array array") && len(ll.Elems) == 1 {
-			if inner, ok := ll.Elems[0].(*ListLit); ok && len(inner.Elems) == 0 {
-				elem := strings.TrimSuffix(c.Type, " array array")
-				io.WriteString(w, "[|Array.empty<")
-				io.WriteString(w, elem)
-				io.WriteString(w, ">|]")
-				return
+		} else if ll, ok := c.Expr.(*ListLit); ok && strings.HasSuffix(c.Type, " array array") {
+			io.WriteString(w, "[|")
+			for i, e := range ll.Elems {
+				if i > 0 {
+					io.WriteString(w, "; ")
+				}
+				e.emit(w)
 			}
-			elem := strings.TrimSuffix(c.Type, " array array")
-			io.WriteString(w, "(match ")
-			if needsParen(c.Expr) {
-				io.WriteString(w, "(")
-				c.Expr.emit(w)
-				io.WriteString(w, ")")
-			} else {
-				c.Expr.emit(w)
-			}
-			io.WriteString(w, " with | :? (")
-			io.WriteString(w, c.Type)
-			io.WriteString(w, ") as a -> a | :? (obj array) as oa -> oa |> Array.map (fun v -> unbox<")
-			io.WriteString(w, elem)
-			io.WriteString(w, " array> v) | _ -> failwith \"invalid cast\")")
+			io.WriteString(w, "|]")
 		} else if strings.HasSuffix(c.Type, " array array") && inferType(c.Expr) == "obj" {
 			elem := strings.TrimSuffix(c.Type, " array array")
 			io.WriteString(w, "(match ")
@@ -2958,15 +2946,9 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			p.Stmts = append(p.Stmts, optimizeFun(conv))
 		}
 	}
-	var funcs, others []Stmt
-	for _, st := range p.Stmts {
-		if _, ok := st.(*FunDef); ok {
-			funcs = append(funcs, st)
-		} else {
-			others = append(others, st)
-		}
-	}
-	p.Stmts = append(funcs, others...)
+	// Preserve original statement order so that top-level values defined
+	// before functions remain in scope when those functions are emitted.
+	// F# requires values to be declared prior to use.
 	if len(methodDefs) > 0 {
 		p.Stmts = append(methodDefs, p.Stmts...)
 		methodDefs = nil

@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (385/491)
+## Rosetta Golden Test Checklist (387/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -392,8 +392,8 @@ This file is auto-generated from rosetta tests.
 | 385 | extend-your-language | ✓ | 245µs | 42.1 KB |
 | 386 | extensible-prime-generator | ✓ | 7.717ms | 88.5 KB |
 | 387 | extreme-floating-point-values | ✓ | 314µs | 48.1 KB |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
+| 388 | faces-from-a-mesh-2 | ✓ | 361µs | 63.6 KB |
+| 389 | faces-from-a-mesh | ✓ | 353µs | 53.8 KB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
 | 391 | factorial-primes |   |  |  |
 | 392 | factorial |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 20:03 +0700
+Last updated: 2025-08-04 20:23 +0700
