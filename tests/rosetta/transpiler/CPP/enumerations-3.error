@@ -1,0 +1,40 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:21:181: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:22:209: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:22:295: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:23:189: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:24:183: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:25:215: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:25:251: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:56:8: error: expected identifier before ‘int’
+   56 | struct int;
+      |        ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:56:1: error: multiple types in one declaration
+   56 | struct int;
+      | ^~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:66:8: error: expected identifier before ‘int’
+   66 | struct int : fruit {
+      |        ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:66:12: error: expected unqualified-id before ‘:’ token
+   66 | struct int : fruit {
+      |            ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:78:59: error: invalid cast from type ‘std::shared_ptr<fruit>’ to type ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(((int64_t)(apple) + int64_t(1)));
+      |                                                           ^~~~~~~~~~~~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-3.cpp:79:59: error: invalid cast from type ‘std::shared_ptr<fruit>’ to type ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(((int64_t)(banana) + int64_t(1)));
+      |                                                           ^~~~~~~~~~~~~~~~~

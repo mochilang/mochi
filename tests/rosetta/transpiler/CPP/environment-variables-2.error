@@ -1,0 +1,30 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:20:181: warning: multi-character character constant [-Wmultichar]
+   20 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:21:209: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:21:295: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:22:189: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:23:183: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:24:215: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:24:251: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp: In function ‘int main()’:
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:69:20: error: ‘os’ was not declared in this scope; did you mean ‘cos’?
+   69 |     for (auto v : (os.Environ)()) {
+      |                    ^~
+      |                    cos
+/workspace/mochi/tests/rosetta/transpiler/CPP/environment-variables-2.cpp:73:13: error: return-statement with no value, in function returning ‘int’ [-fpermissive]
+   73 |             return;
+      |             ^~~~~~

@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (315/491) - Last updated 2025-08-04 11:08 +0700:
+Checklist of programs that currently transpile and run (329/491) - Last updated 2025-08-04 11:45 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -344,24 +344,24 @@ Checklist of programs that currently transpile and run (315/491) - Last updated 
 | 337 | elementary-cellular-automaton-random-number-generator | ✓ |  |  |
 | 338 | elementary-cellular-automaton | ✓ | 678.0µs | 3.48MB |
 | 339 | elliptic-curve-arithmetic | ✓ | 319.0µs | 3.78MB |
-| 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
-| 341 | emirp-primes |   |  |  |
-| 342 | empty-directory |   |  |  |
-| 343 | empty-program |   |  |  |
-| 344 | empty-string-1 |   |  |  |
-| 345 | empty-string-2 |   |  |  |
-| 346 | enforced-immutability |   |  |  |
-| 347 | entropy-1 |   |  |  |
-| 348 | entropy-2 |   |  |  |
-| 349 | entropy-narcissist |   |  |  |
-| 350 | enumerations-1 |   |  |  |
-| 351 | enumerations-2 |   |  |  |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 219.0µs | 3.46MB |
+| 341 | emirp-primes | ✓ | 451.0ms | 3.91MB |
+| 342 | empty-directory | ✓ | 227.0µs | 3.70MB |
+| 343 | empty-program | ✓ | 13.0µs | 3.56MB |
+| 344 | empty-string-1 | ✓ | 177.0µs | 3.56MB |
+| 345 | empty-string-2 | ✓ | 280.0µs | 3.50MB |
+| 346 | enforced-immutability | ✓ | 130.0µs | 3.54MB |
+| 347 | entropy-1 | ✓ | 407.0µs | 3.78MB |
+| 348 | entropy-2 | ✓ | 395.0µs | 3.84MB |
+| 349 | entropy-narcissist | ✓ | 2.0ms | 3.75MB |
+| 350 | enumerations-1 | ✓ | 2.0µs | 3.43MB |
+| 351 | enumerations-2 | ✓ | 2.0µs | 3.50MB |
 | 352 | enumerations-3 |   |  |  |
 | 353 | enumerations-4 |   |  |  |
 | 354 | environment-variables-1 |   |  |  |
 | 355 | environment-variables-2 |   |  |  |
-| 356 | equal-prime-and-composite-sums |   |  |  |
-| 357 | equilibrium-index |   |  |  |
+| 356 | equal-prime-and-composite-sums | ✓ | 1.79s | 4.04MB |
+| 357 | equilibrium-index | ✓ | 288.0ms | 3.88MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
 | 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
 | 360 | esthetic-numbers |   |  |  |

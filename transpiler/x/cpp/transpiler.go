@@ -4037,6 +4037,20 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		} else {
 			localTypes[s.Var.Name] = "auto"
 		}
+		if ml, ok := val.(*MapLit); ok && typ != "" && strings.HasPrefix(typ, "std::map<") && strings.HasSuffix(typ, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(typ, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 {
+				if ml.KeyType == "auto" {
+					ml.KeyType = strings.TrimSpace(parts[0])
+				}
+				if ml.ValueType == "auto" {
+					ml.ValueType = strings.TrimSpace(parts[1])
+				}
+			}
+		}
+		if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 && typ != "" {
+			ll.ElemType = elementTypeFromListType(typ)
+		}
 		ls := &LetStmt{Name: s.Var.Name, Type: typ, Value: val}
 		if currentVarDecls != nil {
 			currentVarDecls[s.Var.Name] = ls
@@ -4082,6 +4096,18 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 					return nil, err
 				}
 				target = &IndexExpr{Target: target, Index: id}
+			}
+			if ll, ok := val.(*ListLit); ok && len(ll.Elems) == 0 {
+				baseType := exprType(target)
+				if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
+					parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
+					if len(parts) == 2 {
+						valueType := strings.TrimSpace(parts[1])
+						ll.ElemType = elementTypeFromListType(valueType)
+					}
+				} else if strings.HasPrefix(baseType, "std::vector<") {
+					ll.ElemType = elementTypeFromListType(baseType)
+				}
 			}
 			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
 		}
