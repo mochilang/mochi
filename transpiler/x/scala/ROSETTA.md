@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (439/491)
-_Last updated: 2025-08-04 16:36 +0700_
+## Golden Test Checklist (440/491)
+_Last updated: 2025-08-04 17:19 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -254,15 +254,15 @@ _Last updated: 2025-08-04 16:36 +0700_
 | 245 | count-occurrences-of-a-substring | error |  |  |
 | 246 | count-the-coins-1 | ✓ | 3µs | 8.7 MB |
 | 247 | count-the-coins-2 | ✓ | 33µs | 8.7 MB |
-| 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 | error |  |  |
-| 250 | crc-32-2 | ✓ | 7µs | 8.8 MB |
-| 251 | create-a-file-on-magnetic-tape | ✓ | 2µs | 8.7 MB |
+| 248 | cramers-rule | ✓ | 12µs | 8.7 MB |
+| 249 | crc-32-1 | ✓ | 6µs | 8.8 MB |
+| 250 | crc-32-2 | ✓ | 5µs | 8.8 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 3µs | 8.7 MB |
 | 252 | create-a-file | ✓ | 2µs | 8.7 MB |
-| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 4µs | 8.7 MB |
-| 254 | create-an-html-table | ✓ | 16µs | 8.7 MB |
-| 255 | create-an-object-at-a-given-address | ✓ | 20µs | 8.7 MB |
-| 256 | csv-data-manipulation | ✓ | 11µs | 8.7 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 3µs | 8.7 MB |
+| 254 | create-an-html-table | ✓ | 6µs | 8.7 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 7µs | 8.7 MB |
+| 256 | csv-data-manipulation | ✓ | 5µs | 8.7 MB |
 | 257 | csv-to-html-translation-1 | ✓ | 3µs | 8.7 MB |
 | 258 | csv-to-html-translation-2 | ✓ | 5µs | 8.7 MB |
 | 259 | csv-to-html-translation-3 | ✓ | 2µs | 8.7 MB |
