@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (432/491) - Last updated 2025-08-05 00:37 +0700:
+Checklist of programs that currently transpile and run (432/491) - Last updated 2025-08-05 01:13 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 273.0µs | 3.62MB |
@@ -55,7 +55,7 @@ Checklist of programs that currently transpile and run (432/491) - Last updated 
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 80.0µs | 12.96MB |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 380.0µs | 13.27MB |
 | 50 | animate-a-pendulum | ✓ | 320.0µs | 13.16MB |
-| 51 | animation | ✓ | 491.0µs | 12.45MB |
+| 51 | animation | ✓ | 709.0µs | 3.54MB |
 | 52 | anonymous-recursion-1 | ✓ | 73.0µs | 12.67MB |
 | 53 | anonymous-recursion-2 | ✓ | 68.0µs | 13.05MB |
 | 54 | anonymous-recursion | ✓ | 72.0µs | 12.93MB |
