@@ -1,0 +1,26 @@
+/*
+Count the number of 1 bits in the binary representation of a non-negative integer.
+Repeatedly divide the number by two and add the remainder to a running total.
+Each division removes the least significant bit. The process continues until the
+number becomes zero. The algorithm runs in O(log n) time where n is the input
+value and uses O(1) space.
+*/
+
+fun binary_count_setbits(n: int): int {
+  if n < 0 {
+    panic("Input value must be a non-negative integer")
+  }
+  var count = 0
+  var value = n
+  while value > 0 {
+    count = count + (value % 2)
+    value = value / 2
+  }
+  return count
+}
+
+print(str(binary_count_setbits(25)))
+print(str(binary_count_setbits(36)))
+print(str(binary_count_setbits(16)))
+print(str(binary_count_setbits(58)))
+print(str(binary_count_setbits(0)))
