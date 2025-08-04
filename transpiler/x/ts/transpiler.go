@@ -4208,8 +4208,8 @@ func simpleExpr(e Expr) bool {
 			}
 		}
 		return true
-	case *NameRef:
-		return true
+       case *NameRef:
+               return false
 	case *BinaryExpr:
 		if v.Op == "+" || v.Op == "-" || v.Op == "*" || v.Op == "/" || v.Op == "%" {
 			return simpleExpr(v.Left) && simpleExpr(v.Right)

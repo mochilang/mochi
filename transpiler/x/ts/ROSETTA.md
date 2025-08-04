@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-04 10:11 UTC
+Last updated: 2025-08-04 12:46 UTC
 
-## Rosetta Golden Test Checklist (473/491)
+## Rosetta Golden Test Checklist (474/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 1.088ms | 256.0 KB |
@@ -318,26 +318,26 @@ Last updated: 2025-08-04 10:11 UTC
 | 309 | distributed-programming | ✓ | 286µs |  |
 | 310 | diversity-prediction-theorem | ✓ | 556µs | 256.0 KB |
 | 311 | dns-query | ✓ | 338.919ms | 31.2 KB |
-| 312 | documentation | ✓ | 3µs |  |
-| 313 | doomsday-rule | ✓ | 582µs |  |
-| 314 | dot-product | ✓ | 332µs | 128.0 KB |
-| 315 | doubly-linked-list-definition-1 | ✓ | 3µs |  |
-| 316 | doubly-linked-list-definition-2 | ✓ | 479µs | 128.0 KB |
-| 317 | doubly-linked-list-element-definition | ✓ | 316µs | 128.0 KB |
-| 318 | doubly-linked-list-traversal | ✓ | 324µs |  |
-| 319 | dragon-curve | ✓ | 495µs | 128.0 KB |
-| 320 | draw-a-clock | ✓ | 596µs |  |
-| 321 | draw-a-cuboid | ✓ | 683µs | 256.0 KB |
-| 322 | draw-a-pixel-1 | ✓ | 3.059ms | 8.2 MB |
-| 323 | draw-a-rotating-cube | ✓ | 1.819ms | 3.4 MB |
-| 324 | draw-a-sphere | ✓ | 5.221ms | 10.4 MB |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem | ✓ | 535µs | 256.0 KB |
-| 327 | dynamic-variable-names | ✓ | 1.334ms | 512.0 KB |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 909µs | 384.0 KB |
-| 329 | eban-numbers | ✓ | 13.146ms | 13.3 MB |
-| 330 | ecdsa-example | ✓ | 397µs | 256.0 KB |
-| 331 | echo-server | ✓ | 335µs |  |
+| 312 | documentation | ✓ | 15µs | 3.3 KB |
+| 313 | doomsday-rule | ✓ | 1.786ms | 42.8 KB |
+| 314 | dot-product | ✓ | 805µs | 15.6 KB |
+| 315 | doubly-linked-list-definition-1 | ✓ | 10µs | 3.3 KB |
+| 316 | doubly-linked-list-definition-2 | ✓ | 921µs | 26.7 KB |
+| 317 | doubly-linked-list-element-definition | ✓ | 751µs | 18.1 KB |
+| 318 | doubly-linked-list-traversal | ✓ | 797µs | 23.3 KB |
+| 319 | dragon-curve | ✓ | 1.345ms | 91.2 KB |
+| 320 | draw-a-clock | ✓ | 930µs | 26.2 KB |
+| 321 | draw-a-cuboid | ✓ | 3.008ms | 170.3 KB |
+| 322 | draw-a-pixel-1 | ✓ | 19.618ms | 780.0 KB |
+| 323 | draw-a-rotating-cube | ✓ | 6.608ms | 604.4 KB |
+| 324 | draw-a-sphere | ✓ | 17.895ms | 889.0 KB |
+| 325 | duffinian-numbers | ✓ | 32.396ms | 1.9 MB |
+| 326 | dutch-national-flag-problem | ✓ | 1.282ms | 31.5 KB |
+| 327 | dynamic-variable-names | ✓ | 2.273ms | 54.3 KB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 3.781ms | 396.5 KB |
+| 329 | eban-numbers | ✓ | 38.511ms | 351.7 KB |
+| 330 | ecdsa-example | ✓ | 927µs | 44.2 KB |
+| 331 | echo-server | ✓ | 801µs | 20.4 KB |
 | 332 | eertree | ✓ | 548µs | 128.0 KB |
 | 333 | egyptian-division | ✓ | 367µs | 128.0 KB |
 | 334 | ekg-sequence-convergence | ✓ | 3.116ms | 4.7 MB |
