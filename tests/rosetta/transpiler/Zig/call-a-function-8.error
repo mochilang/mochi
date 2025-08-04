@@ -1,8 +1,0 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-8.mochi:12:35: unexpected token "{" (expected "<" TypeRef ("," TypeRef)* ">")
-  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-8.mochi:12:35
-
- 12 |   let fn = fun(r: string): string {
-    |                                   ^
-
-help:
-  Parse error occurred. Check syntax near this location.

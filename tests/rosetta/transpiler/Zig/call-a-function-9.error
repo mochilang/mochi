@@ -1,5 +1,0 @@
-zig build: exit status 1
-/tmp/call-a-function-9.zig:15:14: error: unused function parameter
-/tmp/call-a-function-9.zig:15:6: error: unused function parameter
-/tmp/call-a-function-9.zig:19:21: error: unused function parameter
-/tmp/call-a-function-9.zig:19:6: error: unused function parameter
