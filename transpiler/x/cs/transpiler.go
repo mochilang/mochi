@@ -3224,13 +3224,6 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		retType := csType(s.Fun.Return)
-		if retType == "BigRat" {
-			for i := range ptypes {
-				if ptypes[i] == "long" {
-					ptypes[i] = "object"
-				}
-			}
-		}
 		currentReturnType = retType
 		currentReturnVoid = s.Fun.Return == nil
 		// record return and parameter types for local functions so callers can infer them
