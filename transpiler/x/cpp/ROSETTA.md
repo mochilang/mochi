@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (350/491) - Last updated 2025-08-04 15:15 +0700:
+Checklist of programs that currently transpile and run (363/491) - Last updated 2025-08-04 16:08 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -384,37 +384,37 @@ Checklist of programs that currently transpile and run (350/491) - Last updated 
 | 377 | execute-computer-zero-1 | ✓ | 2.0ms | 3.75MB |
 | 378 | execute-computer-zero | ✓ | 245.0µs | 3.61MB |
 | 379 | execute-hq9+ | ✓ | 1.0ms | 3.63MB |
-| 380 | execute-snusp |   |  |  |
-| 381 | exponentiation-operator-2 |   |  |  |
-| 382 | exponentiation-operator |   |  |  |
-| 383 | exponentiation-order |   |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base |   |  |  |
-| 385 | extend-your-language |   |  |  |
-| 386 | extensible-prime-generator |   |  |  |
-| 387 | extreme-floating-point-values |   |  |  |
-| 388 | faces-from-a-mesh-2 |   |  |  |
-| 389 | faces-from-a-mesh |   |  |  |
+| 380 | execute-snusp | ✓ | 196.0µs | 3.41MB |
+| 381 | exponentiation-operator-2 | ✓ | 634.0µs | 3.84MB |
+| 382 | exponentiation-operator | ✓ | 800.0µs | 3.68MB |
+| 383 | exponentiation-order | ✓ | 370.0µs | 3.68MB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 287.0µs | 3.61MB |
+| 385 | extend-your-language | ✓ | 325.0µs | 3.57MB |
+| 386 | extensible-prime-generator | ✓ | 307.0ms | 3.73MB |
+| 387 | extreme-floating-point-values | ✓ | 689.0µs | 3.84MB |
+| 388 | faces-from-a-mesh-2 | ✓ | 470.0µs | 3.70MB |
+| 389 | faces-from-a-mesh | ✓ | 487.0µs | 3.66MB |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
-| 391 | factorial-primes |   |  |  |
-| 392 | factorial |   |  |  |
-| 393 | factorions |   |  |  |
-| 394 | factors-of-a-mersenne-number |   |  |  |
-| 395 | factors-of-an-integer |   |  |  |
-| 396 | fairshare-between-two-and-more |   |  |  |
-| 397 | farey-sequence |   |  |  |
-| 398 | fast-fourier-transform |   |  |  |
-| 399 | fasta-format | ✓ |  |  |
-| 400 | faulhabers-formula | ✓ |  |  |
-| 401 | faulhabers-triangle | ✓ |  |  |
-| 402 | feigenbaum-constant-calculation | ✓ |  |  |
-| 403 | fermat-numbers | ✓ |  |  |
-| 404 | fibonacci-n-step-number-sequences | ✓ |  |  |
-| 405 | fibonacci-sequence-1 | ✓ |  |  |
-| 406 | fibonacci-sequence-2 | ✓ |  |  |
-| 407 | fibonacci-sequence-3 | ✓ |  |  |
-| 408 | fibonacci-sequence-4 | ✓ |  |  |
-| 409 | fibonacci-sequence-5 | ✓ |  |  |
-| 410 | fibonacci-word-fractal | ✓ |  |  |
+| 391 | factorial-primes | ✓ | 976.0µs | 3.67MB |
+| 392 | factorial | ✓ | 1.0ms | 3.76MB |
+| 393 | factorions | ✓ | 321.0ms | 3.69MB |
+| 394 | factors-of-a-mersenne-number | ✓ | 176.0ms | 3.74MB |
+| 395 | factors-of-an-integer | ✓ | 2.06s | 3.54MB |
+| 396 | fairshare-between-two-and-more | ✓ | 3.82s | 3.80MB |
+| 397 | farey-sequence | ✓ | 1.0ms | 3.72MB |
+| 398 | fast-fourier-transform | ✓ | 471.0µs | 3.61MB |
+| 399 | fasta-format | ✓ | 260.0µs | 3.61MB |
+| 400 | faulhabers-formula |   |  |  |
+| 401 | faulhabers-triangle |   |  |  |
+| 402 | feigenbaum-constant-calculation | ✓ | 1.0ms | 3.78MB |
+| 403 | fermat-numbers |   |  |  |
+| 404 | fibonacci-n-step-number-sequences |   |  |  |
+| 405 | fibonacci-sequence-1 | ✓ | 1.0µs | 3.45MB |
+| 406 | fibonacci-sequence-2 |   |  |  |
+| 407 | fibonacci-sequence-3 | ✓ | 2.0µs | 3.56MB |
+| 408 | fibonacci-sequence-4 | ✓ | 252.0µs | 3.58MB |
+| 409 | fibonacci-sequence-5 | ✓ | 404.0µs | 3.63MB |
+| 410 | fibonacci-word-fractal | ✓ | 1.0ms | 3.80MB |
 | 411 | fibonacci-word | ✓ |  |  |
 | 412 | file-extension-is-in-extensions-list | ✓ |  |  |
 | 413 | file-input-output-1 |   |  |  |
