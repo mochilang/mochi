@@ -38,6 +38,8 @@ var usesSHA256 bool
 var usesAppend bool
 var usesLen bool
 var usesSplit bool
+var usesFetch bool
+var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
 var currentUpdated map[string]bool
@@ -76,6 +78,8 @@ type Program struct {
 	UseAppend     bool
 	UseLen        bool
 	UseSplit      bool
+	UseFetch      bool
+	FetchStructs  map[string]bool
 }
 
 type Stmt interface{ emit(io.Writer) }
@@ -163,7 +167,7 @@ type StructField struct {
 }
 
 func (sd *StructDef) emit(w io.Writer) {
-	fmt.Fprintf(w, "struct %s {\n", sd.Name)
+	fmt.Fprintf(w, "struct %s: Codable {\n", sd.Name)
 	for _, f := range sd.Fields {
 		fmt.Fprintf(w, "    var %s: %s\n", f.Name, f.Type)
 	}
@@ -1888,6 +1892,21 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return s.components(separatedBy: d)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseFetch {
+		buf.WriteString("func _fetch(_ url: String) -> Any {\n")
+		buf.WriteString("    let u = URL(string: url)!\n")
+		buf.WriteString("    let data = try! Data(contentsOf: u)\n")
+		buf.WriteString("    let obj = try! JSONSerialization.jsonObject(with: data, options: [])\n")
+		buf.WriteString("    return obj\n")
+		buf.WriteString("}\n")
+		for name := range p.FetchStructs {
+			buf.WriteString(fmt.Sprintf("func _fetch_%s(_ url: String) -> %s {\n", name, name))
+			buf.WriteString("    let u = URL(string: url)!\n")
+			buf.WriteString("    let data = try! Data(contentsOf: u)\n")
+			buf.WriteString(fmt.Sprintf("    return try! JSONDecoder().decode(%s.self, from: data)\n", name))
+			buf.WriteString("}\n")
+		}
+	}
 	if p.UseBigInt {
 		buf.WriteString("struct BigInt: Comparable, CustomStringConvertible {\n")
 		buf.WriteString("    private var digits: [UInt32] = []\n")
@@ -2046,6 +2065,8 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesAppend = false
 	usesLen = false
 	usesSplit = false
+	usesFetch = false
+	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
 	p := &Program{}
@@ -2056,7 +2077,15 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	if benchMain {
 		usesNow = true
 		usesMem = true
-		stmts = []Stmt{&BenchStmt{Name: "main", Body: stmts}}
+		var prefix, body []Stmt
+		for _, st := range stmts {
+			if isTypeStmt(st) {
+				prefix = append(prefix, st)
+			} else {
+				body = append(body, st)
+			}
+		}
+		stmts = append(prefix, &BenchStmt{Name: "main", Body: body})
 	}
 	p.Stmts = stmts
 	p.UseNow = usesNow
@@ -2073,6 +2102,8 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseAppend = usesAppend
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
+	p.UseFetch = usesFetch
+	p.FetchStructs = fetchStructs
 	return p, nil
 }
 
@@ -2331,7 +2362,23 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 		var err error
 		var typ string
 		if st.Let.Value != nil {
-			if st.Let.Type != nil && (types.IsEmptyListLiteral(st.Let.Value) || isEmptyMapLiteral(st.Let.Value) || isNullLiteral(st.Let.Value)) {
+			if f := fetchExprOnly(st.Let.Value); f != nil {
+				urlExpr, err2 := convertExpr(env, f.URL)
+				if err2 != nil {
+					return nil, err2
+				}
+				usesFetch = true
+				if st.Let.Type != nil {
+					typ = toSwiftType(st.Let.Type)
+					if fetchStructs == nil {
+						fetchStructs = map[string]bool{}
+					}
+					fetchStructs[typ] = true
+					ex = &CallExpr{Func: "_fetch_" + typ, Args: []Expr{urlExpr}}
+				} else {
+					ex = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+				}
+			} else if st.Let.Type != nil && (types.IsEmptyListLiteral(st.Let.Value) || isEmptyMapLiteral(st.Let.Value) || isNullLiteral(st.Let.Value)) {
 				ex = zeroValue(st.Let.Type)
 			} else {
 				ex, err = convertExpr(env, st.Let.Value)
@@ -2344,8 +2391,7 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 			} else if env != nil {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				typ = swiftTypeOf(t)
-				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) &&
-					!types.IsMapType(t) && !types.IsListType(t) {
+				if !types.IsEmptyListLiteral(st.Let.Value) && !isEmptyMapLiteral(st.Let.Value) && !types.IsMapType(t) && !types.IsListType(t) {
 					typ = ""
 				}
 			}
@@ -4695,6 +4741,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 		return convertMatchExpr(env, pr.Match)
 	case pr.Query != nil:
 		return convertQueryExpr(env, pr.Query)
+	case pr.Fetch != nil:
+		urlExpr, err := convertExpr(env, pr.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesFetch = true
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case pr.Load != nil:
 		format := parseFormat(pr.Load.With)
 		path := ""
@@ -4791,6 +4844,35 @@ func zeroValue(t *parser.TypeRef) Expr {
 	default:
 		return &LitExpr{Value: toSwiftType(t) + "()", IsString: false}
 	}
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
+}
+
+func isTypeStmt(st Stmt) bool {
+	switch s := st.(type) {
+	case *StructDef, *UnionDef:
+		return true
+	case *BlockStmt:
+		if len(s.Stmts) > 0 {
+			switch s.Stmts[0].(type) {
+			case *StructDef, *UnionDef:
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func isEmptyMapLiteral(e *parser.Expr) bool {

@@ -1,0 +1,51 @@
+signal: illegal instruction
+main/main.swift:62: Fatal error: 'try!' expression unexpectedly raised an error: Error Domain=NSCocoaErrorDomain Code=262 "The specified URL type isn’t supported."
+
+*** Signal 4: Backtracing from 0x7f7de4312288... done ***
+
+*** Program crashed: Illegal instruction at 0x00007f7de4312288 ***
+
+Thread 0 "main" crashed:
+
+0      0x00007f7de4312288 _assertionFailure(_:_:file:line:flags:) + 264 in libswiftCore.so
+1 [ra] 0x00007f7de43465e6 swift_unexpectedError + 805 in libswiftCore.so
+2 [ra] 0x000055bf81366f1c _fetch_Todo(_:) + 699 in main
+3 [ra] 0x000055bf81366b1b main #1 () in  + 58 in main
+4 [ra] 0x000055bf813694b9 main + 152 in main
+5 [ra] 0x00007f7de2c461ca <unknown> in libc.so.6
+6 [ra] 0x00007f7de2c4628b <unknown> in libc.so.6
+
+
+Registers:
+
+rax 0x0000000200000003  8589934595
+rdx 0x0000000000000002  2
+rcx 0xfffffffe00000000  18446744065119617024
+rbx 0x0000000000000003  3
+rsi 0x000055bf9dcd3b48  03 00 00 00 00 00 00 00 90 00 00 00 00 00 00 80  ················
+rdi 0x000055bf9dcd8100  00 00 00 00 00 00 00 00 a1 00 00 00 00 00 00 00  ········¡·······
+rbp 0x00007ffc618efbb0  60 fc 8e 61 fc 7f 00 00 e6 65 34 e4 7d 7f 00 00  `ü·aü···æe4ä}···
+rsp 0x00007ffc618efb40  50 fb 8e 61 fc 7f 00 00 4b 93 23 e4 7d 7f 00 00  Pû·aü···K·#ä}···
+ r8 0x000055bf9dcc0010  07 00 06 00 06 00 07 00 07 00 07 00 02 00 02 00  ················
+ r9 0x0000000000000007  7
+r10 0x000055bf9dcd8110  78 ee 34 c6 ba 55 00 00 31 4f 7c 2f c5 8f 8b 67  xî4ÆºU··1O|/Å··g
+r11 0x678b8fc52f7c4f31  7461215284737363761
+r12 0x000055bf9dcd3b40  d8 03 5e e4 7d 7f 00 00 03 00 00 00 00 00 00 00  Ø·^ä}···········
+r13 0x00007ffc618efc28  84 00 00 00 00 00 00 30 40 3b cd 9d bf 55 00 00  ·······0@;Í·¿U··
+r14 0x0000000000000000  0
+r15 0x0000000000000084  132
+rip 0x00007f7de4312288  0f 0b 48 8d 35 4f 5c fb ff 48 8d 55 a0 45 31 e4  ··H·5O\ûÿH·U E1ä
+
+rflags 0x0000000000010202  
+
+cs 0x0033  fs 0x0000  gs 0x0000
+
+
+Images (17 omitted):
+
+0x000055bf81362000–0x000055bf8136ad98 c677014917397acc4b29015f868b68f09307c6bd main            /tmp/TestSwiftTranspiler_Rosetta_Golden2620185384/001/main
+0x00007f7de2c1c000–0x00007f7de2dcbcb9 282c2c16e7b6600b0b22ea0c99010d2795752b5f libc.so.6       /usr/lib/x86_64-linux-gnu/libc.so.6
+0x00007f7de4036000–0x00007f7de45c52d8 7bd479aa5e6f57e6772da70789dcdfa25d5e29b0 libswiftCore.so /root/.local/share/mise/installs/swift/6.1/usr/lib/swift/linux/libswiftCore.so
+
+Backtrace took 0.11s
+
