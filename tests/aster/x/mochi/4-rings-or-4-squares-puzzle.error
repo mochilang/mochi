@@ -1,0 +1,8 @@
+error[A001]: var valid missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/4-rings-or-4-squares-puzzle.mochi:26:3
+
+ 26 |   var valid = []
+    |   ^
+
+help:
+  Declare valid with a value

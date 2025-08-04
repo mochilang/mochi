@@ -1,0 +1,110 @@
+type Rational {
+  num: int
+  denom: int
+}
+let OP_ADD: int = 1
+let OP_SUB: int = 2
+let OP_MUL: int = 3
+let OP_DIV: int = 4
+type Node {
+  val: Rational
+  txt: string
+}
+fun makeNode(n: int): Node {
+  return Node {val: Rational {num: n, denom: 1}, txt: str(n)}
+}
+fun combine(op: int, l: Node, r: Node): Node {
+  var res: Rational
+  if (op == OP_ADD) {
+    res = Rational {num: ((l.val.num * r.val.denom) + (l.val.denom * r.val.num)), denom: (l.val.denom * r.val.denom)}
+  } else   if (op == OP_SUB) {
+    res = Rational {num: ((l.val.num * r.val.denom) - (l.val.denom * r.val.num)), denom: (l.val.denom * r.val.denom)}
+  } else   if (op == OP_MUL) {
+    res = Rational {num: (l.val.num * r.val.num), denom: (l.val.denom * r.val.denom)}
+  } else {
+    res = Rational {num: (l.val.num * r.val.denom), denom: (l.val.denom * r.val.num)}
+  }
+  var opstr: string = ""
+  if (op == OP_ADD) {
+    opstr = " + "
+  } else   if (op == OP_SUB) {
+    opstr = " - "
+  } else   if (op == OP_MUL) {
+    opstr = " * "
+  } else {
+    opstr = " / "
+  }
+  return Node {val: res, txt: (((("(" + l.txt) + opstr) + r.txt) + ")")}
+}
+fun exprEval(x: Node): Rational {
+  return x.val
+}
+fun exprString(x: Node): string {
+  return x.txt
+}
+let n_cards: int = 4
+let goal: int = 24
+let digit_range: int = 9
+fun solve(xs: list<Node>): bool {
+  if (len(xs) == 1) {
+    let f: Rational = exprEval(xs[0])
+    if ((f.denom != 0) && (f.num == (f.denom * goal))) {
+      print(exprString(xs[0]))
+      return true
+    }
+    return false
+  }
+  var i: int = 0
+  while (i < len(xs)) {
+    var j: int = (i + 1)
+    while (j < len(xs)) {
+      var rest: list<Node>
+      var k: int = 0
+      while (k < len(xs)) {
+        if ((k != i) && (k != j)) {
+          rest = append(rest, xs[k])
+        }
+        k = (k + 1)
+      }
+      let a: Node = xs[i]
+      let b: Node = xs[j]
+      var node: Node
+      for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
+        node = combine(op, a, b)
+        if solve(append(rest, node)) {
+          return true
+        }
+      }
+      node = combine(OP_SUB, b, a)
+      if solve(append(rest, node)) {
+        return true
+      }
+      node = combine(OP_DIV, b, a)
+      if solve(append(rest, node)) {
+        return true
+      }
+      j = (j + 1)
+    }
+    i = (i + 1)
+  }
+  return false
+}
+fun main(): any {
+  var iter: int = 0
+  while (iter < 10) {
+    var cards: list<Node>
+    var i: int = 0
+    while (i < n_cards) {
+      let n: int = (((now() % ((digit_range - 1)))) + 1)
+      cards = append(cards, makeNode(n))
+      print((" " + str(n)))
+      i = (i + 1)
+    }
+    print(":  ")
+    if !solve(cards) {
+      print("No solution")
+    }
+    iter = (iter + 1)
+  }
+}
+main()

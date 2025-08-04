@@ -8,9 +8,7 @@ import (
 
 // Option controls how AST nodes are generated.
 type Option struct {
-	// WithPositions populates the positional fields when true. Since the
-	// underlying AST currently lacks precise offsets these fields remain
-	// zero even when requested.
+	// WithPositions populates the positional fields when true.
 	WithPositions bool
 }
 
@@ -75,8 +73,10 @@ func convert(n *mochiast.Node, withPos bool) *Node {
 		node.Text = fmt.Sprint(n.Value)
 	}
 	if withPos {
-		// The mochi/ast package does not currently retain precise
-		// position information so the fields remain zero.
+		node.Start = n.Pos.Line
+		if n.Pos.Column > 0 {
+			node.StartCol = n.Pos.Column - 1
+		}
 	}
 	for _, c := range n.Children {
 		if child := convert(c, withPos); child != nil {

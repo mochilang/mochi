@@ -1,0 +1,105 @@
+fun fields(s: string): list<string> {
+  var words: list<string>
+  var cur: string = ""
+  var i: int = 0
+  while (i < len(s)) {
+    let ch: any = substring(s, i, (i + 1))
+    if (((ch == " ") || (ch == "\n")) || (ch == "\t")) {
+      if (len(cur) > 0) {
+        words = append(words, cur)
+        cur = ""
+      }
+    } else {
+      cur = (cur + ch)
+    }
+    i = (i + 1)
+  }
+  if (len(cur) > 0) {
+    words = append(words, cur)
+  }
+  return words
+}
+fun padRight(s: string, width: int): string {
+  var out: string = s
+  var i: int = len(s)
+  while (i < width) {
+    out = (out + " ")
+    i = (i + 1)
+  }
+  return out
+}
+fun join(xs: list<string>, sep: string): string {
+  var res: string = ""
+  var i: int = 0
+  while (i < len(xs)) {
+    if (i > 0) {
+      res = (res + sep)
+    }
+    res = (res + xs[i])
+    i = (i + 1)
+  }
+  return res
+}
+fun validate(commands: list<string>, words: list<string>, mins: list<int>): list<string> {
+  var results: list<string>
+  if (len(words) == 0) {
+    return results
+  }
+  var wi: int = 0
+  while (wi < len(words)) {
+    let w: string = words[wi]
+    var found: bool = false
+    let wlen: int = len(w)
+    var ci: int = 0
+    while (ci < len(commands)) {
+      let cmd: string = commands[ci]
+      if (((mins[ci] != 0) && (wlen >= mins[ci])) && (wlen <= len(cmd))) {
+        let c: any = upper(cmd)
+        let ww: any = upper(w)
+        if (substring(c, 0, wlen) == ww) {
+          results = append(results, c)
+          found = true
+          break
+        }
+      }
+      ci = (ci + 1)
+    }
+    if !found {
+      results = append(results, "*error*")
+    }
+    wi = (wi + 1)
+  }
+  return results
+}
+fun main(): any {
+  let table: string = (((((("Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ") + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ") + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ") + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ") + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ") + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp ")
+  let commands: list<string> = fields(table)
+  var mins: list<int>
+  var i: int = 0
+  while (i < len(commands)) {
+    var count: int = 0
+    var j: int = 0
+    let cmd: string = commands[i]
+    while (j < len(cmd)) {
+      let ch: any = substring(cmd, j, (j + 1))
+      if ((ch >= "A") && (ch <= "Z")) {
+        count = (count + 1)
+      }
+      j = (j + 1)
+    }
+    mins = append(mins, count)
+    i = (i + 1)
+  }
+  let sentence: string = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+  let words: list<string> = fields(sentence)
+  let results: list<string> = validate(commands, words, mins)
+  var out1: string = "user words:  "
+  var k: int = 0
+  while (k < len(words)) {
+    out1 = ((out1 + padRight(words[k], len(results[k]))) + " ")
+    k = (k + 1)
+  }
+  print(out1)
+  print(("full words:  " + join(results, " ")))
+}
+main()

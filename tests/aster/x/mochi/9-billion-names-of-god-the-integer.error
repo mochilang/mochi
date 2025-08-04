@@ -1,0 +1,8 @@
+error[A011]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/9-billion-names-of-god-the-integer.mochi:63:20
+
+ 63 |   var i = count(a) - 1
+    |                    ^
+
+help:
+  Use numeric operands
