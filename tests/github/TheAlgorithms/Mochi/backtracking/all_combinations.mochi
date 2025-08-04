@@ -1,0 +1,32 @@
+/*
+Generate all combinations of k numbers chosen from the range 1..n using
+backtracking. The algorithm explores a state-space tree where each level
+selects the next number to include. Starting from a given increment, it
+recursively appends candidates while ensuring there are enough remaining
+numbers to fill the combination. When the desired length is reached, the
+current list is added to the result. This visits C(n, k) states, so the
+time complexity is O(C(n, k)) and the space complexity is O(k) for the
+recursion stack.
+*/
+
+fun create_all_state(increment: int, total: int, level: int, current: list<int>, result: list<list<int>>): list<list<int>> {
+  if level == 0 {
+    return append(result, current)
+  }
+  var i = increment
+  while i <= total - level + 1 {
+    let next_current = append(current, i)
+    result = create_all_state(i + 1, total, level - 1, next_current, result)
+    i = i + 1
+  }
+  return result
+}
+
+fun generate_all_combinations(n: int, k: int): list<list<int>> {
+  if k < 0 || n < 0 { return [] }
+  let result: list<list<int>> = []
+  return create_all_state(1, n, k, [], result)
+}
+
+print(str(generate_all_combinations(4, 2)))
+print(str(generate_all_combinations(3, 1)))
