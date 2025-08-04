@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (348/491)
-_Last updated: 2025-08-04 22:33 +0700_
+## Rosetta Test Checklist (349/491)
+_Last updated: 2025-08-05 00:37 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -473,7 +473,7 @@ _Last updated: 2025-08-04 22:33 +0700_
 | 465 | ftp |  |  |  |
 | 466 | function-frequency | ✓ | 347.04ms | 249.1 KB |
 | 467 | function-prototype | ✓ | 1us | 0 B |
-| 468 | functional-coverage-tree |  |  |  |
+| 468 | functional-coverage-tree | ✓ | 918us | 46.0 KB |
 | 469 | fusc-sequence |  |  |  |
 | 470 | gamma-function |  |  |  |
 | 471 | general-fizzbuzz |  |  |  |
