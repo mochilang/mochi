@@ -145,6 +145,7 @@ func init() {
     else -> v.toString().length
 }`,
 		"expect":       `fun expect(cond: Boolean) { if (!cond) throw RuntimeException("expect failed") }`,
+		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
 		"importBigInt": `import java.math.BigInteger`,
 		"_now": `var _nowSeed = 0L
