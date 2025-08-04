@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 214/491
-Last updated: 2025-08-04 15:31 +0700
+Completed: 224/491
+Last updated: 2025-08-04 16:09 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -226,16 +226,16 @@ Last updated: 2025-08-04 15:31 +0700
 | 219 | conditional-structures-5 | ✓ | 29.846ms | 18.3 MB |
 | 220 | conditional-structures-6 | ✓ | 25.058ms | 18.4 MB |
 | 221 | conditional-structures-7 | ✓ | 33.216ms | 19.0 MB |
-| 222 | conditional-structures-8 |   |  |  |
-| 223 | conditional-structures-9 |   |  |  |
-| 224 | consecutive-primes-with-ascending-or-descending-differences |   |  |  |
-| 225 | constrained-genericity-1 |   |  |  |
-| 226 | constrained-genericity-2 |   |  |  |
-| 227 | constrained-genericity-3 |   |  |  |
-| 228 | constrained-genericity-4 |   |  |  |
-| 229 | constrained-random-points-on-a-circle-1 |   |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |   |  |  |
-| 231 | continued-fraction |   |  |  |
+| 222 | conditional-structures-8 | ✓ | 29.948ms | 18.3 MB |
+| 223 | conditional-structures-9 | ✓ | 28.313ms | 18.6 MB |
+| 224 | consecutive-primes-with-ascending-or-descending-differences | ✓ | 532.454ms | 192.7 MB |
+| 225 | constrained-genericity-1 | ✓ | 26.403ms | 18.2 MB |
+| 226 | constrained-genericity-2 | ✓ | 24.273ms | 18.1 MB |
+| 227 | constrained-genericity-3 | ✓ | 26.501ms | 18.1 MB |
+| 228 | constrained-genericity-4 | ✓ | 28.437ms | 18.7 MB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 56.389ms | 20.3 MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 62.186ms | 20.7 MB |
+| 231 | continued-fraction | ✓ | 33.341ms | 21.2 MB |
 | 232 | convert-decimal-number-to-rational |   |  |  |
 | 233 | convert-seconds-to-compound-duration |   |  |  |
 | 234 | convex-hull |   |  |  |
