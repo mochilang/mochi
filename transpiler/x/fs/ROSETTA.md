@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (399/491)
+## Rosetta Golden Test Checklist (402/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -417,10 +417,10 @@ This file is auto-generated from rosetta tests.
 | 410 | fibonacci-word-fractal | ✓ | 336µs | 44.0 KB |
 | 411 | fibonacci-word | ✓ | 141.333ms | 46.1 MB |
 | 412 | file-extension-is-in-extensions-list | ✓ | 727µs | 64.8 KB |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
+| 413 | file-input-output-1 | ✓ | 278µs | 20.7 KB |
+| 414 | file-input-output-2 | ✓ | 286µs | 33.7 KB |
 | 415 | file-input-output-3 | ✓ | 216µs | 30.5 KB |
-| 416 | file-modification-time |   |  |  |
+| 416 | file-modification-time | ✓ | 308µs | 25.8 KB |
 | 417 | file-size-distribution | ✓ | 357µs | 50.5 KB |
 | 418 | file-size | ✓ | 457µs | 67.2 KB |
 | 419 | filter | ✓ | 336µs | 45.4 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-05 00:29 +0700
+Last updated: 2025-08-05 00:41 +0700

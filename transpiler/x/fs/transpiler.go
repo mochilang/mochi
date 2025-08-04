@@ -272,7 +272,7 @@ func fsTypeFromString(s string) string {
 	case "int":
 		return "int"
 	case "int64":
-		return "int"
+		return "int64"
 	case "float":
 		return "float"
 	case "bool":
@@ -1826,7 +1826,10 @@ type IntLit struct{ Value int64 }
 
 func (i *IntLit) emit(w io.Writer) {
 	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "(int %dL)", i.Value)
+		// Emit as a 64-bit literal to avoid overflow when the value
+		// exceeds the range of a 32-bit int. Using the L suffix keeps
+		// the literal as int64 without an unnecessary cast.
+		fmt.Fprintf(w, "%dL", i.Value)
 	} else {
 		fmt.Fprintf(w, "%d", i.Value)
 	}
@@ -1985,13 +1988,9 @@ func needsParen(e Expr) bool {
 func inferType(e Expr) string {
 	switch v := e.(type) {
 	case *IntLit:
-		if v.Value > math.MaxInt32 {
-			if v.Value <= math.MaxUint32 {
-				return "int"
-			}
-			return "int64"
-		}
-		if v.Value < math.MinInt32 {
+		// Values outside the 32-bit signed range must be treated as
+		// int64 to avoid overflow in generated F# code.
+		if v.Value > math.MaxInt32 || v.Value < math.MinInt32 {
 			return "int64"
 		}
 		return "int"
