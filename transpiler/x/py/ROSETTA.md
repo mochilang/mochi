@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-03 16:25 GMT+7
+Last updated: 2025-08-04 15:38 GMT+7
 
 ## Rosetta Golden Test Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -288,16 +288,16 @@ Last updated: 2025-08-03 16:25 GMT+7
 | 279 | deconvolution-1d-3 | ✓ | 73.0µs | 14.13MB |
 | 280 | deconvolution-1d | ✓ | 58.0µs | 14.25MB |
 | 281 | deepcopy-1 | ✓ | 680.0µs | 14.25MB |
-| 282 | define-a-primitive-data-type | ✓ |  |  |
-| 283 | delegates | ✓ | 419.0µs | 14.26MB |
-| 284 | demings-funnel | ✓ | 566.0µs | 15.26MB |
-| 285 | department-numbers | ✓ | 81.0µs | 15.26MB |
-| 286 | descending-primes | ✓ | 2.0ms | 15.26MB |
-| 287 | detect-division-by-zero | ✓ | 12.0µs | 15.26MB |
-| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 120.0µs | 15.26MB |
-| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 188.0µs | 13.41MB |
-| 290 | determine-if-a-string-is-collapsible | ✓ | 162.0µs | 12.96MB |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ | 28.0µs | 12.72MB |
+| 282 | define-a-primitive-data-type | ✓ | 30.0µs | 12.55MB |
+| 283 | delegates | ✓ | 645.0µs | 12.85MB |
+| 284 | demings-funnel | ✓ | 549.0µs | 14.01MB |
+| 285 | department-numbers | ✓ | 55.0µs | 12.67MB |
+| 286 | descending-primes | ✓ | 2.0ms | 12.98MB |
+| 287 | detect-division-by-zero | ✓ | 14.0µs | 12.74MB |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 97.0µs | 13.31MB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 126.0µs | 12.86MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 114.0µs | 13.04MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 20.0µs | 12.55MB |
 | 292 | determine-if-a-string-is-numeric-2 | ✓ | 15.0µs | 12.44MB |
 | 293 | determine-if-a-string-is-squeezable | ✓ | 332.0µs | 12.49MB |
 | 294 | determine-if-only-one-instance-is-running | ✓ | 30.0µs | 12.30MB |

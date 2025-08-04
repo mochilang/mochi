@@ -1,9 +1,5 @@
-t1      = 6
-t2      = 3
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/define-a-primitive-data-type.py", line 75, in <module>
-    main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/define-a-primitive-data-type.py", line 65, in main
-    print("t1 + t2 = " + str(t1.Add(t2).get("value")))
-                             ^^^^^^^^^^^^^^
-AttributeError: 'TinyInt' object has no attribute 'get'
+{
+  "duration_us": 30,
+  "memory_bytes": 13156352,
+  "name": "main"
+}
