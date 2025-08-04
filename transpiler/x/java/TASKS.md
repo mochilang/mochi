@@ -1,4 +1,8 @@
-## Progress (2025-08-02 17:58 +0700)
+## Progress (2025-08-04 21:28 +0700)
+- fix java transpiler string comparisons (1601cd716f)
+
+- fix java transpiler string comparisons (1601cd716f)
+
 - fix java transpiler ref var init and add rosetta outputs (5e9500e288)
 
 - fix java transpiler ref var init and add rosetta outputs (5e9500e288)
