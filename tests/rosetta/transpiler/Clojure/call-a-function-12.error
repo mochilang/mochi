@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/call-a-function-12.clj:18:45).
-Unable to resolve symbol: mkAdd_b in this context
-
-Full report at:
-/tmp/clojure-10282833625033430842.edn

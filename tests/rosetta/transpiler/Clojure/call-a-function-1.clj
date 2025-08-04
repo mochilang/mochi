@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [mapString main]))
+(ns main (:refer-clojure :exclude [f g h]))
 
 (require 'clojure.set)
 
@@ -10,21 +10,22 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare mapString main)
+(declare f g h)
 
-(declare main_fn mapString_i mapString_out)
+(defn f []
+  (try (throw (ex-info "return" {:v [0 0.0]})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn mapString [mapString_s mapString_f]
-  (try (do (def mapString_out "") (def mapString_i 0) (while (< mapString_i (count mapString_s)) (do (def mapString_out (str mapString_out (mapString_f (subs mapString_s mapString_i (+ mapString_i 1))))) (def mapString_i (+ mapString_i 1)))) (throw (ex-info "return" {:v mapString_out}))) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn g [g_a g_b]
+  (try (throw (ex-info "return" {:v 0})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
-(defn main []
-  (do (def main_fn (fn [r] (if (= r " ") "" r))) (mapString "Spaces removed" main_fn) (mapString "Test" (fn [r] (clojure.string/lower-case r))) (mapString "shift" (fn [r] r))))
+(defn h [h_s h_nums]
+  (do))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)
     start-mem (- (.totalMemory rt) (.freeMemory rt))
     start (System/nanoTime)]
-      (main)
+
       (System/gc)
       (let [end (System/nanoTime)
         end-mem (- (.totalMemory rt) (.freeMemory rt))
