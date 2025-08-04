@@ -3294,6 +3294,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		alias := pf.Target.Selector.Root
 		method := pf.Target.Selector.Tail[0]
+		if alias == "stdout" && method == "write" && len(args) == 1 {
+			return &CallExpr{Func: "IO.write", Args: args}, nil
+		}
 		if alias == "os" {
 			if (method == "Getenv" || method == "GetEnv") && len(args) == 1 {
 				return &CallExpr{Func: "_getenv", Args: args}, nil
@@ -3407,10 +3410,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				typ = tt.Value
 			default:
-				if _, ok := types.TypeOfExpr(op.Index.Start, env).(types.StringType); ok {
-					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
-				} else {
+				idxType := types.TypeOfExpr(op.Index.Start, env)
+				if _, ok := idxType.(types.IntType); ok {
 					expr = &IndexExpr{Target: expr, Index: idx}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
 				}
 				typ = types.AnyType{}
 			}
@@ -3877,6 +3881,9 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				k, err = compileExpr(it.Key, env)
 				if err != nil {
 					return nil, err
+				}
+				if s, ok := k.(*StringLit); ok {
+					k = &AtomLit{Name: s.Value}
 				}
 			}
 			v, err := compileExpr(it.Value, env)
