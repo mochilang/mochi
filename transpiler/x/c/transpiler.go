@@ -530,6 +530,27 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
+	if call, ok := r.Expr.(*CallExpr); ok && strings.HasSuffix(currentFuncReturn, "[]") && !(call.Func == "append" && len(call.Args) == 2) {
+		tmp := fmt.Sprintf("__ret%d", tempCounter)
+		tempCounter++
+		decl := listPtrType(currentFuncReturn)
+		writeIndent(w, indent)
+		io.WriteString(w, "{\n")
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "%s %s = ", decl, tmp)
+		call.emitExpr(w)
+		io.WriteString(w, ";\n")
+		writeIndent(w, indent+1)
+		if strings.HasSuffix(currentFuncReturn, "[][]") {
+			fmt.Fprintf(w, "%s_lens = %s_lens;\n", currentFuncName, call.Func)
+		}
+		fmt.Fprintf(w, "%s_len = %s_len;\n", currentFuncName, call.Func)
+		writeIndent(w, indent+1)
+		fmt.Fprintf(w, "return %s;\n", tmp)
+		writeIndent(w, indent)
+		io.WriteString(w, "}\n")
+		return
+	}
 	if lst, ok := r.Expr.(*ListLit); ok && strings.HasSuffix(currentFuncReturn, "[]") {
 		base := strings.TrimSuffix(currentFuncReturn, "[]")
 		if strings.HasSuffix(base, "[]") {
@@ -654,8 +675,8 @@ func (r *ReturnStmt) emit(w io.Writer, indent int) {
 
 func (d *DeclStmt) emit(w io.Writer, indent int) {
 	typ := d.Type
-	if typ == "" {
-		typ = "int"
+	if typ == "" || typ == "int" {
+		typ = "long long"
 	}
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][]") {
@@ -830,11 +851,17 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 		}
 		if call, ok := d.Value.(*CallExpr); ok {
 			if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
-				writeIndent(w, indent)
-				fmt.Fprintf(w, "size_t %s_len = 0;\n", d.Name)
 				fmt.Fprintf(w, "%s *%s = ", base, d.Name)
 				d.Value.emitExpr(w)
 				io.WriteString(w, ";\n")
+				writeIndent(w, indent)
+				sliceLen := "_slice_int_len"
+				if call.Func == "_slice_double" {
+					sliceLen = "_slice_double_len"
+				} else if call.Func == "_slice_str" {
+					sliceLen = "_slice_str_len"
+				}
+				fmt.Fprintf(w, "size_t %s_len = %s;\n", d.Name, sliceLen)
 				return
 			}
 			fmt.Fprintf(w, "%s *%s = ", base, d.Name)
@@ -1074,6 +1101,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 
 	if call, ok := a.Value.(*CallExpr); ok {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
+			sliceLen := "_slice_int_len"
+			if call.Func == "_slice_double" {
+				sliceLen = "_slice_double_len"
+			} else if call.Func == "_slice_str" {
+				sliceLen = "_slice_str_len"
+			}
+			writeIndent(w, indent)
+			if _, declared := varTypes[a.Name]; declared {
+				fmt.Fprintf(w, "%s_len = %s;\n", a.Name, sliceLen)
+			} else {
+				fmt.Fprintf(w, "size_t %s_len = %s;\n", a.Name, sliceLen)
+			}
 			return
 		}
 		if strings.HasSuffix(funcReturnTypes[call.Func], "[]") {
