@@ -1000,6 +1000,14 @@ func convertStmt(st *parser.Statement) (Node, error) {
 // print statements with string literals.
 func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	currentEnv = env
+	// Reset per-run state to ensure previous transpilation artifacts do not
+	// leak into subsequent runs when the transpiler is reused. This mirrors
+	// the fresh environment used by the tests for each Rosetta example.
+	breakStack = nil
+	continueStack = nil
+	returnStack = nil
+	gensymCounter = 0
+
 	needBase = false
 	needHash = false
 	usesInput = false

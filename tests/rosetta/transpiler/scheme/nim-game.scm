@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 21:29 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -7,6 +7,9 @@
 (import (srfi 1))
 (define _list list)
 (import (chibi io))
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -91,7 +94,4 @@
 (define (_input)
   (let ((l (read-line)))
     (if (eof-object? l) "" l)))
-(define (parseIntStr str) (call/cc (lambda (ret1) (let ((i 0)) (begin (let ((neg #f)) (begin (if (and (> (_len str) 0) (string=? (_substring str 0 1) "-")) (begin (set! neg #t) (set! i 1)) (quote ())) (let ((n 0)) (begin (let ((digits (alist->hash-table (_list (cons "0" 0) (cons "1" 1) (cons "2" 2) (cons "3" 3) (cons "4" 4) (cons "5" 5) (cons "6" 6) (cons "7" 7) (cons "8" 8) (cons "9" 9))))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i (_len str)) (begin (set! n (+ (* n 10) (cond ((string? digits) (_substring digits (_substring str i (+ i 1)) (+ (_substring str i (+ i 1)) 1))) ((hash-table? digits) (hash-table-ref digits (_substring str i (+ i 1)))) (else (list-ref digits (_substring str i (+ i 1))))))) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (if neg (begin (set! n (- n))) (quote ())) (ret1 n))))))))))))
-(define (showTokens tokens) (call/cc (lambda (ret4) (begin (_display (to-str (string-append "Tokens remaining " (to-str tokens)))) (newline)))))
-(define (main) (call/cc (lambda (ret5) (let ((tokens 12)) (begin (let ((done #f)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (not done) (begin (showTokens tokens) (_display (to-str "")) (newline) (_display (to-str "How many tokens 1, 2 or 3?")) (newline) (let ((line (_input))) (begin (let ((t 0)) (begin (if (> (_len line) 0) (begin (set! t (parseIntStr line))) (quote ())) (if (or (< t 1) (> t 3)) (begin (_display (to-str "\nMust be a number between 1 and 3, try again.\n")) (newline)) (begin (let ((ct (- 4 t))) (begin (let ((s "s")) (begin (if (equal? ct 1) (begin (set! s "")) (quote ())) (_display (to-str (string-append (string-append (string-append (string-append "  Computer takes " (to-str ct)) " token") s) "\n\n"))) (newline) (set! tokens (- tokens 4)))))))) (if (equal? tokens 0) (begin (showTokens 0) (_display (to-str "  Computer wins!")) (newline) (set! done #t)) (quote ())))))) (loop6)) (quote ()))))) (loop6)))))))))))
-(main)
+(let ((start8 (current-jiffy)) (jps11 (jiffies-per-second))) (begin (define (parseIntStr str) (call/cc (lambda (ret1) (let ((i 0)) (begin (let ((neg #f)) (begin (if (and (> (_len str) 0) (string=? (_substring str 0 1) "-")) (begin (set! neg #t) (set! i 1)) (quote ())) (let ((n 0)) (begin (let ((digits (alist->hash-table (_list (cons "0" 0) (cons "1" 1) (cons "2" 2) (cons "3" 3) (cons "4" 4) (cons "5" 5) (cons "6" 6) (cons "7" 7) (cons "8" 8) (cons "9" 9))))) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i (_len str)) (begin (set! n (+ (* n 10) (cond ((string? digits) (_substring digits (_substring str i (+ i 1)) (+ (_substring str i (+ i 1)) 1))) ((hash-table? digits) (hash-table-ref digits (_substring str i (+ i 1)))) (else (list-ref digits (_substring str i (+ i 1))))))) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (if neg (begin (set! n (- n))) (quote ())) (ret1 n)))))))))))) (define (showTokens tokens) (call/cc (lambda (ret4) (begin (_display (to-str (string-append "Tokens remaining " (to-str tokens)))) (newline))))) (define (main) (call/cc (lambda (ret5) (let ((tokens 12)) (begin (let ((done #f)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (not done) (begin (showTokens tokens) (_display (to-str "")) (newline) (_display (to-str "How many tokens 1, 2 or 3?")) (newline) (let ((line (_input))) (begin (let ((t 0)) (begin (if (> (_len line) 0) (begin (set! t (parseIntStr line))) (quote ())) (if (or (< t 1) (> t 3)) (begin (_display (to-str "\nMust be a number between 1 and 3, try again.\n")) (newline)) (begin (let ((ct (- 4 t))) (begin (let ((s "s")) (begin (if (equal? ct 1) (begin (set! s "")) (quote ())) (_display (to-str (string-append (string-append (string-append (string-append "  Computer takes " (to-str ct)) " token") s) "\n\n"))) (newline) (set! tokens (- tokens 4)))))))) (if (equal? tokens 0) (begin (showTokens 0) (_display (to-str "  Computer wins!")) (newline) (set! done #t)) (quote ())))))) (loop6)) (quote ()))))) (loop6))))))))))) (main) (let ((end9 (current-jiffy))) (let ((dur10 (quotient (* (- end9 start8) 1000000) jps11))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur10) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
