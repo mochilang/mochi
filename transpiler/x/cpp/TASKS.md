@@ -1,3 +1,8 @@
+## Progress (2025-08-05 02:12 +0700)
+- cpp: handle struct defaults and empty list types
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-05 01:42 +0700)
 - cpp: handle membership expression
 - Generated C++ for 103/105 programs
