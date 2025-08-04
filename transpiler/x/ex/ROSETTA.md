@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (219/491)
-_Last updated: 2025-08-04 10:22 +0700_
+## Rosetta Test Checklist (225/491)
+_Last updated: 2025-08-04 10:46 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -266,24 +266,24 @@ _Last updated: 2025-08-04 10:22 +0700_
 | 258 | csv-to-html-translation-2 | ✓ | 180us | 0 B |
 | 259 | csv-to-html-translation-3 | ✓ | 390us | 0 B |
 | 260 | csv-to-html-translation-4 | ✓ | 174us | 0 B |
-| 261 | csv-to-html-translation-5 | ✓ | 6.70ms | 130.8 KB |
-| 262 | cuban-primes | ✓ | 2.98s | 65.4 KB |
-| 263 | cullen-and-woodall-numbers | ✓ | 5.10ms | 25.0 KB |
-| 264 | cumulative-standard-deviation | ✓ | 1.74ms | 12.6 KB |
+| 261 | csv-to-html-translation-5 |  |  |  |
+| 262 | cuban-primes |  |  |  |
+| 263 | cullen-and-woodall-numbers |  |  |  |
+| 264 | cumulative-standard-deviation |  |  |  |
 | 265 | currency |  |  |  |
-| 266 | currying |  |  |  |
-| 267 | curzon-numbers |  |  |  |
-| 268 | cusip |  |  |  |
+| 266 | currying | ✓ | 5.13ms | 17.3 KB |
+| 267 | curzon-numbers | ✓ | 46.46ms | 9.5 KB |
+| 268 | cusip | ✓ | 838us | 17.3 KB |
 | 269 | cyclops-numbers |  |  |  |
-| 270 | damm-algorithm |  |  |  |
-| 271 | date-format |  |  |  |
-| 272 | date-manipulation |  |  |  |
-| 273 | day-of-the-week |  |  |  |
+| 270 | damm-algorithm | ✓ | 3.16ms | 7.7 KB |
+| 271 | date-format | ✓ | 3.59ms | 12.5 KB |
+| 272 | date-manipulation | ✓ | 911us | 12.5 KB |
+| 273 | day-of-the-week | ✓ | 5.41ms | 25.0 KB |
 | 274 | de-bruijn-sequences |  |  |  |
-| 275 | deal-cards-for-freecell |  |  |  |
+| 275 | deal-cards-for-freecell | ✓ | 3.12ms | 25.0 KB |
 | 276 | death-star |  |  |  |
-| 277 | deceptive-numbers |  |  |  |
-| 278 | deconvolution-1d-2 |  |  |  |
+| 277 | deceptive-numbers | ✓ | 21.55ms | 45.2 KB |
+| 278 | deconvolution-1d-2 | ✓ | 8.21ms | 25.0 KB |
 | 279 | deconvolution-1d-3 |  |  |  |
 | 280 | deconvolution-1d |  |  |  |
 | 281 | deepcopy-1 |  |  |  |

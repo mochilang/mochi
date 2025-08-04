@@ -1,5 +1,5 @@
-## Progress (2025-08-04 10:05 +0700)
-- Commit 416bd93d71: transpiler ex: add copy stdin to stdout 2
+## Progress (2025-08-04 10:46 +0700)
+- Commit 60dca8c3de: kt: add split helper and handle pow2/nullable vars
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
