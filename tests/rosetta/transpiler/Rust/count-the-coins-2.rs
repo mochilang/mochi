@@ -34,24 +34,29 @@ fn _mem() -> i64 {
     }
     0
 }
-static mut g_rows: Vec<Vec<String>> = Vec::new();
+static mut g_amount: i64 = 0;
 fn main() {
     unsafe {
-        g_rows = vec![];
+        g_amount = 1000;
                 let _start: i64 = _now();
-        let mut c: String = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Character,Speech\n", "The multitude,The messiah! Show us the messiah!\n"), "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n"), "The multitude,Who are you?\n"), "Brians mother,I'm his mother; that's who!\n"), "The multitude,Behold his mother! Behold his mother!").clone();
-        for line in c.split("\n").map(|x| x.to_string()).collect::<Vec<String>>() {
-            g_rows = { let mut _v = g_rows.clone().clone(); _v.push(line.split(",").map(|x| x.to_string()).collect::<Vec<String>>()); _v };
+        unsafe fn countChange(mut amount: i64) -> i64 {
+    let mut ways: Vec<i64> = vec![];
+    let mut i: i64 = 0;
+    while (i <= amount) {
+        ways = { let mut _v = ways.clone(); _v.push(0); _v };
+        i = (i + 1);
+    }
+    ways[0 as usize] = 1;
+    for coin in vec![100, 50, 25, 10, 5, 1].iter().cloned() {
+        let mut j: i64 = coin;
+        while (j <= amount) {
+            ways[j as usize] = (ways[j as usize] + ways[(j - coin) as usize]);
+            j = (j + 1);
         }
-        println!("{}", "<table>");
-        for row in g_rows.clone().iter() {
-            let mut cells: String = String::from("").clone();
-            for cell in row {
-                cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
-            }
-            println!("{}", format!("{}{}", format!("{}{}", "    <tr>", cells), "</tr>"));
-        }
-        println!("{}", "</table>");
+    }
+    return ways[amount as usize]
+};
+        println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "amount, ways to make change: ", g_amount.to_string()), " "), countChange(g_amount).to_string()));
         let _end: i64 = _now();
         let duration_us: i64 = ((_end - _start) / 1000);
         let memory_bytes: i64 = _mem();

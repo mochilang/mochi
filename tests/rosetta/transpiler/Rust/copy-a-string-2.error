@@ -1,0 +1,30 @@
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/copy-a-string-2.rs:52:32
+   |
+52 |         let duration_us: i64 = ((_end - _start) / 1000);
+   |                                ^                      ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+52 -         let duration_us: i64 = ((_end - _start) / 1000);
+52 +         let duration_us: i64 = (_end - _start) / 1000;
+   |
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/copy-a-string-2.rs:42:26
+   |
+42 |         g_pointer = vec![g_creature.clone()];
+   |                          ^^^^^^^^^^^^^^^^^^ expected `i64`, found `String`
+
+error[E0308]: mismatched types
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/copy-a-string-2.rs:47:33
+   |
+47 |         g_pointer[0 as usize] = "jellyfish";
+   |         ---------------------   ^^^^^^^^^^^ expected `i64`, found `&str`
+   |         |
+   |         expected due to the type of this binding
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0308`.
