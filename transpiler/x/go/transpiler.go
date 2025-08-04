@@ -5947,6 +5947,11 @@ func toGoType(t *parser.TypeRef, env *types.Env) string {
 				if _, ok := env.GetStruct(*t.Simple); ok {
 					return *t.Simple
 				}
+				if typ, ok := env.LookupType(*t.Simple); ok {
+					if gt := toGoTypeFromType(typ); gt != "" {
+						return gt
+					}
+				}
 			}
 		}
 	}
