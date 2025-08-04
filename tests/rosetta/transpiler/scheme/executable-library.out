@@ -1,0 +1,10 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+
+Hailstone sequence for the number 27:
+  has 112 elements
+  starts with [27 82 41 124]
+  ends with [8 4 2 1]
+
+77031 has the longest Hailstone sequence, its length being 351.

@@ -345,6 +345,11 @@ func header() []byte {
                   (loop (_substring r (+ idx (string-length del)) (string-length r))
                         (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))`
+	prelude += `
+(define (_len x)
+  (cond ((string? x) (string-length x))
+        ((hash-table? x) (hash-table-size x))
+        (else (length x))))`
 	if usesInput {
 		prelude += "\n(define (_input)\n  (let ((l (read-line)))\n    (if (eof-object? l) \"\" l)))"
 	}
@@ -2739,12 +2744,7 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("len expects 1 arg")
 			}
-			return &List{Elems: []Node{
-				Symbol("cond"),
-				&List{Elems: []Node{&List{Elems: []Node{Symbol("string?"), args[0]}}, &List{Elems: []Node{Symbol("string-length"), args[0]}}}},
-				&List{Elems: []Node{&List{Elems: []Node{Symbol("hash-table?"), args[0]}}, &List{Elems: []Node{Symbol("hash-table-size"), args[0]}}}},
-				&List{Elems: []Node{Symbol("else"), &List{Elems: []Node{Symbol("length"), args[0]}}}},
-			}}, nil
+			return &List{Elems: []Node{Symbol("_len"), args[0]}}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append expects 2 args")

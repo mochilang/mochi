@@ -1,0 +1,13 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+Testing integer  -2:  even even
+Testing integer  -1:   odd  odd
+Testing integer   0:  even even
+Testing integer   1:   odd  odd
+Testing integer   2:  even even
+Testing big integer -222222222222222222222222222222222222:  even
+Testing big integer -1:  odd
+Testing big integer 0:  even
+Testing big integer 1:  odd
+Testing big integer 222222222222222222222222222222222222:  even

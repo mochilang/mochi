@@ -1,0 +1,9 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+validating 5 test cases
+test 1 invalid ruleset
+test 2 invalid ruleset
+test 3 invalid ruleset
+test 4 invalid ruleset
+test 5 invalid ruleset
