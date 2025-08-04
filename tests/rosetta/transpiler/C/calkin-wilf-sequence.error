@@ -1,0 +1,64 @@
+compile failed: exit status 1: /tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c: In function ‘calkinWilf’:
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:148:20: warning: initialization of ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from incompatible pointer type ‘mpz_srcptr’ {aka ‘const __mpz_struct *’} [-Wincompatible-pointer-types]
+  148 |         bigint a = num(prev);
+      |                    ^~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:149:20: warning: initialization of ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from incompatible pointer type ‘mpz_srcptr’ {aka ‘const __mpz_struct *’} [-Wincompatible-pointer-types]
+  149 |         bigint b = denom(prev);
+      |                    ^~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:150:19: error: invalid operands to binary / (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘bigint’ {aka ‘__mpz_struct (*)[1]’})
+  150 |         int f = a / b;
+      |                   ^
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c: In function ‘toContinued’:
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:163:16: warning: initialization of ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from incompatible pointer type ‘mpz_srcptr’ {aka ‘const __mpz_struct *’} [-Wincompatible-pointer-types]
+  163 |     bigint a = num(r);
+      |                ^~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:164:16: warning: initialization of ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from incompatible pointer type ‘mpz_srcptr’ {aka ‘const __mpz_struct *’} [-Wincompatible-pointer-types]
+  164 |     bigint b = denom(r);
+      |                ^~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:168:54: error: invalid operands to binary / (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘bigint’ {aka ‘__mpz_struct (*)[1]’})
+  168 |         res = list_append_long_long(res, &res_len, a / b);
+      |                                                      ^
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:169:19: error: invalid operands to binary % (have ‘bigint’ {aka ‘__mpz_struct (*)[1]’} and ‘bigint’ {aka ‘__mpz_struct (*)[1]’})
+  169 |         int t = a % b;
+      |                   ^
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:171:11: warning: assignment to ‘bigint’ {aka ‘__mpz_struct (*)[1]’} from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  171 |         b = t;
+      |           ^
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:172:15: warning: comparison between pointer and integer
+  172 |         if (a == 1LL) {
+      |               ^~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c: In function ‘termNumber’:
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:188:24: warning: implicit declaration of function ‘repeat’ [-Wimplicit-function-declaration]
+  188 |         b = str_concat(repeat(d, n), b);
+      |                        ^~~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:188:24: warning: passing argument 1 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+  188 |         b = str_concat(repeat(d, n), b);
+      |                        ^~~~~~~~~~~~
+      |                        |
+      |                        int
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:14:37: note: expected ‘const char *’ but argument is of type ‘int’
+   14 | static char* str_concat(const char *a, const char *b) {
+      |                         ~~~~~~~~~~~~^
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:195:12: warning: implicit declaration of function ‘parseIntStr’ [-Wimplicit-function-declaration]
+  195 |     return parseIntStr(b, 2LL);
+      |            ^~~~~~~~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c: In function ‘commatize’:
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:206:13: error: too few arguments to function ‘_substring’
+  206 |         s = _substring(s, 1LL);
+      |             ^~~~~~~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:111:20: note: declared here
+  111 | static const char* _substring(const char *s, int start, int end) {
+      |                    ^~~~~~~~~~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c: In function ‘user_main’:
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:232:22: warning: comparison between pointer and integer
+  232 |         if (denom(r) != 1LL) {
+      |                      ^~
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:235:38: warning: passing argument 1 of ‘str_concat’ makes pointer from integer without a cast [-Wint-conversion]
+  235 |         puts(str_concat(str_concat(i + (int)(1LL), ": "), s));
+      |                                    ~~^~~~~~~~~~~~
+      |                                      |
+      |                                      int
+/tmp/ctranspile2038631596/calkin-wilf-sequence.mochi.c:14:37: note: expected ‘const char *’ but argument is of type ‘int’
+   14 | static char* str_concat(const char *a, const char *b) {
+      |                         ~~~~~~~~~~~~^
+
