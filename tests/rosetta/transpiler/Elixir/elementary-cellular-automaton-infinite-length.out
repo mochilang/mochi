@@ -1,0 +1,59 @@
+Rule #90:
+                                     ..O..
+                                    ..O.O..
+                                   ..O...O..
+                                  ..O.O.O.O..
+                                 ..O.......O..
+                                ..O.O.....O.O..
+                               ..O...O...O...O..
+                              ..O.O.O.O.O.O.O.O..
+                             ..O...............O..
+                            ..O.O.............O.O..
+                           ..O...O...........O...O..
+                          ..O.O.O.O.........O.O.O.O..
+                         ..O.......O.......O.......O..
+                        ..O.O.....O.O.....O.O.....O.O..
+                       ..O...O...O...O...O...O...O...O..
+                      ..O.O.O.O.O.O.O.O.O.O.O.O.O.O.O.O..
+                     ..O...............................O..
+                    ..O.O.............................O.O..
+                   ..O...O...........................O...O..
+                  ..O.O.O.O.........................O.O.O.O..
+                 ..O.......O.......................O.......O..
+                ..O.O.....O.O.....................O.O.....O.O..
+               ..O...O...O...O...................O...O...O...O..
+              ..O.O.O.O.O.O.O.O.................O.O.O.O.O.O.O.O..
+             ..O...............O...............O...............O..
+
+ Rule #30:
+                                     ..O..
+                                    ..OOO..
+                                   ..OO..O..
+                                  ..OO.OOOO..
+                                 ..OO..O...O..
+                                ..OO.OOOO.OOO..
+                               ..OO..O....O..O..
+                              ..OO.OOOO..OOOOOO..
+                             ..OO..O...OOO.....O..
+                            ..OO.OOOO.OO..O...OOO..
+                           ..OO..O....O.OOOO.OO..O..
+                          ..OO.OOOO..OO.O....O.OOOO..
+                         ..OO..O...OOO..OO..OO.O...O..
+                        ..OO.OOOO.OO..OOO.OOO..OO.OOO..
+                       ..OO..O....O.OOO...O..OOO..O..O..
+                      ..OO.OOOO..OO.O..O.OOOOO..OOOOOOO..
+                     ..OO..O...OOO..OOOO.O....OOO......O..
+                    ..OO.OOOO.OO..OOO....OO..OO..O....OOO..
+                   ..OO..O....O.OOO..O..OO.OOO.OOOO..OO..O..
+                  ..OO.OOOO..OO.O..OOOOOO..O...O...OOO.OOOO..
+                 ..OO..O...OOO..OOOO.....OOOO.OOO.OO...O...O..
+                ..OO.OOOO.OO..OOO...O...OO....O...O.O.OOO.OOO..
+               ..OO..O....O.OOO..O.OOO.OO.O..OOO.OO.O.O...O..O..
+              ..OO.OOOO..OO.O..OOO.O...O..OOOO...O..O.OO.OOOOOO..
+             ..OO..O...OOO..OOOO...OO.OOOOO...O.OOOOO.O..O.....O..
+
+{
+  "duration_us": 92314,
+  "memory_bytes": 33504,
+  "name": "main"
+}

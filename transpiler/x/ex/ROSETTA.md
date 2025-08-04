@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (256/491)
-_Last updated: 2025-08-04 15:16 +0700_
+## Rosetta Test Checklist (276/491)
+_Last updated: 2025-08-04 15:54 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -328,31 +328,31 @@ _Last updated: 2025-08-04 15:16 +0700_
 | 320 | draw-a-clock |  |  |  |
 | 321 | draw-a-cuboid | ✓ | 1.72ms | 12.5 KB |
 | 322 | draw-a-pixel-1 |  |  |  |
-| 323 | draw-a-rotating-cube |  |  |  |
-| 324 | draw-a-sphere |  |  |  |
-| 325 | duffinian-numbers |  |  |  |
-| 326 | dutch-national-flag-problem |  |  |  |
+| 323 | draw-a-rotating-cube | ✓ | 12.22ms | 90.4 KB |
+| 324 | draw-a-sphere | ✓ | 55.58ms | 7.7 KB |
+| 325 | duffinian-numbers | ✓ | 262.85ms | 58.0 KB |
+| 326 | dutch-national-flag-problem | ✓ | 39.41ms | 17.3 KB |
 | 327 | dynamic-variable-names |  |  |  |
-| 328 | earliest-difference-between-prime-gaps |  |  |  |
-| 329 | eban-numbers |  |  |  |
-| 330 | ecdsa-example |  |  |  |
-| 331 | echo-server |  |  |  |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 33.44ms | 9.5 KB |
+| 329 | eban-numbers | ✓ | 25.70ms | 17.3 KB |
+| 330 | ecdsa-example | ✓ | 1.86ms | 0 B |
+| 331 | echo-server | ✓ | 3.00ms | 0 B |
 | 332 | eertree |  |  |  |
-| 333 | egyptian-division |  |  |  |
-| 334 | ekg-sequence-convergence |  |  |  |
+| 333 | egyptian-division | ✓ | 713us | 0 B |
+| 334 | ekg-sequence-convergence | ✓ | 676.55ms | 98.1 KB |
 | 335 | element-wise-operations |  |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |  |  |  |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 92.31ms | 32.7 KB |
 | 337 | elementary-cellular-automaton-random-number-generator |  |  |  |
-| 338 | elementary-cellular-automaton |  |  |  |
-| 339 | elliptic-curve-arithmetic |  |  |  |
-| 340 | elliptic-curve-digital-signature-algorithm |  |  |  |
+| 338 | elementary-cellular-automaton | ✓ | 37.14ms | 25.1 KB |
+| 339 | elliptic-curve-arithmetic | ✓ | 5.40ms | 32.9 KB |
+| 340 | elliptic-curve-digital-signature-algorithm | ✓ | 5.18ms | 0 B |
 | 341 | emirp-primes |  |  |  |
-| 342 | empty-directory |  |  |  |
-| 343 | empty-program |  |  |  |
-| 344 | empty-string-1 |  |  |  |
-| 345 | empty-string-2 |  |  |  |
-| 346 | enforced-immutability |  |  |  |
-| 347 | entropy-1 |  |  |  |
+| 342 | empty-directory | ✓ | 132us | 0 B |
+| 343 | empty-program | ✓ | 1us | 0 B |
+| 344 | empty-string-1 | ✓ | 12.67ms | 0 B |
+| 345 | empty-string-2 | ✓ | 407us | 0 B |
+| 346 | enforced-immutability | ✓ | 2.36ms | 24 B |
+| 347 | entropy-1 | ✓ | 8.29ms | 25.0 KB |
 | 348 | entropy-2 |  |  |  |
 | 349 | entropy-narcissist |  |  |  |
 | 350 | enumerations-1 | ✓ |  |  |

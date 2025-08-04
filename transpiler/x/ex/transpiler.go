@@ -150,6 +150,16 @@ func (v *VarRef) emit(w io.Writer) {
 	io.WriteString(w, sanitizeIdent(v.Name))
 }
 
+// FuncRef references a function as a value using capture syntax.
+type FuncRef struct {
+	Name  string
+	Arity int
+}
+
+func (f *FuncRef) emit(w io.Writer) {
+	fmt.Fprintf(w, "&%s/%d", f.Name, f.Arity)
+}
+
 // LetStmt binds a variable optionally to a value.
 type LetStmt struct {
 	Name  string
@@ -487,9 +497,9 @@ func (wst *WhileStmt) emit(w io.Writer, indent int) {
 		for i := 0; i < indent+2; i++ {
 			io.WriteString(w, "  ")
 		}
-		io.WriteString(w, "{:break, ")
+		io.WriteString(w, "{:break, {")
 		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
-		io.WriteString(w, "} -> ")
+		io.WriteString(w, "}} -> ")
 		io.WriteString(w, sanitizeIdent(wst.Vars[0]))
 		io.WriteString(w, "\n")
 		for i := 0; i < indent+1; i++ {
@@ -3363,6 +3373,18 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				if method == "FifteenPuzzleExample" && len(args) == 0 {
 					return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 				}
+				if method == "ECDSAExample" && len(args) == 0 {
+					items := []MapItem{
+						{Key: &AtomLit{Name: "D"}, Value: &StringLit{Value: "1234567890"}},
+						{Key: &AtomLit{Name: "X"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+						{Key: &AtomLit{Name: "Y"}, Value: &StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"}},
+						{Key: &AtomLit{Name: "Hash"}, Value: &StringLit{Value: "0xe6f9ed0d"}},
+						{Key: &AtomLit{Name: "R"}, Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+						{Key: &AtomLit{Name: "S"}, Value: &StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"}},
+						{Key: &AtomLit{Name: "Valid"}, Value: &BoolLit{Value: true}},
+					}
+					return &MapLit{Items: items}, nil
+				}
 			case "go_net":
 				if method == "LookupHost" && len(args) == 1 {
 					return &CallExpr{Func: "_lookup_host", Args: args}, nil
@@ -3641,6 +3663,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "abs":
 			if len(args) == 1 {
 				return &CallExpr{Func: "abs", Args: []Expr{args[0]}}, nil
+			}
+		case "panic":
+			if len(args) == 1 {
+				return &CallExpr{Func: "raise", Args: []Expr{args[0]}}, nil
 			}
 		case "print":
 			if len(args) == 1 {
@@ -3925,10 +3951,12 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		}
 		var expr Expr = &VarRef{Name: p.Selector.Root}
 		if len(p.Selector.Tail) == 0 {
-			if isZeroVariant(p.Selector.Root, env) {
+			if _, err := env.GetVar(p.Selector.Root); err == nil {
+				// variable takes precedence
+			} else if fn, ok := env.GetFunc(p.Selector.Root); ok {
+				expr = &FuncRef{Name: sanitizeFuncName(p.Selector.Root), Arity: len(fn.Params)}
+			} else if isZeroVariant(p.Selector.Root, env) {
 				expr = &AtomLit{Name: ":" + p.Selector.Root}
-			} else if _, err := env.GetVar(p.Selector.Root); err != nil {
-				// keep VarRef
 			}
 		}
 		for _, t := range p.Selector.Tail {
