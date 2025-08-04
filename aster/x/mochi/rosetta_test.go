@@ -39,7 +39,7 @@ func findRepoRoot(t *testing.T) string {
 func TestRosettaDecorate(t *testing.T) {
 	root := findRepoRoot(t)
 	srcDir := filepath.Join(root, "tests", "rosetta", "x", "Mochi")
-	outDir := filepath.Join(root, "tests", "aster", "x", "mochi")
+	outDir := filepath.Join(root, "tests", "aster", "x", "mochi", "rosetta")
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
@@ -53,22 +53,25 @@ func TestRosettaDecorate(t *testing.T) {
 		t.Fatalf("no mochi files in %s", srcDir)
 		return
 	}
+	startIdx := 0
 	if idxStr := os.Getenv("MOCHI_ROSETTA_INDEX"); idxStr != "" {
 		idx, err := strconv.Atoi(idxStr)
 		if err != nil || idx < 1 || idx > len(files) {
 			t.Fatalf("invalid MOCHI_ROSETTA_INDEX: %s", idxStr)
 		}
-		files = []string{files[idx-1]}
+		startIdx = idx - 1
+		files = []string{files[startIdx]}
 	}
 
 	var passed, failed int
 	var firstFail string
 	for i, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		testName := fmt.Sprintf("%03d_%s", i+1, name)
+		idx := startIdx + i + 1
+		testName := fmt.Sprintf("%03d_%s", idx, name)
 		ok := t.Run(testName, func(t *testing.T) {
-			outPath := filepath.Join(outDir, name+".out.mochi")
-			errPath := filepath.Join(outDir, name+".error")
+			outPath := filepath.Join(outDir, fmt.Sprintf("%s.out.mochi", name))
+			errPath := filepath.Join(outDir, fmt.Sprintf("%s.error", name))
 
 			defer func() {
 				if r := recover(); r != nil {
