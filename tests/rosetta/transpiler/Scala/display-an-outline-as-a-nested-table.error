@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/display-an-outline-as-a-nested-table.scala:90: error: value toInt is not a member of Any
-    val lev: BigInt = BigInt((node("level")).toInt)
-                                             ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/display-an-outline-as-a-nested-table.scala:156: error: reassignment to val
-        span = countLeaves(node)
-             ^
-two errors found
