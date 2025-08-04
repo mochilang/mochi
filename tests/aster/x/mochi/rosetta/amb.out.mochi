@@ -1,0 +1,43 @@
+fun amb(wordsets: list<list<string>>, res: list<string>, idx: int): bool {
+  if (idx == len(wordsets)) {
+    return true
+  }
+  var prev: string = ""
+  if (idx > 0) {
+    prev = res[(idx - 1)]
+  }
+  var i: int = 0
+  while (i < len(wordsets[idx])) {
+    let w: string = wordsets[idx][i]
+    if ((idx == 0) || (substring(prev, (len(prev) - 1), len(prev)) == substring(w, 0, 1))) {
+      res[idx] = w
+      if amb(wordsets, res, (idx + 1)) {
+        return true
+      }
+    }
+    i = (i + 1)
+  }
+  return false
+}
+fun main() {
+  let wordset: list<list<string>> = [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
+  var res: list<string>
+  var i: int = 0
+  while (i < len(wordset)) {
+    res = append(res, "")
+    i = (i + 1)
+  }
+  if amb(wordset, res, 0) {
+    var out: string = ("[" + res[0])
+    var j: int = 1
+    while (j < len(res)) {
+      out = ((out + " ") + res[j])
+      j = (j + 1)
+    }
+    out = (out + "]")
+    print(out)
+  } else {
+    print("No amb found")
+  }
+}
+main()

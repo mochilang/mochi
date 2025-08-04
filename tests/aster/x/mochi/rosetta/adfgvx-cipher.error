@@ -1,0 +1,8 @@
+error[A001]: var pairs missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/adfgvx-cipher.mochi:74:3
+
+ 74 |   var pairs = []
+    |   ^
+
+help:
+  Declare pairs with a value

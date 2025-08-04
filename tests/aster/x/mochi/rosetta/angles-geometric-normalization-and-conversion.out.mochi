@@ -1,0 +1,68 @@
+fun d2d(d: float): float {
+  return (d % 360)
+}
+fun g2g(g: float): float {
+  return (g % 400)
+}
+fun m2m(m: float): float {
+  return (m % 6400)
+}
+fun r2r(r: float): float {
+  return (r % ((2 * 3.141592653589793)))
+}
+fun d2g(d: float): float {
+  return ((d2d(d) * 400) / 360)
+}
+fun d2m(d: float): float {
+  return ((d2d(d) * 6400) / 360)
+}
+fun d2r(d: float): float {
+  return ((d2d(d) * 3.141592653589793) / 180)
+}
+fun g2d(g: float): float {
+  return ((g2g(g) * 360) / 400)
+}
+fun g2m(g: float): float {
+  return ((g2g(g) * 6400) / 400)
+}
+fun g2r(g: float): float {
+  return ((g2g(g) * 3.141592653589793) / 200)
+}
+fun m2d(m: float): float {
+  return ((m2m(m) * 360) / 6400)
+}
+fun m2g(m: float): float {
+  return ((m2m(m) * 400) / 6400)
+}
+fun m2r(m: float): float {
+  return ((m2m(m) * 3.141592653589793) / 3200)
+}
+fun r2d(r: float): float {
+  return ((r2r(r) * 180) / 3.141592653589793)
+}
+fun r2g(r: float): float {
+  return ((r2r(r) * 200) / 3.141592653589793)
+}
+fun r2m(r: float): float {
+  return ((r2r(r) * 3200) / 3.141592653589793)
+}
+fun main() {
+  let angles: list<float> = [-2, -1, 0, 1, 2, 6.2831853, 16, 57.2957795, 359, 399, 6399, 1e+06]
+  print("degrees normalized_degs gradians mils radians")
+  for a in angles {
+    print(((((((((str(a) + " ") + str(d2d(a))) + " ") + str(d2g(a))) + " ") + str(d2m(a))) + " ") + str(d2r(a))))
+  }
+  print("\ngradians normalized_grds degrees mils radians")
+  for a in angles {
+    print(((((((((str(a) + " ") + str(g2g(a))) + " ") + str(g2d(a))) + " ") + str(g2m(a))) + " ") + str(g2r(a))))
+  }
+  print("\nmils normalized_mils degrees gradians radians")
+  for a in angles {
+    print(((((((((str(a) + " ") + str(m2m(a))) + " ") + str(m2d(a))) + " ") + str(m2g(a))) + " ") + str(m2r(a))))
+  }
+  print("\nradians normalized_rads degrees gradians mils")
+  for a in angles {
+    print(((((((((str(a) + " ") + str(r2r(a))) + " ") + str(r2d(a))) + " ") + str(r2g(a))) + " ") + str(r2m(a))))
+  }
+}
+main()

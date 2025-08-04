@@ -1,0 +1,46 @@
+let PI: float = 3.141592653589793
+fun sinApprox(x: float): float {
+  var term: float = x
+  var sum: float = x
+  var n: int = 1
+  while (n <= 10) {
+    let denom: float = ((((2 * n)) * (((2 * n) + 1)))) as float
+    term = (((-term * x) * x) / denom)
+    sum = (sum + term)
+    n = (n + 1)
+  }
+  return sum
+}
+fun cosApprox(x: float): float {
+  var term: float = 1
+  var sum: float = 1
+  var n: int = 1
+  while (n <= 10) {
+    let denom: float = (((((2 * n) - 1)) * ((2 * n)))) as float
+    term = (((-term * x) * x) / denom)
+    sum = (sum + term)
+    n = (n + 1)
+  }
+  return sum
+}
+fun sqrtApprox(x: float): float {
+  var guess: float = x
+  var i: int = 0
+  while (i < 10) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+let L: float = 10
+let G: float = 9.81
+let dt: float = 0.2
+let phi0: float = (PI / 4)
+let omega: float = sqrtApprox((G / L))
+var t: float = 0
+for step in 0..10 {
+  let phi: float = (phi0 * cosApprox((omega * t)))
+  let pos: int = (((10 * sinApprox(phi)) + 0.5)) as int
+  print(str(pos))
+  t = (t + dt)
+}

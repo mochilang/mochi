@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/add-a-variable-to-a-class-instance-at-runtime.mochi:17:16
+
+ 17 |     let name = input()
+    |                ^
+
+help:
+  Declare input before use
