@@ -6762,9 +6762,12 @@ func cTypeFromMochiType(t types.Type) string {
 			if _, ok2 := tt.Value.(types.StringType); ok2 {
 				return "MapSS"
 			}
-			if _, ok2 := tt.Value.(types.IntType); ok2 {
-				return "MapSI"
-			}
+                        if _, ok2 := tt.Value.(types.IntType); ok2 {
+                                return "MapSI"
+                        }
+                        if _, ok2 := tt.Value.(types.BoolType); ok2 {
+                                return "MapSI"
+                        }
 			if _, ok2 := tt.Value.(types.AnyType); ok2 {
 				for _, name := range anonStructs {
 					return name
