@@ -99,6 +99,7 @@ var importAliases map[string]string
 var varAliases map[string]string
 var aliasCounter int
 var usesFmt bool
+var usesRepeat bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -2355,6 +2356,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesInput = false
 	usesMem = false
 	usesFmt = false
+	usesRepeat = false
 	usesBigInt = false
 	usesBigRat = false
 	globalDecls = make(map[string]*Global)
@@ -2617,10 +2619,18 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 						} else {
 							ch = &CallExpr{Func: "Convert.ToChar", Args: []Expr{args[1]}}
 						}
-						expr = &MethodCallExpr{Target: fe.Target, Name: "PadLeft", Args: []Expr{args[0], ch}}
+						tgt := fe.Target
+						if typeOfExpr(tgt) != "string" {
+							tgt = &CallExpr{Func: "Convert.ToString", Args: []Expr{tgt}}
+						}
+						expr = &MethodCallExpr{Target: tgt, Name: "PadLeft", Args: []Expr{args[0], ch}}
 					} else if len(args) == 1 {
 						ch := &RawExpr{Code: "' '", Type: "char"}
-						expr = &MethodCallExpr{Target: fe.Target, Name: "PadLeft", Args: []Expr{args[0], ch}}
+						tgt := fe.Target
+						if typeOfExpr(tgt) != "string" {
+							tgt = &CallExpr{Func: "Convert.ToString", Args: []Expr{tgt}}
+						}
+						expr = &MethodCallExpr{Target: tgt, Name: "PadLeft", Args: []Expr{args[0], ch}}
 					} else {
 						return nil, fmt.Errorf("unsupported method call")
 					}
@@ -3173,6 +3183,13 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		retType := csType(s.Fun.Return)
+		if retType == "BigRat" {
+			for i := range ptypes {
+				if ptypes[i] == "long" {
+					ptypes[i] = "object"
+				}
+			}
+		}
 		currentReturnType = retType
 		currentReturnVoid = s.Fun.Return == nil
 		// record return and parameter types for local functions so callers can infer them
@@ -3871,10 +3888,23 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				} else {
 					ch = &CallExpr{Func: "Convert.ToChar", Args: []Expr{args[2]}}
 				}
-				return &MethodCallExpr{Target: args[0], Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
+				tgt := args[0]
+				if typeOfExpr(tgt) != "string" {
+					tgt = &CallExpr{Func: "Convert.ToString", Args: []Expr{tgt}}
+				}
+				return &MethodCallExpr{Target: tgt, Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
 			} else if len(args) == 2 {
 				ch := &RawExpr{Code: "' '", Type: "char"}
-				return &MethodCallExpr{Target: args[0], Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
+				tgt := args[0]
+				if typeOfExpr(tgt) != "string" {
+					tgt = &CallExpr{Func: "Convert.ToString", Args: []Expr{tgt}}
+				}
+				return &MethodCallExpr{Target: tgt, Name: "PadLeft", Args: []Expr{args[1], ch}}, nil
+			}
+		case "repeat":
+			if len(args) == 2 {
+				usesRepeat = true
+				return &CallExpr{Func: "repeat", Args: args}, nil
 			}
 		case "num":
 			if len(args) == 1 {
@@ -4714,7 +4744,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t}\n")
 	}
 	if usesBigRat {
-		buf.WriteString("\tclass BigRat {\n")
+		buf.WriteString("\tpublic class BigRat {\n")
 		buf.WriteString("\t\tpublic BigInteger num;\n")
 		buf.WriteString("\t\tpublic BigInteger den;\n")
 		buf.WriteString("\t\tpublic BigRat(BigInteger n, BigInteger d) {\n")
@@ -4734,6 +4764,7 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\treturn BigInteger.Zero;\n")
 		buf.WriteString("\t}\n")
 		buf.WriteString("\tstatic BigRat _bigrat(object n, object d = null) {\n")
+		buf.WriteString("\t\tif (n is BigRat br && d == null) return br;\n")
 		buf.WriteString("\t\tvar nn = _toBigInt(n);\n")
 		buf.WriteString("\t\tvar dd = d == null ? BigInteger.One : _toBigInt(d);\n")
 		buf.WriteString("\t\treturn new BigRat(nn, dd);\n")
@@ -4745,6 +4776,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\tstatic BigRat _neg(object a) { var x=_bigrat(a, null); return new BigRat(BigInteger.Negate(x.num), x.den); }\n")
 		buf.WriteString("\tstatic BigInteger _num(object x) { return x is BigRat br ? br.num : _toBigInt(x); }\n")
 		buf.WriteString("\tstatic BigInteger _denom(object x) { return x is BigRat br ? br.den : BigInteger.One; }\n")
+	}
+	if usesRepeat {
+		buf.WriteString("\tstatic string repeat(string s, long n) {\n")
+		buf.WriteString("\t\treturn string.Concat(Enumerable.Repeat(s, (int)n));\n")
+		buf.WriteString("\t}\n")
 	}
 	if usesFmt {
 		buf.WriteString(`static string _fmt(object v) {

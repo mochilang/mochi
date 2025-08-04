@@ -1,6 +1,0 @@
-dotnet run: exit status 1
-/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(105,33): error CS1503: Argument 1: cannot convert from 'System.Numerics.BigInteger' to 'long' [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(140,21): error CS0103: The name 'repeat' does not exist in the current context [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
-/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/Program.cs(186,80): error CS1061: 'long' does not contain a definition for 'PadLeft' and no accessible extension method 'PadLeft' accepting a first argument of type 'long' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestCSTranspiler_Rosetta_Golden3200621326/001/app.csproj]
-
-The build failed. Fix the build errors and run again.
