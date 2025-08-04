@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (433/491) - Last updated 2025-08-05 01:25 +0700:
+Checklist of programs that currently transpile and run (437/491) - Last updated 2025-08-05 01:42 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 273.0µs | 3.62MB |
@@ -55,56 +55,56 @@ Checklist of programs that currently transpile and run (433/491) - Last updated 
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 80.0µs | 12.96MB |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 380.0µs | 13.27MB |
 | 50 | animate-a-pendulum | ✓ | 320.0µs | 13.16MB |
-| 51 | animation | ✓ | 709.0µs | 3.54MB |
-| 52 | anonymous-recursion-1 | ✓ | 73.0µs | 12.67MB |
-| 53 | anonymous-recursion-2 | ✓ | 68.0µs | 13.05MB |
-| 54 | anonymous-recursion | ✓ | 72.0µs | 12.93MB |
-| 55 | anti-primes | ✓ | 28.0ms | 12.88MB |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 36.0µs | 12.62MB |
-| 57 | apply-a-callback-to-an-array-1 | ✓ | 57.0µs | 12.69MB |
-| 58 | apply-a-callback-to-an-array-2 | ✓ | 74.0µs | 13.40MB |
-| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 3.0ms | 13.32MB |
-| 60 | approximate-equality | ✓ | 186.0µs | 13.23MB |
-| 61 | arbitrary-precision-integers-included- | ✓ | 1.0ms | 13.24MB |
-| 62 | archimedean-spiral | ✓ | 9.0ms | 13.12MB |
-| 63 | arena-storage-pool | ✓ |  |  |
-| 64 | arithmetic-complex | ✓ | 424.0µs | 12.80MB |
-| 65 | arithmetic-derivative | ✓ | 2.0ms | 13.12MB |
-| 66 | arithmetic-evaluation | ✓ | 346.0µs | 13.70MB |
-| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 463.0µs | 12.61MB |
-| 68 | arithmetic-geometric-mean | ✓ | 440.0µs | 13.05MB |
-| 69 | arithmetic-integer-1 | ✓ | 256.0µs | 12.80MB |
-| 70 | arithmetic-integer-2 | ✓ | 197.0µs | 13.10MB |
+| 51 | animation | ✓ | 645.0µs | 3.45MB |
+| 52 | anonymous-recursion-1 | ✓ | 199.0µs | 3.60MB |
+| 53 | anonymous-recursion-2 | ✓ | 240.0µs | 3.66MB |
+| 54 | anonymous-recursion | ✓ | 212.0µs | 3.68MB |
+| 55 | anti-primes | ✓ | 43.0ms | 3.74MB |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 139.0µs | 3.46MB |
+| 57 | apply-a-callback-to-an-array-1 | ✓ | 215.0µs | 3.73MB |
+| 58 | apply-a-callback-to-an-array-2 | ✓ | 323.0µs | 3.73MB |
+| 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 373.0µs | 3.80MB |
+| 60 | approximate-equality | ✓ | 297.0µs | 3.75MB |
+| 61 | arbitrary-precision-integers-included- | ✓ | 163.0µs | 4.39MB |
+| 62 | archimedean-spiral | ✓ | 1.0ms | 3.73MB |
+| 63 | arena-storage-pool | ✓ | 211.0µs | 3.55MB |
+| 64 | arithmetic-complex | ✓ | 329.0µs | 3.78MB |
+| 65 | arithmetic-derivative | ✓ | 1.0ms | 3.64MB |
+| 66 | arithmetic-evaluation | ✓ | 226.0µs | 3.52MB |
+| 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 346.0µs | 3.72MB |
+| 68 | arithmetic-geometric-mean | ✓ | 331.0µs | 3.75MB |
+| 69 | arithmetic-integer-1 | ✓ | 156.0µs | 3.47MB |
+| 70 | arithmetic-integer-2 | ✓ | 154.0µs | 3.54MB |
 | 71 | arithmetic-numbers |   |  |  |
-| 72 | arithmetic-rational | ✓ | 1.0ms | 12.86MB |
-| 73 | array-concatenation | ✓ | 348.0µs | 13.04MB |
-| 74 | array-length | ✓ | 255.0µs | 12.74MB |
-| 75 | arrays | ✓ | 394.0µs | 13.24MB |
-| 76 | ascending-primes | ✓ | 917.0µs | 13.05MB |
-| 77 | ascii-art-diagram-converter | ✓ | 304.0µs | 12.62MB |
-| 78 | assertions | ✓ | 234.0µs | 12.75MB |
-| 79 | associative-array-creation | ✓ | 240.0µs | 3.57MB |
-| 80 | associative-array-iteration | ✓ | 336.0µs | 13.03MB |
-| 81 | associative-array-merging |   |  |  |
-| 82 | atomic-updates |   |  |  |
-| 83 | attractive-numbers | ✓ | 420.0µs | 12.94MB |
-| 84 | average-loop-length |   |  |  |
-| 85 | averages-arithmetic-mean |   |  |  |
-| 86 | averages-mean-time-of-day | ✓ | 284.0µs | 13.93MB |
-| 87 | averages-median-1 | ✓ | 413.0µs | 12.78MB |
-| 88 | averages-median-2 | ✓ | 380.0µs | 12.90MB |
-| 89 | averages-median-3 | ✓ | 398.0µs | 13.63MB |
-| 90 | averages-mode | ✓ | 246.0µs | 13.37MB |
-| 91 | averages-pythagorean-means | ✓ | 421.0µs | 13.16MB |
-| 92 | averages-root-mean-square | ✓ | 326.0µs | 12.67MB |
-| 93 | averages-simple-moving-average | ✓ | 517.0µs | 12.86MB |
+| 72 | arithmetic-rational | ✓ | 236.0µs | 3.46MB |
+| 73 | array-concatenation | ✓ | 203.0µs | 3.55MB |
+| 74 | array-length | ✓ | 190.0µs | 3.59MB |
+| 75 | arrays | ✓ | 252.0µs | 3.62MB |
+| 76 | ascending-primes | ✓ | 592.0µs | 3.68MB |
+| 77 | ascii-art-diagram-converter | ✓ | 171.0µs | 3.70MB |
+| 78 | assertions | ✓ | 144.0µs | 3.43MB |
+| 79 | associative-array-creation | ✓ | 187.0µs | 3.54MB |
+| 80 | associative-array-iteration | ✓ | 246.0µs | 3.64MB |
+| 81 | associative-array-merging | ✓ | 380.0µs | 3.83MB |
+| 82 | atomic-updates | ✓ | 307.0µs | 3.69MB |
+| 83 | attractive-numbers | ✓ | 311.0µs | 3.81MB |
+| 84 | average-loop-length | ✓ | 1.27s | 3.79MB |
+| 85 | averages-arithmetic-mean | ✓ | 480.0µs | 3.72MB |
+| 86 | averages-mean-time-of-day | ✓ | 247.0µs | 3.47MB |
+| 87 | averages-median-1 | ✓ | 310.0µs | 3.66MB |
+| 88 | averages-median-2 | ✓ | 371.0µs | 3.72MB |
+| 89 | averages-median-3 | ✓ | 342.0µs | 3.85MB |
+| 90 | averages-mode | ✓ | 189.0µs | 3.77MB |
+| 91 | averages-pythagorean-means | ✓ | 444.0µs | 3.69MB |
+| 92 | averages-root-mean-square | ✓ | 229.0µs | 3.66MB |
+| 93 | averages-simple-moving-average | ✓ | 453.0µs | 3.79MB |
 | 94 | avl-tree |   |  |  |
-| 95 | b-zier-curves-intersections | ✓ | 20.0ms | 14.11MB |
-| 96 | babbage-problem | ✓ | 374.0µs | 12.66MB |
-| 97 | babylonian-spiral | ✓ | 1.0ms | 14.18MB |
-| 98 | balanced-brackets |   | 354.0µs | 13.25MB |
-| 99 | balanced-ternary | ✓ | 118.0µs | 14.67MB |
-| 100 | barnsley-fern | ✓ | 96.0ms | 13.11MB |
+| 95 | b-zier-curves-intersections | ✓ | 14.0ms | 3.95MB |
+| 96 | babbage-problem | ✓ | 288.0µs | 3.64MB |
+| 97 | babylonian-spiral | ✓ | 2.0ms | 3.67MB |
+| 98 | balanced-brackets |   | 439.0µs | 3.42MB |
+| 99 | balanced-ternary | ✓ | 265.0µs | 3.71MB |
+| 100 | barnsley-fern | ✓ | 100.0ms | 4.07MB |
 | 101 | base64-decode-data | ✓ | 55.0µs | 14.15MB |
 | 102 | bell-numbers | ✓ | 4.0ms | 13.18MB |
 | 103 | benfords-law | ✓ | 1.0ms | 13.39MB |

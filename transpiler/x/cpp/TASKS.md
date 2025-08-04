@@ -1,3 +1,293 @@
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
+## Progress (2025-08-05 01:42 +0700)
+- cpp: handle membership expression
+- Generated C++ for 103/105 programs
+- Updated README checklist and outputs
+
 ## Progress (2025-08-05 00:37 +0700)
 - transpiler/c: add comma-quibbling rosetta example
 - Generated C++ for 103/105 programs
