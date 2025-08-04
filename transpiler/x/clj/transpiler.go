@@ -1197,7 +1197,8 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		if mutated[p.Name] {
 			initName := newName + "_p"
 			params = append(params, Symbol(initName))
-			paramInit = append(paramInit, &List{Elems: []Node{Symbol("def"), Symbol(newName), Symbol(initName)}})
+			// use set! instead of def to assign mutated params to their dynamic vars
+			paramInit = append(paramInit, &List{Elems: []Node{Symbol("set!"), Symbol(newName), Symbol(initName)}})
 		} else {
 			params = append(params, Symbol(newName))
 		}
