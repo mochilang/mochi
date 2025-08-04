@@ -26,7 +26,7 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-val depth: Int = 10
+var depth: Int = 10
 var seq: String = "F"
 var i: Int = 0
 fun main() {
@@ -36,9 +36,9 @@ fun main() {
         val _start = _now()
         while (i < depth) {
             var rev: String = ""
-            var j: BigInteger = (seq.length - 1).toBigInteger()
-            while (j.compareTo(0.toBigInteger()) >= 0) {
-                val c: String = seq.substring((j).toInt(), (j.add(1.toBigInteger())).toInt())
+            var j: BigInteger = ((seq.length - 1).toBigInteger())
+            while (j.compareTo((0).toBigInteger()) >= 0) {
+                var c: String = seq.substring((j).toInt(), (j.add((1).toBigInteger())).toInt())
                 if (c == "L") {
                     rev = rev + "R"
                 } else {
@@ -48,7 +48,7 @@ fun main() {
                         rev = rev + c
                     }
                 }
-                j = j.subtract(1.toBigInteger())
+                j = j.subtract((1).toBigInteger())
             }
             seq = (seq + "L") + rev
             i = i + 1

@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 21:22 +0700
+Last updated: 2025-08-05 01:14 +0700
 
-Completed tasks: **362/491**
+Completed tasks: **366/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -326,16 +326,16 @@ Completed tasks: **362/491**
 | 315 | doubly-linked-list-definition-1 | ✓ | 3.30ms | 134.6 KB |
 | 316 | doubly-linked-list-definition-2 |  |  |  |
 | 317 | doubly-linked-list-element-definition |  |  |  |
-| 318 | doubly-linked-list-traversal |  |  |  |
-| 319 | dragon-curve | ✓ | 15.97ms | 121.9 KB |
-| 320 | draw-a-clock | ✓ | 4.00ms | 162.8 KB |
-| 321 | draw-a-cuboid | ✓ | 11.28ms | 121.1 KB |
-| 322 | draw-a-pixel-1 | ✓ | 89.65ms | 1.3 MB |
-| 323 | draw-a-rotating-cube |  |  |  |
-| 324 | draw-a-sphere | ✓ | 21.77ms | 142.6 KB |
-| 325 | duffinian-numbers |  |  |  |
-| 326 | dutch-national-flag-problem | ✓ | 20.25ms | 115.5 KB |
-| 327 | dynamic-variable-names |  |  |  |
+| 318 | doubly-linked-list-traversal | ✓ | 20.38ms | 38.8 KB |
+| 319 | dragon-curve | ✓ | 30.83ms | 39.6 KB |
+| 320 | draw-a-clock | ✓ | 7.16ms | 912 B |
+| 321 | draw-a-cuboid | ✓ | 21.58ms | 41.6 KB |
+| 322 | draw-a-pixel-1 | ✓ | 312.94ms | 701.2 KB |
+| 323 | draw-a-rotating-cube | ✓ | 40.62ms | 40.6 KB |
+| 324 | draw-a-sphere | ✓ | 31.41ms | 24.3 KB |
+| 325 | duffinian-numbers | ✓ | 124.24ms | 173.7 KB |
+| 326 | dutch-national-flag-problem | ✓ | 28.01ms | 47.8 KB |
+| 327 | dynamic-variable-names | ✓ | 12.84ms | 36.5 KB |
 | 328 | earliest-difference-between-prime-gaps |  |  |  |
 | 329 | eban-numbers |  |  |  |
 | 330 | ecdsa-example |  |  |  |

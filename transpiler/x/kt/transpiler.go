@@ -295,7 +295,7 @@ func indent(w io.Writer, n int) {
 }
 
 func useHelper(name string) {
-	if helpersUsed[name] || localFuncs[name] {
+	if helpersUsed[name] || (localFuncs[name] && name != "pow2" && name != "lshift" && name != "rshift") {
 		return
 	}
 	if code, ok := helperSnippets[name]; ok {
@@ -809,7 +809,11 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		}
 	}
 
-	wrapBigInt := isMap && ix.Type == "Int"
+	// Only wrap Int values when the map's value type is BigInteger. For
+	// regular Int-typed maps or heterogeneous maps (`Any?`), values are
+	// stored as Kotlin Int and casting through BigInteger would cause
+	// a ClassCastException.
+	wrapBigInt := isMap && ix.Type == "Int" && strings.Contains(baseType, "BigInteger")
 
 	needParens := false
 	switch ix.Target.(type) {
@@ -867,7 +871,12 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 	}
 	if wrapBigInt {
 		// close the opening parenthesis before the target
-		// note: already closed after appending BigInteger cast above
+		// For non-target expressions the closing parenthesis is
+		// included in the BigInteger cast above; when used as a
+		// target we need to close it explicitly here.
+		if asTarget {
+			io.WriteString(w, ")")
+		}
 	}
 }
 
