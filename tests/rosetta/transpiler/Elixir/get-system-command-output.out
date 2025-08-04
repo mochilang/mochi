@@ -1,0 +1,6 @@
+Would run: ls -l and capture output
+{
+  "duration_us": 345,
+  "memory_bytes": 0,
+  "name": "main"
+}

@@ -1,0 +1,13 @@
+Start: pos=(100,100) size=(640x480) max=false icon=false visible=true
+Maximize: pos=(100,100) size=(800x600) max=true icon=false visible=true
+Unmaximize: pos=(100,100) size=(640x480) max=false icon=false visible=true
+Iconify: pos=(100,100) size=(640x480) max=false icon=true visible=false
+Deiconify: pos=(100,100) size=(640x480) max=false icon=false visible=true
+Hide: pos=(100,100) size=(640x480) max=false icon=false visible=false
+Show: pos=(100,100) size=(640x480) max=false icon=false visible=true
+Move: pos=(110,110) size=(640x480) max=false icon=false visible=true
+{
+  "duration_us": 367,
+  "memory_bytes": 12784,
+  "name": "main"
+}
