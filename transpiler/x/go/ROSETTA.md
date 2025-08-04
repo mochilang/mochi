@@ -1,15 +1,15 @@
 # Go Rosetta Transpiler Output
 
 Completed programs: 468/491
-Last updated: 2025-08-03 22:32 +0700
+Last updated: 2025-08-04 15:16 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | 100-doors-2 | ✓ | 392.0µs | 5.54KB |
-| 2 | 100-doors-3 | ✓ | 406.0µs | 6.57KB |
-| 3 | 100-doors | ✓ | 293.0µs | 3.61KB |
+| 1 | 100-doors-2 | ✓ | 461.0µs | 5.54KB |
+| 2 | 100-doors-3 | ✓ | 471.0µs | 6.57KB |
+| 3 | 100-doors | ✓ | 328.0µs | 3.59KB |
 | 4 | 100-prisoners | ✓ | 50.0ms | 1.42MB |
 | 5 | 15-puzzle-game | ✓ | 412.0µs | 5.55KB |
 | 6 | 15-puzzle-solver | ✓ | 731.0ms | 1.33KB |
@@ -491,10 +491,10 @@ Checklist:
 | 482 | gui-maximum-window-dimensions | ✓ | 170.0µs | 1.12KB |
 | 483 | http | ✓ | 87.0ms | 1.87MB |
 | 484 | image-noise | ✓ | 102.0ms | 1.09MB |
-| 485 | loops-increment-loop-index-within-loop-body | ✓ |  |  |
-| 486 | md5 | ✓ | 315.0µs | 2.10KB |
-| 487 | nim-game | ✓ |  |  |
-| 488 | plasma-effect | ✓ |  |  |
-| 489 | sorting-algorithms-bubble-sort | ✓ |  |  |
-| 490 | window-management | ✓ |  |  |
-| 491 | zumkeller-numbers | ✓ |  |  |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 52.0ms | 11.40KB |
+| 486 | md5 | ✓ | 358.0µs | 2.10KB |
+| 487 | nim-game | ✓ | 326.0µs | 5.28KB |
+| 488 | plasma-effect | ✓ | 2.0ms | 936B |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 323.0µs | 1.49KB |
+| 490 | window-management | ✓ | 369.0µs | 2.18KB |
+| 491 | zumkeller-numbers | ✓ | 1.34s | 1.35MB |
