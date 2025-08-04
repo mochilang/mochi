@@ -1526,13 +1526,17 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 				base = base[len("const "):]
 			}
 			fmt.Fprintf(w, "&[_]%s{}", base)
-		} else {
-			io.WriteString(w, "0")
-		}
-	} else {
-		v.Value.emit(w)
-		if zigTypeFromExpr(v.Value) == "Value" {
-			io.WriteString(w, valueAccess(targetType))
+               } else {
+                       if isIntType(targetType) || strings.HasPrefix(targetType, "f") || targetType == "bool" {
+                               io.WriteString(w, "0")
+                       } else {
+                               io.WriteString(w, "undefined")
+                       }
+               }
+       } else {
+               v.Value.emit(w)
+               if zigTypeFromExpr(v.Value) == "Value" {
+                       io.WriteString(w, valueAccess(targetType))
 		}
 	}
 	io.WriteString(w, ";")
@@ -2857,16 +2861,16 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				args[i] = ex
 			}
-			if name, ok := exprToString(expr); ok {
-				expr = &CallExpr{Func: name, Args: args}
-				continue
-			}
-			if fe, ok := expr.(*FieldExpr); ok {
-				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
-				continue
-			}
-			return nil, fmt.Errorf("unsupported call target")
-		}
+                       if fe, ok := expr.(*FieldExpr); ok {
+                               expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
+                               continue
+                       }
+                       if name, ok := exprToString(expr); ok {
+                               expr = &CallExpr{Func: name, Args: args}
+                               continue
+                       }
+                       return nil, fmt.Errorf("unsupported call target")
+               }
 		if op.Field != nil {
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 			continue
@@ -4536,17 +4540,45 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 		typeAliases[td.Name] = "std.StringHashMap(i64)"
 		return nil
 	}
-	if len(td.Members) > 0 {
-		fields := []Field{}
-		for _, m := range td.Members {
-			if m.Field == nil {
-				continue
-			}
-			fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
-		}
-		structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
-	}
-	return nil
+       if len(td.Members) > 0 {
+               fields := []Field{}
+               for _, m := range td.Members {
+                       if m.Field != nil {
+                               fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
+                       } else if m.Method != nil {
+                               fn := m.Method
+                               params := []Param{{Name: "self", Type: td.Name}}
+                               paramTypes := []string{td.Name}
+                               for _, p := range fn.Params {
+                                       ptype := toZigType(p.Type)
+                                       pname := toSnakeCase(p.Name)
+                                       params = append(params, Param{Name: pname, Type: ptype})
+                                       paramTypes = append(paramTypes, ptype)
+                               }
+                               ret := ""
+                               if fn.Return != nil {
+                                       ret = toZigType(fn.Return)
+                               }
+                               body := []Stmt{}
+                               for _, st := range fn.Body {
+                                       s, err := compileStmt(st, nil)
+                                       if err != nil {
+                                               return err
+                                       }
+                                       if s != nil {
+                                               body = append(body, s)
+                                       }
+                               }
+                               f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body, Aliases: map[string]string{}}
+                               funcParamTypes[fn.Name] = paramTypes
+                               varTypes[fn.Name] = fmt.Sprintf("*const fn(%s) %s", strings.Join(paramTypes, ", "), ret)
+                               funcReturns[fn.Name] = ret
+                               extraFuncs = append(extraFuncs, f)
+                       }
+               }
+               structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
+       }
+       return nil
 }
 
 func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
