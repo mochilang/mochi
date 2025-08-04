@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap.mochi:88:23
+
+ 88 |   return {"ok": true, "pixel": row[x]}
+    |                       ^
+
+help:
+  Ensure map keys and values share types

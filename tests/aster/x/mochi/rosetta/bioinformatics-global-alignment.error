@@ -1,0 +1,8 @@
+error[A026]: argument 2 to indexOfFrom type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bioinformatics-global-alignment.mochi:80:32
+
+ 80 |     let ix = indexOfFrom(s1, s2[0:1], start)
+    |                                ^
+
+help:
+  Ensure arguments match parameter types

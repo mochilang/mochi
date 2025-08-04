@@ -1,0 +1,8 @@
+error[A003]: undefined variable n
+  --> /workspace/mochi/tests/rosetta/x/Mochi/benfords-law.mochi:73:26
+
+ 73 |     let d = leadingDigit(n)
+    |                          ^
+
+help:
+  Declare n before use

@@ -1,0 +1,20 @@
+var grid: list<list<string>> = [[".", ".", ".", ".", "."], [".", "#", "#", "#", "."], [".", "#", ".", "#", "."], [".", "#", "#", "#", "."], [".", ".", ".", ".", "."]]
+fun flood(x: int, y: int, repl: string) {
+  let target: string = grid[y][x]
+  fun ff(px: int, py: int) {
+    grid[py][px] = repl
+    ff((px - 1), py)
+    ff((px + 1), py)
+    ff(px, (py - 1))
+    ff(px, (py + 1))
+  }
+  ff(x, y)
+}
+flood(2, 2, "o")
+for row in grid {
+  var line: string = ""
+  for ch in row {
+    line = (line + ch)
+  }
+  print(line)
+}

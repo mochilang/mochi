@@ -1,0 +1,137 @@
+fun toUnsigned16(n: int): int {
+  var u: int = n
+  if (u < 0) {
+    u = (u + 65536)
+  }
+  return (u % 65536)
+}
+fun bin16(n: int): string {
+  var u: int = toUnsigned16(n)
+  var bits: string = ""
+  var mask: int = 32768
+  for i in 0..16 {
+    if (u >= mask) {
+      bits = (bits + "1")
+      u = (u - mask)
+    } else {
+      bits = (bits + "0")
+    }
+    mask = ((mask / 2)) as int
+  }
+  return bits
+}
+fun bit_and(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  var ub: int = toUnsigned16(b)
+  var res: int = 0
+  var bit: int = 1
+  for i in 0..16 {
+    if (((ua % 2) == 1) && ((ub % 2) == 1)) {
+      res = (res + bit)
+    }
+    ua = ((ua / 2)) as int
+    ub = ((ub / 2)) as int
+    bit = (bit * 2)
+  }
+  return res
+}
+fun bit_or(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  var ub: int = toUnsigned16(b)
+  var res: int = 0
+  var bit: int = 1
+  for i in 0..16 {
+    if (((ua % 2) == 1) || ((ub % 2) == 1)) {
+      res = (res + bit)
+    }
+    ua = ((ua / 2)) as int
+    ub = ((ub / 2)) as int
+    bit = (bit * 2)
+  }
+  return res
+}
+fun bit_xor(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  var ub: int = toUnsigned16(b)
+  var res: int = 0
+  var bit: int = 1
+  for i in 0..16 {
+    let abit: int = (ua % 2)
+    let bbit: int = (ub % 2)
+    if ((((abit == 1) && (bbit == 0))) || (((abit == 0) && (bbit == 1)))) {
+      res = (res + bit)
+    }
+    ua = ((ua / 2)) as int
+    ub = ((ub / 2)) as int
+    bit = (bit * 2)
+  }
+  return res
+}
+fun bit_not(a: int): int {
+  var ua: int = toUnsigned16(a)
+  return (65535 - ua)
+}
+fun shl(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  var i: int = 0
+  while (i < b) {
+    ua = (((ua * 2)) % 65536)
+    i = (i + 1)
+  }
+  return ua
+}
+fun shr(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  var i: int = 0
+  while (i < b) {
+    ua = ((ua / 2)) as int
+    i = (i + 1)
+  }
+  return ua
+}
+fun las(a: int, b: int): int {
+  return shl(a, b)
+}
+fun ras(a: int, b: int): int {
+  var val: int = a
+  var i: int = 0
+  while (i < b) {
+    if (val >= 0) {
+      val = ((val / 2)) as int
+    } else {
+      val = ((((val - 1)) / 2)) as int
+    }
+    i = (i + 1)
+  }
+  return toUnsigned16(val)
+}
+fun rol(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  let left: int = shl(ua, b)
+  let right: int = shr(ua, (16 - b))
+  return toUnsigned16((left + right))
+}
+fun ror(a: int, b: int): int {
+  var ua: int = toUnsigned16(a)
+  let right: int = shr(ua, b)
+  let left: int = shl(ua, (16 - b))
+  return toUnsigned16((left + right))
+}
+fun bitwise(a: int, b: int) {
+  print(("a:   " + bin16(a)))
+  print(("b:   " + bin16(b)))
+  print(("and: " + bin16(bit_and(a, b))))
+  print(("or:  " + bin16(bit_or(a, b))))
+  print(("xor: " + bin16(bit_xor(a, b))))
+  print(("not: " + bin16(bit_not(a))))
+  if (b < 0) {
+    print("Right operand is negative, but all shifts require an unsigned right operand (shift distance).")
+  }
+  print(("shl: " + bin16(shl(a, b))))
+  print(("shr: " + bin16(shr(a, b))))
+  print(("las: " + bin16(las(a, b))))
+  print(("ras: " + bin16(ras(a, b))))
+  print(("rol: " + bin16(rol(a, b))))
+  print(("ror: " + bin16(ror(a, b))))
+}
+bitwise(-460, 6)

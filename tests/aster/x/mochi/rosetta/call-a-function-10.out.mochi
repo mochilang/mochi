@@ -1,0 +1,13 @@
+fun main() {
+  var list: list<int>
+  var a: int = 1
+  var d: int = 2
+  var e: int = 3
+  var i: int = 4
+  list = append(list, a)
+  list = append(list, d)
+  list = append(list, e)
+  list = append(list, i)
+  i = len(list)
+}
+main()

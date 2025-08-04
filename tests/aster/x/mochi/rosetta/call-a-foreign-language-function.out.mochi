@@ -1,0 +1,9 @@
+fun strdup(s: string): string {
+  return (s + "")
+}
+fun main() {
+  let go1: string = "hello C"
+  let c2: string = strdup(go1)
+  print(c2)
+}
+main()

@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bioinformatics-base-count.mochi:42:12
+
+ 42 |   let ch = substring(dna, idx, idx + 1)
+    |            ^
+
+help:
+  Declare substring before use

@@ -1,0 +1,8 @@
+error[A026]: argument 2 to indexOf type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:23:27
+
+ 23 |     var c = indexOf(tmpl, ch)
+    |                           ^
+
+help:
+  Ensure arguments match parameter types

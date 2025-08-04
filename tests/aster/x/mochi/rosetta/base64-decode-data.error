@@ -1,0 +1,8 @@
+error[A026]: argument 1 to binToInt type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/base64-decode-data.mochi:103:24
+
+103 |     let val = binToInt(chunk)
+    |                        ^
+
+help:
+  Ensure arguments match parameter types

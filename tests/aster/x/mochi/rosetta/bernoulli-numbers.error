@@ -1,0 +1,8 @@
+error[A003]: undefined variable i
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bernoulli-numbers.mochi:25:21
+
+ 25 |   let b = bernoulli(i)
+    |                     ^
+
+help:
+  Declare i before use

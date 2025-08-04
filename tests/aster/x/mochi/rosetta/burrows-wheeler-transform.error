@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/burrows-wheeler-transform.mochi:43:15
+
+ 43 |     let rot = substring(s, i, le) + substring(s, 0, i)
+    |               ^
+
+help:
+  Declare substring before use

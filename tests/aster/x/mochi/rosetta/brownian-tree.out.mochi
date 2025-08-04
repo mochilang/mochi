@@ -1,0 +1,75 @@
+let w: int = 400
+let h: int = 300
+let n: int = 15000
+let frost: int = 255
+var grid: list<list<int>>
+var y: int = 0
+while (y < h) {
+  var row: list<int>
+  var x: int = 0
+  while (x < w) {
+    row = append(row, 0)
+    x = (x + 1)
+  }
+  grid = append(grid, row)
+  y = (y + 1)
+}
+grid[(h / 3)][(w / 3)] = frost
+fun inBounds(x: int, y: int): bool {
+  return ((((x >= 0) && (x < w)) && (y >= 0)) && (y < h))
+}
+fun hasNeighbor(x: int, y: int): bool {
+  var dy: int = -1
+  while (dy <= 1) {
+    var dx: int = -1
+    while (dx <= 1) {
+      if !(((dx == 0) && (dy == 0))) {
+        let nx: int = (x + dx)
+        let ny: int = (y + dy)
+        if (inBounds(nx, ny) && (grid[ny][nx] == frost)) {
+          return true
+        }
+      }
+      dx = (dx + 1)
+    }
+    dy = (dy + 1)
+  }
+  return false
+}
+var a: int = 0
+while (a < n) {
+  var px: int = (now() % w)
+  var py: int = (now() % h)
+  if (grid[py][px] == frost) {
+    var lost: bool = false
+    while true {
+      px = ((px + ((now() % 3))) - 1)
+      py = ((py + ((now() % 3))) - 1)
+      if !inBounds(px, py) {
+        lost = true
+        break
+      }
+      if (grid[py][px] != frost) {
+        break
+      }
+    }
+    if lost {
+      continue
+    }
+  } else {
+    var lost: bool = false
+    while !hasNeighbor(px, py) {
+      px = ((px + ((now() % 3))) - 1)
+      py = ((py + ((now() % 3))) - 1)
+      if !inBounds(px, py) {
+        lost = true
+        break
+      }
+    }
+    if lost {
+      continue
+    }
+  }
+  grid[py][px] = frost
+  a = (a + 1)
+}

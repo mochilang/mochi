@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:36:14
+
+ 36 |     let ch = substring(s, i, i+1)
+    |              ^
+
+help:
+  Declare substring before use

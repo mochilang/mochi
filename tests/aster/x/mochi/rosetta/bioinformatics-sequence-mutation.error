@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bioinformatics-sequence-mutation.mochi:31:10
+
+ 31 |   return [s, out]
+    |          ^
+
+help:
+  Ensure all list elements share a type

@@ -1,0 +1,8 @@
+error[A003]: undefined variable key
+  --> /workspace/mochi/tests/rosetta/x/Mochi/caesar-cipher-1.mochi:62:27
+
+ 62 |     let ct = encipher(pt, key)
+    |                           ^
+
+help:
+  Declare key before use
