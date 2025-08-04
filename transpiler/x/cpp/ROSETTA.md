@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (397/491) - Last updated 2025-08-04 21:37 +0700:
+Checklist of programs that currently transpile and run (418/491) - Last updated 2025-08-04 21:48 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -451,37 +451,37 @@ Checklist of programs that currently transpile and run (397/491) - Last updated 
 | 444 | flatten-a-list-2 | ✓ | 222.0µs | 3.48MB |
 | 445 | flipping-bits-game | ✓ | 295.0µs | 3.51MB |
 | 446 | flow-control-structures-1 | ✓ | 174.0µs | 3.57MB |
-| 447 | flow-control-structures-2 |   |  |  |
-| 448 | flow-control-structures-3 |   |  |  |
-| 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm | ✓ |  |  |
-| 451 | floyd-warshall-algorithm2 | ✓ |  |  |
-| 452 | floyds-triangle | ✓ |  |  |
-| 453 | forest-fire | ✓ |  |  |
-| 454 | fork-2 | ✓ |  |  |
-| 455 | fork | ✓ |  |  |
-| 456 | formal-power-series |   |  |  |
-| 457 | formatted-numeric-output |   |  |  |
-| 458 | forward-difference |   |  |  |
-| 459 | four-bit-adder-1 |   |  |  |
-| 460 | four-is-magic |   |  |  |
+| 447 | flow-control-structures-2 | ✓ | 167.0µs | 3.62MB |
+| 448 | flow-control-structures-3 | ✓ | 186.0µs | 3.52MB |
+| 449 | flow-control-structures-4 | ✓ | 154.0µs | 3.45MB |
+| 450 | floyd-warshall-algorithm | ✓ | 338.0µs | 3.71MB |
+| 451 | floyd-warshall-algorithm2 |   |  |  |
+| 452 | floyds-triangle | ✓ | 323.0µs | 3.48MB |
+| 453 | forest-fire | ✓ | 4.0ms | 3.62MB |
+| 454 | fork-2 | ✓ | 258.0µs | 3.46MB |
+| 455 | fork | ✓ | 182.0µs | 3.50MB |
+| 456 | formal-power-series | ✓ | 724.0µs | 3.79MB |
+| 457 | formatted-numeric-output | ✓ | 186.0µs | 3.48MB |
+| 458 | forward-difference | ✓ | 279.0µs | 3.74MB |
+| 459 | four-bit-adder-1 | ✓ | 164.0µs | 3.54MB |
+| 460 | four-is-magic | ✓ | 343.0µs | 3.44MB |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
-| 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
+| 462 | fractal-tree | ✓ | 203.0ms | 3.97MB |
+| 463 | fractran | ✓ | 6.87s | 3.57MB |
+| 464 | french-republican-calendar | ✓ | 222.0µs | 3.70MB |
+| 465 | ftp | ✓ | 206.0µs | 3.64MB |
+| 466 | function-frequency | ✓ | 1.0ms | 3.80MB |
+| 467 | function-prototype | ✓ | 7.0µs | 3.44MB |
 | 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
+| 469 | fusc-sequence | ✓ | 366.0µs | 3.56MB |
+| 470 | gamma-function | ✓ | 372.0µs | 3.70MB |
+| 471 | general-fizzbuzz | ✓ | 215.0µs | 3.62MB |
 | 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
+| 473 | get-system-command-output | ✓ | 183.0µs | 3.56MB |
+| 474 | giuga-numbers | ✓ | 193.0µs | 3.43MB |
+| 475 | globally-replace-text-in-several-files | ✓ | 171.0µs | 3.68MB |
+| 476 | goldbachs-comet | ✓ | 1.0ms | 3.62MB |
+| 477 | golden-ratio-convergence | ✓ | 360.0µs | 3.82MB |
 | 478 | graph-colouring |   |  |  |
 | 479 | gray-code |   |  |  |
 | 480 | gui-component-interaction |   |  |  |

@@ -1290,22 +1290,31 @@ func (l *ListLit) emit(w io.Writer) {
 }
 
 func (m *MapLit) emit(w io.Writer) {
-	if len(m.Keys) == 0 {
-		if m.KeyType == "auto" && m.ValueType == "auto" {
-			io.WriteString(w, "{}")
-		} else {
-			fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
-		}
-		return
-	}
-	if m.ValueType == "std::any" && currentProgram != nil {
-		currentProgram.addInclude("<any>")
-	}
-	fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
-	for i := range m.Keys {
-		if i > 0 {
-			io.WriteString(w, ", ")
-		}
+        if len(m.Keys) == 0 {
+                if m.KeyType == "auto" && m.ValueType == "auto" {
+                        io.WriteString(w, "{}")
+                } else {
+                        fmt.Fprintf(w, "std::map<%s, %s>{}", m.KeyType, m.ValueType)
+                }
+                return
+        }
+       if m.KeyType == "" {
+               m.KeyType = exprType(m.Keys[0])
+               if m.KeyType == "auto" {
+                       m.KeyType = "std::string"
+               }
+       }
+       if m.ValueType == "" || m.ValueType == "auto" {
+               m.ValueType = exprType(m.Values[0])
+       }
+       if m.ValueType == "std::any" && currentProgram != nil {
+               currentProgram.addInclude("<any>")
+       }
+       fmt.Fprintf(w, "std::map<%s, %s>{", m.KeyType, m.ValueType)
+        for i := range m.Keys {
+                if i > 0 {
+                        io.WriteString(w, ", ")
+                }
 		io.WriteString(w, "{")
 		switch k := m.Keys[i].(type) {
 		case *StringLit:
@@ -4656,16 +4665,38 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 							}
 						}
 					}
-					if isStructType(typ) {
-						methodName := typ + "_" + sel2.Field
-						args = append([]Expr{sel2.Target}, args...)
-						expr = &CallExpr{Name: methodName, Args: args}
-					} else {
-						expr = &FuncCallExpr{Fun: expr, Args: args}
-					}
-				} else {
-					expr = &FuncCallExpr{Fun: expr, Args: args}
-				}
+                                       if isStructType(typ) {
+                                               if currentEnv != nil {
+                                                       if st, ok := currentEnv.GetStruct(typ); ok {
+                                                               if ft, ok := st.Fields[sel2.Field]; ok {
+                                                                       if _, ok := ft.(types.FuncType); ok {
+                                                                               expr = &FuncCallExpr{Fun: expr, Args: args}
+                                                                       } else {
+                                                                               methodName := typ + "_" + sel2.Field
+                                                                               args = append([]Expr{sel2.Target}, args...)
+                                                                               expr = &CallExpr{Name: methodName, Args: args}
+                                                                       }
+                                                               } else {
+                                                                       methodName := typ + "_" + sel2.Field
+                                                                       args = append([]Expr{sel2.Target}, args...)
+                                                                       expr = &CallExpr{Name: methodName, Args: args}
+                                                               }
+                                                       } else {
+                                                               methodName := typ + "_" + sel2.Field
+                                                               args = append([]Expr{sel2.Target}, args...)
+                                                               expr = &CallExpr{Name: methodName, Args: args}
+                                                       }
+                                               } else {
+                                                       methodName := typ + "_" + sel2.Field
+                                                       args = append([]Expr{sel2.Target}, args...)
+                                                       expr = &CallExpr{Name: methodName, Args: args}
+                                               }
+                                       } else {
+                                               expr = &FuncCallExpr{Fun: expr, Args: args}
+                                       }
+                               } else {
+                                       expr = &FuncCallExpr{Fun: expr, Args: args}
+                               }
 			} else if vr, ok := expr.(*VarRef); ok {
 				if currentEnv != nil {
 					if _, ok := currentEnv.GetFunc(vr.Name); ok {
@@ -5381,15 +5412,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return expr, nil
 	case p.Struct != nil:
-		var fields []FieldLit
-		for _, f := range p.Struct.Fields {
-			val, err := convertExpr(f.Value)
-			if err != nil {
-				return nil, err
-			}
-			fields = append(fields, FieldLit{Name: f.Name, Value: val})
-		}
-		return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
+               var fields []FieldLit
+               var st types.StructType
+               var hasStruct bool
+               if currentEnv != nil {
+                       if s, ok := currentEnv.GetStruct(p.Struct.Name); ok {
+                               st, hasStruct = s, true
+                       }
+               }
+               for _, f := range p.Struct.Fields {
+                       val, err := convertExpr(f.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       if hasStruct {
+                               if ll, ok := val.(*ListLit); ok && ll.ElemType == "" {
+                                       if ft, ok := st.Fields[f.Name]; ok {
+                                               if lt, ok := ft.(types.ListType); ok {
+                                                       ll.ElemType = cppTypeFrom(lt.Elem)
+                                               }
+                                       }
+                               }
+                       }
+                       fields = append(fields, FieldLit{Name: f.Name, Value: val})
+               }
+               return &StructLit{Name: p.Struct.Name, Fields: fields}, nil
 	case p.List != nil:
 		if currentProgram != nil {
 			currentProgram.addInclude("<vector>")
