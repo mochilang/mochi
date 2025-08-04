@@ -1,0 +1,290 @@
+compile: exit status 1
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:21:181: warning: multi-character character constant [-Wmultichar]
+   21 |     else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                     ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:22:209: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                 ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:22:295: warning: multi-character character constant [-Wmultichar]
+   22 |     else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ', '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ', '; os << v[j]; } os << ']'; } os << ']'; }
+      |                                                                                                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:23:189: warning: multi-character character constant [-Wmultichar]
+   23 |     else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }
+      |                                                                                                                                                                                             ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:24:183: warning: multi-character character constant [-Wmultichar]
+   24 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:25:215: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:25:251: warning: multi-character character constant [-Wmultichar]
+   25 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:56:8: error: expected identifier before ‘int’
+   56 | struct int;
+      |        ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:56:1: error: multiple types in one declaration
+   56 | struct int;
+      | ^~~~~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:66:8: error: expected identifier before ‘int’
+   66 | struct int : fruit {
+      |        ^~~
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:66:12: error: expected unqualified-id before ‘:’ token
+   66 | struct int : fruit {
+      |            ^
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: error: no matching function for call to ‘std::shared_ptr<fruit>::shared_ptr(int64_t)’
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+In file included from /usr/include/c++/13/memory:80,
+                 from /workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:4:
+/usr/include/c++/13/bits/shared_ptr.h:478:9: note: candidate: ‘template<class _Alloc, class _Init> std::shared_ptr<_Tp>::shared_ptr(const std::_Sp_counted_array_base<_Alloc>&, _Init) [with _Init = _Alloc; _Tp = fruit]’
+  478 |         shared_ptr(const _Sp_counted_array_base<_Alloc>& __a,
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:478:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘const std::_Sp_counted_array_base<_Alloc>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:463:9: note: candidate: ‘template<class _Alloc, class ... _Args> std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Args = _Alloc; _Tp = fruit]’
+  463 |         shared_ptr(_Sp_alloc_shared_tag<_Alloc> __tag, _Args&&... __args)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:463:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘std::_Sp_alloc_shared_tag<_Tp>’ and ‘long int’
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:395:9: note: candidate: ‘template<class _Yp, class _Del, class> std::shared_ptr<_Tp>::shared_ptr(std::unique_ptr<_Up, _Ep>&&) [with _Del = _Yp; <template-parameter-2-3> = _Del; _Tp = fruit]’
+  395 |         shared_ptr(unique_ptr<_Yp, _Del>&& __r)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:395:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘std::unique_ptr<_Tp, _Dp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:387:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(std::auto_ptr<_Up>&&) [with _Yp = _Tp1; _Tp = fruit]’
+  387 |         shared_ptr(auto_ptr<_Yp>&& __r);
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:387:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘std::auto_ptr<_Up>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:380:18: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(const std::weak_ptr<_Yp>&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  380 |         explicit shared_ptr(const weak_ptr<_Yp>& __r)
+      |                  ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:380:18: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘const std::weak_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:368:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Yp>&&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  368 |         shared_ptr(shared_ptr<_Yp>&& __r) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:368:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:351:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Yp>&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  351 |         shared_ptr(const shared_ptr<_Yp>& __r) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:351:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:339:9: note: candidate: ‘template<class _Yp> std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Yp>&&, element_type*) [with _Tp = fruit]’
+  339 |         shared_ptr(shared_ptr<_Yp>&& __r, element_type* __p) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:339:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:311:9: note: candidate: ‘template<class _Yp> std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Yp>&, element_type*) [with _Tp = fruit]’
+  311 |         shared_ptr(const shared_ptr<_Yp>& __r, element_type* __p) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:311:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:287:9: note: candidate: ‘template<class _Deleter, class _Alloc> std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t, _Deleter, _Alloc) [with _Alloc = _Deleter; _Tp = fruit]’
+  287 |         shared_ptr(nullptr_t __p, _Deleter __d, _Alloc __a)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:287:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   candidate expects 3 arguments, 1 provided
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:268:9: note: candidate: ‘template<class _Yp, class _Deleter, class _Alloc, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*, _Deleter, _Alloc) [with _Deleter = _Yp; _Alloc = _Deleter; <template-parameter-2-4> = _Alloc; _Tp = fruit]’
+  268 |         shared_ptr(_Yp* __p, _Deleter __d, _Alloc __a)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:248:9: note: candidate: ‘template<class _Deleter> std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t, _Deleter) [with _Tp = fruit]’
+  248 |         shared_ptr(nullptr_t __p, _Deleter __d)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:248:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   candidate expects 2 arguments, 1 provided
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:231:9: note: candidate: ‘template<class _Yp, class _Deleter, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*, _Deleter) [with _Deleter = _Yp; <template-parameter-2-3> = _Deleter; _Tp = fruit]’
+  231 |         shared_ptr(_Yp* __p, _Deleter __d)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:231:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:214:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  214 |         shared_ptr(_Yp* __p) : __shared_ptr<_Tp>(__p) { }
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:214:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:78:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   78 | std::shared_ptr<fruit> banana = (std::shared_ptr<fruit>)(int64_t(1));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:535:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(const std::weak_ptr<_Tp>&, std::nothrow_t) [with _Tp = fruit]’
+  535 |       shared_ptr(const weak_ptr<_Tp>& __r, std::nothrow_t) noexcept
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:535:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/shared_ptr.h:412:17: note: candidate: ‘constexpr std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t) [with _Tp = fruit; std::nullptr_t = std::nullptr_t]’
+  412 |       constexpr shared_ptr(nullptr_t) noexcept : shared_ptr() { }
+      |                 ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:412:28: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::nullptr_t’
+  412 |       constexpr shared_ptr(nullptr_t) noexcept : shared_ptr() { }
+      |                            ^~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:359:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Tp>&&) [with _Tp = fruit]’
+  359 |       shared_ptr(shared_ptr&& __r) noexcept
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:359:31: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::shared_ptr<fruit>&&’
+  359 |       shared_ptr(shared_ptr&& __r) noexcept
+      |                  ~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/shared_ptr.h:204:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Tp>&) [with _Tp = fruit]’
+  204 |       shared_ptr(const shared_ptr&) noexcept = default; ///< Copy constructor
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:204:18: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::shared_ptr<fruit>&’
+  204 |       shared_ptr(const shared_ptr&) noexcept = default; ///< Copy constructor
+      |                  ^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:202:17: note: candidate: ‘constexpr std::shared_ptr<_Tp>::shared_ptr() [with _Tp = fruit]’
+  202 |       constexpr shared_ptr() noexcept : __shared_ptr<_Tp>() { }
+      |                 ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:202:17: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: error: no matching function for call to ‘std::shared_ptr<fruit>::shared_ptr(int64_t)’
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:478:9: note: candidate: ‘template<class _Alloc, class _Init> std::shared_ptr<_Tp>::shared_ptr(const std::_Sp_counted_array_base<_Alloc>&, _Init) [with _Init = _Alloc; _Tp = fruit]’
+  478 |         shared_ptr(const _Sp_counted_array_base<_Alloc>& __a,
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:478:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘const std::_Sp_counted_array_base<_Alloc>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:463:9: note: candidate: ‘template<class _Alloc, class ... _Args> std::shared_ptr<_Tp>::shared_ptr(std::_Sp_alloc_shared_tag<_Tp>, _Args&& ...) [with _Args = _Alloc; _Tp = fruit]’
+  463 |         shared_ptr(_Sp_alloc_shared_tag<_Alloc> __tag, _Args&&... __args)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:463:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘std::_Sp_alloc_shared_tag<_Tp>’ and ‘long int’
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:395:9: note: candidate: ‘template<class _Yp, class _Del, class> std::shared_ptr<_Tp>::shared_ptr(std::unique_ptr<_Up, _Ep>&&) [with _Del = _Yp; <template-parameter-2-3> = _Del; _Tp = fruit]’
+  395 |         shared_ptr(unique_ptr<_Yp, _Del>&& __r)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:395:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘std::unique_ptr<_Tp, _Dp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:387:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(std::auto_ptr<_Up>&&) [with _Yp = _Tp1; _Tp = fruit]’
+  387 |         shared_ptr(auto_ptr<_Yp>&& __r);
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:387:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘std::auto_ptr<_Up>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:380:18: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(const std::weak_ptr<_Yp>&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  380 |         explicit shared_ptr(const weak_ptr<_Yp>& __r)
+      |                  ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:380:18: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘const std::weak_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:368:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Yp>&&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  368 |         shared_ptr(shared_ptr<_Yp>&& __r) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:368:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:351:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Yp>&) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  351 |         shared_ptr(const shared_ptr<_Yp>& __r) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:351:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:339:9: note: candidate: ‘template<class _Yp> std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Yp>&&, element_type*) [with _Tp = fruit]’
+  339 |         shared_ptr(shared_ptr<_Yp>&& __r, element_type* __p) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:339:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:311:9: note: candidate: ‘template<class _Yp> std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Yp>&, element_type*) [with _Tp = fruit]’
+  311 |         shared_ptr(const shared_ptr<_Yp>& __r, element_type* __p) noexcept
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:311:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘const std::shared_ptr<_Tp>’ and ‘int64_t’ {aka ‘long int’}
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:287:9: note: candidate: ‘template<class _Deleter, class _Alloc> std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t, _Deleter, _Alloc) [with _Alloc = _Deleter; _Tp = fruit]’
+  287 |         shared_ptr(nullptr_t __p, _Deleter __d, _Alloc __a)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:287:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   candidate expects 3 arguments, 1 provided
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:268:9: note: candidate: ‘template<class _Yp, class _Deleter, class _Alloc, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*, _Deleter, _Alloc) [with _Deleter = _Yp; _Alloc = _Deleter; <template-parameter-2-4> = _Alloc; _Tp = fruit]’
+  268 |         shared_ptr(_Yp* __p, _Deleter __d, _Alloc __a)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:268:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:248:9: note: candidate: ‘template<class _Deleter> std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t, _Deleter) [with _Tp = fruit]’
+  248 |         shared_ptr(nullptr_t __p, _Deleter __d)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:248:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   candidate expects 2 arguments, 1 provided
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:231:9: note: candidate: ‘template<class _Yp, class _Deleter, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*, _Deleter) [with _Deleter = _Yp; <template-parameter-2-3> = _Deleter; _Tp = fruit]’
+  231 |         shared_ptr(_Yp* __p, _Deleter __d)
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:231:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:214:9: note: candidate: ‘template<class _Yp, class> std::shared_ptr<_Tp>::shared_ptr(_Yp*) [with <template-parameter-2-2> = _Yp; _Tp = fruit]’
+  214 |         shared_ptr(_Yp* __p) : __shared_ptr<_Tp>(__p) { }
+      |         ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:214:9: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/rosetta/transpiler/CPP/enumerations-4.cpp:79:68: note:   mismatched types ‘_Yp*’ and ‘long int’
+   79 | std::shared_ptr<fruit> cherry = (std::shared_ptr<fruit>)(int64_t(2));
+      |                                                                    ^
+/usr/include/c++/13/bits/shared_ptr.h:535:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(const std::weak_ptr<_Tp>&, std::nothrow_t) [with _Tp = fruit]’
+  535 |       shared_ptr(const weak_ptr<_Tp>& __r, std::nothrow_t) noexcept
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:535:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/shared_ptr.h:412:17: note: candidate: ‘constexpr std::shared_ptr<_Tp>::shared_ptr(std::nullptr_t) [with _Tp = fruit; std::nullptr_t = std::nullptr_t]’
+  412 |       constexpr shared_ptr(nullptr_t) noexcept : shared_ptr() { }
+      |                 ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:412:28: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::nullptr_t’
+  412 |       constexpr shared_ptr(nullptr_t) noexcept : shared_ptr() { }
+      |                            ^~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:359:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(std::shared_ptr<_Tp>&&) [with _Tp = fruit]’
+  359 |       shared_ptr(shared_ptr&& __r) noexcept
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:359:31: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘std::shared_ptr<fruit>&&’
+  359 |       shared_ptr(shared_ptr&& __r) noexcept
+      |                  ~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/shared_ptr.h:204:7: note: candidate: ‘std::shared_ptr<_Tp>::shared_ptr(const std::shared_ptr<_Tp>&) [with _Tp = fruit]’
+  204 |       shared_ptr(const shared_ptr&) noexcept = default; ///< Copy constructor
+      |       ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:204:18: note:   no known conversion for argument 1 from ‘int64_t’ {aka ‘long int’} to ‘const std::shared_ptr<fruit>&’
+  204 |       shared_ptr(const shared_ptr&) noexcept = default; ///< Copy constructor
+      |                  ^~~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:202:17: note: candidate: ‘constexpr std::shared_ptr<_Tp>::shared_ptr() [with _Tp = fruit]’
+  202 |       constexpr shared_ptr() noexcept : __shared_ptr<_Tp>() { }
+      |                 ^~~~~~~~~~
+/usr/include/c++/13/bits/shared_ptr.h:202:17: note:   candidate expects 0 arguments, 1 provided
