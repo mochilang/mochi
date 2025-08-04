@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (430/491)
-Last updated: 2025-08-04 08:44 UTC
+## Checklist (438/491)
+Last updated: 2025-08-04 09:24 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -467,18 +467,18 @@ Last updated: 2025-08-04 08:44 UTC
 | 458 | forward-difference | ✓ | 1ms | 12.4 MB |
 | 459 | four-bit-adder-1 | ✓ |  |  |
 | 460 | four-is-magic | ✓ |  |  |
-| 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
-| 462 | fractal-tree | ✓ |  |  |
+| 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
+| 462 | fractal-tree | ✓ | 53ms | 16.5 MB |
 | 463 | fractran | ✓ |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
-| 466 | function-frequency |   |  |  |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
+| 464 | french-republican-calendar | ✓ |  |  |
+| 465 | ftp | ✓ |  |  |
+| 466 | function-frequency | ✓ | 33ms | 13.5 MB |
+| 467 | function-prototype | ✓ |  |  |
+| 468 | functional-coverage-tree | ✓ | 12ms | 14.5 MB |
+| 469 | fusc-sequence | ✓ | 2ms | 13.3 MB |
+| 470 | gamma-function | ✓ | 1ms | 12.6 MB |
+| 471 | general-fizzbuzz | ✓ |  |  |
+| 472 | generic-swap | ✓ | 1ms | 12.4 MB |
 | 473 | get-system-command-output |   |  |  |
 | 474 | giuga-numbers |   |  |  |
 | 475 | globally-replace-text-in-several-files |   |  |  |

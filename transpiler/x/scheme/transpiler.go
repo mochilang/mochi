@@ -2476,7 +2476,13 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 	}
 	if op == "/" {
 		_, lint := lt.(types.IntType)
+		if !lint {
+			_, lint = lt.(types.Int64Type)
+		}
 		_, rint := rt.(types.IntType)
+		if !rint {
+			_, rint = rt.(types.Int64Type)
+		}
 		if lint && rint {
 			return &List{Elems: []Node{Symbol("quotient"), left, right}}
 		}
@@ -2484,7 +2490,13 @@ func makeBinaryTyped(op string, left, right Node, lt, rt types.Type) Node {
 	}
 	if op == "%" {
 		_, lint := lt.(types.IntType)
+		if !lint {
+			_, lint = lt.(types.Int64Type)
+		}
 		_, rint := rt.(types.IntType)
+		if !rint {
+			_, rint = rt.(types.Int64Type)
+		}
 		if lint && rint {
 			return &List{Elems: []Node{Symbol("modulo"), left, right}}
 		}
@@ -2615,6 +2627,15 @@ func precedence(op string) int {
 }
 
 func binaryResultType(op string, lt, rt types.Type) types.Type {
+	isInt := func(t types.Type) bool {
+		if _, ok := t.(types.IntType); ok {
+			return true
+		}
+		if _, ok := t.(types.Int64Type); ok {
+			return true
+		}
+		return false
+	}
 	switch op {
 	case "+":
 		if _, ok := lt.(types.StringType); ok {
@@ -2622,6 +2643,13 @@ func binaryResultType(op string, lt, rt types.Type) types.Type {
 		}
 		if _, ok := rt.(types.StringType); ok {
 			return types.StringType{}
+		}
+		if isInt(lt) && isInt(rt) {
+			return types.IntType{}
+		}
+	case "-", "*", "/", "%":
+		if isInt(lt) && isInt(rt) {
+			return types.IntType{}
 		}
 	case "<", "<=", ">", ">=", "==", "!=", "&&", "||", "in":
 		return types.BoolType{}
@@ -2835,6 +2863,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				&List{Elems: []Node{&List{Elems: []Node{xs, args[0]}}}},
 				&List{Elems: []Node{Symbol("exact->inexact"), div}},
 			}}, nil
+		case "float":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("float expects 1 arg")
+			}
+			return &List{Elems: []Node{Symbol("exact->inexact"), args[0]}}, nil
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str expects 1 arg")
