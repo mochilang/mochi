@@ -1,0 +1,40 @@
+/*
+Word Break Problem - Backtracking
+
+Given a string and a set of dictionary words, determine if the string can
+be segmented into a sequence of one or more dictionary words. The
+algorithm explores every possible prefix starting from a given index; if
+that prefix is in the dictionary, the function recursively attempts to
+segment the remaining substring. The recursion succeeds when the start
+index reaches the end of the string. This approach has exponential
+worst-case time complexity but demonstrates a straightforward
+backtracking solution.
+*/
+
+fun contains(words: list<string>, target: string): bool {
+  for w in words {
+    if w == target { return true }
+  }
+  return false
+}
+
+fun backtrack(s: string, word_dict: list<string>, start: int): bool {
+  if start == len(s) { return true }
+  var end = start + 1
+  while end <= len(s) {
+    let substr = substring(s, start, end)
+    if contains(word_dict, substr) && backtrack(s, word_dict, end) {
+      return true
+    }
+    end = end + 1
+  }
+  return false
+}
+
+fun word_break(s: string, word_dict: list<string>): bool {
+  return backtrack(s, word_dict, 0)
+}
+
+print(str(word_break("leetcode", ["leet", "code"])))
+print(str(word_break("applepenapple", ["apple", "pen"])))
+print(str(word_break("catsandog", ["cats", "dog", "sand", "and", "cat"])))
