@@ -312,6 +312,13 @@ func typeRefString(t *parser.TypeRef) string {
 		return fsTypeFromString(*t.Simple)
 	}
 	if t.Fun != nil {
+		if len(t.Fun.Params) == 0 {
+			ret := "obj"
+			if t.Fun.Return != nil {
+				ret = typeRefString(t.Fun.Return)
+			}
+			return "unit -> " + ret
+		}
 		params := make([]string, len(t.Fun.Params)+1)
 		for i, p := range t.Fun.Params {
 			params[i] = typeRefString(p)
@@ -2187,6 +2194,17 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, "()")
 		return
 	}
+	if strings.Contains(name, ".") && !strings.Contains(name, " ") {
+		io.WriteString(w, "(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	for _, a := range c.Args {
 		io.WriteString(w, " (")
 		a.emit(w)
@@ -2327,6 +2345,36 @@ type FieldExpr struct {
 
 func (f *FieldExpr) emit(w io.Writer) {
 	t := inferType(f.Target)
+	if id, ok := f.Target.(*IdentExpr); ok && t == "" {
+		if _, ok2 := varTypes[id.Name]; !ok2 {
+			if strings.Contains(id.Name, ".") {
+				if needsParen(f.Target) {
+					io.WriteString(w, "(")
+					f.Target.emit(w)
+					io.WriteString(w, ")")
+				} else {
+					f.Target.emit(w)
+				}
+				io.WriteString(w, ".")
+				io.WriteString(w, fsIdent(f.Name))
+				return
+			}
+		}
+	}
+	if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+		if f.Name == "Keys" || f.Name == "Values" {
+			if needsParen(f.Target) {
+				io.WriteString(w, "(")
+				f.Target.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				f.Target.emit(w)
+			}
+			io.WriteString(w, ".")
+			io.WriteString(w, fsIdent(f.Name))
+			return
+		}
+	}
 	if t == "obj" || t == "" {
 		if sname, ok := structWithField(f.Name); ok {
 			io.WriteString(w, "((")
@@ -3527,37 +3575,37 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-               if transpileEnv != nil {
-                       if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
-                               if ft, ok := vt.(types.FuncType); ok {
-                                       if inner, ok2 := ft.Return.(types.FuncType); ok2 {
-                                               inner.Return = types.AnyType{}
-                                               ft.Return = inner
-                                       } else {
-                                               ft.Return = types.AnyType{}
-                                       }
-                                       transpileEnv.SetVar(st.Fun.Name, ft, false)
-                               }
-                       }
-               }
-               // Register function signature before processing body so that recursive
-               // calls can correctly infer the return type.
-               if varTypes == nil {
-                       varTypes = map[string]string{}
-               }
-               varTypes[st.Fun.Name] = retType
-               if definedFuncs == nil {
-                       definedFuncs = map[string]bool{}
-               }
-               definedFuncs[st.Fun.Name] = true
+		if transpileEnv != nil {
+			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
+				if ft, ok := vt.(types.FuncType); ok {
+					if inner, ok2 := ft.Return.(types.FuncType); ok2 {
+						inner.Return = types.AnyType{}
+						ft.Return = inner
+					} else {
+						ft.Return = types.AnyType{}
+					}
+					transpileEnv.SetVar(st.Fun.Name, ft, false)
+				}
+			}
+		}
+		// Register function signature before processing body so that recursive
+		// calls can correctly infer the return type.
+		if varTypes == nil {
+			varTypes = map[string]string{}
+		}
+		varTypes[st.Fun.Name] = retType
+		if definedFuncs == nil {
+			definedFuncs = map[string]bool{}
+		}
+		definedFuncs[st.Fun.Name] = true
 
-               prevReturn := currentReturn
-               currentReturn = retType
-               body := make([]Stmt, len(st.Fun.Body))
-               for i, s := range st.Fun.Body {
-                       cs, err := convertStmt(s)
-                       if err != nil {
-                               varTypes = save
+		prevReturn := currentReturn
+		currentReturn = retType
+		body := make([]Stmt, len(st.Fun.Body))
+		for i, s := range st.Fun.Body {
+			cs, err := convertStmt(s)
+			if err != nil {
+				varTypes = save
 				currentReturn = prevReturn
 				return nil, err
 			}
@@ -3615,6 +3663,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			elemType = "int"
 		} else {
 			elemType = elemTypeOf(start)
+			if elemType == "string" {
+				start = &CallExpr{Func: "Seq.map string", Args: []Expr{start}}
+			}
 		}
 		if elemType != "" {
 			varTypes[st.For.Name] = elemType
@@ -3951,24 +4002,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					fn = "String.length"
 				case "map":
 					fn = "Seq.length"
-                               case "group":
-                                       if id, ok := args[0].(*IdentExpr); ok {
-                                               field := &FieldExpr{Target: id, Name: "items"}
-                                               return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
-                                       }
-                               case "obj":
-                                       // Fallback for values with dynamic type. Attempt to treat the
-                                       // value as an array; if it's not, the generated code may fail
-                                       // at runtime, but this handles common cases where `len` is used
-                                       // on a list packaged as `any`.
-                                       cast := &CastExpr{Expr: args[0], Type: "System.Array"}
-                                       field := &FieldExpr{Target: cast, Name: "Length"}
-                                       return field, nil
-                               }
-                       }
-                       return &CallExpr{Func: fn, Args: args}, nil
-               case "str":
-                       if len(args) == 1 {
+				case "group":
+					if id, ok := args[0].(*IdentExpr); ok {
+						field := &FieldExpr{Target: id, Name: "items"}
+						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
+					}
+				case "obj":
+					// Fallback for values with dynamic type. Attempt to treat the
+					// value as an array; if it's not, the generated code may fail
+					// at runtime, but this handles common cases where `len` is used
+					// on a list packaged as `any`.
+					cast := &CastExpr{Expr: args[0], Type: "System.Array"}
+					field := &FieldExpr{Target: cast, Name: "Length"}
+					return field, nil
+				}
+			}
+			return &CallExpr{Func: fn, Args: args}, nil
+		case "str":
+			if len(args) == 1 {
 				t := inferType(args[0])
 				if t == "array" || strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
@@ -4109,7 +4160,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("keys expects 1 arg")
 			}
 			t := inferType(args[0])
-			if t == "map" {
+			if isMapType(t) {
+				if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+					return &FieldExpr{Target: args[0], Name: "Keys"}, nil
+				}
 				inner := &CallExpr{Func: "Map.toList", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "List.map fst", Args: []Expr{inner}}, nil
 			}
@@ -4640,10 +4694,10 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			return &ModuleDef{Open: true, Name: alias, Stmts: []Stmt{
 				&LetStmt{Name: "pi", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "PI"}},
 				&LetStmt{Name: "e", Type: "float", Expr: &FieldExpr{Target: &IdentExpr{Name: "System.Math"}, Name: "E"}},
-				&FunDef{Name: "sqrt", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sqrt", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
-				&FunDef{Name: "pow", Params: []string{"x", "y"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Pow", Args: []Expr{&IdentExpr{Name: "x"}, &IdentExpr{Name: "y"}}}}}},
-				&FunDef{Name: "sin", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sin", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
-				&FunDef{Name: "log", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Log", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "sqrt", Params: []string{"x"}, Return: "float", Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sqrt", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "pow", Params: []string{"x", "y"}, Return: "float", Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Pow", Args: []Expr{&IdentExpr{Name: "x"}, &IdentExpr{Name: "y"}}}}}},
+				&FunDef{Name: "sin", Params: []string{"x"}, Return: "float", Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sin", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
+				&FunDef{Name: "log", Params: []string{"x"}, Return: "float", Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Log", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
 			}}, nil
 		}
 		if path == "subprocess" {

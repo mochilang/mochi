@@ -1,7 +1,6 @@
-// Generated 2025-07-30 21:05 +0700
+// Generated 2025-08-04 22:35 +0700
 
 exception Return
-
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
@@ -30,44 +29,56 @@ let _substring (s:string) (start:int) (finish:int) =
     if st > en then st <- en
     s.Substring(st, en - st)
 
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _idx (arr:'a array) (i:int) : 'a =
+    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+open System.Collections.Generic
+
 open System
 
 module math =
-    let pi: float = ((System.Math :?> Map<string, obj>).["PI"])
-    let e: float = ((System.Math :?> Map<string, obj>).["E"])
+    let pi: float = System.Math.PI
+    let e: float = System.Math.E
     let rec sqrt x =
-        let mutable __ret = ()
+        let mutable __ret : float = Unchecked.defaultof<float>
         let mutable x = x
         try
-            __ret <- System.Math.Sqrt x
+            __ret <- System.Math.Sqrt(x)
             raise Return
             __ret
         with
             | Return -> __ret
     let rec pow x y =
-        let mutable __ret = ()
+        let mutable __ret : float = Unchecked.defaultof<float>
         let mutable x = x
         let mutable y = y
         try
-            __ret <- System.Math.Pow x y
+            __ret <- System.Math.Pow(x, y)
             raise Return
             __ret
         with
             | Return -> __ret
     let rec sin x =
-        let mutable __ret = ()
+        let mutable __ret : float = Unchecked.defaultof<float>
         let mutable x = x
         try
-            __ret <- System.Math.Sin x
+            __ret <- System.Math.Sin(x)
             raise Return
             __ret
         with
             | Return -> __ret
     let rec log x =
-        let mutable __ret = ()
+        let mutable __ret : float = Unchecked.defaultof<float>
         let mutable x = x
         try
-            __ret <- System.Math.Log x
+            __ret <- System.Math.Log(x)
             raise Return
             __ret
         with
@@ -77,21 +88,21 @@ let rec entropy (s: string) =
     let mutable __ret : float = Unchecked.defaultof<float>
     let mutable s = s
     try
-        let mutable counts: Map<string, int> = Map.ofList []
+        let mutable counts: System.Collections.Generic.IDictionary<string, int> = _dictCreate []
         let mutable i: int = 0
-        while i < (String.length s) do
+        while i < (String.length(s)) do
             let ch: string = _substring s i (i + 1)
-            if Map.containsKey ch counts then
-                counts <- Map.add ch ((int (counts.[ch] |> unbox<int>)) + 1) counts
+            if counts.ContainsKey(ch) then
+                counts.[ch] <- (counts.[(string (ch))]) + 1
             else
-                counts <- Map.add ch 1 counts
+                counts.[ch] <- 1
             i <- i + 1
         let mutable hm: float = 0.0
-        for k in List.map fst (Map.toList counts) do
-            let c: float = float (counts.[k] |> unbox<int>)
-            hm <- float (hm + (float (c * (float ((math.log(c)) / (math.log(2.0)))))))
-        let l: float = float (String.length s)
-        __ret <- float ((float ((math.log(l)) / (math.log(2.0)))) - (hm / l))
+        for k in counts.Keys do
+            let c: float = System.Convert.ToDouble (counts.[(string (k))])
+            hm <- float (hm + (float (c * (float ((float (math.log(c))) / (float (math.log(2.0))))))))
+        let l: float = float (String.length(s))
+        __ret <- float ((float ((float (math.log(l))) / (float (math.log(2.0))))) - (hm / l))
         raise Return
         __ret
     with
@@ -118,15 +129,15 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        printfn "%s" ((unbox<string> ((pad "N" 3) + (pad "Length" 9))) + "  Entropy      Word")
+        printfn "%s" (((pad ("N") (3)) + (pad ("Length") (9))) + "  Entropy      Word")
         let mutable n: int = 1
         while n < 10 do
-            let s: string = fibonacciWord n
-            printfn "%s" (((((unbox<string> ((pad (string n) 3) + (pad (string (String.length s)) 9))) + "  ") + (unbox<string> (fmt (entropy s)))) + "  ") + s)
+            let mutable s: string = fibonacciWord (n)
+            printfn "%s" ((((((pad (string (n)) (3)) + (pad (string (String.length(s))) (9))) + "  ") + (fmt (entropy (s)))) + "  ") + s)
             n <- n + 1
         while n <= 37 do
-            let s: string = fibonacciWord n
-            printfn "%s" (((unbox<string> ((pad (string n) 3) + (pad (string (String.length s)) 9))) + "  ") + (unbox<string> (fmt (entropy s))))
+            let mutable s: string = fibonacciWord (n)
+            printfn "%s" ((((pad (string (n)) (3)) + (pad (string (String.length(s))) (9))) + "  ") + (fmt (entropy (s))))
             n <- n + 1
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
@@ -141,7 +152,7 @@ and pad (s: string) (w: int) =
     let mutable w = w
     try
         let mutable t: string = s
-        while (String.length t) < w do
+        while (String.length(t)) < w do
             t <- " " + t
         __ret <- t
         raise Return
@@ -152,13 +163,13 @@ and fmt (x: float) =
     let mutable __ret : string = Unchecked.defaultof<string>
     let mutable x = x
     try
-        let mutable y: float = (float (floorf ((x * 100000000.0) + 0.5))) / 100000000.0
-        let mutable s: string = string y
+        let mutable y: float = (floorf ((x * 100000000.0) + 0.5)) / 100000000.0
+        let mutable s: string = string (y)
         let mutable dot: int = s.IndexOf(".")
         if dot = (0 - 1) then
             s <- s + ".00000000"
         else
-            let mutable d: int = ((String.length s) - dot) - 1
+            let mutable d: int = ((String.length(s)) - dot) - 1
             while d < 8 do
                 s <- s + "0"
                 d <- d + 1
@@ -183,7 +194,7 @@ and indexOf (s: string) (ch: string) =
     let mutable ch = ch
     try
         let mutable i: int = 0
-        while i < (String.length s) do
+        while i < (String.length(s)) do
             if (_substring s i (i + 1)) = ch then
                 __ret <- i
                 raise Return

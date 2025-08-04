@@ -1,4 +1,4 @@
-// Generated 2025-07-30 21:05 +0700
+// Generated 2025-08-04 22:35 +0700
 
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
@@ -18,16 +18,28 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
-let mutable fs: Map<string, string> = Map.ofList [("input.txt", box "example")]
+let _dictAdd<'K,'V when 'K : equality> (d:System.Collections.Generic.IDictionary<'K,'V>) (k:'K) (v:'V) =
+    d.[k] <- v
+    d
+let _dictCreate<'K,'V when 'K : equality> (pairs:('K * 'V) list) : System.Collections.Generic.IDictionary<'K,'V> =
+    let d = System.Collections.Generic.Dictionary<'K, 'V>()
+    for (k, v) in pairs do
+        d.[k] <- v
+    upcast d
+let _idx (arr:'a array) (i:int) : 'a =
+    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
+open System.Collections.Generic
+
+let mutable fs: System.Collections.Generic.IDictionary<string, string> = _dictCreate [("input.txt", "example")]
 let rec copyFile (out: string) (inp: string) =
     let mutable __ret : unit = Unchecked.defaultof<unit>
     let mutable out = out
     let mutable inp = inp
     try
         let mutable s: string = ""
-        for ch in fs.[inp] |> unbox<string> do
-            s <- s + (unbox<string> ch)
-        fs <- Map.add out s fs
+        for ch in Seq.map string (fs.[(string (inp))]) do
+            s <- s + ch
+        fs.[out] <- s
         __ret
     with
         | Return -> __ret
@@ -36,8 +48,8 @@ and main () =
     try
         let __bench_start = _now()
         let __mem_start = System.GC.GetTotalMemory(true)
-        copyFile "output.txt" "input.txt"
-        printfn "%A" (fs.["output.txt"] |> unbox<string>)
+        copyFile ("output.txt") ("input.txt")
+        printfn "%s" (fs.[(string ("output.txt"))])
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)

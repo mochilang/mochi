@@ -415,12 +415,12 @@ This file is auto-generated from rosetta tests.
 | 408 | fibonacci-sequence-4 | ✓ | 344µs | 46.4 KB |
 | 409 | fibonacci-sequence-5 | ✓ | 246µs | 27.7 KB |
 | 410 | fibonacci-word-fractal | ✓ | 336µs | 44.0 KB |
-| 411 | fibonacci-word |   |  |  |
+| 411 | fibonacci-word | ✓ | 141.333ms | 46.1 MB |
 | 412 | file-extension-is-in-extensions-list | ✓ | 727µs | 64.8 KB |
-| 413 | file-input-output-1 |   |  |  |
-| 414 | file-input-output-2 |   |  |  |
-| 415 | file-input-output-3 |   |  |  |
-| 416 | file-modification-time |   |  |  |
+| 413 | file-input-output-1 |   | 203µs | 33.7 KB |
+| 414 | file-input-output-2 |   | 209µs | 41.7 KB |
+| 415 | file-input-output-3 | ✓ | 216µs | 30.5 KB |
+| 416 | file-modification-time |   | 202µs | 33.7 KB |
 | 417 | file-size-distribution | ✓ | 357µs | 50.5 KB |
 | 418 | file-size | ✓ | 457µs | 67.2 KB |
 | 419 | filter | ✓ | 336µs | 45.4 KB |
@@ -439,8 +439,8 @@ This file is auto-generated from rosetta tests.
 | 432 | first-class-functions-use-numbers-analogously |   |  |  |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
 | 434 | five-weekends | ✓ | 375µs | 41.1 KB |
-| 435 | fivenum-1 | ✓ | 346µs | 42.5 KB |
-| 436 | fivenum-2 | ✓ | 339µs | 42.5 KB |
+| 435 | fivenum-1 |   | 346µs | 42.5 KB |
+| 436 | fivenum-2 |   | 339µs | 42.5 KB |
 | 437 | fivenum-3 | ✓ | 347µs | 42.5 KB |
 | 438 | fixed-length-records-1 | ✓ | 341µs | 57.4 KB |
 | 439 | fixed-length-records-2 | ✓ | 358µs | 48.8 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 20:44 +0700
+Last updated: 2025-08-04 22:35 +0700
