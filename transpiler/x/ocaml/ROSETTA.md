@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 346/491
+Completed programs: 347/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -390,7 +390,7 @@ Completed programs: 346/491
 | 382 | exponentiation-operator | ✓ | 252.0µs | 11.12KB |
 | 383 | exponentiation-order | ✓ | 136.0µs | 344B |
 | 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
-| 385 | extend-your-language | error |  |  |
+| 385 | extend-your-language | ✓ | 19.0µs | 448B |
 | 386 | extensible-prime-generator | ✓ |  |  |
 | 387 | extreme-floating-point-values | error |  |  |
 | 388 | faces-from-a-mesh-2 | error |  |  |
@@ -497,4 +497,4 @@ Completed programs: 346/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 08:07 +0700
+Last updated 2025-08-04 08:16 +0700

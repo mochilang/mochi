@@ -1598,9 +1598,13 @@ type FuncExpr struct {
 
 func (f *FuncExpr) emit(w io.Writer) {
 	io.WriteString(w, "(fun")
-	for _, p := range f.Params {
-		io.WriteString(w, " ")
-		io.WriteString(w, p)
+	if len(f.Params) == 0 {
+		io.WriteString(w, " ()")
+	} else {
+		for _, p := range f.Params {
+			io.WriteString(w, " ")
+			io.WriteString(w, p)
+		}
 	}
 	io.WriteString(w, " ->\n")
 	for _, st := range f.Body {
