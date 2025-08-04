@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 22:44 +0700
+Last updated: 2025-08-05 00:37 +0700
 
-## Program Checklist (111/491)
+## Program Checklist (114/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -167,16 +167,16 @@ Last updated: 2025-08-04 22:44 +0700
 | 158 | call-a-function-7 | ✓ | 288µs |  |
 | 159 | call-a-function-8 | ✓ | 732µs | 256.0 KB |
 | 160 | call-a-function-9 | ✓ | 402µs | 384.0 KB |
-| 161 | call-an-object-method-1 |   |  |  |
+| 161 | call-an-object-method-1 | ✓ | 208µs |  |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
 | 164 | call-an-object-method |   |  |  |
-| 165 | camel-case-and-snake-case |   |  |  |
+| 165 | camel-case-and-snake-case | ✓ | 14.762ms | 4.8 MB |
 | 166 | canny-edge-detector |   |  |  |
 | 167 | canonicalize-cidr |   |  |  |
 | 168 | cantor-set |   |  |  |
 | 169 | carmichael-3-strong-pseudoprimes |   |  |  |
-| 170 | cartesian-product-of-two-or-more-lists-1 |   |  |  |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.456ms | 512.0 KB |
 | 171 | cartesian-product-of-two-or-more-lists-2 |   |  |  |
 | 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |

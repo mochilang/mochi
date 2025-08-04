@@ -1,3 +1,0 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencartesian-product-of-two-or-more-lists-1464836073/001/prog.zig:29:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldencartesian-product-of-two-or-more-lists-1464836073/001/prog.zig:29:13: note: consider using 'const'
