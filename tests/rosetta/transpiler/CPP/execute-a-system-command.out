@@ -1,0 +1,8 @@
+total 376
+-rw-r--r-- 1 root root   2493 Aug  4 08:28 README.md
+-rw-r--r-- 1 root root  26428 Aug  4 08:28 ROSETTA.md
+-rw-r--r-- 1 root root 116219 Aug  4 08:28 TASKS.md
+-rw-r--r-- 1 root root   7829 Aug  4 00:59 rosetta_test.go
+-rw-r--r-- 1 root root 207905 Aug  4 08:29 transpiler.go
+-rw-r--r-- 1 root root   4478 Aug  4 00:59 transpiler_test.go
+-rw-r--r-- 1 root root   5338 Aug  4 00:59 vm_valid_golden_test.go
