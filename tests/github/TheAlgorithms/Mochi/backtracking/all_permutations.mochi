@@ -1,10 +1,15 @@
 /*
-Generate all permutations of a sequence using backtracking.
-A state space tree is explored with depth-first search. At each level,
-choose an unused element, append it to the current permutation, and
-recurse. When the permutation length equals the input length, output it.
-This approach visits n! permutations and each permutation requires O(n)
-work to build, giving overall time complexity O(n! * n).
+Generate all permutations of a sequence using recursive backtracking.
+
+A state space tree is explored depth-first.  At depth `index`, choose an
+unused element from the input, append it to the current permutation, and
+recurse to build the next level.  A boolean list tracks which positions in
+the original sequence have already been used so that each element appears
+exactly once per permutation.  When `index` reaches the sequence length the
+current permutation is complete and printed.
+
+This explores n! leaves and each leaf prints a permutation of length n, for
+an overall time complexity of O(n! * n).
 */
 
 fun repeat_bool(times: int): list<bool> {
@@ -31,8 +36,13 @@ fun set_bool(xs: list<bool>, idx: int, value: bool): list<bool> {
   return res
 }
 
-fun create_state_space_tree(sequence: list<any>, current: list<any>, used: list<bool>) {
-  if len(current) == len(sequence) {
+fun create_state_space_tree(
+  sequence: list<any>,
+  current: list<any>,
+  index: int,
+  used: list<bool>
+) {
+  if index == len(sequence) {
     print(str(current))
     return
   }
@@ -41,7 +51,7 @@ fun create_state_space_tree(sequence: list<any>, current: list<any>, used: list<
     if !used[i] {
       let next_current = append(current, sequence[i])
       let next_used = set_bool(used, i, true)
-      create_state_space_tree(sequence, next_current, next_used)
+      create_state_space_tree(sequence, next_current, index + 1, next_used)
     }
     i = i + 1
   }
@@ -49,7 +59,7 @@ fun create_state_space_tree(sequence: list<any>, current: list<any>, used: list<
 
 fun generate_all_permutations(sequence: list<any>) {
   let used = repeat_bool(len(sequence))
-  create_state_space_tree(sequence, [] as list<any>, used)
+  create_state_space_tree(sequence, [] as list<any>, 0, used)
 }
 
 let sequence: list<any> = [3, 1, 2, 4]
