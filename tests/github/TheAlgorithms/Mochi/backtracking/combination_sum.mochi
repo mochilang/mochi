@@ -1,0 +1,26 @@
+// Mochi implementation of Combination Sum using backtracking
+
+fun backtrack(candidates: list<int>, start: int, target: int, path: list<int>, result: list<list<int>>): list<list<int>> {
+  if target == 0 {
+    return append(result, path)
+  }
+  var i = start
+  while i < len(candidates) {
+    let value = candidates[i]
+    if value <= target {
+      let new_path = append(path, value)
+      result = backtrack(candidates, i, target - value, new_path, result)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun combination_sum(candidates: list<int>, target: int): list<list<int>> {
+  let path: list<int> = []
+  let result: list<list<int>> = []
+  return backtrack(candidates, 0, target, path, result)
+}
+
+print(str(combination_sum([2, 3, 5], 8)))
+print(str(combination_sum([2, 3, 6, 7], 7)))
