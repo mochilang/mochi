@@ -1,0 +1,13 @@
+text1 = GCTAGCTCTACGAGTCTA
+text2 = GGCTATAATGCGTA
+text3 = there would have been a time for such a word
+text4 = needle need noodle needle
+text5 = DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages
+text6 = Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk.
+
+Found "TCTA" in 'text1' at indexes [6, 14]
+Found "TAATAAA" in 'text2' at indexes []
+Found "word" in 'text3' at indexes [40]
+Found "needle" in 'text4' at indexes [0, 19]
+Found "and" in 'text5' at indexes [10, 46, 73]
+Found "alfalfa" in 'text6' at indexes [29, 79]
