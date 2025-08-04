@@ -11,14 +11,18 @@ public class Main {
         int i = -1;
         while (i <= 10) {
             if (i < 0) {
-                System.out.println(String.valueOf("fib(" + String.valueOf(i)) + ") returned error: negative n is forbidden");
+                System.out.println("fib(" + _p(i) + ") returned error: negative n is forbidden");
             } else {
-                System.out.println(String.valueOf(String.valueOf("fib(" + String.valueOf(i)) + ") = ") + String.valueOf(fib(i)));
+                System.out.println("fib(" + _p(i) + ") = " + _p(fib(i)));
             }
             i = i + 1;
         }
     }
     public static void main(String[] args) {
         main();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }

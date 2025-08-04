@@ -1,7 +1,7 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-04 21:33 GMT+7
+Last updated: 2025-08-04 21:54 GMT+7
 
 ## Rosetta Checklist (453/491)
 | Index | Name | Status | Duration | Memory |
@@ -52,16 +52,16 @@ Last updated: 2025-08-04 21:33 GMT+7
 | 44 | amicable-pairs | ✓ | 405.0ms | 80.72MB |
 | 45 | anagrams-deranged-anagrams | ✓ | 9.0ms | 245.78KB |
 | 46 | anagrams | ✓ | 21.0ms | 491.59KB |
-| 47 | angle-difference-between-two-bearings-1 | ✓ | 627.0µs | 0B |
-| 48 | angle-difference-between-two-bearings-2 | ✓ | 802.0µs | 0B |
-| 49 | angles-geometric-normalization-and-conversion | ✓ | 9.0ms | 245.78KB |
-| 50 | animate-a-pendulum | ✓ | 634.0µs | 0B |
-| 51 | animation | ✓ | 40.0ms | 32.88KB |
-| 52 | anonymous-recursion-1 | ✓ | 7.0ms | 0B |
-| 53 | anonymous-recursion-2 | ✓ | 8.0ms | 0B |
-| 54 | anonymous-recursion | ✓ | 10.0ms | 0B |
-| 55 | anti-primes | ✓ | 44.0ms | 0B |
-| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 9.0ms | 0B |
+| 47 | angle-difference-between-two-bearings-1 | ✓ | 26.0ms | 10.66KB |
+| 48 | angle-difference-between-two-bearings-2 | ✓ | 31.0ms | 10.80KB |
+| 49 | angles-geometric-normalization-and-conversion | ✓ | 83.0ms | 106.21KB |
+| 50 | animate-a-pendulum | ✓ | 33.0ms | 448B |
+| 51 | animation | ✓ | 55.0ms | 32.88KB |
+| 52 | anonymous-recursion-1 | ✓ | 74.0ms | 77.56KB |
+| 53 | anonymous-recursion-2 | ✓ | 86.0ms | 87.19KB |
+| 54 | anonymous-recursion | ✓ | 72.0ms | 87.19KB |
+| 55 | anti-primes | ✓ | 136.0ms | 77.80KB |
+| 56 | append-a-record-to-the-end-of-a-text-file | ✓ | 51.0ms | 45.76KB |
 | 57 | apply-a-callback-to-an-array-1 | ✓ | 517.0µs | 0B |
 | 58 | apply-a-callback-to-an-array-2 | ✓ | 23.0ms | 0B |
 | 59 | apply-a-digital-filter-direct-form-ii-transposed- | ✓ | 1.0ms | 0B |

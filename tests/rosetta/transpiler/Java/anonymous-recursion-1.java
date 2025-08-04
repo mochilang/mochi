@@ -17,15 +17,19 @@ public class Main {
     }
 
     static void main() {
-        for (var n : new int[]{0, 1, 2, 3, 4, 5, 10, 40, -1}) {
+        for (int n : new int[]{0, 1, 2, 3, 4, 5, 10, 40, -1}) {
             if (n < 0) {
                 System.out.println("fib undefined for negative numbers");
             } else {
-                System.out.println(String.valueOf(String.valueOf("fib " + String.valueOf(n)) + " = ") + String.valueOf(fib(n)));
+                System.out.println("fib " + _p(n) + " = " + _p(fib(n)));
             }
         }
     }
     public static void main(String[] args) {
         main();
+    }
+
+    static String _p(Object v) {
+        return v != null ? String.valueOf(v) : "<nil>";
     }
 }
