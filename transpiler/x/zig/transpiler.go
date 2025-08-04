@@ -3755,6 +3755,8 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 			paramName = uniqueName(name + "_param")
 		} else if globalNames[name] {
 			paramName = name + "_param"
+		} else {
+			paramName = uniqueName(name)
 		}
 		aliasName := paramName
 		if mutables[p.Name] {
@@ -4539,6 +4541,10 @@ func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
 			walkExpr(t.Value)
 		case *ExprStmt:
 			walkExpr(t.Expr)
+		case *PrintStmt:
+			for _, v := range t.Values {
+				walkExpr(v)
+			}
 		case *ReturnStmt:
 			if t.Value != nil {
 				walkExpr(t.Value)
