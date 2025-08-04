@@ -45,7 +45,28 @@ func (k Keyword) Emit(w io.Writer) {
 type StringLit string
 
 func (s StringLit) Emit(w io.Writer) {
-	fmt.Fprintf(w, "%q", string(s))
+        io.WriteString(w, "\"")
+        for _, r := range string(s) {
+                switch r {
+                case '\n':
+                        io.WriteString(w, "\\n")
+                case '\r':
+                        io.WriteString(w, "\\r")
+                case '\t':
+                        io.WriteString(w, "\\t")
+                case '\\':
+                        io.WriteString(w, "\\\\")
+                case '"':
+                        io.WriteString(w, "\\\"")
+                default:
+                        if r < 0x20 || r > 0x7e {
+                                fmt.Fprintf(w, "\\u%04X", r)
+                        } else {
+                                w.Write([]byte(string(r)))
+                        }
+                }
+        }
+        io.WriteString(w, "\"")
 }
 
 // IntLit represents an integer literal.
