@@ -82,6 +82,7 @@ var (
 	currentReturn  string
 	methodDefs     []Stmt
 	definedFuncs   map[string]bool
+	funcParamTypes map[string][]string
 	useParseIntStr bool
 	mutatedVars    map[string]bool
 	letPtrs        map[string][]*LetStmt
@@ -1300,15 +1301,20 @@ func (i *IfStmt) emit(w io.Writer) {
 	writeIndent(w)
 	io.WriteString(w, "if ")
 	i.Cond.emit(w)
-	io.WriteString(w, " then\n")
-	indentLevel++
-	for idx, st := range i.Then {
-		st.emit(w)
-		if idx < len(i.Then)-1 {
-			w.Write([]byte{'\n'})
+	io.WriteString(w, " then")
+	if len(i.Then) == 0 {
+		io.WriteString(w, " ()")
+	} else {
+		io.WriteString(w, "\n")
+		indentLevel++
+		for idx, st := range i.Then {
+			st.emit(w)
+			if idx < len(i.Then)-1 {
+				w.Write([]byte{'\n'})
+			}
 		}
+		indentLevel--
 	}
-	indentLevel--
 	if len(i.Else) > 0 {
 		w.Write([]byte{'\n'})
 		writeIndent(w)
@@ -2952,6 +2958,15 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			p.Stmts = append(p.Stmts, optimizeFun(conv))
 		}
 	}
+	var funcs, others []Stmt
+	for _, st := range p.Stmts {
+		if _, ok := st.(*FunDef); ok {
+			funcs = append(funcs, st)
+		} else {
+			others = append(others, st)
+		}
+	}
+	p.Stmts = append(funcs, others...)
 	if len(methodDefs) > 0 {
 		p.Stmts = append(methodDefs, p.Stmts...)
 		methodDefs = nil
@@ -3564,6 +3579,10 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		}
 		varTypes[st.Fun.Name] = retType
 		definedFuncs[st.Fun.Name] = true
+		if funcParamTypes == nil {
+			funcParamTypes = map[string][]string{}
+		}
+		funcParamTypes[st.Fun.Name] = paramTypes
 		return &FunDef{Name: st.Fun.Name, Params: params, Types: paramTypes, Body: body, Return: retType}, nil
 	case st.While != nil:
 		cond, err := convertExpr(st.While.Cond)
@@ -3706,7 +3725,17 @@ func convertExpr(e *parser.Expr) (Expr, error) {
 	if len(exprs) != 1 {
 		return nil, fmt.Errorf("expr reduce error")
 	}
-	return exprs[0], nil
+	res := exprs[0]
+	if be, ok := res.(*BinaryExpr); ok && (be.Op == "+" || be.Op == "-") {
+		if idx, ok2 := be.Left.(*IndexExpr); ok2 {
+			t := inferType(idx)
+			if t != "int" && t != "float" && t != "string" && t != "bool" {
+				idx.Index = &BinaryExpr{Left: idx.Index, Op: be.Op, Right: be.Right}
+				res = idx
+			}
+		}
+	}
+	return res, nil
 }
 
 func convertUnary(u *parser.Unary) (Expr, error) {
@@ -3816,6 +3845,18 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, err
 			}
 			args[i] = ex
+		}
+		if definedFuncs[p.Call.Func] {
+			if funcParamTypes != nil {
+				if pts, ok := funcParamTypes[p.Call.Func]; ok {
+					for i, t := range pts {
+						if i < len(args) && t != "" && t != inferType(args[i]) {
+							args[i] = &CastExpr{Expr: args[i], Type: t}
+						}
+					}
+				}
+			}
+			return &CallExpr{Func: fsIdent(p.Call.Func), Args: args}, nil
 		}
 		switch p.Call.Func {
 		case "print":

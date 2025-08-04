@@ -1,3 +1,7 @@
+## Progress (2025-08-04 20:03 +0700)
+- scheme: add fetch support and rosetta outputs
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-04 16:14 +0700)
 - fix(go-transpiler): handle map keys and list concat
 - Generated F# for 103/105 programs (103 passing)
