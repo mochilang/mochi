@@ -116,158 +116,60 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def powInt(base, exp) do
+  def main() do
     try do
-      r = 1
-      b = base
-      e = exp
-      while_fun = fn while_fun, b, e, r ->
-        if e > 0 do
-          {r} = if rem(e, 2) == 1 do
-            r = r * b
-            {r}
-          else
-            {r}
+      philosophers = ["Aristotle", "Kant", "Spinoza", "Marx", "Russell"]
+      hunger = 3
+      IO.puts("table empty")
+      Enum.each(philosophers, fn p ->
+        IO.puts((p <> " seated"))
+      end)
+      i = 0
+      while_fun = fn while_fun, i ->
+        if i < _len(philosophers) do
+          name = Enum.at(philosophers, i)
+          h = 0
+          while_fun_2 = fn while_fun_2, h ->
+            if h < hunger do
+              IO.puts((name <> " hungry"))
+              IO.puts((name <> " eating"))
+              IO.puts((name <> " thinking"))
+              h = h + 1
+              while_fun_2.(while_fun_2, h)
+            else
+              h
+            end
           end
-          b = b * b
-          e = div(e, trunc(2))
-          while_fun.(while_fun, b, e, r)
-        else
-          {b, e, r}
-        end
-      end
-      {b, e, r} = try do
-          while_fun.(while_fun, b, e, r)
-        catch
-          {:break, {b, e, r}} -> {b, e, r}
-        end
+          h = try do
+              while_fun_2.(while_fun_2, h)
+            catch
+              {:break, h} -> h
+            end
 
-      throw {:return, r}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def minInt(x, y) do
-    try do
-      throw {:return, ((if x < y, do: x, else: y))}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def throwDie(nSides, nDice, s, counts) do
-    try do
-      {counts} = if nDice == 0 do
-        counts = List.replace_at(counts, s, Enum.at(counts, s) + 1)
-        throw {:return, nil}
-        {counts}
-      else
-        {counts}
-      end
-      i = 1
-      while_fun_2 = fn while_fun_2, i ->
-        if i <= nSides do
-          throwDie(nSides, nDice - 1, s + i, counts)
+          IO.puts((name <> " satisfied"))
+          IO.puts((name <> " left the table"))
           i = i + 1
-          while_fun_2.(while_fun_2, i)
+          while_fun.(while_fun, i)
         else
           i
         end
       end
       i = try do
-          while_fun_2.(while_fun_2, i)
+          while_fun.(while_fun, i)
         catch
           {:break, i} -> i
         end
 
+      IO.puts("table empty")
     catch
       {:return, val} -> val
     end
   end
-  def beatingProbability(nSides1, nDice1, nSides2, nDice2) do
-    try do
-      len1 = (nSides1 + 1) * nDice1
-      c1 = []
-      i = 0
-      while_fun_3 = fn while_fun_3, c1, i ->
-        if i < len1 do
-          c1 = (c1 ++ [0])
-          i = i + 1
-          while_fun_3.(while_fun_3, c1, i)
-        else
-          {c1, i}
-        end
-      end
-      {c1, i} = try do
-          while_fun_3.(while_fun_3, c1, i)
-        catch
-          {:break, {c1, i}} -> {c1, i}
-        end
-
-      throwDie(nSides1, nDice1, 0, c1)
-      len2 = (nSides2 + 1) * nDice2
-      c2 = []
-      j = 0
-      while_fun_4 = fn while_fun_4, c2, j ->
-        if j < len2 do
-          c2 = (c2 ++ [0])
-          j = j + 1
-          while_fun_4.(while_fun_4, c2, j)
-        else
-          {c2, j}
-        end
-      end
-      {c2, j} = try do
-          while_fun_4.(while_fun_4, c2, j)
-        catch
-          {:break, {c2, j}} -> {c2, j}
-        end
-
-      throwDie(nSides2, nDice2, 0, c2)
-      p12 = (powInt(nSides1, nDice1)) * (powInt(nSides2, nDice2))
-      tot = 0.0
-      i = 0
-      while_fun_5 = fn while_fun_5, i, j, tot ->
-        if i < len1 do
-          j = 0
-          m = minInt(i, len2)
-          while_fun_6 = fn while_fun_6, j, tot ->
-            if j < m do
-              tot = tot + (Enum.at(c1, i) * Enum.at(c2, j)) / p12
-              j = j + 1
-              while_fun_6.(while_fun_6, j, tot)
-            else
-              {j, tot}
-            end
-          end
-          {j, tot} = try do
-              while_fun_6.(while_fun_6, j, tot)
-            catch
-              {:break, {j, tot}} -> {j, tot}
-            end
-
-          i = i + 1
-          while_fun_5.(while_fun_5, i, j, tot)
-        else
-          {i, j, tot}
-        end
-      end
-      {i, j, tot} = try do
-          while_fun_5.(while_fun_5, i, j, tot)
-        catch
-          {:break, {i, j, tot}} -> {i, j, tot}
-        end
-
-      throw {:return, tot}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def main() do
+  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(Kernel.inspect(beatingProbability(4, 9, 6, 6)))
-    IO.puts(Kernel.inspect(beatingProbability(10, 5, 7, 6)))
+    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -275,4 +177,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.main()
+Main.bench_main()

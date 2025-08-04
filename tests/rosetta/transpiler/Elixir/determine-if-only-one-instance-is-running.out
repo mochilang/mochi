@@ -1,0 +1,7 @@
+single instance started
+an instance is already running
+{
+  "duration_us": 113,
+  "memory_bytes": 0,
+  "name": "main"
+}

@@ -1,0 +1,67 @@
+table empty
+Aristotle seated
+Kant seated
+Spinoza seated
+Marx seated
+Russell seated
+Aristotle hungry
+Aristotle eating
+Aristotle thinking
+Aristotle hungry
+Aristotle eating
+Aristotle thinking
+Aristotle hungry
+Aristotle eating
+Aristotle thinking
+Aristotle satisfied
+Aristotle left the table
+Kant hungry
+Kant eating
+Kant thinking
+Kant hungry
+Kant eating
+Kant thinking
+Kant hungry
+Kant eating
+Kant thinking
+Kant satisfied
+Kant left the table
+Spinoza hungry
+Spinoza eating
+Spinoza thinking
+Spinoza hungry
+Spinoza eating
+Spinoza thinking
+Spinoza hungry
+Spinoza eating
+Spinoza thinking
+Spinoza satisfied
+Spinoza left the table
+Marx hungry
+Marx eating
+Marx thinking
+Marx hungry
+Marx eating
+Marx thinking
+Marx hungry
+Marx eating
+Marx thinking
+Marx satisfied
+Marx left the table
+Russell hungry
+Russell eating
+Russell thinking
+Russell hungry
+Russell eating
+Russell thinking
+Russell hungry
+Russell eating
+Russell thinking
+Russell satisfied
+Russell left the table
+table empty
+{
+  "duration_us": 2433,
+  "memory_bytes": 17672,
+  "name": "main"
+}

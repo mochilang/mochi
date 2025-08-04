@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (229/491)
-_Last updated: 2025-08-04 11:28 +0700_
+## Rosetta Test Checklist (248/491)
+_Last updated: 2025-08-04 11:46 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -288,29 +288,29 @@ _Last updated: 2025-08-04 11:28 +0700_
 | 280 | deconvolution-1d | ✓ | 2.49ms | 25.0 KB |
 | 281 | deepcopy-1 | ✓ | 3.59ms | 12.5 KB |
 | 282 | define-a-primitive-data-type | ✓ | 8.13ms | 17.3 KB |
-| 283 | delegates |  |  |  |
-| 284 | demings-funnel |  |  |  |
+| 283 | delegates | ✓ | 2.32ms | 17.3 KB |
+| 284 | demings-funnel | ✓ | 5.23ms | 37.8 KB |
 | 285 | department-numbers |  |  |  |
-| 286 | descending-primes |  |  |  |
-| 287 | detect-division-by-zero |  |  |  |
-| 288 | determine-if-a-string-has-all-the-same-characters |  |  |  |
-| 289 | determine-if-a-string-has-all-unique-characters |  |  |  |
-| 290 | determine-if-a-string-is-collapsible |  |  |  |
-| 291 | determine-if-a-string-is-numeric-1 |  |  |  |
-| 292 | determine-if-a-string-is-numeric-2 |  |  |  |
+| 286 | descending-primes | ✓ | 5.71ms | 25.0 KB |
+| 287 | detect-division-by-zero | ✓ | 174us | 0 B |
+| 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 2.21ms | 17.3 KB |
+| 289 | determine-if-a-string-has-all-unique-characters | ✓ | 13.89ms | 9.5 KB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 5.72ms | 7.7 KB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 329us | 25.1 KB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 252us | 24 B |
 | 293 | determine-if-a-string-is-squeezable |  |  |  |
-| 294 | determine-if-only-one-instance-is-running |  |  |  |
-| 295 | determine-if-two-triangles-overlap |  |  |  |
-| 296 | determine-sentence-type |  |  |  |
-| 297 | dice-game-probabilities-1 | ✓ | 167.75ms | 1.5 MB |
-| 298 | dice-game-probabilities-2 |  |  |  |
-| 299 | digital-root-multiplicative-digital-root |  |  |  |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 113us | 0 B |
+| 295 | determine-if-two-triangles-overlap | ✓ | 6.32ms | 26.9 KB |
+| 296 | determine-sentence-type | ✓ | 2.80ms | 45.3 KB |
+| 297 | dice-game-probabilities-1 | ✓ | 262.45ms | 25.0 KB |
+| 298 | dice-game-probabilities-2 | ✓ | 13.28ms | 32.7 KB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 11.56ms | 25.3 KB |
 | 300 | dijkstras-algorithm |  |  |  |
-| 301 | dinesmans-multiple-dwelling-problem |  |  |  |
-| 302 | dining-philosophers-1 |  |  |  |
-| 303 | dining-philosophers-2 |  |  |  |
-| 304 | disarium-numbers |  |  |  |
-| 305 | discordian-date |  |  |  |
+| 301 | dinesmans-multiple-dwelling-problem | ✓ | 95us | 0 B |
+| 302 | dining-philosophers-1 | ✓ | 2.43ms | 17.3 KB |
+| 303 | dining-philosophers-2 | ✓ | 2.03ms | 17.3 KB |
+| 304 | disarium-numbers | ✓ | 4.40s | 12.5 KB |
+| 305 | discordian-date | ✓ | 5.18ms | 17.3 KB |
 | 306 | display-a-linear-combination |  |  |  |
 | 307 | display-an-outline-as-a-nested-table |  |  |  |
 | 308 | distance-and-bearing |  |  |  |

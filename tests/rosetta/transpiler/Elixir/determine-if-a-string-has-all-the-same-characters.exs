@@ -116,65 +116,114 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def powInt(base, exp) do
+  def ord(ch) do
     try do
-      r = 1
-      b = base
-      e = exp
-      while_fun = fn while_fun, b, e, r ->
-        if e > 0 do
-          {r} = if rem(e, 2) == 1 do
-            r = r * b
-            {r}
-          else
-            {r}
-          end
-          b = b * b
-          e = div(e, trunc(2))
-          while_fun.(while_fun, b, e, r)
+      if ch == "5" do
+        throw {:return, 53}
+      end
+      if ch == "T" do
+        throw {:return, 84}
+      end
+      if ch == " " do
+        throw {:return, 32}
+      end
+      if ch == "é" do
+        throw {:return, 233}
+      end
+      if ch == "🐺" do
+        throw {:return, 128058}
+      end
+      throw {:return, 0}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def hex(n) do
+    try do
+      digits = "0123456789abcdef"
+      if n == 0 do
+        throw {:return, "0x0"}
+      end
+      m = n
+      out = ""
+      while_fun = fn while_fun, m, out ->
+        if m > 0 do
+          d = rem(m, 16)
+          out = (_slice(digits, d, d + 1 - (d)) <> out)
+          m = div(m, 16)
+          while_fun.(while_fun, m, out)
         else
-          {b, e, r}
+          {m, out}
         end
       end
-      {b, e, r} = try do
-          while_fun.(while_fun, b, e, r)
+      {m, out} = try do
+          while_fun.(while_fun, m, out)
         catch
-          {:break, {b, e, r}} -> {b, e, r}
+          {:break, {m, out}} -> {m, out}
         end
 
-      throw {:return, r}
+      throw {:return, ("0x" <> out)}
     catch
       {:return, val} -> val
     end
   end
-  def minInt(x, y) do
+  def quote_(s) do
     try do
-      throw {:return, ((if x < y, do: x, else: y))}
+      throw {:return, (("'" <> s) <> "'")}
     catch
       {:return, val} -> val
     end
   end
-  def throwDie(nSides, nDice, s, counts) do
+  def analyze(s) do
     try do
-      {counts} = if nDice == 0 do
-        counts = List.replace_at(counts, s, Enum.at(counts, s) + 1)
-        throw {:return, nil}
-        {counts}
-      else
-        {counts}
+      le = _len(s)
+      IO.puts((((("Analyzing " <> quote_(s)) <> " which has a length of ") <> Kernel.to_string(le)) <> ":"))
+      if le > 1 do
+        i = 1
+        while_fun_2 = fn while_fun_2, i ->
+          if i < le do
+            cur = _slice(s, i, i + 1 - (i))
+            prev = _slice(s, i - 1, i - (i - 1))
+            if cur != prev do
+              IO.puts("  Not all characters in the string are the same.")
+              IO.puts((((((("  " <> quote_(cur)) <> " (") <> hex(ord(cur))) <> ") is different at position ") <> Kernel.to_string(i + 1)) <> "."))
+              IO.puts("")
+              throw {:return, nil}
+            end
+            i = i + 1
+            while_fun_2.(while_fun_2, i)
+          else
+            i
+          end
+        end
+        i = try do
+            while_fun_2.(while_fun_2, i)
+          catch
+            {:break, i} -> i
+          end
+
       end
-      i = 1
-      while_fun_2 = fn while_fun_2, i ->
-        if i <= nSides do
-          throwDie(nSides, nDice - 1, s + i, counts)
+      IO.puts("  All characters in the string are the same.")
+      IO.puts("")
+    catch
+      {:return, val} -> val
+    end
+  end
+  def main() do
+    try do
+      strings = ["", "   ", "2", "333", ".55", "tttTTT", "4444 444k", "pépé", "🐶🐶🐺🐶", "🎄🎄🎄🎄"]
+      i = 0
+      while_fun_3 = fn while_fun_3, i ->
+        if i < _len(strings) do
+          analyze(Enum.at(strings, i))
           i = i + 1
-          while_fun_2.(while_fun_2, i)
+          while_fun_3.(while_fun_3, i)
         else
           i
         end
       end
       i = try do
-          while_fun_2.(while_fun_2, i)
+          while_fun_3.(while_fun_3, i)
         catch
           {:break, i} -> i
         end
@@ -183,91 +232,11 @@ defmodule Main do
       {:return, val} -> val
     end
   end
-  def beatingProbability(nSides1, nDice1, nSides2, nDice2) do
-    try do
-      len1 = (nSides1 + 1) * nDice1
-      c1 = []
-      i = 0
-      while_fun_3 = fn while_fun_3, c1, i ->
-        if i < len1 do
-          c1 = (c1 ++ [0])
-          i = i + 1
-          while_fun_3.(while_fun_3, c1, i)
-        else
-          {c1, i}
-        end
-      end
-      {c1, i} = try do
-          while_fun_3.(while_fun_3, c1, i)
-        catch
-          {:break, {c1, i}} -> {c1, i}
-        end
-
-      throwDie(nSides1, nDice1, 0, c1)
-      len2 = (nSides2 + 1) * nDice2
-      c2 = []
-      j = 0
-      while_fun_4 = fn while_fun_4, c2, j ->
-        if j < len2 do
-          c2 = (c2 ++ [0])
-          j = j + 1
-          while_fun_4.(while_fun_4, c2, j)
-        else
-          {c2, j}
-        end
-      end
-      {c2, j} = try do
-          while_fun_4.(while_fun_4, c2, j)
-        catch
-          {:break, {c2, j}} -> {c2, j}
-        end
-
-      throwDie(nSides2, nDice2, 0, c2)
-      p12 = (powInt(nSides1, nDice1)) * (powInt(nSides2, nDice2))
-      tot = 0.0
-      i = 0
-      while_fun_5 = fn while_fun_5, i, j, tot ->
-        if i < len1 do
-          j = 0
-          m = minInt(i, len2)
-          while_fun_6 = fn while_fun_6, j, tot ->
-            if j < m do
-              tot = tot + (Enum.at(c1, i) * Enum.at(c2, j)) / p12
-              j = j + 1
-              while_fun_6.(while_fun_6, j, tot)
-            else
-              {j, tot}
-            end
-          end
-          {j, tot} = try do
-              while_fun_6.(while_fun_6, j, tot)
-            catch
-              {:break, {j, tot}} -> {j, tot}
-            end
-
-          i = i + 1
-          while_fun_5.(while_fun_5, i, j, tot)
-        else
-          {i, j, tot}
-        end
-      end
-      {i, j, tot} = try do
-          while_fun_5.(while_fun_5, i, j, tot)
-        catch
-          {:break, {i, j, tot}} -> {i, j, tot}
-        end
-
-      throw {:return, tot}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def main() do
+  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(Kernel.inspect(beatingProbability(4, 9, 6, 6)))
-    IO.puts(Kernel.inspect(beatingProbability(10, 5, 7, 6)))
+    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -275,4 +244,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.main()
+Main.bench_main()

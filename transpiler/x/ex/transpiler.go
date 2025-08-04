@@ -24,12 +24,13 @@ import (
 )
 
 var elixirReserved = map[string]struct{}{
-	"fn":   {},
-	"abs":  {},
-	"end":  {},
-	"node": {},
-	"div":  {},
-	"rem":  {},
+	"fn":    {},
+	"abs":   {},
+	"end":   {},
+	"node":  {},
+	"div":   {},
+	"rem":   {},
+	"quote": {},
 }
 
 func sanitizeIdent(name string) string {
@@ -1267,6 +1268,28 @@ func (c *CallExpr) emit(w io.Writer) {
 	if c.Var && c.Func == "str" && len(c.Args) == 1 {
 		io.WriteString(w, "Kernel.to_string(")
 		c.Args[0].emit(w)
+		io.WriteString(w, ")")
+		return
+	}
+	if c.Func == "" {
+		if len(c.Args) == 0 {
+			io.WriteString(w, "()")
+			return
+		}
+		c.Args[0].emit(w)
+		io.WriteString(w, ".(")
+		for i, a := range c.Args[1:] {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if _, ok := a.(*CondExpr); ok {
+				io.WriteString(w, "(")
+				a.emit(w)
+				io.WriteString(w, ")")
+			} else {
+				a.emit(w)
+			}
+		}
 		io.WriteString(w, ")")
 		return
 	}
@@ -3415,7 +3438,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				expr = &IndexExpr{Target: expr, Index: idx, IsString: false}
 				typ = tt.Elem
 			case types.MapType:
-				expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				if _, ok := tt.Value.(types.StringType); ok {
+					def := &StringLit{Value: ""}
+					expr = &CallExpr{Func: "Map.get", Args: []Expr{expr, idx, def}}
+				} else {
+					expr = &IndexExpr{Target: expr, Index: idx, UseMapSyntax: true}
+				}
 				typ = tt.Value
 			default:
 				idxType := types.TypeOfExpr(op.Index.Start, env)

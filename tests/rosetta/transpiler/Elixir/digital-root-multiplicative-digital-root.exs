@@ -116,158 +116,172 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def powInt(base, exp) do
+  def pad(s, width) do
     try do
-      r = 1
+      out = s
+      while_fun = fn while_fun, out ->
+        if _len(out) < width do
+          out = (" " <> out)
+          while_fun.(while_fun, out)
+        else
+          out
+        end
+      end
+      out = try do
+          while_fun.(while_fun, out)
+        catch
+          {:break, out} -> out
+        end
+
+      throw {:return, out}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def mult(n, base) do
+    try do
+      m = 1
+      x = n
       b = base
-      e = exp
-      while_fun = fn while_fun, b, e, r ->
-        if e > 0 do
-          {r} = if rem(e, 2) == 1 do
-            r = r * b
-            {r}
-          else
-            {r}
-          end
-          b = b * b
-          e = div(e, trunc(2))
-          while_fun.(while_fun, b, e, r)
+      while_fun_2 = fn while_fun_2, m, x ->
+        if x > 0 do
+          m = m * (rem(x, b))
+          x = div(x, b)
+          while_fun_2.(while_fun_2, m, x)
         else
-          {b, e, r}
+          {m, x}
         end
       end
-      {b, e, r} = try do
-          while_fun.(while_fun, b, e, r)
+      {m, x} = try do
+          while_fun_2.(while_fun_2, m, x)
         catch
-          {:break, {b, e, r}} -> {b, e, r}
+          {:break, {m, x}} -> {m, x}
         end
 
-      throw {:return, r}
+      throw {:return, m}
     catch
       {:return, val} -> val
     end
   end
-  def minInt(x, y) do
+  def multDigitalRoot(n, base) do
     try do
-      throw {:return, ((if x < y, do: x, else: y))}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def throwDie(nSides, nDice, s, counts) do
-    try do
-      {counts} = if nDice == 0 do
-        counts = List.replace_at(counts, s, Enum.at(counts, s) + 1)
-        throw {:return, nil}
-        {counts}
-      else
-        {counts}
-      end
-      i = 1
-      while_fun_2 = fn while_fun_2, i ->
-        if i <= nSides do
-          throwDie(nSides, nDice - 1, s + i, counts)
-          i = i + 1
-          while_fun_2.(while_fun_2, i)
+      m = n
+      mp = 0
+      b = base
+      while_fun_3 = fn while_fun_3, m, mp ->
+        if m >= b do
+          m = mult(m, base)
+          mp = mp + 1
+          while_fun_3.(while_fun_3, m, mp)
         else
-          i
+          {m, mp}
         end
       end
-      i = try do
-          while_fun_2.(while_fun_2, i)
+      {m, mp} = try do
+          while_fun_3.(while_fun_3, m, mp)
         catch
-          {:break, i} -> i
+          {:break, {m, mp}} -> {m, mp}
         end
 
-    catch
-      {:return, val} -> val
-    end
-  end
-  def beatingProbability(nSides1, nDice1, nSides2, nDice2) do
-    try do
-      len1 = (nSides1 + 1) * nDice1
-      c1 = []
-      i = 0
-      while_fun_3 = fn while_fun_3, c1, i ->
-        if i < len1 do
-          c1 = (c1 ++ [0])
-          i = i + 1
-          while_fun_3.(while_fun_3, c1, i)
-        else
-          {c1, i}
-        end
-      end
-      {c1, i} = try do
-          while_fun_3.(while_fun_3, c1, i)
-        catch
-          {:break, {c1, i}} -> {c1, i}
-        end
-
-      throwDie(nSides1, nDice1, 0, c1)
-      len2 = (nSides2 + 1) * nDice2
-      c2 = []
-      j = 0
-      while_fun_4 = fn while_fun_4, c2, j ->
-        if j < len2 do
-          c2 = (c2 ++ [0])
-          j = j + 1
-          while_fun_4.(while_fun_4, c2, j)
-        else
-          {c2, j}
-        end
-      end
-      {c2, j} = try do
-          while_fun_4.(while_fun_4, c2, j)
-        catch
-          {:break, {c2, j}} -> {c2, j}
-        end
-
-      throwDie(nSides2, nDice2, 0, c2)
-      p12 = (powInt(nSides1, nDice1)) * (powInt(nSides2, nDice2))
-      tot = 0.0
-      i = 0
-      while_fun_5 = fn while_fun_5, i, j, tot ->
-        if i < len1 do
-          j = 0
-          m = minInt(i, len2)
-          while_fun_6 = fn while_fun_6, j, tot ->
-            if j < m do
-              tot = tot + (Enum.at(c1, i) * Enum.at(c2, j)) / p12
-              j = j + 1
-              while_fun_6.(while_fun_6, j, tot)
-            else
-              {j, tot}
-            end
-          end
-          {j, tot} = try do
-              while_fun_6.(while_fun_6, j, tot)
-            catch
-              {:break, {j, tot}} -> {j, tot}
-            end
-
-          i = i + 1
-          while_fun_5.(while_fun_5, i, j, tot)
-        else
-          {i, j, tot}
-        end
-      end
-      {i, j, tot} = try do
-          while_fun_5.(while_fun_5, i, j, tot)
-        catch
-          {:break, {i, j, tot}} -> {i, j, tot}
-        end
-
-      throw {:return, tot}
+      throw {:return, %{mp: mp, mdr: (trunc(m))}}
     catch
       {:return, val} -> val
     end
   end
   def main() do
+    try do
+      base = 10
+      size = 5
+      IO.puts(Kernel.inspect(((((pad("Number", 20) <> " ") <> pad("MDR", 3)) <> " ") <> pad("MP", 3))))
+      nums = [123321, 7739, 893, 899998, 3778888999, 277777788888899]
+      i = 0
+      while_fun_4 = fn while_fun_4, i ->
+        if i < _len(nums) do
+          n = Enum.at(nums, i)
+          r = multDigitalRoot(n, base)
+          IO.puts(Kernel.inspect(((((pad(Kernel.inspect(n), 20) <> " ") <> pad(Kernel.to_string(r.mdr), 3)) <> " ") <> pad(Kernel.to_string(r.mp), 3))))
+          i = i + 1
+          while_fun_4.(while_fun_4, i)
+        else
+          i
+        end
+      end
+      i = try do
+          while_fun_4.(while_fun_4, i)
+        catch
+          {:break, i} -> i
+        end
+
+      IO.puts("")
+      list = []
+      idx = 0
+      while_fun_5 = fn while_fun_5, idx, list ->
+        if idx < base do
+          list = (list ++ [[]])
+          idx = idx + 1
+          while_fun_5.(while_fun_5, idx, list)
+        else
+          {idx, list}
+        end
+      end
+      {idx, list} = try do
+          while_fun_5.(while_fun_5, idx, list)
+        catch
+          {:break, {idx, list}} -> {idx, list}
+        end
+
+      cnt = size * base
+      n = 0
+      b = base
+      while_fun_6 = fn while_fun_6, cnt, list, n ->
+        if cnt > 0 do
+          r = multDigitalRoot(n, base)
+          mdr = r.mdr
+          {cnt, list} = if _len(Enum.at(list, mdr)) < size do
+            list = List.replace_at(list, mdr, (Enum.at(list, mdr) ++ [trunc(n)]))
+            cnt = cnt - 1
+            {cnt, list}
+          else
+            {cnt, list}
+          end
+          n = n + 1
+          while_fun_6.(while_fun_6, cnt, list, n)
+        else
+          {cnt, list, n}
+        end
+      end
+      {cnt, list, n} = try do
+          while_fun_6.(while_fun_6, cnt, list, n)
+        catch
+          {:break, {cnt, list, n}} -> {cnt, list, n}
+        end
+
+      IO.puts("MDR: First")
+      j = 0
+      while_fun_7 = fn while_fun_7, j ->
+        if j < base do
+          IO.puts(Kernel.inspect(((pad(Kernel.to_string(j), 3) <> ": ") <> String.replace(IO.iodata_to_binary(:io_lib.format("~w", [Enum.at(list, j)])), ",", " "))))
+          j = j + 1
+          while_fun_7.(while_fun_7, j)
+        else
+          j
+        end
+      end
+      j = try do
+          while_fun_7.(while_fun_7, j)
+        catch
+          {:break, j} -> j
+        end
+
+    catch
+      {:return, val} -> val
+    end
+  end
+  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(Kernel.inspect(beatingProbability(4, 9, 6, 6)))
-    IO.puts(Kernel.inspect(beatingProbability(10, 5, 7, 6)))
+    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -275,4 +289,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.main()
+Main.bench_main()

@@ -1,0 +1,12 @@
+Are these strings numeric?
+  1 -> true
+  3.14 -> true
+  -100 -> true
+  1e2 -> true
+  NaN -> true
+  rose -> false
+{
+  "duration_us": 329,
+  "memory_bytes": 25696,
+  "name": "main"
+}
