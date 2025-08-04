@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (329/491) - Last updated 2025-08-04 11:45 +0700:
+Checklist of programs that currently transpile and run (330/491) - Last updated 2025-08-04 14:59 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -363,7 +363,7 @@ Checklist of programs that currently transpile and run (329/491) - Last updated 
 | 356 | equal-prime-and-composite-sums | ✓ | 1.79s | 4.04MB |
 | 357 | equilibrium-index | ✓ | 288.0ms | 3.88MB |
 | 358 | erd-s-nicolas-numbers |   |  |  |
-| 359 | erd-s-selfridge-categorization-of-primes |   |  |  |
+| 359 | erd-s-selfridge-categorization-of-primes | ✓ | 10.0ms | 3.84MB |
 | 360 | esthetic-numbers |   |  |  |
 | 361 | ethiopian-multiplication |   |  |  |
 | 362 | euclid-mullin-sequence |   |  |  |
