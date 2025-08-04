@@ -1,0 +1,15 @@
+Testing integer  -2:  even even
+Testing integer  -1:   odd  odd
+Testing integer   0:  even even
+Testing integer   1:   odd  odd
+Testing integer   2:  even even
+Testing big integer -222222222222222222222222222222222222:  even
+Testing big integer -1:  odd
+Testing big integer 0:  even
+Testing big integer 1:  odd
+Testing big integer 222222222222222222222222222222222222:  even
+{
+  "duration_us": 2386,
+  "memory_bytes": 25888,
+  "name": "main"
+}

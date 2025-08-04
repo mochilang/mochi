@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (279/491)
-_Last updated: 2025-08-04 17:03 +0700_
+## Rosetta Test Checklist (280/491)
+_Last updated: 2025-08-04 20:03 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -373,7 +373,7 @@ _Last updated: 2025-08-04 17:03 +0700_
 | 365 | eulers-identity | ✓ |  |  |
 | 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
 | 367 | evaluate-binomial-coefficients | ✓ |  |  |
-| 368 | even-or-odd |  |  |  |
+| 368 | even-or-odd | ✓ | 2.39ms | 25.3 KB |
 | 369 | events | ✓ |  |  |
 | 370 | evolutionary-algorithm | ✓ |  |  |
 | 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ |  |  |
