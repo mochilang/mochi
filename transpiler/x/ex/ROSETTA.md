@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (192/491)
-_Last updated: 2025-08-04 09:19 +0700_
+## Rosetta Test Checklist (197/491)
+_Last updated: 2025-08-04 02:38 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -239,12 +239,12 @@ _Last updated: 2025-08-04 09:19 +0700_
 | 231 | continued-fraction | ✓ | 2.05ms | 25.0 KB |
 | 232 | convert-decimal-number-to-rational | ✓ | 220us | 25.3 KB |
 | 233 | convert-seconds-to-compound-duration | ✓ | 2.66ms | 12.5 KB |
-| 234 | convex-hull | ✓ | 2.05ms | 12.8 KB |
-| 235 | conways-game-of-life |  |  |  |
-| 236 | copy-a-string-1 |  |  |  |
-| 237 | copy-a-string-2 |  |  |  |
-| 238 | copy-stdin-to-stdout-1 |  |  |  |
-| 239 | copy-stdin-to-stdout-2 |  |  |  |
+| 234 | convex-hull | ✓ |  |  |
+| 235 | conways-game-of-life | ✓ | 1.30s | 151.0 KB |
+| 236 | copy-a-string-1 | ✓ | 1us | 0 B |
+| 237 | copy-a-string-2 | ✓ | 188us | 0 B |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 1.88ms | 17.3 KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 1.65ms | 17.3 KB |
 | 240 | count-in-factors |  |  |  |
 | 241 | count-in-octal-1 |  |  |  |
 | 242 | count-in-octal-2 |  |  |  |
