@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/TypeScript`.
-Last updated: 2025-08-04 08:33 UTC
+Last updated: 2025-08-04 09:11 UTC
 
 ## Rosetta Golden Test Checklist (472/491)
 | Index | Name | Status | Duration | Memory |
@@ -164,26 +164,26 @@ Last updated: 2025-08-04 08:33 UTC
 | 155 | call-a-function-4 | ✓ | 51µs | 3.9 KB |
 | 156 | call-a-function-5 | ✓ | 624µs | 15.0 KB |
 | 157 | call-a-function-6 | ✓ | 704µs | 15.3 KB |
-| 158 | call-a-function-7 | ✓ | 65µs |  |
-| 159 | call-a-function-8 | ✓ | 184µs |  |
-| 160 | call-a-function-9 | ✓ | 153µs |  |
-| 161 | call-an-object-method-1 | ✓ | 53µs |  |
-| 162 | call-an-object-method-2 | ✓ | 5µs |  |
-| 163 | call-an-object-method-3 | ✓ | 30µs |  |
-| 164 | call-an-object-method | ✓ | 29µs |  |
-| 165 | camel-case-and-snake-case | ✓ | 2.614ms | 384.0 KB |
-| 166 | canny-edge-detector | ✓ | 1.453ms | 256.0 KB |
-| 167 | canonicalize-cidr | ✓ | 1.764ms | 128.0 KB |
-| 168 | cantor-set | ✓ | 1.773ms | 128.0 KB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 5.978ms | 2.6 MB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.133ms | 128.0 KB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.196ms | 384.0 KB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 2.918ms | 256.0 KB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 3.355ms | 384.0 KB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 1.168ms | 128.0 KB |
-| 175 | casting-out-nines | ✓ | 4.533ms | 2.8 MB |
-| 176 | catalan-numbers-1 | ✓ | 1.444ms | 128.0 KB |
-| 177 | catalan-numbers-2 | ✓ | 1.393ms |  |
+| 158 | call-a-function-7 | ✓ | 37µs | 3.6 KB |
+| 159 | call-a-function-8 | ✓ | 174µs | 6.2 KB |
+| 160 | call-a-function-9 | ✓ | 95µs | 4.4 KB |
+| 161 | call-an-object-method-1 | ✓ | 66µs | 5.3 KB |
+| 162 | call-an-object-method-2 | ✓ | 71µs | 4.1 KB |
+| 163 | call-an-object-method-3 | ✓ | 65µs | 4.9 KB |
+| 164 | call-an-object-method | ✓ | 64µs | 4.9 KB |
+| 165 | camel-case-and-snake-case | ✓ | 2.81ms | 153.0 KB |
+| 166 | canny-edge-detector | ✓ | 2.055ms | 558.1 KB |
+| 167 | canonicalize-cidr | ✓ | 2.33ms | 120.1 KB |
+| 168 | cantor-set | ✓ | 1.87ms | 103.2 KB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 5.692ms | 513.1 KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 1.218ms | 37.8 KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.232ms | 163.2 KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 3.378ms | 203.4 KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 3.579ms | 189.4 KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 1.184ms | 48.2 KB |
+| 175 | casting-out-nines | ✓ | 4.716ms | 573.0 KB |
+| 176 | catalan-numbers-1 | ✓ | 2.047ms | 54.9 KB |
+| 177 | catalan-numbers-2 | ✓ | 1.746ms | 54.4 KB |
 | 178 | catalan-numbers-pascals-triangle | ✓ | 4.282ms | 384.0 KB |
 | 179 | catamorphism | ✓ | 1.151ms |  |
 | 180 | catmull-clark-subdivision-surface | ✓ | 6.743ms | 896.0 KB |
