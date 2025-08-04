@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/casting-out-nines.mochi:56:16
+
+ 56 |   {"base": 10, "begin": "1", "end": "100", "kaprekar": ["1", "9", "45", "55", "99"]},
+    |                ^
+
+help:
+  Ensure map keys and values share types

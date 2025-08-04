@@ -1,0 +1,44 @@
+fun egcd(a: int, b: int): list<int> {
+  if (a == 0) {
+    return [b, 0, 1]
+  }
+  let res: list<int> = egcd((b % a), a)
+  let g: int = res[0]
+  let x1: int = res[1]
+  let y1: int = res[2]
+  return [g, (y1 - (((b / a)) * x1)), x1]
+}
+fun modInv(a: int, m: int): int {
+  let r: list<int> = egcd(a, m)
+  if (r[0] != 1) {
+    return 0
+  }
+  let x: int = r[1]
+  if (x < 0) {
+    return (x + m)
+  }
+  return x
+}
+fun crt(a: list<int>, n: list<int>): int {
+  var prod: int = 1
+  var i: int = 0
+  while (i < len(n)) {
+    prod = (prod * n[i])
+    i = (i + 1)
+  }
+  var x: int = 0
+  i = 0
+  while (i < len(n)) {
+    let ni: int = n[i]
+    let ai: int = a[i]
+    let p: int = (prod / ni)
+    let inv: int = modInv((p % ni), ni)
+    x = (x + ((ai * inv) * p))
+    i = (i + 1)
+  }
+  return (x % prod)
+}
+let n: list<int> = [3, 5, 7]
+let a: list<int> = [2, 3, 2]
+let res: int = crt(a, n)
+print((str(res) + " <nil>"))

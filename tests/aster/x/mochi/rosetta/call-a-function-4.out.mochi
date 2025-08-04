@@ -1,0 +1,8 @@
+fun gifEncode(out: any, img: any, opts: map<string, int>): void {
+}
+fun main(): void {
+  var opts: map<string, int>
+  opts["NumColors"] = 16
+  gifEncode(opts)
+}
+main()

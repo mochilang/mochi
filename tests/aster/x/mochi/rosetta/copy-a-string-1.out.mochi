@@ -1,0 +1,2 @@
+var src: string = "Hello"
+var dst: string = src

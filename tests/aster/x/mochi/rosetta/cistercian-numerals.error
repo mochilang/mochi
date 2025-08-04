@@ -1,0 +1,8 @@
+error[A003]: undefined variable number
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cistercian-numerals.mochi:84:13
+
+ 84 |   var num = number
+    |             ^
+
+help:
+  Declare number before use

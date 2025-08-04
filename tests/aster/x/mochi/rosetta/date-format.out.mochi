@@ -1,0 +1,33 @@
+fun pad2(n: int): string {
+  if (n < 10) {
+    return ("0" + str(n))
+  }
+  return str(n)
+}
+fun weekdayName(z: int): string {
+  let names: list<string> = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  return names[(((z + 4)) % 7)]
+}
+fun main(): void {
+  let ts: int = ((now() / 1000000000)) as int
+  var days: int = ((ts / 86400)) as int
+  var z: int = (days + 719468)
+  var era: int = ((z / 146097)) as int
+  var doe: int = (z - (era * 146097))
+  var yoe: int = (((((doe - (doe / 1460)) + (doe / 36524)) - (doe / 146096))) / 365 as int)
+  var y: int = (yoe + (era * 400))
+  var doy: int = (doe - ((((365 * yoe) + (yoe / 4)) - (yoe / 100))))
+  var mp: int = ((((5 * doy) + 2)) / 153 as int)
+  var d: int = (((doy - (((((153 * mp) + 2)) / 5 as int))) + 1)) as int
+  var m: int = ((mp + 3)) as int
+  if (m > 12) {
+    y = (y + 1)
+    m = (m - 12)
+  }
+  let iso: string = ((((str(y) + "-") + pad2(m)) + "-") + pad2(d))
+  print(iso)
+  let months: list<string> = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  let line: string = ((((((weekdayName(days) + ", ") + months[(m - 1)]) + " ") + str(d)) + ", ") + str(y))
+  print(line)
+}
+main()

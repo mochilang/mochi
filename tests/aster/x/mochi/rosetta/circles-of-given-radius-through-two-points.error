@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/circles-of-given-radius-through-two-points.mochi:43:10
+
+ 43 |   return [
+    |          ^
+
+help:
+  Ensure all list elements share a type

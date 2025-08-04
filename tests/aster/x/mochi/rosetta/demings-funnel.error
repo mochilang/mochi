@@ -1,0 +1,8 @@
+error[A001]: var result missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/demings-funnel.mochi:49:3
+
+ 49 |   var result = []
+    |   ^
+
+help:
+  Declare result with a value

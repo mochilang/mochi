@@ -1,0 +1,8 @@
+error[A019]: map key type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/damm-algorithm.mochi:22:23
+
+ 22 |     let digit = digits[s[i:i+1]] as int
+    |                       ^
+
+help:
+  Ensure the key matches the map's key type

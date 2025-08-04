@@ -1,0 +1,20 @@
+fun toOct(n: int): string {
+  if (n == 0) {
+    return "0"
+  }
+  let digits: string = "01234567"
+  var out: string = ""
+  var v: int = n
+  while (v > 0) {
+    let d: int = (v % 8)
+    out = (digits[d:(d + 1)] + out)
+    v = (v / 8)
+  }
+  return out
+}
+fun main(): void {
+  for i in 0..128 {
+    print(toOct(i))
+  }
+}
+main()

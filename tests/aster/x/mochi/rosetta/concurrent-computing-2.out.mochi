@@ -1,0 +1,15 @@
+fun shuffle(xs: list<string>): list<string> {
+  var arr: list<string> = xs
+  var i: int = (len(arr) - 1)
+  while (i > 0) {
+    let j: int = (now() % ((i + 1)))
+    let tmp: string = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+    i = (i - 1)
+  }
+  return arr
+}
+for w in shuffle(["Enjoy", "Rosetta", "Code"]) {
+  print(w)
+}

@@ -1,0 +1,114 @@
+type Field {
+  s: list<list<bool>>
+  w: int
+  h: int
+}
+type Life {
+  a: Field
+  b: Field
+  w: int
+  h: int
+}
+var seed: int = 1
+fun randN(n: int): int {
+  seed = ((((seed * 1664525) + 1013904223)) % 2147483647)
+  return (seed % n)
+}
+fun newField(w: int, h: int): Field {
+  var rows: list<list<bool>>
+  var y: int = 0
+  while (y < h) {
+    var row: list<bool>
+    var x: int = 0
+    while (x < w) {
+      row = append(row, false)
+      x = (x + 1)
+    }
+    rows = append(rows, row)
+    y = (y + 1)
+  }
+  return Field {s: rows, w: w, h: h}
+}
+fun setCell(f: Field, x: int, y: int, b: bool): void {
+  var rows: list<list<bool>> = f.s
+  var row: list<bool> = rows[y]
+  row[x] = b
+  rows[y] = row
+  f.s = rows
+}
+fun state(f: Field, x: int, y: int): bool {
+  while (y < 0) {
+    y = (y + f.h)
+  }
+  while (x < 0) {
+    x = (x + f.w)
+  }
+  return f.s[(y % f.h)][(x % f.w)]
+}
+fun nextState(f: Field, x: int, y: int): bool {
+  var count: int = 0
+  var dy: int = -1
+  while (dy <= 1) {
+    var dx: int = -1
+    while (dx <= 1) {
+      if (!(((dx == 0) && (dy == 0))) && state(f, (x + dx), (y + dy))) {
+        count = (count + 1)
+      }
+      dx = (dx + 1)
+    }
+    dy = (dy + 1)
+  }
+  return ((count == 3) || (((count == 2) && state(f, x, y))))
+}
+fun newLife(w: int, h: int): Life {
+  var a: Field = newField(w, h)
+  var i: int = 0
+  while (i < (((w * h) / 2))) {
+    setCell(a, randN(w), randN(h), true)
+    i = (i + 1)
+  }
+  return Life {a: a, b: newField(w, h), w: w, h: h}
+}
+fun step(l: Life): void {
+  var y: int = 0
+  while (y < l.h) {
+    var x: int = 0
+    while (x < l.w) {
+      setCell(l.b, x, y, nextState(l.a, x, y))
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  var tmp: Field = l.a
+  l.a = l.b
+  l.b = tmp
+}
+fun lifeString(l: Life): string {
+  var out: string = ""
+  var y: int = 0
+  while (y < l.h) {
+    var x: int = 0
+    while (x < l.w) {
+      if state(l.a, x, y) {
+        out = (out + "*")
+      } else {
+        out = (out + " ")
+      }
+      x = (x + 1)
+    }
+    out = (out + "\n")
+    y = (y + 1)
+  }
+  return out
+}
+fun main(): void {
+  var l: Life = newLife(80, 15)
+  var i: int = 0
+  while (i < 300) {
+    step(l)
+    print("\f")
+    print(lifeString(l))
+    i = (i + 1)
+  }
+}
+main()

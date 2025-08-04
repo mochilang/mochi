@@ -1,0 +1,19 @@
+fun weekday(y: int, m: int, d: int): int {
+  var yy: int = y
+  var mm: int = m
+  if (mm < 3) {
+    mm = (mm + 12)
+    yy = (yy - 1)
+  }
+  let k: int = (yy % 100)
+  let j: int = ((yy / 100)) as int
+  let a: int = ((((13 * ((mm + 1)))) / 5)) as int
+  let b: int = ((k / 4)) as int
+  let c: int = ((j / 4)) as int
+  return (((((((d + a) + k) + b) + c) + (5 * j))) % 7)
+}
+for year in 2008..2122 {
+  if (weekday(year, 12, 25) == 1) {
+    print((("25 December " + str(year)) + " is Sunday"))
+  }
+}

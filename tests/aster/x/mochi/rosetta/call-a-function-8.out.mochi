@@ -1,0 +1,16 @@
+fun mapString(s: string, f: fun(string):string): string {
+  var out: string = ""
+  var i: int = 0
+  while (i < len(s)) {
+    out = (out + f(s[i:(i + 1)]))
+    i = (i + 1)
+  }
+  return out
+}
+fun main(): void {
+  let fn: any = fun(r: string): string => if (r == " ") then "" else r
+  mapString("Spaces removed", fn)
+  mapString("Test", fun(r: string): string => lower(r))
+  mapString("shift", fun(r: string): string => r)
+}
+main()

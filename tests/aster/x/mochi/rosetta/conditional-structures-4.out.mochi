@@ -1,0 +1,15 @@
+fun fetchSomething(): int {
+  return 0
+}
+fun doPos(x: int): void {
+}
+fun doNeg(x: int): void {
+}
+fun example4(): void {
+  let x: int = fetchSomething()
+  if (x > 0) {
+    doPos(x)
+  } else {
+    doNeg(x)
+  }
+}

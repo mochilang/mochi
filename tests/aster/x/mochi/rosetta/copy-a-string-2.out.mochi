@@ -1,0 +1,9 @@
+var creature: string = "shark"
+var pointer: list<string> = [creature]
+print(("creature = " + creature))
+print("pointer = 0")
+print(("*pointer = " + pointer[0]))
+pointer[0] = "jellyfish"
+creature = pointer[0]
+print(("*pointer = " + pointer[0]))
+print(("creature = " + creature))

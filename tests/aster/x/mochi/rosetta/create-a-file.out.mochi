@@ -1,0 +1,25 @@
+fun createFile(fs: map<string, bool>, fn: string): void {
+  if (fn in fs) {
+    print((("open " + fn) + ": file exists"))
+  } else {
+    fs[fn] = false
+    print((("file " + fn) + " created!"))
+  }
+}
+fun createDir(fs: map<string, bool>, dn: string): void {
+  if (dn in fs) {
+    print((("mkdir " + dn) + ": file exists"))
+  } else {
+    fs[dn] = true
+    print((("directory " + dn) + " created!"))
+  }
+}
+fun main(): void {
+  var fs: map<string, bool>
+  fs["docs"] = true
+  createFile(fs, "input.txt")
+  createFile(fs, "/input.txt")
+  createDir(fs, "docs")
+  createDir(fs, "/docs")
+}
+main()

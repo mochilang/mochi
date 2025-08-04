@@ -1,0 +1,15 @@
+fun main(): void {
+  var rows: list<list<int>>
+  for i in 0..4 {
+    rows = append(rows, [(i * 3), ((i * 3) + 1), ((i * 3) + 2)])
+  }
+  print("<table>")
+  print("    <tr><th></th><th>X</th><th>Y</th><th>Z</th></tr>")
+  var idx: int = 0
+  for row in rows {
+    print((((((((("    <tr><td>" + str(idx)) + "</td><td>") + str(row[0])) + "</td><td>") + str(row[1])) + "</td><td>") + str(row[2])) + "</td></tr>"))
+    idx = (idx + 1)
+  }
+  print("</table>")
+}
+main()

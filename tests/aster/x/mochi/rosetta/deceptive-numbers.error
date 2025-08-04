@@ -1,0 +1,8 @@
+error[A002]: type mismatch for eleven: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/deceptive-numbers.mochi:34:3
+
+ 34 |   let eleven: bigint = 11
+    |   ^
+
+help:
+  Ensure eleven matches

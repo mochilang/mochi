@@ -1,0 +1,31 @@
+fun show(n: int): void {
+  if (n == 1) {
+    print("1: 1")
+  }
+  var out: string = (str(n) + ": ")
+  var x: string = ""
+  var m: int = n
+  var f: int = 2
+  while (m != 1) {
+    if ((m % f) == 0) {
+      out = ((out + x) + str(f))
+      x = "×"
+      m = ((m / f)) as int
+    } else {
+      f = (f + 1)
+    }
+  }
+  print(out)
+}
+show(1)
+for i in 2..10 {
+  show(i)
+}
+print("...")
+for i in 2144..2155 {
+  show(i)
+}
+print("...")
+for i in 9987..10000 {
+  show(i)
+}

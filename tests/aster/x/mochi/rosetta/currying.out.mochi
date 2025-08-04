@@ -1,0 +1,37 @@
+fun pow(base: float, exp: float): float {
+  var result: float = 1
+  var i: int = 0
+  while (i < int(exp)) {
+    result = (result * base)
+    i = (i + 1)
+  }
+  return result
+}
+fun PowN(b: float): any {
+  typefun
+  return fun(e: float): float => pow(b, e)
+}
+fun PowE(e: float): any {
+  typefun
+  return fun(b: float): float => pow(b, e)
+}
+type Foo {
+  value: int
+  fun Method(b: int): int {
+    return (value + b)
+  }
+}
+fun main(): void {
+  let pow2: any = PowN(2)
+  let cube: any = PowE(3)
+  print(("2^8 = " + str(pow2(8))))
+  print(("4³ = " + str(cube(4))))
+  var a: Foo = Foo {value: 2}
+  let fn1: any = fun(b: int): int => a.Method(b)
+  let fn2: any = fun(f: Foo, b: int): int => f.Method(b)
+  print(("2 + 2 = " + str(a.Method(2))))
+  print(("2 + 3 = " + str(fn1(3))))
+  print(("2 + 4 = " + str(fn2(a, 4))))
+  print(("3 + 5 = " + str(fn2(Foo {value: 3}, 5))))
+}
+main()

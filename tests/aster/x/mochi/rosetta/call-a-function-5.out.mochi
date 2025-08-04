@@ -1,0 +1,14 @@
+fun doIt(p: map<string, int>): int {
+  var b: int = 0
+  if ("b" in p) {
+    b = p["b"]
+  }
+  return ((p["a"] + b) + p["c"])
+}
+fun main(): void {
+  var p: map<string, int>
+  p["a"] = 1
+  p["c"] = 9
+  print(str(doIt(p)))
+}
+main()

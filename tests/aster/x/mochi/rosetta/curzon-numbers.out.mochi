@@ -1,0 +1,59 @@
+fun padLeft(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun modPow(base: int, exp: int, mod: int): int {
+  var result: int = (1 % mod)
+  var b: int = (base % mod)
+  var e: int = exp
+  while (e > 0) {
+    if ((e % 2) == 1) {
+      result = (((result * b)) % mod)
+    }
+    b = (((b * b)) % mod)
+    e = (e / 2)
+  }
+  return result
+}
+fun main(): void {
+  var k: int = 2
+  while (k <= 10) {
+    print((("The first 50 Curzon numbers using a base of " + str(k)) + " :"))
+    var count: int = 0
+    var n: int = 1
+    var curzon50: list<int>
+    while true {
+      let d: int = ((k * n) + 1)
+      if ((((modPow(k, n, d) + 1)) % d) == 0) {
+        if (count < 50) {
+          curzon50 = append(curzon50, n)
+        }
+        count = (count + 1)
+        if (count == 50) {
+          var idx: int = 0
+          while (idx < len(curzon50)) {
+            var line: string = ""
+            var j: int = 0
+            while (j < 10) {
+              line = ((line + padLeft(curzon50[idx], 4)) + " ")
+              idx = (idx + 1)
+              j = (j + 1)
+            }
+            print(substring(line, 0, (len(line) - 1)))
+          }
+        }
+        if (count == 1000) {
+          print(("\nOne thousandth: " + str(n)))
+          break
+        }
+      }
+      n = (n + 1)
+    }
+    print("")
+    k = (k + 2)
+  }
+}
+main()

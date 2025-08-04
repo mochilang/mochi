@@ -1,0 +1,13 @@
+type Box {
+  Contents: string
+  secret: int
+  fun TellSecret(): int {
+    return secret
+  }
+}
+fun New(): Box {
+  var b: Box = Box {Contents: "rabbit", secret: 1}
+  return b
+}
+var box: Box = New()
+box.TellSecret()

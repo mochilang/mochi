@@ -1,0 +1,8 @@
+error[A017]: index on non-indexable type string
+  --> /workspace/mochi/tests/rosetta/x/Mochi/chaocipher.mochi:13:11
+
+ 13 |   return s[n:] + s[:n]
+    |           ^
+
+help:
+  Only lists and maps support indexing

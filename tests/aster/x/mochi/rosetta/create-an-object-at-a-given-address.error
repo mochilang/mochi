@@ -1,0 +1,8 @@
+error[A001]: var a missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/create-an-object-at-a-given-address.mochi:28:3
+
+ 28 |   var a = []
+    |   ^
+
+help:
+  Declare a with a value

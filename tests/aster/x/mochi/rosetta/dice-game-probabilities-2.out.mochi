@@ -1,0 +1,22 @@
+fun roll(nDice: int, nSides: int): int {
+  var sum: int = 0
+  var i: int = 0
+  while (i < nDice) {
+    sum = ((sum + ((now() % nSides))) + 1)
+    i = (i + 1)
+  }
+  return sum
+}
+fun beats(n1: int, s1: int, n2: int, s2: int, trials: int): float {
+  var wins: int = 0
+  var i: int = 0
+  while (i < trials) {
+    if (roll(n1, s1) > roll(n2, s2)) {
+      wins = (wins + 1)
+    }
+    i = (i + 1)
+  }
+  return ((wins as float) / (trials as float))
+}
+print(str(beats(9, 4, 6, 6, 1000)))
+print(str(beats(5, 10, 7, 6, 1000)))

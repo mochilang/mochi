@@ -1,0 +1,8 @@
+error[A026]: argument 1 to parseIntDigits type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/currency.mochi:34:28
+
+ 34 |     let d = parseIntDigits(ch)
+    |                            ^
+
+help:
+  Ensure arguments match parameter types

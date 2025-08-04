@@ -1,0 +1,5 @@
+fun example3(a: bool, b: bool): void {
+  if a {
+    b
+  }
+}

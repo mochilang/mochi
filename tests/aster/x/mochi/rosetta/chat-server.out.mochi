@@ -1,0 +1,34 @@
+fun removeName(names: list<string>, name: string): list<string> {
+  var out: list<string>
+  for n in names {
+    if (n != name) {
+      out = append(out, n)
+    }
+  }
+  return out
+}
+fun main(): void {
+  var clients: list<string>
+  fun broadcast(msg: string): void {
+    print(msg)
+  }
+  fun add(name: string): void {
+    clients = append(clients, name)
+    broadcast((("+++ \"" + name) + "\" connected +++\n"))
+  }
+  fun send(name: string, msg: string): void {
+    broadcast((((name + "> ") + msg) + "\n"))
+  }
+  fun remove(name: string): void {
+    clients = removeName(clients, name)
+    broadcast((("--- \"" + name) + "\" disconnected ---\n"))
+  }
+  add("Alice")
+  add("Bob")
+  send("Alice", "Hello Bob!")
+  send("Bob", "Hi Alice!")
+  remove("Bob")
+  remove("Alice")
+  broadcast("Server stopping!\n")
+}
+main()

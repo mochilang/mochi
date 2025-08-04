@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/copy-stdin-to-stdout-2.mochi:6:16
+
+  6 |     let line = input()
+    |                ^
+
+help:
+  Declare input before use

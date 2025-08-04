@@ -1,0 +1,8 @@
+error[A003]: undefined variable coin
+  --> /workspace/mochi/tests/rosetta/x/Mochi/count-the-coins-2.mochi:13:13
+
+ 13 |     var j = coin
+    |             ^
+
+help:
+  Declare coin before use

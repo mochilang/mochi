@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cartesian-product-of-two-or-more-lists-4.mochi:40:21
+
+ 40 |   let left = cartN(a[:last])
+    |                     ^
+
+help:
+  Use an int index

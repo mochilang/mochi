@@ -1,0 +1,8 @@
+error[A003]: undefined variable me
+  --> /workspace/mochi/tests/rosetta/x/Mochi/catmull-clark-subdivision-surface.mochi:153:21
+
+153 |     let p1 = points[me[0]]
+    |                     ^
+
+help:
+  Declare me before use

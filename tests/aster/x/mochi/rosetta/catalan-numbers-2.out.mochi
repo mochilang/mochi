@@ -1,0 +1,16 @@
+fun catalanRec(n: int): int {
+  if (n == 0) {
+    return 1
+  }
+  var t1: int = (2 * n)
+  var t2: int = (t1 - 1)
+  var t3: int = (2 * t2)
+  var t5: int = (t3 * catalanRec((n - 1)))
+  return ((t5 / ((n + 1)))) as int
+}
+fun main(): void {
+  for i in 1..16 {
+    print(str(catalanRec(i)))
+  }
+}
+main()

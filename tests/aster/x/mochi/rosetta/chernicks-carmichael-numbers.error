@@ -1,0 +1,8 @@
+error[A024]: unknown function count
+  --> /workspace/mochi/tests/rosetta/x/Mochi/chernicks-carmichael-numbers.mochi:21:11
+
+ 21 |   var n = count(a)
+    |           ^
+
+help:
+  Declare count before use

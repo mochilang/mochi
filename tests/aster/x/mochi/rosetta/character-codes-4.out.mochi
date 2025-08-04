@@ -1,0 +1,16 @@
+fun chr(n: int): string {
+  if (n == 97) {
+    return "a"
+  }
+  if (n == 960) {
+    return "π"
+  }
+  if (n == 65) {
+    return "A"
+  }
+  return "?"
+}
+var b: int = 97
+var r: int = 960
+print(((chr(97) + " ") + chr(960)))
+print(((chr(b) + " ") + chr(r)))

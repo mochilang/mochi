@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected Church, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:12:22
+
+ 12 | fun zero(): Church { return fun(f: Church): Church { return id } }
+    |                      ^
+
+help:
+  Ensure return value matches

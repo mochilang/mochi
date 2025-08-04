@@ -1,0 +1,12 @@
+fun fetch_(): string {
+  return ""
+}
+fun example7(): void {
+  let x: string = fetch_()
+  if (x == "cheese") {
+    someCondition()
+  }
+}
+fun someCondition(): bool {
+  return false
+}

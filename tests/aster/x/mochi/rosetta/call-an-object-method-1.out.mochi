@@ -1,0 +1,14 @@
+type Foo {
+  fun ValueMethod(x: int): void {
+  }
+  fun PointerMethod(x: int): void {
+  }
+}
+var myValue: Foo = Foo {}
+var myPointer: Foo = Foo {}
+myValue.ValueMethod(0)
+myPointer.PointerMethod(0)
+myPointer.ValueMethod(0)
+myValue.PointerMethod(0)
+myValue.ValueMethod(0)
+myPointer.PointerMethod(0)

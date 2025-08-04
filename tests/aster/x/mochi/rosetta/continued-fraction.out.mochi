@@ -1,0 +1,61 @@
+fun newTerm(a: int, b: int): map<string, int> {
+  return {"a": a, "b": b}
+}
+fun cfSqrt2(nTerms: int): list<map<string, int>> {
+  var f: list<map<string, int>>
+  var n: int = 0
+  while (n < nTerms) {
+    f = append(f, newTerm(2, 1))
+    n = (n + 1)
+  }
+  if (nTerms > 0) {
+    f[0]["a"] = 1
+  }
+  return f
+}
+fun cfNap(nTerms: int): list<map<string, int>> {
+  var f: list<map<string, int>>
+  var n: int = 0
+  while (n < nTerms) {
+    f = append(f, newTerm(n, (n - 1)))
+    n = (n + 1)
+  }
+  if (nTerms > 0) {
+    f[0]["a"] = 2
+  }
+  if (nTerms > 1) {
+    f[1]["b"] = 1
+  }
+  return f
+}
+fun cfPi(nTerms: int): list<map<string, int>> {
+  var f: list<map<string, int>>
+  var n: int = 0
+  while (n < nTerms) {
+    let g: int = ((2 * n) - 1)
+    f = append(f, newTerm(6, (g * g)))
+    n = (n + 1)
+  }
+  if (nTerms > 0) {
+    f[0]["a"] = 3
+  }
+  return f
+}
+fun real(f: list<map<string, int>>): float {
+  var r: float = 0
+  var i: int = (len(f) - 1)
+  while (i > 0) {
+    r = ((f[i]["b"] as float) / (((f[i]["a"] as float) + r)))
+    i = (i - 1)
+  }
+  if (len(f) > 0) {
+    r = (r + (f[0]["a"] as float))
+  }
+  return r
+}
+fun main(): void {
+  print(("sqrt2: " + str(real(cfSqrt2(20)))))
+  print(("nap:   " + str(real(cfNap(20)))))
+  print(("pi:    " + str(real(cfPi(20)))))
+}
+main()

@@ -1,0 +1,22 @@
+fun countOccurrences(s: string, sub: string): int {
+  if (len(sub) == 0) {
+    return (len(s) + 1)
+  }
+  var cnt: int = 0
+  var i: int = 0
+  var step: int = len(sub)
+  while ((i + step) <= len(s)) {
+    if (substring(s, i, (i + step)) == sub) {
+      cnt = (cnt + 1)
+      i = (i + step)
+    } else {
+      i = (i + 1)
+    }
+  }
+  return cnt
+}
+fun main(): void {
+  print(str(countOccurrences("the three truths", "th")))
+  print(str(countOccurrences("ababababab", "abab")))
+}
+main()

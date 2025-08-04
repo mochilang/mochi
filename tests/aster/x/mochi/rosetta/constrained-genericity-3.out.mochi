@@ -1,0 +1,6 @@
+type PeelFirst {
+  value: string
+  fun eat() {
+    print((("mm, that " + value) + " was good!"))
+  }
+}

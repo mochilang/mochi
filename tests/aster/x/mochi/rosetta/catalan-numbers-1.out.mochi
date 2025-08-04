@@ -1,0 +1,26 @@
+fun binom(n: int, k: int): int {
+  if ((k < 0) || (k > n)) {
+    return 0
+  }
+  var kk: int = k
+  if (kk > (n - kk)) {
+    kk = (n - kk)
+  }
+  var res: int = 1
+  var i: int = 0
+  while (i < kk) {
+    res = ((res * ((n - i))))
+    i = (i + 1)
+    res = ((res / i)) as int
+  }
+  return res
+}
+fun catalan(n: int): int {
+  return ((binom((2 * n), n) / ((n + 1)))) as int
+}
+fun main(): void {
+  for i in 0..15 {
+    print(str(catalan(i)))
+  }
+}
+main()

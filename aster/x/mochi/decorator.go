@@ -85,6 +85,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 		for _, p := range params {
 			local[p.Text] = cloneNode(p.Children[0])
 		}
+		var inferred *Node
 		for _, c := range n.Children[idx:] {
 			if c.Kind == "return" {
 				if len(c.Children) > 0 {
@@ -93,24 +94,45 @@ func decorateNode(n *Node, env map[string]*Node) error {
 						return err
 					}
 					if ret == nil {
-						return errMissingReturnType(c)
-					}
-					if ret.Text == "void" {
-						return errVoidReturnValue(c)
-					}
-					if !typeAssignable(ret, t) {
-						return errReturnTypeMismatch(ret, t, c)
+						if inferred == nil {
+							inferred = cloneNode(t)
+						} else if !typeAssignable(inferred, t) {
+							return errReturnTypeMismatch(inferred, t, c)
+						}
+					} else {
+						if ret.Text == "void" {
+							return errVoidReturnValue(c)
+						}
+						if !typeAssignable(ret, t) {
+							return errReturnTypeMismatch(ret, t, c)
+						}
 					}
 					if err := decorateNode(c.Children[0], local); err != nil {
 						return err
 					}
-				} else if ret != nil && ret.Text != "void" {
-					return errReturnTypeMismatch(ret, &Node{Kind: "type", Text: "void"}, c)
+				} else {
+					if ret != nil && ret.Text != "void" {
+						return errReturnTypeMismatch(ret, &Node{Kind: "type", Text: "void"}, c)
+					}
+					if ret == nil && inferred != nil && inferred.Text != "void" {
+						return errReturnTypeMismatch(inferred, &Node{Kind: "type", Text: "void"}, c)
+					}
 				}
 				continue
 			}
 			if err := decorateNode(c, local); err != nil {
 				return err
+			}
+		}
+		if ret == nil {
+			if inferred == nil {
+				inferred = &Node{Kind: "type", Text: "void"}
+			}
+			n.Children = append(n.Children[:len(params)], append([]*Node{cloneNode(inferred)}, n.Children[len(params):]...)...)
+			ret = n.Children[len(params)]
+			sig.Children[0] = cloneNode(inferred)
+			if n.Text != "" {
+				env[n.Text] = sig
 			}
 		}
 		return nil

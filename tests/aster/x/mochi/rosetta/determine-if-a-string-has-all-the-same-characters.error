@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/determine-if-a-string-has-all-the-same-characters.mochi:35:17
+
+ 35 |       let cur = substring(s, i, i+1)
+    |                 ^
+
+help:
+  Declare substring before use

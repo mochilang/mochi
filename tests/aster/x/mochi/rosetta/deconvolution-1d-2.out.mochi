@@ -1,0 +1,58 @@
+fun indexOf(s: string, ch: string): int {
+  var i: int = 0
+  while (i < len(s)) {
+    if (substring(s, i, (i + 1)) == ch) {
+      return i
+    }
+    i = (i + 1)
+  }
+  return -1
+}
+fun fmt1(x: float): string {
+  var y: float = (((((x * 10)) + 0.5)) as int as float / 10)
+  var s: string = str(y)
+  let dot: int = indexOf(s, ".")
+  if (dot < 0) {
+    s = (s + ".0")
+  }
+  return s
+}
+fun listToString1(xs: list<float>): string {
+  var s: string = "["
+  var i: int = 0
+  while (i < len(xs)) {
+    s = (s + fmt1(xs[i]))
+    if (i < (len(xs) - 1)) {
+      s = (s + " ")
+    }
+    i = (i + 1)
+  }
+  return (s + "]")
+}
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var out: list<float>
+  var i: int = 0
+  while (i <= (len(g) - len(f))) {
+    var sum: float = g[i]
+    var j: int = 1
+    while (j < len(f)) {
+      if (j <= i) {
+        sum = (sum - (out[(i - j)] * f[j]))
+      }
+      j = (j + 1)
+    }
+    out = append(out, (sum / f[0]))
+    i = (i + 1)
+  }
+  return out
+}
+fun main(): void {
+  let h: list<float> = [-8, -9, -3, -1, -6, 7]
+  let f: list<float> = [-3, -6, -1, 8, -6, 3, -1, -9, -9, 3, -2, 5, 2, -2, -7, -1]
+  let g: list<float> = [24, 75, 71, -34, 3, 22, -45, 23, 245, 25, 52, 25, -67, -96, 96, 31, 55, 36, 29, -43, -7]
+  print(listToString1(h))
+  print(listToString1(deconv(g, f)))
+  print(listToString1(f))
+  print(listToString1(deconv(g, h)))
+}
+main()

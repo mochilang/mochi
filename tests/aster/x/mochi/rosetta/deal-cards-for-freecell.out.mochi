@@ -1,0 +1,42 @@
+var seed: int = 1
+fun rnd(): int {
+  seed = ((((seed * 214013) + 2531011)) % 2147483648)
+  return (seed / 65536)
+}
+fun deal(game: int): list<int> {
+  seed = game
+  var deck: list<int>
+  var i: int = 0
+  while (i < 52) {
+    deck = append(deck, (51 - i))
+    i = (i + 1)
+  }
+  i = 0
+  while (i < 51) {
+    let j: int = (51 - ((rnd() % ((52 - i)))))
+    let tmp: int = deck[i]
+    deck[i] = deck[j]
+    deck[j] = tmp
+    i = (i + 1)
+  }
+  return deck
+}
+let suits: string = "CDHS"
+let nums: string = "A23456789TJQK"
+fun show(cards: list<int>): void {
+  var i: int = 0
+  while (i < len(cards)) {
+    let c: int = cards[i]
+    stdout.write(((" " + substring(nums, (c / 4), ((c / 4) + 1))) + substring(suits, (c % 4), ((c % 4) + 1))))
+    if (((((i + 1)) % 8) == 0) || ((i + 1) == len(cards))) {
+      print("")
+    }
+    i = (i + 1)
+  }
+}
+print("")
+print("Game #1")
+show(deal(1))
+print("")
+print("Game #617")
+show(deal(617))

@@ -1,0 +1,30 @@
+fun toOct(n: int): string {
+  if (n == 0) {
+    return "0"
+  }
+  let digits: string = "01234567"
+  var out: string = ""
+  var v: int = n
+  while (v > 0) {
+    let d: int = (v % 8)
+    out = (digits[d:(d + 1)] + out)
+    v = (v / 8)
+  }
+  return out
+}
+fun main(): void {
+  var i: float = 0
+  while true {
+    print(toOct(i as int))
+    if (i == 3) {
+      i = (9.007199254740992e+15 - 4)
+      print("...")
+    }
+    let next: float = (i + 1)
+    if (next == i) {
+      break
+    }
+    i = next
+  }
+}
+main()
