@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (440/491)
-_Last updated: 2025-08-04 19:30 +0700_
+## Golden Test Checklist (445/491)
+_Last updated: 2025-08-04 21:10 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -276,12 +276,12 @@ _Last updated: 2025-08-04 19:30 +0700_
 | 267 | curzon-numbers | ✓ | 562µs | 8.7 MB |
 | 268 | cusip | error |  |  |
 | 269 | cyclops-numbers |   |  |  |
-| 270 | damm-algorithm | ✓ | 8µs | 8.7 MB |
-| 271 | date-format |   |  |  |
-| 272 | date-manipulation |   |  |  |
-| 273 | day-of-the-week |   |  |  |
-| 274 | de-bruijn-sequences |   |  |  |
-| 275 | deal-cards-for-freecell |   |  |  |
+| 270 | damm-algorithm | ✓ | 9µs | 8.7 MB |
+| 271 | date-format | ✓ | 6µs | 8.7 MB |
+| 272 | date-manipulation | ✓ | 15µs | 8.7 MB |
+| 273 | day-of-the-week | ✓ | 18µs | 8.7 MB |
+| 274 | de-bruijn-sequences | ✓ | 830µs | 8.8 MB |
+| 275 | deal-cards-for-freecell | ✓ | 18µs | 8.7 MB |
 | 276 | death-star | error |  |  |
 | 277 | deceptive-numbers | ✓ | 173µs | 8.7 MB |
 | 278 | deconvolution-1d-2 | ✓ | 11µs | 8.7 MB |
