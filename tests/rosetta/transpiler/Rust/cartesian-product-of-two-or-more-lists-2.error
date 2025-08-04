@@ -1,0 +1,334 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:51:2
+   |
+51 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:64:2
+   |
+64 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:107:2
+    |
+107 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:124:2
+    |
+124 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:42:11
+   |
+42 |     while (i < (xs.len() as i64)) {
+   |           ^                     ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+42 -     while (i < (xs.len() as i64)) {
+42 +     while i < (xs.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:44:12
+   |
+44 |         if (i < ((xs.len() as i64) - 1)) {
+   |            ^                           ^
+   |
+help: remove these parentheses
+   |
+44 -         if (i < ((xs.len() as i64) - 1)) {
+44 +         if i < ((xs.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:47:13
+   |
+47 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+47 -         i = (i + 1);
+47 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:55:11
+   |
+55 |     while (i < (lst.len() as i64)) {
+   |           ^                      ^
+   |
+help: remove these parentheses
+   |
+55 -     while (i < (lst.len() as i64)) {
+55 +     while i < (lst.len() as i64) {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:57:12
+   |
+57 |         if (i < ((lst.len() as i64) - 1)) {
+   |            ^                            ^
+   |
+help: remove these parentheses
+   |
+57 -         if (i < ((lst.len() as i64) - 1)) {
+57 +         if i < ((lst.len() as i64) - 1) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:60:13
+   |
+60 |         i = (i + 1);
+   |             ^     ^
+   |
+help: remove these parentheses
+   |
+60 -         i = (i + 1);
+60 +         i = i + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:66:8
+   |
+66 |     if (lists == Default::default()) {
+   |        ^                           ^
+   |
+help: remove these parentheses
+   |
+66 -     if (lists == Default::default()) {
+66 +     if lists == Default::default() {
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:70:8
+   |
+70 |     if ((a.len() as i64) == 0) {
+   |        ^                     ^
+   |
+help: remove these parentheses
+   |
+70 -     if ((a.len() as i64) == 0) {
+70 +     if (a.len() as i64) == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:75:13
+   |
+75 |         c = (c * (xs.len() as i64));
+   |             ^                     ^
+   |
+help: remove these parentheses
+   |
+75 -         c = (c * (xs.len() as i64));
+75 +         c = c * (xs.len() as i64);
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:77:8
+   |
+77 |     if (c == 0) {
+   |        ^      ^
+   |
+help: remove these parentheses
+   |
+77 -     if (c == 0) {
+77 +     if c == 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:85:17
+   |
+85 |     let mut n = (a.len() as i64);
+   |                 ^              ^
+   |
+help: remove these parentheses
+   |
+85 -     let mut n = (a.len() as i64);
+85 +     let mut n = a.len() as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:87:11
+   |
+87 |     while (count < c) {
+   |           ^         ^
+   |
+help: remove these parentheses
+   |
+87 -     while (count < c) {
+87 +     while count < c {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:90:15
+   |
+90 |         while (j < n) {
+   |               ^     ^
+   |
+help: remove these parentheses
+   |
+90 -         while (j < n) {
+90 +         while j < n {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:92:17
+   |
+92 |             j = (j + 1);
+   |                 ^     ^
+   |
+help: remove these parentheses
+   |
+92 -             j = (j + 1);
+92 +             j = j + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:95:26
+   |
+95 |         let mut k: i64 = (n - 1);
+   |                          ^     ^
+   |
+help: remove these parentheses
+   |
+95 -         let mut k: i64 = (n - 1);
+95 +         let mut k: i64 = n - 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:96:15
+   |
+96 |         while (k >= 0) {
+   |               ^      ^
+   |
+help: remove these parentheses
+   |
+96 -         while (k >= 0) {
+96 +         while k >= 0 {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:97:31
+   |
+97 |             idx[k as usize] = (idx[k as usize] + 1);
+   |                               ^                   ^
+   |
+help: remove these parentheses
+   |
+97 -             idx[k as usize] = (idx[k as usize] + 1);
+97 +             idx[k as usize] = idx[k as usize] + 1;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:98:16
+   |
+98 |             if (idx[k as usize] < (a.chars().nth(k as usize).unwrap().len() as i64)) {
+   |                ^                                                                   ^
+   |
+help: remove these parentheses
+   |
+98 -             if (idx[k as usize] < (a.chars().nth(k as usize).unwrap().len() as i64)) {
+98 +             if idx[k as usize] < (a.chars().nth(k as usize).unwrap().len() as i64) {
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:102:17
+    |
+102 |             k = (k - 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+102 -             k = (k - 1);
+102 +             k = k - 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:104:17
+    |
+104 |         count = (count + 1);
+    |                 ^         ^
+    |
+help: remove these parentheses
+    |
+104 -         count = (count + 1);
+104 +         count = count + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:127:28
+    |
+127 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+127 -     let duration_us: i64 = ((_end - _start) / 1000);
+127 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0277]: `String` is not an iterator
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:74:15
+   |
+74 |     for xs in a {
+   |               ^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+   |
+   = help: the trait `Iterator` is not implemented for `String`
+   = note: required for `String` to implement `IntoIterator`
+
+error[E0277]: `String` is not an iterator
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:82:14
+   |
+82 |     for _ in a {
+   |              ^ `String` is not an iterator; try calling `.chars()` or `.bytes()`
+   |
+   = help: the trait `Iterator` is not implemented for `String`
+   = note: required for `String` to implement `IntoIterator`
+
+error[E0608]: cannot index into a value of type `char`
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:91:89
+   |
+91 |             row = { let mut _v = row.clone(); _v.push(a.chars().nth(j as usize).unwrap()[idx[j as usize] as usize]); _v };
+   |                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0599]: no method named `len` found for type `char` in the current scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:98:71
+   |
+98 |             if (idx[k as usize] < (a.chars().nth(k as usize).unwrap().len() as i64)) {
+   |                                    -                                  ^^^
+   |                                    |
+   |                                    method `len` is available on `&str`
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:116:53
+    |
+116 |         println!("{}", format!("{}{}", " ", listStr(p)));
+    |                                             ------- ^ types differ in mutability
+    |                                             |
+    |                                             arguments to this function are incorrect
+    |
+    = note: expected mutable reference `&mut Vec<_>`
+                       found reference `&Vec<_>`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/cartesian-product-of-two-or-more-lists-2.rs:39:8
+    |
+39  |     fn listStr(xs: &mut Vec<i64>) -> String {
+    |        ^^^^^^^ -----------------
+
+error: aborting due to 5 previous errors; 25 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0599, E0608.
+For more information about an error, try `rustc --explain E0277`.
