@@ -3504,11 +3504,11 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 				left = &CastExpr{Expr: left, Type: "String"}
 				ltyp = types.StringType{}
 			} else if types.IsBigIntType(ltyp) && types.IsIntType(rtyp) {
-				left = &CallExpr{Func: "Int", Args: []Expr{left}}
-				ltyp = types.IntType{}
+				right = &CallExpr{Func: "BigInt", Args: []Expr{right}}
+				rtyp = types.BigIntType{}
 			} else if types.IsBigIntType(rtyp) && types.IsIntType(ltyp) {
-				right = &CallExpr{Func: "Int", Args: []Expr{right}}
-				rtyp = types.IntType{}
+				left = &CallExpr{Func: "BigInt", Args: []Expr{left}}
+				ltyp = types.BigIntType{}
 			}
 		case "&&", "||":
 			if types.IsAnyType(ltyp) {
@@ -3526,6 +3526,16 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			} else if types.IsFloatType(rtyp) && types.IsIntType(ltyp) {
 				left = &CastExpr{Expr: left, Type: "Double"}
 				ltyp = types.FloatType{}
+			}
+			if types.IsBigIntType(ltyp) || types.IsBigIntType(rtyp) {
+				if !types.IsBigIntType(ltyp) {
+					left = &CallExpr{Func: "BigInt", Args: []Expr{left}}
+					ltyp = types.BigIntType{}
+				}
+				if !types.IsBigIntType(rtyp) {
+					right = &CallExpr{Func: "BigInt", Args: []Expr{right}}
+					rtyp = types.BigIntType{}
+				}
 			}
 			if op == "+" && (types.IsStringType(ltyp) || types.IsStringType(rtyp)) {
 				if types.IsAnyType(ltyp) {
@@ -3571,6 +3581,8 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 		case "+", "-", "*", "/", "%":
 			if types.IsStringType(ltyp) || types.IsStringType(rtyp) {
 				resType = types.StringType{}
+			} else if types.IsBigIntType(ltyp) || types.IsBigIntType(rtyp) {
+				resType = types.BigIntType{}
 			} else if (types.IsIntType(ltyp) || types.IsInt64Type(ltyp)) &&
 				(types.IsIntType(rtyp) || types.IsInt64Type(rtyp)) {
 				if types.IsInt64Type(ltyp) || types.IsInt64Type(rtyp) {
