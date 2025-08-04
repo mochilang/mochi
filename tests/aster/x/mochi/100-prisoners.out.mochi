@@ -1,0 +1,84 @@
+fun shuffle(xs: list<int>): list<int> {
+  var arr: list<int> = xs
+  var i: int = 99
+  while (i > 0) {
+    let j: int = (now() % ((i + 1)))
+    let tmp: int = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
+    i = (i - 1)
+  }
+  return arr
+}
+fun doTrials(trials: int, np: int, strategy: string): any {
+  var pardoned: int = 0
+  var t: int = 0
+  while (t < trials) {
+    var drawers: list<int>
+    var i: int = 0
+    while (i < 100) {
+      drawers = append(drawers, i)
+      i = (i + 1)
+    }
+    drawers = shuffle(drawers)
+    var p: int = 0
+    var success: bool = true
+    while (p < np) {
+      var found: bool = false
+      if (strategy == "optimal") {
+        var prev: int = p
+        var d: int = 0
+        while (d < 50) {
+          let this: int = drawers[prev]
+          if (this == p) {
+            found = true
+            break
+          }
+          prev = this
+          d = (d + 1)
+        }
+      } else {
+        var opened: list<bool>
+        var k: int = 0
+        while (k < 100) {
+          opened = append(opened, false)
+          k = (k + 1)
+        }
+        var d: int = 0
+        while (d < 50) {
+          var n: int = (now() % 100)
+          while opened[n] {
+            n = (now() % 100)
+          }
+          opened[n] = true
+          if (drawers[n] == p) {
+            found = true
+            break
+          }
+          d = (d + 1)
+        }
+      }
+      if !found {
+        success = false
+        break
+      }
+      p = (p + 1)
+    }
+    if success {
+      pardoned = (pardoned + 1)
+    }
+    t = (t + 1)
+  }
+  let rf: float = (((pardoned as float) / (trials as float)) * 100)
+  print((((((("  strategy = " + strategy) + "  pardoned = ") + str(pardoned)) + " relative frequency = ") + str(rf)) + "%"))
+}
+fun main(): any {
+  let trials: int = 1000
+  for np in [10, 100] {
+    print((((("Results from " + str(trials)) + " trials with ") + str(np)) + " prisoners:\n"))
+    for strat in ["random", "optimal"] {
+      doTrials(trials, np, strat)
+    }
+  }
+}
+main()

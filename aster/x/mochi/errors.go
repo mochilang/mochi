@@ -33,6 +33,7 @@ var Errors = map[string]diagnostic.Template{
 	"A019": {Code: "A019", Message: "map key type mismatch: %s vs %s", Help: "Ensure the key matches the map's key type"},
 	"A020": {Code: "A020", Message: "unknown field %s on %s", Help: "Check the struct definition"},
 	"A021": {Code: "A021", Message: "%s is not a struct", Help: "Field access is only valid on structs"},
+	"A022": {Code: "A022", Message: "cast expects a type", Help: "Provide a type after 'as'"},
 }
 
 func pos(n *Node) lexer.Position {
@@ -145,4 +146,8 @@ func errNotStruct(typ *Node, n *Node) error {
 	tmpl := Errors["A021"]
 	msg := fmt.Sprintf(tmpl.Message, typeString(typ))
 	return diagnostic.New(tmpl.Code, pos(n), msg, tmpl.Help)
+}
+
+func errCastMissingType(n *Node) error {
+	return Errors["A022"].New(pos(n))
 }

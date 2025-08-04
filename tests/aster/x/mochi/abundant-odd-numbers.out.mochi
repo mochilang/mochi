@@ -4,7 +4,7 @@ fun divisors(n: int): list<int> {
   var i: int = 2
   while ((i * i) <= n) {
     if ((n % i) == 0) {
-      let j: any = ((n / i)) as int
+      let j: int = ((n / i)) as int
       divs = append(divs, i)
       if (i != j) {
         divs2 = append(divs2, j)
