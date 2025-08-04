@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-04 16:18 GMT+7
+Last updated: 2025-08-04 17:13 GMT+7
 
-## Rosetta Golden Test Checklist (485/491)
+## Rosetta Golden Test Checklist (487/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 105.0µs | 12.55MB |
@@ -467,16 +467,16 @@ Last updated: 2025-08-04 16:18 GMT+7
 | 458 | forward-difference | ✓ | 37.0µs | 13.05MB |
 | 459 | four-bit-adder-1 | ✓ | 35.0µs | 12.75MB |
 | 460 | four-is-magic | ✓ | 110.0µs | 12.95MB |
-| 461 | four-is-the-number-of-letters-in-the-... | error |  |  |
-| 462 | fractal-tree | ✓ | 2.0ms | 14.06MB |
-| 463 | fractran | ✓ | 2.83s | 13.06MB |
-| 464 | french-republican-calendar | ✓ | 30.0µs | 14.49MB |
-| 465 | ftp | error |  |  |
-| 466 | function-frequency | ✓ | 931.0µs | 14.16MB |
-| 467 | function-prototype | ✓ | 3.0µs | 12.30MB |
-| 468 | functional-coverage-tree | ✓ | 375.0µs | 14.27MB |
-| 469 | fusc-sequence | ✓ | 159.0µs | 13.12MB |
-| 470 | gamma-function | ✓ | 164.0µs | 13.38MB |
+| 461 | four-is-the-number-of-letters-in-the-... | ✓ | 14.89s | 508.17MB |
+| 462 | fractal-tree | ✓ | 1.0ms | 13.86MB |
+| 463 | fractran | ✓ | 3.89s | 12.57MB |
+| 464 | french-republican-calendar | ✓ | 35.0µs | 13.90MB |
+| 465 | ftp | ✓ | 52.0µs | 12.55MB |
+| 466 | function-frequency | ✓ | 920.0µs | 13.81MB |
+| 467 | function-prototype | ✓ | 3.0µs | 12.69MB |
+| 468 | functional-coverage-tree | ✓ | 400.0µs | 13.94MB |
+| 469 | fusc-sequence | ✓ | 135.0µs | 12.43MB |
+| 470 | gamma-function | ✓ | 234.0µs | 12.42MB |
 | 471 | general-fizzbuzz | ✓ | 45.0µs | 12.70MB |
 | 472 | generic-swap | ✓ | 13.0µs | 12.54MB |
 | 473 | get-system-command-output | ✓ | 8.0µs | 12.55MB |

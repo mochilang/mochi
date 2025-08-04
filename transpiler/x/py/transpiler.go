@@ -41,6 +41,7 @@ var (
 	usesSubstr        bool
 	usesCallable      bool
 	usesFetch         bool
+	usesAppend        bool
 	funcDepth         int
 )
 
@@ -108,6 +109,14 @@ def _fetch(url: str, opts: dict[str, Any] | None) -> Any:
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         text = resp.read()
     return json.loads(text)
+`
+
+const helperAppend = `
+def _append(lst, v):
+    if lst is None:
+        lst = []
+    lst.append(v)
+    return lst
 `
 
 var pyKeywords = map[string]bool{
@@ -2904,6 +2913,11 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 			return err
 		}
 	}
+	if usesAppend {
+		if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
+			return err
+		}
+	}
 	// no runtime helpers required
 	for _, s := range p.Stmts {
 		switch st := s.(type) {
@@ -3179,6 +3193,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	usesIndexOf = false
 	usesCallable = false
 	usesFetch = false
+	usesAppend = false
 	p := &Program{}
 	for _, st := range prog.Statements {
 		switch {
@@ -3637,7 +3652,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 			}
 			var params []string
 			for _, p := range st.Fun.Params {
-				params = append(params, p.Name)
+				params = append(params, safeName(p.Name))
 			}
 			genv := env.Parent()
 			if genv == nil {
@@ -4799,7 +4814,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						}
 					}
 				}
-				return &BinaryExpr{Left: args[0], Op: "+", Right: &ListLit{Elems: []Expr{elem}}}, nil
+				usesAppend = true
+				return &CallExpr{Func: &Name{Name: "_append"}, Args: []Expr{args[0], elem}}, nil
 			}
 		case "avg":
 			if len(args) == 1 {
@@ -4828,7 +4844,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "split":
 			if len(args) == 2 {
-				return &CallExpr{Func: &FieldExpr{Target: args[0], Name: "split"}, Args: []Expr{args[1]}}, nil
+				target := args[0]
+				switch target.(type) {
+				case *Name, *FieldExpr, *IndexExpr:
+				default:
+					target = &ParenExpr{Expr: target}
+				}
+				return &CallExpr{Func: &FieldExpr{Target: target, Name: "split"}, Args: []Expr{args[1]}}, nil
 			}
 		case "repeat":
 			if len(args) == 2 {

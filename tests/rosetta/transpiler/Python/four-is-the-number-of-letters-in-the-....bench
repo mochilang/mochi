@@ -1,11 +1,5 @@
-The lengths of the first 201 words are:
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 163, in <module>
-    main()
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 149, in main
-    r = wordLen(i)
-        ^^^^^^^^^^
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/four-is-the-number-of-letters-in-the-....py", line 117, in wordLen
-    parts = sayOrdinal(idx + 1) + ",".split(" ")
-            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
-TypeError: can only concatenate str (not "list") to str
+{
+  "duration_us": 14887234,
+  "memory_bytes": 532856832,
+  "name": "main"
+}

@@ -1,4 +1,5 @@
-File "/workspace/mochi/tests/rosetta/transpiler/Python/ftp.py", line 51
-    def login(conn, user, pass):
-                          ^^^^
-SyntaxError: invalid syntax
+{
+  "duration_us": 52,
+  "memory_bytes": 13156352,
+  "name": "main"
+}
