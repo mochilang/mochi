@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 349/491
+Completed programs: 360/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -395,11 +395,11 @@ Completed programs: 349/491
 | 387 | extreme-floating-point-values | ✓ | 256.0µs | 15.70KB |
 | 388 | faces-from-a-mesh-2 | ✓ | 396.0µs | 45.23KB |
 | 389 | faces-from-a-mesh | ✓ | 389.0µs | 45.23KB |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | error |  |  |
 | 391 | factorial-primes | ✓ | 2.0ms | 1.78KB |
 | 392 | factorial | ✓ | 1.0ms | 330.30KB |
 | 393 | factorions | ✓ | 3.84s | 843.26MB |
-| 394 | factors-of-a-mersenne-number |   |  |  |
+| 394 | factors-of-a-mersenne-number | ✓ |  |  |
 | 395 | factors-of-an-integer | ✓ | 13.75s | 13.27KB |
 | 396 | fairshare-between-two-and-more | ✓ |  |  |
 | 397 | farey-sequence | ✓ | 1.0ms | 126.62KB |
@@ -437,16 +437,16 @@ Completed programs: 349/491
 | 429 | find-the-last-sunday-of-each-month | ✓ | 119.0µs | 1.62KB |
 | 430 | find-the-missing-permutation | ✓ | 94.0µs | 16.90KB |
 | 431 | first-class-environments | ✓ | 1.0ms | 229.70KB |
-| 432 | first-class-functions-use-numbers-analogously | error |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
-| 435 | fivenum-1 |   |  |  |
-| 436 | fivenum-2 |   |  |  |
-| 437 | fivenum-3 |   |  |  |
-| 438 | fixed-length-records-1 |   |  |  |
-| 439 | fixed-length-records-2 |   |  |  |
-| 440 | fizzbuzz-1 |   |  |  |
-| 441 | fizzbuzz-2 |   |  |  |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 150.0µs | 2.37KB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 469.0µs | 5.78KB |
+| 434 | five-weekends | ✓ | 732.0µs | 56.04KB |
+| 435 | fivenum-1 | ✓ | 885.0µs | 147.79KB |
+| 436 | fivenum-2 | ✓ | 498.0µs | 87.02KB |
+| 437 | fivenum-3 | ✓ | 863.0µs | 150.95KB |
+| 438 | fixed-length-records-1 | ✓ | 88.0µs | 16.52KB |
+| 439 | fixed-length-records-2 | ✓ | 36.0µs | 344B |
+| 440 | fizzbuzz-1 | ✓ | 107.0µs | 1.03KB |
+| 441 | fizzbuzz-2 | ✓ | 194.0µs | 14.27KB |
 | 442 | fizzbuzz |   |  |  |
 | 443 | flatten-a-list-1 |   |  |  |
 | 444 | flatten-a-list-2 |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 349/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 09:20 +0700
+Last updated 2025-08-04 15:16 +0700
