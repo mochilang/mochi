@@ -591,6 +591,13 @@ func (i *IfStmt) emit(w io.Writer) {
 		}
 	}
 	fmt.Fprint(w, "}")
+	if len(i.Else) == 1 {
+		if nested, ok := i.Else[0].(*IfStmt); ok {
+			fmt.Fprint(w, " else ")
+			nested.emit(w)
+			return
+		}
+	}
 	if len(i.Else) > 0 {
 		fmt.Fprint(w, " else {\n")
 		for _, st := range i.Else {
