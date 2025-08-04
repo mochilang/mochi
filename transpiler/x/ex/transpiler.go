@@ -3311,7 +3311,10 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					}
 				}
 				operands[i] = expr
-				if b, ok := expr.(*BinaryExpr); ok && b.Op == "+" && b.StrConcat {
+				if _, ok := typesSlice[i].(types.BigRatType); ok {
+					// preserve BigRat type for subsequent operations
+					typesSlice[i] = types.BigRatType{}
+				} else if b, ok := expr.(*BinaryExpr); ok && b.Op == "+" && b.StrConcat {
 					typesSlice[i] = types.StringType{}
 				} else {
 					typesSlice[i] = types.AnyType{}
@@ -3834,7 +3837,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				sort := &CallExpr{Func: "Enum.sort", Args: []Expr{inner}}
 				return &CallExpr{Func: "Enum.join", Args: []Expr{sort, &StringLit{Value: " "}}}, nil
 			}
-		case "substring":
+		case "substring", "substr", "slice":
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
 				return &CallExpr{Func: "_slice", Args: []Expr{args[0], args[1], diff}}, nil

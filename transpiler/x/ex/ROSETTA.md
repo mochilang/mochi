@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (287/491)
-_Last updated: 2025-08-04 21:17 +0700_
+## Rosetta Test Checklist (317/491)
+_Last updated: 2025-08-04 21:47 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -404,37 +404,37 @@ _Last updated: 2025-08-04 21:17 +0700_
 | 396 | fairshare-between-two-and-more | ✓ | 1m59.281662s | 4.5 MB |
 | 397 | farey-sequence | ✓ | 7.65ms | 25.0 KB |
 | 398 | fast-fourier-transform | ✓ | 3.82ms | 25.2 KB |
-| 399 | fasta-format |  |  |  |
-| 400 | faulhabers-formula |  |  |  |
-| 401 | faulhabers-triangle |  |  |  |
-| 402 | feigenbaum-constant-calculation |  |  |  |
-| 403 | fermat-numbers |  |  |  |
-| 404 | fibonacci-n-step-number-sequences |  |  |  |
-| 405 | fibonacci-sequence-1 |  |  |  |
-| 406 | fibonacci-sequence-2 |  |  |  |
-| 407 | fibonacci-sequence-3 |  |  |  |
-| 408 | fibonacci-sequence-4 |  |  |  |
-| 409 | fibonacci-sequence-5 |  |  |  |
-| 410 | fibonacci-word-fractal |  |  |  |
+| 399 | fasta-format | ✓ | 1.37ms | 32.8 KB |
+| 400 | faulhabers-formula | ✓ | 9.28ms | 17.3 KB |
+| 401 | faulhabers-triangle | ✓ | 13.82ms | 25.0 KB |
+| 402 | feigenbaum-constant-calculation | ✓ | 19.86ms | 32.8 KB |
+| 403 | fermat-numbers | ✓ | 9.38ms | 25.0 KB |
+| 404 | fibonacci-n-step-number-sequences | ✓ | 479us | 17.3 KB |
+| 405 | fibonacci-sequence-1 | ✓ | 1us | 0 B |
+| 406 | fibonacci-sequence-2 | ✓ | 1us | 0 B |
+| 407 | fibonacci-sequence-3 | ✓ | 1us | 0 B |
+| 408 | fibonacci-sequence-4 | ✓ | 409us | 0 B |
+| 409 | fibonacci-sequence-5 | ✓ | 3.68ms | 25.0 KB |
+| 410 | fibonacci-word-fractal | ✓ | 3.35ms | 12.5 KB |
 | 411 | fibonacci-word |  |  |  |
-| 412 | file-extension-is-in-extensions-list |  |  |  |
-| 413 | file-input-output-1 |  |  |  |
-| 414 | file-input-output-2 |  |  |  |
-| 415 | file-input-output-3 |  |  |  |
-| 416 | file-modification-time |  |  |  |
-| 417 | file-size-distribution |  |  |  |
-| 418 | file-size |  |  |  |
-| 419 | filter |  |  |  |
-| 420 | find-chess960-starting-position-identifier-2 |  |  |  |
-| 421 | find-chess960-starting-position-identifier |  |  |  |
-| 422 | find-common-directory-path |  |  |  |
-| 423 | find-duplicate-files |  |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |  |  |  |
-| 425 | find-limit-of-recursion |  |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |  |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |  |  |  |
-| 428 | find-the-intersection-of-two-lines |  |  |  |
-| 429 | find-the-last-sunday-of-each-month |  |  |  |
+| 412 | file-extension-is-in-extensions-list | ✓ | 23.46ms | 12.5 KB |
+| 413 | file-input-output-1 | ✓ | 364us | 0 B |
+| 414 | file-input-output-2 | ✓ | 209us | 0 B |
+| 415 | file-input-output-3 | ✓ | 202us | 0 B |
+| 416 | file-modification-time | ✓ | 262us | 0 B |
+| 417 | file-size-distribution | ✓ | 4.21ms | 25.1 KB |
+| 418 | file-size | ✓ | 141us | 0 B |
+| 419 | filter | ✓ | 8.35ms | 25.0 KB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 5.53ms | 17.3 KB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 4.01ms | 17.3 KB |
+| 422 | find-common-directory-path | ✓ | 2.50ms | 20.2 KB |
+| 423 | find-duplicate-files | ✓ | 149us | 0 B |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 22.93ms | 25.0 KB |
+| 425 | find-limit-of-recursion | ✓ | 17.36ms | 25.0 KB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 8.51s | 25.0 KB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 3.00ms | 17.3 KB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 2.36ms | 17.3 KB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 7.74ms | 25.0 KB |
 | 430 | find-the-missing-permutation |  |  |  |
 | 431 | first-class-environments |  |  |  |
 | 432 | first-class-functions-use-numbers-analogously |  |  |  |
