@@ -1,7 +1,0 @@
-zig build: exit status 1
-/tmp/calculating-the-value-of-e.zig:12:11: error: local constant shadows declaration of 'n'
-/tmp/calculating-the-value-of-e.zig:36:1: note: declared here
-/tmp/calculating-the-value-of-e.zig:46:10: error: function parameter shadows declaration of 'n'
-/tmp/calculating-the-value-of-e.zig:36:1: note: declared here
-/tmp/calculating-the-value-of-e.zig:59:9: error: local variable shadows declaration of 'n'
-/tmp/calculating-the-value-of-e.zig:36:1: note: declared here

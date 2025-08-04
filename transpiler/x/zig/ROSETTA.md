@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 16:06 +0700
+Last updated: 2025-08-04 17:00 +0700
 
-## Program Checklist (95/491)
+## Program Checklist (104/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -146,17 +146,17 @@ Last updated: 2025-08-04 16:06 +0700
 | 137 | brownian-tree |   |  |  |
 | 138 | bulls-and-cows-player | ✓ | 546.149ms |  |
 | 139 | bulls-and-cows |   |  |  |
-| 140 | burrows-wheeler-transform |   |  |  |
-| 141 | caesar-cipher-1 |   |  |  |
-| 142 | caesar-cipher-2 |   |  |  |
-| 143 | calculating-the-value-of-e |   |  |  |
-| 144 | calendar---for-real-programmers-1 |   |  |  |
-| 145 | calendar---for-real-programmers-2 |   |  |  |
-| 146 | calendar |   |  |  |
+| 140 | burrows-wheeler-transform | ✓ | 100.406ms |  |
+| 141 | caesar-cipher-1 | ✓ | 4.799ms |  |
+| 142 | caesar-cipher-2 | ✓ | 4.564ms |  |
+| 143 | calculating-the-value-of-e | ✓ | 258µs |  |
+| 144 | calendar---for-real-programmers-1 | ✓ | 23.617ms |  |
+| 145 | calendar---for-real-programmers-2 | ✓ | 21.207ms |  |
+| 146 | calendar | ✓ | 20.628ms |  |
 | 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function |   |  |  |
-| 149 | call-a-function-1 |   |  |  |
-| 150 | call-a-function-10 | ✓ | 186µs |  |
+| 148 | call-a-foreign-language-function | ✓ | 344µs |  |
+| 149 | call-a-function-1 | ✓ | 4µs |  |
+| 150 | call-a-function-10 | ✓ | 227µs |  |
 | 151 | call-a-function-11 | ✓ | 431µs |  |
 | 152 | call-a-function-12 |   |  |  |
 | 153 | call-a-function-2 | ✓ | 4µs |  |
