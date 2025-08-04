@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,7 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (primeFactors n) (call/cc (lambda (ret1) (let ((factors (_list))) (begin (let ((last 0)) (begin (let ((x n)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (equal? (modulo x 2) 0) (begin (if (equal? last 2) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list 2))) (set! last 2) (set! x (quotient x 2)) (loop2)) (quote ()))))) (loop2)))) (let ((p 3)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (<= (* p p) x) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (equal? (modulo x p) 0) (begin (if (equal? last p) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list p))) (set! last p) (set! x (quotient x p)) (loop6)) (quote ()))))) (loop6)))) (set! p (+ p 2)) (loop4)) (quote ()))))) (loop4)))) (if (> x 1) (begin (if (equal? last x) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list x)))) (quote ())) (ret1 factors))))))))))))
-(define (isGiuga n) (call/cc (lambda (ret8) (let ((facs (primeFactors n))) (begin (if (<= (_len facs) 2) (begin (ret8 #f)) (quote ())) (call/cc (lambda (break10) (letrec ((loop9 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((f (car xs))) (begin (if (not (equal? (fmod (- (/ n f) 1) f) 0)) (begin (ret8 #f)) (quote ())))) (loop9 (cdr xs))))))) (loop9 facs)))) (ret8 #t))))))
-(define (main) (call/cc (lambda (ret11) (let ((known (_list 30 858 1722 66198))) (begin (let ((nums (_list))) (begin (call/cc (lambda (break13) (letrec ((loop12 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((n (car xs))) (begin (if (isGiuga n) (begin (set! nums (append nums (_list n)))) (quote ())))) (loop12 (cdr xs))))))) (loop12 known)))) (_display (to-str "The first 4 Giuga numbers are:")) (newline) (_display (to-str nums)) (newline))))))))
-(main)
+(let ((start14 (current-jiffy)) (jps17 (jiffies-per-second))) (begin (define (primeFactors n) (call/cc (lambda (ret1) (let ((factors (_list))) (begin (let ((last 0)) (begin (let ((x n)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (equal? (modulo x 2) 0) (begin (if (equal? last 2) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list 2))) (set! last 2) (set! x (quotient x 2)) (loop2)) (quote ()))))) (loop2)))) (let ((p 3)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (<= (* p p) x) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (equal? (modulo x p) 0) (begin (if (equal? last p) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list p))) (set! last p) (set! x (quotient x p)) (loop6)) (quote ()))))) (loop6)))) (set! p (+ p 2)) (loop4)) (quote ()))))) (loop4)))) (if (> x 1) (begin (if (equal? last x) (begin (ret1 (_list))) (quote ())) (set! factors (append factors (_list x)))) (quote ())) (ret1 factors)))))))))))) (define (isGiuga n) (call/cc (lambda (ret8) (let ((facs (primeFactors n))) (begin (if (<= (_len facs) 2) (begin (ret8 #f)) (quote ())) (call/cc (lambda (break10) (letrec ((loop9 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((f (car xs))) (begin (if (not (equal? (fmod (- (/ n f) 1) f) 0)) (begin (ret8 #f)) (quote ())))) (loop9 (cdr xs))))))) (loop9 facs)))) (ret8 #t)))))) (define (main) (call/cc (lambda (ret11) (let ((known (_list 30 858 1722 66198))) (begin (let ((nums (_list))) (begin (call/cc (lambda (break13) (letrec ((loop12 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((n (car xs))) (begin (if (isGiuga n) (begin (set! nums (append nums (_list n)))) (quote ())))) (loop12 (cdr xs))))))) (loop12 known)))) (_display (to-str "The first 4 Giuga numbers are:")) (newline) (_display (to-str nums)) (newline)))))))) (main) (let ((end15 (current-jiffy))) (let ((dur16 (quotient (* (- end15 start14) 1000000) jps17))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur16) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

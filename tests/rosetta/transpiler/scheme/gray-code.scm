@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,10 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (xor a b) (call/cc (lambda (ret1) (let ((res 0)) (begin (let ((bit 1)) (begin (let ((x a)) (begin (let ((y b)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (or (> x 0) (> y 0)) (begin (if (equal? (modulo (+ (modulo x 2) (modulo y 2)) 2) 1) (begin (set! res (+ res bit))) (quote ())) (set! x (quotient x 2)) (set! y (quotient y 2)) (set! bit (* bit 2)) (loop2)) (quote ()))))) (loop2)))) (ret1 res))))))))))))
-(define (enc b) (call/cc (lambda (ret4) (ret4 (xor b (quotient b 2))))))
-(define (dec g) (call/cc (lambda (ret5) (let ((b 0)) (begin (let ((x g)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (> x 0) (begin (set! b (xor b x)) (set! x (quotient x 2)) (loop6)) (quote ()))))) (loop6)))) (ret5 b))))))))
-(define (binary n) (call/cc (lambda (ret8) (begin (if (equal? n 0) (begin (ret8 "0")) (quote ())) (let ((s "")) (begin (let ((x n)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (> x 0) (begin (if (equal? (modulo x 2) 1) (begin (set! s (string-append "1" s))) (begin (set! s (string-append "0" s)))) (set! x (quotient x 2)) (loop9)) (quote ()))))) (loop9)))) (ret8 s)))))))))
-(define (pad5 s) (call/cc (lambda (ret11) (let ((p s)) (begin (call/cc (lambda (break13) (letrec ((loop12 (lambda () (if (< (_len p) 5) (begin (set! p (string-append "0" p)) (loop12)) (quote ()))))) (loop12)))) (ret11 p))))))
-(define (main) (call/cc (lambda (ret14) (begin (_display (to-str "decimal  binary   gray    decoded")) (newline) (let ((b 0)) (begin (call/cc (lambda (break16) (letrec ((loop15 (lambda () (if (< b 32) (begin (let ((g (enc b))) (begin (let ((d (dec g))) (begin (_display (to-str (string-append (string-append (string-append (string-append (string-append (string-append (string-append "  " (pad5 (binary b))) "   ") (pad5 (binary g))) "   ") (pad5 (binary d))) "  ") (to-str d)))) (newline) (set! b (+ b 1)))))) (loop15)) (quote ()))))) (loop15))))))))))
-(main)
+(let ((start17 (current-jiffy)) (jps20 (jiffies-per-second))) (begin (define (xor a b) (call/cc (lambda (ret1) (let ((res 0)) (begin (let ((bit 1)) (begin (let ((x a)) (begin (let ((y b)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (or (> x 0) (> y 0)) (begin (if (equal? (modulo (+ (modulo x 2) (modulo y 2)) 2) 1) (begin (set! res (+ res bit))) (quote ())) (set! x (quotient x 2)) (set! y (quotient y 2)) (set! bit (* bit 2)) (loop2)) (quote ()))))) (loop2)))) (ret1 res)))))))))))) (define (enc b) (call/cc (lambda (ret4) (ret4 (xor b (quotient b 2)))))) (define (dec g) (call/cc (lambda (ret5) (let ((b 0)) (begin (let ((x g)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (> x 0) (begin (set! b (xor b x)) (set! x (quotient x 2)) (loop6)) (quote ()))))) (loop6)))) (ret5 b)))))))) (define (binary n) (call/cc (lambda (ret8) (begin (if (equal? n 0) (begin (ret8 "0")) (quote ())) (let ((s "")) (begin (let ((x n)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (> x 0) (begin (if (equal? (modulo x 2) 1) (begin (set! s (string-append "1" s))) (begin (set! s (string-append "0" s)))) (set! x (quotient x 2)) (loop9)) (quote ()))))) (loop9)))) (ret8 s))))))))) (define (pad5 s) (call/cc (lambda (ret11) (let ((p s)) (begin (call/cc (lambda (break13) (letrec ((loop12 (lambda () (if (< (_len p) 5) (begin (set! p (string-append "0" p)) (loop12)) (quote ()))))) (loop12)))) (ret11 p)))))) (define (main) (call/cc (lambda (ret14) (begin (_display (to-str "decimal  binary   gray    decoded")) (newline) (let ((b 0)) (begin (call/cc (lambda (break16) (letrec ((loop15 (lambda () (if (< b 32) (begin (let ((g (enc b))) (begin (let ((d (dec g))) (begin (_display (to-str (string-append (string-append (string-append (string-append (string-append (string-append (string-append "  " (pad5 (binary b))) "   ") (pad5 (binary g))) "   ") (pad5 (binary d))) "  ") (to-str d)))) (newline) (set! b (+ b 1)))))) (loop15)) (quote ()))))) (loop15)))))))))) (main) (let ((end18 (current-jiffy))) (let ((dur19 (quotient (* (- end18 start17) 1000000) jps20))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur19) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

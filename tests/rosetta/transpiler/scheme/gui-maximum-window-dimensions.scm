@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,6 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (maximize s win) (call/cc (lambda (ret1) (begin (hash-table-set! win "w" (hash-table-ref s "w")) (hash-table-set! win "h" (hash-table-ref s "h")) (hash-table-set! win "maximized" #t) (ret1 win)))))
-(define (main) (call/cc (lambda (ret2) (let ((screen (alist->hash-table (_list (cons "w" 1920) (cons "h" 1080))))) (begin (_display (to-str (string-append (string-append (string-append "Screen size: " (to-str (hash-table-ref screen "w"))) " x ") (to-str (hash-table-ref screen "h"))))) (newline) (let ((win (alist->hash-table (_list (cons "x" 50) (cons "y" 50) (cons "w" 800) (cons "h" 600) (cons "maximized" #f))))) (begin (set! win (maximize screen win)) (_display (to-str (string-append (string-append (string-append "Max usable : " (to-str (hash-table-ref win "w"))) " x ") (to-str (hash-table-ref win "h"))))) (newline))))))))
-(main)
+(let ((start3 (current-jiffy)) (jps6 (jiffies-per-second))) (begin (define (maximize s win) (call/cc (lambda (ret1) (begin (hash-table-set! win "w" (hash-table-ref s "w")) (hash-table-set! win "h" (hash-table-ref s "h")) (hash-table-set! win "maximized" #t) (ret1 win))))) (define (main) (call/cc (lambda (ret2) (let ((screen (alist->hash-table (_list (cons "w" 1920) (cons "h" 1080))))) (begin (_display (to-str (string-append (string-append (string-append "Screen size: " (to-str (hash-table-ref screen "w"))) " x ") (to-str (hash-table-ref screen "h"))))) (newline) (let ((win (alist->hash-table (_list (cons "x" 50) (cons "y" 50) (cons "w" 800) (cons "h" 600) (cons "maximized" #f))))) (begin (set! win (maximize screen win)) (_display (to-str (string-append (string-append (string-append "Max usable : " (to-str (hash-table-ref win "w"))) " x ") (to-str (hash-table-ref win "h"))))) (newline)))))))) (main) (let ((end4 (current-jiffy))) (let ((dur5 (quotient (* (- end4 start3) 1000000) jps6))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur5) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

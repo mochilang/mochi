@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (457/491)
-Last updated: 2025-08-04 14:47 UTC
+Last updated: 2025-08-04 15:57 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -468,33 +468,33 @@ Last updated: 2025-08-04 14:47 UTC
 | 459 | four-bit-adder-1 | ✓ |  |  |
 | 460 | four-is-magic | ✓ |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree | ✓ | 53ms | 16.5 MB |
-| 463 | fractran | ✓ |  |  |
+| 462 | fractal-tree | ✓ | 67ms | 16.5 MB |
+| 463 | fractran | ✓ | 1m22.826s | 12.6 MB |
 | 464 | french-republican-calendar | ✓ |  |  |
 | 465 | ftp | ✓ |  |  |
-| 466 | function-frequency | ✓ | 33ms | 13.5 MB |
+| 466 | function-frequency | ✓ | 45ms | 14.1 MB |
 | 467 | function-prototype | ✓ |  |  |
-| 468 | functional-coverage-tree | ✓ | 12ms | 14.5 MB |
-| 469 | fusc-sequence | ✓ | 2ms | 13.3 MB |
-| 470 | gamma-function | ✓ | 1ms | 12.6 MB |
+| 468 | functional-coverage-tree | ✓ | 14ms | 14.5 MB |
+| 469 | fusc-sequence | ✓ | 2ms | 12.9 MB |
+| 470 | gamma-function | ✓ | 2ms | 12.4 MB |
 | 471 | general-fizzbuzz | ✓ |  |  |
-| 472 | generic-swap | ✓ | 1ms | 12.4 MB |
+| 472 | generic-swap | ✓ |  |  |
 | 473 | get-system-command-output | ✓ |  |  |
-| 474 | giuga-numbers | ✓ | 1ms | 12.8 MB |
+| 474 | giuga-numbers | ✓ | 1ms | 13.0 MB |
 | 475 | globally-replace-text-in-several-files | ✓ |  |  |
-| 476 | goldbachs-comet | ✓ | 99ms | 12.5 MB |
+| 476 | goldbachs-comet | ✓ | 141ms | 12.5 MB |
 | 477 | golden-ratio-convergence | ✓ |  |  |
 | 478 | graph-colouring | ✓ |  |  |
-| 479 | gray-code | ✓ | 6ms | 12.9 MB |
+| 479 | gray-code | ✓ | 9ms | 13.4 MB |
 | 480 | gui-component-interaction | ✓ |  |  |
 | 481 | gui-enabling-disabling-of-controls | ✓ | 1ms | 12.6 MB |
-| 482 | gui-maximum-window-dimensions | ✓ | 1ms | 12.9 MB |
-| 483 | http | ✓ | 65ms | 12.6 MB |
-| 484 | image-noise | ✓ | 776ms | 12.7 MB |
-| 485 | loops-increment-loop-index-within-loop-body | ✓ | 35.453s | 13.0 MB |
-| 486 | md5 | ✓ | 4ms | 16.9 MB |
-| 487 | nim-game | ✓ | 1ms | 12.9 MB |
-| 488 | plasma-effect | ✓ | 706ms | 12.5 MB |
-| 489 | sorting-algorithms-bubble-sort | ✓ | 0µs | 12.2 MB |
-| 490 | window-management | ✓ | 1ms | 12.8 MB |
+| 482 | gui-maximum-window-dimensions | ✓ |  |  |
+| 483 | http | ✓ | 178ms | 12.2 MB |
+| 484 | image-noise | ✓ | 1.076s | 12.7 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 51.005s | 12.7 MB |
+| 486 | md5 | ✓ | 7ms | 16.9 MB |
+| 487 | nim-game | ✓ |  |  |
+| 488 | plasma-effect | ✓ | 712ms | 12.2 MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ |  |  |
+| 490 | window-management | ✓ | 1ms | 13.3 MB |
 | 491 | zumkeller-numbers | ✓ |  |  |

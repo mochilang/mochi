@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 16:05 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,8 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (ln x) (call/cc (lambda (ret1) (let ((k 0.0)) (begin (let ((v x)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (>= v 2.0) (begin (set! v (/ v 2.0)) (set! k (+ k 1.0)) (loop2)) (quote ()))))) (loop2)))) (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< v 1.0) (begin (set! v (* v 2.0)) (set! k (- k 1.0)) (loop4)) (quote ()))))) (loop4)))) (let ((z (/ (- v 1.0) (+ v 1.0)))) (begin (let ((zpow z)) (begin (let ((sum z)) (begin (let ((i 3)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (<= i 9) (begin (set! zpow (* (* zpow z) z)) (set! sum (_add sum (/ zpow (+ 0.0 i)))) (set! i (+ i 2)) (loop6)) (quote ()))))) (loop6)))) (let ((ln2 0.6931471805599453)) (begin (ret1 (_add (* k ln2) (* 2.0 sum))))))))))))))))))))
-(define (expf x) (call/cc (lambda (ret8) (let ((term 1.0)) (begin (let ((sum 1.0)) (begin (let ((i 1)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (< i 20) (begin (set! term (/ (* term x) (exact->inexact i))) (set! sum (+ sum term)) (set! i (+ i 1)) (loop9)) (quote ()))))) (loop9)))) (ret8 sum))))))))))
-(define (powf base exp) (call/cc (lambda (ret11) (ret11 (expf (* exp (ln base)))))))
-(define (lanczos7 z) (call/cc (lambda (ret12) (let ((t (+ z 6.5))) (begin (let ((x (_add (_add (- (_add (- (_add (- (_add 0.9999999999998099 (/ 676.5203681218851 z)) (/ 1259.1392167224028 (+ z 1.0))) (/ 771.3234287776531 (+ z 2.0))) (/ 176.6150291621406 (+ z 3.0))) (/ 12.507343278686905 (+ z 4.0))) (/ 0.13857109526572012 (+ z 5.0))) (/ 9.984369578019572e-06 (+ z 6.0))) (/ 1.5056327351493116e-07 (+ z 7.0))))) (begin (ret12 (* (* (* 2.5066282746310002 (powf t (- z 0.5))) (powf 2.718281828459045 (- t))) x)))))))))
-(let ((xs (_list (- 0.5) 0.1 0.5 1.0 1.5 2.0 3.0 10.0 140.0 170.0))) (begin (call/cc (lambda (break14) (letrec ((loop13 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((x (car xs))) (begin (_display (to-str (string-append (string-append (to-str x) " ") (to-str (lanczos7 x))))) (newline))) (loop13 (cdr xs))))))) (loop13 xs))))))
+(let ((start15 (current-jiffy)) (jps18 (jiffies-per-second))) (begin (define (ln x) (call/cc (lambda (ret1) (let ((k 0.0)) (begin (let ((v x)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (>= v 2.0) (begin (set! v (/ v 2.0)) (set! k (+ k 1.0)) (loop2)) (quote ()))))) (loop2)))) (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< v 1.0) (begin (set! v (* v 2.0)) (set! k (- k 1.0)) (loop4)) (quote ()))))) (loop4)))) (let ((z (/ (- v 1.0) (+ v 1.0)))) (begin (let ((zpow z)) (begin (let ((sum z)) (begin (let ((i 3)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (<= i 9) (begin (set! zpow (* (* zpow z) z)) (set! sum (_add sum (/ zpow (+ 0.0 i)))) (set! i (+ i 2)) (loop6)) (quote ()))))) (loop6)))) (let ((ln2 0.6931471805599453)) (begin (ret1 (_add (* k ln2) (* 2.0 sum)))))))))))))))))))) (define (expf x) (call/cc (lambda (ret8) (let ((term 1.0)) (begin (let ((sum 1.0)) (begin (let ((i 1)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (< i 20) (begin (set! term (/ (* term x) (exact->inexact i))) (set! sum (+ sum term)) (set! i (+ i 1)) (loop9)) (quote ()))))) (loop9)))) (ret8 sum)))))))))) (define (powf base exp) (call/cc (lambda (ret11) (ret11 (expf (* exp (ln base))))))) (define (lanczos7 z) (call/cc (lambda (ret12) (let ((t (+ z 6.5))) (begin (let ((x (_add (_add (- (_add (- (_add (- (_add 0.9999999999998099 (/ 676.5203681218851 z)) (/ 1259.1392167224028 (+ z 1.0))) (/ 771.3234287776531 (+ z 2.0))) (/ 176.6150291621406 (+ z 3.0))) (/ 12.507343278686905 (+ z 4.0))) (/ 0.13857109526572012 (+ z 5.0))) (/ 9.984369578019572e-06 (+ z 6.0))) (/ 1.5056327351493116e-07 (+ z 7.0))))) (begin (ret12 (* (* (* 2.5066282746310002 (powf t (- z 0.5))) (powf 2.718281828459045 (- t))) x))))))))) (let ((xs (_list (- 0.5) 0.1 0.5 1.0 1.5 2.0 3.0 10.0 140.0 170.0))) (begin (call/cc (lambda (break14) (letrec ((loop13 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((x (car xs))) (begin (_display (to-str (string-append (string-append (to-str x) " ") (to-str (lanczos7 x))))) (newline))) (loop13 (cdr xs))))))) (loop13 xs)))))) (let ((end16 (current-jiffy))) (let ((dur17 (quotient (* (- end16 start15) 1000000) jps18))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur17) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

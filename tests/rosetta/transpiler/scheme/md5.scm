@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 20:03 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -7,9 +7,6 @@
 (import (srfi 1))
 (define _list list)
 (import (chibi crypto md5))
-(import (chibi time))
-(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
-(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -91,4 +88,6 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(let ((start3 (current-jiffy)) (jps6 (jiffies-per-second))) (begin (define testpkg (make-hash-table)) (hash-table-set! testpkg "MD5Hex" (lambda (s) (md5 s))) (call/cc (lambda (break2) (letrec ((loop1 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((pair (car xs))) (begin (let ((sum ((hash-table-ref testpkg "MD5Hex") (cond ((string? pair) (_substring pair 1 (+ 1 1))) ((hash-table? pair) (hash-table-ref pair 1)) (else (list-ref pair 1)))))) (begin (if (not (equal? sum (cond ((string? pair) (_substring pair 0 (+ 0 1))) ((hash-table? pair) (hash-table-ref pair 0)) (else (list-ref pair 0))))) (begin (_display (to-str "MD5 fail")) (newline) (_display (to-str "  for string,")) (_display " ") (_display (to-str (cond ((string? pair) (_substring pair 1 (+ 1 1))) ((hash-table? pair) (hash-table-ref pair 1)) (else (list-ref pair 1))))) (newline) (_display (to-str "  expected:  ")) (_display " ") (_display (to-str (cond ((string? pair) (_substring pair 0 (+ 0 1))) ((hash-table? pair) (hash-table-ref pair 0)) (else (list-ref pair 0))))) (newline) (_display (to-str "  got:       ")) (_display " ") (_display (to-str sum)) (newline)) (quote ())))))) (loop1 (cdr xs))))))) (loop1 (_list (_list "d41d8cd98f00b204e9800998ecf8427e" "") (_list "0cc175b9c0f1b6a831c399e269772661" "a") (_list "900150983cd24fb0d6963f7d28e17f72" "abc") (_list "f96b697d7cb7938d525a2f31aaf161d0" "message digest") (_list "c3fcd3d76192e4007dfb496cca67e13b" "abcdefghijklmnopqrstuvwxyz") (_list "d174ab98d277d9f5a5611c2c9f419d9f" "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") (_list "57edf4a22be3c955ac49da2e2107b67a" "12345678901234567890123456789012345678901234567890123456789012345678901234567890") (_list "e38ca1d920c4b8b8d3946b2c72f01680" "The quick brown fox jumped over the lazy dog's back")))))) (let ((end4 (current-jiffy))) (let ((dur5 (quotient (* (- end4 start3) 1000000) jps6))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur5) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
+(define testpkg (make-hash-table))
+(hash-table-set! testpkg "MD5Hex" (lambda (s) (md5 s)))
+(call/cc (lambda (break2) (letrec ((loop1 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((pair (car xs))) (begin (let ((sum ((hash-table-ref testpkg "MD5Hex") (cond ((string? pair) (_substring pair 1 (+ 1 1))) ((hash-table? pair) (hash-table-ref pair 1)) (else (list-ref pair 1)))))) (begin (if (not (equal? sum (cond ((string? pair) (_substring pair 0 (+ 0 1))) ((hash-table? pair) (hash-table-ref pair 0)) (else (list-ref pair 0))))) (begin (_display (to-str "MD5 fail")) (newline) (_display (to-str "  for string,")) (_display " ") (_display (to-str (cond ((string? pair) (_substring pair 1 (+ 1 1))) ((hash-table? pair) (hash-table-ref pair 1)) (else (list-ref pair 1))))) (newline) (_display (to-str "  expected:  ")) (_display " ") (_display (to-str (cond ((string? pair) (_substring pair 0 (+ 0 1))) ((hash-table? pair) (hash-table-ref pair 0)) (else (list-ref pair 0))))) (newline) (_display (to-str "  got:       ")) (_display " ") (_display (to-str sum)) (newline)) (quote ())))))) (loop1 (cdr xs))))))) (loop1 (_list (_list "d41d8cd98f00b204e9800998ecf8427e" "") (_list "0cc175b9c0f1b6a831c399e269772661" "a") (_list "900150983cd24fb0d6963f7d28e17f72" "abc") (_list "f96b697d7cb7938d525a2f31aaf161d0" "message digest") (_list "c3fcd3d76192e4007dfb496cca67e13b" "abcdefghijklmnopqrstuvwxyz") (_list "d174ab98d277d9f5a5611c2c9f419d9f" "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") (_list "57edf4a22be3c955ac49da2e2107b67a" "12345678901234567890123456789012345678901234567890123456789012345678901234567890") (_list "e38ca1d920c4b8b8d3946b2c72f01680" "The quick brown fox jumped over the lazy dog's back"))))))

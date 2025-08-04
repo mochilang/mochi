@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -21,6 +21,8 @@
         _now_seed)
       (exact (floor (* (current-second) 1000000000))))
 )
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -102,4 +104,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(let ((width 320)) (begin (let ((height 240)) (begin (let ((seed (modulo (now) 2147483647))) (begin (define (nextRand) (call/cc (lambda (ret1) (begin (set! seed (modulo (+ (* seed 1664525) 1013904223) 2147483647)) (ret1 seed))))) (define (randBit) (call/cc (lambda (ret2) (let ((r (nextRand))) (begin (if (equal? (fmod r 2) 0) (begin (ret2 0)) (quote ())) (ret2 255)))))) (_display (to-str "P2")) (newline) (_display (to-str (string-append (string-append (to-str width) " ") (to-str height)))) (newline) (_display (to-str "255")) (newline) (let ((y 0)) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda () (if (< y height) (begin (let ((line "")) (begin (let ((x 0)) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (< x width) (begin (let ((val (randBit))) (begin (set! line (string-append line (to-str val))) (if (< x (- width 1)) (begin (set! line (string-append line " "))) (quote ())) (set! x (+ x 1)))) (loop5)) (quote ()))))) (loop5)))) (_display (to-str line)) (newline) (set! y (+ y 1)))))) (loop3)) (quote ()))))) (loop3))))))))))))
+(let ((start7 (current-jiffy)) (jps10 (jiffies-per-second))) (begin (let ((width 320)) (begin (let ((height 240)) (begin (let ((seed (modulo (now) 2147483647))) (begin (define (nextRand) (call/cc (lambda (ret1) (begin (set! seed (modulo (+ (* seed 1664525) 1013904223) 2147483647)) (ret1 seed))))) (define (randBit) (call/cc (lambda (ret2) (let ((r (nextRand))) (begin (if (equal? (fmod r 2) 0) (begin (ret2 0)) (quote ())) (ret2 255)))))) (_display (to-str "P2")) (newline) (_display (to-str (string-append (string-append (to-str width) " ") (to-str height)))) (newline) (_display (to-str "255")) (newline) (let ((y 0)) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda () (if (< y height) (begin (let ((line "")) (begin (let ((x 0)) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (< x width) (begin (let ((val (randBit))) (begin (set! line (string-append line (to-str val))) (if (< x (- width 1)) (begin (set! line (string-append line " "))) (quote ())) (set! x (+ x 1)))) (loop5)) (quote ()))))) (loop5)))) (_display (to-str line)) (newline) (set! y (+ y 1)))))) (loop3)) (quote ()))))) (loop3)))))))))))) (let ((end8 (current-jiffy))) (let ((dur9 (quotient (* (- end8 start7) 1000000) jps10))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur9) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

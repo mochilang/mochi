@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 16:05 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,6 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (swap a b) (call/cc (lambda (ret1) (ret1 (_list b a)))))
-(define (main) (call/cc (lambda (ret2) (let ((a 3)) (begin (let ((b "four")) (begin (_display (to-str (string-append (string-append (to-str a) " ") (to-str b)))) (newline) (let ((res (swap a b))) (begin (set! a (cond ((string? res) (_substring res 0 (+ 0 1))) ((hash-table? res) (hash-table-ref res 0)) (else (list-ref res 0)))) (set! b (cond ((string? res) (_substring res 1 (+ 1 1))) ((hash-table? res) (hash-table-ref res 1)) (else (list-ref res 1)))) (_display (to-str (string-append (string-append (to-str a) " ") (to-str b)))) (newline))))))))))
-(main)
+(let ((start3 (current-jiffy)) (jps6 (jiffies-per-second))) (begin (define (swap a b) (call/cc (lambda (ret1) (ret1 (_list b a))))) (define (main) (call/cc (lambda (ret2) (let ((a 3)) (begin (let ((b "four")) (begin (_display (to-str (string-append (string-append (to-str a) " ") (to-str b)))) (newline) (let ((res (swap a b))) (begin (set! a (cond ((string? res) (_substring res 0 (+ 0 1))) ((hash-table? res) (hash-table-ref res 0)) (else (list-ref res 0)))) (set! b (cond ((string? res) (_substring res 1 (+ 1 1))) ((hash-table? res) (hash-table-ref res 1)) (else (list-ref res 1)))) (_display (to-str (string-append (string-append (to-str a) " ") (to-str b)))) (newline)))))))))) (main) (let ((end4 (current-jiffy))) (let ((dur5 (quotient (* (- end4 start3) 1000000) jps6))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur5) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

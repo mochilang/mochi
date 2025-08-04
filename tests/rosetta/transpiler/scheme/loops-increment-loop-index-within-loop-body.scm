@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 20:03 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,9 +6,6 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
-(import (chibi time))
-(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
-(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -90,4 +87,8 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(let ((start16 (current-jiffy)) (jps19 (jiffies-per-second))) (begin (define (isPrime n) (call/cc (lambda (ret1) (begin (if (< n 2) (begin (ret1 #f)) (quote ())) (if (equal? (modulo n 2) 0) (begin (ret1 (equal? n 2))) (quote ())) (if (equal? (modulo n 3) 0) (begin (ret1 (equal? n 3))) (quote ())) (let ((d 5)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (<= (* d d) n) (begin (if (equal? (modulo n d) 0) (begin (ret1 #f)) (quote ())) (set! d (+ d 2)) (if (equal? (modulo n d) 0) (begin (ret1 #f)) (quote ())) (set! d (+ d 4)) (loop2)) (quote ()))))) (loop2)))) (ret1 #t))))))) (define (commatize n) (call/cc (lambda (ret4) (let ((s (to-str n))) (begin (let ((i (- (_len s) 3))) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (>= i 1) (begin (set! s (string-append (string-append (_substring s 0 i) ",") (_substring s i (_len s)))) (set! i (- i 3)) (loop5)) (quote ()))))) (loop5)))) (ret4 s)))))))) (define (padLeft s w) (call/cc (lambda (ret7) (let ((out s)) (begin (call/cc (lambda (break9) (letrec ((loop8 (lambda () (if (< (_len out) w) (begin (set! out (string-append " " out)) (loop8)) (quote ()))))) (loop8)))) (ret7 out)))))) (define (padRight s w) (call/cc (lambda (ret10) (let ((out s)) (begin (call/cc (lambda (break12) (letrec ((loop11 (lambda () (if (< (_len out) w) (begin (set! out (string-append out " ")) (loop11)) (quote ()))))) (loop11)))) (ret10 out)))))) (let ((limit 42)) (begin (define (main) (call/cc (lambda (ret13) (let ((i limit)) (begin (let ((n 0)) (begin (call/cc (lambda (break15) (letrec ((loop14 (lambda () (if (< n limit) (begin (if (isPrime i) (begin (set! n (+ n 1)) (let ((nStr (padRight (to-str n) 2))) (begin (let ((pStr (padLeft (commatize i) 19))) (begin (_display (to-str (string-append (string-append (string-append "n = " nStr) "  ") pStr))) (newline) (set! i (- (+ i i) 1))))))) (quote ())) (set! i (+ i 1)) (loop14)) (quote ()))))) (loop14))))))))))) (main))) (let ((end17 (current-jiffy))) (let ((dur18 (quotient (* (- end17 start16) 1000000) jps19))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur18) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
+(define (isPrime n) (call/cc (lambda (ret1) (begin (if (< n 2) (begin (ret1 #f)) (quote ())) (if (equal? (modulo n 2) 0) (begin (ret1 (equal? n 2))) (quote ())) (if (equal? (modulo n 3) 0) (begin (ret1 (equal? n 3))) (quote ())) (let ((d 5)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (<= (* d d) n) (begin (if (equal? (modulo n d) 0) (begin (ret1 #f)) (quote ())) (set! d (+ d 2)) (if (equal? (modulo n d) 0) (begin (ret1 #f)) (quote ())) (set! d (+ d 4)) (loop2)) (quote ()))))) (loop2)))) (ret1 #t)))))))
+(define (commatize n) (call/cc (lambda (ret4) (let ((s (to-str n))) (begin (let ((i (- (_len s) 3))) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (>= i 1) (begin (set! s (string-append (string-append (_substring s 0 i) ",") (_substring s i (_len s)))) (set! i (- i 3)) (loop5)) (quote ()))))) (loop5)))) (ret4 s))))))))
+(define (padLeft s w) (call/cc (lambda (ret7) (let ((out s)) (begin (call/cc (lambda (break9) (letrec ((loop8 (lambda () (if (< (_len out) w) (begin (set! out (string-append " " out)) (loop8)) (quote ()))))) (loop8)))) (ret7 out))))))
+(define (padRight s w) (call/cc (lambda (ret10) (let ((out s)) (begin (call/cc (lambda (break12) (letrec ((loop11 (lambda () (if (< (_len out) w) (begin (set! out (string-append out " ")) (loop11)) (quote ()))))) (loop11)))) (ret10 out))))))
+(let ((limit 42)) (begin (define (main) (call/cc (lambda (ret13) (let ((i limit)) (begin (let ((n 0)) (begin (call/cc (lambda (break15) (letrec ((loop14 (lambda () (if (< n limit) (begin (if (isPrime i) (begin (set! n (+ n 1)) (let ((nStr (padRight (to-str n) 2))) (begin (let ((pStr (padLeft (commatize i) 19))) (begin (_display (to-str (string-append (string-append (string-append "n = " nStr) "  ") pStr))) (newline) (set! i (- (+ i i) 1))))))) (quote ())) (set! i (+ i 1)) (loop14)) (quote ()))))) (loop14))))))))))) (main)))

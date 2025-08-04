@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,7 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (state v) (call/cc (lambda (ret1) (ret1 (alist->hash-table (_list (cons "entry" (equal? v 0)) (cons "inc" (< v 10)) (cons "dec" (> v 0))))))))
-(define (printState v) (call/cc (lambda (ret2) (let ((s (state v))) (begin (_display (to-str (string-append (string-append (string-append (string-append (string-append (string-append (string-append "value=" (to-str v)) " entry=") (to-str (hash-table-ref s "entry"))) " inc=") (to-str (hash-table-ref s "inc"))) " dec=") (to-str (hash-table-ref s "dec"))))) (newline))))))
-(define (main) (call/cc (lambda (ret3) (let ((v 0)) (begin (printState v) (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if #t (begin (let ((s (state v))) (begin (if (not (hash-table-ref s "inc")) (begin (break5 (quote ()))) (quote ())) (set! v (+ v 1)) (printState v))) (loop4)) (quote ()))))) (loop4)))) (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if #t (begin (let ((s (state v))) (begin (if (not (hash-table-ref s "dec")) (begin (break7 (quote ()))) (quote ())) (set! v (- v 1)) (printState v))) (loop6)) (quote ()))))) (loop6)))))))))
-(main)
+(let ((start8 (current-jiffy)) (jps11 (jiffies-per-second))) (begin (define (state v) (call/cc (lambda (ret1) (ret1 (alist->hash-table (_list (cons "entry" (equal? v 0)) (cons "inc" (< v 10)) (cons "dec" (> v 0)))))))) (define (printState v) (call/cc (lambda (ret2) (let ((s (state v))) (begin (_display (to-str (string-append (string-append (string-append (string-append (string-append (string-append (string-append "value=" (to-str v)) " entry=") (to-str (hash-table-ref s "entry"))) " inc=") (to-str (hash-table-ref s "inc"))) " dec=") (to-str (hash-table-ref s "dec"))))) (newline)))))) (define (main) (call/cc (lambda (ret3) (let ((v 0)) (begin (printState v) (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if #t (begin (let ((s (state v))) (begin (if (not (hash-table-ref s "inc")) (begin (break5 (quote ()))) (quote ())) (set! v (+ v 1)) (printState v))) (loop4)) (quote ()))))) (loop4)))) (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if #t (begin (let ((s (state v))) (begin (if (not (hash-table-ref s "dec")) (begin (break7 (quote ()))) (quote ())) (set! v (- v 1)) (printState v))) (loop6)) (quote ()))))) (loop6))))))))) (main) (let ((end9 (current-jiffy))) (let ((dur10 (quotient (* (- end9 start8) 1000000) jps11))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur10) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

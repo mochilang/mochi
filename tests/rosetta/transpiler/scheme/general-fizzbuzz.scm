@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 16:05 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,4 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(let ((max 20)) (begin (let ((words (alist->hash-table (_list (cons 3 "Fizz") (cons 5 "Buzz") (cons 7 "Baxx"))))) (begin (let ((keys (_list 3 5 7))) (begin (call/cc (lambda (break2) (letrec ((loop1 (lambda (i) (if (< i (+ max 1)) (begin (begin (let ((text "")) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((n (car xs))) (begin (if (equal? (fmod i n) 0) (begin (set! text (string-append text (hash-table-ref/default words n (quote ()))))) (quote ())))) (loop3 (cdr xs))))))) (loop3 keys)))) (if (string=? text "") (begin (set! text (to-str i))) (quote ())) (_display (to-str text)) (newline)))) (loop1 (+ i 1))) (quote ()))))) (loop1 1))))))))))
+(let ((start5 (current-jiffy)) (jps8 (jiffies-per-second))) (begin (let ((max 20)) (begin (let ((words (alist->hash-table (_list (cons 3 "Fizz") (cons 5 "Buzz") (cons 7 "Baxx"))))) (begin (let ((keys (_list 3 5 7))) (begin (call/cc (lambda (break2) (letrec ((loop1 (lambda (i) (if (< i (+ max 1)) (begin (begin (let ((text "")) (begin (call/cc (lambda (break4) (letrec ((loop3 (lambda (xs) (if (null? xs) (quote ()) (begin (let ((n (car xs))) (begin (if (equal? (fmod i n) 0) (begin (set! text (string-append text (hash-table-ref/default words n (quote ()))))) (quote ())))) (loop3 (cdr xs))))))) (loop3 keys)))) (if (string=? text "") (begin (set! text (to-str i))) (quote ())) (_display (to-str text)) (newline)))) (loop1 (+ i 1))) (quote ()))))) (loop1 1)))))))))) (let ((end6 (current-jiffy))) (let ((dur7 (quotient (* (- end6 start5) 1000000) jps8))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur7) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

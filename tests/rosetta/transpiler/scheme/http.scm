@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,8 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
 (import (chibi process))
 (define (subprocess.getoutput cmd) (process->string cmd))
 (import (chibi json))
@@ -91,5 +93,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (main) (call/cc (lambda (ret1) (let ((todo (_fetch "https://jsonplaceholder.typicode.com/todos/1"))) (begin (_display (to-str (hash-table-ref todo "title"))) (newline))))))
-(main)
+(let ((start2 (current-jiffy)) (jps5 (jiffies-per-second))) (begin (define (main) (call/cc (lambda (ret1) (let ((todo (_fetch "https://jsonplaceholder.typicode.com/todos/1"))) (begin (_display (to-str (hash-table-ref todo "title"))) (newline)))))) (main) (let ((end3 (current-jiffy))) (let ((dur4 (quotient (* (- end3 start2) 1000000) jps5))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur4) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

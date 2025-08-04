@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,7 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (sqrtApprox x) (call/cc (lambda (ret1) (begin (if (<= x 0.0) (begin (ret1 0.0)) (quote ())) (let ((g x)) (begin (let ((i 0)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i 20) (begin (set! g (/ (_add g (/ x g)) 2.0)) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (ret1 g)))))))))
-(define (abs x) (call/cc (lambda (ret4) (begin (if (< x 0.0) (begin (ret4 (- x))) (quote ())) (ret4 x)))))
-(define (main) (call/cc (lambda (ret5) (let ((oldPhi 1.0)) (begin (let ((phi 0.0)) (begin (let ((iters 0)) (begin (let ((limit 1e-05)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if #t (begin (set! phi (_add 1.0 (/ 1.0 oldPhi))) (set! iters (+ iters 1)) (if (_le (abs (- phi oldPhi)) limit) (begin (break7 (quote ()))) (quote ())) (set! oldPhi phi) (loop6)) (quote ()))))) (loop6)))) (let ((actual (/ (_add 1.0 (sqrtApprox 5.0)) 2.0))) (begin (_display (to-str (string-append "Final value of phi : " (to-str phi)))) (newline) (_display (to-str (string-append "Number of iterations : " (to-str iters)))) (newline) (_display (to-str (string-append "Error (approx) : " (to-str (- phi actual))))) (newline))))))))))))))
-(main)
+(let ((start8 (current-jiffy)) (jps11 (jiffies-per-second))) (begin (define (sqrtApprox x) (call/cc (lambda (ret1) (begin (if (<= x 0.0) (begin (ret1 0.0)) (quote ())) (let ((g x)) (begin (let ((i 0)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i 20) (begin (set! g (/ (_add g (/ x g)) 2.0)) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (ret1 g))))))))) (define (abs x) (call/cc (lambda (ret4) (begin (if (< x 0.0) (begin (ret4 (- x))) (quote ())) (ret4 x))))) (define (main) (call/cc (lambda (ret5) (let ((oldPhi 1.0)) (begin (let ((phi 0.0)) (begin (let ((iters 0)) (begin (let ((limit 1e-05)) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if #t (begin (set! phi (_add 1.0 (/ 1.0 oldPhi))) (set! iters (+ iters 1)) (if (_le (abs (- phi oldPhi)) limit) (begin (break7 (quote ()))) (quote ())) (set! oldPhi phi) (loop6)) (quote ()))))) (loop6)))) (let ((actual (/ (_add 1.0 (sqrtApprox 5.0)) 2.0))) (begin (_display (to-str (string-append "Final value of phi : " (to-str phi)))) (newline) (_display (to-str (string-append "Number of iterations : " (to-str iters)))) (newline) (_display (to-str (string-append "Error (approx) : " (to-str (- phi actual))))) (newline)))))))))))))) (main) (let ((end9 (current-jiffy))) (let ((dur10 (quotient (* (- end9 start8) 1000000) jps11))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur10) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
