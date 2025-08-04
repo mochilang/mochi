@@ -875,6 +875,23 @@ func (i *IndexExpr) emit(w io.Writer) {
 		return
 	}
 	i.Target.emit(w)
+	if num, ok := i.Index.(*NumberLit); ok {
+		if st, ok2 := structTypes[inferType(i.Target)]; ok2 {
+			idx, _ := strconv.Atoi(num.Value)
+			if idx >= 0 && idx < len(st.Order) {
+				field := st.Order[idx]
+				io.WriteString(w, ".")
+				io.WriteString(w, field)
+				if !indexLHS {
+					vt := rustTypeFromType(st.Fields[field])
+					if vt != "i64" && vt != "bool" && vt != "f64" {
+						io.WriteString(w, ".clone()")
+					}
+				}
+				return
+			}
+		}
+	}
 	if strings.HasPrefix(inferType(i.Target), "HashMap") {
 		io.WriteString(w, "[")
 		switch inferType(i.Index) {
@@ -1369,6 +1386,10 @@ func (s *StringCastExpr) emit(w io.Writer) {
 		io.WriteString(w, ".clone()")
 		return
 	}
+	if _, ok := s.Expr.(*NullLit); ok {
+		io.WriteString(w, "String::new()")
+		return
+	}
 	if strings.HasPrefix(t, "&mut ") {
 		t = strings.TrimPrefix(t, "&mut ")
 	} else if strings.HasPrefix(t, "&") {
@@ -1434,7 +1455,7 @@ func (n *NameRef) emit(w io.Writer) {
 		name = newName
 	}
 	if refMode {
-		io.WriteString(w, name)
+		io.WriteString(w, rustIdent(name))
 		return
 	}
 	if cloneVars[n.Name] {
@@ -4661,6 +4682,31 @@ func compileIfExpr(n *parser.IfExpr) (Expr, error) {
 		}
 		elseExpr = e
 	}
+	// Ensure branches have matching String types
+	if elseExpr != nil {
+		t1 := inferType(thenExpr)
+		t2 := inferType(elseExpr)
+		if t1 == "String" && t2 == "String" {
+			if _, ok := thenExpr.(*StringLit); ok {
+				thenExpr = &StringCastExpr{Expr: thenExpr}
+			}
+			if _, ok := elseExpr.(*StringLit); ok {
+				elseExpr = &StringCastExpr{Expr: elseExpr}
+			}
+		} else if t1 == "String" && t2 != "String" {
+			elseExpr = &StringCastExpr{Expr: elseExpr}
+		} else if t2 == "String" && t1 != "String" {
+			thenExpr = &StringCastExpr{Expr: thenExpr}
+		}
+	}
+	if _, ok := thenExpr.(*StringLit); ok && inferType(thenExpr) == "String" {
+		thenExpr = &StringCastExpr{Expr: thenExpr}
+	}
+	if elseExpr != nil {
+		if _, ok := elseExpr.(*StringLit); ok && inferType(elseExpr) == "String" {
+			elseExpr = &StringCastExpr{Expr: elseExpr}
+		}
+	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }
 
@@ -5048,7 +5094,7 @@ func inferType(e Expr) string {
 		}
 		if t1 == t2 {
 			if t1 == "String" {
-				return ""
+				return "String"
 			}
 			return t1
 		}
@@ -5088,6 +5134,15 @@ func inferType(e Expr) string {
 				}
 			}
 		}
+		if num, ok := ex.Index.(*NumberLit); ok {
+			if st, ok2 := structTypes[ct]; ok2 {
+				idx, _ := strconv.Atoi(num.Value)
+				if idx >= 0 && idx < len(st.Order) {
+					field := st.Order[idx]
+					return rustTypeFromType(st.Fields[field])
+				}
+			}
+		}
 		return "i64"
 	case *NameRef:
 		if ex.Type != "" {
@@ -5095,6 +5150,12 @@ func inferType(e Expr) string {
 		}
 		if stringVars[ex.Name] {
 			return "String"
+		}
+		if t, ok := currentParamTypes[ex.Name]; ok && t != "" {
+			if strings.HasPrefix(t, "&") {
+				return strings.TrimPrefix(t, "&")
+			}
+			return t
 		}
 		if t, ok := varTypes[ex.Name]; ok && t != "" {
 			if t == "&str" {
