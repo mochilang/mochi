@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (317/491)
-_Last updated: 2025-08-04 21:47 +0700_
+## Rosetta Test Checklist (348/491)
+_Last updated: 2025-08-04 22:33 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -435,44 +435,44 @@ _Last updated: 2025-08-04 21:47 +0700_
 | 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 3.00ms | 17.3 KB |
 | 428 | find-the-intersection-of-two-lines | ✓ | 2.36ms | 17.3 KB |
 | 429 | find-the-last-sunday-of-each-month | ✓ | 7.74ms | 25.0 KB |
-| 430 | find-the-missing-permutation |  |  |  |
-| 431 | first-class-environments |  |  |  |
-| 432 | first-class-functions-use-numbers-analogously |  |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |  |  |  |
-| 434 | five-weekends |  |  |  |
-| 435 | fivenum-1 |  |  |  |
-| 436 | fivenum-2 |  |  |  |
-| 437 | fivenum-3 |  |  |  |
-| 438 | fixed-length-records-1 |  |  |  |
-| 439 | fixed-length-records-2 |  |  |  |
-| 440 | fizzbuzz-1 |  |  |  |
-| 441 | fizzbuzz-2 |  |  |  |
-| 442 | fizzbuzz |  |  |  |
-| 443 | flatten-a-list-1 |  |  |  |
-| 444 | flatten-a-list-2 |  |  |  |
-| 445 | flipping-bits-game |  |  |  |
+| 430 | find-the-missing-permutation | ✓ | 255us | 12.5 KB |
+| 431 | first-class-environments | ✓ | 6.46ms | 17.4 KB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 2.72ms | 17.3 KB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 1.56ms | 25.0 KB |
+| 434 | five-weekends | ✓ | 15.20ms | 32.7 KB |
+| 435 | fivenum-1 | ✓ | 6.54ms | 17.3 KB |
+| 436 | fivenum-2 | ✓ | 5.62ms | 17.3 KB |
+| 437 | fivenum-3 | ✓ | 6.57ms | 32.8 KB |
+| 438 | fixed-length-records-1 | ✓ | 6.97ms | 32.7 KB |
+| 439 | fixed-length-records-2 | ✓ | 4.91ms | 45.2 KB |
+| 440 | fizzbuzz-1 | ✓ | 6.11ms | 25.0 KB |
+| 441 | fizzbuzz-2 | ✓ | 11.65ms | 25.0 KB |
+| 442 | fizzbuzz | ✓ | 9.49ms | 25.0 KB |
+| 443 | flatten-a-list-1 | ✓ | 3.37ms | 0 B |
+| 444 | flatten-a-list-2 | ✓ | 189us | 0 B |
+| 445 | flipping-bits-game | ✓ | 504us | 17.3 KB |
 | 446 | flow-control-structures-1 |  |  |  |
-| 447 | flow-control-structures-2 |  |  |  |
-| 448 | flow-control-structures-3 |  |  |  |
-| 449 | flow-control-structures-4 |  |  |  |
-| 450 | floyd-warshall-algorithm | ✓ | 271us | 2.5 MB |
+| 447 | flow-control-structures-2 | ✓ | 162us | 0 B |
+| 448 | flow-control-structures-3 | ✓ | 3.81ms | 17.3 KB |
+| 449 | flow-control-structures-4 | ✓ | 148us | 0 B |
+| 450 | floyd-warshall-algorithm | ✓ | 338us | 12.5 KB |
 | 451 | floyd-warshall-algorithm2 |  |  |  |
-| 452 | floyds-triangle |  |  |  |
-| 453 | forest-fire |  |  |  |
-| 454 | fork-2 |  |  |  |
-| 455 | fork |  |  |  |
-| 456 | formal-power-series | ✓ | 1.72ms | 3.6 MB |
-| 457 | formatted-numeric-output |  |  |  |
-| 458 | forward-difference |  |  |  |
-| 459 | four-bit-adder-1 |  |  |  |
-| 460 | four-is-magic |  |  |  |
+| 452 | floyds-triangle | ✓ | 1.12ms | 17.3 KB |
+| 453 | forest-fire | ✓ | 8.73ms | 77.9 KB |
+| 454 | fork-2 | ✓ | 761us | 0 B |
+| 455 | fork | ✓ | 320us | 0 B |
+| 456 | formal-power-series | ✓ | 3.28ms | 25.4 KB |
+| 457 | formatted-numeric-output | ✓ | 2.65ms | 17.3 KB |
+| 458 | forward-difference | ✓ | 2.37ms | 17.3 KB |
+| 459 | four-bit-adder-1 | ✓ | 4.75ms | 25.0 KB |
+| 460 | four-is-magic | ✓ | 18.89ms | 25.0 KB |
 | 461 | four-is-the-number-of-letters-in-the-... |  |  |  |
-| 462 | fractal-tree |  |  |  |
-| 463 | fractran | ✓ | 1.76s | 121.7 KB |
-| 464 | french-republican-calendar |  |  |  |
+| 462 | fractal-tree | ✓ | 6.57ms | 163.5 KB |
+| 463 | fractran | ✓ | 2.55s | 57.7 KB |
+| 464 | french-republican-calendar | ✓ | 2.57ms | 12.5 KB |
 | 465 | ftp |  |  |  |
-| 466 | function-frequency |  |  |  |
-| 467 | function-prototype |  |  |  |
+| 466 | function-frequency | ✓ | 347.04ms | 249.1 KB |
+| 467 | function-prototype | ✓ | 1us | 0 B |
 | 468 | functional-coverage-tree |  |  |  |
 | 469 | fusc-sequence |  |  |  |
 | 470 | gamma-function |  |  |  |

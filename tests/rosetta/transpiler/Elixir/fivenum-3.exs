@@ -120,103 +120,107 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def sortFloat(xs) do
     try do
+      arr = xs
+      n = _len(arr)
       i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
-        else
-          {i, n}
-        end
-      end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
-        catch
-          {:break, {i, n}} -> {i, n}
-        end
-
-      throw {:return, %{n: n, ok: false}}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def main() do
-    try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
+      while_fun = fn while_fun, arr, i ->
+        if i < n do
+          j = 0
+          while_fun_2 = fn while_fun_2, arr, j ->
+            if j < n - 1 do
+              {arr} = if Enum.at(arr, j) > Enum.at(arr, j + 1) do
+                t = Enum.at(arr, j)
+                arr = List.replace_at(arr, j, Enum.at(arr, j + 1))
+                arr = List.replace_at(arr, j + 1, t)
+                {arr}
+              else
+                {arr}
+              end
+              j = j + 1
+              while_fun_2.(while_fun_2, arr, j)
             else
-              {m, pow}
+              {arr, j}
             end
           end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
+          {arr, j} = try do
+              while_fun_2.(while_fun_2, arr, j)
             catch
-              {:break, {m, pow}} -> {m, pow}
+              {:break, {arr, j}} -> {arr, j}
             end
 
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
+          i = i + 1
+          while_fun.(while_fun, arr, i)
         else
-          {count, line, n, primes}
+          {arr, i}
         end
       end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
+      {arr, i} = try do
+          while_fun.(while_fun, arr, i)
         catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
+          {:break, {arr, i}} -> {arr, i}
         end
 
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+      throw {:return, arr}
     catch
       {:return, val} -> val
     end
   end
-  def bench_main() do
+  def ceilf(x) do
+    try do
+      i = Kernel.trunc(x)
+      if x > (i) do
+        throw {:return, i + 1}
+      end
+      throw {:return, i}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def fivenum(a) do
+    try do
+      arr = sortFloat(a)
+      n = _len(arr)
+      half = (n + 3) - (rem((n + 3), 2))
+      n4 = (div(half, 2)) / 2.0
+      nf = n
+      d = [1.0, n4, (nf + 1.0) / 2.0, nf + 1.0 - n4, nf]
+      result = []
+      idx = 0
+      while_fun_3 = fn while_fun_3, idx, result ->
+        if idx < _len(d) do
+          de = Enum.at(d, idx)
+          fl = Kernel.trunc(de - 1.0)
+          cl = ceilf(de - 1.0)
+          result = (result ++ [0.5 * (Enum.at(arr, fl) + Enum.at(arr, cl))])
+          idx = idx + 1
+          while_fun_3.(while_fun_3, idx, result)
+        else
+          {idx, result}
+        end
+      end
+      {idx, result} = try do
+          while_fun_3.(while_fun_3, idx, result)
+        catch
+          {:break, {idx, result}} -> {idx, result}
+        end
+
+      throw {:return, result}
+    catch
+      {:return, val} -> val
+    end
+  end
+  Process.put(:x1, [36.0, 40.0, 7.0, 39.0, 41.0, 15.0])
+  Process.put(:x2, [15.0, 6.0, 42.0, 41.0, 7.0, 36.0, 49.0, 40.0, 39.0, 47.0, 43.0])
+  def main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    Process.put(:x3, [0.14082834, 0.0974879, 1.73131507, 0.87636009, -1.95059594, 0.73438555, -0.03035726, 1.4667597, -0.74621349, -0.72588772, 0.6390516, 0.61501527, -0.9898378, -1.00447874, -0.62759469, 0.66206163, 1.04312009, -0.10305385, 0.75775634, 0.32566578])
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x1))))
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x2))))
+    IO.puts(Kernel.inspect(fivenum(Process.get(:x3))))
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -224,4 +228,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

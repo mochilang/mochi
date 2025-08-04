@@ -1,0 +1,8 @@
+alpha
+beta
+gamma
+{
+  "duration_us": 4908,
+  "memory_bytes": 46272,
+  "name": "main"
+}

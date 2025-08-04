@@ -1,0 +1,9 @@
+PID: 1
+Child's PID: 2
+PID: 2
+Done.
+{
+  "duration_us": 320,
+  "memory_bytes": 0,
+  "name": "main"
+}

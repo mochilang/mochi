@@ -120,99 +120,138 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def capitalize(s) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
+      throw {:return, ((if _len(s) == 0, do: s, else: (String.upcase(_slice(s, 0, 1 - (0))) <> _slice(s, 1, _len(s) - (1)))))}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def say(n) do
+    try do
+      t = ""
+      {n, t} = if n < 0 do
+        t = "negative "
+        n = -n
+        {n, t}
+      else
+        {n, t}
+      end
+      {t} = if n < 20 do
+        throw {:return, (t <> Enum.at(Process.get(:small), n))}
+        {t}
+      else
+        {t} = if n < 100 do
+          t = Enum.at(Process.get(:tens), div(n, 10))
+          s = rem(n, 10)
+          {t} = if s > 0 do
+            t = ((t <> "-") <> Enum.at(Process.get(:small), s))
+            {t}
           else
-            {n}
+            {t}
+          end
+          throw {:return, t}
+          {t}
+        else
+          {t} = if n < 1000 do
+            t = (Enum.at(Process.get(:small), div(n, 100)) <> " hundred")
+            s = rem(n, 100)
+            {t} = if s > 0 do
+              t = ((t <> " ") <> say(s))
+              {t}
+            else
+              {t}
+            end
+            throw {:return, t}
+            {t}
+          else
+            {t}
+          end
+          {t}
+        end
+        {t}
+      end
+      sx = ""
+      i = 0
+      nn = n
+      while_fun = fn while_fun, i, nn, sx ->
+        if nn > 0 do
+          p = rem(nn, 1000)
+          nn = div(nn, 1000)
+          {sx} = if p > 0 do
+            ix = (say(p) <> Enum.at(Process.get(:illions), i))
+            {ix} = if sx != "" do
+              ix = ((ix <> " ") <> sx)
+              {ix}
+            else
+              {ix}
+            end
+            sx = ix
+            {sx}
+          else
+            {sx}
           end
           i = i + 1
-          while_fun.(while_fun, i, n)
+          while_fun.(while_fun, i, nn, sx)
         else
-          {i, n}
+          {i, nn, sx}
         end
       end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
+      {i, nn, sx} = try do
+          while_fun.(while_fun, i, nn, sx)
         catch
-          {:break, {i, n}} -> {i, n}
+          {:break, {i, nn, sx}} -> {i, nn, sx}
         end
 
-      throw {:return, %{n: n, ok: false}}
+      throw {:return, (t <> sx)}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def fourIsMagic(n) do
+    try do
+      s = say(n)
+      s = capitalize(s)
+      t = s
+      while_fun_2 = fn while_fun_2, n, s, t ->
+        if n != 4 do
+          n = _len(s)
+          s = say(n)
+          t = ((((t <> " is ") <> s) <> ", ") <> s)
+          while_fun_2.(while_fun_2, n, s, t)
+        else
+          {n, s, t}
+        end
+      end
+      {n, s, t} = try do
+          while_fun_2.(while_fun_2, n, s, t)
+        catch
+          {:break, {n, s, t}} -> {n, s, t}
+        end
+
+      t = (t <> " is magic.")
+      throw {:return, t}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
-            else
-              {m, pow}
-            end
-          end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
-            catch
-              {:break, {m, pow}} -> {m, pow}
-            end
-
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        else
-          {count, line, n, primes}
-        end
-      end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
-        end
-
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+      nums = [0, 4, 6, 11, 13, 75, 100, 337, -164, 9223372036854775807]
+      Enum.each(nums, fn n ->
+        IO.puts(Kernel.inspect(fourIsMagic(n)))
+      end)
     catch
       {:return, val} -> val
     end
   end
+  Process.put(:small, ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"])
+  Process.put(:tens, ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"])
+  Process.put(:illions, ["", " thousand", " million", " billion", " trillion", " quadrillion", " quintillion"])
   def bench_main() do
+    Process.put(:small, ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"])
+    Process.put(:tens, ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"])
+    Process.put(:illions, ["", " thousand", " million", " billion", " trillion", " quadrillion", " quintillion"])
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()

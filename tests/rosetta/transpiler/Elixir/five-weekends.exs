@@ -120,94 +120,86 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def weekday(y, m, d) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
-        else
-          {i, n}
-        end
+      yy = y
+      mm = m
+      {mm, yy} = if mm < 3 do
+        mm = mm + 12
+        yy = yy - 1
+        {mm, yy}
+      else
+        {mm, yy}
       end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
-        catch
-          {:break, {i, n}} -> {i, n}
-        end
-
-      throw {:return, %{n: n, ok: false}}
+      k = rem(yy, 100)
+      j = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div(yy, 100)))
+      a = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div((13 * (mm + 1)), 5)))
+      b = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div(k, 4)))
+      c = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div(j, 4)))
+      throw {:return, rem((d + a + k + b + c + 5 * j), 7)}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
+      months31 = [1, 3, 5, 7, 8, 10, 12]
+      names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
+      firstY = 0
+      firstM = 0
+      lastY = 0
+      lastM = 0
+      haveNone = []
+      IO.puts("Months with five weekends:")
+      {count, firstM, firstY, haveNone, lastM, lastY} = Enum.reduce((1900..(2101 - 1)), {count, firstM, firstY, haveNone, lastM, lastY}, fn year, {count, firstM, firstY, haveNone, lastM, lastY} ->
+        hasOne = false
+        {count, firstM, firstY, hasOne, lastM, lastY} = Enum.reduce(months31, {count, firstM, firstY, hasOne, lastM, lastY}, fn m, {count, firstM, firstY, hasOne, lastM, lastY} ->
+          {count, firstM, firstY, hasOne, lastM, lastY} = if weekday(year, m, 1) == 6 do
+            IO.puts(((("  " <> Kernel.to_string(year)) <> " ") <> Enum.at(names, m - 1)))
+            count = count + 1
+            hasOne = true
+            lastY = year
+            lastM = m
+            {firstM, firstY} = if firstY == 0 do
+              firstY = year
+              firstM = m
+              {firstM, firstY}
             else
-              {m, pow}
+              {firstM, firstY}
             end
-          end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
-            catch
-              {:break, {m, pow}} -> {m, pow}
-            end
-
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
+            {count, firstM, firstY, hasOne, lastM, lastY}
           else
-            {line, primes}
+            {count, firstM, firstY, hasOne, lastM, lastY}
           end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
+          {count, firstM, firstY, hasOne, lastM, lastY}
+        end)
+        {haveNone} = if !hasOne do
+          haveNone = (haveNone ++ [year])
+          {haveNone}
         else
-          {count, line, n, primes}
+          {haveNone}
         end
-      end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
-        end
-
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+        {count, firstM, firstY, haveNone, lastM, lastY}
+      end)
+      IO.puts((Kernel.inspect(count) <> " total"))
+      IO.puts("")
+      IO.puts("First five dates of weekends:")
+      Enum.each((0..(5 - 1)), fn i ->
+        day = 1 + 7 * i
+        IO.puts(((((("  Friday, " <> Enum.at(names, firstM - 1)) <> " ") <> Kernel.to_string(day)) <> ", ") <> Kernel.to_string(firstY)))
+      end)
+      IO.puts("Last five dates of weekends:")
+      Enum.each((0..(5 - 1)), fn i ->
+        day = 1 + 7 * i
+        IO.puts(((((("  Friday, " <> Enum.at(names, lastM - 1)) <> " ") <> Kernel.to_string(day)) <> ", ") <> Kernel.to_string(lastY)))
+      end)
+      IO.puts("")
+      IO.puts("Years with no months with five weekends:")
+      Enum.each(haveNone, fn y ->
+        IO.puts(("  " <> Kernel.to_string(y)))
+      end)
+      IO.puts((Kernel.inspect(_len(haveNone)) <> " total"))
     catch
       {:return, val} -> val
     end

@@ -120,94 +120,51 @@ defmodule Main do
     {out, 0} = System.cmd("sh", ["-c", cmd])
     String.trim(out)
   end
-  def step(n, program) do
+  def xor(a, b) do
     try do
-      i = 0
-      while_fun = fn while_fun, i, n ->
-        if i < _len(program) do
-          num = Enum.at(Enum.at(program, i), 0)
-          den = Enum.at(Enum.at(program, i), 1)
-          {n} = if rem(n, den) == 0 do
-            n = (div(n, den)) * num
-            throw {:return, %{n: n, ok: true}}
-            {n}
-          else
-            {n}
-          end
-          i = i + 1
-          while_fun.(while_fun, i, n)
-        else
-          {i, n}
-        end
-      end
-      {i, n} = try do
-          while_fun.(while_fun, i, n)
-        catch
-          {:break, {i, n}} -> {i, n}
-        end
-
-      throw {:return, %{n: n, ok: false}}
+      throw {:return, (a && (!b)) || ((!a) && b)}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def ha(a, b) do
+    try do
+      throw {:return, %{s: xor(a, b), c: a && b}}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def fa(a, b, c0) do
+    try do
+      r1 = ha(a, c0)
+      r2 = ha(r1.s, b)
+      throw {:return, %{s: r2.s, c: r1.c || r2.c}}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def add4(a3, a2, a1, a0, b3, b2, b1, b0) do
+    try do
+      r0 = fa(a0, b0, false)
+      r1 = fa(a1, b1, r0.c)
+      r2 = fa(a2, b2, r1.c)
+      r3 = fa(a3, b3, r2.c)
+      throw {:return, %{v: r3.c, s3: r3.s, s2: r2.s, s1: r1.s, s0: r0.s}}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def b2i(b) do
+    try do
+      throw {:return, ((if b, do: 1, else: 0))}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      program = [[17, 91], [78, 85], [19, 51], [23, 38], [29, 33], [77, 29], [95, 23], [77, 19], [1, 17], [11, 13], [13, 11], [15, 14], [15, 2], [55, 1]]
-      n = 2
-      primes = 0
-      count = 0
-      limit = 1000000
-      two = 2
-      line = ""
-      while_fun_2 = fn while_fun_2, count, line, n, primes ->
-        if primes < 20 && count < limit do
-          res = step(n, program)
-          n = res.n
-          if !res.ok do
-            throw {:break, {count, line, n, primes}}
-          end
-          m = n
-          pow = 0
-          while_fun_3 = fn while_fun_3, m, pow ->
-            if rem(m, two) == 0 do
-              m = div(m, two)
-              pow = pow + 1
-              while_fun_3.(while_fun_3, m, pow)
-            else
-              {m, pow}
-            end
-          end
-          {m, pow} = try do
-              while_fun_3.(while_fun_3, m, pow)
-            catch
-              {:break, {m, pow}} -> {m, pow}
-            end
-
-          {line, primes} = if m == 1 && pow > 1 do
-            line = ((line <> Kernel.to_string(pow)) <> " ")
-            primes = primes + 1
-            {line, primes}
-          else
-            {line, primes}
-          end
-          count = count + 1
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        else
-          {count, line, n, primes}
-        end
-      end
-      {count, line, n, primes} = try do
-          while_fun_2.(while_fun_2, count, line, n, primes)
-        catch
-          {:break, {count, line, n, primes}} -> {count, line, n, primes}
-        end
-
-      if _len(line) > 0 do
-        IO.puts(Kernel.inspect(_slice(line, 0, _len(line) - 1 - (0))))
-      else
-        IO.puts("")
-      end
+      r = add4(true, false, true, false, true, false, false, true)
+      IO.puts(((((((((Kernel.inspect(b2i(r.v)) <> " ") <> Kernel.inspect(b2i(r.s3))) <> " ") <> Kernel.inspect(b2i(r.s2))) <> " ") <> Kernel.inspect(b2i(r.s1))) <> " ") <> Kernel.inspect(b2i(r.s0))))
     catch
       {:return, val} -> val
     end

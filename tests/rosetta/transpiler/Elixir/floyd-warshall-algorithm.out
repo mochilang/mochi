@@ -1,6 +1,6 @@
 pair	dist	path
 {
-  "duration_us": 271,
-  "memory_bytes": 2586560,
+  "duration_us": 338,
+  "memory_bytes": 12784,
   "name": "main"
 }
