@@ -76,11 +76,11 @@ Compiled and ran: 477/491
 | 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 7.218ms | 12.0 MB |
 | 68 | arithmetic-geometric-mean | ✓ | 13.01ms | 2.0 MB |
 | 69 | arithmetic-integer-1 | ✓ | 25.623ms | 10.7 MB |
-| 70 | arithmetic-integer-2 | ✓ |  |  |
+| 70 | arithmetic-integer-2 | ✓ | 18.25ms | 10.9 MB |
 | 71 | arithmetic-numbers | ✓ |  |  |
-| 72 | arithmetic-rational | ✓ |  |  |
-| 73 | array-concatenation | ✓ | 12.589ms | 3.5 MB |
-| 74 | array-length | ✓ |  |  |
+| 72 | arithmetic-rational | ✓ | 12.47ms | 9.7 MB |
+| 73 | array-concatenation | ✓ | 19.228ms | 10.2 MB |
+| 74 | array-length | ✓ | 16.646ms | 10.5 MB |
 | 75 | arrays | ✓ | 12.049ms | 3.4 MB |
 | 76 | ascending-primes | ✓ | 24.433ms | 9.6 MB |
 | 77 | ascii-art-diagram-converter | ✓ | 22.821ms | 9.5 MB |
@@ -499,4 +499,4 @@ Compiled and ran: 477/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-04 15:58 +0700_
+_Last updated: 2025-08-04 16:14 +0700_
