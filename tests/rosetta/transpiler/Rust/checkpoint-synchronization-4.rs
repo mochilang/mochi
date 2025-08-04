@@ -34,33 +34,28 @@ fn _mem() -> i64 {
     }
     0
 }
-static mut g_n: Vec<i64> = Vec::new();
+static mut g_nMech: i64 = 0;
+static mut g_detailsPerMech: i64 = 0;
 fn main() {
     unsafe {
-        g_n = vec![1, 2, 3, 4, 5];
+        g_nMech = 5;
+        g_detailsPerMech = 4;
                 let _start: i64 = _now();
-        unsafe fn add(mut a: i64, mut b: i64) -> i64 {
-    return (a + b)
-};
-        unsafe fn sub(mut a: i64, mut b: i64) -> i64 {
-    return (a - b)
-};
-        unsafe fn mul(mut a: i64, mut b: i64) -> i64 {
-    return (a * b)
-};
-        unsafe fn fold(f: &mut impl FnMut(i64, i64) -> i64, mut xs: Vec<i64>) -> i64 {
-    let mut r: i64 = xs[0 as usize];
-    let mut i: i64 = 1;
-    while (i < (xs.len() as i64)) {
-        r = f(r, xs[i as usize]);
-        i = (i + 1);
-    }
-    return r
-};
-        static mut g_n: Vec<i64> = Vec::new();;
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { add(a, b) }, g_n.clone().clone()));
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { sub(a, b) }, g_n.clone().clone()));
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { mul(a, b) }, g_n.clone().clone()));
+        static mut g_nMech: i64 = 0;;
+        static mut g_detailsPerMech: i64 = 0;;
+        for mech in 1..(g_nMech + 1) {
+            let mut id: i64 = mech;
+            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "worker ", id.to_string()), " contracted to assemble "), g_detailsPerMech.to_string()), " details"));
+            println!("{}", format!("{}{}", format!("{}{}", "worker ", id.to_string()), " enters shop"));
+            let mut d: i64 = 0;
+            while (d < g_detailsPerMech) {
+                println!("{}", format!("{}{}", format!("{}{}", "worker ", id.to_string()), " assembling"));
+                println!("{}", format!("{}{}", format!("{}{}", "worker ", id.to_string()), " completed detail"));
+                d = (d + 1);
+            }
+            println!("{}", format!("{}{}", format!("{}{}", "worker ", id.to_string()), " leaves shop"));
+            println!("{}", format!("{}{}", format!("{}{}", "mechanism ", mech.to_string()), " completed"));
+        }
         let _end: i64 = _now();
         let duration_us: i64 = ((_end - _start) / 1000);
         let memory_bytes: i64 = _mem();
