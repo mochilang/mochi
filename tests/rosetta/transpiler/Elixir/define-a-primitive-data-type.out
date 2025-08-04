@@ -1,0 +1,14 @@
+t1      = 6
+t2      = 3
+t1 + t2 = %{value: 9}
+t1 - t2 = %{value: 3}
+t1 * t2 = %{value: 10}
+t1 / t2 = %{value: 2.0}
+t1 % t2 = %{value: 1}
+t1 + 1  = %{value: 7}
+t1 - 1  = %{value: 5}
+{
+  "duration_us": 8127,
+  "memory_bytes": 17672,
+  "name": "main"
+}
