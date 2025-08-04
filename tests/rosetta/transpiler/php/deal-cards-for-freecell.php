@@ -15,6 +15,10 @@ function _now() {
     }
     return hrtime(true);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -37,7 +41,7 @@ $__start = _now();
   $deck = [];
   $i = 0;
   while ($i < 52) {
-  $deck = array_merge($deck, [51 - $i]);
+  $deck = _append($deck, 51 - $i);
   $i = $i + 1;
 };
   $i = 0;

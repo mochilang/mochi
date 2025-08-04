@@ -179,6 +179,11 @@ const helperParseIntStr = `function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }`
 
+const helperAppend = `function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}`
+
 const helperGetOutput = `function _getoutput($cmd) {
     $out = shell_exec($cmd);
     if ($out === null) return '';
@@ -276,6 +281,7 @@ var usesSHA256 bool
 var usesEnviron bool
 var usesBigIntOps bool
 var usesGetOutput bool
+var usesAppend bool
 var usesFetch bool
 var benchMain bool
 var extraStmts []Stmt
@@ -2341,6 +2347,11 @@ func Emit(w io.Writer, p *Program) error {
 			return err
 		}
 	}
+	if usesAppend {
+		if _, err := io.WriteString(w, helperAppend+"\n"); err != nil {
+			return err
+		}
+	}
 	if usesIntDiv {
 		if _, err := io.WriteString(w, helperIntDiv+"\n"); err != nil {
 			return err
@@ -2438,6 +2449,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesEnviron = false
 	usesBigIntOps = false
 	usesGetOutput = false
+	usesAppend = false
 	usesFetch = false
 	defer func() { transpileEnv = nil }()
 	p := &Program{Env: env}
@@ -3135,8 +3147,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			args[1] = replaceStringNamesWithVars(args[1])
-			tmp := &ListLit{Elems: []Expr{args[1]}}
-			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], tmp}}, nil
+			usesAppend = true
+			return &CallExpr{Func: "_append", Args: []Expr{args[0], args[1]}}, nil
 		} else if name == "json" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
@@ -4586,7 +4598,7 @@ func isListExpr(e Expr) bool {
 			}
 		}
 		switch c.Func {
-		case "array_merge", "array_slice", "array_values", "array_diff", "array_intersect", "array_unique":
+		case "array_merge", "_append", "array_slice", "array_values", "array_diff", "array_intersect", "array_unique":
 			return true
 		}
 	} else if b, ok := e.(*BinaryExpr); ok {

@@ -38,6 +38,10 @@ function _indexof($s, $sub) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -208,7 +212,7 @@ $__start = _now();
   $ch = substr($input, $i, $i + 1 - $i);
   if ($ch == ' ') {
   if (strlen($cur) > 0) {
-  $parts = array_merge($parts, [$cur]);
+  $parts = _append($parts, $cur);
   $cur = '';
 };
 } else {
@@ -217,7 +221,7 @@ $__start = _now();
   $i = $i + 1;
 };
   if (strlen($cur) > 0) {
-  $parts = array_merge($parts, [$cur]);
+  $parts = _append($parts, $cur);
 }
   $month = $months[$parts[0]];
   $day = parseIntStr($parts[1], 10);

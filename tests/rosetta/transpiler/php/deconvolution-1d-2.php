@@ -35,6 +35,10 @@ function _indexof($s, $sub) {
     $pos = strpos($s, $sub);
     return $pos === false ? -1 : $pos;
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function indexOf($s, $ch) {
@@ -80,7 +84,7 @@ $__start = _now();
 }
   $j = $j + 1;
 };
-  $out = array_merge($out, [$sum / $f[0]]);
+  $out = _append($out, $sum / $f[0]);
   $i = $i + 1;
 };
   return $out;
