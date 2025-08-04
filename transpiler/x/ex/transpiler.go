@@ -2032,13 +2032,22 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.TypeOfExpr(st.Let.Value, env)
 				if lt, ok := t.(types.ListType); ok {
 					if _, isAny := lt.Elem.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					}
 				} else if mt, ok := t.(types.MapType); ok {
 					if _, isAny := mt.Key.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					} else if _, isAny := mt.Value.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					}
 				}
 				env.SetVar(st.Let.Name, t, false)
@@ -2081,13 +2090,22 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				t := types.TypeOfExpr(st.Var.Value, env)
 				if lt, ok := t.(types.ListType); ok {
 					if _, isAny := lt.Elem.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					}
 				} else if mt, ok := t.(types.MapType); ok {
 					if _, isAny := mt.Key.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					} else if _, isAny := mt.Value.(types.AnyType); isAny {
-						t = inferStaticType(val)
+						it := inferStaticType(val)
+						if _, isAny2 := it.(types.AnyType); !isAny2 {
+							t = it
+						}
 					}
 				}
 				env.SetVar(st.Var.Name, t, true)
@@ -2125,7 +2143,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			t, _ := env.GetVar(st.Assign.Name)
 			var call *CallExpr
 			switch t.(type) {
-			case types.MapType:
+			case types.MapType, types.StructType:
 				call = &CallExpr{Func: "Map.put", Args: []Expr{&VarRef{Name: st.Assign.Name}, idx, val}}
 			default:
 				// Fallback to list semantics when the type is unknown
@@ -3938,9 +3956,6 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				k, err = compileExpr(it.Key, env)
 				if err != nil {
 					return nil, err
-				}
-				if s, ok := k.(*StringLit); ok {
-					k = &AtomLit{Name: s.Value}
 				}
 			}
 			v, err := compileExpr(it.Value, env)

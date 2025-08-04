@@ -116,77 +116,124 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def node_(value, next, prev) do
+  def repeat(ch, n) do
     try do
-      throw {:return, %{"value" => value, "next" => next, "prev" => prev}}
+      s = ""
+      i = 0
+      while_fun = fn while_fun, i, s ->
+        if i < n do
+          s = (s <> ch)
+          i = i + 1
+          while_fun.(while_fun, i, s)
+        else
+          {i, s}
+        end
+      end
+      {i, s} = try do
+          while_fun.(while_fun, i, s)
+        catch
+          {:break, {i, s}} -> {i, s}
+        end
+
+      throw {:return, s}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def cubLine(n, dx, dy, cde) do
+    try do
+      line = (repeat(" ", n + 1) <> _slice(cde, 0, 1 - 0))
+      d = 9 * dx - 1
+      while_fun_2 = fn while_fun_2, d, line ->
+        if d > 0 do
+          line = (line <> _slice(cde, 1, 2 - 1))
+          d = d - 1
+          while_fun_2.(while_fun_2, d, line)
+        else
+          {d, line}
+        end
+      end
+      {d, line} = try do
+          while_fun_2.(while_fun_2, d, line)
+        catch
+          {:break, {d, line}} -> {d, line}
+        end
+
+      line = (line <> _slice(cde, 0, 1 - 0))
+      line = ((line <> repeat(" ", dy)) <> _slice(cde, 2, _len(cde) - 2))
+      IO.puts(line)
+    catch
+      {:return, val} -> val
+    end
+  end
+  def cuboid(dx, dy, dz) do
+    try do
+      IO.puts((((((("cuboid " <> Kernel.to_string(dx)) <> " ") <> Kernel.to_string(dy)) <> " ") <> Kernel.to_string(dz)) <> ":"))
+      cubLine(dy + 1, dx, 0, "+-")
+      i = 1
+      while_fun_3 = fn while_fun_3, i ->
+        if i <= dy do
+          cubLine(dy - i + 1, dx, i - 1, "/ |")
+          i = i + 1
+          while_fun_3.(while_fun_3, i)
+        else
+          i
+        end
+      end
+      i = try do
+          while_fun_3.(while_fun_3, i)
+        catch
+          {:break, i} -> i
+        end
+
+      cubLine(0, dx, dy, "+-|")
+      j = 4 * dz - dy - 2
+      while_fun_4 = fn while_fun_4, j ->
+        if j > 0 do
+          cubLine(0, dx, dy, "| |")
+          j = j - 1
+          while_fun_4.(while_fun_4, j)
+        else
+          j
+        end
+      end
+      j = try do
+          while_fun_4.(while_fun_4, j)
+        catch
+          {:break, j} -> j
+        end
+
+      cubLine(0, dx, dy, "| +")
+      i = 1
+      while_fun_5 = fn while_fun_5, i ->
+        if i <= dy do
+          cubLine(0, dx, dy - i, "| /")
+          i = i + 1
+          while_fun_5.(while_fun_5, i)
+        else
+          i
+        end
+      end
+      i = try do
+          while_fun_5.(while_fun_5, i)
+        catch
+          {:break, i} -> i
+        end
+
+      cubLine(0, dx, 0, "+-\n")
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    try do
-      a = node_("A", nil, nil)
-      b = node_("B", nil, a)
-      a = Map.put(a, "next", b)
-      c = node_("C", nil, b)
-      b = Map.put(b, "next", c)
-      p = a
-      line = ""
-      while_fun = fn while_fun, line, p ->
-        if p != nil do
-          line = (line <> (p["value"]))
-          p = p["next"]
-          {line} = if p != nil do
-            line = (line <> " ")
-            {line}
-          else
-            {line}
-          end
-          while_fun.(while_fun, line, p)
-        else
-          {line, p}
-        end
-      end
-      {line, p} = try do
-          while_fun.(while_fun, line, p)
-        catch
-          {:break, {line, p}} -> {line, p}
-        end
-
-      IO.puts(line)
-      p = c
-      line = ""
-      while_fun_2 = fn while_fun_2, line, p ->
-        if p != nil do
-          line = (line <> (p["value"]))
-          p = p["prev"]
-          {line} = if p != nil do
-            line = (line <> " ")
-            {line}
-          else
-            {line}
-          end
-          while_fun_2.(while_fun_2, line, p)
-        else
-          {line, p}
-        end
-      end
-      {line, p} = try do
-          while_fun_2.(while_fun_2, line, p)
-        catch
-          {:break, {line, p}} -> {line, p}
-        end
-
-      IO.puts(line)
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    cuboid(2, 3, 4)
+    IO.puts("")
+    cuboid(1, 1, 1)
+    IO.puts("")
+    cuboid(6, 2, 1)
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -194,4 +241,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()
