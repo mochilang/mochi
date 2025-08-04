@@ -148,6 +148,15 @@ func init() {
 		"panic":        `fun panic(msg: String): Nothing { throw RuntimeException(msg) }`,
 		"input":        `fun input(): String = readLine() ?: ""`,
 		"importBigInt": `import java.math.BigInteger`,
+		"_lookupHost": `fun _lookupHost(host: String): MutableList<Any?> {
+    return try {
+        val arr = java.net.InetAddress.getAllByName(host)
+        val out = arr.map { it.hostAddress }.toMutableList<Any?>()
+        mutableListOf(out, null)
+    } catch (e: Exception) {
+        mutableListOf(null, e.toString())
+    }
+}`,
 		"_now": `var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -3164,7 +3173,7 @@ func handleImport(env *types.Env, im *parser.ImportStmt) bool {
 			}
 			builtinAliases[alias] = "go_net"
 			if env != nil {
-				env.SetFuncType(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.StringType{}}})
+				env.SetFuncType(alias+".LookupHost", types.FuncType{Params: []types.Type{types.StringType{}}, Return: types.ListType{Elem: types.AnyType{}}})
 			}
 			return true
 		}
@@ -5082,8 +5091,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 				}
 			case "go_net":
 				if field == "LookupHost" {
-					list := &TypedListLit{ElemType: "Any?", Elems: []Expr{&ListLit{Elems: []Expr{&StringLit{Value: "210.155.141.200"}}}, &VarRef{Name: "null"}}}
-					return &CastExpr{Value: list, Type: "MutableList<Any?>"}, nil
+					useHelper("_lookupHost")
+					return &CallExpr{Func: "_lookupHost", Args: args}, nil
 				}
 			}
 		}
