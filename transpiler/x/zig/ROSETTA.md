@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 21:21 +0700
+Last updated: 2025-08-04 21:43 +0700
 
-## Program Checklist (104/491)
+## Program Checklist (109/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -159,12 +159,12 @@ Last updated: 2025-08-04 21:21 +0700
 | 150 | call-a-function-10 | ✓ | 227µs |  |
 | 151 | call-a-function-11 | ✓ | 338µs |  |
 | 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 | ✓ | 4µs |  |
-| 154 | call-a-function-3 |   |  |  |
-| 155 | call-a-function-4 |   |  |  |
-| 156 | call-a-function-5 |   |  |  |
-| 157 | call-a-function-6 |   |  |  |
-| 158 | call-a-function-7 |   |  |  |
+| 153 | call-a-function-2 | ✓ | 359µs | 128.0 KB |
+| 154 | call-a-function-3 | ✓ | 342µs |  |
+| 155 | call-a-function-4 | ✓ | 548µs | 256.0 KB |
+| 156 | call-a-function-5 | ✓ | 473µs | 256.0 KB |
+| 157 | call-a-function-6 | ✓ | 565µs | 384.0 KB |
+| 158 | call-a-function-7 | ✓ | 288µs |  |
 | 159 | call-a-function-8 |   |  |  |
 | 160 | call-a-function-9 |   |  |  |
 | 161 | call-an-object-method-1 |   |  |  |

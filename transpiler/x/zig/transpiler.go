@@ -60,6 +60,21 @@ var localMutablesStack []map[string]bool
 var globalNames map[string]bool
 var variantTags map[string]int
 var globalInits []Stmt
+var zigKeywords = map[string]bool{
+	"fn":       true,
+	"const":    true,
+	"var":      true,
+	"if":       true,
+	"else":     true,
+	"switch":   true,
+	"for":      true,
+	"while":    true,
+	"break":    true,
+	"continue": true,
+	"defer":    true,
+	"return":   true,
+	"pub":      true,
+}
 
 // when true, wrap the generated main function in a benchmark block
 var benchMain bool
@@ -125,7 +140,11 @@ func zigIdent(s string) string {
 	if buf.Len() == 0 {
 		return "_"
 	}
-	return buf.String()
+	ident := buf.String()
+	if zigKeywords[ident] {
+		return ident + "_"
+	}
+	return ident
 }
 
 func isIntType(t string) bool {
@@ -136,6 +155,8 @@ func valueTag(t string) string {
 	switch t {
 	case "i64":
 		return "Int"
+	case "f64":
+		return "Float"
 	case "[]const u8":
 		return "Str"
 	case "bool":
@@ -149,6 +170,8 @@ func valueAccess(t string) string {
 	switch t {
 	case "i64":
 		return ".Int"
+	case "f64":
+		return ".Float"
 	case "[]const u8":
 		return ".Str"
 	case "bool":
@@ -443,6 +466,7 @@ func collectVarsExpr(e Expr, m map[string]bool) {
 		collectVarsExpr(ex.Left, m)
 		collectVarsExpr(ex.Right, m)
 	case *CallExpr:
+		m[ex.Func] = true
 		for _, a := range ex.Args {
 			collectVarsExpr(a, m)
 		}
@@ -986,7 +1010,7 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
-	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
+	fmt.Fprintf(w, "blk: { const m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -1226,7 +1250,7 @@ func (p *Program) Emit() []byte {
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
 	if useValue {
-		buf.WriteString("const Value = union(enum) { Int: i64, Str: []const u8, Bool: bool, };\n")
+		buf.WriteString("const Value = union(enum) { Int: i64, Float: f64, Str: []const u8, Bool: bool, };\n")
 	}
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
@@ -1347,15 +1371,15 @@ func (p *Program) Emit() []byte {
 	if useMem {
 		buf.WriteString("\nfn _mem() i64 {\n")
 		buf.WriteString("    const path = \"/proc/self/statm\";\n")
-		buf.WriteString("    var f = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
-		buf.WriteString("    defer f.close();\n")
+		buf.WriteString("    var file = std.fs.openFileAbsolute(path, .{}) catch return 0;\n")
+		buf.WriteString("    defer file.close();\n")
 		buf.WriteString("    var buf: [64]u8 = undefined;\n")
-		buf.WriteString("    const n = f.readAll(&buf) catch return 0;\n")
-		buf.WriteString("    var it = std.mem.tokenize(u8, buf[0..n], \" \" );\n")
+		buf.WriteString("    const n = file.readAll(&buf) catch return 0;\n")
+		buf.WriteString("    var it = std.mem.tokenizeScalar(u8, buf[0..n], ' ');\n")
 		buf.WriteString("    _ = it.next(); // total program size\n")
 		buf.WriteString("    if (it.next()) |tok| {\n")
 		buf.WriteString("        const pages = std.fmt.parseInt(i64, tok, 10) catch return 0;\n")
-		buf.WriteString("        return pages * std.mem.page_size;\n")
+		buf.WriteString("        return pages * std.heap.page_size_min;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return 0;\n")
 		buf.WriteString("}\n")
@@ -1766,7 +1790,12 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 	}
 	if b.Op == "in" {
-		if _, ok := b.Right.(*StringLit); ok {
+		if vr, ok := b.Right.(*VarRef); ok && mapVars[vr.Name] {
+			vr.emit(w)
+			io.WriteString(w, ".contains(")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		} else if _, ok := b.Right.(*StringLit); ok {
 			io.WriteString(w, "std.mem.indexOf(u8, ")
 			b.Right.emit(w)
 			io.WriteString(w, ", ")
@@ -1778,11 +1807,6 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			io.WriteString(w, ", ")
 			b.Left.emit(w)
 			io.WriteString(w, ") != null")
-		} else if vr, ok := b.Right.(*VarRef); ok && mapVars[vr.Name] {
-			vr.emit(w)
-			io.WriteString(w, ".contains(")
-			b.Left.emit(w)
-			io.WriteString(w, ")")
 		} else {
 			io.WriteString(w, "std.mem.indexOfScalar(i64, ")
 			b.Right.emit(w)
@@ -2140,7 +2164,9 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __memory_bytes: i64 = std.math.absInt(__end_mem - __start_mem);\n")
+	io.WriteString(w, "const __mem_diff: i64 = __end_mem - __start_mem;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "const __memory_bytes: i64 = if (__mem_diff < 0) -__mem_diff else __mem_diff;\n")
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
 	indent--
@@ -2249,11 +2275,19 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 	case "contains":
 		if len(c.Args) == 2 {
-			io.WriteString(w, "std.mem.indexOf(u8, ")
-			c.Args[0].emit(w)
-			io.WriteString(w, ", ")
-			c.Args[1].emit(w)
-			io.WriteString(w, ") != null")
+			targetType := zigTypeFromExpr(c.Args[0])
+			if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
+				c.Args[0].emit(w)
+				io.WriteString(w, ".contains(")
+				c.Args[1].emit(w)
+				io.WriteString(w, ")")
+			} else {
+				io.WriteString(w, "std.mem.indexOf(u8, ")
+				c.Args[0].emit(w)
+				io.WriteString(w, ", ")
+				c.Args[1].emit(w)
+				io.WriteString(w, ") != null")
+			}
 		} else {
 			io.WriteString(w, "false")
 		}
@@ -2324,6 +2358,15 @@ func (c *CallExpr) emit(w io.Writer) {
 				}
 				if exp != at {
 					switch {
+					case at == "Value":
+						a.emit(w)
+						io.WriteString(w, valueAccess(exp))
+					case exp == "Value":
+						io.WriteString(w, "Value{.")
+						io.WriteString(w, valueTag(at))
+						io.WriteString(w, " = ")
+						a.emit(w)
+						io.WriteString(w, "}")
 					case exp == "i64" && at == "f64":
 						io.WriteString(w, "@as(i64, @intFromFloat(")
 						a.emit(w)
@@ -2889,6 +2932,15 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 		}
 		f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
+		if ret == "[]Value" {
+			for _, st := range f.Body {
+				if rs, ok := st.(*ReturnStmt); ok {
+					if l, ok2 := rs.Value.(*ListLit); ok2 {
+						l.ElemType = "Value"
+					}
+				}
+			}
+		}
 		funcReturns[name] = ret
 		if funDepth > 0 {
 			captured := []string{}
@@ -3820,6 +3872,15 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		}
 	}
 	f := &Func{Name: name, Params: params, ReturnType: ret, Body: body, Aliases: aliases}
+	if ret == "[]Value" {
+		for _, st := range f.Body {
+			if rs, ok := st.(*ReturnStmt); ok {
+				if l, ok2 := rs.Value.(*ListLit); ok2 {
+					l.ElemType = "Value"
+				}
+			}
+		}
+	}
 	if funDepth > 2 {
 		capturedMap := map[string]bool{}
 		captured := []string{}
