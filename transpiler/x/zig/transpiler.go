@@ -2107,6 +2107,8 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	io.WriteString(w, "{\n")
 	indent++
 	writeIndent(w, indent)
+	io.WriteString(w, "const __start_mem = _mem();\n")
+	writeIndent(w, indent)
 	io.WriteString(w, "const __start = _now();\n")
 	for _, st := range b.Body {
 		st.emit(w, indent)
@@ -2114,11 +2116,19 @@ func (b *BenchStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	io.WriteString(w, "const __end = _now();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
+	io.WriteString(w, "const __end_mem = _mem();\n")
 	writeIndent(w, indent)
-	io.WriteString(w, "const __memory_bytes: i64 = 0;\n")
+	io.WriteString(w, "const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);\n")
 	writeIndent(w, indent)
-	fmt.Fprintf(w, "std.debug.print(\"{{\\\"duration_us\\\":{d},\\\"memory_bytes\\\":{d},\\\"name\\\":\\\"%s\\\"}}\\n\", .{__duration_us, __memory_bytes});\n", b.Name)
+	io.WriteString(w, "const __memory_bytes = __end_mem - __start_mem;\n")
+	writeIndent(w, indent)
+	fmt.Fprintf(w, "const __bench = .{ .duration_us = __duration_us, .memory_bytes = __memory_bytes, .name = \"%s\" };\n", b.Name)
+	writeIndent(w, indent)
+	io.WriteString(w, "const __bj = std.fmt.allocPrint(std.heap.page_allocator, \"{f}\", .{std.json.fmt(__bench, .{ .whitespace = .indent_2 })}) catch unreachable;\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.debug.print(\"{s}\\n\", .{__bj});\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "std.heap.page_allocator.free(__bj);\n")
 	indent--
 	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
@@ -2473,6 +2483,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	_ = env
 	if benchMain {
 		useNow = true
+		useMem = true
 		main.Body = []Stmt{&BenchStmt{Name: "main", Body: main.Body}}
 	}
 	funcs = append(funcs, extraFuncs...)

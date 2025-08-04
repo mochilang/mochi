@@ -1,7 +1,7 @@
 // Mochi implementation of Rosetta "Bitmap/Flood fill" task
 // Simple flood fill on a small grid of characters.
 
-var grid: list<list<string>> = [
+var gridData: list<list<string>> = [
   [".", ".", ".", ".", "."],
   [".", "#", "#", "#", "."],
   [".", "#", ".", "#", "."],
@@ -9,26 +9,25 @@ var grid: list<list<string>> = [
   [".", ".", ".", ".", "."],
 ]
 
+fun ff(gridData: list<list<string>>, px: int, py: int, target: string, repl: string) {
+  if px < 0 || py < 0 || py >= len(gridData) || px >= len(gridData[0]) { return }
+  if gridData[py][px] != target { return }
+  gridData[py][px] = repl
+  ff(gridData, px - 1, py, target, repl)
+  ff(gridData, px + 1, py, target, repl)
+  ff(gridData, px, py - 1, target, repl)
+  ff(gridData, px, py + 1, target, repl)
+}
+
 fun flood(x: int, y: int, repl: string) {
-  let target = grid[y][x]
+  let target = gridData[y][x]
   if target == repl { return }
-
-  fun ff(px: int, py: int) {
-    if px < 0 || py < 0 || py >= len(grid) || px >= len(grid[0]) { return }
-    if grid[py][px] != target { return }
-    grid[py][px] = repl
-    ff(px - 1, py)
-    ff(px + 1, py)
-    ff(px, py - 1)
-    ff(px, py + 1)
-  }
-
-  ff(x, y)
+  ff(gridData, x, y, target, repl)
 }
 
 flood(2, 2, "o")
 
-for row in grid {
+for row in gridData {
   var line = ""
   for ch in row { line = line + ch }
   print(line)

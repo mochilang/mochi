@@ -5,45 +5,66 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-var grid_data_var: [][][]const u8 = &[_][][]const u8{};
+const Point = struct {
+    x: i64,
+    y: i64,
+};
 
-fn ff(gridData_param: [][][]const u8, px: i64, py: i64, target: []const u8, repl: []const u8) void {
-    if (px < 0 or py < 0 or py >= @as(i64, @intCast(gridData_param.len)) or px >= @as(i64, @intCast(gridData_param[@intCast(0)].len))) {
-        return;
+fn absi(x: i64) i64 {
+    if (x < 0) {
+        return 0 - x;
     }
-    if (!std.mem.eql(u8, gridData_param[@intCast(py)][@intCast(px)], target)) {
-        return;
-    }
-    gridData_param[@intCast(py)][@intCast(px)] = repl;
-    ff(gridData_param, px - 1, py, target, repl);
-    ff(gridData_param, px + 1, py, target, repl);
-    ff(gridData_param, px, py - 1, target, repl);
-    ff(gridData_param, px, py + 1, target, repl);
+    return x;
 }
 
-fn flood(x: i64, y: i64, repl: []const u8) void {
-    const target: []const u8 = grid_data_var[@intCast(y)][@intCast(x)];
-    if (std.mem.eql(u8, target, repl)) {
-        return;
+fn bresenham(x0_param: i64, y0_param: i64, x1: i64, y1: i64) []Point {
+    var x0_var: i64 = x0_param;
+    var y0_var: i64 = y0_param;
+    const dx: i64 = absi(x1 - x0_var);
+    const dy: i64 = absi(y1 - y0_var);
+    var sx: i64 = 0 - 1;
+    if (x0_var < x1) {
+        sx = 1;
     }
-    ff(grid_data_var, x, y, target, repl);
+    var sy: i64 = 0 - 1;
+    if (y0_var < y1) {
+        sy = 1;
+    }
+    var errv: i64 = dx - dy;
+    var pts: []Point = &[_]Point{};
+    while (true) {
+        pts = blk: { var _tmp = std.ArrayList(Point).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const Point, pts)) catch |err| handleError(err); _tmp.append(.{ .x = x0_var, .y = y0_var }) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        if (x0_var == x1 and y0_var == y1) {
+            break;
+        }
+        const e2: i64 = 2 * errv;
+        if (e2 > 0 - dy) {
+            errv = errv - dy;
+            x0_var = x0_var + sx;
+        }
+        if (e2 < dx) {
+            errv = errv + dx;
+            y0_var = y0_var + sy;
+        }
+    }
+    return pts;
+}
+
+fn mochi_main() void {
+    const pts_1: []Point = bresenham(0, 0, 6, 4);
+    var i: i64 = 0;
+    while (i < @as(i64, @intCast(pts_1.len))) {
+        const p: Point = pts_1[@intCast(i)];
+        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string("(", _str(p.x)), ","), _str(p.y)), ")")});
+        i = i + 1;
+    }
 }
 
 pub fn main() void {
     {
         const __start_mem = _mem();
         const __start = _now();
-        grid_data_var = blk0: { var _tmp0 = std.heap.page_allocator.alloc([][]const u8, 5) catch unreachable; _tmp0[0] = blk1: { var _tmp1 = std.heap.page_allocator.alloc([]const u8, 5) catch unreachable; _tmp1[0] = "."; _tmp1[1] = "."; _tmp1[2] = "."; _tmp1[3] = "."; _tmp1[4] = "."; break :blk1 _tmp1; }; _tmp0[1] = blk2: { var _tmp2 = std.heap.page_allocator.alloc([]const u8, 5) catch unreachable; _tmp2[0] = "."; _tmp2[1] = "#"; _tmp2[2] = "#"; _tmp2[3] = "#"; _tmp2[4] = "."; break :blk2 _tmp2; }; _tmp0[2] = blk3: { var _tmp3 = std.heap.page_allocator.alloc([]const u8, 5) catch unreachable; _tmp3[0] = "."; _tmp3[1] = "#"; _tmp3[2] = "."; _tmp3[3] = "#"; _tmp3[4] = "."; break :blk3 _tmp3; }; _tmp0[3] = blk4: { var _tmp4 = std.heap.page_allocator.alloc([]const u8, 5) catch unreachable; _tmp4[0] = "."; _tmp4[1] = "#"; _tmp4[2] = "#"; _tmp4[3] = "#"; _tmp4[4] = "."; break :blk4 _tmp4; }; _tmp0[4] = blk5: { var _tmp5 = std.heap.page_allocator.alloc([]const u8, 5) catch unreachable; _tmp5[0] = "."; _tmp5[1] = "."; _tmp5[2] = "."; _tmp5[3] = "."; _tmp5[4] = "."; break :blk5 _tmp5; }; break :blk0 _tmp0; };
-        flood(2, 2, "o");
-        for (grid_data_var) |__it0| {
-            const row = __it0;
-            var line: []const u8 = "";
-            for (row) |__it1| {
-                const ch = __it1;
-                line = _concat_string(line, ch);
-            }
-            std.debug.print("{s}\n", .{line});
-        }
+        mochi_main();
         const __end = _now();
         const __end_mem = _mem();
         const __duration_us = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
@@ -74,6 +95,13 @@ fn _now() i64 {
         } else |_| {}
     }
     return @as(i64, @intCast(std.time.nanoTimestamp()));
+}
+
+fn _str(v: anytype) []const u8 {
+    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {
+        return std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{v}) catch unreachable;
+    }
+    return std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{v}) catch unreachable;
 }
 
 fn _concat_string(lhs: []const u8, rhs: []const u8) []const u8 {

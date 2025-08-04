@@ -2,9 +2,9 @@
 
 Generated Zig code for Rosetta tasks lives under `tests/rosetta/transpiler/Zig`.
 
-Last updated: 2025-08-04 16:06 +0700
+Last updated: 2025-08-04 18:31 +0700
 
-## Program Checklist (95/491)
+## Program Checklist (102/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 8.923ms |  |
@@ -124,15 +124,15 @@ Last updated: 2025-08-04 16:06 +0700
 | 115 | bitcoin-address-validation | ✓ | 1.597ms |  |
 | 116 | bitmap-b-zier-curves-cubic |   |  |  |
 | 117 | bitmap-b-zier-curves-quadratic |   |  |  |
-| 118 | bitmap-bresenhams-line-algorithm |   |  |  |
-| 119 | bitmap-flood-fill |   |  |  |
-| 120 | bitmap-histogram |   |  |  |
-| 121 | bitmap-midpoint-circle-algorithm |   |  |  |
+| 118 | bitmap-bresenhams-line-algorithm | ✓ | 1.41ms | 512.0 KB |
+| 119 | bitmap-flood-fill | ✓ | 724µs | 256.0 KB |
+| 120 | bitmap-histogram | ✓ | 752µs | 384.0 KB |
+| 121 | bitmap-midpoint-circle-algorithm | ✓ | 16.09ms | 3.5 MB |
 | 122 | bitmap-ppm-conversion-through-a-pipe |   |  |  |
 | 123 | bitmap-read-a-ppm-file |   |  |  |
-| 124 | bitmap-read-an-image-through-a-pipe |   |  |  |
-| 125 | bitmap-write-a-ppm-file |   |  |  |
-| 126 | bitmap |   |  |  |
+| 124 | bitmap-read-an-image-through-a-pipe | ✓ |  |  |
+| 125 | bitmap-write-a-ppm-file | ✓ |  |  |
+| 126 | bitmap | ✓ |  |  |
 | 127 | bitwise-io-1 |   |  |  |
 | 128 | bitwise-io-2 |   |  |  |
 | 129 | bitwise-operations |   |  |  |

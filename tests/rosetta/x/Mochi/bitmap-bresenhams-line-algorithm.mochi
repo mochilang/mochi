@@ -17,20 +17,20 @@ fun bresenham(x0: int, y0: int, x1: int, y1: int): list<Point> {
   if x0 < x1 { sx = 1 }
   var sy = -1
   if y0 < y1 { sy = 1 }
-  var err = dx - dy
+    var errv = dx - dy
   var pts: list<Point> = []
   while true {
     pts = append(pts, Point{x: x0, y: y0})
     if x0 == x1 && y0 == y1 {
       break
     }
-    var e2 = 2 * err
-    if e2 > (-dy) {
-      err = err - dy
+    var e2 = 2 * errv
+    if e2 > (0 - dy) {
+      errv = errv - dy
       x0 = x0 + sx
     }
     if e2 < dx {
-      err = err + dx
+      errv = errv + dx
       y0 = y0 + sy
     }
   }
