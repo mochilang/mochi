@@ -551,7 +551,18 @@ func (in *InvokeExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
+	needParens := true
+	switch in.Callee.(type) {
+	case *VarRef, *FieldExpr:
+		needParens = false
+	}
+	if needParens {
+		io.WriteString(w, "(")
+	}
 	in.Callee.emit(w)
+	if needParens {
+		io.WriteString(w, ")")
+	}
 	io.WriteString(w, "(")
 	for i, a := range in.Args {
 		if i > 0 {
@@ -2678,6 +2689,8 @@ func guessType(e Expr) string {
 			return "MutableList<" + elem + ">"
 		}
 		return "MutableList<Any>"
+	case *TypedListLit:
+		return "MutableList<" + v.ElemType + ">"
 	case *MapLit:
 		if len(v.Items) > 0 {
 			k := guessType(v.Items[0].Key)
@@ -2951,6 +2964,25 @@ func localTypeName(env *types.Env, name string) string {
 		}
 	}
 	return ""
+}
+
+func findStructByField(env *types.Env, field string) (types.StructType, bool) {
+	if env == nil {
+		return types.StructType{}, false
+	}
+	var found types.StructType
+	for _, st := range env.Structs() {
+		if _, ok := st.Fields[field]; ok {
+			if found.Name != "" {
+				return types.StructType{}, false
+			}
+			found = st
+		}
+	}
+	if found.Name == "" {
+		return types.StructType{}, false
+	}
+	return found, true
 }
 
 func handleImport(env *types.Env, im *parser.ImportStmt) bool {
@@ -5537,8 +5569,15 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				}
 			} else {
 				curType = nil
+				if st, ok := findStructByField(env, name); ok {
+					ftype = kotlinTypeFromType(st.Fields[name])
+					expr = &FieldExpr{Receiver: &CastExpr{Value: expr, Type: st.Name}, Name: name, Type: ftype}
+					curType = st.Fields[name]
+					goto nextField
+				}
 			}
 			expr = &FieldExpr{Receiver: expr, Name: name, Type: ftype}
+		nextField:
 			if i == 0 {
 				if vr, ok := expr.(*FieldExpr); ok {
 					if vref, ok2 := vr.Receiver.(*VarRef); ok2 && env != nil {
@@ -5563,6 +5602,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 			}
 			elems[i] = ex
 		}
+		if len(elems) == 0 {
+			return &ListLit{Elems: elems}, nil
+		}
 		elemType := ""
 		for _, ex := range elems {
 			t := guessType(ex)
@@ -5581,8 +5623,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					elems[i] = &CastExpr{Value: ex, Type: elemType}
 				}
 			}
+			return &ListLit{Elems: elems}, nil
 		}
-		return &ListLit{Elems: elems}, nil
+		return &TypedListLit{ElemType: "Any?", Elems: elems}, nil
 	case p.Map != nil:
 		allSimple := true
 		for _, it := range p.Map.Items {

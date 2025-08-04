@@ -98,7 +98,7 @@ fun main() {
             var f: Int = q[0]!!
             var fd: Int = fq[0]!!
             if (isPrime(f) && isCircular(f)) {
-                circs = run { val _tmp = circs.toMutableList(); _tmp.add(f); _tmp } as MutableList<Int>
+                circs = run { val _tmp = circs.toMutableList(); _tmp.add(f); _tmp }
                 count = count + 1
                 if (count == 19) {
                     break
@@ -108,8 +108,8 @@ fun main() {
             fq = fq.subList(1, fq.size)
             if ((f != 2) && (f != 5)) {
                 for (d in digits) {
-                    q = run { val _tmp = q.toMutableList(); _tmp.add((f * 10) + d); _tmp } as MutableList<Int>
-                    fq = run { val _tmp = fq.toMutableList(); _tmp.add(fd); _tmp } as MutableList<Int>
+                    q = run { val _tmp = q.toMutableList(); _tmp.add((f * 10) + d); _tmp }
+                    fq = run { val _tmp = fq.toMutableList(); _tmp.add(fd); _tmp }
                 }
             }
         }

@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 00:33 +0700
+Last updated: 2025-08-04 08:01 +0700
 
-Completed tasks: **273/491**
+Completed tasks: **281/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -212,17 +212,17 @@ Completed tasks: **273/491**
 | 201 | chowla-numbers | ✓ | 7.43ms | 130.8 KB |
 | 202 | church-numerals-1 | ✓ | 10.17ms | 130.3 KB |
 | 203 | church-numerals-2 |  |  |  |
-| 204 | circles-of-given-radius-through-two-points |  |  |  |
-| 205 | circular-primes | ✓ | 68.53ms | 119.0 KB |
-| 206 | cistercian-numerals |  |  |  |
-| 207 | comma-quibbling | ✓ | 23.13ms | 123.6 KB |
+| 204 | circles-of-given-radius-through-two-points | ✓ | 11.02ms | 123.7 KB |
+| 205 | circular-primes | ✓ | 27.73ms | 118.1 KB |
+| 206 | cistercian-numerals | ✓ | 57.32ms | 92.0 KB |
+| 207 | comma-quibbling | ✓ | 23.52ms | 123.6 KB |
 | 208 | compiler-virtual-machine-interpreter |  |  |  |
-| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k |  |  |  |
-| 210 | compound-data-type |  |  |  |
-| 211 | concurrent-computing-1 |  |  |  |
-| 212 | concurrent-computing-2 |  |  |  |
-| 213 | concurrent-computing-3 |  |  |  |
-| 214 | conditional-structures-1 |  |  |  |
+| 209 | composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k | ✓ | 15.29s | 836.8 KB |
+| 210 | compound-data-type | ✓ | 10.21ms | 134.6 KB |
+| 211 | concurrent-computing-1 | ✓ | 26.65ms | 114.4 KB |
+| 212 | concurrent-computing-2 | ✓ | 25.28ms | 114.4 KB |
+| 213 | concurrent-computing-3 | ✓ | 25.08ms | 114.5 KB |
+| 214 | conditional-structures-1 | ✓ | 8.14ms | 134.6 KB |
 | 215 | conditional-structures-10 |  |  |  |
 | 216 | conditional-structures-2 |  |  |  |
 | 217 | conditional-structures-3 |  |  |  |
