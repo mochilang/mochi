@@ -1,7 +1,7 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-04 21:54 GMT+7
+Last updated: 2025-08-04 22:47 GMT+7
 
 ## Rosetta Checklist (453/491)
 | Index | Name | Status | Duration | Memory |
@@ -56,7 +56,7 @@ Last updated: 2025-08-04 21:54 GMT+7
 | 48 | angle-difference-between-two-bearings-2 | ✓ | 31.0ms | 10.80KB |
 | 49 | angles-geometric-normalization-and-conversion | ✓ | 83.0ms | 106.21KB |
 | 50 | animate-a-pendulum | ✓ | 33.0ms | 448B |
-| 51 | animation | ✓ | 55.0ms | 32.88KB |
+| 51 | animation | ✓ | 26.0ms | 32.88KB |
 | 52 | anonymous-recursion-1 | ✓ | 74.0ms | 77.56KB |
 | 53 | anonymous-recursion-2 | ✓ | 86.0ms | 87.19KB |
 | 54 | anonymous-recursion | ✓ | 72.0ms | 87.19KB |
