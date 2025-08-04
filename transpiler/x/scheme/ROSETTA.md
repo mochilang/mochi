@@ -3,7 +3,7 @@
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
 ## Checklist (430/491)
-Last updated: 2025-08-04 02:36 UTC
+Last updated: 2025-08-04 08:44 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -456,15 +456,15 @@ Last updated: 2025-08-04 02:36 UTC
 | 447 | flow-control-structures-2 | ✓ | 571.223ms | 11.9 MB |
 | 448 | flow-control-structures-3 | ✓ | 571.223ms | 11.9 MB |
 | 449 | flow-control-structures-4 |   |  |  |
-| 450 | floyd-warshall-algorithm | ✓ |  |  |
-| 451 | floyd-warshall-algorithm2 | ✓ |  |  |
-| 452 | floyds-triangle | ✓ |  |  |
-| 453 | forest-fire | ✓ |  |  |
+| 450 | floyd-warshall-algorithm | ✓ | 2ms | 13.8 MB |
+| 451 | floyd-warshall-algorithm2 | ✓ | 1ms | 13.6 MB |
+| 452 | floyds-triangle | ✓ | 1ms | 12.7 MB |
+| 453 | forest-fire | ✓ | 52ms | 16.5 MB |
 | 454 | fork-2 | ✓ |  |  |
 | 455 | fork | ✓ |  |  |
-| 456 | formal-power-series | ✓ |  |  |
+| 456 | formal-power-series | ✓ | 3ms | 13.7 MB |
 | 457 | formatted-numeric-output | ✓ |  |  |
-| 458 | forward-difference | ✓ |  |  |
+| 458 | forward-difference | ✓ | 1ms | 12.4 MB |
 | 459 | four-bit-adder-1 | ✓ |  |  |
 | 460 | four-is-magic | ✓ |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... | ✓ |  |  |
