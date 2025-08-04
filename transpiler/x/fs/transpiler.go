@@ -230,11 +230,19 @@ func fsType(t types.Type) string {
 	case types.StringType:
 		return "string"
 	case types.ListType:
-		return fsType(tt.Elem) + " array"
+		elem := fsType(tt.Elem)
+		if _, ok := tt.Elem.(types.FuncType); ok {
+			elem = "(" + elem + ")"
+		}
+		return elem + " array"
 	case types.MapType:
 		return fmt.Sprintf("System.Collections.Generic.IDictionary<%s, %s>", fsType(tt.Key), fsType(tt.Value))
 	case types.OptionType:
-		return fsType(tt.Elem) + " option"
+		elem := fsType(tt.Elem)
+		if _, ok := tt.Elem.(types.FuncType); ok {
+			elem = "(" + elem + ")"
+		}
+		return elem + " option"
 	case types.VoidType:
 		return "unit"
 	case types.FuncType:
@@ -278,10 +286,25 @@ func fsTypeFromString(s string) string {
 	default:
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
-			return fsTypeFromString(elem) + " array"
+			t := fsTypeFromString(elem)
+			if strings.Contains(t, "->") {
+				t = "(" + t + ")"
+			}
+			return t + " array"
 		}
 		if strings.HasSuffix(s, " list") {
-			return fsTypeFromString(strings.TrimSuffix(s, " list")) + " array"
+			t := fsTypeFromString(strings.TrimSuffix(s, " list"))
+			if strings.Contains(t, "->") {
+				t = "(" + t + ")"
+			}
+			return t + " array"
+		}
+		if strings.HasSuffix(s, " option") {
+			t := fsTypeFromString(strings.TrimSuffix(s, " option"))
+			if strings.Contains(t, "->") {
+				t = "(" + t + ")"
+			}
+			return t + " option"
 		}
 		if strings.HasPrefix(s, "fun(") && strings.HasSuffix(s, ")") {
 			inner := strings.TrimSuffix(strings.TrimPrefix(s, "fun("), ")")

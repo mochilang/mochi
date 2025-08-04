@@ -1,7 +1,6 @@
-// Generated 2025-07-30 21:05 +0700
+// Generated 2025-08-05 00:29 +0700
 
 exception Return
-
 let mutable _nowSeed:int64 = 0L
 let mutable _nowSeeded = false
 let _initNow () =
@@ -20,6 +19,8 @@ let _now () =
         int (System.DateTime.UtcNow.Ticks % 2147483647L)
 
 _initNow()
+let _idx (arr:'a array) (i:int) : 'a =
+    if i >= 0 && i < arr.Length then arr.[i] else Unchecked.defaultof<'a>
 let rec multiplier (n1: float) (n2: float) =
     let mutable __ret : float -> float = Unchecked.defaultof<float -> float>
     let mutable n1 = n1
@@ -44,13 +45,13 @@ and main () =
         let zi: float = 1.0 / (x + y)
         let numbers: float array = [|x; y; z|]
         let inverses: float array = [|xi; yi; zi|]
-        let mutable mfs: float -> float array = [||]
+        let mutable mfs: (float -> float) array = [||]
         let mutable i: int = 0
-        while i < (Seq.length numbers) do
-            mfs <- Array.append mfs [|unbox<float -> float> (multiplier (numbers.[i]) (inverses.[i]))|]
+        while i < (Seq.length(numbers)) do
+            mfs <- Array.append mfs [|multiplier (_idx numbers (i)) (_idx inverses (i))|]
             i <- i + 1
         for mf in mfs do
-            printfn "%s" (string (mf 1.0))
+            printfn "%s" (string (mf (1.0)))
         let __bench_end = _now()
         let __mem_end = System.GC.GetTotalMemory(true)
         printfn "{\n  \"duration_us\": %d,\n  \"memory_bytes\": %d,\n  \"name\": \"main\"\n}" ((__bench_end - __bench_start) / 1000) (__mem_end - __mem_start)
