@@ -984,40 +984,11 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	methodNames = map[string]struct{}{}
 	currentMethodFields = nil
 	externFuncs = map[string]struct{}{}
-	p := &Program{}
-	// hoist function declarations before other statements
-	for _, st := range prog.Statements {
-		if st.Fun == nil {
-			continue
-		}
-		form, err := convertStmt(st)
-		if err != nil {
-			return nil, err
-		}
-		if form != nil {
-			if lst, ok := form.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
-				p.Forms = append(p.Forms, lst.Elems[1:]...)
-			} else {
-				p.Forms = append(p.Forms, form)
-			}
-		}
+	forms, err := convertStmts(prog.Statements)
+	if err != nil {
+		return nil, err
 	}
-	for _, st := range prog.Statements {
-		if st.Fun != nil {
-			continue
-		}
-		form, err := convertStmt(st)
-		if err != nil {
-			return nil, err
-		}
-		if form != nil {
-			if lst, ok := form.(*List); ok && len(lst.Elems) > 0 && lst.Elems[0] == Symbol("begin") {
-				p.Forms = append(p.Forms, lst.Elems[1:]...)
-			} else {
-				p.Forms = append(p.Forms, form)
-			}
-		}
-	}
+	p := &Program{Forms: forms}
 	if len(unionConstOrder) > 0 {
 		defs := make([]Node, len(unionConstOrder))
 		for i, v := range unionConstOrder {
