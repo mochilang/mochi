@@ -1,6 +1,0 @@
-run error: exit status 1
-Execution error (IndexOutOfBoundsException) at main/cartN (cartesian-product-of-two-or-more-lists-3.clj:27).
-null
-
-Full report at:
-/tmp/clojure-2476248691420609536.edn
