@@ -2571,6 +2571,9 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
+	if c.Type == "num" && valType == "double" {
+		return c.Value.emit(w)
+	}
 	if strings.HasPrefix(c.Type, "List<") && valType != c.Type {
 		return emitListConversion(w, c.Value, c.Type)
 	}
@@ -3335,7 +3338,7 @@ func inferType(e Expr) string {
 	case *IntLit:
 		return "int"
 	case *FloatLit:
-		return "num"
+		return "double"
 	case *BoolLit:
 		return "bool"
 	case *StringLit:
@@ -3669,6 +3672,9 @@ func inferType(e Expr) string {
 			if lt == "int" && rt == "int" {
 				return "int"
 			}
+			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+				return "double"
+			}
 			return "num"
 		case "-", "*", "%":
 			lt := inferType(ex.Left)
@@ -3679,6 +3685,9 @@ func inferType(e Expr) string {
 			if lt == "int" && rt == "int" {
 				return "int"
 			}
+			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+				return "double"
+			}
 			return "num"
 		case "/":
 			lt := inferType(ex.Left)
@@ -3688,6 +3697,9 @@ func inferType(e Expr) string {
 			}
 			if lt == "int" && rt == "int" {
 				return "int"
+			}
+			if lt == "double" || rt == "double" || lt == "num" || rt == "num" {
+				return "double"
 			}
 			return "num"
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
