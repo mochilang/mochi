@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 08:01 +0700
+Last updated: 2025-08-04 08:54 +0700
 
-Completed tasks: **281/491**
+Completed tasks: **291/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -223,17 +223,17 @@ Completed tasks: **281/491**
 | 212 | concurrent-computing-2 | ✓ | 25.28ms | 114.4 KB |
 | 213 | concurrent-computing-3 | ✓ | 25.08ms | 114.5 KB |
 | 214 | conditional-structures-1 | ✓ | 8.14ms | 134.6 KB |
-| 215 | conditional-structures-10 |  |  |  |
-| 216 | conditional-structures-2 |  |  |  |
-| 217 | conditional-structures-3 |  |  |  |
-| 218 | conditional-structures-4 |  |  |  |
-| 219 | conditional-structures-5 |  |  |  |
-| 220 | conditional-structures-6 |  |  |  |
-| 221 | conditional-structures-7 |  |  |  |
-| 222 | conditional-structures-8 |  |  |  |
-| 223 | conditional-structures-9 |  |  |  |
+| 215 | conditional-structures-10 | ✓ | 6.64ms | 134.1 KB |
+| 216 | conditional-structures-2 | ✓ | 5.90ms | 134.6 KB |
+| 217 | conditional-structures-3 | ✓ | 5.47ms | 134.6 KB |
+| 218 | conditional-structures-4 | ✓ | 5.81ms | 134.6 KB |
+| 219 | conditional-structures-5 | ✓ | 5.35ms | 134.6 KB |
+| 220 | conditional-structures-6 | ✓ | 7.20ms | 134.6 KB |
+| 221 | conditional-structures-7 | ✓ | 6.35ms | 134.6 KB |
+| 222 | conditional-structures-8 | ✓ | 7.08ms | 134.6 KB |
+| 223 | conditional-structures-9 | ✓ | 6.22ms | 134.6 KB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |  |  |  |
-| 225 | constrained-genericity-1 |  |  |  |
+| 225 | constrained-genericity-1 | ✓ | 6.23ms | 134.6 KB |
 | 226 | constrained-genericity-2 |  |  |  |
 | 227 | constrained-genericity-3 |  |  |  |
 | 228 | constrained-genericity-4 |  |  |  |

@@ -450,6 +450,13 @@ func (d *DataClass) emit(w io.Writer, indentLevel int) {
 			if typ == "" {
 				typ = "Any"
 			}
+			if f.Default == "null" && !strings.HasSuffix(typ, "?") {
+				if strings.Contains(typ, "->") {
+					typ = "(" + typ + ")?"
+				} else {
+					typ += "?"
+				}
+			}
 			io.WriteString(w, "var "+f.Name+": "+typ)
 			if f.Default != "" {
 				io.WriteString(w, " = "+f.Default)
