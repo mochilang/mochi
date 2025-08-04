@@ -1,0 +1,8 @@
+error[A024]: unknown function indexOf
+  --> /workspace/mochi/tests/rosetta/x/Mochi/determine-if-two-triangles-overlap.mochi:17:13
+
+ 17 |   let idx = indexOf(s, ".")
+    |             ^
+
+help:
+  Declare indexOf before use

@@ -1,0 +1,34 @@
+fun main(): void {
+  var pkg_dog: string = "Salt"
+  var Dog: string = "Pepper"
+  var pkg_DOG: string = "Mustard"
+  fun packageSees(d1: string, d2: string, d3: string): map<string, bool> {
+    print(((((("Package sees: " + d1) + " ") + d2) + " ") + d3))
+    return {"pkg_dog": true, "Dog": true, "pkg_DOG": true}
+  }
+  var d: map<string, bool> = packageSees(pkg_dog, Dog, pkg_DOG)
+  print((("There are " + str(len(d))) + " dogs.\n"))
+  var dog: string = "Benjamin"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print(((((("Main sees:   " + dog) + " ") + Dog) + " ") + pkg_DOG))
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  print((("There are " + str(len(d))) + " dogs.\n"))
+  Dog = "Samba"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print(((((("Main sees:   " + dog) + " ") + Dog) + " ") + pkg_DOG))
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  print((("There are " + str(len(d))) + " dogs.\n"))
+  var DOG: string = "Bernie"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print(((((("Main sees:   " + dog) + " ") + Dog) + " ") + DOG))
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  d["DOG"] = true
+  print((("There are " + str(len(d))) + " dogs."))
+}
+main()

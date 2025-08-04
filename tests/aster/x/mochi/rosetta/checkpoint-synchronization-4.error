@@ -1,0 +1,8 @@
+error[A003]: undefined variable mech
+  --> /workspace/mochi/tests/rosetta/x/Mochi/checkpoint-synchronization-4.mochi:5:12
+
+  5 |   let id = mech
+    |            ^
+
+help:
+  Declare mech before use

@@ -1,0 +1,79 @@
+fun primesUpTo(n: int): list<int> {
+  var sieve: list<bool>
+  var i: int = 0
+  while (i <= n) {
+    sieve = append(sieve, true)
+    i = (i + 1)
+  }
+  var p: int = 2
+  while ((p * p) <= n) {
+    if sieve[p] {
+      var m: int = (p * p)
+      while (m <= n) {
+        sieve[m] = false
+        m = (m + p)
+      }
+    }
+    p = (p + 1)
+  }
+  var res: list<int>
+  var x: int = 2
+  while (x <= n) {
+    if sieve[x] {
+      res = append(res, x)
+    }
+    x = (x + 1)
+  }
+  return res
+}
+let LIMIT: int = 999999
+let primes: list<int> = primesUpTo(LIMIT)
+fun longestSeq(dir: string): void {
+  var pd: int = 0
+  var longSeqs: list<list<int>> = [[2]]
+  var currSeq: list<int> = [2]
+  var i: int = 1
+  while (i < len(primes)) {
+    let d: int = (primes[i] - primes[(i - 1)])
+    if ((((dir == "ascending") && (d <= pd))) || (((dir == "descending") && (d >= pd)))) {
+      if (len(currSeq) > len(longSeqs[0])) {
+        longSeqs = [currSeq]
+      } else       if (len(currSeq) == len(longSeqs[0])) {
+        longSeqs = append(longSeqs, currSeq)
+      }
+      currSeq = [primes[(i - 1)], primes[i]]
+    } else {
+      currSeq = append(currSeq, primes[i])
+    }
+    pd = d
+    i = (i + 1)
+  }
+  if (len(currSeq) > len(longSeqs[0])) {
+    longSeqs = [currSeq]
+  } else   if (len(currSeq) == len(longSeqs[0])) {
+    longSeqs = append(longSeqs, currSeq)
+  }
+  print((((("Longest run(s) of primes with " + dir) + " differences is ") + str(len(longSeqs[0]))) + " :"))
+  for ls in longSeqs {
+    var diffs: list<int>
+    var j: int = 1
+    while (j < len(ls)) {
+      diffs = append(diffs, (ls[j] - ls[(j - 1)]))
+      j = (j + 1)
+    }
+    var k: int = 0
+    while (k < (len(ls) - 1)) {
+      print((((str(ls[k]) + " (") + str(diffs[k])) + ") "), false)
+      k = (k + 1)
+    }
+    print(str(ls[(len(ls) - 1)]))
+  }
+  print("")
+}
+fun main(): void {
+  print("For primes < 1 million:\n")
+  for dir in ["ascending", "descending"] {
+    longestSeq(dir)
+  }
+}
+main()

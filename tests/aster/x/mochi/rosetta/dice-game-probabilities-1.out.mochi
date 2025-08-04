@@ -1,0 +1,62 @@
+fun powInt(base: int, exp: int): int {
+  var r: int = 1
+  var b: int = base
+  var e: int = exp
+  while (e > 0) {
+    if ((e % 2) == 1) {
+      r = (r * b)
+    }
+    b = (b * b)
+    e = (e / 2 as int)
+  }
+  return r
+}
+fun minInt(x: int, y: int): int {
+  if (x < y) {
+    return x
+  }
+  return y
+}
+fun throwDie(nSides: int, nDice: int, s: int, counts: list<int>): void {
+  if (nDice == 0) {
+    counts[s] = (counts[s] + 1)
+  }
+  var i: int = 1
+  while (i <= nSides) {
+    throwDie(nSides, (nDice - 1), (s + i), counts)
+    i = (i + 1)
+  }
+}
+fun beatingProbability(nSides1: int, nDice1: int, nSides2: int, nDice2: int): float {
+  let len1: int = (((nSides1 + 1)) * nDice1)
+  var c1: list<int>
+  var i: int = 0
+  while (i < len1) {
+    c1 = append(c1, 0)
+    i = (i + 1)
+  }
+  throwDie(nSides1, nDice1, 0, c1)
+  let len2: int = (((nSides2 + 1)) * nDice2)
+  var c2: list<int>
+  var j: int = 0
+  while (j < len2) {
+    c2 = append(c2, 0)
+    j = (j + 1)
+  }
+  throwDie(nSides2, nDice2, 0, c2)
+  let p12: float = ((powInt(nSides1, nDice1) as float) * (powInt(nSides2, nDice2) as float))
+  var tot: float = 0
+  i = 0
+  while (i < len1) {
+    j = 0
+    let m: int = minInt(i, len2)
+    while (j < m) {
+      tot = (tot + (((c1[i] * c2[j] as float)) / p12))
+      j = (j + 1)
+    }
+    i = (i + 1)
+  }
+  return tot
+}
+print(str(beatingProbability(4, 9, 6, 6)))
+print(str(beatingProbability(10, 5, 7, 6)))

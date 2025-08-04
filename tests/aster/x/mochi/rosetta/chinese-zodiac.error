@@ -1,0 +1,8 @@
+error[A003]: undefined variable yr
+  --> /workspace/mochi/tests/rosetta/x/Mochi/chinese-zodiac.mochi:32:14
+
+ 32 |   let r = cz(yr, animal, yinYang, element, stemChArr, branchChArr)
+    |              ^
+
+help:
+  Declare yr before use

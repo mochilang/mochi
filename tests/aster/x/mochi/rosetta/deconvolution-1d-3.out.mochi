@@ -1,0 +1,60 @@
+fun indexOf(s: string, ch: string): int {
+  var i: int = 0
+  while (i < len(s)) {
+    if (substring(s, i, (i + 1)) == ch) {
+      return i
+    }
+    i = (i + 1)
+  }
+  return -1
+}
+fun fmt1(x: float): string {
+  var y: float = (((((x * 10)) + 0.5)) as int as float / 10)
+  var s: string = str(y)
+  let dot: int = indexOf(s, ".")
+  if (dot < 0) {
+    s = (s + ".0")
+  }
+  return s
+}
+fun printColumnMatrix(xs: list<float>): void {
+  print((("⎡" + fmt1(xs[0])) + "⎤"))
+  var i: int = 1
+  while (i < (len(xs) - 1)) {
+    print((("⎢" + fmt1(xs[i])) + "⎥"))
+    i = (i + 1)
+  }
+  print((("⎣ " + fmt1(xs[(len(xs) - 1)])) + "⎦"))
+}
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var h: list<float>
+  var n: int = 0
+  let hn: int = ((len(g) - len(f)) + 1)
+  while (n < hn) {
+    var v: float = g[n]
+    var lower: int = 0
+    if (n >= len(f)) {
+      lower = ((n - len(f)) + 1)
+    }
+    var i: int = lower
+    while (i < n) {
+      v = (v - (h[i] * f[(n - i)]))
+      i = (i + 1)
+    }
+    v = (v / f[0])
+    h = append(h, v)
+    n = (n + 1)
+  }
+  return h
+}
+fun main(): void {
+  let h: list<float> = [-8, -9, -3, -1, -6, 7]
+  let f: list<float> = [-3, -6, -1, 8, -6, 3, -1, -9, -9, 3, -2, 5, 2, -2, -7, -1]
+  let g: list<float> = [24, 75, 71, -34, 3, 22, -45, 23, 245, 25, 52, 25, -67, -96, 96, 31, 55, 36, 29, -43, -7]
+  print("deconv(g, f) =")
+  printColumnMatrix(deconv(g, f))
+  print("")
+  print("deconv(g, h) =")
+  printColumnMatrix(deconv(g, h))
+}
+main()

@@ -1,0 +1,8 @@
+error[A003]: undefined variable r
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cyclops-numbers.mochi:122:17
+
+122 |     let start = r[0]
+    |                 ^
+
+help:
+  Declare r before use

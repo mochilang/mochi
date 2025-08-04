@@ -1,0 +1,50 @@
+let nPts: int = 100
+let rMin: int = 10
+let rMax: int = 15
+let span: int = ((rMax + 1) + rMax)
+var rows: list<list<string>>
+var r: int = 0
+while (r < span) {
+  var row: list<string>
+  var c: int = 0
+  while (c < (span * 2)) {
+    row = append(row, " ")
+    c = (c + 1)
+  }
+  rows = append(rows, row)
+  r = (r + 1)
+}
+var u: int = 0
+var seen: map<string, bool>
+let min2: int = (rMin * rMin)
+let max2: int = (rMax * rMax)
+var n: int = 0
+while (n < nPts) {
+  var x: int = ((now() % span) - rMax)
+  var y: int = ((now() % span) - rMax)
+  let rs: int = ((x * x) + (y * y))
+  if ((rs < min2) || (rs > max2)) {
+    continue
+  }
+  n = (n + 1)
+  let row: int = (y + rMax)
+  let col: int = (((x + rMax)) * 2)
+  rows[row][col] = "*"
+  let key: string = ((str(row) + ",") + str(col))
+  if !seen[key] {
+    seen[key] = true
+    u = (u + 1)
+  }
+}
+var i: int = 0
+while (i < span) {
+  var line: string = ""
+  var j: int = 0
+  while (j < (span * 2)) {
+    line = (line + rows[i][j])
+    j = (j + 1)
+  }
+  print(line)
+  i = (i + 1)
+}
+print((str(u) + " unique points"))

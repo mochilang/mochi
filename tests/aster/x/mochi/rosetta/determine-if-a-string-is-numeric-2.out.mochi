@@ -1,0 +1,23 @@
+fun isInt(s: string): bool {
+  if (len(s) == 0) {
+    return false
+  }
+  for ch in s {
+    if ((ch < "0") || (ch > "9")) {
+      return false
+    }
+  }
+  return true
+}
+fun main(): void {
+  print("Are these strings integers?")
+  let v: string = "1"
+  var b: bool = false
+  if isInt(v) {
+    b = true
+  }
+  print(((("  " + v) + " -> ") + str(b)))
+  let i: string = "one"
+  print(((("  " + i) + " -> ") + str(isInt(i))))
+}
+main()

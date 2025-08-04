@@ -1,0 +1,8 @@
+fun example9(): void {
+  while true {
+    if true {
+      break
+    }
+    print("I want out!")
+  }
+}

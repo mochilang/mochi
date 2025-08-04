@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/create-a-file-on-magnetic-tape.mochi:34:5
+
+ 34 |     "Mode": 0o660,
+    |     ^
+
+help:
+  Ensure map keys and values share types

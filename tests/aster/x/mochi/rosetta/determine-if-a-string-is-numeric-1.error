@@ -1,0 +1,8 @@
+error[A017]: index on non-indexable type string
+  --> /workspace/mochi/tests/rosetta/x/Mochi/determine-if-a-string-is-numeric-1.mochi:15:15
+
+ 15 |     let ch = s[i]
+    |               ^
+
+help:
+  Only lists and maps support indexing

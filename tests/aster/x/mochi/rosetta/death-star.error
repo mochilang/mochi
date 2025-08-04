@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/death-star.mochi:50:24
+
+ 50 |   return {"hit": true, "z1": s.cz - z, "z2": s.cz + z}
+    |                        ^
+
+help:
+  Ensure map keys and values share types

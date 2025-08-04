@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/call-an-object-method-2.mochi:21:10
+
+ 21 |   return [New, Count]
+    |          ^
+
+help:
+  Ensure all list elements share a type

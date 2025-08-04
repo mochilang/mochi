@@ -1,0 +1,46 @@
+type TinyInt {
+  value: int
+  fun Add(t2: TinyInt): TinyInt {
+    return NewTinyInt((value + t2.value))
+  }
+  fun Sub(t2: TinyInt): TinyInt {
+    return NewTinyInt((value - t2.value))
+  }
+  fun Mul(t2: TinyInt): TinyInt {
+    return NewTinyInt((value * t2.value))
+  }
+  fun Div(t2: TinyInt): TinyInt {
+    return NewTinyInt((value / t2.value))
+  }
+  fun Rem(t2: TinyInt): TinyInt {
+    return NewTinyInt((value % t2.value))
+  }
+  fun Inc(): TinyInt {
+    return Add(NewTinyInt(1))
+  }
+  fun Dec(): TinyInt {
+    return Sub(NewTinyInt(1))
+  }
+}
+fun NewTinyInt(i: int): TinyInt {
+  if (i < 1) {
+    i = 1
+  } else   if (i > 10) {
+    i = 10
+  }
+  return TinyInt {value: i}
+}
+fun main(): void {
+  let t1: TinyInt = NewTinyInt(6)
+  let t2: TinyInt = NewTinyInt(3)
+  print(("t1      = " + str(t1.value)))
+  print(("t2      = " + str(t2.value)))
+  print(("t1 + t2 = " + str(t1.Add(t2).value)))
+  print(("t1 - t2 = " + str(t1.Sub(t2).value)))
+  print(("t1 * t2 = " + str(t1.Mul(t2).value)))
+  print(("t1 / t2 = " + str(t1.Div(t2).value)))
+  print(("t1 % t2 = " + str(t1.Rem(t2).value)))
+  print(("t1 + 1  = " + str(t1.Inc().value)))
+  print(("t1 - 1  = " + str(t1.Dec().value)))
+}
+main()

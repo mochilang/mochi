@@ -1,0 +1,47 @@
+fun timeStr(sec: int): string {
+  var wks: int = (sec / 604800)
+  sec = (sec % 604800)
+  var ds: int = (sec / 86400)
+  sec = (sec % 86400)
+  var hrs: int = (sec / 3600)
+  sec = (sec % 3600)
+  var mins: int = (sec / 60)
+  sec = (sec % 60)
+  var res: string = ""
+  var comma: bool = false
+  if (wks != 0) {
+    res = ((res + str(wks)) + " wk")
+    comma = true
+  }
+  if (ds != 0) {
+    if comma {
+      res = (res + ", ")
+    }
+    res = ((res + str(ds)) + " d")
+    comma = true
+  }
+  if (hrs != 0) {
+    if comma {
+      res = (res + ", ")
+    }
+    res = ((res + str(hrs)) + " hr")
+    comma = true
+  }
+  if (mins != 0) {
+    if comma {
+      res = (res + ", ")
+    }
+    res = ((res + str(mins)) + " min")
+    comma = true
+  }
+  if (sec != 0) {
+    if comma {
+      res = (res + ", ")
+    }
+    res = ((res + str(sec)) + " sec")
+  }
+  return res
+}
+print(timeStr(7259))
+print(timeStr(86400))
+print(timeStr(6000000))

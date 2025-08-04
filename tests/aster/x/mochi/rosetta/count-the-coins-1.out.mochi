@@ -1,0 +1,23 @@
+fun countChange(amount: int): int {
+  var ways: list<int>
+  var i: int = 0
+  while (i <= amount) {
+    ways = append(ways, 0)
+    i = (i + 1)
+  }
+  ways[0] = 1
+  var coins: list<int> = [1, 5, 10, 25]
+  var idx: int = 0
+  while (idx < len(coins)) {
+    let coin: int = coins[idx]
+    var j: int = coin
+    while (j <= amount) {
+      ways[j] = (ways[j] + ways[(j - coin)])
+      j = (j + 1)
+    }
+    idx = (idx + 1)
+  }
+  return ways[amount]
+}
+let amount: int = 10
+print(((("amount, ways to make change: " + str(amount)) + " ") + str(countChange(amount))))

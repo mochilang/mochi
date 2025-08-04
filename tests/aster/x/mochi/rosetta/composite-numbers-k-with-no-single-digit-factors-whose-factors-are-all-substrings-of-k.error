@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/composite-numbers-k-with-no-single-digit-factors-whose-factors-are-all-substrings-of-k.mochi:57:10
+
+ 57 |   return substring(s, 0, end)
+    |          ^
+
+help:
+  Declare substring before use

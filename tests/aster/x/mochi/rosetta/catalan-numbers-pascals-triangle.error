@@ -1,0 +1,8 @@
+error[A003]: undefined variable i
+  --> /workspace/mochi/tests/rosetta/x/Mochi/catalan-numbers-pascals-triangle.mochi:14:11
+
+ 14 |   var j = i
+    |           ^
+
+help:
+  Declare i before use

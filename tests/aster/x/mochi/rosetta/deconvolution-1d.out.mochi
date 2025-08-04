@@ -1,0 +1,43 @@
+fun listToStringInts(xs: list<float>): string {
+  var s: string = "["
+  var i: int = 0
+  while (i < len(xs)) {
+    s = (s + str(xs[i] as int))
+    if (i < (len(xs) - 1)) {
+      s = (s + " ")
+    }
+    i = (i + 1)
+  }
+  return (s + "]")
+}
+fun deconv(g: list<float>, f: list<float>): list<float> {
+  var h: list<float>
+  var n: int = 0
+  let hn: int = ((len(g) - len(f)) + 1)
+  while (n < hn) {
+    var v: float = g[n]
+    var lower: int = 0
+    if (n >= len(f)) {
+      lower = ((n - len(f)) + 1)
+    }
+    var i: int = lower
+    while (i < n) {
+      v = (v - (h[i] * f[(n - i)]))
+      i = (i + 1)
+    }
+    v = (v / f[0])
+    h = append(h, v)
+    n = (n + 1)
+  }
+  return h
+}
+fun main(): void {
+  let h: list<float> = [-8, -9, -3, -1, -6, 7]
+  let f: list<float> = [-3, -6, -1, 8, -6, 3, -1, -9, -9, 3, -2, 5, 2, -2, -7, -1]
+  let g: list<float> = [24, 75, 71, -34, 3, 22, -45, 23, 245, 25, 52, 25, -67, -96, 96, 31, 55, 36, 29, -43, -7]
+  print(listToStringInts(h))
+  print(listToStringInts(deconv(g, f)))
+  print(listToStringInts(f))
+  print(listToStringInts(deconv(g, h)))
+}
+main()

@@ -1,0 +1,8 @@
+error[A002]: type mismatch for m: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/digital-root-multiplicative-digital-root.mochi:15:3
+
+ 15 |   var m: bigint = 1
+    |   ^
+
+help:
+  Ensure m matches

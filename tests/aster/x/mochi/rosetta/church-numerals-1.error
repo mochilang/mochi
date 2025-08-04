@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected Fn, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-1.mochi:8:23
+
+  8 | fun zero(f: Fn): Fn { return fun(x: any): any { return x } }
+    |                       ^
+
+help:
+  Ensure return value matches

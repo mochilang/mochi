@@ -1,0 +1,8 @@
+error[A003]: undefined variable h3
+  --> /workspace/mochi/tests/rosetta/x/Mochi/carmichael-3-strong-pseudoprimes.mochi:34:35
+
+ 34 |         let p2 = 1 + ((p1 - 1) * (h3 + p1) / d)
+    |                                   ^
+
+help:
+  Declare h3 before use

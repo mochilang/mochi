@@ -1,0 +1,53 @@
+type cds {
+  i: int
+  s: string
+  b: list<int>
+  m: map<int, bool>
+}
+fun copyList(src: list<int>): list<int> {
+  var out: list<int>
+  for v in src {
+    out = append(out, v)
+  }
+  return out
+}
+fun copyMap(src: map<int, bool>): map<int, bool> {
+  var out: map<int, bool>
+  for k in src {
+    out[k] = src[k]
+  }
+  return out
+}
+fun deepcopy(c: cds): cds {
+  return cds {i: c.i, s: c.s, b: copyList(c.b), m: copyMap(c.m)}
+}
+fun cdsStr(c: cds): string {
+  var bs: string = "["
+  var i: int = 0
+  while (i < len(c.b)) {
+    bs = (bs + str(c.b[i]))
+    if (i < (len(c.b) - 1)) {
+      bs = (bs + " ")
+    }
+    i = (i + 1)
+  }
+  bs = (bs + "]")
+  var ms: string = "map["
+  var first: bool = true
+  for k in c.m {
+    if !first {
+      ms = (ms + " ")
+    }
+    ms = (((ms + str(k)) + ":") + str(c.m[k]))
+    first = false
+  }
+  ms = (ms + "]")
+  return (((((((("{" + str(c.i)) + " ") + c.s) + " ") + bs) + " ") + ms) + "}")
+}
+var c1: cds = cds {i: 1, s: "one", b: [117, 110, 105, 116], m: {1: true}}
+var c2: cds = deepcopy(c1)
+print(cdsStr(c1))
+print(cdsStr(c2))
+c1 = cds {i: 0, s: "nil", b: [122, 101, 114, 111], m: {1: false}}
+print(cdsStr(c1))
+print(cdsStr(c2))

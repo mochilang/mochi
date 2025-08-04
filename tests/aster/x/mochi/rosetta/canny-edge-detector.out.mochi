@@ -1,0 +1,110 @@
+let PI: float = 3.141592653589793
+fun conv2d(img: list<list<float>>, k: list<list<float>>): list<list<float>> {
+  let h: int = len(img)
+  let w: int = len(img[0])
+  let n: int = len(k)
+  let half: int = (n / 2)
+  var out: list<list<float>>
+  var y: int = 0
+  while (y < h) {
+    var row: list<float>
+    var x: int = 0
+    while (x < w) {
+      var sum: float = 0
+      var j: int = 0
+      while (j < n) {
+        var i: int = 0
+        while (i < n) {
+          var yy: int = ((y + j) - half)
+          if (yy < 0) {
+            yy = 0
+          }
+          if (yy >= h) {
+            yy = (h - 1)
+          }
+          var xx: int = ((x + i) - half)
+          if (xx < 0) {
+            xx = 0
+          }
+          if (xx >= w) {
+            xx = (w - 1)
+          }
+          sum = (sum + (img[yy][xx] * k[j][i]))
+          i = (i + 1)
+        }
+        j = (j + 1)
+      }
+      row = append(row, sum)
+      x = (x + 1)
+    }
+    out = append(out, row)
+    y = (y + 1)
+  }
+  return out
+}
+fun gradient(img: list<list<float>>): list<list<float>> {
+  let hx: list<list<float>> = [[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]
+  let hy: list<list<float>> = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
+  var gx: list<list<float>> = conv2d(img, hx)
+  var gy: list<list<float>> = conv2d(img, hy)
+  var h: int = len(img)
+  var w: int = len(img[0])
+  var out: list<list<float>>
+  var y: int = 0
+  while (y < h) {
+    var row: list<float>
+    var x: int = 0
+    while (x < w) {
+      let g: float = ((gx[y][x] * gx[y][x]) + (gy[y][x] * gy[y][x]))
+      row = append(row, g)
+      x = (x + 1)
+    }
+    out = append(out, row)
+    y = (y + 1)
+  }
+  return out
+}
+fun threshold(g: list<list<float>>, t: float): list<list<int>> {
+  var h: int = len(g)
+  var w: int = len(g[0])
+  var out: list<list<int>>
+  var y: int = 0
+  while (y < h) {
+    var row: list<int>
+    var x: int = 0
+    while (x < w) {
+      if (g[y][x] >= t) {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      x = (x + 1)
+    }
+    out = append(out, row)
+    y = (y + 1)
+  }
+  return out
+}
+fun printMatrix(m: list<list<int>>): void {
+  var y: int = 0
+  while (y < len(m)) {
+    var line: string = ""
+    var x: int = 0
+    while (x < len(m[0])) {
+      line = (line + str(m[y][x]))
+      if (x < (len(m[0]) - 1)) {
+        line = (line + " ")
+      }
+      x = (x + 1)
+    }
+    print(line)
+    y = (y + 1)
+  }
+}
+fun main(): void {
+  let img: list<list<float>> = [[0, 0, 0, 0, 0], [0, 255, 255, 255, 0], [0, 255, 255, 255, 0], [0, 255, 255, 255, 0], [0, 0, 0, 0, 0]]
+  let g: list<list<float>> = gradient(img)
+  let edges: list<list<int>> = threshold(g, (1020 * 1020))
+  printMatrix(edges)
+}
+main()

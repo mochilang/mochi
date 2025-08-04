@@ -1,0 +1,8 @@
+error[A028]: return type mismatch: expected string, got any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/camel-case-and-snake-case.mochi:13:3
+
+ 13 |   return s[start:end]
+    |   ^
+
+help:
+  Ensure return value matches

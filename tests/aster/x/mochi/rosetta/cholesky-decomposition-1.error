@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cholesky-decomposition-1.mochi:16:27
+
+ 16 |   return {"order": order, "ele": elements}
+    |                           ^
+
+help:
+  Ensure map keys and values share types

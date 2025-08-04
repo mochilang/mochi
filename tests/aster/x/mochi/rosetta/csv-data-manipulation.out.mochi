@@ -1,0 +1,44 @@
+fun join(xs: list<string>, sep: string): string {
+  var res: string = ""
+  var i: int = 0
+  while (i < len(xs)) {
+    if (i > 0) {
+      res = (res + sep)
+    }
+    res = (res + xs[i])
+    i = (i + 1)
+  }
+  return res
+}
+fun parseIntStr(str: string): int {
+  var i: int = 0
+  var neg: bool = false
+  if ((len(str) > 0) && (str[0:1] == "-")) {
+    neg = true
+    i = 1
+  }
+  var n: int = 0
+  let digits: map<string, int> = {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+  while (i < len(str)) {
+    n = ((n * 10) + digits[str[i:(i + 1)]])
+    i = (i + 1)
+  }
+  if neg {
+    n = -n
+  }
+  return n
+}
+var rows: list<list<string>> = [["A", "B", "C"], ["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+rows[0] = append(rows[0], "SUM")
+var i: int = 1
+while (i < len(rows)) {
+  var sum: int = 0
+  for s in rows[i] {
+    sum = (sum + parseIntStr(s))
+  }
+  rows[i] = append(rows[i], str(sum))
+  i = (i + 1)
+}
+for r in rows {
+  print(join(r, ","))
+}

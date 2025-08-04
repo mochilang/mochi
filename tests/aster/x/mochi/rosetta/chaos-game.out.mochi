@@ -1,0 +1,47 @@
+let width: int = 60
+let height: int = ((width as float * 0.86602540378)) as int
+let iterations: int = 5000
+var grid: list<list<string>>
+var y: int = 0
+while (y < height) {
+  var line: list<string>
+  var x: int = 0
+  while (x < width) {
+    line = append(line, " ")
+    x = (x + 1)
+  }
+  grid = append(grid, line)
+  y = (y + 1)
+}
+fun randInt(s: int, n: int): list<int> {
+  let next: int = ((((s * 1664525) + 1013904223)) % 2147483647)
+  return [next, (next % n)]
+}
+var seed: int = 1
+let vertices: list<list<int>> = [[0, (height - 1)], [(width - 1), (height - 1)], [((width / 2)) as int, 0]]
+var px: int = ((width / 2)) as int
+var py: int = ((height / 2)) as int
+var i: int = 0
+while (i < iterations) {
+  var r: list<int> = randInt(seed, 3)
+  seed = r[0]
+  let idx: int = r[1] as int
+  let v: list<int> = vertices[idx]
+  px = ((((px + v[0])) / 2)) as int
+  py = ((((py + v[1])) / 2)) as int
+  if ((((px >= 0) && (px < width)) && (py >= 0)) && (py < height)) {
+    grid[py][px] = "*"
+  }
+  i = (i + 1)
+}
+y = 0
+while (y < height) {
+  var line: string = ""
+  var x: int = 0
+  while (x < width) {
+    line = (line + grid[y][x])
+    x = (x + 1)
+  }
+  print(line)
+  y = (y + 1)
+}

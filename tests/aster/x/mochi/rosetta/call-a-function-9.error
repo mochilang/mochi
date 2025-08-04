@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/call-a-function-9.mochi:3:10
+
+  3 |   return [0, 0.0]
+    |          ^
+
+help:
+  Ensure all list elements share a type

@@ -1,0 +1,8 @@
+error[A003]: undefined variable a
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cuban-primes.mochi:26:20
+
+ 26 |     var x = modPow(a, d, n)
+    |                    ^
+
+help:
+  Declare a before use

@@ -1,0 +1,8 @@
+error[A011]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/check-machin-like-formulas.mochi:4:55
+
+  4 | fun br(n: int, d: int): bigrat { return (n as bigrat) / (d as bigrat) as bigrat }
+    |                                                       ^
+
+help:
+  Use numeric operands

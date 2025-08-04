@@ -1,0 +1,8 @@
+error[A013]: unknown binary operator union_all
+  --> /workspace/mochi/tests/rosetta/x/Mochi/descending-primes.mochi:24:15
+
+ 24 |   return with union all without
+    |               ^
+
+help:
+  Use a supported operator

@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/date-manipulation.mochi:27:17
+
+ 27 |   let lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    |                 ^
+
+help:
+  Ensure all list elements share a type

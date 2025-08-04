@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/convex-hull.mochi:54:11
+
+ 54 |   return h[:len(h)-1]
+    |           ^
+
+help:
+  Use an int index

@@ -1,0 +1,29 @@
+fun quibble(items: list<string>): string {
+  let n: int = len(items)
+  if (n == 0) {
+    return "{}"
+  } else   if (n == 1) {
+    return (("{" + items[0]) + "}")
+  } else   if (n == 2) {
+    return (((("{" + items[0]) + " and ") + items[1]) + "}")
+  } else {
+    var prefix: string = ""
+    for i in 0..(n - 1) {
+      if (i == (n - 1)) {
+        break
+      }
+      if (i > 0) {
+        prefix = (prefix + ", ")
+      }
+      prefix = (prefix + items[i])
+    }
+    return (((("{" + prefix) + " and ") + items[(n - 1)]) + "}")
+  }
+}
+fun main(): void {
+  print(quibble())
+  print(quibble(["ABC"]))
+  print(quibble(["ABC", "DEF"]))
+  print(quibble(["ABC", "DEF", "G", "H"]))
+}
+main()

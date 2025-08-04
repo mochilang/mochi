@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:10
+
+ 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
+    |          ^
+
+help:
+  Declare substring before use

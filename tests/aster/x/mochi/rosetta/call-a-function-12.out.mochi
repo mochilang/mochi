@@ -1,0 +1,19 @@
+fun mkAdd(a: int): any {
+  typefun
+  return fun(b: int): int => (a + b)
+}
+fun mysum(x: int, y: int): int {
+  return (x + y)
+}
+fun partialSum(x: int): any {
+  typefun
+  return fun(y: int): int => mysum(x, y)
+}
+fun main(): void {
+  let add2: any = mkAdd(2)
+  let add3: any = mkAdd(3)
+  print(((str(add2(5)) + " ") + str(add3(6))))
+  let partial: any = partialSum(13)
+  print(str(partial(5)))
+}
+main()

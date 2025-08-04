@@ -1,0 +1,8 @@
+error[A024]: unknown function indexOf
+  --> /workspace/mochi/tests/rosetta/x/Mochi/crc-32-1.mochi:27:13
+
+ 27 |   var idx = indexOf(upper, ch)
+    |             ^
+
+help:
+  Declare indexOf before use

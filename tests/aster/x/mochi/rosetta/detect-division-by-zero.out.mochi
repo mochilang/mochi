@@ -1,0 +1,18 @@
+type DivResult {
+  q: int
+  ok: bool
+}
+fun divCheck(x: int, y: int): DivResult {
+  if (y == 0) {
+    return DivResult {q: 0, ok: false}
+  }
+  return DivResult {q: (x / y), ok: true}
+}
+fun printResult(r: DivResult): void {
+  print(((str(r.q) + " ") + str(r.ok)))
+}
+fun main(): void {
+  printResult(divCheck(3, 2))
+  printResult(divCheck(3, 0))
+}
+main()

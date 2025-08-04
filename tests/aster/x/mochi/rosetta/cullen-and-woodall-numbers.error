@@ -1,0 +1,8 @@
+error[A002]: type mismatch for result: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cullen-and-woodall-numbers.mochi:4:3
+
+  4 |   var result: bigint = 1
+    |   ^
+
+help:
+  Ensure result matches

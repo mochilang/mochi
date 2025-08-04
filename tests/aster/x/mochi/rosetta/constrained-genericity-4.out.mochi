@@ -1,0 +1,18 @@
+type Eatable {
+  eat: any
+}
+type Foodbox {
+  items: list<PeelFirst>
+}
+type PeelFirst {
+  value: string
+}
+fun peelFirstEat(p: PeelFirst): void {
+  print((("mm, that " + p.value) + " was good!"))
+}
+fun main(): void {
+  var fb: Foodbox = Foodbox {items: [PeelFirst {value: "banana"}, PeelFirst {value: "mango"}]}
+  var f0: PeelFirst = fb.items[0]
+  peelFirstEat(f0)
+}
+main()

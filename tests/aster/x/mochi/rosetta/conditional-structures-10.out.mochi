@@ -1,0 +1,10 @@
+fun example10(): void {
+  while true {
+    break
+  }
+  print("I'm off!")
+}
+fun main(): void {
+  example10()
+}
+main()

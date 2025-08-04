@@ -1,0 +1,14 @@
+var lockExists: bool = false
+fun startOnce(): void {
+  if lockExists {
+    print("an instance is already running")
+  } else {
+    lockExists = true
+    print("single instance started")
+  }
+}
+fun main(): void {
+  startOnce()
+  startOnce()
+}
+main()

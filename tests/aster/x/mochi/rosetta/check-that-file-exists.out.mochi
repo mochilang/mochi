@@ -1,0 +1,19 @@
+fun printStat(fs: map<string, bool>, path: string): void {
+  if (path in fs) {
+    if fs[path] {
+      print((path + " is a directory"))
+    } else {
+      print((path + " is a file"))
+    }
+  } else {
+    print((("stat " + path) + ": no such file or directory"))
+  }
+}
+fun main(): void {
+  var fs: map<string, bool>
+  fs["docs"] = true
+  for p in ["input.txt", "/input.txt", "docs", "/docs"] {
+    printStat(fs, p)
+  }
+}
+main()

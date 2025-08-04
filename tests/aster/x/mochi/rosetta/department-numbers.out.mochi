@@ -1,0 +1,25 @@
+print("Police  Sanitation  Fire")
+print("------  ----------  ----")
+var count: int = 0
+var i: int = 2
+while (i < 7) {
+  var j: int = 1
+  while (j < 8) {
+    if (j != i) {
+      var k: int = 1
+      while (k < 8) {
+        if ((k != i) && (k != j)) {
+          if (((i + j) + k) == 12) {
+            print(((((("  " + str(i)) + "         ") + str(j)) + "         ") + str(k)))
+            count = (count + 1)
+          }
+        }
+        k = (k + 1)
+      }
+    }
+    j = (j + 1)
+  }
+  i = (i + 2)
+}
+print("")
+print((str(count) + " valid combinations"))
