@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (418/491) - Last updated 2025-08-04 21:48 +0700:
+Checklist of programs that currently transpile and run (432/491) - Last updated 2025-08-04 22:33 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -482,17 +482,17 @@ Checklist of programs that currently transpile and run (418/491) - Last updated 
 | 475 | globally-replace-text-in-several-files | ✓ | 171.0µs | 3.68MB |
 | 476 | goldbachs-comet | ✓ | 1.0ms | 3.62MB |
 | 477 | golden-ratio-convergence | ✓ | 360.0µs | 3.82MB |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
-| 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 478 | graph-colouring | ✓ | 150.0µs | 3.48MB |
+| 479 | gray-code | ✓ | 556.0µs | 3.75MB |
+| 480 | gui-component-interaction | ✓ | 225.0µs | 3.70MB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 339.0µs | 3.46MB |
+| 482 | gui-maximum-window-dimensions | ✓ | 189.0µs | 3.72MB |
+| 483 | http | ✓ | 146.0µs | 3.57MB |
+| 484 | image-noise | ✓ | 65.0ms | 3.87MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 50.0ms | 3.68MB |
+| 486 | md5 | ✓ | 220.0µs | 4.99MB |
+| 487 | nim-game | ✓ | 284.0µs | 3.70MB |
+| 488 | plasma-effect | ✓ | 4.0ms | 3.57MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 216.0µs | 3.43MB |
+| 490 | window-management | ✓ | 281.0µs | 3.60MB |
+| 491 | zumkeller-numbers | ✓ | 2.74s | 3.63MB |

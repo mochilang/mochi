@@ -118,7 +118,7 @@ func TestCPPTranspiler_Rosetta_Golden(t *testing.T) {
 		}
 		bin := filepath.Join(outDir, base)
 		args := []string{codePath, "-std=c++20"}
-		if ast.UseSHA256 {
+		if ast.UseSHA256 || ast.UseMD5 {
 			args = append(args, "-lcrypto")
 		}
 		args = append(args, "-o", bin)
