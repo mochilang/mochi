@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (148/491) - Last updated 2025-08-03 23:52 +0700:
+Checklist of programs that currently transpile and run (148/491) - Last updated 2025-08-04 00:29 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -144,7 +144,7 @@ Checklist of programs that currently transpile and run (148/491) - Last updated 
 | 137 | brownian-tree | ✓ | 19.39s | 682.6 KB |
 | 138 | bulls-and-cows-player | ✓ | 1.38ms | 1.9 MB |
 | 139 | bulls-and-cows |  |  |  |
-| 140 | burrows-wheeler-transform | ✓ | 2.67ms | 348.0 KB |
+| 140 | burrows-wheeler-transform | ✓ | 4.10ms | 1.9 MB |
 | 141 | caesar-cipher-1 | ✓ | 993us | 248.2 KB |
 | 142 | caesar-cipher-2 | ✓ | 1.17ms | 248.2 KB |
 | 143 | calculating-the-value-of-e |  |  |  |
