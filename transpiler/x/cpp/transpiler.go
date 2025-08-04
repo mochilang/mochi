@@ -1489,7 +1489,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 					if currentProgram != nil {
 						currentProgram.addInclude("<any>")
 					}
-					io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
+					io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 					i.Index.emit(w)
 					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
 					io.WriteString(w, "(")
@@ -1504,7 +1504,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
 		if len(parts) == 2 {
 			valType := strings.TrimSpace(parts[1])
-			io.WriteString(w, "([&](auto& __m){ auto __it = __m.find(")
+			io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
 			i.Index.emit(w)
 			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
 			io.WriteString(w, "(")
@@ -2888,6 +2888,19 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 	}
 	if len(idxs) == 0 {
 		io.WriteString(w, ind)
+		baseType := exprType(a.Target)
+		if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
+			parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
+			if len(parts) == 2 && strings.TrimSpace(parts[0]) == "std::string" {
+				a.Target.emit(w)
+				io.WriteString(w, "[")
+				a.Index.emit(w)
+				io.WriteString(w, "] = ")
+				a.Value.emit(w)
+				io.WriteString(w, ";\n")
+				return
+			}
+		}
 		a.Target.emit(w)
 		io.WriteString(w, "[")
 		emitIndex(w, a.Index)
@@ -2918,6 +2931,24 @@ func (a *AssignIndexStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "[")
 		emitIndex(w, idxs[0])
 		io.WriteString(w, "])")
+	} else if strings.HasPrefix(baseType, "std::map<") && strings.HasSuffix(baseType, ">") {
+		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(baseType, "std::map<"), ">"), ",", 2)
+		if len(parts) == 2 {
+			keyType := strings.TrimSpace(parts[0])
+			target.emit(w)
+			io.WriteString(w, "[")
+			if keyType == "std::string" {
+				idxs[0].emit(w)
+			} else {
+				emitIndex(w, idxs[0])
+			}
+			io.WriteString(w, "]")
+		} else {
+			target.emit(w)
+			io.WriteString(w, "[")
+			emitIndex(w, idxs[0])
+			io.WriteString(w, "]")
+		}
 	} else {
 		target.emit(w)
 		io.WriteString(w, "[")
@@ -6639,6 +6670,9 @@ func defaultValueForType(t string) string {
 	}
 	if strings.HasPrefix(t, "std::vector<") || strings.HasPrefix(t, "std::map<") {
 		return t + "{}"
+	}
+	if t == "std::any" {
+		return "std::any{}"
 	}
 	return "{}"
 }
