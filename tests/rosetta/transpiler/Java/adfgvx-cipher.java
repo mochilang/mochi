@@ -1,17 +1,17 @@
 public class Main {
-    static String adfgvx = "ADFGVX";
-    static String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    static String adfgvx;
+    static String alphabet;
 
     static String shuffleStr(String s) {
-        String[] arr = new String[]{};
+        String[] arr = ((String[])(new String[]{}));
         int i = 0;
-        while (i < s.length()) {
-            arr = java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(s.substring(i, i + 1))).toArray(String[]::new);
+        while (i < _runeLen(s)) {
+            arr = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(arr), java.util.stream.Stream.of(s.substring(i, i + 1))).toArray(String[]::new)));
             i = i + 1;
         }
         int j = arr.length - 1;
         while (j > 0) {
-            int k = _now() % (j + 1);
+            int k = Math.floorMod(_now(), (j + 1));
             String tmp = arr[j];
 arr[j] = arr[k];
 arr[k] = tmp;
@@ -27,29 +27,29 @@ arr[k] = tmp;
     }
 
     static String[] createPolybius() {
-        String shuffled = shuffleStr(alphabet);
-        String[] labels = new String[]{};
+        String shuffled = String.valueOf(shuffleStr(alphabet));
+        String[] labels = ((String[])(new String[]{}));
         int li = 0;
-        while (li < adfgvx.length()) {
-            labels = java.util.stream.Stream.concat(java.util.Arrays.stream(labels), java.util.stream.Stream.of(adfgvx.substring(li, li + 1))).toArray(String[]::new);
+        while (li < _runeLen(adfgvx)) {
+            labels = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(labels), java.util.stream.Stream.of(adfgvx.substring(li, li + 1))).toArray(String[]::new)));
             li = li + 1;
         }
         System.out.println("6 x 6 Polybius square:\n");
         System.out.println("  | A D F G V X");
         System.out.println("---------------");
-        String[] p = new String[]{};
-        int i = 0;
-        while (i < 6) {
-            String row = shuffled.substring(i * 6, (i + 1) * 6);
-            p = java.util.stream.Stream.concat(java.util.Arrays.stream(p), java.util.stream.Stream.of(row)).toArray(String[]::new);
-            String line = labels[i] + " | ";
-            int j = 0;
-            while (j < 6) {
-                line = line + row.substring(j, j + 1) + " ";
-                j = j + 1;
+        String[] p = ((String[])(new String[]{}));
+        int i_1 = 0;
+        while (i_1 < 6) {
+            String row = shuffled.substring(i_1 * 6, (i_1 + 1) * 6);
+            p = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(p), java.util.stream.Stream.of(row)).toArray(String[]::new)));
+            String line = labels[i_1] + " | ";
+            int j_1 = 0;
+            while (j_1 < 6) {
+                line = line + row.substring(j_1, j_1 + 1) + " ";
+                j_1 = j_1 + 1;
             }
             System.out.println(line);
-            i = i + 1;
+            i_1 = i_1 + 1;
         }
         return p;
     }
@@ -60,104 +60,104 @@ arr[k] = tmp;
         }
         String pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         String key = "";
-        int i = 0;
-        while (i < n) {
-            int idx = _now() % pool.length();
-            key = key + pool.charAt(idx);
-            pool = pool.substring(0, idx) + pool.substring(idx + 1, pool.length());
-            i = i + 1;
+        int i_2 = 0;
+        while (i_2 < n) {
+            int idx = Math.floorMod(_now(), _runeLen(pool));
+            key = key + pool.substring(idx, idx+1);
+            pool = pool.substring(0, idx) + pool.substring(idx + 1, _runeLen(pool));
+            i_2 = i_2 + 1;
         }
         System.out.println("\nThe key is " + key);
         return key;
     }
 
     static int[] orderKey(String key) {
-        String[][] pairs = new String[][]{};
-        int i = 0;
-        while (i < key.length()) {
-            pairs = appendObj(pairs, new String[]{key.substring(i, i + 1), i});
-            i = i + 1;
+        Object[][] pairs = ((Object[][])(new Object[][]{}));
+        int i_3 = 0;
+        while (i_3 < _runeLen(key)) {
+            pairs = ((Object[][])(appendObj(pairs, new Object[]{key.substring(i_3, i_3 + 1), i_3})));
+            i_3 = i_3 + 1;
         }
         int n = pairs.length;
         int m = 0;
         while (m < n) {
-            int j = 0;
-            while (j < n - 1) {
-                if (pairs[j][0] > pairs[j + 1][0]) {
-                    String[] tmp = pairs[j];
-pairs[j] = pairs[j + 1];
-pairs[j + 1] = tmp;
+            int j_2 = 0;
+            while (j_2 < n - 1) {
+                if (String.valueOf(pairs[j_2][0]).compareTo(String.valueOf(pairs[j_2 + 1][0])) > 0) {
+                    Object[] tmp_1 = ((Object[])(pairs[j_2]));
+pairs[j_2] = ((Object[])(pairs[j_2 + 1]));
+pairs[j_2 + 1] = ((Object[])(tmp_1));
                 }
-                j = j + 1;
+                j_2 = j_2 + 1;
             }
             m = m + 1;
         }
-        int[] res = new int[]{};
-        i = 0;
-        while (i < n) {
-            res = java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(pairs[i][1])).toArray();
-            i = i + 1;
+        int[] res = ((int[])(new int[]{}));
+        i_3 = 0;
+        while (i_3 < n) {
+            res = ((int[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(res), java.util.stream.IntStream.of(((int)(pairs[i_3][1])))).toArray()));
+            i_3 = i_3 + 1;
         }
         return res;
     }
 
     static String encrypt(String[] polybius, String key, String plainText) {
-        String[] labels = new String[]{};
-        int li = 0;
-        while (li < adfgvx.length()) {
-            labels = java.util.stream.Stream.concat(java.util.Arrays.stream(labels), java.util.stream.Stream.of(adfgvx.substring(li, li + 1))).toArray(String[]::new);
-            li = li + 1;
+        String[] labels_1 = ((String[])(new String[]{}));
+        int li_1 = 0;
+        while (li_1 < _runeLen(adfgvx)) {
+            labels_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(labels_1), java.util.stream.Stream.of(adfgvx.substring(li_1, li_1 + 1))).toArray(String[]::new)));
+            li_1 = li_1 + 1;
         }
         String temp = "";
-        int i = 0;
-        while (i < plainText.length()) {
+        int i_4 = 0;
+        while (i_4 < _runeLen(plainText)) {
             int r = 0;
             while (r < 6) {
                 int c = 0;
                 while (c < 6) {
-                    if ((polybius[r].equals(plainText.substring(i, i + 1)))) {
-                        temp = temp + java.util.Arrays.copyOfRange(labels, r, r + 1) + java.util.Arrays.copyOfRange(labels, c, c + 1);
+                    if ((polybius[r].substring(c, c + 1).equals(plainText.substring(i_4, i_4 + 1)))) {
+                        temp = temp + String.join("", java.util.Arrays.copyOfRange(labels_1, r, r + 1)) + String.join("", java.util.Arrays.copyOfRange(labels_1, c, c + 1));
                     }
                     c = c + 1;
                 }
                 r = r + 1;
             }
-            i = i + 1;
+            i_4 = i_4 + 1;
         }
-        int colLen = temp.length() / key.length();
-        if (temp.length() % key.length() > 0) {
+        int colLen = _runeLen(temp) / _runeLen(key);
+        if (Math.floorMod(_runeLen(temp), _runeLen(key)) > 0) {
             colLen = colLen + 1;
         }
-        string[][] table = new String[][]{};
+        String[][] table = ((String[][])(new String[][]{}));
         int rIdx = 0;
         while (rIdx < colLen) {
-            String[] row = new String[]{};
-            int j = 0;
-            while (j < key.length()) {
-                row = java.util.stream.Stream.concat(java.util.Arrays.stream(row), java.util.stream.Stream.of("")).toArray(String[]::new);
-                j = j + 1;
+            String[] row_1 = ((String[])(new String[]{}));
+            int j_3 = 0;
+            while (j_3 < _runeLen(key)) {
+                row_1 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_1), java.util.stream.Stream.of("")).toArray(String[]::new)));
+                j_3 = j_3 + 1;
             }
-            table = appendObj(table, row);
+            table = ((String[][])(appendObj(table, row_1)));
             rIdx = rIdx + 1;
         }
-        int idx = 0;
-        while (idx < temp.length()) {
-            int row = idx / key.length();
-            int col = idx % key.length();
-table[row][col] = temp.substring(idx, idx + 1);
-            idx = idx + 1;
+        int idx_1 = 0;
+        while (idx_1 < _runeLen(temp)) {
+            int row_2 = idx_1 / _runeLen(key);
+            int col = Math.floorMod(idx_1, _runeLen(key));
+table[row_2][col] = temp.substring(idx_1, idx_1 + 1);
+            idx_1 = idx_1 + 1;
         }
-        int[] order = orderKey(key);
-        String[] cols = new String[]{};
+        int[] order = ((int[])(orderKey(key)));
+        String[] cols = ((String[])(new String[]{}));
         int ci = 0;
-        while (ci < key.length()) {
+        while (ci < _runeLen(key)) {
             String colStr = "";
             int ri = 0;
             while (ri < colLen) {
                 colStr = colStr + table[ri][order[ci]];
                 ri = ri + 1;
             }
-            cols = java.util.stream.Stream.concat(java.util.Arrays.stream(cols), java.util.stream.Stream.of(colStr)).toArray(String[]::new);
+            cols = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(cols), java.util.stream.Stream.of(colStr)).toArray(String[]::new)));
             ci = ci + 1;
         }
         String result = "";
@@ -173,116 +173,118 @@ table[row][col] = temp.substring(idx, idx + 1);
     }
 
     static int indexOf(String s, String ch) {
-        int i = 0;
-        while (i < s.length()) {
-            if ((s.substring(i, i + 1).equals(ch))) {
-                return i;
+        int i_5 = 0;
+        while (i_5 < _runeLen(s)) {
+            if ((s.substring(i_5, i_5 + 1).equals(ch))) {
+                return i_5;
             }
-            i = i + 1;
+            i_5 = i_5 + 1;
         }
         return -1;
     }
 
     static String decrypt(String[] polybius, String key, String cipherText) {
-        String[] colStrs = new String[]{};
+        String[] colStrs = ((String[])(new String[]{}));
         int start = 0;
-        int i = 0;
-        while (i <= cipherText.length()) {
-            if ((i == cipherText.length() || cipherText.charAt(i).equals(" "))) {
-                colStrs = java.util.stream.Stream.concat(java.util.Arrays.stream(colStrs), java.util.stream.Stream.of(cipherText.substring(start, i))).toArray(String[]::new);
-                start = i + 1;
+        int i_6 = 0;
+        while (i_6 <= _runeLen(cipherText)) {
+            if (i_6 == _runeLen(cipherText) || (cipherText.substring(i_6, i_6+1).equals(" "))) {
+                colStrs = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(colStrs), java.util.stream.Stream.of(cipherText.substring(start, i_6))).toArray(String[]::new)));
+                start = i_6 + 1;
             }
-            i = i + 1;
+            i_6 = i_6 + 1;
         }
         int maxColLen = 0;
-        i = 0;
-        while (i < colStrs.length) {
-            if (colStrs[i].length() > maxColLen) {
-                maxColLen = colStrs[i].length();
+        i_6 = 0;
+        while (i_6 < colStrs.length) {
+            if (colStrs[i_6].length() > maxColLen) {
+                maxColLen = colStrs[i_6].length();
             }
-            i = i + 1;
+            i_6 = i_6 + 1;
         }
-        string[][] cols = new String[][]{};
-        i = 0;
-        while (i < colStrs.length) {
-            String s = colStrs[i];
-            String[] ls = new String[]{};
-            int j = 0;
-            while (j < s.length()) {
-                ls = java.util.stream.Stream.concat(java.util.Arrays.stream(ls), java.util.stream.Stream.of(s.substring(j, j + 1))).toArray(String[]::new);
-                j = j + 1;
+        String[][] cols_1 = ((String[][])(new String[][]{}));
+        i_6 = 0;
+        while (i_6 < colStrs.length) {
+            String s = colStrs[i_6];
+            String[] ls = ((String[])(new String[]{}));
+            int j_4 = 0;
+            while (j_4 < _runeLen(s)) {
+                ls = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(ls), java.util.stream.Stream.of(s.substring(j_4, j_4 + 1))).toArray(String[]::new)));
+                j_4 = j_4 + 1;
             }
-            if (s.length() < maxColLen) {
-                String[] pad = new String[]{};
-                int k = 0;
-                while (k < maxColLen) {
-                    if (k < ls.length) {
-                        pad = java.util.stream.Stream.concat(java.util.Arrays.stream(pad), java.util.stream.Stream.of(ls[k])).toArray(String[]::new);
+            if (_runeLen(s) < maxColLen) {
+                String[] pad = ((String[])(new String[]{}));
+                int k_1 = 0;
+                while (k_1 < maxColLen) {
+                    if (k_1 < ls.length) {
+                        pad = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(pad), java.util.stream.Stream.of(ls[k_1])).toArray(String[]::new)));
                     } else {
-                        pad = java.util.stream.Stream.concat(java.util.Arrays.stream(pad), java.util.stream.Stream.of("")).toArray(String[]::new);
+                        pad = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(pad), java.util.stream.Stream.of("")).toArray(String[]::new)));
                     }
-                    k = k + 1;
+                    k_1 = k_1 + 1;
                 }
-                cols = appendObj(cols, pad);
+                cols_1 = ((String[][])(appendObj(cols_1, pad)));
             } else {
-                cols = appendObj(cols, ls);
+                cols_1 = ((String[][])(appendObj(cols_1, ls)));
             }
-            i = i + 1;
+            i_6 = i_6 + 1;
         }
-        string[][] table = new String[][]{};
-        int r = 0;
-        while (r < maxColLen) {
-            String[] row = new String[]{};
-            int c = 0;
-            while (c < key.length()) {
-                row = java.util.stream.Stream.concat(java.util.Arrays.stream(row), java.util.stream.Stream.of("")).toArray(String[]::new);
-                c = c + 1;
+        String[][] table_1 = ((String[][])(new String[][]{}));
+        int r_1 = 0;
+        while (r_1 < maxColLen) {
+            String[] row_3 = ((String[])(new String[]{}));
+            int c_1 = 0;
+            while (c_1 < _runeLen(key)) {
+                row_3 = ((String[])(java.util.stream.Stream.concat(java.util.Arrays.stream(row_3), java.util.stream.Stream.of("")).toArray(String[]::new)));
+                c_1 = c_1 + 1;
             }
-            table = appendObj(table, row);
-            r = r + 1;
+            table_1 = ((String[][])(appendObj(table_1, row_3)));
+            r_1 = r_1 + 1;
         }
-        int[] order = orderKey(key);
-        r = 0;
-        while (r < maxColLen) {
-            int c = 0;
-            while (c < key.length()) {
-table[r][order[c]] = cols[c][r];
-                c = c + 1;
+        int[] order_1 = ((int[])(orderKey(key)));
+        r_1 = 0;
+        while (r_1 < maxColLen) {
+            int c_2 = 0;
+            while (c_2 < _runeLen(key)) {
+table_1[r_1][order_1[c_2]] = cols_1[c_2][r_1];
+                c_2 = c_2 + 1;
             }
-            r = r + 1;
+            r_1 = r_1 + 1;
         }
-        String temp = "";
-        r = 0;
-        while (r < table.length) {
-            int j = 0;
-            while (j < table[r].length()) {
-                temp = temp + table[r][j];
-                j = j + 1;
+        String temp_1 = "";
+        r_1 = 0;
+        while (r_1 < table_1.length) {
+            int j_5 = 0;
+            while (j_5 < table_1[r_1].length) {
+                temp_1 = temp_1 + table_1[r_1][j_5];
+                j_5 = j_5 + 1;
             }
-            r = r + 1;
+            r_1 = r_1 + 1;
         }
         String plainText = "";
-        int idx = 0;
-        while (idx < temp.length()) {
-            int rIdx = indexOf(adfgvx, temp.substring(idx, idx + 1));
-            int cIdx = indexOf(adfgvx, temp.substring(idx + 1, idx + 2));
-            plainText = plainText + polybius[rIdx][cIdx];
-            idx = idx + 2;
+        int idx_2 = 0;
+        while (idx_2 < _runeLen(temp_1)) {
+            int rIdx_1 = indexOf(adfgvx, temp_1.substring(idx_2, idx_2 + 1));
+            int cIdx = indexOf(adfgvx, temp_1.substring(idx_2 + 1, idx_2 + 2));
+            plainText = plainText + polybius[rIdx_1].substring(cIdx, cIdx+1);
+            idx_2 = idx_2 + 2;
         }
         return plainText;
     }
 
     static void main() {
-        String plainText = "ATTACKAT1200AM";
-        String[] polybius = createPolybius();
-        String key = createKey(9);
-        System.out.println("\nPlaintext : " + plainText);
-        String cipherText = encrypt(polybius, key, plainText);
+        String plainText_1 = "ATTACKAT1200AM";
+        String[] polybius = ((String[])(createPolybius()));
+        String key_1 = String.valueOf(createKey(9));
+        System.out.println("\nPlaintext : " + plainText_1);
+        String cipherText = String.valueOf(encrypt(((String[])(polybius)), key_1, plainText_1));
         System.out.println("\nEncrypted : " + cipherText);
-        String plainText2 = decrypt(polybius, key, cipherText);
+        String plainText2 = String.valueOf(decrypt(((String[])(polybius)), key_1, cipherText));
         System.out.println("\nDecrypted : " + plainText2);
     }
     public static void main(String[] args) {
+        adfgvx = "ADFGVX";
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         main();
     }
 
@@ -299,12 +301,16 @@ table[r][order[c]] = cols[c][r];
             _nowSeed = (int)((_nowSeed * 1664525L + 1013904223) % 2147483647);
             return _nowSeed;
         }
-        return (int)System.currentTimeMillis();
+        return (int)(System.nanoTime() / 1000);
     }
 
     static <T> T[] appendObj(T[] arr, T v) {
         T[] out = java.util.Arrays.copyOf(arr, arr.length + 1);
         out[arr.length] = v;
         return out;
+    }
+
+    static int _runeLen(String s) {
+        return s.codePointCount(0, s.length());
     }
 }
