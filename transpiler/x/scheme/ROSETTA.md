@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (438/491)
-Last updated: 2025-08-04 09:24 UTC
+## Checklist (439/491)
+Last updated: 2025-08-04 10:00 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -479,7 +479,7 @@ Last updated: 2025-08-04 09:24 UTC
 | 470 | gamma-function | ✓ | 1ms | 12.6 MB |
 | 471 | general-fizzbuzz | ✓ |  |  |
 | 472 | generic-swap | ✓ | 1ms | 12.4 MB |
-| 473 | get-system-command-output |   |  |  |
+| 473 | get-system-command-output | ✓ |  |  |
 | 474 | giuga-numbers |   |  |  |
 | 475 | globally-replace-text-in-several-files |   |  |  |
 | 476 | goldbachs-comet |   |  |  |
