@@ -123,7 +123,8 @@ func runRosetta(t *testing.T, src, outDir string, bench bool) ([]byte, error) {
 			outBytes = outBytes[idx:]
 		}
 		_ = os.WriteFile(benchPath, outBytes, 0o644)
-		return outBytes, nil
+		_ = os.WriteFile(outPath, got, 0o644)
+		return got, nil
 	}
 	_ = os.WriteFile(outPath, got, 0o644)
 	return got, nil

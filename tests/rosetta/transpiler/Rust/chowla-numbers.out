@@ -49,3 +49,8 @@ Count of primes up to 10,000,000 = 664,579
 8,128 is a perfect number
 33,550,336 is a perfect number
 There are 5 perfect numbers <= 35,000,000
+{
+  "duration_us": 72,
+  "memory_bytes": 1888256,
+  "name": "main"
+}
