@@ -1,4 +1,0 @@
-zig build: exit status 1
-/tmp/call-a-function-6.zig:21:14: error: expected type 'usize', found '*const [1:0]u8'
-/tmp/zig-0.12.0/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
-/tmp/zig-0.12.0/lib/std/hash_map.zig:55:39: note: called from here
