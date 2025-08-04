@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 345/491
+Completed programs: 346/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -379,7 +379,7 @@ Completed programs: 345/491
 | 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 16.0µs | 240B |
 | 372 | exceptions | ✓ | 96.0µs | 368B |
 | 373 | executable-library | ✓ | 11.38s | 16.24GB |
-| 374 | execute-a-markov-algorithm |   |  |  |
+| 374 | execute-a-markov-algorithm | ✓ | 4.0ms | 556.30KB |
 | 375 | execute-a-system-command | ✓ | 486.0µs | 10.90KB |
 | 376 | execute-brain- | ✓ | 1.0ms | 244.05KB |
 | 377 | execute-computer-zero-1 | ✓ | 1.0ms | 344.98KB |
@@ -497,4 +497,4 @@ Completed programs: 345/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 07:36 +0700
+Last updated 2025-08-04 08:07 +0700
