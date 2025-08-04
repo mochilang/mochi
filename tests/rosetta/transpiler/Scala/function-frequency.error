@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/rosetta/transpiler/Scala/function-frequency.scala:57: error: value toInt is not a member of Any
-        while (j > BigInt(0) && BigInt((arr((j - BigInt(1)).toInt).asInstanceOf[scala.collection.mutable.Map[String,Any]]("count")).toInt) < BigInt((arr((j).toInt).asInstanceOf[scala.collection.mutable.Map[String,Any]]("count")).toInt)) {
-                                                                                                                                    ^
-/workspace/mochi/tests/rosetta/transpiler/Scala/function-frequency.scala:57: error: value toInt is not a member of Any
-        while (j > BigInt(0) && BigInt((arr((j - BigInt(1)).toInt).asInstanceOf[scala.collection.mutable.Map[String,Any]]("count")).toInt) < BigInt((arr((j).toInt).asInstanceOf[scala.collection.mutable.Map[String,Any]]("count")).toInt)) {
-                                                                                                                                                                                                                                     ^
-two errors found
