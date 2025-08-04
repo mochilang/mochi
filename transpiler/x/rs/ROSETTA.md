@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 00:57 UTC
+Last updated: 2025-08-04 02:25 UTC
 
-## Rosetta Golden Test Checklist (236/491)
+## Rosetta Golden Test Checklist (237/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -146,7 +146,7 @@ Last updated: 2025-08-04 00:57 UTC
 | 137 | brownian-tree | ✓ |  |  |
 | 138 | bulls-and-cows-player | ✓ | 369.677ms | 2.6 MB |
 | 139 | bulls-and-cows |   |  |  |
-| 140 | burrows-wheeler-transform |   |  |  |
+| 140 | burrows-wheeler-transform | ✓ | 9.406ms | 2.2 MB |
 | 141 | caesar-cipher-1 |   |  |  |
 | 142 | caesar-cipher-2 |   |  |  |
 | 143 | calculating-the-value-of-e |   |  |  |

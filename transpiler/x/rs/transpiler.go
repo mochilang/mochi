@@ -6423,6 +6423,19 @@ func rewriteReturnStruct(st Stmt, name string, typ types.StructType) Stmt {
 				}
 			}
 			s.Value = &StructLit{Name: name, Fields: fields, Names: typ.Order}
+		} else if sl, ok := s.Value.(*StructLit); ok && sl.Name != name {
+			fields := make([]Expr, len(typ.Order))
+			for i, n := range typ.Order {
+				for j, m := range sl.Names {
+					if m == n {
+						if j < len(sl.Fields) {
+							fields[i] = sl.Fields[j]
+						}
+						break
+					}
+				}
+			}
+			s.Value = &StructLit{Name: name, Fields: fields, Names: typ.Order}
 		}
 		return s
 	case *IfStmt:
