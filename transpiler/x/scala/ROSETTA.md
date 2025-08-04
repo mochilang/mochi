@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (446/491)
-_Last updated: 2025-08-04 21:31 +0700_
+## Golden Test Checklist (447/491)
+_Last updated: 2025-08-04 21:57 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -296,16 +296,16 @@ _Last updated: 2025-08-04 21:31 +0700_
 | 287 | detect-division-by-zero | ✓ | 4µs | 8.7 MB |
 | 288 | determine-if-a-string-has-all-the-same-characters | ✓ | 9µs | 8.7 MB |
 | 289 | determine-if-a-string-has-all-unique-characters | ✓ | 11µs | 8.7 MB |
-| 290 | determine-if-a-string-is-collapsible | ✓ | 10µs | 8.7 MB |
-| 291 | determine-if-a-string-is-numeric-1 | ✓ | 7µs | 8.7 MB |
-| 292 | determine-if-a-string-is-numeric-2 | ✓ | 7µs | 8.7 MB |
-| 293 | determine-if-a-string-is-squeezable | error |  |  |
-| 294 | determine-if-only-one-instance-is-running | ✓ | 3µs | 8.7 MB |
-| 295 | determine-if-two-triangles-overlap | ✓ | 13µs | 8.7 MB |
-| 296 | determine-sentence-type | ✓ | 8µs | 8.7 MB |
-| 297 | dice-game-probabilities-1 | ✓ | 237µs | 8.7 MB |
-| 298 | dice-game-probabilities-2 | ✓ | 477µs | 8.8 MB |
-| 299 | digital-root-multiplicative-digital-root | ✓ | 86µs | 8.7 MB |
+| 290 | determine-if-a-string-is-collapsible | ✓ | 4µs | 3.4 MB |
+| 291 | determine-if-a-string-is-numeric-1 | ✓ | 8µs | 3.4 MB |
+| 292 | determine-if-a-string-is-numeric-2 | ✓ | 2µs | 3.4 MB |
+| 293 | determine-if-a-string-is-squeezable | ✓ | 6µs | 3.4 MB |
+| 294 | determine-if-only-one-instance-is-running | ✓ | 1µs | 3.4 MB |
+| 295 | determine-if-two-triangles-overlap | ✓ | 4µs | 3.5 MB |
+| 296 | determine-sentence-type | ✓ | 8µs | 3.4 MB |
+| 297 | dice-game-probabilities-1 | ✓ | 64µs | 3.5 MB |
+| 298 | dice-game-probabilities-2 | ✓ | 318µs | 3.5 MB |
+| 299 | digital-root-multiplicative-digital-root | ✓ | 40µs | 3.5 MB |
 | 300 | dijkstras-algorithm | error |  |  |
 | 301 | dinesmans-multiple-dwelling-problem | ✓ | 4µs | 8.7 MB |
 | 302 | dining-philosophers-1 | ✓ | 7µs | 8.7 MB |
