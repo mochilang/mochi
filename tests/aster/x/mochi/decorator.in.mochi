@@ -1,0 +1,7 @@
+let i = 1
+let f = 1.5
+let s = "hi"
+let b = 1 < 2 && 2 < 3
+let lst = [1, 2, 3]
+let mp = {"a": 1, "b": 2}
+
