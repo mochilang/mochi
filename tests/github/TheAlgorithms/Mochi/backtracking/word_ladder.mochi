@@ -1,0 +1,78 @@
+/*
+Word Ladder - Backtracking
+
+Given a begin word and an end word along with a list of valid words,
+transform the begin word into the end word by changing one letter at a time.
+Each intermediate word must exist in the given list.  This implementation
+performs a depth-first search.  From the current word all possible single
+character substitutions are generated.  Valid transformations are removed
+from the available word list and recursion continues from the new word.
+If the end word is reached the accumulated path is returned, otherwise the
+search backtracks and tries alternative substitutions.
+*/
+
+let alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun remove_item(xs: list<string>, x: string): list<string> {
+  var res: list<string> = []
+  var removed = false
+  var i = 0
+  while i < len(xs) {
+    if !removed && xs[i] == x {
+      removed = true
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun word_ladder(current: string, path: list<string>, target: string, words: list<string>): list<string> {
+  if current == target {
+    return path
+  }
+  var i = 0
+  while i < len(current) {
+    var j = 0
+    while j < len(alphabet) {
+      let c = substring(alphabet, j, j + 1)
+      let transformed = substring(current, 0, i) + c + substring(current, i + 1, len(current))
+      if contains(words, transformed) {
+        let new_words = remove_item(words, transformed)
+        let new_path = append(path, transformed)
+        let result = word_ladder(transformed, new_path, target, new_words)
+        if len(result) > 0 {
+          return result
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return [] as list<string>
+}
+
+fun main() {
+  let w1 = ["hot", "dot", "dog", "lot", "log", "cog"]
+  print(str(word_ladder("hit", ["hit"], "cog", w1)))
+  let w2 = ["hot", "dot", "dog", "lot", "log"]
+  print(str(word_ladder("hit", ["hit"], "cog", w2)))
+  let w3 = ["load", "goad", "gold", "lead", "lord"]
+  print(str(word_ladder("lead", ["lead"], "gold", w3)))
+  let w4 = ["came", "cage", "code", "cade", "gave"]
+  print(str(word_ladder("game", ["game"], "code", w4)))
+}
+
+main()
