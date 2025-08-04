@@ -633,9 +633,10 @@ type StringLit struct{ Value string }
 var hexEscape = regexp.MustCompile(`\\x([0-9a-fA-F]{2})`)
 
 func (s *StringLit) emit(w io.Writer) {
-	q := strconv.Quote(s.Value)
-	q = hexEscape.ReplaceAllString(q, `\\u00$1`)
-	io.WriteString(w, q)
+        q := strconv.Quote(s.Value)
+       q = hexEscape.ReplaceAllString(q, `\\u00$1`)
+       q = strings.ReplaceAll(q, "\\f", "\\u000c")
+        io.WriteString(w, q)
 }
 
 type IntLit struct{ Value int64 }
@@ -762,21 +763,21 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		ix.Index.emit(w)
 	}
 	io.WriteString(w, "]")
-	if !asTarget {
-		if isMap || dynamicCast != "" {
-			if ix.Type != "" {
-				io.WriteString(w, " as "+ix.Type)
-			} else if ix.ForceBang {
-				io.WriteString(w, "!!")
-			}
-		} else if isString {
-			io.WriteString(w, ".toString()")
-		} else if isList && ix.Type != "" && (baseType == "" || strings.Contains(baseType, "Any")) {
-			io.WriteString(w, " as "+ix.Type)
-		} else if ix.ForceBang {
-			io.WriteString(w, "!!")
-		}
-	}
+        if !asTarget {
+               if (isMap || dynamicCast != "") {
+                       if ix.Type == "Boolean" && !ix.ForceBang {
+                               io.WriteString(w, " ?: false")
+                       } else if ix.ForceBang {
+                               io.WriteString(w, "!!")
+                       }
+               } else if isString {
+                        io.WriteString(w, ".toString()")
+               } else if isList && ix.Type != "" && (baseType == "" || strings.Contains(baseType, "Any")) {
+                       io.WriteString(w, " as "+ix.Type)
+               } else if ix.ForceBang {
+                       io.WriteString(w, "!!")
+               }
+       }
 }
 
 // MapLit represents a Kotlin map literal.
@@ -1884,23 +1885,29 @@ func (s *StrExpr) emit(w io.Writer) {
 type NotExpr struct{ Value Expr }
 
 func (n *NotExpr) emit(w io.Writer) {
-	io.WriteString(w, "!")
-	needCast := guessType(n.Value) != "Boolean"
-	if needCast {
-		io.WriteString(w, "(")
-	}
-	switch n.Value.(type) {
-	case *BoolLit, *VarRef, *CallExpr, *IndexExpr, *FieldExpr:
-		n.Value.emit(w)
-	default:
-		io.WriteString(w, "(")
-		n.Value.emit(w)
-		io.WriteString(w, ")")
-	}
-	if needCast {
-		io.WriteString(w, " as Boolean")
-		io.WriteString(w, ")")
-	}
+       io.WriteString(w, "!")
+       if _, ok := n.Value.(*IndexExpr); ok {
+               io.WriteString(w, "((")
+               n.Value.emit(w)
+               io.WriteString(w, ") as? Boolean ?: false)")
+               return
+       }
+       needCast := guessType(n.Value) != "Boolean"
+       if needCast {
+               io.WriteString(w, "(")
+       }
+       switch n.Value.(type) {
+       case *BoolLit, *VarRef, *CallExpr, *FieldExpr:
+               n.Value.emit(w)
+       default:
+               io.WriteString(w, "(")
+               n.Value.emit(w)
+               io.WriteString(w, ")")
+       }
+       if needCast {
+               io.WriteString(w, " as Boolean")
+               io.WriteString(w, ")")
+       }
 }
 
 // NotNullCheck converts Mochi truthiness to Kotlin null check.
@@ -2698,7 +2705,7 @@ func guessType(e Expr) string {
 		return "MutableList<Any>"
 	case *TypedListLit:
 		return "MutableList<" + v.ElemType + ">"
-	case *MapLit:
+        case *MapLit:
 		if len(v.Items) > 0 {
 			k := guessType(v.Items[0].Key)
 			if k == "" {
@@ -2724,7 +2731,7 @@ func guessType(e Expr) string {
 			return "MutableMap<" + k + ", " + val + ">"
 		}
 		return "MutableMap<Any?, Any?>"
-	case *ValuesExpr:
+       case *ValuesExpr:
 		base := guessType(v.Map)
 		if strings.HasPrefix(base, "MutableMap<") {
 			part := strings.TrimSuffix(strings.TrimPrefix(base, "MutableMap<"), ">")
@@ -4010,11 +4017,12 @@ func convertWhileStmt(env *types.Env, ws *parser.WhileStmt) (Stmt, error) {
 	if !isBoolExpr(cond) {
 		cond = &CastExpr{Value: cond, Type: "Boolean"}
 	}
-	body, err := convertStmts(env, ws.Body)
-	if err != nil {
-		return nil, err
-	}
-	return &WhileStmt{Cond: cond, Body: body}, nil
+        bodyEnv := types.NewEnv(env)
+        body, err := convertStmts(bodyEnv, ws.Body)
+        if err != nil {
+                return nil, err
+        }
+        return &WhileStmt{Cond: cond, Body: body}, nil
 }
 
 func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
@@ -4168,22 +4176,21 @@ func buildIndexTarget(env *types.Env, name string, idx []*parser.IndexOp) (Expr,
 		if err != nil {
 			return nil, err
 		}
-		tname := ""
-		force := true
-		if curType != nil {
-			switch tt := curType.(type) {
-			case types.ListType:
-				tname = kotlinTypeFromType(tt.Elem)
-				curType = tt.Elem
-			case types.MapType:
-				tname = ""
-				curType = tt.Value
-				force = false
-			}
-		}
-		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}
-	}
-	return target, nil
+               tname := ""
+               force := true
+               if curType != nil {
+                       switch tt := curType.(type) {
+                       case types.ListType:
+                               tname = kotlinTypeFromType(tt.Elem)
+                               curType = tt.Elem
+                       case types.MapType:
+                               curType = tt.Value
+                               force = false
+                       }
+               }
+               target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}
+       }
+       return target, nil
 }
 
 func buildAccessTarget(env *types.Env, name string, idx []*parser.IndexOp, fields []*parser.FieldOp) (Expr, error) {
@@ -4202,19 +4209,20 @@ func buildAccessTarget(env *types.Env, name string, idx []*parser.IndexOp, field
 		if err != nil {
 			return nil, err
 		}
-		tname := ""
-		if curType != nil {
-			switch tt := curType.(type) {
-			case types.ListType:
-				tname = kotlinTypeFromType(tt.Elem)
-				curType = tt.Elem
-			case types.MapType:
-				tname = kotlinTypeFromType(tt.Value)
-				curType = tt.Value
-			}
-		}
-		target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: true}
-	}
+               tname := ""
+               force := true
+               if curType != nil {
+                       switch tt := curType.(type) {
+                       case types.ListType:
+                               tname = kotlinTypeFromType(tt.Elem)
+                               curType = tt.Elem
+                       case types.MapType:
+                               curType = tt.Value
+                               force = false
+                       }
+               }
+               target = &IndexExpr{Target: target, Index: idxExpr, Type: tname, ForceBang: force}
+       }
 	for _, f := range fields {
 		ftype := ""
 		if st, ok := curType.(types.StructType); ok {
@@ -4961,42 +4969,48 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			tname := ""
-			if v, ok := expr.(*VarRef); ok && env != nil {
-				if typ, err := env.GetVar(v.Name); err == nil {
-					switch tt := typ.(type) {
-					case types.ListType:
-						tname = kotlinTypeFromType(tt.Elem)
-					case types.MapType:
-						tname = kotlinTypeFromType(tt.Value)
-					}
-				}
-			}
-			if tname == "" {
-				baseType := guessType(expr)
-				if strings.HasPrefix(baseType, "MutableList<") {
-					tname = strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableList<"), ">")
-				} else if strings.HasPrefix(baseType, "MutableMap<") {
-					part := strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableMap<"), ">")
-					if idx := strings.Index(part, ","); idx >= 0 {
-						tname = strings.TrimSpace(part[idx+1:])
-					}
-				}
-			}
-			if tname == "Any" {
-				tname = ""
-			}
-			if tname == "" && baseIsMap && i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
-				tname = "MutableMap<String, Any>"
-			}
-			force := true
-			if tname == "" {
-				force = false
-			}
-			if ix, ok := expr.(*IndexExpr); ok && ix.Type != "" {
-				expr = &CastExpr{Value: ix, Type: ix.Type}
-			}
-			expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
+                       tname := ""
+                       force := true
+                       if v, ok := expr.(*VarRef); ok && env != nil {
+                               if typ, err := env.GetVar(v.Name); err == nil {
+                                       switch tt := typ.(type) {
+                                       case types.ListType:
+                                               tname = kotlinTypeFromType(tt.Elem)
+                                       case types.MapType:
+                                               tname = kotlinTypeFromType(tt.Value)
+                                               if tname == "Boolean" {
+                                                       force = false
+                                               }
+                                       }
+                               }
+                       }
+                       if tname == "" {
+                               baseType := guessType(expr)
+                               if strings.HasPrefix(baseType, "MutableList<") {
+                                       tname = strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableList<"), ">")
+                               } else if strings.HasPrefix(baseType, "MutableMap<") {
+                                       part := strings.TrimSuffix(strings.TrimPrefix(baseType, "MutableMap<"), ">")
+                                       if idx := strings.Index(part, ","); idx >= 0 {
+                                               tname = strings.TrimSpace(part[idx+1:])
+                                       }
+                                       if tname == "Boolean" {
+                                               force = false
+                                       }
+                               }
+                       }
+                       if tname == "Any" {
+                               tname = ""
+                       }
+                       if tname == "" && baseIsMap && i+1 < len(p.Ops) && p.Ops[i+1].Index != nil {
+                               tname = "MutableMap<String, Any>"
+                       }
+                       if tname == "" {
+                               force = false
+                       }
+                       if ix, ok := expr.(*IndexExpr); ok && ix.Type != "" {
+                               expr = &CastExpr{Value: ix, Type: ix.Type}
+                       }
+                       expr = &IndexExpr{Target: expr, Index: idx, Type: tname, ForceBang: force}
 		case op.Index != nil && op.Index.Colon != nil && op.Index.Colon2 == nil && op.Index.Step == nil:
 			var startExpr Expr
 			if op.Index.Start != nil {

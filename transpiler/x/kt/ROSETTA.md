@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 08:54 +0700
+Last updated: 2025-08-04 09:36 +0700
 
-Completed tasks: **291/491**
+Completed tasks: **311/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -234,26 +234,26 @@ Completed tasks: **291/491**
 | 223 | conditional-structures-9 | ✓ | 6.22ms | 134.6 KB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences |  |  |  |
 | 225 | constrained-genericity-1 | ✓ | 6.23ms | 134.6 KB |
-| 226 | constrained-genericity-2 |  |  |  |
-| 227 | constrained-genericity-3 |  |  |  |
-| 228 | constrained-genericity-4 |  |  |  |
-| 229 | constrained-random-points-on-a-circle-1 |  |  |  |
-| 230 | constrained-random-points-on-a-circle-2 |  |  |  |
-| 231 | continued-fraction |  |  |  |
-| 232 | convert-decimal-number-to-rational |  |  |  |
-| 233 | convert-seconds-to-compound-duration |  |  |  |
-| 234 | convex-hull |  |  |  |
-| 235 | conways-game-of-life |  |  |  |
-| 236 | copy-a-string-1 |  |  |  |
-| 237 | copy-a-string-2 |  |  |  |
-| 238 | copy-stdin-to-stdout-1 |  |  |  |
-| 239 | copy-stdin-to-stdout-2 |  |  |  |
-| 240 | count-in-factors |  |  |  |
-| 241 | count-in-octal-1 |  |  |  |
-| 242 | count-in-octal-2 |  |  |  |
-| 243 | count-in-octal-3 |  |  |  |
-| 244 | count-in-octal-4 |  |  |  |
-| 245 | count-occurrences-of-a-substring |  |  |  |
+| 226 | constrained-genericity-2 | ✓ | 5.88ms | 134.6 KB |
+| 227 | constrained-genericity-3 | ✓ | 6.08ms | 134.6 KB |
+| 228 | constrained-genericity-4 | ✓ | 16.07ms | 123.0 KB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 36.05ms | 123.5 KB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 34.28ms | 94.5 KB |
+| 231 | continued-fraction | ✓ | 25.24ms | 102.2 KB |
+| 232 | convert-decimal-number-to-rational | ✓ | 18.49ms | 111.0 KB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 6.64ms | 133.8 KB |
+| 234 | convex-hull | ✓ | 5.84ms | 133.9 KB |
+| 235 | conways-game-of-life | ✓ | 698.82ms | 822.4 KB |
+| 236 | copy-a-string-1 | ✓ | 5.36ms | 134.6 KB |
+| 237 | copy-a-string-2 | ✓ | 5.48ms | 133.8 KB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 25.29ms | 102.6 KB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 20.74ms | 102.6 KB |
+| 240 | count-in-factors | ✓ | 8.92ms | 134.0 KB |
+| 241 | count-in-octal-1 | ✓ | 14.31ms | 121.5 KB |
+| 242 | count-in-octal-2 | ✓ | 332.39ms | 821.7 KB |
+| 243 | count-in-octal-3 | ✓ | 11.31ms | 121.6 KB |
+| 244 | count-in-octal-4 | ✓ | 10.10ms | 121.6 KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 8.15ms | 130.3 KB |
 | 246 | count-the-coins-1 |  |  |  |
 | 247 | count-the-coins-2 | ✓ | 38.64ms | 92.5 KB |
 | 248 | cramers-rule | ✓ | 10.09ms | 130.8 KB |
