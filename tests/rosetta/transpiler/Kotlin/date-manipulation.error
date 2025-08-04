@@ -1,0 +1,22 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:142:28: error: type mismatch: inferred type is Int but (Int) -> Int was expected
+    var hh: (Int) -> Int = h
+                           ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:144:14: error: type mismatch: inferred type is Int but (Int) -> Int was expected
+        hh = h + 12
+             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:147:14: error: the integer literal does not conform to the expected type (Int) -> Int
+        hh = 0
+             ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:149:35: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toInt(): Int defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toInt(radix: Int): Int defined in kotlin.text
+private fun Iterable<FlagEnum>.toInt(): Int defined in kotlin.text
+    return mutableListOf<Int>((hh.toInt()), (mi.toInt()))
+                                  ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:174:37: error: type mismatch: inferred type is Any? but String! was expected
+    var day: Int = Integer.parseInt(parts[1] as Any?, 10)
+                                    ^
+/workspace/mochi/tests/rosetta/transpiler/Kotlin/date-manipulation.kt:175:38: error: type mismatch: inferred type is Any? but String! was expected
+    var year: Int = Integer.parseInt(parts[2] as Any?, 10)
+                                     ^
