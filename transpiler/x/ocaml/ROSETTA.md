@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 372/491
+Completed programs: 373/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -471,7 +471,7 @@ Completed programs: 372/491
 | 463 | fractran | ✓ | 3.16s | 3.09GB |
 | 464 | french-republican-calendar | ✓ | 129.0µs | 1.45KB |
 | 465 | ftp | error |  |  |
-| 466 | function-frequency |   |  |  |
+| 466 | function-frequency | ✓ | 1.0ms | 159.14KB |
 | 467 | function-prototype |   |  |  |
 | 468 | functional-coverage-tree |   |  |  |
 | 469 | fusc-sequence |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 372/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 16:58 +0700
+Last updated 2025-08-04 19:20 +0700
