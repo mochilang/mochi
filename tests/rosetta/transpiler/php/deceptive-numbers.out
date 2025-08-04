@@ -1,7 +1,7 @@
 The first 25 deceptive numbers are:
 [91 259 451 481 703 1729 2821 2981 3367 4141 4187 5461 6533 6541 6601 7471 7777 8149 8401 8911 10001 11111 12403 13981 14701]
 {
-  "duration_us": 220889,
-  "memory_bytes": 96,
+  "duration_us": 323320,
+  "memory_bytes": 99096,
   "name": "main"
 }
