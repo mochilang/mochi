@@ -3141,6 +3141,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				if typ == "" {
 					typ = guessType(val)
+				} else if strings.Contains(typ, "->") {
+					if gt := guessType(val); gt != "" && gt != "Any" && !strings.Contains(gt, "->") {
+						typ = gt
+					}
 				}
 				if typ == "Int" {
 					if lit, ok := val.(*IntLit); ok {
@@ -5477,6 +5481,7 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				} else if len(args) != 2 {
 					return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
 				}
+				funcRets["Integer.parseInt"] = "Int"
 				return &CallExpr{Func: "Integer.parseInt", Args: args}, nil
 			}
 			if name == "now" {
