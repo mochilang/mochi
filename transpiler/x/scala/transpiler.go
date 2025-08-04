@@ -4073,17 +4073,28 @@ func convertMatchExpr(me *parser.MatchExpr, env *types.Env) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	targetType := types.ExprType(me.Target, env)
 	m := &MatchExpr{Target: target}
+	// Track whether we can safely match on Int by converting the target.
+	useIntMatch := false
 	for _, c := range me.Cases {
 		pat, err := convertExpr(c.Pattern, env)
 		if err != nil {
 			return nil, err
+		}
+		if types.IsIntType(targetType) || types.IsInt64Type(targetType) || types.IsBigIntType(targetType) {
+			if _, ok := pat.(*IntLit); ok {
+				useIntMatch = true
+			}
 		}
 		res, err := convertExpr(c.Result, env)
 		if err != nil {
 			return nil, err
 		}
 		m.Cases = append(m.Cases, MatchCase{Pattern: pat, Result: res})
+	}
+	if useIntMatch && (types.IsIntType(targetType) || types.IsInt64Type(targetType) || types.IsBigIntType(targetType)) {
+		m.Target = &FieldExpr{Receiver: target, Name: "toInt"}
 	}
 	return m, nil
 }
