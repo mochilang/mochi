@@ -1,0 +1,26 @@
+value=0 entry=true inc=true dec=false
+value=1 entry=false inc=true dec=true
+value=2 entry=false inc=true dec=true
+value=3 entry=false inc=true dec=true
+value=4 entry=false inc=true dec=true
+value=5 entry=false inc=true dec=true
+value=6 entry=false inc=true dec=true
+value=7 entry=false inc=true dec=true
+value=8 entry=false inc=true dec=true
+value=9 entry=false inc=true dec=true
+value=10 entry=false inc=false dec=true
+value=9 entry=false inc=true dec=true
+value=8 entry=false inc=true dec=true
+value=7 entry=false inc=true dec=true
+value=6 entry=false inc=true dec=true
+value=5 entry=false inc=true dec=true
+value=4 entry=false inc=true dec=true
+value=3 entry=false inc=true dec=true
+value=2 entry=false inc=true dec=true
+value=1 entry=false inc=true dec=true
+value=0 entry=true inc=true dec=false
+{
+  "duration_us": 913,
+  "memory_bytes": 25576,
+  "name": "main"
+}

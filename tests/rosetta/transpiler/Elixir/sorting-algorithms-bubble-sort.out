@@ -1,0 +1,7 @@
+unsorted: [31 41 59 26 53 58 97 93 23 84]
+sorted!  [23 26 31 41 53 58 59 84 93 97]
+{
+  "duration_us": 373,
+  "memory_bytes": 17912,
+  "name": "main"
+}

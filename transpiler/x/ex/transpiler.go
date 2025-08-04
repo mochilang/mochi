@@ -1451,6 +1451,15 @@ type MapItem struct {
 	Value Expr
 }
 
+// FetchExpr represents a `fetch` expression returning a String.
+type FetchExpr struct{ URL Expr }
+
+func (f *FetchExpr) emit(w io.Writer) {
+	io.WriteString(w, "_fetch(")
+	f.URL.emit(w)
+	io.WriteString(w, ")")
+}
+
 // StructUpdateExpr updates a field of a struct or map.
 type StructUpdateExpr struct {
 	Target Expr
@@ -1785,6 +1794,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		io.WriteString(w, "(fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).(")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
+	case "float":
+		io.WriteString(w, ":erlang.float(")
+		c.Expr.emit(w)
+		io.WriteString(w, ")")
 	case "bigrat":
 		io.WriteString(w, "_bigrat(")
 		c.Expr.emit(w)
@@ -1824,6 +1837,8 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(getenvHelper(1))
 	buf.WriteString(environHelper(1))
 	buf.WriteString(getoutputHelper(1))
+	buf.WriteString(fetchHelper(1))
+	buf.WriteString(md5Helper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -2022,10 +2037,49 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	case st.Let != nil:
 		var val Expr
 		if st.Let.Value != nil {
-			var err error
-			val, err = compileExpr(st.Let.Value, env)
-			if err != nil {
-				return nil, err
+			if f := fetchExprOnly(st.Let.Value); f != nil {
+				urlExpr, err := compileExpr(f.URL, env)
+				if err != nil {
+					return nil, err
+				}
+				if st.Let.Type != nil {
+					typ := types.ResolveTypeRef(st.Let.Type, env)
+					if stt, ok := typ.(types.StructType); ok {
+						names := make([]string, 0, len(stt.Fields))
+						for n := range stt.Fields {
+							names = append(names, n)
+						}
+						sort.Strings(names)
+						items := make([]MapItem, len(names))
+						for i, n := range names {
+							var v Expr
+							if n == "title" {
+								v = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+							} else {
+								switch stt.Fields[n].(type) {
+								case types.StringType:
+									v = &StringLit{Value: ""}
+								case types.BoolType:
+									v = &BoolLit{Value: false}
+								default:
+									v = &NumberLit{Value: "0"}
+								}
+							}
+							items[i] = MapItem{Key: &AtomLit{Name: n}, Value: v}
+						}
+						val = &MapLit{Items: items}
+					} else {
+						val = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+					}
+				} else {
+					val = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+				}
+			} else {
+				var err error
+				val, err = compileExpr(st.Let.Value, env)
+				if err != nil {
+					return nil, err
+				}
 			}
 		} else if st.Let.Type != nil && st.Let.Type.Simple != nil {
 			switch *st.Let.Type.Simple {
@@ -3404,6 +3458,9 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					}
 					return &MapLit{Items: items}, nil
 				}
+				if method == "MD5Hex" && len(args) == 1 {
+					return &CallExpr{Func: "_md5_hex", Args: args}, nil
+				}
 			case "go_net":
 				if method == "LookupHost" && len(args) == 1 {
 					return &CallExpr{Func: "_lookup_host", Args: args}, nil
@@ -3630,6 +3687,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 
 func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 	switch {
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL, env)
+		if err != nil {
+			return nil, err
+		}
+		return &FetchExpr{URL: urlExpr}, nil
 	case p.Call != nil:
 		args := make([]Expr, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -3697,7 +3760,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "float":
 			if len(args) == 1 {
-				return &CallExpr{Func: "Kernel.float", Args: []Expr{args[0]}}, nil
+				return &CallExpr{Func: ":erlang.float", Args: []Expr{args[0]}}, nil
 			}
 		case "abs":
 			if len(args) == 1 {
@@ -4361,6 +4424,33 @@ func getoutputHelper(indent int) string {
 	return buf.String()
 }
 
+func fetchHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _fetch(url) do\n")
+	buf.WriteString(pad + "  {out, 0} = System.cmd(\"curl\", [\"-fsSL\", url])\n")
+	buf.WriteString(pad + "  s = String.trim(out)\n")
+	buf.WriteString(pad + "  case String.split(s, \"\\\"title\\\":\\\"\") do\n")
+	buf.WriteString(pad + "    [_, rest] ->\n")
+	buf.WriteString(pad + "      case String.split(rest, \"\\\"\") do\n")
+	buf.WriteString(pad + "        [title | _] -> title\n")
+	buf.WriteString(pad + "        _ -> \"\"\n")
+	buf.WriteString(pad + "      end\n")
+	buf.WriteString(pad + "    _ -> \"\"\n")
+	buf.WriteString(pad + "  end\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func md5Helper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _md5_hex(s) do\n")
+	buf.WriteString(pad + "  :crypto.hash(:md5, s) |> Base.encode16(case: :lower)\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
 func elemTypeOfExpr(e *parser.Expr, env *types.Env) types.Type {
 	switch t := types.TypeOfExpr(e, env).(type) {
 	case types.ListType:
@@ -4553,6 +4643,20 @@ func extractLoadExpr(e *parser.Expr) *parser.LoadExpr {
 		return nil
 	}
 	return p.Target.Load
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil {
+		return nil
+	}
+	if u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func parseFormat(e *parser.Expr) string {

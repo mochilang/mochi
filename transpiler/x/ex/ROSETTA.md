@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (349/491)
-_Last updated: 2025-08-05 00:37 +0700_
+## Rosetta Test Checklist (372/491)
+_Last updated: 2025-08-05 01:09 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -474,26 +474,26 @@ _Last updated: 2025-08-05 00:37 +0700_
 | 466 | function-frequency | ✓ | 347.04ms | 249.1 KB |
 | 467 | function-prototype | ✓ | 1us | 0 B |
 | 468 | functional-coverage-tree | ✓ | 918us | 46.0 KB |
-| 469 | fusc-sequence |  |  |  |
-| 470 | gamma-function |  |  |  |
-| 471 | general-fizzbuzz |  |  |  |
-| 472 | generic-swap |  |  |  |
-| 473 | get-system-command-output |  |  |  |
-| 474 | giuga-numbers |  |  |  |
-| 475 | globally-replace-text-in-several-files |  |  |  |
-| 476 | goldbachs-comet |  |  |  |
-| 477 | golden-ratio-convergence |  |  |  |
-| 478 | graph-colouring |  |  |  |
-| 479 | gray-code |  |  |  |
-| 480 | gui-component-interaction |  |  |  |
-| 481 | gui-enabling-disabling-of-controls |  |  |  |
-| 482 | gui-maximum-window-dimensions |  |  |  |
-| 483 | http |  |  |  |
-| 484 | image-noise |  |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |  |  |  |
-| 486 | md5 |  |  |  |
-| 487 | nim-game |  |  |  |
-| 488 | plasma-effect |  |  |  |
-| 489 | sorting-algorithms-bubble-sort |  |  |  |
-| 490 | window-management |  |  |  |
-| 491 | zumkeller-numbers |  |  |  |
+| 469 | fusc-sequence | ✓ | 10.31ms | 9.6 KB |
+| 470 | gamma-function | ✓ | 7.18ms | 25.0 KB |
+| 471 | general-fizzbuzz | ✓ | 5.67ms | 17.3 KB |
+| 472 | generic-swap | ✓ | 371us | 0 B |
+| 473 | get-system-command-output | ✓ | 345us | 0 B |
+| 474 | giuga-numbers | ✓ | 5.09ms | 25.0 KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 186us | 0 B |
+| 476 | goldbachs-comet | ✓ | 22.28ms | 98.1 KB |
+| 477 | golden-ratio-convergence | ✓ | 3.79ms | 17.3 KB |
+| 478 | graph-colouring | ✓ | 197us | 0 B |
+| 479 | gray-code | ✓ | 1.82ms | 25.2 KB |
+| 480 | gui-component-interaction | ✓ | 3.34ms | 17.3 KB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 913us | 25.0 KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 349us | 0 B |
+| 483 | http | ✓ | 487.58ms | 98.1 KB |
+| 484 | image-noise | ✓ | 48.78ms | 12.5 KB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 116.68ms | 7.8 KB |
+| 486 | md5 | ✓ | 82.51ms | 12.5 KB |
+| 487 | nim-game | ✓ | 3.16ms | 12.5 KB |
+| 488 | plasma-effect | ✓ | 51.86ms | 35.4 KB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 373us | 17.5 KB |
+| 490 | window-management | ✓ | 367us | 12.5 KB |
+| 491 | zumkeller-numbers | ✓ | 15.76s | 130.9 KB |
