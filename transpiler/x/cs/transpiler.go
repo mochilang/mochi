@@ -1447,6 +1447,9 @@ func csType(t *parser.TypeRef) string {
 		switch t.Generic.Name {
 		case "list":
 			if len(t.Generic.Args) == 1 {
+				if a := t.Generic.Args[0]; a.Fun != nil && a.Fun.Return == nil {
+					return "Func<object>[]"
+				}
 				return fmt.Sprintf("%s[]", csType(t.Generic.Args[0]))
 			}
 			return "object[]"
@@ -1494,6 +1497,16 @@ func csTypeFromType(t types.Type) string {
 		usesBigInt = true
 		return "BigRat"
 	case types.ListType:
+		switch ft := tt.Elem.(type) {
+		case types.FuncType:
+			if ft.Return == nil && len(ft.Params) == 0 {
+				return "Func<object>[]"
+			}
+		case *types.FuncType:
+			if ft.Return == nil && len(ft.Params) == 0 {
+				return "Func<object>[]"
+			}
+		}
 		return fmt.Sprintf("%s[]", csTypeFromType(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Dictionary<%s, %s>", csTypeFromType(tt.Key), csTypeFromType(tt.Value))
@@ -1511,7 +1524,20 @@ func csTypeFromType(t types.Type) string {
 			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
 		}
 		if len(parts) == 0 {
-			return "Action"
+			return "Func<object>"
+		}
+		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
+	case *types.FuncType:
+		parts := make([]string, 0, len(tt.Params))
+		for _, p := range tt.Params {
+			parts = append(parts, csTypeFromType(p))
+		}
+		if tt.Return != nil {
+			parts = append(parts, csTypeFromType(tt.Return))
+			return fmt.Sprintf("Func<%s>", strings.Join(parts, ", "))
+		}
+		if len(parts) == 0 {
+			return "Func<object>"
 		}
 		return fmt.Sprintf("Action<%s>", strings.Join(parts, ", "))
 	default:
@@ -3248,8 +3274,15 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		mutatedVars = savedMut
 		if prog != nil && blockDepth == 0 {
 			varTypes[s.Fun.Name] = fmt.Sprintf("fn/%d", len(ptypes))
-			funRets[s.Fun.Name] = retType
+			if currentReturnType != "" {
+				funRets[s.Fun.Name] = currentReturnType
+			} else {
+				funRets[s.Fun.Name] = retType
+			}
 			userFuncs[s.Fun.Name] = true
+		}
+		if currentReturnType != "" {
+			retType = currentReturnType
 		}
 		if s.Fun.Return == nil {
 			retType = ""
@@ -3318,7 +3351,22 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 								for i, e := range l.Elems {
 									if vr, ok2 := e.(*VarRef); ok2 {
 										call := &CallExpr{Func: vr.Name, Args: nil}
-										l.Elems[i] = &FunLit{ExprBody: call}
+										cast := &RawExpr{Code: fmt.Sprintf("(object)(%s)", exprString(call)), Type: "object"}
+										l.Elems[i] = &FunLit{ExprBody: cast, ReturnType: "object"}
+									}
+								}
+								ct = "Func<object>[]"
+								currentReturnType = ct
+								l.ElemType = ct
+								vt = ct
+							}
+						} else if elem == "Func<object>" {
+							if l, ok := val.(*ListLit); ok {
+								for i, e := range l.Elems {
+									if vr, ok2 := e.(*VarRef); ok2 {
+										call := &CallExpr{Func: vr.Name, Args: nil}
+										cast := &RawExpr{Code: fmt.Sprintf("(object)(%s)", exprString(call)), Type: "object"}
+										l.Elems[i] = &FunLit{ExprBody: cast, ReturnType: "object"}
 									}
 								}
 								l.ElemType = ct
