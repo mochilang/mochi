@@ -1,0 +1,67 @@
+/*
+Rat in a Maze - Backtracking
+
+Given a square maze represented as a matrix of 0s and 1s,
+find a path from a starting cell to a destination cell.
+0 represents an open cell and 1 represents a wall.
+The algorithm explores neighbours recursively (down, right, up, left)
+marking the path in a separate solution matrix.  The solution matrix
+initially contains only 1s and cells on the path are set to 0.  If a
+path from source to destination exists the filled solution matrix is
+returned, otherwise an error is raised.
+*/
+
+fun run_maze(maze: list<list<int>>, i: int, j: int, dr: int, dc: int, sol: list<list<int>>): bool {
+  let size = len(maze)
+  if i == dr && j == dc && maze[i][j] == 0 {
+    sol[i][j] = 0
+    return true
+  }
+  let lower_flag = (i >= 0) && (j >= 0)
+  let upper_flag = (i < size) && (j < size)
+  if lower_flag && upper_flag {
+    let block_flag = (sol[i][j] == 1) && (maze[i][j] == 0)
+    if block_flag {
+      sol[i][j] = 0
+      if run_maze(maze, i + 1, j, dr, dc, sol) || run_maze(maze, i, j + 1, dr, dc, sol) || run_maze(maze, i - 1, j, dr, dc, sol) || run_maze(maze, i, j - 1, dr, dc, sol) {
+        return true
+      }
+      sol[i][j] = 1
+      return false
+    }
+  }
+  return false
+}
+
+fun solve_maze(maze: list<list<int>>, sr: int, sc: int, dr: int, dc: int): list<list<int>> {
+  let size = len(maze)
+  if !(0 <= sr && sr < size && 0 <= sc && sc < size && 0 <= dr && dr < size && 0 <= dc && dc < size) {
+    panic("Invalid source or destination coordinates")
+  }
+  var sol: list<list<int>> = []
+  var i = 0
+  while i < size {
+    var row: list<int> = []
+    var j = 0
+    while j < size {
+      row = append(row, 1)
+      j = j + 1
+    }
+    sol = append(sol, row)
+    i = i + 1
+  }
+  let solved = run_maze(maze, sr, sc, dr, dc, sol)
+  if solved {
+    return sol
+  } else {
+    panic("No solution exists!")
+  }
+}
+
+let maze = [[0,1,0,1,1],
+            [0,0,0,0,0],
+            [1,0,1,0,1],
+            [0,0,1,0,0],
+            [1,0,0,1,0]]
+let n = len(maze) - 1
+print(str(solve_maze(maze, 0, 0, n, n)))
