@@ -1493,7 +1493,8 @@ func isIntExpr(e Expr) bool {
 	case *Ident:
 		if currentEnv != nil {
 			if t, err := currentEnv.GetVar(ex.Name); err == nil {
-				if _, ok := t.(types.IntType); ok {
+				switch t.(type) {
+				case types.IntType, types.BigIntType:
 					return true
 				}
 			}
@@ -1508,8 +1509,11 @@ func isIntExpr(e Expr) bool {
 			return isIntExpr(ex.Left) && isIntExpr(ex.Right)
 		}
 	case *IndexExpr:
-		if _, ok := exprType(ex).(types.IntType); ok {
-			return true
+		if t := exprType(ex); t != nil {
+			switch t.(type) {
+			case types.IntType, types.BigIntType:
+				return true
+			}
 		}
 	}
 	return false
