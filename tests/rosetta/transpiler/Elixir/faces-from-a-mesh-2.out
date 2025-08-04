@@ -7,3 +7,8 @@ Edge to perimeter format translations:
   F => [1 11 23 17]
   G => [8 14 10 12 17 19 18]
   H => Invalid edge format
+{
+  "duration_us": 1078,
+  "memory_bytes": 17672,
+  "name": "main"
+}

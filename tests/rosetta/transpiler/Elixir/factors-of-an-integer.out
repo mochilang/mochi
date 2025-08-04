@@ -1,0 +1,40 @@
+Factors of -1 not computed
+
+Factors of 0 not computed
+
+Factors of 1: 
+[1]
+Number of factors = 1
+
+Factors of 2: 
+[1]
+Number of factors = 1
+
+Factors of 3: 
+[1]
+Number of factors = 1
+
+Factors of 53: 
+[1]
+Number of factors = 1
+
+Factors of 45: 
+[1]
+Number of factors = 1
+
+Factors of 64: 
+[1]
+Number of factors = 1
+
+Factors of 600851475143: 
+[1]
+Number of factors = 1
+
+Factors of 999999999999999989: 
+[1]
+Number of factors = 1
+{
+  "duration_us": 53654230,
+  "memory_bytes": 20688,
+  "name": "main"
+}

@@ -1,12 +1,12 @@
 run: exit status 1
-** (MismatchedDelimiterError) mismatched delimiter found on /workspace/mochi/tests/rosetta/transpiler/Elixir/factorial-base-numbers-indexing-permutations-of-a-collection.exs:434:10:
+** (MismatchedDelimiterError) mismatched delimiter found on /workspace/mochi/tests/rosetta/transpiler/Elixir/factorial-base-numbers-indexing-permutations-of-a-collection.exs:437:10:
      error: unexpected token: )
      │
- 358 │       {perms} = Enum.reduce(factNums, {perms}, fn fn, {perms} ->
+ 361 │       {perms} = Enum.reduce(factNums, {perms}, fn fn, {perms} ->
      │                                                └ unclosed delimiter
  ...
- 434 │       end)
+ 437 │       end)
      │          └ mismatched closing delimiter (expected "end")
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/factorial-base-numbers-indexing-permutations-of-a-collection.exs:434:10
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/factorial-base-numbers-indexing-permutations-of-a-collection.exs:437:10
     (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

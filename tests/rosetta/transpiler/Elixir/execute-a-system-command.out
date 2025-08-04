@@ -1,0 +1,14 @@
+total 184
+-rw-r--r-- 1 root root   2371 Aug  4 14:38 README.md
+-rw-r--r-- 1 root root  24569 Aug  4 14:38 ROSETTA.md
+-rw-r--r-- 1 root root    838 Aug  4 14:38 TASKS.md
+-rw-r--r-- 1 root root   7244 Aug  4 09:01 rosetta_test.go
+-rw-r--r-- 1 root root 130290 Aug  4 14:41 transpiler.go
+-rw-r--r-- 1 root root   2559 Aug  4 09:01 transpiler_test.go
+-rw-r--r-- 1 root root    115 Aug  4 09:01 update_readme_test.go
+-rw-r--r-- 1 root root   5898 Aug  4 09:01 vm_valid_golden_test.go
+{
+  "duration_us": 21256,
+  "memory_bytes": 67056,
+  "name": "main"
+}

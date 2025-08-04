@@ -116,114 +116,135 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def factorial(n) do
+  def fracStr(f) do
     try do
-      result = 1
-      i = 2
-      while_fun = fn while_fun, i, result ->
-        if i <= n do
-          result = result * i
-          i = i + 1
-          while_fun.(while_fun, i, result)
-        else
-          {i, result}
-        end
-      end
-      {i, result} = try do
-          while_fun.(while_fun, i, result)
-        catch
-          {:break, {i, result}} -> {i, result}
-        end
-
-      throw {:return, result}
+      throw {:return, ((Kernel.to_string(f.num) <> "/") <> Kernel.to_string(f.den))}
     catch
       {:return, val} -> val
     end
   end
-  def isPrime(n) do
+  def gen(l, r, n, acc) do
     try do
-      if n < 2 do
-        throw {:return, false}
+      m = %{num: l.num + r.num, den: l.den + r.den}
+      {acc} = if m.den <= n do
+        acc = gen(l, m, n, acc)
+        acc = (acc ++ [m])
+        acc = gen(m, r, n, acc)
+        {acc}
+      else
+        {acc}
       end
-      if rem(n, 2) == 0 do
-        throw {:return, n == 2}
-      end
-      d = 3
-      while_fun_2 = fn while_fun_2, d ->
-        if d * d <= n do
-          if rem(n, d) == 0 do
-            throw {:return, false}
+      throw {:return, acc}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def totient(n) do
+    try do
+      tot = n
+      nn = n
+      p = 2
+      while_fun = fn while_fun, nn, p, tot ->
+        if p * p <= nn do
+          {nn, tot} = if rem(nn, p) == 0 do
+            while_fun_2 = fn while_fun_2, nn ->
+              if rem(nn, p) == 0 do
+                nn = div(nn, p)
+                while_fun_2.(while_fun_2, nn)
+              else
+                nn
+              end
+            end
+            nn = try do
+                while_fun_2.(while_fun_2, nn)
+              catch
+                {:break, {nn}} -> nn
+              end
+
+            tot = tot - div(tot, p)
+            {nn, tot}
+          else
+            {nn, tot}
           end
-          d = d + 2
-          while_fun_2.(while_fun_2, d)
+          {p} = if p == 2 do
+            p = 1
+            {p}
+          else
+            {p}
+          end
+          p = p + 2
+          while_fun.(while_fun, nn, p, tot)
         else
-          d
+          {nn, p, tot}
         end
       end
-      d = try do
-          while_fun_2.(while_fun_2, d)
+      {nn, p, tot} = try do
+          while_fun.(while_fun, nn, p, tot)
         catch
-          {:break, {d}} -> d
+          {:break, {nn, p, tot}} -> {nn, p, tot}
         end
 
-      throw {:return, true}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def padLeft(s, w) do
-    try do
-      out = s
-      while_fun_3 = fn while_fun_3, out ->
-        if _len(out) < w do
-          out = (" " <> out)
-          while_fun_3.(while_fun_3, out)
-        else
-          out
-        end
+      {tot} = if nn > 1 do
+        tot = tot - div(tot, nn)
+        {tot}
+      else
+        {tot}
       end
-      out = try do
-          while_fun_3.(while_fun_3, out)
-        catch
-          {:break, {out}} -> out
-        end
-
-      throw {:return, out}
+      throw {:return, tot}
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      n = 0
-      count = 0
-      while_fun_4 = fn while_fun_4, count, n ->
-        if count < 10 do
+      n = 1
+      while_fun_3 = fn while_fun_3, n ->
+        if n <= 11 do
+          l = %{num: 0, den: 1}
+          r = %{num: 1, den: 1}
+          seq = gen(l, r, n, [])
+          line = ((("F(" <> Kernel.to_string(n)) <> "): ") <> fracStr(l))
+          {line} = Enum.reduce(seq, {line}, fn f, {line} ->
+            line = ((line <> " ") <> fracStr(f))
+            {line}
+          end)
+          line = ((line <> " ") <> fracStr(r))
+          IO.puts(line)
           n = n + 1
-          f = factorial(n)
-          {count} = if isPrime(f - 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! - 1 = ") <> Kernel.to_string(f - 1))))
-            {count}
-          else
-            {count}
-          end
-          {count} = if count < 10 && isPrime(f + 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! + 1 = ") <> Kernel.to_string(f + 1))))
-            {count}
-          else
-            {count}
-          end
-          while_fun_4.(while_fun_4, count, n)
+          while_fun_3.(while_fun_3, n)
         else
-          {count, n}
+          n
         end
       end
-      {count, n} = try do
-          while_fun_4.(while_fun_4, count, n)
+      n = try do
+          while_fun_3.(while_fun_3, n)
         catch
-          {:break, {count, n}} -> {count, n}
+          {:break, {n}} -> n
+        end
+
+      sum = 1
+      i = 1
+      next = 100
+      while_fun_4 = fn while_fun_4, i, next, sum ->
+        if i <= 1000 do
+          sum = sum + totient(i)
+          {next} = if i == next do
+            IO.puts(((("|F(" <> Kernel.to_string(i)) <> ")|: ") <> Kernel.inspect(sum)))
+            next = next + 100
+            {next}
+          else
+            {next}
+          end
+          i = i + 1
+          while_fun_4.(while_fun_4, i, next, sum)
+        else
+          {i, next, sum}
+        end
+      end
+      {i, next, sum} = try do
+          while_fun_4.(while_fun_4, i, next, sum)
+        catch
+          {:break, {i, next, sum}} -> {i, next, sum}
         end
 
     catch
