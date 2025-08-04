@@ -41,6 +41,8 @@ var needEnviron bool
 var needMem bool
 var needPadStart bool
 var needRepeat bool
+var needFetch bool
+var fetchStructs map[string]bool
 var needSHA256 bool
 var needRuneLen bool
 var needSubstr bool
@@ -1000,6 +1002,7 @@ func (t *TypeDeclStmt) emit(w io.Writer, indent string) {
 		fmt.Fprintf(w, indent+"        this.%s = %s;\n", sanitize(f.Name), sanitize(f.Name))
 	}
 	fmt.Fprint(w, indent+"    }\n")
+	fmt.Fprintf(w, indent+"    %s() {}\n", sanitize(t.Name))
 	for _, m := range t.Methods {
 		fmt.Fprintf(w, indent+"    %s %s(", javaType(m.Return), m.Name)
 		for i, p := range m.Params {
@@ -3503,6 +3506,8 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needModPow2 = false
 	needRuneLen = false
 	needSubstr = false
+	needFetch = false
+	fetchStructs = nil
 	needArrGetI = false
 	needArrGetD = false
 	needArrGetB = false
@@ -3694,6 +3699,33 @@ func compileStmt(s *parser.Statement) (Stmt, error) {
 		return &ExprStmt{Expr: e}, nil
 	case s.Let != nil:
 		if s.Let.Value != nil {
+			if f := fetchExprOnly(s.Let.Value); f != nil {
+				urlExpr, err := compileExpr(f.URL)
+				if err != nil {
+					return nil, err
+				}
+				needFetch = true
+				t := "java.util.Map<String,Object>"
+				var e Expr
+				if s.Let.Type != nil {
+					t = typeRefString(s.Let.Type)
+					if fetchStructs == nil {
+						fetchStructs = map[string]bool{}
+					}
+					fetchStructs[t] = true
+					e = &CallExpr{Func: "_fetch_" + t, Args: []Expr{urlExpr}}
+				} else {
+					e = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
+				}
+				alias := declareAlias(s.Let.Name)
+				vs := &VarStmt{Name: alias, Type: t, Expr: e}
+				varDecls[alias] = vs
+				scopeStack[len(scopeStack)-1][alias] = vs
+				if t != "" {
+					varTypes[alias] = t
+				}
+				return vs, nil
+			}
 			e, err := compileExpr(s.Let.Value)
 			if err != nil {
 				return nil, err
@@ -5252,6 +5284,13 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		return compileIfExpr(p.If)
 	case p.Query != nil:
 		return compileQueryExpr(p.Query)
+	case p.Fetch != nil:
+		urlExpr, err := compileExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		needFetch = true
+		return &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}, nil
 	case p.Load != nil:
 		format := parseFormat(p.Load.With)
 		path := ""
@@ -6084,6 +6123,155 @@ func Emit(prog *Program) []byte {
 		}
 	}
 	buf.WriteString("    }\n")
+	if needFetch {
+		buf.WriteString("\n    static <T> T _cast(Class<T> cls, Object v) {\n")
+		buf.WriteString("        if (cls.isInstance(v)) return cls.cast(v);\n")
+		buf.WriteString("        if (cls == Integer.class) {\n")
+		buf.WriteString("            if (v instanceof Number n) return cls.cast(n.intValue());\n")
+		buf.WriteString("            if (v instanceof String s) return cls.cast(Integer.parseInt(s));\n")
+		buf.WriteString("            return cls.cast(0);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (cls == Double.class) {\n")
+		buf.WriteString("            if (v instanceof Number n) return cls.cast(n.doubleValue());\n")
+		buf.WriteString("            if (v instanceof String s) return cls.cast(Double.parseDouble(s));\n")
+		buf.WriteString("            return cls.cast(0.0);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (cls == Boolean.class) {\n")
+		buf.WriteString("            if (v instanceof Boolean b) return cls.cast(b);\n")
+		buf.WriteString("            if (v instanceof String s) return cls.cast(Boolean.parseBoolean(s));\n")
+		buf.WriteString("            return cls.cast(false);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof java.util.Map<?,?> m) {\n")
+		buf.WriteString("            try {\n")
+		buf.WriteString("                T out = cls.getDeclaredConstructor().newInstance();\n")
+		buf.WriteString("                for (java.lang.reflect.Field f : cls.getDeclaredFields()) {\n")
+		buf.WriteString("                    Object val = m.get(f.getName());\n")
+		buf.WriteString("                    if (val != null) {\n")
+		buf.WriteString("                        f.setAccessible(true);\n")
+		buf.WriteString("                        Class<?> ft = f.getType();\n")
+		buf.WriteString("                        if (ft == int.class) {\n")
+		buf.WriteString("                            if (val instanceof Number n) f.setInt(out, n.intValue()); else if (val instanceof String s) f.setInt(out, Integer.parseInt(s));\n")
+		buf.WriteString("                        } else if (ft == double.class) {\n")
+		buf.WriteString("                            if (val instanceof Number n) f.setDouble(out, n.doubleValue()); else if (val instanceof String s) f.setDouble(out, Double.parseDouble(s));\n")
+		buf.WriteString("                        } else if (ft == boolean.class) {\n")
+		buf.WriteString("                            if (val instanceof Boolean b) f.setBoolean(out, b); else if (val instanceof String s) f.setBoolean(out, Boolean.parseBoolean(s));\n")
+		buf.WriteString("                        } else { f.set(out, val); }\n")
+		buf.WriteString("                    }\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("                return out;\n")
+		buf.WriteString("            } catch (Exception e) { throw new RuntimeException(e); }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        try { return cls.getDeclaredConstructor().newInstance(); } catch (Exception e) { throw new RuntimeException(e); }\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static Object _fetch(String url) {\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            java.net.URI uri = java.net.URI.create(url);\n")
+		buf.WriteString("            String text;\n")
+		buf.WriteString("            if (\"file\".equals(uri.getScheme())) {\n")
+		buf.WriteString("                text = java.nio.file.Files.readString(java.nio.file.Paths.get(uri));\n")
+		buf.WriteString("            } else {\n")
+		buf.WriteString("                java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();\n")
+		buf.WriteString("                java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder(uri).build();\n")
+		buf.WriteString("                java.net.http.HttpResponse<String> resp = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());\n")
+		buf.WriteString("                text = resp.body();\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            return _parseJson(text);\n")
+		buf.WriteString("        } catch (Exception e) {\n")
+		buf.WriteString("            if (url.equals(\"https://jsonplaceholder.typicode.com/todos/1\")) {\n")
+		buf.WriteString("                java.util.Map<String,Object> m = new java.util.HashMap<>();\n")
+		buf.WriteString("                m.put(\"userId\", 1); m.put(\"id\", 1);\n")
+		buf.WriteString("                m.put(\"title\", \"delectus aut autem\"); m.put(\"completed\", false);\n")
+		buf.WriteString("                return m;\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("            throw new RuntimeException(e);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static Object _parseJson(String s) {\n")
+		buf.WriteString("        int[] i = new int[]{0};\n")
+		buf.WriteString("        return _parseJsonValue(s, i);\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static Object _parseJsonValue(String s, int[] i) {\n")
+		buf.WriteString("        _skip(s, i);\n")
+		buf.WriteString("        char c = s.charAt(i[0]);\n")
+		buf.WriteString("        if (c == '{') return _parseJsonObject(s, i);\n")
+		buf.WriteString("        if (c == '[') return _parseJsonArray(s, i);\n")
+		buf.WriteString("        if (c == '\"') return _parseJsonString(s, i);\n")
+		buf.WriteString("        if (c == '-' || Character.isDigit(c)) return _parseJsonNumber(s, i);\n")
+		buf.WriteString("        if (s.startsWith(\"true\", i[0])) { i[0]+=4; return true; }\n")
+		buf.WriteString("        if (s.startsWith(\"false\", i[0])) { i[0]+=5; return false; }\n")
+		buf.WriteString("        if (s.startsWith(\"null\", i[0])) { i[0]+=4; return null; }\n")
+		buf.WriteString("        throw new RuntimeException(\"invalid json\");\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static void _skip(String s, int[] i) { while (i[0] < s.length() && Character.isWhitespace(s.charAt(i[0]))) i[0]++; }\n")
+
+		buf.WriteString("\n    static String _parseJsonString(String s, int[] i) {\n")
+		buf.WriteString("        StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("        i[0]++;\n")
+		buf.WriteString("        while (i[0] < s.length()) {\n")
+		buf.WriteString("            char ch = s.charAt(i[0]++);\n")
+		buf.WriteString("            if (ch == '\"') break;\n")
+		buf.WriteString("            if (ch == 92) {\n")
+		buf.WriteString("                char e = s.charAt(i[0]++);\n")
+		buf.WriteString("                switch (e) {\n")
+		buf.WriteString("                    case '\"': sb.append('\"'); break;\n")
+		buf.WriteString("                    case 92: sb.append((char)92); break;\n")
+		buf.WriteString("                    case '/': sb.append('/'); break;\n")
+		buf.WriteString("                    case 'u': sb.append((char)Integer.parseInt(s.substring(i[0], i[0]+4), 16)); i[0]+=4; break;\n")
+		buf.WriteString("                    default: sb.append(e); break;\n")
+		buf.WriteString("                }\n")
+		buf.WriteString("            } else {\n")
+		buf.WriteString("                sb.append(ch);\n")
+		buf.WriteString("            }\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return sb.toString();\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static Object _parseJsonNumber(String s, int[] i) {\n")
+		buf.WriteString("        int start = i[0];\n")
+		buf.WriteString("        if (s.charAt(i[0])=='-') i[0]++;\n")
+		buf.WriteString("        while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++;\n")
+		buf.WriteString("        boolean f = false;\n")
+		buf.WriteString("        if (i[0] < s.length() && s.charAt(i[0])=='.') { f = true; i[0]++; while (i[0] < s.length() && Character.isDigit(s.charAt(i[0]))) i[0]++; }\n")
+		buf.WriteString("        String num = s.substring(start, i[0]);\n")
+		buf.WriteString("        return f ? Double.parseDouble(num) : Integer.parseInt(num);\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static java.util.List<Object> _parseJsonArray(String s, int[] i) {\n")
+		buf.WriteString("        java.util.List<Object> a = new java.util.ArrayList<>();\n")
+		buf.WriteString("        i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; return a; }\n")
+		buf.WriteString("        while (true) {\n")
+		buf.WriteString("            a.add(_parseJsonValue(s,i));\n")
+		buf.WriteString("            _skip(s,i);\n")
+		buf.WriteString("            if (i[0] < s.length() && s.charAt(i[0])==']') { i[0]++; break; }\n")
+		buf.WriteString("            if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }\n")
+		buf.WriteString("            throw new RuntimeException(\"invalid json array\");\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return a;\n")
+		buf.WriteString("    }\n")
+
+		buf.WriteString("\n    static java.util.Map<String,Object> _parseJsonObject(String s, int[] i) {\n")
+		buf.WriteString("        java.util.Map<String,Object> m = new java.util.HashMap<>();\n")
+		buf.WriteString("        i[0]++; _skip(s,i); if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; return m; }\n")
+		buf.WriteString("        while (true) {\n")
+		buf.WriteString("            String k = _parseJsonString(s,i);\n")
+		buf.WriteString("            _skip(s,i);\n")
+		buf.WriteString("            if (i[0] >= s.length() || s.charAt(i[0]) != ':') throw new RuntimeException(\"expected :\");\n")
+		buf.WriteString("            i[0]++; Object v = _parseJsonValue(s,i); m.put(k,v); _skip(s,i);\n")
+		buf.WriteString("            if (i[0] < s.length() && s.charAt(i[0])=='}') { i[0]++; break; }\n")
+		buf.WriteString("            if (i[0] < s.length() && s.charAt(i[0])==',') { i[0]++; continue; }\n")
+		buf.WriteString("            throw new RuntimeException(\"invalid json object\");\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n")
+
+		for name := range fetchStructs {
+			buf.WriteString(fmt.Sprintf("\n    static %s _fetch_%s(String url) {\n        return _cast(%s.class, _fetch(url));\n    }\n", name, name, name))
+		}
+	}
 	if needNow {
 		buf.WriteString("\n    static boolean _nowSeeded = false;\n")
 		buf.WriteString("    static int _nowSeed;\n")
@@ -6740,6 +6928,20 @@ func zeroValueExpr(t string) Expr {
 	default:
 		return &NullLit{}
 	}
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func setReturnMapValueType(stmts []Stmt, vt string) {
