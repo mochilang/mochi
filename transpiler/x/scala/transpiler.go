@@ -59,6 +59,15 @@ func SetBenchMain(v bool) { benchMain = v }
 
 func BuiltinAliases() map[string]string { return builtinAliases }
 
+func isDeclaredType(name string) bool {
+	for _, td := range typeDecls {
+		if td.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
 var scalaKeywords = map[string]bool{
 	"val":    true,
 	"var":    true,
@@ -4452,7 +4461,11 @@ func toScalaType(t *parser.TypeRef) string {
 		case "any":
 			return "Any"
 		default:
-			return strings.TrimSpace(*t.Simple)
+			orig := strings.TrimSpace(*t.Simple)
+			if isDeclaredType(orig) {
+				return orig
+			}
+			return "Any"
 		}
 	}
 	if t.Generic != nil {
@@ -4566,6 +4579,11 @@ func inferType(e Expr) string {
 		return "Boolean"
 	case *FloatLit:
 		return "Double"
+	case *Name:
+		if t, ok := localVarTypes[ex.Name]; ok {
+			return t
+		}
+		return ""
 	case *ListLit:
 		if len(ex.Elems) == 0 {
 			return "ArrayBuffer[Any]"
