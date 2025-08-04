@@ -36,6 +36,7 @@ var usesGetEnv bool
 var usesEnviron bool
 var usesSplit bool
 var usesDynLen bool
+var usesFetch bool
 var benchMain bool
 var funcMutations = map[string]map[string]bool{}
 var rootEnv *types.Env
@@ -3071,6 +3072,35 @@ let _sha256 lst =
   loop (String.length digest - 1) []
 `
 
+const helperFetch = `
+let _fetch url =
+  let ic = Unix.open_process_in ("curl -fsSL " ^ url) in
+  let buf = Buffer.create 1024 in
+  (try
+     while true do
+       Buffer.add_string buf (input_line ic);
+       Buffer.add_char buf '\n'
+     done
+   with End_of_file -> ());
+  ignore (Unix.close_process_in ic);
+  let s = Buffer.contents buf in
+  let rec find_sub s sub i =
+    if i + String.length sub > String.length s then -1
+    else if String.sub s i (String.length sub) = sub then i
+    else find_sub s sub (i + 1)
+  in
+  let start = find_sub s "\"title\"" 0 in
+  if start >= 0 then
+    let rest = String.sub s (start + 8) (String.length s - start - 8) in
+    try
+      let b = String.index rest '"' in
+      let rest2 = String.sub rest (b + 1) (String.length rest - b - 1) in
+      let e = String.index rest2 '"' in
+      String.sub rest2 0 e
+    with Not_found -> ""
+  else ""
+`
+
 const helperSplit = `
 let _split s sep =
   let c = if String.length sep = 0 then ' ' else sep.[0] in
@@ -3231,6 +3261,10 @@ func (p *Program) Emit() []byte {
 		buf.WriteString(helperMem)
 		buf.WriteString("\n")
 	}
+	if usesFetch {
+		buf.WriteString(helperFetch)
+		buf.WriteString("\n")
+	}
 	if usesGetOutput {
 		buf.WriteString(helperGetOutput)
 		buf.WriteString("\n")
@@ -3362,15 +3396,47 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		var err error
 		var valTyp string
 		if st.Let.Value != nil {
-			expr, valTyp, err = convertExpr(st.Let.Value, env, vars)
-			if err != nil {
-				return nil, err
+			if f := fetchExprOnly(st.Let.Value); f != nil && st.Let.Type != nil {
+				urlExpr, _, err2 := convertExpr(f.URL, env, vars)
+				if err2 != nil {
+					return nil, err2
+				}
+				typ = typeRefString(st.Let.Type)
+				if typ == "" {
+					typ = guessTypeFromName(st.Var.Name)
+				}
+				fields := structFields[typ]
+				names := make([]string, 0, len(fields))
+				for n := range fields {
+					names = append(names, n)
+				}
+				sort.Strings(names)
+				items := make([]MapEntry, len(names))
+				for i, n := range names {
+					var v Expr
+					if n == "title" {
+						usesFetch = true
+						v = &FuncCall{Name: "_fetch", Args: []Expr{urlExpr}, Ret: "string"}
+					} else {
+						v = defaultValueExpr(fields[n])
+					}
+					items[i] = MapEntry{Key: &StringLit{Value: n}, Value: v}
+				}
+				expr = &MapLit{Items: items, Dynamic: true}
+				valTyp = typ
+			} else {
+				expr, valTyp, err = convertExpr(st.Let.Value, env, vars)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 		if st.Let.Type != nil {
-			typ = typeRefString(st.Let.Type)
 			if typ == "" {
-				typ = guessTypeFromName(st.Var.Name)
+				typ = typeRefString(st.Let.Type)
+				if typ == "" {
+					typ = guessTypeFromName(st.Var.Name)
+				}
 			}
 		} else {
 			typ = valTyp
@@ -3921,6 +3987,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesEnviron = false
 	usesSplit = false
 	usesDynLen = false
+	usesFetch = false
 	pr := &Program{}
 	vars := map[string]VarInfo{}
 	stmts, err := transpileStmts(prog.Statements, env, vars)
@@ -4960,6 +5027,13 @@ func convertPrimary(p *parser.Primary, env *types.Env, vars map[string]VarInfo) 
 			}
 		}
 		return expr, listTyp, nil
+	case p.Fetch != nil:
+		urlExpr, _, err := convertExpr(p.Fetch.URL, env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		usesFetch = true
+		return &FuncCall{Name: "_fetch", Args: []Expr{urlExpr}, Ret: "string"}, "string", nil
 	case p.Map != nil:
 		items := make([]MapEntry, len(p.Map.Items))
 		fieldTypes := []string{}
@@ -6207,6 +6281,20 @@ func extractSaveExpr(e *parser.Expr) *parser.SaveExpr {
 		return nil
 	}
 	return p.Target.Save
+}
+
+func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Fetch
 }
 
 func extractCallExpr(e *parser.Expr) *parser.CallExpr {
