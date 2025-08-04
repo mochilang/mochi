@@ -68,6 +68,9 @@ var globalVars map[string]struct{}
 // methodFuncs tracks names of struct methods for implicit self calls.
 var methodFuncs map[string]struct{}
 
+// definedFuncs tracks names of top-level functions.
+var definedFuncs map[string]struct{}
+
 func isGlobalVar(name string) bool {
 	_, ok := globalVars[name]
 	return ok
@@ -1308,8 +1311,10 @@ func (c *CallExpr) emit(w io.Writer) {
 		return
 	}
 	name := c.Func
-	if !moduleMode && strings.HasPrefix(name, "_") {
-		name = "Main." + name
+	if !moduleMode {
+		if _, ok := definedFuncs[name]; ok || strings.HasPrefix(name, "_") {
+			name = "Main." + name
+		}
 	}
 	io.WriteString(w, name)
 	if c.Var {
@@ -1934,6 +1939,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
 	methodFuncs = make(map[string]struct{})
+	definedFuncs = make(map[string]struct{})
 	moduleMode = false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -1968,6 +1974,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if st.Fun != nil {
 			moduleMode = true
+			definedFuncs[sanitizeFuncName(st.Fun.Name)] = struct{}{}
 		}
 		if st.Let != nil {
 			globalVars[st.Let.Name] = struct{}{}
@@ -2609,7 +2616,12 @@ func compileForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 	}
 	check(body)
 	vars := gatherMutVars(body, env)
-	res := &ForStmt{Name: fs.Name, Start: start, End: end, Source: src, Body: body, Vars: vars, Simple: simple}
+	name := sanitizeIdent(fs.Name)
+	varsSanitized := make([]string, len(vars))
+	for i, v := range vars {
+		varsSanitized[i] = sanitizeIdent(v)
+	}
+	res := &ForStmt{Name: name, Start: start, End: end, Source: src, Body: body, Vars: varsSanitized, Simple: simple}
 	return res, nil
 }
 
