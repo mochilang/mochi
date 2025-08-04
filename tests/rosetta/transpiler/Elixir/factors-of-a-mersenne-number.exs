@@ -116,13 +116,13 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def factorial(n) do
+  def powf(base, exp) do
     try do
-      result = 1
-      i = 2
+      result = 1.0
+      i = 0
       while_fun = fn while_fun, i, result ->
-        if i <= n do
-          result = result * i
+        if i < exp do
+          result = result * base
           i = i + 1
           while_fun.(while_fun, i, result)
         else
@@ -140,97 +140,167 @@ defmodule Main do
       {:return, val} -> val
     end
   end
-  def isPrime(n) do
+  def sqrtApprox(x) do
     try do
-      if n < 2 do
-        throw {:return, false}
+      if x <= 0.0 do
+        throw {:return, 0.0}
       end
-      if rem(n, 2) == 0 do
-        throw {:return, n == 2}
-      end
-      d = 3
-      while_fun_2 = fn while_fun_2, d ->
-        if d * d <= n do
-          if rem(n, d) == 0 do
-            throw {:return, false}
-          end
-          d = d + 2
-          while_fun_2.(while_fun_2, d)
+      g = x
+      i = 0
+      while_fun_2 = fn while_fun_2, g, i ->
+        if i < 20 do
+          g = (g + x / g) / 2.0
+          i = i + 1
+          while_fun_2.(while_fun_2, g, i)
         else
-          d
+          {g, i}
         end
       end
-      d = try do
-          while_fun_2.(while_fun_2, d)
+      {g, i} = try do
+          while_fun_2.(while_fun_2, g, i)
         catch
-          {:break, {d}} -> d
+          {:break, {g, i}} -> {g, i}
         end
 
-      throw {:return, true}
+      throw {:return, g}
     catch
       {:return, val} -> val
     end
   end
-  def padLeft(s, w) do
+  def modPow(base, exp, mod) do
     try do
-      out = s
-      while_fun_3 = fn while_fun_3, out ->
-        if _len(out) < w do
-          out = (" " <> out)
-          while_fun_3.(while_fun_3, out)
+      result = rem(1, mod)
+      b = rem(base, mod)
+      e = exp
+      while_fun_3 = fn while_fun_3, b, e, result ->
+        if e > 0 do
+          {result} = if rem(e, 2) == 1 do
+            result = rem((result * b), mod)
+            {result}
+          else
+            {result}
+          end
+          b = rem((b * b), mod)
+          e = div(e, 2)
+          while_fun_3.(while_fun_3, b, e, result)
         else
-          out
+          {b, e, result}
         end
       end
-      out = try do
-          while_fun_3.(while_fun_3, out)
+      {b, e, result} = try do
+          while_fun_3.(while_fun_3, b, e, result)
         catch
-          {:break, {out}} -> out
+          {:break, {b, e, result}} -> {b, e, result}
         end
 
-      throw {:return, out}
+      throw {:return, result}
+    catch
+      {:return, val} -> val
+    end
+  end
+  def mtest(m) do
+    try do
+      if m < 4 do
+        IO.puts((((Kernel.to_string(m) <> " < 4.  M") <> Kernel.to_string(m)) <> " not tested."))
+        throw {:return, nil}
+      end
+      flimit = sqrtApprox(powf(2.0, m) - 1.0)
+      qlast = 0
+      qlast = (if flimit < Process.get(:qlimit), do: (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).(flimit), else: Process.get(:qlimit))
+      composite = []
+      i = 0
+      while_fun_4 = fn while_fun_4, composite, i ->
+        if i <= qlast do
+          composite = (composite ++ [false])
+          i = i + 1
+          while_fun_4.(while_fun_4, composite, i)
+        else
+          {composite, i}
+        end
+      end
+      {composite, i} = try do
+          while_fun_4.(while_fun_4, composite, i)
+        catch
+          {:break, {composite, i}} -> {composite, i}
+        end
+
+      sq = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).(sqrtApprox(qlast))
+      q = 3
+      while_fun_5 = fn while_fun_5, composite, q ->
+        if true do
+          {composite} = if q <= sq do
+            j = q * q
+            while_fun_6 = fn while_fun_6, composite, j ->
+              if j <= qlast do
+                composite = List.replace_at(composite, j, true)
+                j = j + q
+                while_fun_6.(while_fun_6, composite, j)
+              else
+                {composite, j}
+              end
+            end
+            {composite, j} = try do
+                while_fun_6.(while_fun_6, composite, j)
+              catch
+                {:break, {composite, j}} -> {composite, j}
+              end
+
+            {composite}
+          else
+            {composite}
+          end
+          q8 = rem(q, 8)
+          if (q8 == 1 || q8 == 7) && modPow(2, m, q) == 1 do
+            IO.puts(((("M" <> Kernel.to_string(m)) <> " has factor ") <> Kernel.to_string(q)))
+            throw {:return, nil}
+          end
+          while_fun_7 = fn while_fun_7, q ->
+            if true do
+              q = q + 2
+              if q > qlast do
+                IO.puts((("No factors of M" <> Kernel.to_string(m)) <> " found."))
+                throw {:return, nil}
+              end
+              if !Enum.at(composite, q) do
+                throw {:break, {q}}
+              end
+              while_fun_7.(while_fun_7, q)
+            else
+              q
+            end
+          end
+          q = try do
+              while_fun_7.(while_fun_7, q)
+            catch
+              {:break, {q}} -> q
+            end
+
+          while_fun_5.(while_fun_5, composite, q)
+        else
+          {composite, q}
+        end
+      end
+      {composite, q} = try do
+          while_fun_5.(while_fun_5, composite, q)
+        catch
+          {:break, {composite, q}} -> {composite, q}
+        end
+
     catch
       {:return, val} -> val
     end
   end
   def main() do
     try do
-      n = 0
-      count = 0
-      while_fun_4 = fn while_fun_4, count, n ->
-        if count < 10 do
-          n = n + 1
-          f = factorial(n)
-          {count} = if isPrime(f - 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! - 1 = ") <> Kernel.to_string(f - 1))))
-            {count}
-          else
-            {count}
-          end
-          {count} = if count < 10 && isPrime(f + 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! + 1 = ") <> Kernel.to_string(f + 1))))
-            {count}
-          else
-            {count}
-          end
-          while_fun_4.(while_fun_4, count, n)
-        else
-          {count, n}
-        end
-      end
-      {count, n} = try do
-          while_fun_4.(while_fun_4, count, n)
-        catch
-          {:break, {count, n}} -> {count, n}
-        end
-
+      mtest(31)
+      mtest(67)
     catch
       {:return, val} -> val
     end
   end
+  Process.put(:qlimit, 50000)
   def bench_main() do
+    Process.put(:qlimit, 50000)
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()

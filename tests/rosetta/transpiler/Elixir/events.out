@@ -3,3 +3,8 @@ program sleeping
 task start
 program signaling event
 event reset by task
+{
+  "duration_us": 167,
+  "memory_bytes": 0,
+  "name": "main"
+}

@@ -15,132 +15,119 @@ run: exit status 1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 129 │       {i, x} = try do
+ 132 │       {i, x} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:129:8: Main.makeInf/0
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:132:8: Main.makeInf/0
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 153 │       {i, x} = try do
+ 156 │       {i, x} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:153:8: Main.makeMax/0
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:156:8: Main.makeMax/0
 
     warning: function _slice/3 is unused
     │
- 47 │   defp _slice(base, start, len) do
+ 50 │   defp _slice(base, start, len) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:47:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:50:8: Main (module)
 
      warning: function _sha256/1 is unused
      │
- 106 │   defp _sha256(bs) do
+ 109 │   defp _sha256(bs) do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:106:8: Main (module)
-
-    warning: function _now/0 is unused
-    │
-  3 │   defp _now() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:3:8: Main (module)
-
-    warning: function _mem/0 is unused
-    │
- 28 │   defp _mem() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:28:8: Main (module)
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:109:8: Main (module)
 
     warning: function _lookup_host/1 is unused
     │
- 31 │   defp _lookup_host(host) do
+ 34 │   defp _lookup_host(host) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:31:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:34:8: Main (module)
 
     warning: function _len/1 is unused
     │
- 60 │   defp _len(x) do
+ 63 │   defp _len(x) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:60:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:63:8: Main (module)
 
      warning: function _getenv/1 is unused
      │
- 110 │   defp _getenv(name) do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:110:8: Main (module)
-
-     warning: function _environ/0 is unused
-     │
- 113 │   defp _environ() do
+ 113 │   defp _getenv(name) do
      │        ~
      │
      └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:113:8: Main (module)
 
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:116:8: Main (module)
+
     warning: function _clamp_slice/3 is unused
     │
- 40 │   defp _clamp_slice(n, start, stop) do
+ 43 │   defp _clamp_slice(n, start, stop) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:40:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:43:8: Main (module)
 
     warning: function _bigrat_sub/2 is unused
     │
- 87 │   defp _bigrat_sub(a, b) do
+ 90 │   defp _bigrat_sub(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:87:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:90:8: Main (module)
 
      warning: function _bigrat_neg/1 is unused
      │
- 102 │   defp _bigrat_neg(a) do
+ 105 │   defp _bigrat_neg(a) do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:102:8: Main (module)
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:105:8: Main (module)
 
     warning: function _bigrat_mul/2 is unused
     │
- 92 │   defp _bigrat_mul(a, b) do
+ 95 │   defp _bigrat_mul(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:92:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:95:8: Main (module)
 
-    warning: function _bigrat_div/2 is unused
-    │
- 97 │   defp _bigrat_div(a, b) do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:97:8: Main (module)
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:100:8: Main (module)
 
     warning: function _bigrat_add/2 is unused
     │
- 82 │   defp _bigrat_add(a, b) do
+ 85 │   defp _bigrat_add(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:82:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:85:8: Main (module)
 
     warning: function _bigrat/2 is unused
     │
- 70 │   defp _bigrat(n, d) do
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
     │        ~
     │
     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:70:8: Main (module)
 
-    warning: function _bigrat/1 is unused
-    │
- 67 │   defp _bigrat(v) do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:67:8: Main (module)
-
 ** (ArithmeticError) bad argument in arithmetic expression
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:122: anonymous fn/3 in Main.makeInf/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:130: Main.makeInf/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:229: Main.main/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:251: (file)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:125: anonymous fn/3 in Main.makeInf/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:133: Main.makeInf/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:232: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:257: Main.bench_main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/extreme-floating-point-values.exs:265: (file)

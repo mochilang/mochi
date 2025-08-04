@@ -1,10 +1,199 @@
 run: exit status 1
-** (MismatchedDelimiterError) mismatched delimiter found on /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:137:37:
-     error: unexpected reserved word: end
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 137 │           while_fun_2.(while_fun_2, end)
-     │                       │             └ mismatched closing delimiter (expected ")")
-     │                       └ unclosed delimiter
+ 178 │       {cur, i, parts} = try do
+     │             ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:137:37
-    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:178:13: Main.split/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 217 │       {cur, i, out} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:217:13: Main.splitWS/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 248 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:248:7: Main.indexOf/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 281 │       {i, n} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:281:8: Main.parseIntStr/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 366 │       {i, instrs, labels, lineNum} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:366:8: Main.parseAsm/1
+
+     warning: variable "lineNum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 366 │       {i, instrs, labels, lineNum} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:366:27: Main.parseAsm/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 408 │       {bytecode, i} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:408:18: Main.compile/1
+
+     warning: variable "acc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 474 │             {acc, mem, pc} = if op == 0 do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:474:14: Main.run/1
+
+     warning: variable "mem" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 474 │             {acc, mem, pc} = if op == 0 do
+     │                   ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:474:19: Main.run/1
+
+     warning: variable "pc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 474 │             {acc, mem, pc} = if op == 0 do
+     │                        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:474:24: Main.run/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 462 │       {i, mem} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:462:8: Main.run/1
+
+     warning: variable "mem" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 534 │       {acc, mem, pc} = try do
+     │             ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:534:13: Main.run/1
+
+     warning: variable "pc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 534 │       {acc, mem, pc} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:534:18: Main.run/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 568 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:568:7: Main.main/0
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:109:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:34:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:113:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:116:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:70:8: Main (module)
+
+** (ArithmeticError) bad argument in arithmetic expression: 0 + nil
+    :erlang.+(0, nil)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:274: anonymous fn/4 in Main.parseIntStr/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:282: Main.parseIntStr/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:389: anonymous fn/5 in Main.compile/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:409: Main.compile/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:548: Main.execute/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:560: anonymous fn/2 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/execute-computer-zero-1.exs:569: Main.main/0

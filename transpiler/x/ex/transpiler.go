@@ -1818,6 +1818,7 @@ func Emit(p *Program, benchMain bool) []byte {
 	buf.WriteString(sha256Helper(1))
 	buf.WriteString(getenvHelper(1))
 	buf.WriteString(environHelper(1))
+	buf.WriteString(getoutputHelper(1))
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1960,6 +1961,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 			case "python":
 				if path == "math" {
 					builtinAliases[alias] = "python_math"
+				} else if path == "subprocess" {
+					builtinAliases[alias] = "python_subprocess"
 				}
 			}
 		}
@@ -3401,6 +3404,10 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 						return &CallExpr{Func: ":math.pow", Args: args}, nil
 					}
 				}
+			case "python_subprocess":
+				if method == "getoutput" && len(args) == 1 {
+					return &CallExpr{Func: "_getoutput", Args: args}, nil
+				}
 			}
 		}
 		if method == "get" {
@@ -3644,6 +3651,10 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 						if len(args) == 2 {
 							return &CallExpr{Func: ":math.pow", Args: args}, nil
 						}
+					}
+				case "python_subprocess":
+					if method == "getoutput" && len(args) == 1 {
+						return &CallExpr{Func: "_getoutput", Args: args}, nil
 					}
 				}
 			}
@@ -4309,6 +4320,16 @@ func environHelper(indent int) string {
 	pad := strings.Repeat("  ", indent)
 	buf.WriteString(pad + "defp _environ() do\n")
 	buf.WriteString(pad + "  System.get_env() |> Enum.map(fn {k, v} -> \"#{k}=#{v}\" end)\n")
+	buf.WriteString(pad + "end\n")
+	return buf.String()
+}
+
+func getoutputHelper(indent int) string {
+	var buf bytes.Buffer
+	pad := strings.Repeat("  ", indent)
+	buf.WriteString(pad + "defp _getoutput(cmd) do\n")
+	buf.WriteString(pad + "  {out, 0} = System.cmd(\"sh\", [\"-c\", cmd])\n")
+	buf.WriteString(pad + "  String.trim(out)\n")
 	buf.WriteString(pad + "end\n")
 	return buf.String()
 }

@@ -15,238 +15,224 @@ run: exit status 1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 142 │       i = try do
+ 145 │       i = try do
      │       ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:142:7: Main.sliceEqual/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:145:7: Main.sliceEqual/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 169 │       {i, j, xs} = try do
+ 172 │       {i, j, xs} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:169:8: Main.reverse/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:172:8: Main.reverse/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 169 │       {i, j, xs} = try do
+ 172 │       {i, j, xs} = try do
      │           ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:169:11: Main.reverse/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:172:11: Main.reverse/1
 
      warning: variable "xs" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 169 │       {i, j, xs} = try do
+ 172 │       {i, j, xs} = try do
      │              ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:169:14: Main.reverse/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:172:14: Main.reverse/1
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 222 │               {c, j} = try do
+ 225 │               {c, j} = try do
      │                   ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:222:19: Main.perimEqual/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:225:19: Main.perimEqual/2
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 235 │           {c, i} = try do
+ 238 │           {c, i} = try do
      │               ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:235:15: Main.perimEqual/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:238:15: Main.perimEqual/2
 
      warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 248 │       {c, r} = try do
+ 251 │       {c, r} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:248:8: Main.perimEqual/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:251:8: Main.perimEqual/2
 
      warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 248 │       {c, r} = try do
+ 251 │       {c, r} = try do
      │           ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:248:11: Main.perimEqual/2
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:251:11: Main.perimEqual/2
 
      warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 284 │           {arr, j} = try do
+ 287 │           {arr, j} = try do
      │                 ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:284:17: Main.sortEdges/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:287:17: Main.sortEdges/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 296 │       {arr, i} = try do
+ 299 │       {arr, i} = try do
      │             ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:296:13: Main.sortEdges/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:299:13: Main.sortEdges/1
 
      warning: variable "e" is unused (if the variable is not meant to be used, prefix it with an underscore)
      │
- 333 │           e = Enum.at(face, i)
+ 336 │           e = Enum.at(face, i)
      │           ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:333:11: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:336:11: Main.faceToPerim/1
 
      warning: variable "e" is unused (if the variable is not meant to be used, prefix it with an underscore)
      │
- 364 │               e = Enum.at(edges, idx)
+ 367 │               e = Enum.at(edges, idx)
      │               ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:364:15: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:367:15: Main.faceToPerim/1
 
      warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 407 │           {done, edges, found, idx, last, le, perim} = try do
+ 410 │           {done, edges, found, idx, last, le, perim} = try do
      │                                ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:407:32: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:410:32: Main.faceToPerim/1
 
      warning: variable "done" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 421 │       {done, edges, last, le, perim} = try do
+ 424 │       {done, edges, last, le, perim} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:421:8: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:424:8: Main.faceToPerim/1
 
      warning: variable "edges" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 421 │       {done, edges, last, le, perim} = try do
+ 424 │       {done, edges, last, le, perim} = try do
      │              ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:421:14: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:424:14: Main.faceToPerim/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 344 │       {edges, i} = try do
+ 347 │       {edges, i} = try do
      │               ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:344:15: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:347:15: Main.faceToPerim/1
 
      warning: variable "last" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 421 │       {done, edges, last, le, perim} = try do
+ 424 │       {done, edges, last, le, perim} = try do
      │                     ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:421:21: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:424:21: Main.faceToPerim/1
 
      warning: variable "le" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 421 │       {done, edges, last, le, perim} = try do
+ 424 │       {done, edges, last, le, perim} = try do
      │                           ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:421:27: Main.faceToPerim/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:424:27: Main.faceToPerim/1
 
      warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
      │
- 451 │       {i, s} = try do
+ 454 │       {i, s} = try do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:451:8: Main.listStr/1
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:454:8: Main.listStr/1
 
      warning: function _sha256/1 is unused
      │
- 106 │   defp _sha256(bs) do
+ 109 │   defp _sha256(bs) do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:106:8: Main (module)
-
-    warning: function _now/0 is unused
-    │
-  3 │   defp _now() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:3:8: Main (module)
-
-    warning: function _mem/0 is unused
-    │
- 28 │   defp _mem() do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:28:8: Main (module)
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:109:8: Main (module)
 
     warning: function _lookup_host/1 is unused
     │
- 31 │   defp _lookup_host(host) do
+ 34 │   defp _lookup_host(host) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:31:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:34:8: Main (module)
 
      warning: function _getenv/1 is unused
      │
- 110 │   defp _getenv(name) do
-     │        ~
-     │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:110:8: Main (module)
-
-     warning: function _environ/0 is unused
-     │
- 113 │   defp _environ() do
+ 113 │   defp _getenv(name) do
      │        ~
      │
      └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:113:8: Main (module)
 
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:116:8: Main (module)
+
     warning: function _bigrat_sub/2 is unused
     │
- 87 │   defp _bigrat_sub(a, b) do
+ 90 │   defp _bigrat_sub(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:87:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:90:8: Main (module)
 
      warning: function _bigrat_neg/1 is unused
      │
- 102 │   defp _bigrat_neg(a) do
+ 105 │   defp _bigrat_neg(a) do
      │        ~
      │
-     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:102:8: Main (module)
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:105:8: Main (module)
 
     warning: function _bigrat_mul/2 is unused
     │
- 92 │   defp _bigrat_mul(a, b) do
+ 95 │   defp _bigrat_mul(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:92:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:95:8: Main (module)
 
-    warning: function _bigrat_div/2 is unused
-    │
- 97 │   defp _bigrat_div(a, b) do
-    │        ~
-    │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:97:8: Main (module)
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:100:8: Main (module)
 
     warning: function _bigrat_add/2 is unused
     │
- 82 │   defp _bigrat_add(a, b) do
+ 85 │   defp _bigrat_add(a, b) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:82:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:85:8: Main (module)
 
     warning: function _bigrat/2 is unused
     │
- 70 │   defp _bigrat(n, d) do
+ 73 │   defp _bigrat(n, d) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:70:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:73:8: Main (module)
 
     warning: function _bigrat/1 is unused
     │
- 67 │   defp _bigrat(v) do
+ 70 │   defp _bigrat(v) do
     │        ~
     │
-    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:67:8: Main (module)
+    └─ /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:70:8: Main (module)
 
 Perimeter format equality checks:
   Q == R is true
   U == V is true
 
 Edge to perimeter format translations:
-** (KeyError) key :b not found in: [%{b: 11, a: 7}, %{b: 11, a: 1}, %{b: 7, a: 1}]
+** (KeyError) key :b not found in: [%{a: 7, b: 11}, %{a: 1, b: 11}, %{a: 1, b: 7}]
 
 If you are using the dot syntax, such as map.field, make sure the left-hand side of the dot is a map
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:334: anonymous fn/5 in Main.faceToPerim/1
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:345: Main.faceToPerim/1
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:477: anonymous fn/1 in Main.main/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:490: Main.main/0
-    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:497: (file)
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:337: anonymous fn/5 in Main.faceToPerim/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:348: Main.faceToPerim/1
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:483: anonymous fn/1 in Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:496: Main.main/0
+    /workspace/mochi/tests/rosetta/transpiler/Elixir/faces-from-a-mesh.exs:508: (file)

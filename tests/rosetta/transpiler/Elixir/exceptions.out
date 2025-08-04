@@ -1,3 +1,8 @@
 let's foo...
 Recovered from runtime error: index out of range [12] with length 0
 glad that's over.
+{
+  "duration_us": 2559,
+  "memory_bytes": 12784,
+  "name": "main"
+}

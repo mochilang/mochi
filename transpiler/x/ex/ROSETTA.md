@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (280/491)
-_Last updated: 2025-08-04 20:03 +0700_
+## Rosetta Test Checklist (287/491)
+_Last updated: 2025-08-04 21:17 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -374,36 +374,36 @@ _Last updated: 2025-08-04 20:03 +0700_
 | 366 | eulers-sum-of-powers-conjecture | ✓ |  |  |
 | 367 | evaluate-binomial-coefficients | ✓ |  |  |
 | 368 | even-or-odd | ✓ | 2.39ms | 25.3 KB |
-| 369 | events | ✓ |  |  |
-| 370 | evolutionary-algorithm | ✓ |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ |  |  |
-| 372 | exceptions | ✓ |  |  |
-| 373 | executable-library | ✓ |  |  |
-| 374 | execute-a-markov-algorithm |  |  |  |
-| 375 | execute-a-system-command |  |  |  |
-| 376 | execute-brain- | ✓ |  |  |
+| 369 | events | ✓ | 167us | 0 B |
+| 370 | evolutionary-algorithm | ✓ | 1.22s | 9.5 KB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ | 343us | 12.5 KB |
+| 372 | exceptions | ✓ | 2.56ms | 12.5 KB |
+| 373 | executable-library | ✓ | 3.00s | 57.7 KB |
+| 374 | execute-a-markov-algorithm | ✓ | 98.79ms | 57.7 KB |
+| 375 | execute-a-system-command | ✓ | 21.26ms | 65.5 KB |
+| 376 | execute-brain- | ✓ | 32.66ms | 57.7 KB |
 | 377 | execute-computer-zero-1 |  |  |  |
-| 378 | execute-computer-zero | ✓ |  |  |
-| 379 | execute-hq9+ | ✓ |  |  |
-| 380 | execute-snusp | ✓ |  |  |
-| 381 | exponentiation-operator-2 | ✓ |  |  |
-| 382 | exponentiation-operator | ✓ |  |  |
-| 383 | exponentiation-order | ✓ |  |  |
-| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
-| 385 | extend-your-language | ✓ |  |  |
-| 386 | extensible-prime-generator | ✓ |  |  |
+| 378 | execute-computer-zero | ✓ | 282us | 17.3 KB |
+| 379 | execute-hq9+ | ✓ | 20.30ms | 9.6 KB |
+| 380 | execute-snusp | ✓ | 154us | 0 B |
+| 381 | exponentiation-operator-2 | ✓ | 6.98ms | 25.5 KB |
+| 382 | exponentiation-operator | ✓ | 6.26ms | 25.1 KB |
+| 383 | exponentiation-order | ✓ | 2.67ms | 17.3 KB |
+| 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ | 2.68ms | 25.2 KB |
+| 385 | extend-your-language | ✓ | 287us | 0 B |
+| 386 | extensible-prime-generator | ✓ | 9.35s | 1.1 MB |
 | 387 | extreme-floating-point-values |  |  |  |
-| 388 | faces-from-a-mesh-2 | ✓ |  |  |
+| 388 | faces-from-a-mesh-2 | ✓ | 1.08ms | 17.3 KB |
 | 389 | faces-from-a-mesh |  |  |  |
 | 390 | factorial-base-numbers-indexing-permutations-of-a-collection |  |  |  |
-| 391 | factorial-primes | ✓ |  |  |
-| 392 | factorial | ✓ |  |  |
+| 391 | factorial-primes | ✓ | 5.99ms | 7.7 KB |
+| 392 | factorial | ✓ | 6.50ms | 9.5 KB |
 | 393 | factorions | ✓ |  |  |
-| 394 | factors-of-a-mersenne-number |  |  |  |
-| 395 | factors-of-an-integer |  |  |  |
-| 396 | fairshare-between-two-and-more |  |  |  |
-| 397 | farey-sequence |  |  |  |
-| 398 | fast-fourier-transform |  |  |  |
+| 394 | factors-of-a-mersenne-number | ✓ | 1m25.378245s | 6.3 MB |
+| 395 | factors-of-an-integer | ✓ | 53.65s | 20.2 KB |
+| 396 | fairshare-between-two-and-more | ✓ | 1m59.281662s | 4.5 MB |
+| 397 | farey-sequence | ✓ | 7.65ms | 25.0 KB |
+| 398 | fast-fourier-transform | ✓ | 3.82ms | 25.2 KB |
 | 399 | fasta-format |  |  |  |
 | 400 | faulhabers-formula |  |  |  |
 | 401 | faulhabers-triangle |  |  |  |

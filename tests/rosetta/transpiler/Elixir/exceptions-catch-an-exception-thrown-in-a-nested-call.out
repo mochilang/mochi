@@ -8,3 +8,8 @@ bar: start
 baz: start
 baz: raising U1
 main: unhandled U1
+{
+  "duration_us": 343,
+  "memory_bytes": 12832,
+  "name": "main"
+}

@@ -4,3 +4,8 @@ Hailstone sequence for the number 27:
   ends with [8 4 2 1]
 
 77031 has the longest Hailstone sequence, its length being 351.
+{
+  "duration_us": 3003594,
+  "memory_bytes": 59064,
+  "name": "main"
+}

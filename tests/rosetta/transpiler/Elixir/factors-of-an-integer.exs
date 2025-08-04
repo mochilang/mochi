@@ -116,125 +116,128 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def factorial(n) do
+  def printFactors(n) do
     try do
-      result = 1
-      i = 2
-      while_fun = fn while_fun, i, result ->
-        if i <= n do
-          result = result * i
-          i = i + 1
-          while_fun.(while_fun, i, result)
+      if n < 1 do
+        IO.puts((("\nFactors of " <> Kernel.to_string(n)) <> " not computed"))
+        throw {:return, nil}
+      end
+      IO.puts((("\nFactors of " <> Kernel.to_string(n)) <> ": "))
+      fs = [1]
+      apf = fn p, e ->
+  orig = _len(fs)
+  pp = p
+  i = 0
+  while_fun = fn while_fun, fs, i, pp ->
+    if i < e do
+      j = 0
+      while_fun_2 = fn while_fun_2, fs, j ->
+        if j < orig do
+          fs = (fs ++ [Enum.at(fs, j) * pp])
+          j = j + 1
+          while_fun_2.(while_fun_2, fs, j)
         else
-          {i, result}
+          {fs, j}
         end
       end
-      {i, result} = try do
-          while_fun.(while_fun, i, result)
+      {fs, j} = try do
+          while_fun_2.(while_fun_2, fs, j)
         catch
-          {:break, {i, result}} -> {i, result}
+          {:break, {fs, j}} -> {fs, j}
         end
 
-      throw {:return, result}
-    catch
-      {:return, val} -> val
+      i = i + 1
+      pp = pp * p
+      while_fun.(while_fun, fs, i, pp)
+    else
+      {fs, i, pp}
     end
   end
-  def isPrime(n) do
-    try do
-      if n < 2 do
-        throw {:return, false}
+  {fs, i, pp} = try do
+      while_fun.(while_fun, fs, i, pp)
+    catch
+      {:break, {fs, i, pp}} -> {fs, i, pp}
+    end
+
+end
+      e = 0
+      m = n
+      while_fun_3 = fn while_fun_3, e, m ->
+        if rem(m, 2) == 0 do
+          m = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div(m, 2)))
+          e = e + 1
+          while_fun_3.(while_fun_3, e, m)
+        else
+          {e, m}
+        end
       end
-      if rem(n, 2) == 0 do
-        throw {:return, n == 2}
-      end
+      {e, m} = try do
+          while_fun_3.(while_fun_3, e, m)
+        catch
+          {:break, {e, m}} -> {e, m}
+        end
+
+      apf.(2, e)
       d = 3
-      while_fun_2 = fn while_fun_2, d ->
-        if d * d <= n do
-          if rem(n, d) == 0 do
-            throw {:return, false}
+      while_fun_4 = fn while_fun_4, d, e, m ->
+        if m > 1 do
+          {d} = if d * d > m do
+            d = m
+            {d}
+          else
+            {d}
+          end
+          e = 0
+          while_fun_5 = fn while_fun_5, e, m ->
+            if rem(m, d) == 0 do
+              m = (fn v -> if is_binary(v), do: String.to_integer(v), else: trunc(v) end).((div(m, d)))
+              e = e + 1
+              while_fun_5.(while_fun_5, e, m)
+            else
+              {e, m}
+            end
+          end
+          {e, m} = try do
+              while_fun_5.(while_fun_5, e, m)
+            catch
+              {:break, {e, m}} -> {e, m}
+            end
+
+          if e > 0 do
+            apf.(d, e)
           end
           d = d + 2
-          while_fun_2.(while_fun_2, d)
+          while_fun_4.(while_fun_4, d, e, m)
         else
-          d
+          {d, e, m}
         end
       end
-      d = try do
-          while_fun_2.(while_fun_2, d)
+      {d, e, m} = try do
+          while_fun_4.(while_fun_4, d, e, m)
         catch
-          {:break, {d}} -> d
+          {:break, {d, e, m}} -> {d, e, m}
         end
 
-      throw {:return, true}
-    catch
-      {:return, val} -> val
-    end
-  end
-  def padLeft(s, w) do
-    try do
-      out = s
-      while_fun_3 = fn while_fun_3, out ->
-        if _len(out) < w do
-          out = (" " <> out)
-          while_fun_3.(while_fun_3, out)
-        else
-          out
-        end
-      end
-      out = try do
-          while_fun_3.(while_fun_3, out)
-        catch
-          {:break, {out}} -> out
-        end
-
-      throw {:return, out}
+      IO.puts(String.replace(IO.iodata_to_binary(:io_lib.format("~w", [fs])), ",", " "))
+      IO.puts(("Number of factors = " <> Kernel.inspect(_len(fs))))
     catch
       {:return, val} -> val
     end
   end
   def main() do
-    try do
-      n = 0
-      count = 0
-      while_fun_4 = fn while_fun_4, count, n ->
-        if count < 10 do
-          n = n + 1
-          f = factorial(n)
-          {count} = if isPrime(f - 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! - 1 = ") <> Kernel.to_string(f - 1))))
-            {count}
-          else
-            {count}
-          end
-          {count} = if count < 10 && isPrime(f + 1) do
-            count = count + 1
-            IO.puts(Kernel.inspect(((((padLeft(Kernel.inspect(count), 2) <> ": ") <> padLeft(Kernel.to_string(n), 2)) <> "! + 1 = ") <> Kernel.to_string(f + 1))))
-            {count}
-          else
-            {count}
-          end
-          while_fun_4.(while_fun_4, count, n)
-        else
-          {count, n}
-        end
-      end
-      {count, n} = try do
-          while_fun_4.(while_fun_4, count, n)
-        catch
-          {:break, {count, n}} -> {count, n}
-        end
-
-    catch
-      {:return, val} -> val
-    end
-  end
-  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    main()
+    printFactors(-1)
+    printFactors(0)
+    printFactors(1)
+    printFactors(2)
+    printFactors(3)
+    printFactors(53)
+    printFactors(45)
+    printFactors(64)
+    printFactors(600851475143)
+    printFactors(999999999999999989)
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -242,4 +245,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.bench_main()
+Main.main()

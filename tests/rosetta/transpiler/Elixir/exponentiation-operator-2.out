@@ -19,3 +19,8 @@ other interesting cases for 32 bit float type
 10.0^39: 1.0000000000000001e39
 10.0^-39: 1.0e-39
 -10.0^39: -1.0000000000000001e39
+{
+  "duration_us": 6983,
+  "memory_bytes": 26072,
+  "name": "main"
+}
