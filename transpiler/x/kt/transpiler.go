@@ -906,7 +906,11 @@ func (m *MapLit) emit(w io.Writer) {
 			if k != keyType {
 				keyType = "Any?"
 			}
-			if v != valType {
+			if valType == "Int" && v == "Long" {
+				valType = "Long"
+			} else if valType == "Long" && v == "Int" {
+				// keep Long
+			} else if v != valType {
 				valType = "Any?"
 			}
 		}
@@ -918,7 +922,11 @@ func (m *MapLit) emit(w io.Writer) {
 		}
 		it.Key.emit(w)
 		io.WriteString(w, " to (")
-		it.Value.emit(w)
+		if valType == "Long" && guessType(it.Value) == "Int" {
+			(&CastExpr{Value: it.Value, Type: "Long"}).emit(w)
+		} else {
+			it.Value.emit(w)
+		}
 		io.WriteString(w, ")")
 	}
 	io.WriteString(w, ")")
@@ -2839,7 +2847,11 @@ func guessType(e Expr) string {
 				if vk != k {
 					k = "Any?"
 				}
-				if vv != val {
+				if val == "Int" && vv == "Long" {
+					val = "Long"
+				} else if val == "Long" && vv == "Int" {
+					// keep Long
+				} else if vv != val {
 					val = "Any?"
 				}
 				if k == "Any?" && val == "Any?" {
@@ -3280,6 +3292,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				}
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
+				}
+				if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
+					typ = gt
 				}
 				if strings.Contains(typ, "Any?") && guessType(val) != typ {
 					typ = ""
