@@ -1,9 +1,0 @@
-exit status 1
-lua: ...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:72: attempt to index a nil value (field '?')
-stack traceback:
-	...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:72: in function 'state'
-	...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:80: in function 'nextState'
-	...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:103: in function 'step'
-	...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:134: in function 'main'
-	...hi/tests/rosetta/transpiler/Lua/conways-game-of-life.lua:141: in main chunk
-	[C]: in ?
