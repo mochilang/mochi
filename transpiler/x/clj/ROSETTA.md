@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 182/491
-Last updated: 2025-08-03 23:13 +0700
+Completed: 183/491
+Last updated: 2025-08-04 07:59 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -142,7 +142,7 @@ Last updated: 2025-08-03 23:13 +0700
 | 135 | break-oo-privacy | ✓ | 3.549ms | 2.5 MB |
 | 136 | brilliant-numbers |   |  |  |
 | 137 | brownian-tree |   |  |  |
-| 138 | bulls-and-cows-player |   |  |  |
+| 138 | bulls-and-cows-player | ✓ | 57.844ms | 22.6 MB |
 | 139 | bulls-and-cows |   |  |  |
 | 140 | burrows-wheeler-transform |   |  |  |
 | 141 | caesar-cipher-1 |   |  |  |

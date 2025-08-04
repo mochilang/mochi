@@ -928,13 +928,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
+		name := renameVar(s.Let.Name)
 		if stringVars != nil && isStringNode(v) {
-			stringVars[s.Let.Name] = true
+			stringVars[name] = true
 		}
 		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[s.Let.Name] = true
+			stringListVars[name] = true
 		}
-		name := renameVar(s.Let.Name)
 		if funDepth > 0 {
 			if declVars != nil {
 				declVars[name] = true
@@ -967,13 +967,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				v = Symbol("nil")
 			}
 		}
+		name := renameVar(s.Var.Name)
 		if stringVars != nil && isStringNode(v) {
-			stringVars[s.Var.Name] = true
+			stringVars[name] = true
 		}
 		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[s.Var.Name] = true
+			stringListVars[name] = true
 		}
-		name := renameVar(s.Var.Name)
 		if funDepth > 0 {
 			if declVars != nil {
 				declVars[name] = true
@@ -1001,13 +1001,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 		for _, fld := range s.Assign.Field {
 			path = append(path, Keyword(fld.Name))
 		}
+		name := renameVar(s.Assign.Name)
 		if stringVars != nil && isStringNode(v) {
-			stringVars[s.Assign.Name] = true
+			stringVars[name] = true
 		}
 		if stringListVars != nil && isStringListNode(v) {
-			stringListVars[s.Assign.Name] = true
+			stringListVars[name] = true
 		}
-		name := renameVar(s.Assign.Name)
 		if transpileEnv != nil && len(path) >= 1 {
 			if typ, err := transpileEnv.GetVar(s.Assign.Name); err == nil {
 				t := typ
@@ -1403,6 +1403,16 @@ func isStringNode(n Node) bool {
 
 func isStringListNode(n Node) bool {
 	switch t := n.(type) {
+	case *Vector:
+		if len(t.Elems) == 0 {
+			return false
+		}
+		for _, e := range t.Elems {
+			if !isStringNode(e) {
+				return false
+			}
+		}
+		return true
 	case *List:
 		if len(t.Elems) > 0 {
 			if sym, ok := t.Elems[0].(Symbol); ok {
