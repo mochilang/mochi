@@ -2,7 +2,7 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Python`.
-Last updated: 2025-08-04 16:07 GMT+7
+Last updated: 2025-08-04 16:18 GMT+7
 
 ## Rosetta Golden Test Checklist (485/491)
 | Index | Name | Status | Duration | Memory |
@@ -333,16 +333,16 @@ Last updated: 2025-08-04 16:07 GMT+7
 | 324 | draw-a-sphere | ✓ | 17.0ms | 12.73MB |
 | 325 | duffinian-numbers | ✓ | 190.0ms | 13.94MB |
 | 326 | dutch-national-flag-problem | ✓ | 34.0µs | 13.29MB |
-| 327 | dynamic-variable-names | ✓ |  |  |
-| 328 | earliest-difference-between-prime-gaps | ✓ | 118.0µs | 12.93MB |
-| 329 | eban-numbers | ✓ | 38.0ms | 12.89MB |
-| 330 | ecdsa-example | ✓ | 49.0µs | 12.50MB |
-| 331 | echo-server | ✓ | 14.0µs | 12.42MB |
-| 332 | eertree | ✓ | 92.0µs | 13.57MB |
-| 333 | egyptian-division | ✓ | 21.0µs | 12.48MB |
-| 334 | ekg-sequence-convergence | ✓ | 15.0ms | 13.47MB |
-| 335 | element-wise-operations | ✓ | 250.0µs | 14.03MB |
-| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 13.14MB |
+| 327 | dynamic-variable-names | ✓ | 125.0µs | 13.30MB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 78.0µs | 13.07MB |
+| 329 | eban-numbers | ✓ | 39.0ms | 13.37MB |
+| 330 | ecdsa-example | ✓ | 27.0µs | 12.45MB |
+| 331 | echo-server | ✓ | 12.0µs | 12.75MB |
+| 332 | eertree | ✓ | 82.0µs | 13.17MB |
+| 333 | egyptian-division | ✓ | 18.0µs | 13.12MB |
+| 334 | ekg-sequence-convergence | ✓ | 11.0ms | 13.61MB |
+| 335 | element-wise-operations | ✓ | 209.0µs | 13.61MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 1.0ms | 13.05MB |
 | 337 | elementary-cellular-automaton-random-number-generator | ✓ | 3.0ms | 12.62MB |
 | 338 | elementary-cellular-automaton | ✓ | 556.0µs | 13.43MB |
 | 339 | elliptic-curve-arithmetic | ✓ | 108.0µs | 13.43MB |
