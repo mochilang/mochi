@@ -1,0 +1,8 @@
+error[A003]: undefined variable p
+  --> /workspace/mochi/tests/rosetta/x/Mochi/babylonian-spiral.mochi:45:17
+
+ 45 |     let cross = p[0] * dir[1] - p[1] * dir[0]
+    |                 ^
+
+help:
+  Declare p before use

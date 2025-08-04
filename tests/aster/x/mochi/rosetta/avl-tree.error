@@ -1,0 +1,8 @@
+error[A006]: invalid map entry
+  --> /workspace/mochi/tests/rosetta/x/Mochi/avl-tree.mochi:6:39
+
+  6 |   return {"Data": data, "Balance": 0, "Link": [null, null]}
+    |                                       ^
+
+help:
+  Map entries require key and value

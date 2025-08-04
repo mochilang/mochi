@@ -1,0 +1,8 @@
+error[A003]: undefined variable pair
+  --> /workspace/mochi/tests/rosetta/x/Mochi/approximate-equality.mochi:45:13
+
+ 45 |     let a = pair[0]
+    |             ^
+
+help:
+  Declare pair before use

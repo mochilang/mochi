@@ -1,0 +1,36 @@
+fun abs(x: float): float {
+  if (x < 0) {
+    return -x
+  }
+  return x
+}
+fun sqrtApprox(x: float): float {
+  var guess: float = x
+  var i: int = 0
+  while (i < 20) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+fun agmPi(): float {
+  var a: float = 1
+  var g: float = (1 / sqrtApprox(2))
+  var sum: float = 0
+  var pow: float = 2
+  while (abs((a - g)) > 1e-15) {
+    var t: float = (((a + g)) / 2)
+    var u: float = sqrtApprox((a * g))
+    a = t
+    g = u
+    pow = (pow * 2)
+    var diff: float = ((a * a) - (g * g))
+    sum = (sum + (diff * pow))
+  }
+  var pi: float = (((4 * a) * a) / ((1 - sum)))
+  return pi
+}
+fun main() {
+  print(str(agmPi()))
+}
+main()

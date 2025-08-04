@@ -1,0 +1,12 @@
+let target: int = 269696
+let modulus: int = 1000000
+var n: int = 1
+while true {
+  let square: int = (n * n)
+  let ending: int = (square % modulus)
+  if (ending == target) {
+    print(((("The smallest number whose square ends with " + str(target)) + " is ") + str(n)))
+    break
+  }
+  n = (n + 1)
+}

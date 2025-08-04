@@ -1,0 +1,18 @@
+fun sqrtApprox(x: float): float {
+  var guess: float = x
+  var i: int = 0
+  while (i < 20) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+let n: int = 10
+var sum: float = 0
+var x: int = 1
+while (x <= n) {
+  sum = (sum + ((x as float) * (x as float)))
+  x = (x + 1)
+}
+let rms: float = sqrtApprox((sum / (n as float)))
+print(str(rms))

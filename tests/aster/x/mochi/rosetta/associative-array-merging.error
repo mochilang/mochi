@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/associative-array-merging.mochi:13:58
+
+ 13 |   let base: map<string, any> = {"name": "Rocket Skates", "price": 12.75, "color": "yellow"}
+    |                                                          ^
+
+help:
+  Ensure map keys and values share types

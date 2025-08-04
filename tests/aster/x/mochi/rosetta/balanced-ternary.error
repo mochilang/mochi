@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/balanced-ternary.mochi:9:10
+
+  9 |   return substring(s, i, len(s))
+    |          ^
+
+help:
+  Declare substring before use

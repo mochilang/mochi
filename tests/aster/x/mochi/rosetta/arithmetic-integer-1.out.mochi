@@ -1,0 +1,10 @@
+fun main() {
+  let a: int = 12
+  let b: int = 8
+  print(((((str(a) + " + ") + str(b)) + " = ") + str((a + b))))
+  print(((((str(a) + " - ") + str(b)) + " = ") + str((a - b))))
+  print(((((str(a) + " * ") + str(b)) + " = ") + str((a * b))))
+  print(((((str(a) + " / ") + str(b)) + " = ") + str(((a / b)) as int)))
+  print(((((str(a) + " % ") + str(b)) + " = ") + str((a % b))))
+}
+main()

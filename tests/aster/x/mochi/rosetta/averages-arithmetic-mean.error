@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-arithmetic-mean.mochi:9:23
+
+  9 |   return {"ok": true, "mean": sum / (len(v) as float)}
+    |                       ^
+
+help:
+  Ensure map keys and values share types

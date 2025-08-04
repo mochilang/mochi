@@ -1,0 +1,21 @@
+let msg: string = "Hello World! "
+var shift: int = 0
+var inc: int = 1
+var clicks: int = 0
+var frames: int = 0
+while (clicks < 5) {
+  var line: string = ""
+  var i: int = 0
+  while (i < len(msg)) {
+    let idx: int = (((shift + i)) % len(msg))
+    line = (line + msg[idx:(idx + 1)])
+    i = (i + 1)
+  }
+  print(line)
+  shift = (((shift + inc)) % len(msg))
+  frames = (frames + 1)
+  if ((frames % len(msg)) == 0) {
+    inc = (len(msg) - inc)
+    clicks = (clicks + 1)
+  }
+}

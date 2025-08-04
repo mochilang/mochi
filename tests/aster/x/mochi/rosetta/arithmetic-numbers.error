@@ -1,0 +1,8 @@
+error[A003]: undefined variable x
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-numbers.mochi:127:20
+
+127 |     let last = arr[x - 1]
+    |                    ^
+
+help:
+  Declare x before use

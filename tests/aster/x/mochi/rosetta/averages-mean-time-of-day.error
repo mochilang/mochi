@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
+
+ 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
+    |                ^
+
+help:
+  Declare substring before use

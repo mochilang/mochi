@@ -1,0 +1,29 @@
+fun sel(list: list<float>, k: int): float {
+  var i: int = 0
+  while (i <= k) {
+    var minIndex: int = i
+    var j: int = (i + 1)
+    while (j < len(list)) {
+      if (list[j] < list[minIndex]) {
+        minIndex = j
+      }
+      j = (j + 1)
+    }
+    let tmp: float = list[i]
+    list[i] = list[minIndex]
+    list[minIndex] = tmp
+    i = (i + 1)
+  }
+  return list[k]
+}
+fun median(a: list<float>): float {
+  var arr: list<float> = a
+  let half: int = ((len(arr) / 2)) as int
+  let med: float = sel(arr, half)
+  if ((len(arr) % 2) == 0) {
+    return (((med + arr[(half - 1)])) / 2)
+  }
+  return med
+}
+print(str(median([3, 1, 4, 1])))
+print(str(median([3, 1, 4, 1, 5])))

@@ -1,0 +1,8 @@
+error[A003]: undefined variable n
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-rational.mochi:42:22
+
+ 42 |     let s = sumRecip(n)
+    |                      ^
+
+help:
+  Declare n before use

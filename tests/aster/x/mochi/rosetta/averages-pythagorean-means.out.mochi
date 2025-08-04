@@ -1,0 +1,44 @@
+fun powf(base: float, exp: int): float {
+  var result: float = 1
+  var i: int = 0
+  while (i < exp) {
+    result = (result * base)
+    i = (i + 1)
+  }
+  return result
+}
+fun nthRoot(x: float, n: int): float {
+  var low: float = 0
+  var high: float = x
+  var i: int = 0
+  while (i < 60) {
+    let mid: float = (((low + high)) / 2)
+    if (powf(mid, n) > x) {
+      high = mid
+    } else {
+      low = mid
+    }
+    i = (i + 1)
+  }
+  return low
+}
+fun main() {
+  var sum: float = 0
+  var sumRecip: float = 0
+  var prod: float = 1
+  var n: int = 1
+  while (n <= 10) {
+    let f: float = n as float
+    sum = (sum + f)
+    sumRecip = (sumRecip + (1 / f))
+    prod = (prod * f)
+    n = (n + 1)
+  }
+  let count: float = 10
+  let a: float = (sum / count)
+  let g: float = nthRoot(prod, 10)
+  let h: float = (count / sumRecip)
+  print(((((("A: " + str(a)) + " G: ") + str(g)) + " H: ") + str(h)))
+  print(("A >= G >= H: " + str(((a >= g) && (g >= h)))))
+}
+main()

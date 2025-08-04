@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arena-storage-pool.mochi:16:22
+
+ 16 |   return {"pool": p, "val": v}
+    |                      ^
+
+help:
+  Ensure map keys and values share types

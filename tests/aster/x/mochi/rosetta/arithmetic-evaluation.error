@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-evaluation.mochi:31:14
+
+ 31 |     let ch = substring(p.expr, p.pos, p.pos+1)
+    |              ^
+
+help:
+  Declare substring before use
