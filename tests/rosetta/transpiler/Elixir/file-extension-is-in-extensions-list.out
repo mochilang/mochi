@@ -1,0 +1,15 @@
+The listed extensions are:
+["zip", "rar", "7z", "gz", "archive", "A##", "tar.bz2"]
+"MyData.a##           => true  (extension = A##)"
+"MyData.tar.Gz        => true  (extension = gz)"
+"MyData.gzip          => false  (extension = gzip)"
+"MyData.7z.backup     => false  (extension = backup)"
+"MyData...            => false  (extension = <empty>)"
+"MyData               => false  (extension = <none>)"
+"MyData_v1.0.tar.bz2  => true  (extension = tar.bz2)"
+"MyData_v1.0.bz2      => false  (extension = bz2)"
+{
+  "duration_us": 23462,
+  "memory_bytes": 12784,
+  "name": "main"
+}
