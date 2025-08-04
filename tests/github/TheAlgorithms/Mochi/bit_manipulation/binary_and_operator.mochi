@@ -1,0 +1,67 @@
+/*
+Perform a bitwise AND on two non-negative integers using string operations.
+
+The integers are converted to binary without leading zeros. The shorter
+binary string is left-padded with zeros so both have equal length. We then
+compare the bits at each position: if both bits are '1', the result bit is
+'1'; otherwise it is '0'. The final bit string is prefixed with "0b".
+
+This mirrors the behavior of the binary AND operator and runs in O(n) time,
+where n is the number of bits in the larger input.
+*/
+
+fun to_binary(n: int): string {
+  if n == 0 {
+    return "0"
+  }
+  var num = n
+  var res = ""
+  while num > 0 {
+    let bit = num % 2
+    res = str(bit) + res
+    num = num / 2
+  }
+  return res
+}
+
+fun zfill(s: string, width: int): string {
+  var res = s
+  var pad = width - len(s)
+  while pad > 0 {
+    res = "0" + res
+    pad = pad - 1
+  }
+  return res
+}
+
+fun binary_and(a: int, b: int): string {
+  if a < 0 || b < 0 {
+    panic("the value of both inputs must be positive")
+  }
+  let a_bin = to_binary(a)
+  let b_bin = to_binary(b)
+  var max_len = len(a_bin)
+  if len(b_bin) > max_len {
+    max_len = len(b_bin)
+  }
+  let a_pad = zfill(a_bin, max_len)
+  let b_pad = zfill(b_bin, max_len)
+  var i = 0
+  var res = ""
+  while i < max_len {
+    if a_pad[i] == "1" && b_pad[i] == "1" {
+      res = res + "1"
+    } else {
+      res = res + "0"
+    }
+    i = i + 1
+  }
+  return "0b" + res
+}
+
+print(binary_and(25, 32))
+print(binary_and(37, 50))
+print(binary_and(21, 30))
+print(binary_and(58, 73))
+print(binary_and(0, 255))
+print(binary_and(256, 256))
