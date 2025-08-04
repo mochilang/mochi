@@ -2899,15 +2899,15 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needSliceInt {
-		buf.WriteString("static int* _slice_int(const int *arr, size_t len, int start, int end, size_t *out_len) {\n")
+		buf.WriteString("static long long* _slice_int(const long long *arr, size_t len, int start, int end, size_t *out_len) {\n")
 		buf.WriteString("    if (start < 0) start = 0;\n")
 		buf.WriteString("    if ((size_t)end > len) end = len;\n")
 		buf.WriteString("    if (start > end) start = end;\n")
 		buf.WriteString("    size_t n = end - start;\n")
-		buf.WriteString("    int *res = NULL;\n")
+		buf.WriteString("    long long *res = NULL;\n")
 		buf.WriteString("    if (n) {\n")
-		buf.WriteString("        res = malloc(n * sizeof(int));\n")
-		buf.WriteString("        memcpy(res, arr + start, n * sizeof(int));\n")
+		buf.WriteString("        res = malloc(n * sizeof(long long));\n")
+		buf.WriteString("        memcpy(res, arr + start, n * sizeof(long long));\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    *out_len = n;\n")
 		buf.WriteString("    _slice_int_len = n;\n")
@@ -5395,13 +5395,13 @@ func convertUnary(u *parser.Unary) Expr {
 					needSubstring = true
 					funcReturnTypes["_substring"] = "const char*"
 					current = &CallExpr{Func: "_substring", Args: []Expr{current, sliceStart, sliceEnd}}
-				} else if typ == "int[]" {
+				} else if typ == "int[]" || typ == "long long[]" {
 					if vr, ok := current.(*VarRef); ok {
 						if sliceEnd == nil {
 							sliceEnd = &VarRef{Name: vr.Name + "_len"}
 						}
 						needSliceInt = true
-						funcReturnTypes["_slice_int"] = "int[]"
+						funcReturnTypes["_slice_int"] = typ
 						current = &CallExpr{Func: "_slice_int", Args: []Expr{current, &VarRef{Name: vr.Name + "_len"}, sliceStart, sliceEnd, &UnaryExpr{Op: "&", Expr: &VarRef{Name: "_slice_int_len"}}}}
 					} else {
 						return nil
