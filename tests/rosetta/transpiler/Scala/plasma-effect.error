@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/rosetta/transpiler/Scala/plasma-effect.scala:100: error: type mismatch;
+ found   : Double
+ required: scala.math.BigInt
+          val ci: BigInt = nframes.toString.toDouble * rem.toInt + 1.toInt
+                                                                 ^
+one error found

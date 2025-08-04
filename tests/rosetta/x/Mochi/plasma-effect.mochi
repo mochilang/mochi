@@ -53,7 +53,7 @@ while f <= nframes {
       value = value + 4.0
       value = value / 8.0
       let rem = frac(value + (f as float)/(nframes as float))
-      let ci = (nframes as float * rem) as int + 1
+      let ci = ((nframes as float) * rem) as int + 1
       total = total + ci
       x = x + 1
     }
