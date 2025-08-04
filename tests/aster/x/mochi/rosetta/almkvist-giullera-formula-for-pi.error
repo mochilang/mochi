@@ -1,0 +1,8 @@
+error[A024]: unknown function count
+  --> /workspace/mochi/tests/rosetta/x/Mochi/almkvist-giullera-formula-for-pi.mochi:7:11
+
+  7 |   var n = count(a)
+    |           ^
+
+help:
+  Declare count before use

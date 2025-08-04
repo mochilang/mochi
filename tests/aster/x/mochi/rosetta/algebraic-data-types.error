@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/algebraic-data-types.mochi:5:21
+
+  5 |   return {"cl": cl, "le": le, "aa": aa, "ri": ri}
+    |                     ^
+
+help:
+  Ensure map keys and values share types

@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/aliquot-sequence-classifications.mochi:73:23
+
+ 73 |   return {"seq": seq, "aliquot": ""}
+    |                       ^
+
+help:
+  Ensure map keys and values share types

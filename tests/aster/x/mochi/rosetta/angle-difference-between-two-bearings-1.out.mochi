@@ -1,0 +1,14 @@
+fun angleDiff(b1: float, b2: float): float {
+  let d: float = (b2 - b1)
+  if (d < (0 - 180)) {
+    return (d + 360)
+  }
+  if (d > 180) {
+    return (d - 360)
+  }
+  return d
+}
+var testCases: list<list<float>> = [[20, 45], [(0 - 45), 45], [(0 - 85), 90], [(0 - 95), 90], [(0 - 45), 125], [(0 - 45), 145], [29.4803, (0 - 88.6381)], [(0 - 78.3251), (0 - 159.036)]]
+for tc in testCases {
+  print(angleDiff(tc[0], tc[1]))
+}

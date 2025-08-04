@@ -1,0 +1,3 @@
+var myVar: float = 3.14
+print("value as float:", myVar)
+print("address: <not available>")

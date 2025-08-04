@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/align-columns.mochi:27:15
+
+ 27 |   return words[:n]
+    |               ^
+
+help:
+  Use an int index

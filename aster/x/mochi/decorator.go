@@ -299,7 +299,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		return inferType(n.Children[0], env)
 	case "list":
 		if len(n.Children) == 0 {
-			return &Node{Kind: "type", Text: "list"}, nil
+			return &Node{Kind: "type", Text: "list", Children: []*Node{{Kind: "type", Text: "any"}}}, nil
 		}
 		elem, err := inferType(n.Children[0], env)
 		if err != nil {

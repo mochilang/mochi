@@ -1,0 +1,8 @@
+error[A003]: undefined variable w
+  --> /workspace/mochi/tests/rosetta/x/Mochi/anagrams.mochi:64:23
+
+ 64 |     let k = sortRunes(w)
+    |                       ^
+
+help:
+  Declare w before use
