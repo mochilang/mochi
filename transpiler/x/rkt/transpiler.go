@@ -305,9 +305,19 @@ type BenchStmt struct {
 }
 
 func (b *BenchStmt) emit(w io.Writer) {
+	// Emit global declarations first so that benchmarked body can invoke them.
+	var body []Stmt
+	for _, st := range b.Body {
+		switch st.(type) {
+		case *FunDecl, StmtList:
+			st.emit(w)
+		default:
+			body = append(body, st)
+		}
+	}
 	fmt.Fprintln(w, "(let* ([_start_mem (current-memory-use)] [_start (now)])")
 	fmt.Fprintln(w, "  (let/ec _return (begin")
-	for _, st := range b.Body {
+	for _, st := range body {
 		st.emit(w)
 	}
 	fmt.Fprintln(w, "    (void)")
@@ -2646,8 +2656,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							}
 						}
 					}
-					// call the function stored in the field
+					// call the function stored in the field, passing the target as first argument
 					var args []Expr
+					args = append(args, n.Target)
 					for _, a := range op.Call.Args {
 						arg, err := convertExpr(a, env)
 						if err != nil {
