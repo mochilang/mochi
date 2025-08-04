@@ -2,8 +2,8 @@
 
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
-## Golden Test Checklist (436/491)
-_Last updated: 2025-08-04 15:40 +0700_
+## Golden Test Checklist (439/491)
+_Last updated: 2025-08-04 16:36 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -231,16 +231,16 @@ _Last updated: 2025-08-04 15:40 +0700_
 | 222 | conditional-structures-8 | ✓ |  | 8.7 MB |
 | 223 | conditional-structures-9 | ✓ |  | 8.7 MB |
 | 224 | consecutive-primes-with-ascending-or-descending-differences | error |  |  |
-| 225 | constrained-genericity-1 | ✓ |  | 8.7 MB |
-| 226 | constrained-genericity-2 | error |  |  |
-| 227 | constrained-genericity-3 | ✓ |  | 8.7 MB |
-| 228 | constrained-genericity-4 | ✓ | 3µs | 8.7 MB |
-| 229 | constrained-random-points-on-a-circle-1 | ✓ | 68µs | 8.7 MB |
-| 230 | constrained-random-points-on-a-circle-2 | error |  |  |
-| 231 | continued-fraction | ✓ | 10µs | 8.7 MB |
-| 232 | convert-decimal-number-to-rational | error |  |  |
-| 233 | convert-seconds-to-compound-duration | ✓ | 3µs | 8.7 MB |
-| 234 | convex-hull | ✓ | 21µs | 8.7 MB |
+| 225 | constrained-genericity-1 | ✓ | 1µs | 8.7 MB |
+| 226 | constrained-genericity-2 | ✓ |  | 8.7 MB |
+| 227 | constrained-genericity-3 | ✓ | 1µs | 8.7 MB |
+| 228 | constrained-genericity-4 | ✓ | 4µs | 8.7 MB |
+| 229 | constrained-random-points-on-a-circle-1 | ✓ | 64µs | 8.8 MB |
+| 230 | constrained-random-points-on-a-circle-2 | ✓ | 41µs | 8.8 MB |
+| 231 | continued-fraction | ✓ | 17µs | 8.7 MB |
+| 232 | convert-decimal-number-to-rational | ✓ | 14µs | 8.7 MB |
+| 233 | convert-seconds-to-compound-duration | ✓ | 6µs | 8.7 MB |
+| 234 | convex-hull | ✓ | 5µs | 8.7 MB |
 | 235 | conways-game-of-life | ✓ | 851µs | 8.7 MB |
 | 236 | copy-a-string-1 | ✓ |  | 8.7 MB |
 | 237 | copy-a-string-2 | ✓ | 3µs | 8.7 MB |
