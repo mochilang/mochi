@@ -1,0 +1,16 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Rosetta_Goldenfunction-frequency335218375/001/Main.java:87: error: method appendObj in class Main cannot be applied to given types;
+            pairs = appendObj(pairs, new java.util.LinkedHashMap<String, Object>(java.util.Map.ofEntries(java.util.Map.entry("expr", (Object)(t)), java.util.Map.entry("count", (Object)(((int)(freq).getOrDefault(t, 0)))))));
+                    ^
+  required: T[],T
+  found:    Object,LinkedHashMap<String,Object>
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Rosetta_Goldenfunction-frequency335218375/001/Main.java:92: error: array required, but Object found
+            Object p_1 = pairs[idx];
+                              ^
+Note: /tmp/TestJavaTranspiler_Rosetta_Goldenfunction-frequency335218375/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors
