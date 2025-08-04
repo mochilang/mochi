@@ -1,3 +1,7 @@
+## Progress (2025-08-04 16:14 +0700)
+- fix(go-transpiler): handle map keys and list concat
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-02 14:26 +0700)
 - fs transpiler: support any type arithmetic
 - Generated F# for 103/105 programs (103 passing)

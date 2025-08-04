@@ -540,6 +540,29 @@ func inferLiteralType(e *parser.Expr) string {
 		return ""
 	}
 	if ll := u.Value.Target.List; ll != nil {
+		if len(ll.Elems) > 0 && ll.Elems[0].Binary != nil && ll.Elems[0].Binary.Left.Value.Target.Map != nil {
+			ml0 := ll.Elems[0].Binary.Left.Value.Target.Map
+			if mt, ok := types.InferSimpleMap(ml0, transpileEnv); ok {
+				same := true
+				for _, el := range ll.Elems[1:] {
+					if el.Binary == nil || el.Binary.Left.Value.Target.Map == nil {
+						same = false
+						break
+					}
+					if _, ok2 := types.InferSimpleMap(el.Binary.Left.Value.Target.Map, transpileEnv); !ok2 {
+						same = false
+						break
+					}
+				}
+				if same {
+					vt := fsType(mt.Value)
+					if vt == "" {
+						vt = "obj"
+					}
+					return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s> array", vt)
+				}
+			}
+		}
 		if st, ok := types.InferStructFromList(ll, transpileEnv); ok {
 			structCount++
 			name := fmt.Sprintf("Anon%d", structCount)
@@ -1981,7 +2004,7 @@ func inferType(e Expr) string {
 				return t
 			}
 			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				return "map"
+				return t
 			}
 			return t
 		}
@@ -1990,7 +2013,7 @@ func inferType(e Expr) string {
 				return t
 			}
 			if strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				return "map"
+				return t
 			}
 			return t
 		}
@@ -3700,6 +3723,9 @@ func convertUnary(u *parser.Unary) (Expr, error) {
 		case "-":
 			expr = &UnaryExpr{Op: "-", Expr: expr}
 		case "!":
+			if inferType(expr) != "bool" {
+				expr = &CastExpr{Expr: expr, Type: "bool"}
+			}
 			expr = &UnaryExpr{Op: "not", Expr: expr}
 		default:
 			return nil, fmt.Errorf("unsupported unary op")
@@ -3898,8 +3924,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
 					}
 				case "obj":
-					cast := &CastExpr{Expr: args[0], Type: "System.Array"}
-					return &FieldExpr{Target: cast, Name: "Length"}, nil
+					cast := &CastExpr{Expr: args[0], Type: "string"}
+					return &CallExpr{Func: "String.length", Args: []Expr{cast}}, nil
 				}
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
@@ -4581,6 +4607,22 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 				&FunDef{Name: "sin", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Sin", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
 				&FunDef{Name: "log", Params: []string{"x"}, Body: []Stmt{&ReturnStmt{Expr: &CallExpr{Func: "System.Math.Log", Args: []Expr{&IdentExpr{Name: "x"}}}}}},
 			}}, nil
+		}
+		if path == "subprocess" {
+			neededOpens["System"] = true
+			neededOpens["System.Diagnostics"] = true
+			stub := &ModuleDef{Name: alias, Stmts: []Stmt{
+				&FunDef{Name: "getoutput", Params: []string{"cmd"}, Types: []string{"string"}, Return: "string", Body: []Stmt{
+					&LetStmt{Name: "psi", Expr: &CallExpr{Func: "System.Diagnostics.ProcessStartInfo", Args: []Expr{&StringLit{Value: "/bin/sh"}, &BinaryExpr{Left: &StringLit{Value: "-c "}, Op: "+", Right: &IdentExpr{Name: "cmd"}}}}},
+					&AssignStmt{Name: "psi.RedirectStandardOutput", Expr: &BoolLit{Value: true}},
+					&AssignStmt{Name: "psi.UseShellExecute", Expr: &BoolLit{Value: false}},
+					&LetStmt{Name: "p", Expr: &CallExpr{Func: "System.Diagnostics.Process.Start", Args: []Expr{&IdentExpr{Name: "psi"}}}},
+					&LetStmt{Name: "output", Expr: &CallExpr{Func: "p.StandardOutput.ReadToEnd", Args: nil}},
+					&ExprStmt{Expr: &CallExpr{Func: "p.WaitForExit", Args: nil}},
+					&AssignStmt{Name: "__ret", Expr: &CallExpr{Func: "output.TrimEnd", Args: nil}},
+				}},
+			}}
+			return stub, nil
 		}
 	case "go":
 		if path == "mochi/runtime/ffi/go/testpkg" {
