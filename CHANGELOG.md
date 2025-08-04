@@ -1,5 +1,29 @@
 # 📦 CHANGELOG.md
 
+## [0.10.57] – 2025-08-04T11:04:01+07:00
+
+### Added
+
+* Validate function types and allow explicit casts via decorator
+* Aster infers builtins and struct types automatically
+* Kotlin transpiler adds split helper, pow2/nullable variable handling and 20 new Rosetta tasks
+* Clojure and C++ gain new Rosetta outputs including Catalan numbers, cartesian product and display-a-linear-combination
+* Swift benchmark suite gains 15-puzzle solver with improved timing
+
+### Changed
+
+* Elixir transpiler handles split builtin, global vars in loops and refined loop tracking
+* Swift transpiler seeds _now RNG and fixes timing
+* C++ map iteration and ECDSA example handling improved
+* Scala and Kotlin transpilers refine integer handling and default value typing
+
+### Fixed
+
+* OCaml float modulo and dynamic return handling
+* C transpiler supports 2D float lists
+* Swift int casting and Scala variable type widening
+* Kotlin newline printing
+
 ## [0.10.56] – 2025-08-03T10:08:34+07:00
 
 ### Added
