@@ -116,56 +116,59 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def countChange(amount) do
+  def show(n) do
     try do
-      ways = []
-      i = 0
-      while_fun = fn while_fun, i, ways ->
-        if i <= amount do
-          ways = (ways ++ [0])
-          i = i + 1
-          while_fun.(while_fun, i, ways)
+      if n == 1 do
+        IO.puts("1: 1")
+        throw {:return, nil}
+      end
+      out = (Kernel.to_string(n) <> ": ")
+      x = ""
+      m = n
+      f = 2
+      while_fun = fn while_fun, f, m, out, x ->
+        if m != 1 do
+          {f, m, out, x} = if rem(m, f) == 0 do
+            out = ((out <> x) <> Kernel.to_string(f))
+            x = "×"
+            m = trunc((div(m, f)))
+            {f, m, out, x}
+          else
+            f = f + 1
+            {f, m, out, x}
+          end
+          while_fun.(while_fun, f, m, out, x)
         else
-          {i, ways}
+          {f, m, out, x}
         end
       end
-      {i, ways} = try do
-          while_fun.(while_fun, i, ways)
+      {f, m, out, x} = try do
+          while_fun.(while_fun, f, m, out, x)
         catch
-          {:break, {i, ways}} -> {i, ways}
+          {:break, {f, m, out, x}} -> {f, m, out, x}
         end
 
-      ways = List.replace_at(ways, 0, 1)
-      {ways} = Enum.reduce([100, 50, 25, 10, 5, 1], {ways}, fn coin, {ways} ->
-        j = coin
-        while_fun_2 = fn while_fun_2, j, ways ->
-          if j <= amount do
-            ways = List.replace_at(ways, j, Enum.at(ways, j) + Enum.at(ways, j - coin))
-            j = j + 1
-            while_fun_2.(while_fun_2, j, ways)
-          else
-            {j, ways}
-          end
-        end
-        {j, ways} = try do
-            while_fun_2.(while_fun_2, j, ways)
-          catch
-            {:break, {j, ways}} -> {j, ways}
-          end
-
-        {ways}
-      end)
-      throw {:return, Enum.at(ways, amount)}
+      IO.puts(out)
     catch
       {:return, val} -> val
     end
   end
-  Process.put(:amount, 1000)
   def main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(((("amount, ways to make change: " <> Kernel.to_string(Process.get(:amount))) <> " ") <> Kernel.inspect(Main.countChange(Process.get(:amount)))))
+    Main.show(1)
+    Enum.each((2..(10 - 1)), fn i ->
+      Main.show(i)
+    end)
+    IO.puts("...")
+    Enum.each((2144..(2155 - 1)), fn i ->
+      Main.show(i)
+    end)
+    IO.puts("...")
+    Enum.each((9987..(10000 - 1)), fn i ->
+      Main.show(i)
+    end)
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
