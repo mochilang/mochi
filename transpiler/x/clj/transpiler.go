@@ -665,6 +665,7 @@ var stringListVars map[string]bool
 var renameVars map[string]string
 var currentFun string
 var declVars map[string]bool
+var localVars map[string]bool
 var currentStruct *types.StructType
 var currentSelf string
 var outerVarStack []map[string]string
@@ -882,19 +883,19 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 
 	// insert variable declarations before nested function definitions
 	if len(declVars) > 0 {
-		decl := &List{Elems: []Node{Symbol("declare")}}
 		names := make([]string, 0, len(declVars))
 		for n := range declVars {
 			names = append(names, n)
 		}
 		sort.Strings(names)
+		defs := []Node{}
 		for _, n := range names {
-			decl.Elems = append(decl.Elems, Symbol(n))
+			defs = append(defs, &List{Elems: []Node{Symbol("def"), Symbol("^:dynamic"), Symbol(n), Symbol("nil")}})
 		}
 		if varDeclIndex <= len(pr.Forms) {
-			pr.Forms = append(pr.Forms[:varDeclIndex], append([]Node{decl}, pr.Forms[varDeclIndex:]...)...)
+			pr.Forms = append(pr.Forms[:varDeclIndex], append(defs, pr.Forms[varDeclIndex:]...)...)
 		} else {
-			pr.Forms = append(pr.Forms, decl)
+			pr.Forms = append(pr.Forms, defs...)
 		}
 	}
 
@@ -954,6 +955,10 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			if declVars != nil {
 				declVars[name] = true
 			}
+			if localVars != nil {
+				localVars[name] = true
+			}
+			return &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Var != nil:
@@ -993,6 +998,10 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			if declVars != nil {
 				declVars[name] = true
 			}
+			if localVars != nil {
+				localVars[name] = true
+			}
+			return &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Assign != nil:
@@ -1046,6 +1055,14 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 				}
 			}
 		}
+		if funDepth > 0 {
+			if declVars != nil {
+				declVars[name] = true
+			}
+			if localVars != nil {
+				localVars[name] = true
+			}
+		}
 		if simple && len(path) > 0 {
 			var assign Node
 			if len(path) == 1 {
@@ -1053,7 +1070,13 @@ func transpileStmt(s *parser.Statement) (Node, error) {
 			} else {
 				assign = &List{Elems: []Node{Symbol("assoc-in"), Symbol(name), &Vector{Elems: path}, v}}
 			}
+			if funDepth > 0 {
+				return &List{Elems: []Node{Symbol("set!"), Symbol(name), assign}}, nil
+			}
 			return &List{Elems: []Node{Symbol("def"), Symbol(name), assign}}, nil
+		}
+		if funDepth > 0 {
+			return &List{Elems: []Node{Symbol("set!"), Symbol(name), v}}, nil
 		}
 		return &List{Elems: []Node{Symbol("def"), Symbol(name), v}}, nil
 	case s.Fun != nil:
@@ -1105,6 +1128,8 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		}
 	}
 	currentSelf = ""
+	prevLocal := localVars
+	localVars = make(map[string]bool)
 	defer func() {
 		funDepth--
 		currentFun = prevFun
@@ -1115,6 +1140,7 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 		outerVarStack = outerVarStack[:len(outerVarStack)-1]
 		currentStruct = prevStruct
 		currentSelf = prevSelf
+		localVars = prevLocal
 	}()
 
 	stringVars = make(map[string]bool)
@@ -1227,6 +1253,18 @@ func transpileFunStmt(f *parser.FunStmt) (Node, error) {
 			}},
 		}}
 		bodyNode = &List{Elems: []Node{Symbol("try"), bodyNode, catchExpr}}
+	}
+	if len(localVars) > 0 {
+		names := make([]string, 0, len(localVars))
+		for n := range localVars {
+			names = append(names, n)
+		}
+		sort.Strings(names)
+		bind := &Vector{}
+		for _, n := range names {
+			bind.Elems = append(bind.Elems, Symbol(n), Symbol("nil"))
+		}
+		bodyNode = &List{Elems: []Node{Symbol("binding"), bind, bodyNode}}
 	}
 	defn := &Defn{Name: f.Name, Params: params, Body: []Node{bodyNode}}
 	if funDepth > 1 && currentProgram != nil {
