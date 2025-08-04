@@ -1,0 +1,9 @@
+fun tax(cents: int): int {
+  if (cents < 0) {
+    panic("Negative amounts not allowed")
+  }
+  return ((((cents * 5) + 50)) / 100)
+}
+let amount: int = 300
+let result: int = tax(amount)
+print((((("tax on " + str(amount)) + " cents is ") + str(result)) + " cents"))

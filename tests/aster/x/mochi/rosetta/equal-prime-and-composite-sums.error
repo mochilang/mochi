@@ -1,0 +1,8 @@
+error[A024]: unknown function padStart
+  --> /workspace/mochi/tests/rosetta/x/Mochi/equal-prime-and-composite-sums.mochi:74:41
+
+ 74 |       let sumStr = commatize(s).padStart(10, " ")
+    |                                         ^
+
+help:
+  Declare padStart before use

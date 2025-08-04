@@ -1,0 +1,85 @@
+fun chr(n: int): string {
+  let upper: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower: string = "abcdefghijklmnopqrstuvwxyz"
+  if ((n >= 65) && (n < 91)) {
+    return upper[(n - 65):(n - 64)]
+  }
+  if ((n >= 97) && (n < 123)) {
+    return lower[(n - 97):(n - 96)]
+  }
+  if (n == 32) {
+    return " "
+  }
+  if (n == 33) {
+    return "!"
+  }
+  if (n == 44) {
+    return ","
+  }
+  if (n == 13) {
+    return ""
+  }
+  if (n == 10) {
+    return "\n"
+  }
+  return "?"
+}
+fun bf(dLen: int, code: string): string {
+  var ds: list<int>
+  for i in 0..dLen {
+    ds = append(ds, 0)
+  }
+  var dp: int = 0
+  var ip: int = 0
+  var out: string = ""
+  while (ip < len(code)) {
+    let ch: any = code[ip:(ip + 1)]
+    if (ch == ">") {
+      dp = (dp + 1)
+    } else     if (ch == "<") {
+      dp = (dp - 1)
+    } else     if (ch == "+") {
+      ds[dp] = (ds[dp] + 1)
+    } else     if (ch == "-") {
+      ds[dp] = (ds[dp] - 1)
+    } else     if (ch == ".") {
+      out = (out + chr(ds[dp]))
+    } else     if (ch == ",") {
+      (ch == "[")
+      if (ds[dp] == 0) {
+        var nc: int = 1
+        while (nc > 0) {
+          ip = (ip + 1)
+          let cc: any = code[ip:(ip + 1)]
+          if (cc == "[") {
+            nc = (nc + 1)
+          } else           if (cc == "]") {
+            nc = (nc - 1)
+          }
+        }
+      }
+      if (ch == "]") {
+        if (ds[dp] != 0) {
+          var nc: int = 1
+          while (nc > 0) {
+            ip = (ip - 1)
+            let cc: any = code[ip:(ip + 1)]
+            if (cc == "]") {
+              nc = (nc + 1)
+            } else             if (cc == "[") {
+              nc = (nc - 1)
+            }
+          }
+        }
+      }
+    }
+    ip = (ip + 1)
+  }
+  return out
+}
+fun main(): void {
+  let prog: string = ((("++++++++++[>+>+++>++++>+++++++>++++++++>+++++++++>++\n" + "++++++++>+++++++++++>++++++++++++<<<<<<<<<-]>>>>+.>>>\n") + ">+..<.<++++++++.>>>+.<<+.<<<<++++.<++.>>>+++++++.>>>.+++.\n") + "<+++++++.--------.<<<<<+.<+++.---.")
+  let out: string = bf(10, prog)
+  print(out)
+}
+main()

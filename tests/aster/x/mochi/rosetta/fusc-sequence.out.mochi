@@ -1,0 +1,67 @@
+fun fuscVal(n: int): int {
+  var a: int = 1
+  var b: int = 0
+  var x: int = n
+  while (x > 0) {
+    if ((x % 2) == 0) {
+      x = (x / 2)
+      a = (a + b)
+    } else {
+      x = (((x - 1)) / 2)
+      b = (a + b)
+    }
+  }
+  if (n == 0) {
+    return 0
+  }
+  return b
+}
+fun firstFusc(n: int): list<int> {
+  var arr: list<int>
+  var i: int = 0
+  while (i < n) {
+    arr = append(arr, fuscVal(i))
+    i = (i + 1)
+  }
+  return arr
+}
+fun commatize(n: int): string {
+  var s: string = str(n)
+  var neg: bool = false
+  if (n < 0) {
+    neg = true
+    s = substring(s, 1, len(s))
+  }
+  var i: int = (len(s) - 3)
+  while (i >= 1) {
+    s = ((substring(s, 0, i) + ",") + substring(s, i, len(s)))
+    i = (i - 3)
+  }
+  if neg {
+    return ("-" + s)
+  }
+  return s
+}
+fun padLeft(s: string, w: int): string {
+  var out: string = s
+  while (len(out) < w) {
+    out = (" " + out)
+  }
+  return out
+}
+fun main(): void {
+  print("The first 61 fusc numbers are:")
+  print(str(firstFusc(61)))
+  print("\nThe fusc numbers whose length > any previous fusc number length are:")
+  let idxs: list<int> = [0, 37, 1173, 35499, 699051, 19573419]
+  var i: int = 0
+  while (i < len(idxs)) {
+    let idx: int = idxs[i]
+    let val: int = fuscVal(idx)
+    let numStr: string = padLeft(commatize(val), 7)
+    let idxStr: string = padLeft(commatize(idx), 10)
+    print((((numStr + " (index ") + idxStr) + ")"))
+    i = (i + 1)
+  }
+}
+main()

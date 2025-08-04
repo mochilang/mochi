@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/environment-variables-2.mochi:8:10
+
+  8 |   return substring(s, 0, len(p)) == p
+    |          ^
+
+help:
+  Declare substring before use

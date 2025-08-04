@@ -1,0 +1,135 @@
+fun generatePrimes(n: int): list<int> {
+  var primes: list<int> = [2]
+  var cand: int = 3
+  while (len(primes) < n) {
+    var isP: bool = true
+    var i: int = 0
+    while (i < len(primes)) {
+      let p: int = primes[i]
+      if ((p * p) > cand) {
+        break
+      }
+      if ((cand % p) == 0) {
+        isP = false
+        break
+      }
+      i = (i + 1)
+    }
+    if isP {
+      primes = append(primes, cand)
+    }
+    cand = (cand + 2)
+  }
+  return primes
+}
+fun primeFactors(n: int, primes: list<int>): list<int> {
+  var factors: list<int>
+  var num: int = n
+  var i: int = 0
+  while ((i < len(primes)) && ((primes[i] * primes[i]) <= num)) {
+    let p: int = primes[i]
+    while ((num % p) == 0) {
+      factors = append(factors, p)
+      num = (num / p)
+    }
+    i = (i + 1)
+  }
+  if (num > 1) {
+    factors = append(factors, num)
+  }
+  return factors
+}
+var prevCats: map<int, int>
+fun cat(p: int, primes: list<int>): int {
+  if contains(prevCats, p) {
+    return prevCats[p]
+  }
+  var pf: list<int> = primeFactors((p + 1), primes)
+  var all23: bool = true
+  for f in pf {
+    if ((f != 2) && (f != 3)) {
+      all23 = false
+      break
+    }
+  }
+  if all23 {
+    prevCats[p] = 1
+    return 1
+  }
+  if (p > 2) {
+    var unique: list<int>
+    var last: int = -1
+    for f in pf {
+      if (f != last) {
+        unique = append(unique, f)
+        last = f
+      }
+    }
+    pf = unique
+  }
+  var c: int = 2
+  while (c <= 11) {
+    var ok: bool = true
+    for f in pf {
+      if (cat(f, primes) >= c) {
+        ok = false
+        break
+      }
+    }
+    if ok {
+      prevCats[p] = c
+      return c
+    }
+    c = (c + 1)
+  }
+  prevCats[p] = 12
+  return 12
+}
+fun padLeft(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun main(): void {
+  let primes: list<int> = generatePrimes(1000)
+  var es: list<list<int>>
+  for _ in 0..12 {
+    es = append(es)
+  }
+  print("First 200 primes:\n")
+  var idx: int = 0
+  while (idx < 200) {
+    let p: int = primes[idx]
+    let c: int = cat(p, primes)
+    es[(c - 1)] = append(es[(c - 1)], p)
+    idx = (idx + 1)
+  }
+  var c: int = 1
+  while (c <= 6) {
+    if (len(es[(c - 1)]) > 0) {
+      print((("Category " + str(c)) + ":"))
+      print(str(es[(c - 1)]))
+      print("")
+    }
+    c = (c + 1)
+  }
+  print("First thousand primes:\n")
+  while (idx < 1000) {
+    let p: int = primes[idx]
+    let cv: int = cat(p, primes)
+    es[(cv - 1)] = append(es[(cv - 1)], p)
+    idx = (idx + 1)
+  }
+  c = 1
+  while (c <= 12) {
+    let e: list<int> = es[(c - 1)]
+    if (len(e) > 0) {
+      let line: string = ((((((("Category " + padLeft(c, 2)) + ": First = ") + padLeft(e[0], 7)) + "  Last = ") + padLeft(e[(len(e) - 1)], 8)) + "  Count = ") + padLeft(len(e), 6))
+      print(line)
+    }
+    c = (c + 1)
+  }
+}
+main()

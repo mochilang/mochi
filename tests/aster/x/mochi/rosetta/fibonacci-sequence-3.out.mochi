@@ -1,0 +1,21 @@
+fun fibNumber(): any {
+  typefun
+  var a: int = 0
+  var b: int = 1
+  return fun(): int {
+  let tmp: int = (a + b)
+  a = b
+  b = tmp
+  return a
+}
+}
+fun fibSequence(n: int): int {
+  let f: any = fibNumber()
+  var r: int = 0
+  var i: int = 0
+  while (i < n) {
+    r = f()
+    i = (i + 1)
+  }
+  return r
+}

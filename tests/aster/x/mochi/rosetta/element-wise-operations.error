@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/element-wise-operations.mochi:42:17
+
+ 42 |   let intPart = substring(digits, 0, len(digits) - prec)
+    |                 ^
+
+help:
+  Declare substring before use

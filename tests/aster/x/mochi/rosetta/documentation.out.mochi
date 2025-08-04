@@ -1,0 +1,8 @@
+var X: int = 0
+var Y: int = 0
+var Z: int = 0
+fun XP(): void {
+}
+fun nonXP(): void {
+}
+var MEMEME: int = 0

@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/file-extension-is-in-extensions-list.mochi:5:10
+
+  5 |   return substring(s, len(s)-len(suf), len(s)) == suf
+    |          ^
+
+help:
+  Declare substring before use

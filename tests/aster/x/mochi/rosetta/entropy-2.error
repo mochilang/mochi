@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/entropy-2.mochi:34:14
+
+ 34 |     let ch = substring(s, i, i+1)
+    |              ^
+
+help:
+  Declare substring before use

@@ -1,0 +1,13 @@
+fun swap(a: any, b: any): list<any> {
+  return [b, a]
+}
+fun main(): void {
+  var a: int = 3
+  var b: string = "four"
+  print(((str(a) + " ") + str(b)))
+  var res: list<any> = swap(a, b)
+  a = res[0]
+  b = res[1]
+  print(((str(a) + " ") + str(b)))
+}
+main()

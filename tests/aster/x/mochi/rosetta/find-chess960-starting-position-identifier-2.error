@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/find-chess960-starting-position-identifier-2.mochi:22:13
+
+ 22 |     let c = substring(s, i, i+1)
+    |             ^
+
+help:
+  Declare substring before use

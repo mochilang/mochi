@@ -1,0 +1,8 @@
+error[A024]: unknown function pow_int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/feigenbaum-constant-calculation.mochi:35:19
+
+ 35 |       let limit = pow_int(2, i)
+    |                   ^
+
+help:
+  Declare pow_int before use

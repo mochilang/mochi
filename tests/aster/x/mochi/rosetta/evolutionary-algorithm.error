@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/evolutionary-algorithm.mochi:14:10
+
+ 14 |   return substring(chars, idx, idx + 1)
+    |          ^
+
+help:
+  Declare substring before use

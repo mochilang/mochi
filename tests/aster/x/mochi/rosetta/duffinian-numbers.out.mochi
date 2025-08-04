@@ -1,0 +1,109 @@
+fun gcd(a: int, b: int): int {
+  var x: int = a
+  if (x < 0) {
+    x = -x
+  }
+  var y: int = b
+  if (y < 0) {
+    y = -y
+  }
+  while (y != 0) {
+    let t: int = (x % y)
+    x = y
+    y = t
+  }
+  return x
+}
+fun divisors(n: int): list<int> {
+  var divs: list<int>
+  var i: int = 1
+  while ((i * i) <= n) {
+    if ((n % i) == 0) {
+      divs = append(divs, i)
+      let j: int = ((n / i)) as int
+      if (i != j) {
+        divs = append(divs, j)
+      }
+    }
+    i = (i + 1)
+  }
+  return divs
+}
+fun sum(xs: list<int>): int {
+  var s: int = 0
+  for v in xs {
+    s = (s + v)
+  }
+  return s
+}
+fun isDuffinian(n: int): bool {
+  let divs: list<int> = divisors(n)
+  if (len(divs) <= 2) {
+    return false
+  }
+  let sigma: int = sum(divs)
+  return (gcd(sigma, n) == 1)
+}
+fun pad(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun printTable(nums: list<int>, perRow: int, width: int): void {
+  var i: int = 0
+  var line: string = ""
+  while (i < len(nums)) {
+    line = ((line + " ") + pad(nums[i], width))
+    if ((((i + 1)) % perRow) == 0) {
+      print(substring(line, 1, len(line)))
+      line = ""
+    }
+    i = (i + 1)
+  }
+  if (len(line) > 0) {
+    print(substring(line, 1, len(line)))
+  }
+}
+fun main(): void {
+  var duff: list<int>
+  var n: int = 1
+  while (len(duff) < 50) {
+    if isDuffinian(n) {
+      duff = append(duff, n)
+    }
+    n = (n + 1)
+  }
+  print("First 50 Duffinian numbers:")
+  printTable(duff, 10, 3)
+  var triplets: list<string>
+  n = 1
+  while (len(triplets) < 20) {
+    if ((isDuffinian(n) && isDuffinian((n + 1))) && isDuffinian((n + 2))) {
+      triplets = append(triplets, (((((("(" + str(n)) + ",") + str((n + 1))) + ",") + str((n + 2))) + ")"))
+      n = (n + 3)
+    }
+    n = (n + 1)
+  }
+  print("\nFirst 20 Duffinian triplets:")
+  var i: int = 0
+  while (i < len(triplets)) {
+    var line: string = ""
+    var j: int = 0
+    while ((j < 4) && (i < len(triplets))) {
+      line = (line + padStr(triplets[i], 16))
+      j = (j + 1)
+      i = (i + 1)
+    }
+    print(line)
+  }
+}
+fun padStr(s: string, width: int): string {
+  var res: string = s
+  while (len(res) < width) {
+    res = (res + " ")
+  }
+  return res
+}
+main()

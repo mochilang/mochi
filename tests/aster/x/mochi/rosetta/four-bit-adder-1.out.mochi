@@ -1,0 +1,40 @@
+type SumCarry {
+  s: bool
+  c: bool
+}
+type Add4Result {
+  v: bool
+  s3: bool
+  s2: bool
+  s1: bool
+  s0: bool
+}
+fun xor(a: bool, b: bool): bool {
+  return (((a && (!b))) || (((!a) && b)))
+}
+fun ha(a: bool, b: bool): SumCarry {
+  return SumCarry {s: xor(a, b), c: (a && b)}
+}
+fun fa(a: bool, b: bool, c0: bool): SumCarry {
+  let r1: SumCarry = ha(a, c0)
+  let r2: SumCarry = ha(r1.s, b)
+  return SumCarry {s: r2.s, c: (r1.c || r2.c)}
+}
+fun add4(a3: bool, a2: bool, a1: bool, a0: bool, b3: bool, b2: bool, b1: bool, b0: bool): Add4Result {
+  let r0: SumCarry = fa(a0, b0, false)
+  let r1: SumCarry = fa(a1, b1, r0.c)
+  let r2: SumCarry = fa(a2, b2, r1.c)
+  let r3: SumCarry = fa(a3, b3, r2.c)
+  return Add4Result {v: r3.c, s3: r3.s, s2: r2.s, s1: r1.s, s0: r0.s}
+}
+fun b2i(b: bool): int {
+  if b {
+    return 1
+  }
+  return 0
+}
+fun main(): void {
+  let r: Add4Result = add4(true, false, true, false, true, false, false, true)
+  print(((((((((str(b2i(r.v)) + " ") + str(b2i(r.s3))) + " ") + str(b2i(r.s2))) + " ") + str(b2i(r.s1))) + " ") + str(b2i(r.s0))))
+}
+main()

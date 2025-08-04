@@ -1,0 +1,49 @@
+let PI: float = 3.141592653589793
+type Complex {
+  re: float
+  im: float
+}
+fun sinApprox(x: float): float {
+  var term: float = x
+  var sum: float = x
+  var n: int = 1
+  while (n <= 10) {
+    let denom: float = ((((2 * n)) * (((2 * n) + 1)))) as float
+    term = (((-term * x) * x) / denom)
+    sum = (sum + term)
+    n = (n + 1)
+  }
+  return sum
+}
+fun cosApprox(x: float): float {
+  var term: float = 1
+  var sum: float = 1
+  var n: int = 1
+  while (n <= 10) {
+    let denom: float = (((((2 * n) - 1)) * ((2 * n)))) as float
+    term = (((-term * x) * x) / denom)
+    sum = (sum + term)
+    n = (n + 1)
+  }
+  return sum
+}
+fun cis(x: float): Complex {
+  return Complex {re: cosApprox(x), im: sinApprox(x)}
+}
+fun add(a: Complex, b: Complex): Complex {
+  return Complex {re: (a.re + b.re), im: (a.im + b.im)}
+}
+fun cstr(a: Complex): string {
+  var s: string = ("(" + str(a.re))
+  if (a.im >= 0) {
+    s = (((s + "+") + str(a.im)) + "i)")
+  } else {
+    s = ((s + str(a.im)) + "i)")
+  }
+  return s
+}
+fun main(): void {
+  let result: Complex = add(cis(PI), Complex {re: 1, im: 0})
+  print(cstr(result))
+}
+main()

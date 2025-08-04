@@ -1,0 +1,82 @@
+let qlimit: int = 50000
+fun powf(base: float, exp: int): float {
+  var result: float = 1
+  var i: int = 0
+  while (i < exp) {
+    result = (result * base)
+    i = (i + 1)
+  }
+  return result
+}
+fun sqrtApprox(x: float): float {
+  if (x <= 0) {
+    return 0
+  }
+  var g: float = x
+  var i: int = 0
+  while (i < 20) {
+    g = (((g + (x / g))) / 2)
+    i = (i + 1)
+  }
+  return g
+}
+fun modPow(base: int, exp: int, mod: int): int {
+  var result: int = (1 % mod)
+  var b: int = (base % mod)
+  var e: int = exp
+  while (e > 0) {
+    if ((e % 2) == 1) {
+      result = (((result * b)) % mod)
+    }
+    b = (((b * b)) % mod)
+    e = (e / 2)
+  }
+  return result
+}
+fun mtest(m: int): void {
+  if (m < 4) {
+    print((((str(m) + " < 4.  M") + str(m)) + " not tested."))
+  }
+  let flimit: float = sqrtApprox((powf(2, m) - 1))
+  var qlast: int = 0
+  if (flimit < qlimit) {
+    qlast = flimit as int
+  } else {
+    qlast = qlimit
+  }
+  var composite: list<bool>
+  var i: int = 0
+  while (i <= qlast) {
+    composite = append(composite, false)
+    i = (i + 1)
+  }
+  let sq: int = sqrtApprox(qlast as float) as int
+  var q: int = 3
+  while true {
+    if (q <= sq) {
+      var j: int = (q * q)
+      while (j <= qlast) {
+        composite[j] = true
+        j = (j + q)
+      }
+    }
+    let q8: int = (q % 8)
+    if ((((q8 == 1) || (q8 == 7))) && (modPow(2, m, q) == 1)) {
+      print(((("M" + str(m)) + " has factor ") + str(q)))
+    }
+    while true {
+      q = (q + 2)
+      if (q > qlast) {
+        print((("No factors of M" + str(m)) + " found."))
+      }
+      if !composite[q] {
+        break
+      }
+    }
+  }
+}
+fun main(): void {
+  mtest(31)
+  mtest(67)
+}
+main()

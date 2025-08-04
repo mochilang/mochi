@@ -1,0 +1,29 @@
+let maxNumber: int = 100000000
+var dsum: list<int>
+var dcount: list<int>
+var i: int = 0
+while (i <= maxNumber) {
+  dsum = append(dsum, 1)
+  dcount = append(dcount, 1)
+  i = (i + 1)
+}
+fun pad8(n: int): string {
+  var s: string = str(n)
+  while (len(s) < 8) {
+    s = (" " + s)
+  }
+  return s
+}
+i = 2
+while (i <= maxNumber) {
+  var j: int = (i + i)
+  while (j <= maxNumber) {
+    if (dsum[j] == j) {
+      print((((pad8(j) + " equals the sum of its first ") + str(dcount[j])) + " divisors"))
+    }
+    dsum[j] = (dsum[j] + i)
+    dcount[j] = (dcount[j] + 1)
+    j = (j + i)
+  }
+  i = (i + 1)
+}

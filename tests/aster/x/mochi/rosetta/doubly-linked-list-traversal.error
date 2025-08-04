@@ -1,0 +1,8 @@
+error[A012]: invalid string operation
+  --> /workspace/mochi/tests/rosetta/x/Mochi/doubly-linked-list-traversal.mochi:10:15
+
+ 10 |   var r = "[" + nodes[head]["value"]
+    |               ^
+
+help:
+  Only concatenation is supported

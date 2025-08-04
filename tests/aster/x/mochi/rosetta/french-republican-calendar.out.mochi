@@ -1,0 +1,101 @@
+let gregorianStr: list<string> = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+let gregorian: list<int> = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+let republicanStr: list<string> = ["Vendemiaire", "Brumaire", "Frimaire", "Nivose", "Pluviose", "Ventose", "Germinal", "Floreal", "Prairial", "Messidor", "Thermidor", "Fructidor"]
+let sansculotidesStr: list<string> = ["Fete de la vertu", "Fete du genie", "Fete du travail", "Fete de l'opinion", "Fete des recompenses", "Fete de la Revolution"]
+fun greLeap(year: int): bool {
+  let a: int = ((year % 4)) as int
+  let b: int = ((year % 100)) as int
+  let c: int = ((year % 400)) as int
+  return ((a == 0) && (((b != 0) || (c == 0))))
+}
+fun repLeap(year: int): bool {
+  let a: int = ((((year + 1)) % 4)) as int
+  let b: int = ((((year + 1)) % 100)) as int
+  let c: int = ((((year + 1)) % 400)) as int
+  return ((a == 0) && (((b != 0) || (c == 0))))
+}
+fun greToDay(d: int, m: int, y: int): int {
+  var yy: int = y
+  var mm: int = m
+  if (mm < 3) {
+    yy = (yy - 1)
+    mm = (mm + 12)
+  }
+  return (((((((yy * 36525) / 100) - (yy / 100)) + (yy / 400)) + ((306 * ((mm + 1))) / 10)) + d) - 654842)
+}
+fun repToDay(d: int, m: int, y: int): int {
+  var dd: int = d
+  var mm: int = m
+  if (mm == 13) {
+    mm = (mm - 1)
+    dd = (dd + 30)
+  }
+  if repLeap(y) {
+    dd = (dd - 1)
+  }
+  return (((((((365 * y) + (((y + 1)) / 4)) - (((y + 1)) / 100)) + (((y + 1)) / 400)) + (30 * mm)) + dd) - 395)
+}
+fun dayToGre(day: int): list<int> {
+  var y: int = ((day * 100) / 36525)
+  var d: int = ((day - ((y * 36525) / 100)) + 21)
+  y = (y + 1792)
+  d = (((d + (y / 100)) - (y / 400)) - 13)
+  var m: int = 8
+  while (d > gregorian[m]) {
+    d = (d - gregorian[m])
+    m = (m + 1)
+    if (m == 12) {
+      m = 0
+      y = (y + 1)
+      if greLeap(y) {
+        gregorian[1] = 29
+      } else {
+        gregorian[1] = 28
+      }
+    }
+  }
+  m = (m + 1)
+  return [d, m, y]
+}
+fun dayToRep(day: int): list<int> {
+  var y: int = ((((day - 1)) * 100) / 36525)
+  if repLeap(y) {
+    y = (y - 1)
+  }
+  var d: int = ((((day - ((((y + 1)) * 36525) / 100)) + 365) + (((y + 1)) / 100)) - (((y + 1)) / 400))
+  y = (y + 1)
+  var m: int = 1
+  var sc: int = 5
+  if repLeap(y) {
+    sc = 6
+  }
+  while (d > 30) {
+    d = (d - 30)
+    m = (m + 1)
+    if (m == 13) {
+      if (d > sc) {
+        d = (d - sc)
+        m = 1
+        y = (y + 1)
+        sc = 5
+        if repLeap(y) {
+          sc = 6
+        }
+      }
+    }
+  }
+  return [d, m, y]
+}
+fun formatRep(d: int, m: int, y: int): string {
+  if (m == 13) {
+    return ((sansculotidesStr[(d - 1)] + " ") + str(y))
+  }
+  return ((((str(d) + " ") + republicanStr[(m - 1)]) + " ") + str(y))
+}
+fun formatGre(d: int, m: int, y: int): string {
+  return ((((str(d) + " ") + gregorianStr[(m - 1)]) + " ") + str(y))
+}
+let rep: list<int> = dayToRep(greToDay(20, 5, 1795))
+print(formatRep(rep[0], rep[1], rep[2]))
+let gre: list<int> = dayToGre(repToDay(1, 9, 3))
+print(formatGre(gre[0], gre[1], gre[2]))

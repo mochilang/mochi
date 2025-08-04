@@ -1,0 +1,4 @@
+type fruit
+let apple: fruit = 0 as fruit
+let banana: fruit = ((apple as int + 1)) as fruit
+let cherry: fruit = ((banana as int + 1)) as fruit

@@ -1,0 +1,101 @@
+let INF: int = 1000000
+type FWResult {
+  dist: list<list<int>>
+  next: list<list<int>>
+}
+fun floydWarshall(graph: list<list<int>>): FWResult {
+  let n: int = len(graph)
+  var dist: list<list<int>>
+  var next: list<list<int>>
+  var i: int = 0
+  while (i < n) {
+    var drow: list<int>
+    var nrow: list<int>
+    var j: int = 0
+    while (j < n) {
+      drow = append(drow, graph[i][j])
+      if ((graph[i][j] < INF) && (i != j)) {
+        nrow = append(nrow, j)
+      } else {
+        nrow = append(nrow, -1)
+      }
+      j = (j + 1)
+    }
+    dist = append(dist, drow)
+    next = append(next, nrow)
+    i = (i + 1)
+  }
+  var k: int = 0
+  while (k < n) {
+    var i: int = 0
+    while (i < n) {
+      var j: int = 0
+      while (j < n) {
+        if ((dist[i][k] < INF) && (dist[k][j] < INF)) {
+          let alt: int = (dist[i][k] + dist[k][j])
+          if (alt < dist[i][j]) {
+            dist[i][j] = alt
+            next[i][j] = next[i][k]
+          }
+        }
+        j = (j + 1)
+      }
+      i = (i + 1)
+    }
+    k = (k + 1)
+  }
+  return FWResult {dist: dist, next: next}
+}
+fun path(u: int, v: int, next: list<list<int>>): list<int> {
+  var p: list<int> = [u]
+  var x: int = u
+  while (x != v) {
+    x = next[x][v]
+    p = append(p, x)
+  }
+  return p
+}
+fun pathStr(p: list<int>): string {
+  var s: string = ""
+  var i: int = 0
+  while (i < len(p)) {
+    s = (s + str((p[i] + 1)))
+    if (i < (len(p) - 1)) {
+      s = (s + " -> ")
+    }
+    i = (i + 1)
+  }
+  return s
+}
+let n: int = 4
+var g: list<list<int>>
+for i in 0..n {
+  var row: list<int>
+  for j in 0..n {
+    if (i == j) {
+      row = append(row, 0)
+    } else {
+      row = append(row, INF)
+    }
+  }
+  g = append(g, row)
+}
+g[0][2] = -2
+g[2][3] = 2
+g[3][1] = -1
+g[1][0] = 4
+g[1][2] = 3
+let res: FWResult = floydWarshall(g)
+print("pair\tdist\tpath")
+var i: int = 0
+while (i < n) {
+  var j: int = 0
+  while (j < n) {
+    if (i != j) {
+      let p: list<int> = path(i, j, res.next)
+      print(((((((str((i + 1)) + " -> ") + str((j + 1))) + "\t") + str(res.dist[i][j])) + "\t") + pathStr(p)))
+    }
+    j = (j + 1)
+  }
+  i = (i + 1)
+}

@@ -1,0 +1,65 @@
+let dayNames: list<string> = ["Sweetmorn", "Boomtime", "Pungenday", "Prickle-Prickle", "Setting Orange"]
+let seasons: list<string> = ["Chaos", "Discord", "Confusion", "Bureaucracy", "The Aftermath"]
+let holydays: list<list<string>> = [["Mungday", "Chaoflux"], ["Mojoday", "Discoflux"], ["Syaday", "Confuflux"], ["Zaraday", "Bureflux"], ["Maladay", "Afflux"]]
+fun isLeap(y: int): bool {
+  if ((y % 400) == 0) {
+    return true
+  }
+  if ((y % 100) == 0) {
+    return false
+  }
+  return ((y % 4) == 0)
+}
+let daysBefore: list<int> = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+fun dayOfYear(y: int, m: int, d: int): int {
+  var doy: int = (daysBefore[(m - 1)] + d)
+  if ((m > 2) && isLeap(y)) {
+    doy = (doy + 1)
+  }
+  return doy
+}
+fun ordinal(n: int): string {
+  var suff: string = "th"
+  let mod100: int = (n % 100)
+  if ((mod100 < 11) || (mod100 > 13)) {
+    let r: int = (n % 10)
+    if (r == 1) {
+      suff = "st"
+    } else     if (r == 2) {
+      suff = "nd"
+    } else     if (r == 3) {
+      suff = "rd"
+    }
+  }
+  return (str(n) + suff)
+}
+fun discordian(y: int, m: int, d: int): string {
+  if ((isLeap(y) && (m == 2)) && (d == 29)) {
+    return ("St. Tib's Day, YOLD " + str((y + 1166)))
+  }
+  var doy: int = dayOfYear(y, m, d)
+  if (isLeap(y) && (doy > 60)) {
+    doy = (doy - 1)
+  }
+  var idx: int = (doy - 1)
+  let season: int = (idx / 73)
+  let day: int = (idx % 73)
+  var res: string = ((((((dayNames[(idx % 5)] + ", the ") + ordinal((day + 1))) + " day of ") + seasons[season]) + " in the YOLD ") + str((y + 1166)))
+  if (day == 4) {
+    res = (((res + ". Celebrate ") + holydays[season][0]) + "!")
+  }
+  if (day == 49) {
+    res = (((res + ". Celebrate ") + holydays[season][1]) + "!")
+  }
+  return res
+}
+fun main(): void {
+  let dates: list<list<int>> = [[2010, 7, 22], [2012, 2, 28], [2012, 2, 29], [2012, 3, 1], [2012, 12, 31], [2013, 1, 1], [2100, 12, 31], [2015, 10, 19], [2010, 1, 5], [2011, 5, 3], [2000, 3, 13]]
+  var i: int = 0
+  while (i < len(dates)) {
+    let dt: list<int> = dates[i]
+    print(discordian(dt[0], dt[1], dt[2]))
+    i = (i + 1)
+  }
+}
+main()

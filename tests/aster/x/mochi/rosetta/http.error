@@ -1,0 +1,8 @@
+error[A002]: type mismatch for todo: Todo vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/http.mochi:11:3
+
+ 11 |   let todo: Todo = fetch "https://jsonplaceholder.typicode.com/todos/1"
+    |   ^
+
+help:
+  Ensure todo matches

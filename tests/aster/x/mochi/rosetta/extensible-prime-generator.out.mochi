@@ -1,0 +1,60 @@
+fun nextPrime(primes: list<int>, start: int): int {
+  var n: int = start
+  while true {
+    var isP: bool = true
+    var i: int = 0
+    while (i < len(primes)) {
+      let p: int = primes[i]
+      if ((p * p) > n) {
+        break
+      }
+      if ((n % p) == 0) {
+        isP = false
+        break
+      }
+      i = (i + 1)
+    }
+    if isP {
+      return n
+    }
+    n = (n + 2)
+  }
+}
+fun main(): void {
+  var primes: list<int> = [2]
+  var cand: int = 3
+  while (len(primes) < 10000) {
+    cand = nextPrime(primes, cand)
+    primes = append(primes, cand)
+    cand = (cand + 2)
+  }
+  var line: string = "First twenty:"
+  var i: int = 0
+  while (i < 20) {
+    line = ((line + " ") + str(primes[i]))
+    i = (i + 1)
+  }
+  print(line)
+  var idx: int = 0
+  while (primes[idx] <= 100) {
+    idx = (idx + 1)
+  }
+  line = ("Between 100 and 150: " + str(primes[idx]))
+  idx = (idx + 1)
+  while (primes[idx] < 150) {
+    line = ((line + " ") + str(primes[idx]))
+    idx = (idx + 1)
+  }
+  print(line)
+  while (primes[idx] <= 7700) {
+    idx = (idx + 1)
+  }
+  var count: int = 0
+  while (primes[idx] < 8000) {
+    count = (count + 1)
+    idx = (idx + 1)
+  }
+  print(("Number beween 7,700 and 8,000: " + str(count)))
+  print(("10,000th prime: " + str(primes[9999])))
+}
+main()

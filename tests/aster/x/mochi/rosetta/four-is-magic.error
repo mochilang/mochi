@@ -1,0 +1,8 @@
+error[A024]: unknown function upper
+  --> /workspace/mochi/tests/rosetta/x/Mochi/four-is-magic.mochi:3:10
+
+  3 |   return upper(substring(s, 0, 1)) + substring(s, 1, len(s))
+    |          ^
+
+help:
+  Declare upper before use

@@ -1,0 +1,108 @@
+fun getDivisors(n: int): list<int> {
+  var divs: list<int> = [1, n]
+  var i: int = 2
+  while ((i * i) <= n) {
+    if ((n % i) == 0) {
+      let j: int = ((n / i)) as int
+      divs = append(divs, i)
+      if (i != j) {
+        divs = append(divs, j)
+      }
+    }
+    i = (i + 1)
+  }
+  return divs
+}
+fun sum(xs: list<int>): int {
+  var s: int = 0
+  for x in xs {
+    s = (s + x)
+  }
+  return s
+}
+fun isPartSum(divs: list<int>, target: int): bool {
+  var possible: list<bool>
+  var i: int = 0
+  while (i <= target) {
+    possible = append(possible, false)
+    i = (i + 1)
+  }
+  possible[0] = true
+  for v in divs {
+    var s: int = target
+    while (s >= v) {
+      if possible[(s - v)] {
+        possible[s] = true
+      }
+      s = (s - 1)
+    }
+  }
+  return possible[target]
+}
+fun isZumkeller(n: int): bool {
+  let divs: list<int> = getDivisors(n)
+  let s: int = sum(divs)
+  if ((s % 2) == 1) {
+    return false
+  }
+  if ((n % 2) == 1) {
+    let abundance: int = (s - (2 * n))
+    return ((abundance > 0) && ((abundance % 2) == 0))
+  }
+  return isPartSum(divs, (s / 2))
+}
+fun pad(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun main(): void {
+  print("The first 220 Zumkeller numbers are:")
+  var count: int = 0
+  var line: string = ""
+  var i: int = 2
+  while (count < 220) {
+    if isZumkeller(i) {
+      line = ((line + pad(i, 3)) + " ")
+      count = (count + 1)
+      if ((count % 20) == 0) {
+        print(substring(line, 0, (len(line) - 1)))
+        line = ""
+      }
+    }
+    i = (i + 1)
+  }
+  print("\nThe first 40 odd Zumkeller numbers are:")
+  count = 0
+  line = ""
+  i = 3
+  while (count < 40) {
+    if isZumkeller(i) {
+      line = ((line + pad(i, 5)) + " ")
+      count = (count + 1)
+      if ((count % 10) == 0) {
+        print(substring(line, 0, (len(line) - 1)))
+        line = ""
+      }
+    }
+    i = (i + 2)
+  }
+  print("\nThe first 40 odd Zumkeller numbers which don't end in 5 are:")
+  count = 0
+  line = ""
+  i = 3
+  while (count < 40) {
+    if (((i % 10) != 5) && isZumkeller(i)) {
+      line = ((line + pad(i, 7)) + " ")
+      count = (count + 1)
+      if ((count % 8) == 0) {
+        print(substring(line, 0, (len(line) - 1)))
+        line = ""
+      }
+    }
+    i = (i + 2)
+  }
+}
+main()

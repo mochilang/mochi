@@ -1,0 +1,8 @@
+error[A024]: unknown function pad
+  --> /workspace/mochi/tests/rosetta/x/Mochi/fast-fourier-transform.mochi:86:16
+
+ 86 |     var line = pad(fmt(c.re),8)
+    |                ^
+
+help:
+  Declare pad before use

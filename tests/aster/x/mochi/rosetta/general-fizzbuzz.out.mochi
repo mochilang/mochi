@@ -1,0 +1,15 @@
+let max: int = 20
+let words: map<int, string> = {3: "Fizz", 5: "Buzz", 7: "Baxx"}
+let keys: list<int> = [3, 5, 7]
+for i in 1..((max + 1)) {
+  var text: string = ""
+  for n in keys {
+    if ((i % n) == 0) {
+      text = (text + words[n])
+    }
+  }
+  if (text == "") {
+    text = str(i)
+  }
+  print(text)
+}

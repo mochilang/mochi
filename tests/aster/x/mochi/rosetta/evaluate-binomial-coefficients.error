@@ -1,0 +1,8 @@
+error[A002]: type mismatch for res: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/evaluate-binomial-coefficients.mochi:7:3
+
+  7 |   var res: bigint = 1
+    |   ^
+
+help:
+  Ensure res matches

@@ -1,0 +1,8 @@
+error[A011]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/faulhabers-triangle.mochi:16:10
+
+ 16 |   return -a[0]
+    |          ^
+
+help:
+  Use numeric operands

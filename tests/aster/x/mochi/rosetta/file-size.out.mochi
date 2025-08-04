@@ -1,0 +1,14 @@
+fun printSize(fs: map<string, int>, path: string): void {
+  if (path in fs) {
+    print(str(fs[path]))
+  } else {
+    print((("stat " + path) + ": no such file or directory"))
+  }
+}
+fun main(): void {
+  var fs: map<string, int>
+  fs["input.txt"] = 123
+  printSize(fs, "input.txt")
+  printSize(fs, "/input.txt")
+}
+main()

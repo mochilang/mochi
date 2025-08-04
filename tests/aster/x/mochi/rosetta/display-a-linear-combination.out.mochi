@@ -1,0 +1,61 @@
+fun padRight(s: string, w: int): string {
+  var r: string = s
+  while (len(r) < w) {
+    r = (r + " ")
+  }
+  return r
+}
+fun linearCombo(c: list<int>): string {
+  var out: string = ""
+  var i: int = 0
+  while (i < len(c)) {
+    let n: int = c[i]
+    if (n != 0) {
+      var op: string = ""
+      if ((n < 0) && (len(out) == 0)) {
+        op = "-"
+      } else       if (n < 0) {
+        op = " - "
+      } else       if ((n > 0) && (len(out) == 0)) {
+        op = ""
+      } else {
+        op = " + "
+      }
+      var av: int = n
+      if (av < 0) {
+        av = -av
+      }
+      var coeff: string = (str(av) + "*")
+      if (av == 1) {
+        coeff = ""
+      }
+      out = (((((out + op) + coeff) + "e(") + str((i + 1))) + ")")
+    }
+    i = (i + 1)
+  }
+  if (len(out) == 0) {
+    return "0"
+  }
+  return out
+}
+fun main(): void {
+  let combos: list<list<int>> = [[1, 2, 3], [0, 1, 2, 3], [1, 0, 3, 4], [1, 2, 0], [0, 0, 0], [0], [1, 1, 1], [-1, -1, -1], [-1, -2, 0, -3], [-1]]
+  var idx: int = 0
+  while (idx < len(combos)) {
+    let c: list<int> = combos[idx]
+    var t: string = "["
+    var j: int = 0
+    while (j < len(c)) {
+      t = (t + str(c[j]))
+      if (j < (len(c) - 1)) {
+        t = (t + ", ")
+      }
+      j = (j + 1)
+    }
+    t = (t + "]")
+    let lc: string = linearCombo(c)
+    print(((padRight(t, 15) + "  ->  ") + lc))
+    idx = (idx + 1)
+  }
+}
+main()

@@ -1,0 +1,5 @@
+error[A023]: parameter f missing type%!(EXTRA string=f)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/extend-your-language.mochi:0:1
+
+help:
+  Add a type for f

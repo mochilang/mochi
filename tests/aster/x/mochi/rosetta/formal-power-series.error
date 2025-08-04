@@ -1,0 +1,8 @@
+error[A024]: unknown function compute
+  --> /workspace/mochi/tests/rosetta/x/Mochi/formal-power-series.mochi:18:22
+
+ 18 |     let v = f.compute(idx)
+    |                      ^
+
+help:
+  Declare compute before use

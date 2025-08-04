@@ -1,0 +1,25 @@
+type Screen {
+  w: int
+  h: int
+}
+type Window {
+  x: int
+  y: int
+  w: int
+  h: int
+  maximized: bool
+}
+fun maximize(s: Screen, win: Window): Window {
+  win.w = s.w
+  win.h = s.h
+  win.maximized = true
+  return win
+}
+fun main(): void {
+  let screen: Screen = Screen {w: 1920, h: 1080}
+  print(((("Screen size: " + str(screen.w)) + " x ") + str(screen.h)))
+  var win: Window = Window {x: 50, y: 50, w: 800, h: 600, maximized: false}
+  win = maximize(screen, win)
+  print(((("Max usable : " + str(win.w)) + " x ") + str(win.h)))
+}
+main()

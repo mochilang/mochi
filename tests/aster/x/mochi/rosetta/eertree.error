@@ -1,0 +1,8 @@
+error[A006]: invalid map entry
+  --> /workspace/mochi/tests/rosetta/x/Mochi/eertree.mochi:8:26
+
+  8 |   return {"length": len, "edges": {}, "suffix": 0}
+    |                          ^
+
+help:
+  Map entries require key and value

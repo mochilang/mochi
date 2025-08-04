@@ -1,0 +1,98 @@
+fun bitAt(x: int, idx: int): int {
+  var v: int = x
+  var i: int = 0
+  while (i < idx) {
+    v = ((v / 2)) as int
+    i = (i + 1)
+  }
+  return (v % 2)
+}
+fun outputState(state: string): void {
+  var line: string = ""
+  var i: int = 0
+  while (i < len(state)) {
+    if (state[i:(i + 1)] == "1") {
+      line = (line + "#")
+    } else {
+      line = (line + " ")
+    }
+    i = (i + 1)
+  }
+  print(line)
+}
+fun step(state: string, r: int): string {
+  let cells: int = len(state)
+  var out: string = ""
+  var i: int = 0
+  while (i < cells) {
+    let l: any = state[((((i - 1) + cells)) % cells):(((((i - 1) + cells)) % cells) + 1)]
+    let c: any = state[i:(i + 1)]
+    let rt: any = state[(((i + 1)) % cells):((((i + 1)) % cells) + 1)]
+    var idx: int = 0
+    if (l == "1") {
+      idx = (idx + 4)
+    }
+    if (c == "1") {
+      idx = (idx + 2)
+    }
+    if (rt == "1") {
+      idx = (idx + 1)
+    }
+    if (bitAt(r, idx) == 1) {
+      out = (out + "1")
+    } else {
+      out = (out + "0")
+    }
+    i = (i + 1)
+  }
+  return out
+}
+fun elem(r: int, cells: int, generations: int, state: string): void {
+  outputState(state)
+  var g: int = 0
+  var s: string = state
+  while (g < generations) {
+    s = step(s, r)
+    outputState(s)
+    g = (g + 1)
+  }
+}
+fun randInit(cells: int, seed: int): string {
+  var s: string = ""
+  var val: int = seed
+  var i: int = 0
+  while (i < cells) {
+    val = ((((val * 1664525) + 1013904223)) % 2147483647)
+    if ((val % 2) == 0) {
+      s = (s + "0")
+    } else {
+      s = (s + "1")
+    }
+    i = (i + 1)
+  }
+  return s
+}
+fun singleInit(cells: int): string {
+  var s: string = ""
+  var i: int = 0
+  while (i < cells) {
+    if (i == (cells / 2)) {
+      s = (s + "1")
+    } else {
+      s = (s + "0")
+    }
+    i = (i + 1)
+  }
+  return s
+}
+fun main(): void {
+  let cells: int = 20
+  let generations: int = 9
+  print("Single 1, rule 90:")
+  var state: string = singleInit(cells)
+  elem(90, cells, generations, state)
+  print("Random intial state, rule 30:")
+  state = randInit(cells, 3)
+  elem(30, cells, generations, state)
+}
+main()

@@ -1,0 +1,4 @@
+type fruit
+let apple: fruit = 0 as fruit
+let banana: fruit = 1 as fruit
+let cherry: fruit = 2 as fruit

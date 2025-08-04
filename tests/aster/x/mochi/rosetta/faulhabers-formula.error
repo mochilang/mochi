@@ -1,0 +1,8 @@
+error[A002]: type mismatch for res: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/faulhabers-formula.mochi:20:3
+
+ 20 |   var res: bigint = 1
+    |   ^
+
+help:
+  Ensure res matches

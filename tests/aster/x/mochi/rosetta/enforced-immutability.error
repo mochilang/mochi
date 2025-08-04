@@ -1,0 +1,8 @@
+error[A017]: index on non-indexable type string
+  --> /workspace/mochi/tests/rosetta/x/Mochi/enforced-immutability.mochi:4:17
+
+  4 | var s2 = "a" + s[1:]
+    |                 ^
+
+help:
+  Only lists and maps support indexing

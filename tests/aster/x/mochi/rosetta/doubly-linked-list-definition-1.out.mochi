@@ -1,0 +1,10 @@
+type dlNode {
+  value: int
+  next: any
+  prev: any
+}
+type dlList {
+  members: map<any, int>
+  head: any
+  tail: any
+}

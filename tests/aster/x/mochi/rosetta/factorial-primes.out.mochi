@@ -1,0 +1,49 @@
+fun factorial(n: int): int {
+  var result: int = 1
+  var i: int = 2
+  while (i <= n) {
+    result = (result * i)
+    i = (i + 1)
+  }
+  return result
+}
+fun isPrime(n: int): bool {
+  if (n < 2) {
+    return false
+  }
+  if ((n % 2) == 0) {
+    return (n == 2)
+  }
+  var d: int = 3
+  while ((d * d) <= n) {
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 2)
+  }
+  return true
+}
+fun padLeft(s: string, w: int): string {
+  var out: string = s
+  while (len(out) < w) {
+    out = (" " + out)
+  }
+  return out
+}
+fun main(): void {
+  var n: int = 0
+  var count: int = 0
+  while (count < 10) {
+    n = (n + 1)
+    let f: int = factorial(n)
+    if isPrime((f - 1)) {
+      count = (count + 1)
+      print(((((padLeft(str(count), 2) + ": ") + padLeft(str(n), 2)) + "! - 1 = ") + str((f - 1))))
+    }
+    if ((count < 10) && isPrime((f + 1))) {
+      count = (count + 1)
+      print(((((padLeft(str(count), 2) + ": ") + padLeft(str(n), 2)) + "! + 1 = ") + str((f + 1))))
+    }
+  }
+}
+main()

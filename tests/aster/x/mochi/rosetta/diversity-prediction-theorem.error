@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/diversity-prediction-theorem.mochi:22:17
+
+ 22 |   let intPart = substring(digits, 0, len(digits) - prec)
+    |                 ^
+
+help:
+  Declare substring before use

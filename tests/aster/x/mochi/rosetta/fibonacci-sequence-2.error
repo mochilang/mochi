@@ -1,0 +1,8 @@
+error[A002]: type mismatch for a: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/fibonacci-sequence-2.mochi:3:3
+
+  3 |   var a: bigint = 0
+    |   ^
+
+help:
+  Ensure a matches

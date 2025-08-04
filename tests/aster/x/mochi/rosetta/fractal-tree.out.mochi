@@ -1,0 +1,115 @@
+let PI: float = 3.141592653589793
+fun _mod(x: float, m: float): float {
+  return (x - ((((x / m)) as int as float) * m))
+}
+fun _sin(x: float): float {
+  let y: float = (_mod((x + PI), (2 * PI)) - PI)
+  let y2: float = (y * y)
+  let y3: float = (y2 * y)
+  let y5: float = (y3 * y2)
+  let y7: float = (y5 * y2)
+  return (((y - (y3 / 6)) + (y5 / 120)) - (y7 / 5040))
+}
+fun _cos(x: float): float {
+  let y: float = (_mod((x + PI), (2 * PI)) - PI)
+  let y2: float = (y * y)
+  let y4: float = (y2 * y2)
+  let y6: float = (y4 * y2)
+  return (((1 - (y2 / 2)) + (y4 / 24)) - (y6 / 720))
+}
+let width: int = 80
+let height: int = 40
+let depth: int = 6
+let angle: float = 12
+let length: float = 12
+let frac: float = 0.8
+fun clearGrid(): list<list<string>> {
+  var g: list<list<string>>
+  var y: int = 0
+  while (y < height) {
+    var row: list<string>
+    var x: int = 0
+    while (x < width) {
+      row = append(row, " ")
+      x = (x + 1)
+    }
+    g = append(g, row)
+    y = (y + 1)
+  }
+  return g
+}
+fun drawPoint(g: list<list<string>>, x: int, y: int): void {
+  if ((((x >= 0) && (x < width)) && (y >= 0)) && (y < height)) {
+    var row: list<string> = g[y]
+    row[x] = "#"
+    g[y] = row
+  }
+}
+fun bresenham(x0: int, y0: int, x1: int, y1: int, g: list<list<string>>): void {
+  var dx: int = (x1 - x0)
+  if (dx < 0) {
+    dx = -dx
+  }
+  var dy: int = (y1 - y0)
+  if (dy < 0) {
+    dy = -dy
+  }
+  var sx: int = -1
+  if (x0 < x1) {
+    sx = 1
+  }
+  var sy: int = -1
+  if (y0 < y1) {
+    sy = 1
+  }
+  var err: int = (dx - dy)
+  while true {
+    drawPoint(g, x0, y0)
+    if ((x0 == x1) && (y0 == y1)) {
+      break
+    }
+    var e2: int = (2 * err)
+    if (e2 > (-dy)) {
+      err = (err - dy)
+      x0 = (x0 + sx)
+    }
+    if (e2 < dx) {
+      err = (err + dx)
+      y0 = (y0 + sy)
+    }
+  }
+}
+fun ftree(g: list<list<string>>, x: float, y: float, dist: float, dir: float, d: int): void {
+  let rad: float = ((dir * PI) / 180)
+  let x2: float = (x + (dist * _sin(rad)))
+  let y2: float = (y - (dist * _cos(rad)))
+  bresenham(x as int, y as int, x2 as int, y2 as int, g)
+  if (d > 0) {
+    ftree(g, x2, y2, (dist * frac), (dir - angle), (d - 1))
+    ftree(g, x2, y2, (dist * frac), (dir + angle), (d - 1))
+  }
+}
+fun render(g: list<list<string>>): string {
+  var out: string = ""
+  var y: int = 0
+  while (y < height) {
+    var line: string = ""
+    var x: int = 0
+    while (x < width) {
+      line = (line + g[y][x])
+      x = (x + 1)
+    }
+    out = (out + line)
+    if (y < (height - 1)) {
+      out = (out + "\n")
+    }
+    y = (y + 1)
+  }
+  return out
+}
+fun main(): void {
+  var grid: list<list<string>> = clearGrid()
+  ftree(grid, ((width / 2)) as float, ((height - 1)) as float, length, 0, depth)
+  print(render(grid))
+}
+main()

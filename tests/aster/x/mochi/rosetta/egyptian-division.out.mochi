@@ -1,0 +1,41 @@
+type DivResult {
+  q: int
+  r: int
+}
+fun egyptianDivide(dividend: int, divisor: int): DivResult {
+  if ((dividend < 0) || (divisor <= 0)) {
+    panic("Invalid argument(s)")
+  }
+  if (dividend < divisor) {
+    return DivResult {q: 0, r: dividend}
+  }
+  var powers: list<int> = [1]
+  var doublings: list<int> = [divisor]
+  var doubling: int = (divisor * 2)
+  while (doubling <= dividend) {
+    powers = append(powers, (powers[(len(powers) - 1)] * 2))
+    doublings = append(doublings, doubling)
+    doubling = (doubling * 2)
+  }
+  var ans: int = 0
+  var accum: int = 0
+  var i: int = (len(doublings) - 1)
+  while (i >= 0) {
+    if ((accum + doublings[i]) <= dividend) {
+      accum = (accum + doublings[i])
+      ans = (ans + powers[i])
+      if (accum == dividend) {
+        break
+      }
+    }
+    i = (i - 1)
+  }
+  return DivResult {q: ans, r: (dividend - accum)}
+}
+fun main(): void {
+  let dividend: int = 580
+  let divisor: int = 34
+  let res: DivResult = egyptianDivide(dividend, divisor)
+  print(((((((str(dividend) + " divided by ") + str(divisor)) + " is ") + str(res.q)) + " with remainder ") + str(res.r)))
+}
+main()

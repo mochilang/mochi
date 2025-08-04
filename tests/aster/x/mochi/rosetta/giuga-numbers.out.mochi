@@ -1,0 +1,47 @@
+fun primeFactors(n: int): list<int> {
+  var factors: list<int>
+  var last: int = 0
+  var x: int = n
+  while ((x % 2) == 0) {
+    factors = append(factors, 2)
+    last = 2
+    x = (x / 2)
+  }
+  var p: int = 3
+  while ((p * p) <= x) {
+    while ((x % p) == 0) {
+      factors = append(factors, p)
+      last = p
+      x = (x / p)
+    }
+    p = (p + 2)
+  }
+  if (x > 1) {
+    factors = append(factors, x)
+  }
+  return factors
+}
+fun isGiuga(n: int): bool {
+  let facs: list<int> = primeFactors(n)
+  if (len(facs) <= 2) {
+    return false
+  }
+  for f in facs {
+    if ((((((n / f) - 1)) % f)) != 0) {
+      return false
+    }
+  }
+  return true
+}
+fun main(): void {
+  var known: list<int> = [30, 858, 1722, 66198]
+  var nums: list<int>
+  for n in known {
+    if isGiuga(n) {
+      nums = append(nums, n)
+    }
+  }
+  print("The first 4 Giuga numbers are:")
+  print(nums)
+}
+main()

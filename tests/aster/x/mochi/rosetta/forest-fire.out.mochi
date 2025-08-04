@@ -1,0 +1,105 @@
+let rows: int = 20
+let cols: int = 30
+let p: float = 0.01
+let f: float = 0.001
+fun repeat(ch: string, n: int): string {
+  var s: string = ""
+  var i: int = 0
+  while (i < n) {
+    s = (s + ch)
+    i = (i + 1)
+  }
+  return s
+}
+fun chance(prob: float): bool {
+  let threshold: int = int((prob * 1000))
+  return ((now() % 1000) < threshold)
+}
+fun newBoard(): list<list<string>> {
+  var b: list<list<string>>
+  var r: int = 0
+  while (r < rows) {
+    var row: list<string>
+    var c: int = 0
+    while (c < cols) {
+      if ((now() % 2) == 0) {
+        row = append(row, "T")
+      } else {
+        row = append(row, " ")
+      }
+      c = (c + 1)
+    }
+    b = append(b, row)
+    r = (r + 1)
+  }
+  return b
+}
+fun step(src: list<list<string>>): list<list<string>> {
+  var dst: list<list<string>>
+  var r: int = 0
+  while (r < rows) {
+    var row: list<string>
+    var c: int = 0
+    while (c < cols) {
+      var cell: string = src[r][c]
+      var next: string = cell
+      if (cell == "#") {
+        next = " "
+      } else       if (cell == "T") {
+        var burning: bool = false
+        var dr: int = -1
+        while (dr <= 1) {
+          var dc: int = -1
+          while (dc <= 1) {
+            if ((dr != 0) || (dc != 0)) {
+              let rr: int = (r + dr)
+              let cc: int = (c + dc)
+              if ((((rr >= 0) && (rr < rows)) && (cc >= 0)) && (cc < cols)) {
+                if (src[rr][cc] == "#") {
+                  burning = true
+                }
+              }
+            }
+            dc = (dc + 1)
+          }
+          dr = (dr + 1)
+        }
+        if (burning || chance(f)) {
+          next = "#"
+        }
+      } else {
+        if chance(p) {
+          next = "T"
+        }
+      }
+      row = append(row, next)
+      c = (c + 1)
+    }
+    dst = append(dst, row)
+    r = (r + 1)
+  }
+  return dst
+}
+fun printBoard(b: list<list<string>>): void {
+  print((repeat("__", cols) + "\n\n"))
+  var r: int = 0
+  while (r < rows) {
+    var line: string = ""
+    var c: int = 0
+    while (c < cols) {
+      let cell: string = b[r][c]
+      if (cell == " ") {
+        line = (line + "  ")
+      } else {
+        line = ((line + " ") + cell)
+      }
+      c = (c + 1)
+    }
+    print((line + "\n"))
+    r = (r + 1)
+  }
+}
+var board: list<list<string>> = newBoard()
+printBoard(board)
+board = step(board)
+printBoard(board)

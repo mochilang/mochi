@@ -1,0 +1,77 @@
+fun makeInf(): float {
+  var x: float = 1
+  var i: int = 0
+  while (i < 400) {
+    x = (x * 10)
+    i = (i + 1)
+  }
+  return x
+}
+fun makeMax(): float {
+  var x: float = 1
+  var i: int = 0
+  while (i < 308) {
+    x = (x * 10)
+    i = (i + 1)
+  }
+  return x
+}
+fun isNaN(x: float): bool {
+  return (x != x)
+}
+fun validateNaN(n: float, op: string): void {
+  if isNaN(n) {
+    print((op + " -> NaN"))
+  } else {
+    print("!!! Expected NaN from", op, " Found", n)
+  }
+}
+fun validateZero(n: float, op: string): void {
+  if (n == 0) {
+    print((op + " -> 0"))
+  } else {
+    print("!!! Expected 0 from", op, " Found", n)
+  }
+}
+fun validateGT(a: float, b: float, op: string): void {
+  if (a > b) {
+    print(op)
+  } else {
+    print("!!! Expected", op, " Found not true.")
+  }
+}
+fun validateNE(a: float, b: float, op: string): void {
+  if (a == b) {
+    print("!!! Expected", op, " Found not true.")
+  } else {
+    print(op)
+  }
+}
+fun validateEQ(a: float, b: float, op: string): void {
+  if (a == b) {
+    print(op)
+  } else {
+    print("!!! Expected", op, " Found not true.")
+  }
+}
+fun main(): void {
+  let negZero: float = -0
+  let posInf: float = makeInf()
+  let negInf: float = -posInf
+  let nan: float = (posInf / posInf)
+  let maxVal: float = makeMax()
+  print(negZero, posInf, negInf, nan)
+  print(negZero, posInf, negInf, nan)
+  print("")
+  validateNaN((negInf + posInf), "-Inf + Inf")
+  validateNaN((0 * posInf), "0 * Inf")
+  validateNaN((posInf / posInf), "Inf / Inf")
+  validateNaN((posInf % 1), "Inf % 1")
+  validateNaN((1 + nan), "1 + NaN")
+  validateZero((1 / posInf), "1 / Inf")
+  validateGT(posInf, maxVal, "Inf > max value")
+  validateGT(-maxVal, negInf, "-Inf < max neg value")
+  validateNE(nan, nan, "NaN != NaN")
+  validateEQ(negZero, 0, "-0 == 0")
+}
+main()

@@ -1,0 +1,8 @@
+error[A003]: undefined variable b
+  --> /workspace/mochi/tests/rosetta/x/Mochi/factorions.mochi:17:19
+
+ 17 |       let d = m % b
+    |                   ^
+
+help:
+  Declare b before use

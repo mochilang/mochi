@@ -1,0 +1,8 @@
+error[A024]: unknown function LookupHost
+  --> /workspace/mochi/tests/rosetta/x/Mochi/dns-query.mochi:3:36
+
+  3 | let res: list<any> = net.LookupHost("www.kame.net")
+    |                                    ^
+
+help:
+  Declare LookupHost before use

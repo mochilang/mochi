@@ -1,0 +1,73 @@
+type V3 {
+  x: float
+  y: float
+  z: float
+}
+fun sqrtApprox(x: float): float {
+  if (x <= 0) {
+    return 0
+  }
+  var guess: float = x
+  var i: int = 0
+  while (i < 20) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+fun powf(base: float, exp: int): float {
+  var result: float = 1
+  var i: int = 0
+  while (i < exp) {
+    result = (result * base)
+    i = (i + 1)
+  }
+  return result
+}
+fun normalize(v: V3): V3 {
+  let len: float = sqrtApprox((((v.x * v.x) + (v.y * v.y)) + (v.z * v.z)))
+  return V3 {x: (v.x / len), y: (v.y / len), z: (v.z / len)}
+}
+fun dot(a: V3, b: V3): float {
+  let d: float = (((a.x * b.x) + (a.y * b.y)) + (a.z * b.z))
+  if (d < 0) {
+    return -d
+  }
+  return 0
+}
+fun drawSphere(r: int, k: int, ambient: float, light: V3, shades: string): void {
+  var i: int = -r
+  while (i <= r) {
+    let x: float = ((i as float) + 0.5)
+    var line: string = ""
+    var j: int = -((2 * r))
+    while (j <= (2 * r)) {
+      let y: float = (((j as float) / 2) + 0.5)
+      if (((x * x) + (y * y)) <= ((r as float) * (r as float))) {
+        var zsq: float = ((((r as float) * (r as float)) - (x * x)) - (y * y))
+        var vec: V3 = normalize(V3 {x: x, y: y, z: sqrtApprox(zsq)})
+        var b: float = (powf(dot(light, vec), k) + ambient)
+        var intensity: int = ((((1 - b)) * (((len(shades) as float) - 1)))) as int
+        if (intensity < 0) {
+          intensity = 0
+        }
+        if (intensity >= len(shades)) {
+          intensity = (len(shades) - 1)
+        }
+        line = (line + substring(shades, intensity, (intensity + 1)))
+      } else {
+        line = (line + " ")
+      }
+      j = (j + 1)
+    }
+    print(line)
+    i = (i + 1)
+  }
+}
+fun main(): void {
+  let shades: string = ".:!*oe&#%@"
+  var light: V3 = normalize(V3 {x: 30, y: 30, z: -50})
+  drawSphere(20, 4, 0.1, light, shades)
+  drawSphere(10, 2, 0.4, light, shades)
+}
+main()

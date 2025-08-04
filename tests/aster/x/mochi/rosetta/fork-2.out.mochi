@@ -1,0 +1,13 @@
+var nextPID: int = 1
+fun fork(hasChild: bool): void {
+  let pid: int = nextPID
+  nextPID = (nextPID + 1)
+  print(("PID: " + str(pid)))
+  if !hasChild {
+    print("Done.")
+  }
+  let childPID: int = nextPID
+  print(("Child's PID: " + str(childPID)))
+  fork(false)
+}
+fork(true)

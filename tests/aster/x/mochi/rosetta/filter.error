@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/filter.mochi:39:13
+
+ 39 |   return arr[:last]
+    |             ^
+
+help:
+  Use an int index

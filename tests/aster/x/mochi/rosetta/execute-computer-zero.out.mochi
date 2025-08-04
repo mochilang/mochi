@@ -1,0 +1,48 @@
+fun floorMod(a: int, b: int): int {
+  var r: int = (a % b)
+  if (r < 0) {
+    r = (r + b)
+  }
+  return r
+}
+fun run(bc: list<int>): int {
+  var acc: int = 0
+  var pc: int = 0
+  while (pc < 32) {
+    let op: int = (bc[pc] / 32)
+    let arg: int = (bc[pc] % 32)
+    pc = (pc + 1)
+    if (op == 0) {
+      (op == 1)
+      acc = bc[arg]
+      if (op == 2) {
+        bc[arg] = acc
+      } else       if (op == 3) {
+        acc = floorMod((acc + bc[arg]), 256)
+      } else       if (op == 4) {
+        acc = floorMod((acc - bc[arg]), 256)
+      } else       if (op == 5) {
+        if (acc == 0) {
+          pc = arg
+        }
+      } else       if (op == 6) {
+        pc = arg
+      } else       if (op == 7) {
+        break
+      } else {
+        break
+      }
+    }
+  }
+  return acc
+}
+fun main(): void {
+  let programs: list<list<int>> = [[35, 100, 224, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [44, 106, 76, 43, 141, 75, 168, 192, 44, 224, 8, 7, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [46, 79, 109, 78, 47, 77, 48, 145, 171, 80, 192, 46, 224, 1, 1, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [45, 111, 69, 112, 71, 0, 78, 0, 171, 79, 192, 46, 224, 32, 0, 28, 1, 0, 0, 0, 6, 0, 2, 26, 5, 20, 3, 30, 1, 22, 4, 24], [35, 132, 224, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [35, 132, 224, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [35, 100, 224, 1, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+  var i: int = 0
+  while (i < len(programs)) {
+    let res: int = run(programs[i])
+    print(str(res))
+    i = (i + 1)
+  }
+}
+main()

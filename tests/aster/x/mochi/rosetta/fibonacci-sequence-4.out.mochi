@@ -1,0 +1,21 @@
+fun fib(n: int): list<int> {
+  var a: int = 0
+  var b: int = 1
+  var res: list<int>
+  var i: int = 0
+  while (i < n) {
+    res = append(res, a)
+    var tmp: int = (a + b)
+    a = b
+    i = (i + 1)
+    b = tmp
+  }
+  return res
+}
+fun main(): void {
+  let seq: list<int> = fib(10)
+  for v in seq {
+    print(str(v))
+  }
+}
+main()

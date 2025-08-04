@@ -1,0 +1,65 @@
+fun isPrime(n: int): bool {
+  if (n < 2) {
+    return false
+  }
+  if ((n % 2) == 0) {
+    return (n == 2)
+  }
+  var d: int = 3
+  while ((d * d) <= n) {
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 2)
+  }
+  return true
+}
+fun revInt(n: int): int {
+  var r: int = 0
+  var t: int = n
+  while (t > 0) {
+    r = ((r * 10) + (t % 10))
+    t = ((t / 10)) as int
+  }
+  return r
+}
+fun main(): void {
+  var emirps: list<int>
+  var n: int = 2
+  while (len(emirps) < 10000) {
+    if isPrime(n) {
+      let r: int = revInt(n)
+      if ((r != n) && isPrime(r)) {
+        emirps = append(emirps, n)
+      }
+    }
+    n = (n + 1)
+  }
+  var line: string = "   ["
+  var i: int = 0
+  while (i < 20) {
+    line = (line + str(emirps[i]))
+    if (i < 19) {
+      line = (line + ", ")
+    }
+    i = (i + 1)
+  }
+  line = (line + "]")
+  print("First 20:")
+  print(line)
+  line = "  ["
+  for e in emirps {
+    if (e >= 8000) {
+      break
+    }
+    if (e >= 7700) {
+      line = ((line + str(e)) + ", ")
+    }
+  }
+  line = (line + "]")
+  print("Between 7700 and 8000:")
+  print(line)
+  print("10000th:")
+  print((("   [" + str(emirps[9999])) + "]"))
+}
+main()
