@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 199/491
-Last updated: 2025-08-04 10:31 +0700
+Completed: 204/491
+Last updated: 2025-08-04 11:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -178,13 +178,13 @@ Last updated: 2025-08-04 10:31 +0700
 | 171 | cartesian-product-of-two-or-more-lists-2 |   | 55.999ms | 24.2 MB |
 | 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
-| 174 | case-sensitivity-of-identifiers |   | 56.442ms | 19.3 MB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 33.524ms | 19.7 MB |
 | 175 | casting-out-nines |   |  |  |
-| 176 | catalan-numbers-1 |   | 48.796ms | 21.5 MB |
-| 177 | catalan-numbers-2 |   | 51.826ms | 19.6 MB |
-| 178 | catalan-numbers-pascals-triangle |   | 50.841ms | 20.8 MB |
+| 176 | catalan-numbers-1 | ✓ | 37.587ms | 19.6 MB |
+| 177 | catalan-numbers-2 | ✓ | 40.459ms | 19.6 MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 44.141ms | 20.7 MB |
 | 179 | catamorphism | ✓ | 28.178ms | 15.5 MB |
-| 180 | catmull-clark-subdivision-surface |   | 101.114ms | 40.0 MB |
+| 180 | catmull-clark-subdivision-surface | ✓ | 79.476ms | 39.7 MB |
 | 181 | chaocipher |   |  |  |
 | 182 | chaos-game |   |  |  |
 | 183 | character-codes-1 | ✓ | 52.035ms | 18.7 MB |
