@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (366/491) - Last updated 2025-08-04 20:00 +0700:
+Checklist of programs that currently transpile and run (396/491) - Last updated 2025-08-04 21:16 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -420,36 +420,36 @@ Checklist of programs that currently transpile and run (366/491) - Last updated 
 | 413 | file-input-output-1 | ✓ | 120.0µs | 3.64MB |
 | 414 | file-input-output-2 | ✓ | 278.0µs | 3.60MB |
 | 415 | file-input-output-3 | ✓ | 152.0µs | 3.44MB |
-| 416 | file-modification-time |   |  |  |
-| 417 | file-size-distribution |   |  |  |
-| 418 | file-size |   |  |  |
-| 419 | filter |   |  |  |
-| 420 | find-chess960-starting-position-identifier-2 |   |  |  |
-| 421 | find-chess960-starting-position-identifier |   |  |  |
-| 422 | find-common-directory-path |   |  |  |
-| 423 | find-duplicate-files |   |  |  |
-| 424 | find-largest-left-truncatable-prime-in-a-given-base |   |  |  |
-| 425 | find-limit-of-recursion |   |  |  |
-| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases |   |  |  |
-| 427 | find-the-intersection-of-a-line-with-a-plane |   |  |  |
-| 428 | find-the-intersection-of-two-lines |   |  |  |
-| 429 | find-the-last-sunday-of-each-month |   |  |  |
-| 430 | find-the-missing-permutation |   |  |  |
-| 431 | first-class-environments |   |  |  |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
-| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
-| 434 | five-weekends |   |  |  |
-| 435 | fivenum-1 |   |  |  |
-| 436 | fivenum-2 |   |  |  |
-| 437 | fivenum-3 |   |  |  |
-| 438 | fixed-length-records-1 |   |  |  |
-| 439 | fixed-length-records-2 |   |  |  |
-| 440 | fizzbuzz-1 |   |  |  |
-| 441 | fizzbuzz-2 |   |  |  |
-| 442 | fizzbuzz |   |  |  |
-| 443 | flatten-a-list-1 |   |  |  |
-| 444 | flatten-a-list-2 |   |  |  |
-| 445 | flipping-bits-game |   |  |  |
+| 416 | file-modification-time | ✓ | 216.0µs | 3.54MB |
+| 417 | file-size-distribution | ✓ | 282.0µs | 3.54MB |
+| 418 | file-size | ✓ | 222.0µs | 3.69MB |
+| 419 | filter | ✓ | 303.0µs | 3.61MB |
+| 420 | find-chess960-starting-position-identifier-2 | ✓ | 380.0µs | 3.72MB |
+| 421 | find-chess960-starting-position-identifier | ✓ | 341.0µs | 3.51MB |
+| 422 | find-common-directory-path | ✓ | 448.0µs | 3.49MB |
+| 423 | find-duplicate-files | ✓ | 194.0µs | 3.59MB |
+| 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 4.0ms | 3.74MB |
+| 425 | find-limit-of-recursion | ✓ | 579.0µs | 3.69MB |
+| 426 | find-palindromic-numbers-in-both-binary-and-ternary-bases | ✓ | 2.12s | 3.63MB |
+| 427 | find-the-intersection-of-a-line-with-a-plane | ✓ | 383.0µs | 3.84MB |
+| 428 | find-the-intersection-of-two-lines | ✓ | 305.0µs | 3.76MB |
+| 429 | find-the-last-sunday-of-each-month | ✓ | 334.0µs | 3.75MB |
+| 430 | find-the-missing-permutation | ✓ | 199.0µs | 3.64MB |
+| 431 | first-class-environments | ✓ | 977.0µs | 3.61MB |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 395.0µs | 3.73MB |
+| 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 | ✓ | 304.0µs | 3.61MB |
+| 434 | five-weekends | ✓ | 652.0µs | 3.53MB |
+| 435 | fivenum-1 | ✓ | 413.0µs | 3.70MB |
+| 436 | fivenum-2 | ✓ | 480.0µs | 3.84MB |
+| 437 | fivenum-3 | ✓ | 334.0µs | 3.83MB |
+| 438 | fixed-length-records-1 | ✓ | 245.0µs | 3.48MB |
+| 439 | fixed-length-records-2 | ✓ | 192.0µs | 3.64MB |
+| 440 | fizzbuzz-1 | ✓ | 261.0µs | 3.62MB |
+| 441 | fizzbuzz-2 | ✓ | 928.0µs | 3.56MB |
+| 442 | fizzbuzz | ✓ | 325.0µs | 3.63MB |
+| 443 | flatten-a-list-1 | ✓ | 170.0µs | 3.56MB |
+| 444 | flatten-a-list-2 | ✓ | 222.0µs | 3.48MB |
+| 445 | flipping-bits-game | ✓ | 295.0µs | 3.51MB |
 | 446 | flow-control-structures-1 |   |  |  |
 | 447 | flow-control-structures-2 |   |  |  |
 | 448 | flow-control-structures-3 |   |  |  |
