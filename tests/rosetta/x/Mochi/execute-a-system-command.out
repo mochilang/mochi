@@ -1,4 +1,4 @@
-total 308
+total 288
 -rw-r--r--  1 root root  4436 Jul 27 03:46 BENCHMARK.md
 -rw-r--r--  1 root root 56802 Jul 27 03:46 CHANGELOG.md
 -rw-r--r--  1 root root   632 Jul 27 03:46 Dockerfile
@@ -34,7 +34,6 @@ drwxr-xr-x  2 root root  4096 Jul 27 03:46 parser
 -rw-r--r--  1 root root  2499 Jul 27 03:46 q1.c
 drwxr-xr-x  2 root root  4096 Jul 27 03:46 releases
 drwxr-xr-x  2 root root  4096 Jul 27 03:46 repl
--rw-r--r--  1 root root 15122 Jul 27 08:04 rosetta_mochi_index.txt
 drwxr-xr-x 20 root root  4096 Jul 27 03:46 runtime
 drwxr-xr-x  2 root root 12288 Jul 27 03:46 scripts
 drwxr-xr-x 19 root root  4096 Jul 27 03:46 tests
