@@ -4613,7 +4613,9 @@ func convertImport(im *parser.ImportStmt) (Stmt, error) {
 			neededOpens["System.Diagnostics"] = true
 			stub := &ModuleDef{Name: alias, Stmts: []Stmt{
 				&FunDef{Name: "getoutput", Params: []string{"cmd"}, Types: []string{"string"}, Return: "string", Body: []Stmt{
-					&LetStmt{Name: "psi", Expr: &CallExpr{Func: "System.Diagnostics.ProcessStartInfo", Args: []Expr{&StringLit{Value: "/bin/sh"}, &BinaryExpr{Left: &StringLit{Value: "-c "}, Op: "+", Right: &IdentExpr{Name: "cmd"}}}}},
+					&LetStmt{Name: "psi", Expr: &CallExpr{Func: "System.Diagnostics.ProcessStartInfo", Args: nil}},
+					&AssignStmt{Name: "psi.FileName", Expr: &StringLit{Value: "/bin/sh"}},
+					&AssignStmt{Name: "psi.Arguments", Expr: &BinaryExpr{Left: &StringLit{Value: "-c "}, Op: "+", Right: &IdentExpr{Name: "cmd"}}},
 					&AssignStmt{Name: "psi.RedirectStandardOutput", Expr: &BoolLit{Value: true}},
 					&AssignStmt{Name: "psi.UseShellExecute", Expr: &BoolLit{Value: false}},
 					&LetStmt{Name: "p", Expr: &CallExpr{Func: "System.Diagnostics.Process.Start", Args: []Expr{&IdentExpr{Name: "psi"}}}},

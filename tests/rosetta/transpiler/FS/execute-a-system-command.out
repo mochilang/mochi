@@ -1,0 +1,8 @@
+README.md
+ROSETTA.md
+TASKS.md
+rosetta_test.go
+stub.go
+transpiler.go
+transpiler_test.go
+vm_valid_golden_test.go

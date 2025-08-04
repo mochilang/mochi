@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (373/491)
+## Rosetta Golden Test Checklist (374/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -379,7 +379,7 @@ This file is auto-generated from rosetta tests.
 | 372 | exceptions | ✓ | 244µs | 46.0 KB |
 | 373 | executable-library | ✓ | 14.229ms | 76.3 KB |
 | 374 | execute-a-markov-algorithm | ✓ | 361µs | 36.1 KB |
-| 375 | execute-a-system-command |   |  |  |
+| 375 | execute-a-system-command | ✓ | 398µs | 51.1 KB |
 | 376 | execute-brain- |   |  |  |
 | 377 | execute-computer-zero-1 |   |  |  |
 | 378 | execute-computer-zero |   |  |  |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 16:14 +0700
+Last updated: 2025-08-04 17:04 +0700
