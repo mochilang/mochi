@@ -1,0 +1,46 @@
+/*
+Binary OR of two non-negative integers.
+
+Given integers a and b, this function returns the binary representation
+of the bitwise OR a | b.  Instead of relying on built-in bitwise
+operators, the algorithm inspects the least significant bit of each
+number and builds the result string from right to left.
+
+At each step it appends "1" if either bit is set, otherwise "0",
+then divides the inputs by 2 to process the next higher bit.
+This continues until both numbers become zero.  The final string is
+prefixed with "0b" to match Python's binary formatting.
+
+Time complexity is O(max(log2(a), log2(b))) because we examine each bit once.
+*/
+
+fun binary_or(a: int, b: int): string {
+  if a < 0 || b < 0 {
+    return "ValueError"
+  }
+  var res = ""
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let bit_a = x % 2
+    let bit_b = y % 2
+    if bit_a == 1 || bit_b == 1 {
+      res = "1" + res
+    } else {
+      res = "0" + res
+    }
+    x = x / 2
+    y = y / 2
+  }
+  if res == "" {
+    res = "0"
+  }
+  return "0b" + res
+}
+
+print(binary_or(25, 32))
+print(binary_or(37, 50))
+print(binary_or(21, 30))
+print(binary_or(58, 73))
+print(binary_or(0, 255))
+print(binary_or(0, 256))
