@@ -1017,9 +1017,17 @@ func (m *MapLit) emit(w io.Writer) {
 		if i > 0 {
 			fmt.Fprint(w, ", ")
 		}
-		it.Key.emit(w)
+		k := it.Key
+		if inferType(k) == "BigInt" {
+			k = &CastExpr{Value: k, Type: "BigInt"}
+		}
+		k.emit(w)
 		fmt.Fprint(w, " -> (")
-		it.Value.emit(w)
+		v := it.Value
+		if inferType(v) == "BigInt" || it.Type == "BigInt" {
+			v = &CastExpr{Value: v, Type: "BigInt"}
+		}
+		v.emit(w)
 		fmt.Fprint(w, ")")
 	}
 	fmt.Fprint(w, ")")
@@ -1203,48 +1211,51 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
-	if c.Type == "bigint" || c.Type == "int" || c.Type == "BigInt" || c.Type == "Int" {
-		if (c.Type == "int" || c.Type == "Int") && inferType(c.Value) == "Double" {
+	switch c.Type {
+	case "Int", "int":
+		if inferType(c.Value) == "Double" {
 			fmt.Fprint(w, "(")
 			c.Value.emit(w)
 			fmt.Fprint(w, ").toInt")
 		} else {
-			needsBigInt = true
-			if il, ok := c.Value.(*IntLit); ok {
-				if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
-					fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
-				} else {
-					fmt.Fprintf(w, "BigInt(%d)", il.Value)
-				}
-			} else if isBigIntExpr(c.Value) {
-				c.Value.emit(w)
-			} else {
-				typ := inferType(c.Value)
-				fmt.Fprint(w, "BigInt(")
-				switch c.Value.(type) {
-				case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
-					c.Value.emit(w)
-				default:
-					fmt.Fprint(w, "(")
-					c.Value.emit(w)
-					fmt.Fprint(w, ")")
-				}
-				if typ == "String" {
-					fmt.Fprint(w, ".charAt(0).toInt")
-				} else if typ == "Any" || typ == "" {
-					// Fallback for unknown types: convert to string, then to Double before Int.
-					// This avoids runtime errors when the value is a floating point like "2.0".
-					fmt.Fprint(w, ".toString.toDouble.toInt")
-				} else {
-					fmt.Fprint(w, ".toInt")
-				}
-				fmt.Fprint(w, ")")
+			c.Value.emit(w)
+			if inferType(c.Value) != "Int" {
+				fmt.Fprint(w, ".toInt")
 			}
 		}
 		return
-	} else if c.Type == "Int" {
-		c.Value.emit(w)
-		fmt.Fprint(w, ".toInt")
+	case "BigInt", "bigint":
+		needsBigInt = true
+		if il, ok := c.Value.(*IntLit); ok {
+			if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
+				fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
+			} else {
+				fmt.Fprintf(w, "BigInt(%d)", il.Value)
+			}
+		} else if isBigIntExpr(c.Value) {
+			c.Value.emit(w)
+		} else {
+			typ := inferType(c.Value)
+			fmt.Fprint(w, "BigInt(")
+			switch c.Value.(type) {
+			case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+				c.Value.emit(w)
+			default:
+				fmt.Fprint(w, "(")
+				c.Value.emit(w)
+				fmt.Fprint(w, ")")
+			}
+			if typ == "String" {
+				fmt.Fprint(w, ".charAt(0).toInt")
+			} else if typ == "Any" || typ == "" {
+				// Fallback for unknown types: convert to string, then to Double before Int.
+				// This avoids runtime errors when the value is a floating point like "2.0".
+				fmt.Fprint(w, ".toString.toDouble.toInt")
+			} else if typ != "Int" {
+				fmt.Fprint(w, ".toInt")
+			}
+			fmt.Fprint(w, ")")
+		}
 		return
 	}
 	switch c.Value.(type) {
@@ -2213,9 +2224,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			return nil, nil
 		}
 		td := &TypeDeclStmt{Name: st.Type.Name}
+		typeDecls = append(typeDecls, td)
 		if st.Type.Alias != nil {
 			td.Alias = toScalaType(st.Type.Alias)
-			typeDecls = append(typeDecls, td)
 			return nil, nil
 		}
 		for _, m := range st.Type.Members {
@@ -2231,7 +2242,6 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 		}
-		typeDecls = append(typeDecls, td)
 		return nil, nil
 	case st.Assign != nil:
 		target := Expr(&Name{Name: st.Assign.Name})
