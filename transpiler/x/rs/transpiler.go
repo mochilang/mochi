@@ -4118,7 +4118,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "contains" && len(args) == 2 {
 			funReturns[name] = "bool"
-			return &MethodCallExpr{Receiver: args[0], Name: "contains", Args: []Expr{args[1]}}, nil
+			arg := args[1]
+			if inferType(arg) == "String" {
+				arg = &MethodCallExpr{Receiver: arg, Name: "as_str"}
+			}
+			return &MethodCallExpr{Receiver: args[0], Name: "contains", Args: []Expr{arg}}, nil
 		}
 		var paramTypes []string
 		if pts, ok := funParamTypes[name]; ok {
@@ -4342,8 +4346,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 			if !invalid {
-				sigParts := make([]string, len(st.Order))
-				for i, n := range st.Order {
+				sigOrder := append([]string(nil), st.Order...)
+				sort.Strings(sigOrder)
+				sigParts := make([]string, len(sigOrder))
+				for i, n := range sigOrder {
 					sigParts[i] = n + ":" + rustTypeFromType(st.Fields[n])
 				}
 				sig := strings.Join(sigParts, ";")
@@ -4407,7 +4413,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			// Fallback: infer struct using expression types when env inference fails.
 			names := make([]string, len(p.Map.Items))
 			vals := make([]Expr, len(p.Map.Items))
-			sigParts := make([]string, len(p.Map.Items))
 			stFields := make(map[string]types.Type, len(p.Map.Items))
 			fields := make([]Param, len(p.Map.Items))
 			for i, it := range p.Map.Items {
@@ -4424,9 +4429,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 				}
 				vals[i] = v
 				rt := inferType(v)
-				sigParts[i] = keyName + ":" + rt
 				stFields[keyName] = typeFromString(rt)
 				fields[i] = Param{Name: keyName, Type: rt}
+			}
+			sigNames := append([]string(nil), names...)
+			sort.Strings(sigNames)
+			sigParts := make([]string, len(sigNames))
+			for i, n := range sigNames {
+				sigParts[i] = n + ":" + rustTypeFromType(stFields[n])
 			}
 			sig := strings.Join(sigParts, ";")
 			name, ok := structSig[sig]
