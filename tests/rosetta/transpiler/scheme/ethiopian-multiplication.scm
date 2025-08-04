@@ -1,4 +1,4 @@
-;; Generated on 2025-08-03 17:42 +0700
+;; Generated on 2025-08-04 00:31 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -83,9 +86,4 @@
                   (loop (_substring r (+ idx (string-length del)) (string-length r))
                         (cons (_substring r 0 idx) acc)))
                 (reverse (cons r acc)))))))))
-(define (halve i) (call/cc (lambda (ret1) (ret1 (quotient i 2)))))
-(define (double i) (call/cc (lambda (ret2) (ret2 (* i 2)))))
-(define (isEven i) (call/cc (lambda (ret3) (ret3 (equal? (modulo i 2) 0)))))
-(define (ethMulti i j) (call/cc (lambda (ret4) (let ((r 0)) (begin (let ((x i)) (begin (let ((y j)) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (> x 0) (begin (if (not (isEven x)) (begin (set! r (+ r y))) (quote ())) (set! x (halve x)) (set! y (double y)) (loop5)) (quote ()))))) (loop5)))) (ret4 r))))))))))
-(_display (to-str (string-append "17 ethiopian 34 = " (to-str (ethMulti 17 34)))))
-(newline)
+(let ((start7 (current-jiffy)) (jps10 (jiffies-per-second))) (begin (define (halve i) (call/cc (lambda (ret1) (ret1 (quotient i 2))))) (define (double i) (call/cc (lambda (ret2) (ret2 (* i 2))))) (define (isEven i) (call/cc (lambda (ret3) (ret3 (equal? (modulo i 2) 0))))) (define (ethMulti i j) (call/cc (lambda (ret4) (let ((r 0)) (begin (let ((x i)) (begin (let ((y j)) (begin (call/cc (lambda (break6) (letrec ((loop5 (lambda () (if (> x 0) (begin (if (not (isEven x)) (begin (set! r (+ r y))) (quote ())) (set! x (halve x)) (set! y (double y)) (loop5)) (quote ()))))) (loop5)))) (ret4 r)))))))))) (_display (to-str (string-append "17 ethiopian 34 = " (to-str (ethMulti 17 34))))) (newline) (let ((end8 (current-jiffy))) (let ((dur9 (quotient (* (- end8 start7) 1000000) jps10))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur9) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
