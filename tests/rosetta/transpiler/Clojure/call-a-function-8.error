@@ -1,6 +1,0 @@
-run error: exit status 1
-Syntax error compiling at (/workspace/mochi/tests/rosetta/transpiler/Clojure/call-a-function-8.clj:18:138).
-Unable to resolve symbol: f in this context
-
-Full report at:
-/tmp/clojure-16760093253006496647.edn

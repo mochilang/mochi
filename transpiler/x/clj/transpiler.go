@@ -1751,18 +1751,33 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				n = &List{Elems: []Node{Symbol("nth"), n, i}}
 			}
 		case op.Field != nil:
-			if i+1 < len(ops) && ops[i+1].Call != nil && op.Field.Name == "contains" {
+			if i+1 < len(ops) && ops[i+1].Call != nil {
 				call := ops[i+1].Call
-				if len(call.Args) != 1 {
-					return nil, fmt.Errorf("contains expects 1 arg")
+				if op.Field.Name == "contains" {
+					if len(call.Args) != 1 {
+						return nil, fmt.Errorf("contains expects 1 arg")
+					}
+					arg, err := transpileExpr(call.Args[0])
+					if err != nil {
+						return nil, err
+					}
+					n = &List{Elems: []Node{Symbol("clojure.string/includes?"), n, arg}}
+					i++
+					continue
 				}
-				arg, err := transpileExpr(call.Args[0])
-				if err != nil {
-					return nil, err
+				if op.Field.Name == "padStart" {
+					args := []Node{n}
+					for _, a := range call.Args {
+						ae, err := transpileExpr(a)
+						if err != nil {
+							return nil, err
+						}
+						args = append(args, ae)
+					}
+					n = &List{Elems: append([]Node{Symbol("padStart")}, args...)}
+					i++
+					continue
 				}
-				n = &List{Elems: []Node{Symbol("clojure.string/includes?"), n, arg}}
-				i++
-				continue
 			}
 			if i+1 < len(ops) && ops[i+1].Call != nil && transpileEnv != nil {
 				if sym, ok := n.(Symbol); ok {
@@ -2134,6 +2149,27 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 				return nil, err
 			}
 			return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
+		case "parseIntStr":
+			switch len(c.Args) {
+			case 1:
+				arg, err := transpileExpr(c.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				return &List{Elems: []Node{Symbol("Integer/parseInt"), arg}}, nil
+			case 2:
+				sarg, err := transpileExpr(c.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				barg, err := transpileExpr(c.Args[1])
+				if err != nil {
+					return nil, err
+				}
+				return &List{Elems: []Node{Symbol("Integer/parseInt"), sarg, barg}}, nil
+			default:
+				return nil, fmt.Errorf("parseIntStr expects 1 or 2 args")
+			}
 		case "input":
 			if len(c.Args) != 0 {
 				return nil, fmt.Errorf("input expects no args")
@@ -2150,6 +2186,20 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			return &List{Elems: []Node{Symbol("Math/abs"), arg}}, nil
 		case "append":
 			elems = append(elems, Symbol("conj"))
+		case "repeat":
+			if len(c.Args) != 2 {
+				return nil, fmt.Errorf("repeat expects 2 args")
+			}
+			strArg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			countArg, err := transpileExpr(c.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			rep := &List{Elems: []Node{Symbol("repeat"), countArg, strArg}}
+			return &List{Elems: []Node{Symbol("apply"), Symbol("str"), rep}}, nil
 		case "sum":
 			elems = append(elems, Symbol("reduce"), Symbol("+"), IntLit(0))
 		case "avg":
@@ -2172,7 +2222,9 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &List{Elems: []Node{Symbol("numerator"), arg}}, nil
+			test := &List{Elems: []Node{Symbol("instance?"), Symbol("clojure.lang.Ratio"), arg}}
+			then := &List{Elems: []Node{Symbol("numerator"), arg}}
+			return &List{Elems: []Node{Symbol("if"), test, then, arg}}, nil
 		case "denom":
 			if len(c.Args) != 1 {
 				return nil, fmt.Errorf("denom expects 1 arg")
@@ -2181,7 +2233,9 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 			if err != nil {
 				return nil, err
 			}
-			return &List{Elems: []Node{Symbol("denominator"), arg}}, nil
+			test := &List{Elems: []Node{Symbol("instance?"), Symbol("clojure.lang.Ratio"), arg}}
+			then := &List{Elems: []Node{Symbol("denominator"), arg}}
+			return &List{Elems: []Node{Symbol("if"), test, then, IntLit(1)}}, nil
 		case "json":
 			if len(c.Args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
@@ -2786,11 +2840,11 @@ func castNode(n Node, t *parser.TypeRef) (Node, error) {
 		}
 	}
 	switch *t.Simple {
-       case "int":
-               if isStringNode(n) {
-                       return &List{Elems: []Node{Symbol("Long/parseLong"), n}}, nil
-               }
-               return &List{Elems: []Node{Symbol("long"), n}}, nil
+	case "int":
+		if isStringNode(n) {
+			return &List{Elems: []Node{Symbol("Long/parseLong"), n}}, nil
+		}
+		return &List{Elems: []Node{Symbol("long"), n}}, nil
 	case "float":
 		if isStringNode(n) {
 			return &List{Elems: []Node{Symbol("Double/parseDouble"), n}}, nil

@@ -1,4 +1,4 @@
-(ns main (:refer-clojure :exclude [mkAdd mysum partialSum main]))
+(ns main (:refer-clojure :exclude [strdup main]))
 
 (require 'clojure.set)
 
@@ -10,21 +10,15 @@
 
 (def nowSeed (atom (let [s (System/getenv "MOCHI_NOW_SEED")] (if (and s (not (= s ""))) (Integer/parseInt s) 0))))
 
-(declare mkAdd mysum partialSum main)
+(declare strdup main)
 
-(declare main_add2 main_add3 main_partial)
+(declare main_c2 main_go1)
 
-(defn mkAdd [mkAdd_a]
-  (try (throw (ex-info "return" {:v (fn [b] (+ mkAdd_a b))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
-
-(defn mysum [mysum_x mysum_y]
-  (try (throw (ex-info "return" {:v (+ mysum_x mysum_y)})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
-
-(defn partialSum [partialSum_x]
-  (try (throw (ex-info "return" {:v (fn [y] (mysum partialSum_x y))})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
+(defn strdup [strdup_s]
+  (try (throw (ex-info "return" {:v (str strdup_s "")})) (catch clojure.lang.ExceptionInfo e (if (= (ex-message e) "return") (get (ex-data e) :v) (throw e)))))
 
 (defn main []
-  (do (def main_add2 (mkAdd 2)) (def main_add3 (mkAdd 3)) (println (str (str (str (main_add2 5)) " ") (str (main_add3 6)))) (def main_partial (partialSum 13)) (println (str (main_partial 5)))))
+  (do (def main_go1 "hello C") (def main_c2 (strdup main_go1)) (println main_c2)))
 
 (defn -main []
   (let [rt (Runtime/getRuntime)

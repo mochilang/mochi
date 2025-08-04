@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 190/491
-Last updated: 2025-08-04 09:31 +0700
+Completed: 195/491
+Last updated: 2025-08-04 10:06 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -151,19 +151,19 @@ Last updated: 2025-08-04 09:31 +0700
 | 144 | calendar---for-real-programmers-1 | ✓ | 56.418ms | 21.0 MB |
 | 145 | calendar---for-real-programmers-2 | ✓ | 53.253ms | 21.0 MB |
 | 146 | calendar | ✓ | 58.446ms | 21.0 MB |
-| 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function |   |  |  |
-| 149 | call-a-function-1 |   |  |  |
+| 147 | calkin-wilf-sequence | ✓ | 43.391ms | 22.6 MB |
+| 148 | call-a-foreign-language-function | ✓ | 29.616ms | 18.5 MB |
+| 149 | call-a-function-1 | ✓ | 35.634ms | 18.6 MB |
 | 150 | call-a-function-10 | ✓ | 28.062ms | 18.4 MB |
 | 151 | call-a-function-11 | ✓ | 27.687ms | 18.7 MB |
-| 152 | call-a-function-12 |   |  |  |
+| 152 | call-a-function-12 | ✓ | 36.914ms | 19.3 MB |
 | 153 | call-a-function-2 | ✓ | 28.669ms | 18.7 MB |
 | 154 | call-a-function-3 | ✓ | 32.014ms | 18.7 MB |
 | 155 | call-a-function-4 | ✓ | 29.436ms | 18.6 MB |
 | 156 | call-a-function-5 | ✓ | 32.216ms | 18.7 MB |
 | 157 | call-a-function-6 | ✓ | 30.45ms | 18.7 MB |
 | 158 | call-a-function-7 | ✓ | 28.845ms | 18.8 MB |
-| 159 | call-a-function-8 |   |  |  |
+| 159 | call-a-function-8 | ✓ | 40.111ms | 19.0 MB |
 | 160 | call-a-function-9 | ✓ | 38.208ms | 19.3 MB |
 | 161 | call-an-object-method-1 | ✓ | 40.402ms | 20.1 MB |
 | 162 | call-an-object-method-2 | ✓ | 42.826ms | 19.7 MB |
