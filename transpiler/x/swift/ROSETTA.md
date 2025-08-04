@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 429/491
-Last updated: 2025-08-04 19:34 +0700
+Completed: 430/491
+Last updated: 2025-08-04 21:11 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -478,18 +478,18 @@ Last updated: 2025-08-04 19:34 +0700
 | 469 | fusc-sequence | ✓ | 423µs | 3.2 MB |
 | 470 | gamma-function | ✓ | 425µs | 3.4 MB |
 | 471 | general-fizzbuzz | ✓ | 282µs | 3.2 MB |
-| 472 | generic-swap | ✓ | 627µs | 3.2 MB |
-| 473 | get-system-command-output | ✓ | 223µs | 3.0 MB |
-| 474 | giuga-numbers | ✓ | 525µs | 3.1 MB |
-| 475 | globally-replace-text-in-several-files | ✓ | 267µs | 3.0 MB |
-| 476 | goldbachs-comet | ✓ | 1.035ms | 3.3 MB |
-| 477 | golden-ratio-convergence | ✓ | 484µs | 3.5 MB |
-| 478 | graph-colouring | ✓ | 204µs | 3.2 MB |
-| 479 | gray-code | ✓ | 362µs | 3.3 MB |
-| 480 | gui-component-interaction | ✓ | 573µs | 3.1 MB |
-| 481 | gui-enabling-disabling-of-controls | ✓ | 304µs | 3.1 MB |
-| 482 | gui-maximum-window-dimensions | ✓ | 360µs | 3.1 MB |
-| 483 | http |   |  |  |
+| 472 | generic-swap | ✓ | 428µs | 3.2 MB |
+| 473 | get-system-command-output | ✓ | 212µs | 3.1 MB |
+| 474 | giuga-numbers | ✓ | 356µs | 3.4 MB |
+| 475 | globally-replace-text-in-several-files | ✓ | 145µs | 3.2 MB |
+| 476 | goldbachs-comet | ✓ | 765µs | 3.2 MB |
+| 477 | golden-ratio-convergence | ✓ | 356µs | 3.5 MB |
+| 478 | graph-colouring | ✓ | 165µs | 3.0 MB |
+| 479 | gray-code | ✓ | 307µs | 3.2 MB |
+| 480 | gui-component-interaction | ✓ | 462µs | 3.2 MB |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 240µs | 3.0 MB |
+| 482 | gui-maximum-window-dimensions | ✓ | 181µs | 3.2 MB |
+| 483 | http | ✓ | 161.752ms | 13.3 MB |
 | 484 | image-noise | ✓ | 48.07ms | 3.1 MB |
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 285.061ms | 3.2 MB |
 | 486 | md5 |   |  |  |
