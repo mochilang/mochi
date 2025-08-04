@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (440/491)
-_Last updated: 2025-08-04 17:19 +0700_
+_Last updated: 2025-08-04 19:30 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -264,16 +264,16 @@ _Last updated: 2025-08-04 17:19 +0700_
 | 255 | create-an-object-at-a-given-address | ✓ | 7µs | 8.7 MB |
 | 256 | csv-data-manipulation | ✓ | 5µs | 8.7 MB |
 | 257 | csv-to-html-translation-1 | ✓ | 3µs | 8.7 MB |
-| 258 | csv-to-html-translation-2 | ✓ | 5µs | 8.7 MB |
-| 259 | csv-to-html-translation-3 | ✓ | 2µs | 8.7 MB |
+| 258 | csv-to-html-translation-2 | ✓ | 4µs | 8.7 MB |
+| 259 | csv-to-html-translation-3 | ✓ | 3µs | 8.7 MB |
 | 260 | csv-to-html-translation-4 | ✓ | 2µs | 8.7 MB |
-| 261 | csv-to-html-translation-5 | ✓ | 6µs | 8.7 MB |
-| 262 | cuban-primes | ✓ | 13.374ms | 8.7 MB |
-| 263 | cullen-and-woodall-numbers | ✓ | 6µs | 8.7 MB |
-| 264 | cumulative-standard-deviation | ✓ | 6µs | 8.7 MB |
+| 261 | csv-to-html-translation-5 | ✓ | 7µs | 8.7 MB |
+| 262 | cuban-primes | ✓ | 14.436ms | 8.7 MB |
+| 263 | cullen-and-woodall-numbers | ✓ | 11µs | 8.7 MB |
+| 264 | cumulative-standard-deviation | ✓ | 4µs | 8.7 MB |
 | 265 | currency | ✓ | 7µs | 8.7 MB |
-| 266 | currying | ✓ | 6µs | 8.7 MB |
-| 267 | curzon-numbers | ✓ | 414µs | 8.7 MB |
+| 266 | currying | ✓ | 7µs | 8.7 MB |
+| 267 | curzon-numbers | ✓ | 562µs | 8.7 MB |
 | 268 | cusip | error |  |  |
 | 269 | cyclops-numbers |   |  |  |
 | 270 | damm-algorithm | ✓ | 8µs | 8.7 MB |
