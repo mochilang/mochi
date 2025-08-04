@@ -1164,12 +1164,18 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		}
 		return false
 	}
-	if b.Op == "/" && (b.IntDiv || (!isFloat(b.Left) && !isFloat(b.Right))) {
-		io.WriteString(w, "div(")
-		b.Left.emit(w)
-		io.WriteString(w, ", ")
-		b.Right.emit(w)
-		io.WriteString(w, ")")
+	if b.Op == "/" {
+		if b.IntDiv {
+			io.WriteString(w, "div(")
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+			io.WriteString(w, " / ")
+			b.Right.emit(w)
+		}
 		return
 	}
 	if b.Op == "%" {

@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (191/491)
-_Last updated: 2025-08-04 01:28 +0000_
+## Rosetta Test Checklist (192/491)
+_Last updated: 2025-08-04 09:19 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -239,7 +239,7 @@ _Last updated: 2025-08-04 01:28 +0000_
 | 231 | continued-fraction | ✓ | 2.05ms | 25.0 KB |
 | 232 | convert-decimal-number-to-rational | ✓ | 220us | 25.3 KB |
 | 233 | convert-seconds-to-compound-duration | ✓ | 2.66ms | 12.5 KB |
-| 234 | convex-hull |  |  |  |
+| 234 | convex-hull | ✓ | 2.05ms | 12.8 KB |
 | 235 | conways-game-of-life |  |  |  |
 | 236 | copy-a-string-1 |  |  |  |
 | 237 | copy-a-string-2 |  |  |  |
@@ -253,7 +253,7 @@ _Last updated: 2025-08-04 01:28 +0000_
 | 245 | count-occurrences-of-a-substring |  |  |  |
 | 246 | count-the-coins-1 |  |  |  |
 | 247 | count-the-coins-2 | ✓ | 63.33ms | 77.7 KB |
-| 248 | cramers-rule | ✓ | 4.48ms | 456.9 KB |
+| 248 | cramers-rule | ✓ |  |  |
 | 249 | crc-32-1 |  |  |  |
 | 250 | crc-32-2 |  |  |  |
 | 251 | create-a-file-on-magnetic-tape |  |  |  |
