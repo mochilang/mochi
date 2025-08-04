@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-05 01:14 +0700
+Last updated: 2025-08-05 01:53 +0700
 
-Completed tasks: **366/491**
+Completed tasks: **367/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -337,7 +337,7 @@ Completed tasks: **366/491**
 | 326 | dutch-national-flag-problem | ✓ | 28.01ms | 47.8 KB |
 | 327 | dynamic-variable-names | ✓ | 12.84ms | 36.5 KB |
 | 328 | earliest-difference-between-prime-gaps |  |  |  |
-| 329 | eban-numbers |  |  |  |
+| 329 | eban-numbers | ✓ | 192.06ms | 820.3 KB |
 | 330 | ecdsa-example |  |  |  |
 | 331 | echo-server | ✓ | 9.78ms | 123.6 KB |
 | 332 | eertree |  |  |  |

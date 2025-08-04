@@ -995,6 +995,9 @@ type CastExpr struct {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if c.Type == "bool" {
+		c.Type = "Boolean"
+	}
 	if inner, ok := c.Value.(*CastExpr); ok && inner.Type == "Any?" {
 		c.Value = inner.Value
 	}
