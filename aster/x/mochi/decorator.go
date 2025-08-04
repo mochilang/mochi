@@ -59,25 +59,24 @@ func decorateNode(n *Node, env map[string]*Node) error {
 			idx++
 		}
 		var ret *Node
-		hasRet := idx < len(n.Children) && n.Children[idx].Kind == "type"
-		if hasRet {
+		if idx < len(n.Children) && n.Children[idx].Kind == "type" {
 			ret = n.Children[idx]
 			idx++
-		} else {
-			ret = &Node{Kind: "type", Text: "void"}
-			n.Children = append(n.Children, nil)
-			copy(n.Children[idx+1:], n.Children[idx:])
-			n.Children[idx] = ret
-			idx++
 		}
-		sig := &Node{Kind: "fun", Children: []*Node{cloneNode(ret)}}
+		sigRet := ret
+		if sigRet == nil {
+			sigRet = &Node{Kind: "type", Text: "void"}
+		}
+		sig := &Node{Kind: "fun", Children: []*Node{cloneNode(sigRet)}}
 		for _, p := range params {
 			if len(p.Children) == 0 {
 				return errParamMissingType(p.Text, p)
 			}
 			sig.Children = append(sig.Children, cloneNode(p.Children[0]))
 		}
-		env[n.Text] = sig
+		if n.Text != "" {
+			env[n.Text] = sig
+		}
 		local := map[string]*Node{}
 		for k, v := range env {
 			local[k] = cloneNode(v)
@@ -92,8 +91,11 @@ func decorateNode(n *Node, env map[string]*Node) error {
 					if err != nil {
 						return err
 					}
-					if ret.Text == "void" {
+					if ret == nil {
 						return errMissingReturnType(c)
+					}
+					if ret.Text == "void" {
+						return errVoidReturnValue(c)
 					}
 					if !typeEqual(ret, t) {
 						return errReturnTypeMismatch(ret, t, c)
@@ -101,7 +103,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 					if err := decorateNode(c.Children[0], local); err != nil {
 						return err
 					}
-				} else if ret.Text != "void" {
+				} else if ret != nil && ret.Text != "void" {
 					return errReturnTypeMismatch(ret, &Node{Kind: "type", Text: "void"}, c)
 				}
 				continue
@@ -126,6 +128,9 @@ func decorateNode(n *Node, env map[string]*Node) error {
 				if !typeEqual(want, got) {
 					return errVarTypeMismatch(n.Text, want, got, n)
 				}
+				if err := decorateNode(n.Children[1], env); err != nil {
+					return err
+				}
 			}
 			env[n.Text] = cloneNode(n.Children[0])
 			return nil
@@ -136,6 +141,11 @@ func decorateNode(n *Node, env map[string]*Node) error {
 		}
 		n.Children = append([]*Node{t}, n.Children...)
 		env[n.Text] = cloneNode(t)
+		if len(n.Children) > 1 {
+			if err := decorateNode(n.Children[1], env); err != nil {
+				return err
+			}
+		}
 	default:
 		for _, c := range n.Children {
 			if err := decorateNode(c, env); err != nil {
@@ -159,6 +169,26 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		return &Node{Kind: "type", Text: "string"}, nil
 	case "bool":
 		return &Node{Kind: "type", Text: "bool"}, nil
+	case "fun":
+		idx := 0
+		var params []*Node
+		for idx < len(n.Children) && n.Children[idx].Kind == "param" {
+			p := n.Children[idx]
+			if len(p.Children) == 0 {
+				return nil, errParamMissingType(p.Text, p)
+			}
+			params = append(params, cloneNode(p.Children[0]))
+			idx++
+		}
+		var ret *Node
+		if idx < len(n.Children) && n.Children[idx].Kind == "type" {
+			ret = cloneNode(n.Children[idx])
+		} else {
+			ret = &Node{Kind: "type", Text: "void"}
+		}
+		sig := &Node{Kind: "fun", Children: []*Node{ret}}
+		sig.Children = append(sig.Children, params...)
+		return sig, nil
 	case "selector":
 		if len(n.Children) == 0 {
 			t, ok := env[n.Text]

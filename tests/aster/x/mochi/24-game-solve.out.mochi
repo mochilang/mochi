@@ -89,7 +89,7 @@ fun solve(xs: list<Node>): bool {
   }
   return false
 }
-fun main(): void {
+fun main() {
   var iter: int = 0
   while (iter < 10) {
     var cards: list<Node>

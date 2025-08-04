@@ -40,6 +40,7 @@ var Errors = map[string]diagnostic.Template{
 	"A026": {Code: "A026", Message: "argument %d to %s type mismatch: %s vs %s", Help: "Ensure arguments match parameter types"},
 	"A027": {Code: "A027", Message: "missing return type", Help: "Specify a return type"},
 	"A028": {Code: "A028", Message: "return type mismatch: expected %s, got %s", Help: "Ensure return value matches"},
+	"A029": {Code: "A029", Message: "void function should not return a value", Help: "Remove the return value or change the return type"},
 }
 
 func pos(n *Node) lexer.Position {
@@ -193,4 +194,8 @@ func errReturnTypeMismatch(want, got *Node, n *Node) error {
 	tmpl := Errors["A028"]
 	msg := fmt.Sprintf(tmpl.Message, typeString(want), typeString(got))
 	return diagnostic.New(tmpl.Code, pos(n), msg, tmpl.Help)
+}
+
+func errVoidReturnValue(n *Node) error {
+	return Errors["A029"].New(pos(n))
 }
