@@ -4865,7 +4865,7 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 		currentReturnType = prevRet
 	}()
 
-	ret := "void"
+	ret := "std::any"
 	if fn.Return != nil {
 		if fn.Return.Simple != nil {
 			ret = cppType(*fn.Return.Simple)
@@ -4885,6 +4885,30 @@ func convertFunLambda(fn *parser.FunStmt) (*BlockLambda, error) {
 			return nil, err
 		}
 		body = append(body, s)
+	}
+	if ret != "" && ret != "void" {
+		if len(body) == 0 || reflect.TypeOf(body[len(body)-1]) != reflect.TypeOf(&ReturnStmt{}) {
+			var def Expr
+			switch {
+			case ret == "int64_t":
+				def = &IntLit{Value: 0}
+			case ret == "double":
+				def = &FloatLit{Value: 0}
+			case ret == "bool":
+				def = &BoolLit{Value: false}
+			case strings.HasPrefix(ret, "std::unique_ptr<") || strings.HasPrefix(ret, "std::shared_ptr<"):
+				def = &NullLit{}
+			case ret == "std::any":
+				def = &CallExpr{Name: "std::any"}
+			default:
+				if isStructType(ret) {
+					def = &StructLit{Name: ret}
+				} else {
+					def = &NullLit{}
+				}
+			}
+			body = append(body, &ReturnStmt{Value: def, Type: ret})
+		}
 	}
 	var params []Param
 	for _, p := range fn.Params {
