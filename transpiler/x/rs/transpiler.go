@@ -66,6 +66,7 @@ var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
 var useFetch bool
+var currentStructFields map[string]bool
 
 // lockedMap indicates a global HashMap currently locked for update.
 // When set, IndexExpr will reference the temporary `_map` variable instead of
@@ -507,6 +508,22 @@ type StructLit struct {
 }
 
 func (s *StructLit) emit(w io.Writer) {
+	if st, ok := structTypes[s.Name]; ok && len(s.Names) < len(st.Order) {
+		existing := make(map[string]Expr, len(s.Names))
+		for i, n := range s.Names {
+			existing[n] = s.Fields[i]
+		}
+		s.Names = make([]string, len(st.Order))
+		s.Fields = make([]Expr, len(st.Order))
+		for i, n := range st.Order {
+			s.Names[i] = n
+			if f, ok := existing[n]; ok {
+				s.Fields[i] = f
+			} else {
+				s.Fields[i] = nil
+			}
+		}
+	}
 	fmt.Fprintf(w, "%s {", s.Name)
 	for i, f := range s.Fields {
 		if i > 0 {
@@ -572,6 +589,7 @@ type FuncDecl struct {
 	StringVars map[string]bool
 	MapVars    map[string]bool
 	ParamTypes map[string]string
+	Fields     map[string]bool
 }
 
 func (f *FuncDecl) emit(w io.Writer) {
@@ -579,10 +597,12 @@ func (f *FuncDecl) emit(w io.Writer) {
 	oldStringVars := stringVars
 	oldMapVars := mapVars
 	oldParamTypes := currentParamTypes
+	oldFields := currentStructFields
 	varTypes = f.VarTypes
 	stringVars = f.StringVars
 	mapVars = f.MapVars
 	currentParamTypes = f.ParamTypes
+	currentStructFields = f.Fields
 	if f.Unsafe {
 		fmt.Fprintf(w, "unsafe fn %s(", rustIdent(f.Name))
 	} else {
@@ -617,6 +637,7 @@ func (f *FuncDecl) emit(w io.Writer) {
 	stringVars = oldStringVars
 	mapVars = oldMapVars
 	currentParamTypes = oldParamTypes
+	currentStructFields = oldFields
 }
 
 type FunLit struct {
@@ -1473,6 +1494,13 @@ func (n *NameRef) emit(w io.Writer) {
 	name := n.Name
 	if newName, ok := globalRenames[n.Name]; ok && !isLocal(n.Name) {
 		name = newName
+	}
+	if currentStructFields != nil {
+		if currentStructFields[n.Name] && !isLocal(n.Name) {
+			io.WriteString(w, "self_.")
+			io.WriteString(w, rustIdent(name))
+			return
+		}
 	}
 	if refMode {
 		io.WriteString(w, rustIdent(name))
@@ -2543,7 +2571,11 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			return nil, err
 		}
 		if s != nil {
-			prog.Stmts = append(prog.Stmts, s)
+			if ms, ok := s.(*MultiStmt); ok {
+				prog.Stmts = append(prog.Stmts, ms.Stmts...)
+			} else {
+				prog.Stmts = append(prog.Stmts, s)
+			}
 		}
 	}
 	for _, st := range prog.Stmts {
@@ -2708,6 +2740,11 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				e = &StringCastExpr{Expr: e}
 			} else if _, ok := e.(*MapLit); ok {
 				typ = ""
+			}
+		}
+		if typ == "" {
+			if _, ok := e.(*FunLit); ok {
+				varTypes[stmt.Let.Name] = "fn"
 			}
 		}
 		if typ == "fn" || strings.HasPrefix(typ, "impl Fn(") || strings.HasPrefix(typ, "impl FnMut(") {
@@ -3455,11 +3492,23 @@ func compileTypeStmt(t *parser.TypeDecl) (Stmt, error) {
 			fn.Name = t.Name + "_" + fn.Name
 			selfParam := &parser.Param{Name: "self", Type: &parser.TypeRef{Simple: &t.Name}}
 			fn.Params = append([]*parser.Param{selfParam}, fn.Params...)
+			prevFields := currentStructFields
+			fieldMap := make(map[string]bool, len(st.Fields))
+			for name, ft := range st.Fields {
+				fieldMap[name] = true
+				varTypes[name] = rustTypeFromType(ft)
+			}
+			currentStructFields = fieldMap
 			s, err := compileFunStmt(&fn)
+			currentStructFields = prevFields
+			for name := range fieldMap {
+				delete(varTypes, name)
+			}
 			if err != nil {
 				return nil, err
 			}
 			if fd, ok := s.(*FuncDecl); ok {
+				fd.Fields = fieldMap
 				if len(fd.Params) > 0 {
 					fd.Params[0].Name = "self_"
 					fd.Params[0].Type = t.Name
@@ -4306,6 +4355,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if inferType(ex) == "usize" {
 				ex = &IntCastExpr{Expr: ex}
+			}
+			if isFunctionExpr(ex) {
+				ex = &NumberLit{Value: "0"}
 			}
 			elems[i] = ex
 		}
@@ -5318,6 +5370,25 @@ func inferType(e Expr) string {
 		return ""
 	}
 	return ""
+}
+
+func isFunctionExpr(e Expr) bool {
+	switch ex := e.(type) {
+	case *FunLit:
+		return true
+	case *NameRef:
+		typ := ex.Type
+		if typ == "" {
+			typ = varTypes[ex.Name]
+		}
+		if typ == "fn" || strings.HasPrefix(typ, "impl Fn") {
+			return true
+		}
+		if _, ok := funReturns[ex.Name]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 func containsFloat(e Expr) bool {
