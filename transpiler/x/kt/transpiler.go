@@ -285,7 +285,7 @@ func indent(w io.Writer, n int) {
 }
 
 func useHelper(name string) {
-	if helpersUsed[name] {
+	if helpersUsed[name] || localFuncs[name] {
 		return
 	}
 	if code, ok := helperSnippets[name]; ok {
@@ -1066,11 +1066,11 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	}
 	leftType := guessType(b.Left)
 	rightType := guessType(b.Right)
-	listOp := b.Op == "+" && (strings.HasPrefix(leftType, "MutableList<") || strings.HasPrefix(rightType, "MutableList<"))
+	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
+	listOp := b.Op == "+" && !strOp && strings.HasPrefix(leftType, "MutableList<") && strings.HasPrefix(rightType, "MutableList<")
 	numOp := (b.Op == "+" || b.Op == "-" || b.Op == "*" || b.Op == "/" || b.Op == "%") && !listOp
 	cmpOp := b.Op == ">" || b.Op == "<" || b.Op == ">=" || b.Op == "<=" || b.Op == "in"
 	boolOp := b.Op == "&&" || b.Op == "||"
-	strOp := b.Op == "+" && (leftType == "String" || rightType == "String")
 	bigOp := leftType == "BigInteger" || rightType == "BigInteger"
 	ratOp := leftType == "BigRat" || rightType == "BigRat"
 	cast := func(e Expr, typ string) {
@@ -5368,6 +5368,9 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 					return nil, err
 				}
 				args[i] = ex
+			}
+			if localFuncs["pow"] {
+				return &CallExpr{Func: "pow", Args: args}, nil
 			}
 			useHelper("_powInt")
 			return &CallExpr{Func: "_powInt", Args: args}, nil
