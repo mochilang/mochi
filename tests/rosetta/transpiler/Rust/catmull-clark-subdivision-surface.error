@@ -1,0 +1,1675 @@
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:121:2
+    |
+121 | };
+    |  ^ help: remove this semicolon
+    |
+    = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:149:2
+    |
+149 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:156:2
+    |
+156 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:159:2
+    |
+159 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:162:2
+    |
+162 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:165:2
+    |
+165 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:168:2
+    |
+168 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:183:2
+    |
+183 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:211:2
+    |
+211 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:261:2
+    |
+261 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:278:2
+    |
+278 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:304:2
+    |
+304 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:329:2
+    |
+329 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:345:2
+    |
+345 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:362:2
+    |
+362 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:368:2
+    |
+368 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:415:2
+    |
+415 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:418:2
+    |
+418 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:431:2
+    |
+431 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:451:2
+    |
+451 | };
+    |  ^ help: remove this semicolon
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:114:11
+    |
+114 |     while (i < (s.len() as i64)) {
+    |           ^                    ^
+    |
+    = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+    |
+114 -     while (i < (s.len() as i64)) {
+114 +     while i < (s.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:118:13
+    |
+118 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+118 -         i = (i + 1);
+118 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:123:22
+    |
+123 |     let mut y: f64 = (x * 10000.0);
+    |                      ^           ^
+    |
+help: remove these parentheses
+    |
+123 -     let mut y: f64 = (x * 10000.0);
+123 +     let mut y: f64 = x * 10000.0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:124:8
+    |
+124 |     if (y >= (0 as f64)) {
+    |        ^               ^
+    |
+help: remove these parentheses
+    |
+124 -     if (y >= (0 as f64)) {
+124 +     if y >= (0 as f64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:125:13
+    |
+125 |         y = (y + 0.5);
+    |             ^       ^
+    |
+help: remove these parentheses
+    |
+125 -         y = (y + 0.5);
+125 +         y = y + 0.5;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:127:13
+    |
+127 |         y = (y - 0.5);
+    |             ^       ^
+    |
+help: remove these parentheses
+    |
+127 -         y = (y - 0.5);
+127 +         y = y - 0.5;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:129:9
+    |
+129 |     y = (((y as i64) as f64) / 10000.0);
+    |         ^                             ^
+    |
+help: remove these parentheses
+    |
+129 -     y = (((y as i64) as f64) / 10000.0);
+129 +     y = ((y as i64) as f64) / 10000.0;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:132:8
+    |
+132 |     if (dot == (0 - 1)) {
+    |        ^              ^
+    |
+help: remove these parentheses
+    |
+132 -     if (dot == (0 - 1)) {
+132 +     if dot == (0 - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:135:24
+    |
+135 |         let mut decs = (((s.len() as i64) - dot) - 1);
+    |                        ^                            ^
+    |
+help: remove these parentheses
+    |
+135 -         let mut decs = (((s.len() as i64) - dot) - 1);
+135 +         let mut decs = ((s.len() as i64) - dot) - 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:136:12
+    |
+136 |         if (decs > 4) {
+    |            ^        ^
+    |
+help: remove these parentheses
+    |
+136 -         if (decs > 4) {
+136 +         if decs > 4 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:139:19
+    |
+139 |             while (decs < 4) {
+    |                   ^        ^
+    |
+help: remove these parentheses
+    |
+139 -             while (decs < 4) {
+139 +             while decs < 4 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:141:24
+    |
+141 |                 decs = (decs + 1);
+    |                        ^        ^
+    |
+help: remove these parentheses
+    |
+141 -                 decs = (decs + 1);
+141 +                 decs = decs + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:145:8
+    |
+145 |     if (x >= 0.0) {
+    |        ^        ^
+    |
+help: remove these parentheses
+    |
+145 -     if (x >= 0.0) {
+145 +     if x >= 0.0 {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:152:8
+    |
+152 |     if ((s.len() as i64) < 2) {
+    |        ^                    ^
+    |
+help: remove these parentheses
+    |
+152 -     if ((s.len() as i64) < 2) {
+152 +     if (s.len() as i64) < 2 {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:164:25
+    |
+164 |     return mulPoint(&p, (1.0 / d))
+    |                         ^       ^
+    |
+help: remove these parentheses
+    |
+164 -     return mulPoint(&p, (1.0 / d))
+164 +     return mulPoint(&p, 1.0 / d)
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:172:11
+    |
+172 |     while (i < (faces.len() as i64)) {
+    |           ^                        ^
+    |
+help: remove these parentheses
+    |
+172 -     while (i < (faces.len() as i64)) {
+172 +     while i < (faces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:178:27
+    |
+178 |         fp = divPoint(fp, ((face.len() as i64) as f64));
+    |                           ^                          ^
+    |
+help: remove these parentheses
+    |
+178 -         fp = divPoint(fp, ((face.len() as i64) as f64));
+178 +         fp = divPoint(fp, (face.len() as i64) as f64);
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:180:13
+    |
+180 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+180 -         i = (i + 1);
+180 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:187:11
+    |
+187 |     while ((tmp.len() as i64) > 0) {
+    |           ^                      ^
+    |
+help: remove these parentheses
+    |
+187 -     while ((tmp.len() as i64) > 0) {
+187 +     while (tmp.len() as i64) > 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:191:15
+    |
+191 |         while (j < (tmp.len() as i64)) {
+    |               ^                      ^
+    |
+help: remove these parentheses
+    |
+191 -         while (j < (tmp.len() as i64)) {
+191 +         while j < (tmp.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:193:16
+    |
+193 | ...if ((e[0 as usize] < min[0 as usize]) || ((e[0 as usize] == min[0 as usize]) && ((e[1 as usize] < min[1 as usize]) || ((e[1 as usize] == min[1 as usize]) && (e[2 as usize] < min[2 as usize]))))) {
+    |       ^                                                                                                                                                                                             ^
+    |
+help: remove these parentheses
+    |
+193 -             if ((e[0 as usize] < min[0 as usize]) || ((e[0 as usize] == min[0 as usize]) && ((e[1 as usize] < min[1 as usize]) || ((e[1 as usize] == min[1 as usize]) && (e[2 as usize] < min[2 as usize]))))) {
+193 +             if (e[0 as usize] < min[0 as usize]) || ((e[0 as usize] == min[0 as usize]) && ((e[1 as usize] < min[1 as usize]) || ((e[1 as usize] == min[1 as usize]) && (e[2 as usize] < min[2 as usize])))) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:197:17
+    |
+197 |             j = (j + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+197 -             j = (j + 1);
+197 +             j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:202:15
+    |
+202 |         while (k < (tmp.len() as i64)) {
+    |               ^                      ^
+    |
+help: remove these parentheses
+    |
+202 -         while (k < (tmp.len() as i64)) {
+202 +         while k < (tmp.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:203:16
+    |
+203 |             if (k != idx) {
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+203 -             if (k != idx) {
+203 +             if k != idx {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:206:17
+    |
+206 |             k = (k + 1);
+    |                 ^     ^
+    |
+help: remove these parentheses
+    |
+206 -             k = (k + 1);
+206 +             k = k + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:215:11
+    |
+215 |     while (fnum < (faces.len() as i64)) {
+    |           ^                           ^
+    |
+help: remove these parentheses
+    |
+215 -     while (fnum < (faces.len() as i64)) {
+215 +     while fnum < (faces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:217:24
+    |
+217 |         let mut numP = (face.len() as i64);
+    |                        ^                 ^
+    |
+help: remove these parentheses
+    |
+217 -         let mut numP = (face.len() as i64);
+217 +         let mut numP = face.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:219:15
+    |
+219 |         while (pi < numP) {
+    |               ^         ^
+    |
+help: remove these parentheses
+    |
+219 -         while (pi < numP) {
+219 +         while pi < numP {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:222:16
+    |
+222 |             if (pi < (numP - 1)) {
+    |                ^               ^
+    |
+help: remove these parentheses
+    |
+222 -             if (pi < (numP - 1)) {
+222 +             if pi < (numP - 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:227:16
+    |
+227 |             if (pn1 > pn2) {
+    |                ^         ^
+    |
+help: remove these parentheses
+    |
+227 -             if (pn1 > pn2) {
+227 +             if pn1 > pn2 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:233:18
+    |
+233 |             pi = (pi + 1);
+    |                  ^      ^
+    |
+help: remove these parentheses
+    |
+233 -             pi = (pi + 1);
+233 +             pi = pi + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:235:16
+    |
+235 |         fnum = (fnum + 1);
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+235 -         fnum = (fnum + 1);
+235 +         fnum = fnum + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:240:11
+    |
+240 |     while (idx < (edges.len() as i64)) {
+    |           ^                          ^
+    |
+help: remove these parentheses
+    |
+240 -     while (idx < (edges.len() as i64)) {
+240 +     while idx < (edges.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:242:12
+    |
+242 |         if (idx < ((edges.len() as i64) - 1)) {
+    |            ^                                ^
+    |
+help: remove these parentheses
+    |
+242 -         if (idx < ((edges.len() as i64) - 1)) {
+242 +         if idx < ((edges.len() as i64) - 1) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:244:16
+    |
+244 |             if ((e1[0 as usize] == e2[0 as usize]) && (e1[1 as usize] == e2[1 as usize])) {
+    |                ^                                                                        ^
+    |
+help: remove these parentheses
+    |
+244 -             if ((e1[0 as usize] == e2[0 as usize]) && (e1[1 as usize] == e2[1 as usize])) {
+244 +             if (e1[0 as usize] == e2[0 as usize]) && (e1[1 as usize] == e2[1 as usize]) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:246:23
+    |
+246 |                 idx = (idx + 2);
+    |                       ^       ^
+    |
+help: remove these parentheses
+    |
+246 -                 idx = (idx + 2);
+246 +                 idx = idx + 2;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:251:15
+    |
+251 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+251 -         idx = (idx + 1);
+251 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:265:11
+    |
+265 |     while (i < (edgesFaces.len() as i64)) {
+    |           ^                             ^
+    |
+help: remove these parentheses
+    |
+265 -     while (i < (edgesFaces.len() as i64)) {
+265 +     while i < (edgesFaces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:270:12
+    |
+270 |         if (edge.fn2 != (0 - 1)) {
+    |            ^                   ^
+    |
+help: remove these parentheses
+    |
+270 -         if (edge.fn2 != (0 - 1)) {
+270 +         if edge.fn2 != (0 - 1) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:275:13
+    |
+275 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+275 -         i = (i + 1);
+275 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:280:20
+    |
+280 |     let mut numP = (points.len() as i64);
+    |                    ^                   ^
+    |
+help: remove these parentheses
+    |
+280 -     let mut numP = (points.len() as i64);
+280 +     let mut numP = points.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:283:11
+    |
+283 |     while (i < numP) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+283 -     while (i < numP) {
+283 +     while i < numP {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:285:13
+    |
+285 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+285 -         i = (i + 1);
+285 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:288:11
+    |
+288 |     while (fnum < (faces.len() as i64)) {
+    |           ^                           ^
+    |
+help: remove these parentheses
+    |
+288 -     while (fnum < (faces.len() as i64)) {
+288 +     while fnum < (faces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:294:16
+    |
+294 |         fnum = (fnum + 1);
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+294 -         fnum = (fnum + 1);
+294 +         fnum = fnum + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:298:11
+    |
+298 |     while (j < numP) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+298 -     while (j < numP) {
+298 +     while j < numP {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:300:66
+    |
+300 |         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, (tp.n as f64))); _v };
+    |                                                                  ^           ^
+    |
+help: remove these parentheses
+    |
+300 -         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, (tp.n as f64))); _v };
+300 +         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, tp.n as f64)); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:301:13
+    |
+301 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+301 -         j = (j + 1);
+301 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:306:20
+    |
+306 |     let mut numP = (points.len() as i64);
+    |                    ^                   ^
+    |
+help: remove these parentheses
+    |
+306 -     let mut numP = (points.len() as i64);
+306 +     let mut numP = points.len() as i64;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:309:11
+    |
+309 |     while (i < numP) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+309 -     while (i < numP) {
+309 +     while i < numP {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:311:13
+    |
+311 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+311 -         i = (i + 1);
+311 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:323:11
+    |
+323 |     while (j < numP) {
+    |           ^        ^
+    |
+help: remove these parentheses
+    |
+323 -     while (j < numP) {
+323 +     while j < numP {
+    |
+
+warning: unnecessary parentheses around function argument
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:325:66
+    |
+325 |         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, (tp.n as f64))); _v };
+    |                                                                  ^           ^
+    |
+help: remove these parentheses
+    |
+325 -         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, (tp.n as f64))); _v };
+325 +         avg = { let mut _v = avg.clone(); _v.push(divPoint(tp.p, tp.n as f64)); _v };
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:326:13
+    |
+326 |         j = (j + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+326 -         j = (j + 1);
+326 +         j = j + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:333:11
+    |
+333 |     while (i < (points.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+333 -     while (i < (points.len() as i64)) {
+333 +     while i < (points.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:335:13
+    |
+335 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+335 -         i = (i + 1);
+335 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:338:11
+    |
+338 |     while (fnum < (faces.len() as i64)) {
+    |           ^                           ^
+    |
+help: remove these parentheses
+    |
+338 -     while (fnum < (faces.len() as i64)) {
+338 +     while fnum < (faces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:340:31
+    |
+340 |             pf[pn as usize] = (pf[pn as usize] + 1);
+    |                               ^                   ^
+    |
+help: remove these parentheses
+    |
+340 -             pf[pn as usize] = (pf[pn as usize] + 1);
+340 +             pf[pn as usize] = pf[pn as usize] + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:342:16
+    |
+342 |         fnum = (fnum + 1);
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+342 -         fnum = (fnum + 1);
+342 +         fnum = fnum + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:349:11
+    |
+349 |     while (i < (points.len() as i64)) {
+    |           ^                         ^
+    |
+help: remove these parentheses
+    |
+349 -     while (i < (points.len() as i64)) {
+349 +     while i < (points.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:350:26
+    |
+350 |         let mut n: f64 = (pf[i as usize] as f64);
+    |                          ^                     ^
+    |
+help: remove these parentheses
+    |
+350 -         let mut n: f64 = (pf[i as usize] as f64);
+350 +         let mut n: f64 = pf[i as usize] as f64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:351:27
+    |
+351 |         let mut m1: f64 = ((n - 3.0) / n);
+    |                           ^             ^
+    |
+help: remove these parentheses
+    |
+351 -         let mut m1: f64 = ((n - 3.0) / n);
+351 +         let mut m1: f64 = (n - 3.0) / n;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:352:27
+    |
+352 |         let mut m2: f64 = (1.0 / n);
+    |                           ^       ^
+    |
+help: remove these parentheses
+    |
+352 -         let mut m2: f64 = (1.0 / n);
+352 +         let mut m2: f64 = 1.0 / n;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:353:27
+    |
+353 |         let mut m3: f64 = (2.0 / n);
+    |                           ^       ^
+    |
+help: remove these parentheses
+    |
+353 -         let mut m3: f64 = (2.0 / n);
+353 +         let mut m3: f64 = 2.0 / n;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:359:13
+    |
+359 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+359 -         i = (i + 1);
+359 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:364:8
+    |
+364 |     if (a < b) {
+    |        ^     ^
+    |
+help: remove these parentheses
+    |
+364 -     if (a < b) {
+364 +     if a < b {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:378:25
+    |
+378 |     let mut nextPoint = (newPoints.len() as i64);
+    |                         ^                      ^
+    |
+help: remove these parentheses
+    |
+378 -     let mut nextPoint = (newPoints.len() as i64);
+378 +     let mut nextPoint = newPoints.len() as i64;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:382:21
+    |
+382 |         nextPoint = (nextPoint + 1);
+    |                     ^             ^
+    |
+help: remove these parentheses
+    |
+382 -         nextPoint = (nextPoint + 1);
+382 +         nextPoint = nextPoint + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:386:11
+    |
+386 |     while (idx < (edgesFaces.len() as i64)) {
+    |           ^                               ^
+    |
+help: remove these parentheses
+    |
+386 -     while (idx < (edgesFaces.len() as i64)) {
+386 +     while idx < (edgesFaces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:390:21
+    |
+390 |         nextPoint = (nextPoint + 1);
+    |                     ^             ^
+    |
+help: remove these parentheses
+    |
+390 -         nextPoint = (nextPoint + 1);
+390 +         nextPoint = nextPoint + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:391:15
+    |
+391 |         idx = (idx + 1);
+    |               ^       ^
+    |
+help: remove these parentheses
+    |
+391 -         idx = (idx + 1);
+391 +         idx = idx + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:395:11
+    |
+395 |     while (fnum < (faces.len() as i64)) {
+    |           ^                           ^
+    |
+help: remove these parentheses
+    |
+395 -     while (fnum < (faces.len() as i64)) {
+395 +     while fnum < (faces.len() as i64) {
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:397:12
+    |
+397 |         if ((oldFace.len() as i64) == 4) {
+    |            ^                           ^
+    |
+help: remove these parentheses
+    |
+397 -         if ((oldFace.len() as i64) == 4) {
+397 +         if (oldFace.len() as i64) == 4 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:412:16
+    |
+412 |         fnum = (fnum + 1);
+    |                ^        ^
+    |
+help: remove these parentheses
+    |
+412 -         fnum = (fnum + 1);
+412 +         fnum = fnum + 1;
+    |
+
+warning: unnecessary parentheses around `if` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:420:8
+    |
+420 |     if ((f.len() as i64) == 0) {
+    |        ^                     ^
+    |
+help: remove these parentheses
+    |
+420 -     if ((f.len() as i64) == 0) {
+420 +     if (f.len() as i64) == 0 {
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:425:11
+    |
+425 |     while (i < (f.len() as i64)) {
+    |           ^                    ^
+    |
+help: remove these parentheses
+    |
+425 -     while (i < (f.len() as i64)) {
+425 +     while i < (f.len() as i64) {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:427:13
+    |
+427 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+427 -         i = (i + 1);
+427 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around `while` condition
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:438:11
+    |
+438 |     while (i < 1) {
+    |           ^     ^
+    |
+help: remove these parentheses
+    |
+438 -     while (i < 1) {
+438 +     while i < 1 {
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:442:13
+    |
+442 |         i = (i + 1);
+    |             ^     ^
+    |
+help: remove these parentheses
+    |
+442 -         i = (i + 1);
+442 +         i = i + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:454:28
+    |
+454 |     let duration_us: i64 = ((_end - _start) / 1000);
+    |                            ^                      ^
+    |
+help: remove these parentheses
+    |
+454 -     let duration_us: i64 = ((_end - _start) / 1000);
+454 +     let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:314:33
+    |
+314 |         let mut cp: &mut Edge = edge.cp.clone();
+    |                     ---------   ^^^^^^^^^^^^^^^ expected `&mut Edge`, found `Point`
+    |                     |
+    |                     expected due to this
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:315:44
+    |
+315 |         let mut arr: Vec<&mut Edge> = vec![edge.pn1, edge.pn2];
+    |                                            ^^^^^^^^ expected `&mut Edge`, found `i64`
+
+error[E0277]: the trait bound `&mut Edge: Clone` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:316:30
+    |
+316 |         for pn in arr.iter().cloned() {
+    |                              ^^^^^^ the trait `Clone` is not implemented for `&mut Edge`
+    |
+    = help: the trait `Clone` is implemented for `Edge`
+    = note: `Clone` is implemented for `&Edge`, but not for `&mut Edge`
+note: required by a bound in `cloned`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/iterator.rs:3424:5
+
+error[E0277]: the trait bound `&mut Edge: Clone` is not satisfied
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:316:19
+    |
+316 |         for pn in arr.iter().cloned() {
+    |                   ^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `&mut Edge`
+    |
+    = help: the trait `Clone` is implemented for `Edge`
+    = note: `Clone` is implemented for `&Edge`, but not for `&mut Edge`
+    = note: required for `Cloned<std::slice::Iter<'_, &mut Edge>>` to implement `Iterator`
+    = note: required for `Cloned<std::slice::Iter<'_, &mut Edge>>` to implement `IntoIterator`
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:318:61
+    |
+318 |             temp[pn as usize] = PointEx {p: sumPoint(&tp.p, cp), n: (tp.n + 1)};
+    |                                             --------        ^^ expected `&Point`, found `&mut Edge`
+    |                                             |
+    |                                             arguments to this function are incorrect
+    |
+    = note:      expected reference `&Point`
+            found mutable reference `&mut Edge`
+note: function defined here
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:157:8
+    |
+157 |     fn sumPoint(p1: &Point, p2: &Point) -> Point {
+    |        ^^^^^^^^             ----------
+
+error[E0606]: casting `&mut Edge` as `usize` is invalid
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:317:40
+    |
+317 |             let mut tp: PointEx = temp[pn as usize].clone();
+    |                                        ^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0606]: casting `&mut Edge` as `usize` is invalid
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:318:18
+    |
+318 |             temp[pn as usize] = PointEx {p: sumPoint(&tp.p, cp), n: (tp.n + 1)};
+    |                  ^^^^^^^^^^^
+    |
+    = help: cast through a raw pointer first
+
+error[E0308]: mismatched types
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:380:63
+    |
+380 |         newPoints = { let mut _v = newPoints.clone(); _v.push(fp); _v };
+    |                                                          ---- ^^ expected `Point`, found `&Point`
+    |                                                          |
+    |                                                          arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/vec/mod.rs:2442:12
+help: consider using clone here
+    |
+380 |         newPoints = { let mut _v = newPoints.clone(); _v.push(fp.clone()); _v };
+    |                                                                 ++++++++
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:112:16
+    |
+112 |     fn indexOf(mut s: String, ch: &str) -> i64 {
+    |                ----^
+    |                |
+    |                help: remove this `mut`
+    |
+    = note: `#[warn(unused_mut)]` on by default
+
+warning: unused variable: `s`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:137:21
+    |
+137 |             let mut s: String = { let tmp = &s; tmp.chars().skip(0 as usize).take(((dot + 5) - 0) as usize).collect::<String>() };
+    |                     ^ help: if this is intentional, prefix it with an underscore: `_s`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:122:13
+    |
+122 |     fn fmt4(mut x: f64) -> String {
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:131:9
+    |
+131 |     let mut dot = { let s = s.clone(); let p = ".".clone(); match s.find(&p) { Some(v) => v as i64, None => -1 } };
+    |         ----^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:137:17
+    |
+137 |             let mut s: String = { let tmp = &s; tmp.chars().skip(0 as usize).take(((dot + 5) - 0) as usize).collect::<String>() };
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:150:13
+    |
+150 |     fn fmt2(mut n: i64) -> String {
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:151:9
+    |
+151 |     let mut s = n.to_string();
+    |         ----^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:160:28
+    |
+160 |     fn mulPoint(p: &Point, mut m: f64) -> Point {
+    |                            ----^
+    |                            |
+    |                            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:163:17
+    |
+163 |     fn divPoint(mut p: Point, mut d: f64) -> Point {
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:163:31
+    |
+163 |     fn divPoint(mut p: Point, mut d: f64) -> Point {
+    |                               ----^
+    |                               |
+    |                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:166:20
+    |
+166 |     fn centerPoint(mut p1: Point, mut p2: Point) -> Point {
+    |                    ----^^
+    |                    |
+    |                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:166:35
+    |
+166 |     fn centerPoint(mut p1: Point, mut p2: Point) -> Point {
+    |                                   ----^^
+    |                                   |
+    |                                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:169:22
+    |
+169 |     fn getFacePoints(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<Point> {
+    |                      ----^^^^^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:169:46
+    |
+169 |     fn getFacePoints(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<Point> {
+    |                                              ----^^^^^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:173:13
+    |
+173 |         let mut face: Vec<i64> = faces[i as usize].clone();
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:184:18
+    |
+184 |     fn sortEdges(mut edges: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+    |                  ----^^^^^
+    |                  |
+    |                  help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:192:17
+    |
+192 |             let mut e: Vec<i64> = tmp[j as usize].clone();
+    |                 ----^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: value assigned to `pn2` is never read
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:221:21
+    |
+221 |             let mut pn2: i64 = 0;
+    |                     ^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` on by default
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:212:22
+    |
+212 |     fn getEdgesFaces(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<Edge> {
+    |                      ----^^^^^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:212:46
+    |
+212 |     fn getEdgesFaces(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<Edge> {
+    |                                              ----^^^^^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:216:13
+    |
+216 |         let mut face: Vec<i64> = faces[fnum as usize].clone();
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:217:13
+    |
+217 |         let mut numP = (face.len() as i64);
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:228:21
+    |
+228 |                 let mut tmpn: i64 = pn1;
+    |                     ----^^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:241:13
+    |
+241 |         let mut e1: Vec<i64> = edges[idx as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:243:17
+    |
+243 |             let mut e2: Vec<i64> = edges[(idx + 1) as usize].clone();
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:255:13
+    |
+255 |         let mut p1: Point = points[me[0 as usize] as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:256:13
+    |
+256 |         let mut p2: Point = points[me[1 as usize] as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:257:13
+    |
+257 |         let mut cp: Point = centerPoint(p1, p2);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: unused variable: `points`
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:262:26
+    |
+262 |     fn getEdgePoints(mut points: Vec<Point>, mut edgesFaces: Vec<Edge>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                          ^^^^^^ help: if this is intentional, prefix it with an underscore: `_points`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:262:22
+    |
+262 |     fn getEdgePoints(mut points: Vec<Point>, mut edgesFaces: Vec<Edge>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                      ----^^^^^^
+    |                      |
+    |                      help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:262:46
+    |
+262 |     fn getEdgePoints(mut points: Vec<Point>, mut edgesFaces: Vec<Edge>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                                              ----^^^^^^^^^^
+    |                                              |
+    |                                              help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:262:73
+    |
+262 |     fn getEdgePoints(mut points: Vec<Point>, mut edgesFaces: Vec<Edge>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                                                                         ----^^^^^^^^^^
+    |                                                                         |
+    |                                                                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:266:13
+    |
+266 |         let mut edge: Edge = edgesFaces[i as usize].clone();
+    |             ----^^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:267:13
+    |
+267 |         let mut cp: Point = edge.cp;
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:268:13
+    |
+268 |         let mut fp1: Point = facePoints[edge.fn1 as usize].clone();
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:273:13
+    |
+273 |         let mut cfp: Point = centerPoint(fp1, fp2);
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:279:25
+    |
+279 |     fn getAvgFacePoints(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                         ----^^^^^^
+    |                         |
+    |                         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:279:49
+    |
+279 |     fn getAvgFacePoints(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                                                 ----^^^^^
+    |                                                 |
+    |                                                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:279:75
+    |
+279 |     fn getAvgFacePoints(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>, mut facePoints: Vec<Point>) -> Vec<Point> {
+    |                                                                           ----^^^^^^^^^^
+    |                                                                           |
+    |                                                                           help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:280:9
+    |
+280 |     let mut numP = (points.len() as i64);
+    |         ----^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:289:13
+    |
+289 |         let mut fp: Point = facePoints[fnum as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:291:17
+    |
+291 |             let mut tp: PointEx = temp[pn as usize].clone();
+    |                 ----^^
+    |                 |
+    |                 help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:299:13
+    |
+299 |         let mut tp: PointEx = temp[j as usize].clone();
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:330:23
+    |
+330 |     fn getPointsFaces(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<i64> {
+    |                       ----^^^^^^
+    |                       |
+    |                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:330:47
+    |
+330 |     fn getPointsFaces(mut points: Vec<Point>, mut faces: Vec<Vec<i64>>) -> Vec<i64> {
+    |                                               ----^^^^^
+    |                                               |
+    |                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:346:21
+    |
+346 |     fn getNewPoints(mut points: Vec<Point>, mut pf: Vec<i64>, mut afp: Vec<Point>, mut ame: Vec<Point>) -> Vec<Point> {
+    |                     ----^^^^^^
+    |                     |
+    |                     help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:346:45
+    |
+346 |     fn getNewPoints(mut points: Vec<Point>, mut pf: Vec<i64>, mut afp: Vec<Point>, mut ame: Vec<Point>) -> Vec<Point> {
+    |                                             ----^^
+    |                                             |
+    |                                             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:346:63
+    |
+346 |     fn getNewPoints(mut points: Vec<Point>, mut pf: Vec<i64>, mut afp: Vec<Point>, mut ame: Vec<Point>) -> Vec<Point> {
+    |                                                               ----^^^
+    |                                                               |
+    |                                                               help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:346:84
+    |
+346 |     fn getNewPoints(mut points: Vec<Point>, mut pf: Vec<i64>, mut afp: Vec<Point>, mut ame: Vec<Point>) -> Vec<Point> {
+    |                                                                                    ----^^^
+    |                                                                                    |
+    |                                                                                    help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:350:13
+    |
+350 |         let mut n: f64 = (pf[i as usize] as f64);
+    |             ----^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:351:13
+    |
+351 |         let mut m1: f64 = ((n - 3.0) / n);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:352:13
+    |
+352 |         let mut m2: f64 = (1.0 / n);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:353:13
+    |
+353 |         let mut m3: f64 = (2.0 / n);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:354:13
+    |
+354 |         let mut old: Point = points[i as usize].clone();
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:355:13
+    |
+355 |         let mut p1: Point = mulPoint(&old, m1);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:356:13
+    |
+356 |         let mut p2: Point = mulPoint(&afp[i as usize].clone(), m2);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:357:13
+    |
+357 |         let mut p3: Point = mulPoint(&ame[i as usize].clone(), m3);
+    |             ----^^
+    |             |
+    |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:363:12
+    |
+363 |     fn key(mut a: i64, mut b: i64) -> String {
+    |            ----^
+    |            |
+    |            help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:363:24
+    |
+363 |     fn key(mut a: i64, mut b: i64) -> String {
+    |                        ----^
+    |                        |
+    |                        help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:419:19
+    |
+419 |     fn formatFace(mut f: Vec<i64>) -> String {
+    |                   ----^
+    |                   |
+    |                   help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:433:9
+    |
+433 |     let mut inputPoints: Vec<Point> = vec![Point {x: -1.0, y: 1.0, z: 1.0}, Point {x: -1.0, y: -1.0, z: 1.0}, Point {x: 1.0, y: -1.0, z: ...
+    |         ----^^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:434:9
+    |
+434 |     let mut inputFaces: Vec<Vec<i64>> = vec![vec![0, 1, 2, 3], vec![3, 2, 4, 5], vec![5, 4, 6, 7], vec![7, 0, 3, 5], vec![7, 6, 1, 0], ve...
+    |         ----^^^^^^^^^^
+    |         |
+    |         help: remove this `mut`
+
+warning: variable does not need to be mutable
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/catmull-clark-subdivision-surface.rs:439:13
+    |
+439 |         let mut res: Ret = cmcSubdiv(outputPoints.clone(), outputFaces.clone());
+    |             ----^^^
+    |             |
+    |             help: remove this `mut`
+
+error: aborting due to 8 previous errors; 163 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0606.
+For more information about an error, try `rustc --explain E0277`.

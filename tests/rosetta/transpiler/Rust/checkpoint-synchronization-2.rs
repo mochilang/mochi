@@ -34,33 +34,37 @@ fn _mem() -> i64 {
     }
     0
 }
-static mut g_n: Vec<i64> = Vec::new();
+static mut g_partList: Vec<String> = Vec::new();
+static mut g_nAssemblies: i64 = 0;
 fn main() {
     unsafe {
-        g_n = vec![1, 2, 3, 4, 5];
+        g_partList = vec![String::from("A"), String::from("B"), String::from("C"), String::from("D")];
+        g_nAssemblies = 3;
                 let _start: i64 = _now();
-        unsafe fn add(mut a: i64, mut b: i64) -> i64 {
-    return (a + b)
-};
-        unsafe fn sub(mut a: i64, mut b: i64) -> i64 {
-    return (a - b)
-};
-        unsafe fn mul(mut a: i64, mut b: i64) -> i64 {
-    return (a * b)
-};
-        unsafe fn fold(f: &mut impl FnMut(i64, i64) -> i64, mut xs: Vec<i64>) -> i64 {
-    let mut r: i64 = xs[0 as usize];
-    let mut i: i64 = 1;
-    while (i < (xs.len() as i64)) {
-        r = f(r, xs[i as usize]);
+        unsafe fn lower(ch: &str) -> String {
+    let mut upper: String = String::from("ABCDEFGHIJKLMNOPQRSTUVWXYZ").clone();
+    let mut lower: String = String::from("abcdefghijklmnopqrstuvwxyz").clone();
+    let mut i: i64 = 0;
+    while (i < (upper.len() as i64)) {
+        if (ch == { let tmp = &upper; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }) {
+            return { let tmp = &lower; tmp.chars().skip(i as usize).take(((i + 1) - i) as usize).collect::<String>() }
+        }
         i = (i + 1);
     }
-    return r
+    return ch.to_string().clone()
 };
-        static mut g_n: Vec<i64> = Vec::new();;
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { add(a, b) }, g_n.clone().clone()));
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { sub(a, b) }, g_n.clone().clone()));
-        println!("{}", fold(&mut move |a: i64, b: i64| -> i64 { mul(a, b) }, g_n.clone().clone()));
+        static mut g_partList: Vec<String> = Vec::new();;
+        static mut g_nAssemblies: i64 = 0;;
+        for cycle in 1..(g_nAssemblies + 1) {
+            println!("{}", format!("{}{}", "begin assembly cycle ", cycle.to_string()));
+            let mut a: String = String::from("").clone();
+            for p in g_partList.clone().iter().cloned() {
+                println!("{}", format!("{}{}", p, " worker begins part"));
+                println!("{}", format!("{}{}", format!("{}{}", p, " worker completed "), (p.to_lowercase())));
+                a = format!("{}{}", a, (p.to_lowercase()));
+            }
+            println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", a, " assembled.  cycle "), cycle.to_string()), " complete"));
+        }
         let _end: i64 = _now();
         let duration_us: i64 = ((_end - _start) / 1000);
         let memory_bytes: i64 = _mem();

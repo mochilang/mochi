@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 15:57 UTC
+Last updated: 2025-08-04 17:47 UTC
 
-## Rosetta Golden Test Checklist (268/491)
+## Rosetta Golden Test Checklist (271/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -178,30 +178,30 @@ Last updated: 2025-08-04 15:57 UTC
 | 169 | carmichael-3-strong-pseudoprimes | ✓ | 330µs | 2.0 MB |
 | 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 56µs | 2.1 MB |
 | 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 302µs | 2.0 MB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ |  |  |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ |  |  |
+| 172 | cartesian-product-of-two-or-more-lists-3 |   |  |  |
+| 173 | cartesian-product-of-two-or-more-lists-4 |   |  |  |
 | 174 | case-sensitivity-of-identifiers | ✓ | 62µs | 2.0 MB |
 | 175 | casting-out-nines | ✓ | 1.271ms | 2.1 MB |
-| 176 | catalan-numbers-1 | ✓ | 27µs |  |
-| 177 | catalan-numbers-2 | ✓ | 38µs |  |
-| 178 | catalan-numbers-pascals-triangle | ✓ | 51µs |  |
-| 179 | catamorphism | ✓ | 22µs |  |
+| 176 | catalan-numbers-1 | ✓ | 151µs | 1.9 MB |
+| 177 | catalan-numbers-2 | ✓ | 57µs | 1.9 MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 174µs | 2.0 MB |
+| 179 | catamorphism | ✓ | 37µs | 1.8 MB |
 | 180 | catmull-clark-subdivision-surface |   | 579µs |  |
-| 181 | chaocipher | ✓ | 98µs |  |
-| 182 | chaos-game | ✓ | 313.773ms | 528.0 KB |
-| 183 | character-codes-1 | ✓ | 51µs |  |
-| 184 | character-codes-2 | ✓ | 30µs |  |
-| 185 | character-codes-3 | ✓ | 24µs |  |
-| 186 | character-codes-4 | ✓ | 21µs |  |
-| 187 | character-codes-5 | ✓ | 18µs |  |
+| 181 | chaocipher | ✓ | 236µs | 2.0 MB |
+| 182 | chaos-game |   | 313.773ms | 528.0 KB |
+| 183 | character-codes-1 | ✓ | 23µs | 1.8 MB |
+| 184 | character-codes-2 | ✓ | 117µs | 2.0 MB |
+| 185 | character-codes-3 | ✓ | 66µs | 2.2 MB |
+| 186 | character-codes-4 | ✓ | 66µs | 2.0 MB |
+| 187 | character-codes-5 | ✓ | 37µs | 1.9 MB |
 | 188 | chat-server |   |  |  |
-| 189 | check-machin-like-formulas |   |  |  |
-| 190 | check-that-file-exists | ✓ |  |  |
-| 191 | checkpoint-synchronization-1 |   |  |  |
-| 192 | checkpoint-synchronization-2 |   |  |  |
-| 193 | checkpoint-synchronization-3 |   |  |  |
-| 194 | checkpoint-synchronization-4 |   |  |  |
-| 195 | chernicks-carmichael-numbers |   |  |  |
+| 189 | check-machin-like-formulas | ✓ | 466µs | 2.1 MB |
+| 190 | check-that-file-exists | ✓ | 62µs | 2.0 MB |
+| 191 | checkpoint-synchronization-1 | ✓ | 128µs | 1.8 MB |
+| 192 | checkpoint-synchronization-2 | ✓ | 171µs | 2.1 MB |
+| 193 | checkpoint-synchronization-3 | ✓ | 181µs | 2.2 MB |
+| 194 | checkpoint-synchronization-4 | ✓ | 328µs | 2.0 MB |
+| 195 | chernicks-carmichael-numbers | ✓ | 202.106ms | 2.1 MB |
 | 196 | cheryls-birthday |   |  |  |
 | 197 | chinese-remainder-theorem |   |  |  |
 | 198 | chinese-zodiac |   |  |  |

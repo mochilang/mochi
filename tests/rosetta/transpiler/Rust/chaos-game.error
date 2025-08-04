@@ -1,0 +1,308 @@
+error[E0425]: cannot find value `height` in this scope
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:53:17
+   |
+53 |         g_py = (height / 2);
+   |                 ^^^^^^ not found in this scope
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:56:37
+   |
+56 |         static mut g_width: i64 = 0;;
+   |                                     ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:58:42
+   |
+58 |         static mut g_iterations: i64 = 0;;
+   |                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:59:58
+   |
+59 |         static mut g_grid: Vec<Vec<String>> = Vec::new();;
+   |                                                          ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:60:33
+   |
+60 |         static mut g_y: i64 = 0;;
+   |                                 ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:74:2
+   |
+74 | };
+   |  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:75:36
+   |
+75 |         static mut g_seed: i64 = 0;;
+   |                                    ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:77:34
+   |
+77 |         static mut g_px: i64 = 0;;
+   |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:78:34
+   |
+78 |         static mut g_py: i64 = 0;;
+   |                                  ^ help: remove this semicolon
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:79:33
+   |
+79 |         static mut g_i: i64 = 0;;
+   |                                 ^ help: remove this semicolon
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:52:16
+   |
+52 |         g_px = (g_width / 2);
+   |                ^           ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+52 -         g_px = (g_width / 2);
+52 +         g_px = g_width / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:53:16
+   |
+53 |         g_py = (height / 2);
+   |                ^          ^
+   |
+help: remove these parentheses
+   |
+53 -         g_py = (height / 2);
+53 +         g_py = height / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:57:31
+   |
+57 |         let mut height: i64 = (((g_width as f64) * 0.86602540378) as i64);
+   |                               ^                                         ^
+   |
+help: remove these parentheses
+   |
+57 -         let mut height: i64 = (((g_width as f64) * 0.86602540378) as i64);
+57 +         let mut height: i64 = ((g_width as f64) * 0.86602540378) as i64;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:61:15
+   |
+61 |         while (g_y < height) {
+   |               ^            ^
+   |
+help: remove these parentheses
+   |
+61 -         while (g_y < height) {
+61 +         while g_y < height {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:64:19
+   |
+64 |             while (x < g_width) {
+   |                   ^           ^
+   |
+help: remove these parentheses
+   |
+64 -             while (x < g_width) {
+64 +             while x < g_width {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:66:21
+   |
+66 |                 x = (x + 1);
+   |                     ^     ^
+   |
+help: remove these parentheses
+   |
+66 -                 x = (x + 1);
+66 +                 x = x + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:69:19
+   |
+69 |             g_y = (g_y + 1);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+69 -             g_y = (g_y + 1);
+69 +             g_y = g_y + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:72:25
+   |
+72 |     let mut next: i64 = (((s * 1664525) + 1013904223) % 2147483647);
+   |                         ^                                         ^
+   |
+help: remove these parentheses
+   |
+72 -     let mut next: i64 = (((s * 1664525) + 1013904223) % 2147483647);
+72 +     let mut next: i64 = ((s * 1664525) + 1013904223) % 2147483647;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:80:15
+   |
+80 |         while (g_i < g_iterations) {
+   |               ^                  ^
+   |
+help: remove these parentheses
+   |
+80 -         while (g_i < g_iterations) {
+80 +         while g_i < g_iterations {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:85:20
+   |
+85 |             g_px = ((g_px + v[0 as usize]) / 2);
+   |                    ^                          ^
+   |
+help: remove these parentheses
+   |
+85 -             g_px = ((g_px + v[0 as usize]) / 2);
+85 +             g_px = (g_px + v[0 as usize]) / 2;
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:86:20
+   |
+86 |             g_py = ((g_py + v[1 as usize]) / 2);
+   |                    ^                          ^
+   |
+help: remove these parentheses
+   |
+86 -             g_py = ((g_py + v[1 as usize]) / 2);
+86 +             g_py = (g_py + v[1 as usize]) / 2;
+   |
+
+warning: unnecessary parentheses around `if` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:87:16
+   |
+87 |             if ((((g_px >= 0) && (g_px < g_width)) && (g_py >= 0)) && (g_py < height)) {
+   |                ^                                                                     ^
+   |
+help: remove these parentheses
+   |
+87 -             if ((((g_px >= 0) && (g_px < g_width)) && (g_py >= 0)) && (g_py < height)) {
+87 +             if (((g_px >= 0) && (g_px < g_width)) && (g_py >= 0)) && (g_py < height) {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:90:19
+   |
+90 |             g_i = (g_i + 1);
+   |                   ^       ^
+   |
+help: remove these parentheses
+   |
+90 -             g_i = (g_i + 1);
+90 +             g_i = g_i + 1;
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:93:15
+   |
+93 |         while (g_y < height) {
+   |               ^            ^
+   |
+help: remove these parentheses
+   |
+93 -         while (g_y < height) {
+93 +         while g_y < height {
+   |
+
+warning: unnecessary parentheses around `while` condition
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:96:19
+   |
+96 |             while (x < g_width) {
+   |                   ^           ^
+   |
+help: remove these parentheses
+   |
+96 -             while (x < g_width) {
+96 +             while x < g_width {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:98:21
+   |
+98 |                 x = (x + 1);
+   |                     ^     ^
+   |
+help: remove these parentheses
+   |
+98 -                 x = (x + 1);
+98 +                 x = x + 1;
+   |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:101:19
+    |
+101 |             g_y = (g_y + 1);
+    |                   ^       ^
+    |
+help: remove these parentheses
+    |
+101 -             g_y = (g_y + 1);
+101 +             g_y = g_y + 1;
+    |
+
+warning: unnecessary parentheses around assigned value
+   --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:104:32
+    |
+104 |         let duration_us: i64 = ((_end - _start) / 1000);
+    |                                ^                      ^
+    |
+help: remove these parentheses
+    |
+104 -         let duration_us: i64 = ((_end - _start) / 1000);
+104 +         let duration_us: i64 = (_end - _start) / 1000;
+    |
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:71:27
+   |
+71 |         unsafe fn randInt(mut s: i64, mut n: i64) -> Vec<i64> {
+   |                           ----^
+   |                           |
+   |                           help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:71:39
+   |
+71 |         unsafe fn randInt(mut s: i64, mut n: i64) -> Vec<i64> {
+   |                                       ----^
+   |                                       |
+   |                                       help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chaos-game.rs:72:9
+   |
+72 |     let mut next: i64 = (((s * 1664525) + 1013904223) % 2147483647);
+   |         ----^^^^
+   |         |
+   |         help: remove this `mut`
+
+error: aborting due to 1 previous error; 30 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

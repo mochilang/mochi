@@ -1,79 +1,105 @@
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:47:2
+   |
+47 | };
+   |  ^ help: remove this semicolon
+   |
+   = note: `#[warn(redundant_semicolons)]` on by default
+
+warning: unnecessary trailing semicolon
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:71:2
+   |
+71 | };
+   |  ^ help: remove this semicolon
+
 warning: unnecessary parentheses around `if` condition
- --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:5:12
-  |
-5 |         if (n != name) {
-  |            ^         ^
-  |
-  = note: `#[warn(unused_parens)]` on by default
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:42:12
+   |
+42 |         if (n != name) {
+   |            ^         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
 help: remove these parentheses
-  |
-5 -         if (n != name) {
-5 +         if n != name {
-  |
+   |
+42 -         if (n != name) {
+42 +         if n != name {
+   |
+
+warning: unnecessary parentheses around assigned value
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:74:28
+   |
+74 |     let duration_us: i64 = ((_end - _start) / 1000);
+   |                            ^                      ^
+   |
+help: remove these parentheses
+   |
+74 -     let duration_us: i64 = ((_end - _start) / 1000);
+74 +     let duration_us: i64 = (_end - _start) / 1000;
+   |
 
 warning: variable does not need to be mutable
- --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:2:15
-  |
-2 | fn removeName(mut names: Vec<String>, name: &str) -> Vec<String> {
-  |               ----^^^^^
-  |               |
-  |               help: remove this `mut`
-  |
-  = note: `#[warn(unused_mut)]` on by default
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:39:19
+   |
+39 |     fn removeName(mut names: Vec<String>, name: &str) -> Vec<String> {
+   |                   ----^^^^^
+   |                   |
+   |                   help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
 
 error[E0596]: cannot borrow `add` as mutable, as it is not declared as mutable
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:17:9
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:53:9
    |
-17 |     let add = move |name: &str| {
+53 |     let add = move |name: String| {
    |         ^^^ not mutable
-18 |     clients = { let mut _v = clients.clone(); _v.push(name.to_string()); _v };
+54 |     clients = { let mut _v = clients.clone(); _v.push(name.clone()); _v };
    |     ------- calling `add` requires mutable binding due to possible mutation of `clients`
 ...
-28 |     add(&"Alice");
+64 |     add(String::from("Alice"));
    |     --- cannot borrow as mutable
-29 |     add(&"Bob");
+65 |     add(String::from("Bob"));
    |     --- cannot borrow as mutable
    |
 help: consider changing this to be mutable
    |
-17 |     let mut add = move |name: &str| {
+53 |     let mut add = move |name: String| {
    |         +++
 
 error[E0596]: cannot borrow `remove` as mutable, as it is not declared as mutable
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:24:9
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:60:9
    |
-24 |     let remove = move |name: &str| {
+60 |     let remove = move |name: String| {
    |         ^^^^^^ not mutable
-25 |     clients = removeName(clients.clone(), name);
+61 |     clients = removeName(clients.clone(), &name);
    |     ------- calling `remove` requires mutable binding due to possible mutation of `clients`
 ...
-32 |     remove(&"Bob");
+68 |     remove(String::from("Bob"));
    |     ------ cannot borrow as mutable
-33 |     remove(&"Alice");
+69 |     remove(String::from("Alice"));
    |     ------ cannot borrow as mutable
    |
 help: consider changing this to be mutable
    |
-24 |     let mut remove = move |name: &str| {
+60 |     let mut remove = move |name: String| {
    |         +++
 
 error[E0382]: use of moved value: `clients`
-  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:24:18
+  --> /workspace/mochi/tests/rosetta/transpiler/Rust/chat-server.rs:60:18
    |
-13 |     let mut clients: Vec<String> = vec![];
+49 |     let mut clients: Vec<String> = vec![];
    |         ----------- move occurs because `clients` has type `Vec<String>`, which does not implement the `Copy` trait
 ...
-17 |     let add = move |name: &str| {
-   |               ----------------- value moved into closure here
-18 |     clients = { let mut _v = clients.clone(); _v.push(name.to_string()); _v };
+53 |     let add = move |name: String| {
+   |               ------------------- value moved into closure here
+54 |     clients = { let mut _v = clients.clone(); _v.push(name.clone()); _v };
    |     ------- variable moved due to use in closure
 ...
-24 |     let remove = move |name: &str| {
-   |                  ^^^^^^^^^^^^^^^^^ value used here after move
-25 |     clients = removeName(clients.clone(), name);
+60 |     let remove = move |name: String| {
+   |                  ^^^^^^^^^^^^^^^^^^^ value used here after move
+61 |     clients = removeName(clients.clone(), &name);
    |     ------- use occurs due to use in closure
 
-error: aborting due to 3 previous errors; 2 warnings emitted
+error: aborting due to 3 previous errors; 5 warnings emitted
 
 Some errors have detailed explanations: E0382, E0596.
 For more information about an error, try `rustc --explain E0382`.

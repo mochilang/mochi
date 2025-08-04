@@ -1,0 +1,60 @@
+worker 1 contracted to assemble 4 details
+worker 1 enters shop
+worker 1 assembling
+worker 1 completed detail
+worker 1 assembling
+worker 1 completed detail
+worker 1 assembling
+worker 1 completed detail
+worker 1 assembling
+worker 1 completed detail
+worker 1 leaves shop
+mechanism 1 completed
+worker 2 contracted to assemble 4 details
+worker 2 enters shop
+worker 2 assembling
+worker 2 completed detail
+worker 2 assembling
+worker 2 completed detail
+worker 2 assembling
+worker 2 completed detail
+worker 2 assembling
+worker 2 completed detail
+worker 2 leaves shop
+mechanism 2 completed
+worker 3 contracted to assemble 4 details
+worker 3 enters shop
+worker 3 assembling
+worker 3 completed detail
+worker 3 assembling
+worker 3 completed detail
+worker 3 assembling
+worker 3 completed detail
+worker 3 assembling
+worker 3 completed detail
+worker 3 leaves shop
+mechanism 3 completed
+worker 4 contracted to assemble 4 details
+worker 4 enters shop
+worker 4 assembling
+worker 4 completed detail
+worker 4 assembling
+worker 4 completed detail
+worker 4 assembling
+worker 4 completed detail
+worker 4 assembling
+worker 4 completed detail
+worker 4 leaves shop
+mechanism 4 completed
+worker 5 contracted to assemble 4 details
+worker 5 enters shop
+worker 5 assembling
+worker 5 completed detail
+worker 5 assembling
+worker 5 completed detail
+worker 5 assembling
+worker 5 completed detail
+worker 5 assembling
+worker 5 completed detail
+worker 5 leaves shop
+mechanism 5 completed
