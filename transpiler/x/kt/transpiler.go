@@ -799,6 +799,8 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		}
 	}
 
+	wrapBigInt := isMap && ix.Type == "Int"
+
 	needParens := false
 	switch ix.Target.(type) {
 	case *BinaryExpr, *CastExpr, *IndexExpr, *CallExpr, *FieldExpr,
@@ -806,6 +808,9 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		needParens = true
 	}
 
+	if wrapBigInt {
+		io.WriteString(w, "(")
+	}
 	if isMap || dynamicCast != "" || needParens {
 		io.WriteString(w, "(")
 		ix.Target.emit(w)
@@ -826,7 +831,17 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 	}
 	io.WriteString(w, "]")
 	if !asTarget {
-		if isMap || dynamicCast != "" {
+		if wrapBigInt {
+			io.WriteString(w, " as java.math.BigInteger).toInt()")
+		} else if isMap {
+			if ix.Type != "" && ix.Type != "Any" && ix.Type != "Any?" {
+				io.WriteString(w, " as "+ix.Type)
+			} else if ix.Type == "Boolean" && !ix.ForceBang {
+				io.WriteString(w, " ?: false")
+			} else if ix.ForceBang {
+				io.WriteString(w, "!!")
+			}
+		} else if dynamicCast != "" {
 			if ix.Type == "Boolean" && !ix.ForceBang {
 				io.WriteString(w, " ?: false")
 			} else if ix.ForceBang {
@@ -839,6 +854,10 @@ func (ix *IndexExpr) emitWithCast(w io.Writer, asTarget bool) {
 		} else if ix.ForceBang {
 			io.WriteString(w, "!!")
 		}
+	}
+	if wrapBigInt {
+		// close the opening parenthesis before the target
+		// note: already closed after appending BigInteger cast above
 	}
 }
 
@@ -1489,7 +1508,12 @@ func (s *LetStmt) emit(w io.Writer, indentLevel int) {
 			}
 		}
 	}
-	s.Value.emit(w)
+	valType := guessType(s.Value)
+	if typ != "" && valType != typ && !strings.HasPrefix(typ, "MutableList<") && !strings.HasPrefix(typ, "MutableMap<") && typ != "Any?" {
+		(&CastExpr{Value: s.Value, Type: typ}).emit(w)
+	} else {
+		s.Value.emit(w)
+	}
 }
 
 type VarStmt struct {
