@@ -2,9 +2,9 @@
 
 Generated Lua code for programs in `tests/rosetta/x/Mochi`. Each program has a `.lua` file produced by the transpiler and a `.out` file with its runtime output. Compilation or runtime errors are captured in `.error` files.
 
-Transpiled programs: 487/491
+Transpiled programs: 488/491
 
-Last updated: 2025-08-03 17:00 GMT+7
+Last updated: 2025-08-04 15:16 GMT+7
 
 Checklist:
 
@@ -114,16 +114,16 @@ Checklist:
 | 102 | bell-numbers | ✓ | 2.398ms |  |
 | 103 | benfords-law | ✓ | 9.13ms | 672 B |
 | 104 | bernoulli-numbers | ✓ | 95.585ms | 623 B |
-| 105 | best-shuffle | ✓ | 416µs |  |
-| 106 | bifid-cipher | ✓ | 1.55ms | 520 B |
-| 107 | bin-given-limits | ✓ | 800µs | 480 B |
-| 108 | binary-digits | ✓ | 174µs | 2.3 KB |
-| 109 | binary-search | ✓ | 82µs | 440 B |
-| 110 | binary-strings | ✓ | 336µs | 1.2 KB |
-| 111 | bioinformatics-base-count | ✓ | 641µs | 685 B |
-| 112 | bioinformatics-global-alignment | ✓ | 6.153248s | 4.8 KB |
-| 113 | bioinformatics-sequence-mutation | ✓ | 10.764ms | 520 B |
-| 114 | biorhythms | ✓ | 246µs | 760 B |
+| 105 | best-shuffle | ✓ | 296µs | 1.1 KB |
+| 106 | bifid-cipher | ✓ | 980µs | 2.3 KB |
+| 107 | bin-given-limits | ✓ | 623µs | 1.0 KB |
+| 108 | binary-digits | ✓ | 126µs | 2.7 KB |
+| 109 | binary-search | ✓ | 80µs | 952 B |
+| 110 | binary-strings | ✓ | 196µs | 1.8 KB |
+| 111 | bioinformatics-base-count | ✓ | 413µs | 1.3 KB |
+| 112 | bioinformatics-global-alignment | ✓ | 2.147513s | 84.5 KB |
+| 113 | bioinformatics-sequence-mutation | ✓ | 6.42ms | 5.0 KB |
+| 114 | biorhythms | ✓ | 162µs | 1.4 KB |
 | 115 | bitcoin-address-validation | ✓ | 2.404ms | 912 B |
 | 116 | bitmap-b-zier-curves-cubic | ✓ | 1.842636s | 2.4 MB |
 | 117 | bitmap-b-zier-curves-quadratic | ✓ | 1.960474s | 2.4 MB |
@@ -244,7 +244,7 @@ Checklist:
 | 232 | convert-decimal-number-to-rational | ✓ | 138µs | 992 B |
 | 233 | convert-seconds-to-compound-duration | ✓ | 46µs | 2.7 KB |
 | 234 | convex-hull | ✓ | 169µs | 3.6 KB |
-| 235 | conways-game-of-life |   |  |  |
+| 235 | conways-game-of-life | ✓ | 352.684ms | 2.5 KB |
 | 236 | copy-a-string-1 | ✓ | 1µs | 64 B |
 | 237 | copy-a-string-2 | ✓ | 39µs | 136 B |
 | 238 | copy-stdin-to-stdout-1 | ✓ | 53µs | 64 B |
