@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/rosetta/x/Mochi` lives in `tests/rosetta/transpiler/Rust`.
-Last updated: 2025-08-04 08:32 UTC
+Last updated: 2025-08-04 10:14 UTC
 
-## Rosetta Golden Test Checklist (243/491)
+## Rosetta Golden Test Checklist (256/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 78µs | 2.0 MB |
@@ -154,19 +154,19 @@ Last updated: 2025-08-04 08:32 UTC
 | 145 | calendar---for-real-programmers-2 | ✓ | 762µs | 2.3 MB |
 | 146 | calendar | ✓ | 477µs | 2.1 MB |
 | 147 | calkin-wilf-sequence |   |  |  |
-| 148 | call-a-foreign-language-function |   |  |  |
-| 149 | call-a-function-1 |   |  |  |
-| 150 | call-a-function-10 |   |  |  |
-| 151 | call-a-function-11 |   |  |  |
-| 152 | call-a-function-12 |   |  |  |
-| 153 | call-a-function-2 |   |  |  |
-| 154 | call-a-function-3 |   |  |  |
-| 155 | call-a-function-4 |   |  |  |
-| 156 | call-a-function-5 |   |  |  |
-| 157 | call-a-function-6 |   |  |  |
-| 158 | call-a-function-7 |   |  |  |
-| 159 | call-a-function-8 |   |  |  |
-| 160 | call-a-function-9 |   |  |  |
+| 148 | call-a-foreign-language-function | ✓ | 93µs | 2.1 MB |
+| 149 | call-a-function-1 | ✓ |  | 2.1 MB |
+| 150 | call-a-function-10 | ✓ | 3µs | 2.1 MB |
+| 151 | call-a-function-11 | ✓ | 45µs | 1.9 MB |
+| 152 | call-a-function-12 | ✓ | 57µs | 2.1 MB |
+| 153 | call-a-function-2 | ✓ |  | 2.1 MB |
+| 154 | call-a-function-3 | ✓ |  | 2.0 MB |
+| 155 | call-a-function-4 | ✓ | 14µs | 2.0 MB |
+| 156 | call-a-function-5 | ✓ | 47µs | 1.8 MB |
+| 157 | call-a-function-6 | ✓ | 78µs | 2.0 MB |
+| 158 | call-a-function-7 | ✓ | 1µs | 2.0 MB |
+| 159 | call-a-function-8 | ✓ | 9µs | 2.0 MB |
+| 160 | call-a-function-9 | ✓ | 2µs | 1.9 MB |
 | 161 | call-an-object-method-1 |   |  |  |
 | 162 | call-an-object-method-2 |   |  |  |
 | 163 | call-an-object-method-3 |   |  |  |
