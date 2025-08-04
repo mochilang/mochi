@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (396/491) - Last updated 2025-08-04 21:16 +0700:
+Checklist of programs that currently transpile and run (397/491) - Last updated 2025-08-04 21:37 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -450,7 +450,7 @@ Checklist of programs that currently transpile and run (396/491) - Last updated 
 | 443 | flatten-a-list-1 | ✓ | 170.0µs | 3.56MB |
 | 444 | flatten-a-list-2 | ✓ | 222.0µs | 3.48MB |
 | 445 | flipping-bits-game | ✓ | 295.0µs | 3.51MB |
-| 446 | flow-control-structures-1 |   |  |  |
+| 446 | flow-control-structures-1 | ✓ | 174.0µs | 3.57MB |
 | 447 | flow-control-structures-2 |   |  |  |
 | 448 | flow-control-structures-3 |   |  |  |
 | 449 | flow-control-structures-4 |   |  |  |
