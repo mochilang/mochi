@@ -1,0 +1,103 @@
+fun absf(x: float): float {
+  if (x < 0) {
+    return -x
+  }
+  return x
+}
+fun floorf(x: float): float {
+  let y: int = x as int
+  return y as float
+}
+fun indexOf(s: string, ch: string): int {
+  var i: int = 0
+  while (i < len(s)) {
+    if (substring(s, i, (i + 1)) == ch) {
+      return i
+    }
+    i = (i + 1)
+  }
+  return -1
+}
+fun fmtF(x: float): string {
+  var y: float = (floorf(((x * 10000) + 0.5)) / 10000)
+  var s: string = str(y)
+  var dot: int = indexOf(s, ".")
+  if (dot == (0 - 1)) {
+    s = (s + ".0000")
+  } else {
+    var decs: int = ((len(s) - dot) - 1)
+    if (decs > 4) {
+      s = substring(s, 0, (dot + 5))
+    } else {
+      while (decs < 4) {
+        s = (s + "0")
+        decs = (decs + 1)
+      }
+    }
+  }
+  return s
+}
+fun padInt(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun padFloat(x: float, width: int): string {
+  var s: string = fmtF(x)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun avgLen(n: int): float {
+  let tests: int = 10000
+  var sum: int = 0
+  var seed: int = 1
+  var t: int = 0
+  while (t < tests) {
+    var visited: list<bool>
+    var i: int = 0
+    while (i < n) {
+      visited = append(visited, false)
+      i = (i + 1)
+    }
+    var x: int = 0
+    while !visited[x] {
+      visited[x] = true
+      sum = (sum + 1)
+      seed = ((((seed * 1664525) + 1013904223)) % 2147483647)
+      x = (seed % n)
+    }
+    t = (t + 1)
+  }
+  return ((sum as float) / tests)
+}
+fun ana(n: int): float {
+  var nn: float = n as float
+  var term: float = 1
+  var sum: float = 1
+  var i: float = (nn - 1)
+  while (i >= 1) {
+    term = (term * ((i / nn)))
+    sum = (sum + term)
+    i = (i - 1)
+  }
+  return sum
+}
+fun main() {
+  let nmax: int = 20
+  print(" N    average    analytical    (error)")
+  print("===  =========  ============  =========")
+  var n: int = 1
+  while (n <= nmax) {
+    let a: float = avgLen(n)
+    let b: float = ana(n)
+    let err: float = ((absf((a - b)) / b) * 100)
+    var line: string = (((((((padInt(n, 3) + "  ") + padFloat(a, 9)) + "  ") + padFloat(b, 12)) + "  (") + padFloat(err, 6)) + "%)")
+    print(line)
+    n = (n + 1)
+  }
+}
+main()

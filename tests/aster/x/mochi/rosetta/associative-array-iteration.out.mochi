@@ -1,0 +1,13 @@
+fun main() {
+  let m: map<string, int> = {"hello": 13, "world": 31, "!": 71}
+  for k in keys(m) {
+    print(((("key = " + k) + ", value = ") + str(m[k])))
+  }
+  for k in keys(m) {
+    print(("key = " + k))
+  }
+  for k in keys(m) {
+    print(("value = " + str(m[k])))
+  }
+}
+main()

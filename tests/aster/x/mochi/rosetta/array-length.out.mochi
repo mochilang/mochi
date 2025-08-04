@@ -1,0 +1,5 @@
+fun main() {
+  let arr: list<string> = ["apple", "orange", "pear"]
+  print((((("Length of " + str(arr)) + " is ") + str(len(arr))) + "."))
+}
+main()

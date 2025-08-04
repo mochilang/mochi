@@ -1,0 +1,75 @@
+let xMin: float = -2.182
+let xMax: float = 2.6558
+let yMin: float = 0
+let yMax: float = 9.9983
+let width: int = 60
+let nIter: int = 10000
+let dx: float = (xMax - xMin)
+let dy: float = (yMax - yMin)
+let height: int = (((width * dy) / dx)) as int
+var grid: list<list<string>>
+var row: int = 0
+while (row < height) {
+  var line: list<string>
+  var col: int = 0
+  while (col < width) {
+    line = append(line, " ")
+    col = (col + 1)
+  }
+  grid = append(grid, line)
+  row = (row + 1)
+}
+var seed: int = 1
+fun randInt(s: int, n: int): list<int> {
+  let next: int = ((((s * 1664525) + 1013904223)) % 2147483647)
+  return [next, (next % n)]
+}
+var x: float = 0
+var y: float = 0
+var ix: int = ((((width as float) * ((x - xMin))) / dx)) as int
+var iy: int = ((((height as float) * ((yMax - y))) / dy)) as int
+if ((((ix >= 0) && (ix < width)) && (iy >= 0)) && (iy < height)) {
+  grid[iy][ix] = "*"
+}
+var i: int = 0
+while (i < nIter) {
+  var res: list<int> = randInt(seed, 100)
+  seed = res[0]
+  let r: int = res[1]
+  if (r < 85) {
+    let nx: float = ((0.85 * x) + (0.04 * y))
+    let ny: float = (((-0.04 * x) + (0.85 * y)) + 1.6)
+    x = nx
+    y = ny
+  } else   if (r < 92) {
+    let nx: float = ((0.2 * x) - (0.26 * y))
+    let ny: float = (((0.23 * x) + (0.22 * y)) + 1.6)
+    x = nx
+    y = ny
+  } else   if (r < 99) {
+    let nx: float = ((-0.15 * x) + (0.28 * y))
+    let ny: float = (((0.26 * x) + (0.24 * y)) + 0.44)
+    x = nx
+    y = ny
+  } else {
+    x = 0
+    y = (0.16 * y)
+  }
+  ix = ((((width as float) * ((x - xMin))) / dx)) as int
+  iy = ((((height as float) * ((yMax - y))) / dy)) as int
+  if ((((ix >= 0) && (ix < width)) && (iy >= 0)) && (iy < height)) {
+    grid[iy][ix] = "*"
+  }
+  i = (i + 1)
+}
+row = 0
+while (row < height) {
+  var line: string = ""
+  var col: int = 0
+  while (col < width) {
+    line = (line + grid[row][col])
+    col = (col + 1)
+  }
+  print(line)
+  row = (row + 1)
+}

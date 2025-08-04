@@ -1,0 +1,8 @@
+error[A002]: type mismatch for result: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:16:3
+
+ 16 |   var result: bigint = 1
+    |   ^
+
+help:
+  Ensure result matches

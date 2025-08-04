@@ -1,0 +1,65 @@
+fun isPrime(n: int): bool {
+  if (n < 2) {
+    return false
+  }
+  if ((n % 2) == 0) {
+    return (n == 2)
+  }
+  if ((n % 3) == 0) {
+    return (n == 3)
+  }
+  var d: int = 5
+  while ((d * d) <= n) {
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 2)
+    if ((n % d) == 0) {
+      return false
+    }
+    d = (d + 4)
+  }
+  return true
+}
+var asc: list<int>
+fun gen(first: int, cand: int, digits: int) {
+  if (digits == 0) {
+    if isPrime(cand) {
+      asc = (asc + [cand])
+    }
+  }
+  var i: int = first
+  while (i < 10) {
+    gen((i + 1), ((cand * 10) + i), (digits - 1))
+    i = (i + 1)
+  }
+}
+fun pad(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun main() {
+  var digits: int = 1
+  while (digits < 10) {
+    gen(1, 0, digits)
+    digits = (digits + 1)
+  }
+  print((("There are " + str(len(asc))) + " ascending primes, namely:"))
+  var i: int = 0
+  var line: string = ""
+  while (i < len(asc)) {
+    line = ((line + pad(asc[i], 8)) + " ")
+    if ((((i + 1)) % 10) == 0) {
+      print(substring(line, 0, (len(line) - 1)))
+      line = ""
+    }
+    i = (i + 1)
+  }
+  if (len(line) > 0) {
+    print(substring(line, 0, (len(line) - 1)))
+  }
+}
+main()

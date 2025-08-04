@@ -98,7 +98,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 					if ret.Text == "void" {
 						return errVoidReturnValue(c)
 					}
-					if !typeEqual(ret, t) {
+					if !typeAssignable(ret, t) {
 						return errReturnTypeMismatch(ret, t, c)
 					}
 					if err := decorateNode(c.Children[0], local); err != nil {
@@ -126,7 +126,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 				if err != nil {
 					return err
 				}
-				if !typeEqual(want, got) {
+				if !typeAssignable(want, got) {
 					return errVarTypeMismatch(n.Text, want, got, n)
 				}
 				if err := decorateNode(n.Children[1], env); err != nil {
@@ -235,7 +235,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 						if err != nil {
 							return nil, err
 						}
-						if !typeEqual(f.Children[i+1], t) {
+						if !typeAssignable(f.Children[i+1], t) {
 							return nil, errFuncArgTypeMismatch(i+1, fname, f.Children[i+1], t, arg)
 						}
 					}
@@ -259,7 +259,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				if err != nil {
 					return nil, err
 				}
-				if !typeEqual(elem, argT) {
+				if !typeAssignable(elem, argT) {
 					return nil, errFuncArgTypeMismatch(2, fname, elem, argT, n.Children[1])
 				}
 				return cloneNode(listT), nil
@@ -273,7 +273,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 					return nil, err
 				}
 				boolT := &Node{Kind: "type", Text: "bool"}
-				if !typeEqual(boolT, argT) {
+				if !typeAssignable(boolT, argT) {
 					return nil, errFuncArgTypeMismatch(1, fname, boolT, argT, n.Children[0])
 				}
 				return boolT, nil
@@ -375,7 +375,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 			}
 			keyT := base.Children[0]
 			valT := base.Children[1]
-			if !typeEqual(keyT, idx) {
+			if !typeAssignable(keyT, idx) {
 				return nil, errMapIndexTypeMismatch(keyT, idx, n)
 			}
 			return cloneNode(valT), nil
@@ -466,7 +466,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				if err != nil {
 					return nil, err
 				}
-				if !typeEqual(want, got) {
+				if !typeAssignable(want, got) {
 					return nil, errVarTypeMismatch(f.Text, want, got, f)
 				}
 			}
@@ -500,6 +500,24 @@ func typeEqual(a, b *Node) bool {
 	}
 	for i := range a.Children {
 		if !typeEqual(a.Children[i], b.Children[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func typeAssignable(dst, src *Node) bool {
+	if dst == nil || src == nil {
+		return dst == nil && src == nil
+	}
+	if dst.Text == "any" {
+		return true
+	}
+	if dst.Kind != src.Kind || dst.Text != src.Text || len(dst.Children) != len(src.Children) {
+		return false
+	}
+	for i := range dst.Children {
+		if !typeAssignable(dst.Children[i], src.Children[i]) {
 			return false
 		}
 	}

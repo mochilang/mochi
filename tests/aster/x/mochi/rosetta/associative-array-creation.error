@@ -1,0 +1,8 @@
+error[A013]: unknown binary operator in
+  --> /workspace/mochi/tests/rosetta/x/Mochi/associative-array-creation.mochi:17:18
+
+ 17 |   let ok = "bar" in x
+    |                  ^
+
+help:
+  Use a supported operator

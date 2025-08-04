@@ -1,0 +1,29 @@
+fun abs(x: float): float {
+  if (x < 0) {
+    return -x
+  }
+  return x
+}
+fun sqrtApprox(x: float): float {
+  var guess: float = x
+  var i: int = 0
+  while (i < 20) {
+    guess = (((guess + (x / guess))) / 2)
+    i = (i + 1)
+  }
+  return guess
+}
+fun agm(a: float, g: float): float {
+  let eps: float = 1e-14
+  while (abs((a - g)) > (abs(a) * eps)) {
+    let newA: float = (((a + g)) / 2)
+    let newG: float = sqrtApprox((a * g))
+    a = newA
+    g = newG
+  }
+  return a
+}
+fun main() {
+  print(str(agm(1, (1 / sqrtApprox(2)))))
+}
+main()
