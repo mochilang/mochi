@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
+
+  7 |   return substring(letters, idx, idx + 1)
+    |          ^
+
+help:
+  Declare substring before use

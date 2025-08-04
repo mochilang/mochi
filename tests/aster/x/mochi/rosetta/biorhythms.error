@@ -1,0 +1,8 @@
+error[A026]: argument 1 to parseIntStr type mismatch: string vs any
+  --> /workspace/mochi/tests/rosetta/x/Mochi/biorhythms.mochi:58:24
+
+ 58 |   let y = parseIntStr(s[0:4])
+    |                        ^
+
+help:
+  Ensure arguments match parameter types

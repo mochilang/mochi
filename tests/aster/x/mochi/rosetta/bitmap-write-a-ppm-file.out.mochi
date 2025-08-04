@@ -1,0 +1,101 @@
+type Colour {
+  R: int
+  G: int
+  B: int
+}
+type Bitmap {
+  width: int
+  height: int
+  pixels: list<list<Colour>>
+}
+fun newBitmap(w: int, h: int, c: Colour): Bitmap {
+  var rows: list<list<Colour>>
+  var y: int = 0
+  while (y < h) {
+    var row: list<Colour>
+    var x: int = 0
+    while (x < w) {
+      row = append(row, c)
+      x = (x + 1)
+    }
+    rows = append(rows, row)
+    y = (y + 1)
+  }
+  return Bitmap {width: w, height: h, pixels: rows}
+}
+fun setPixel(b: Bitmap, x: int, y: int, c: Colour) {
+  var rows: list<list<Colour>> = b.pixels
+  var row: list<Colour> = rows[y]
+  row[x] = c
+  rows[y] = row
+  b.pixels = rows
+}
+fun fillRect(b: Bitmap, x: int, y: int, w: int, h: int, c: Colour) {
+  var yy: int = y
+  while (yy < (y + h)) {
+    var xx: int = x
+    while (xx < (x + w)) {
+      setPixel(b, xx, yy, c)
+      xx = (xx + 1)
+    }
+    yy = (yy + 1)
+  }
+}
+fun pad(n: int, width: int): string {
+  var s: string = str(n)
+  while (len(s) < width) {
+    s = (" " + s)
+  }
+  return s
+}
+fun writePPMP3(b: Bitmap): string {
+  var maxv: int = 0
+  var y: int = 0
+  while (y < b.height) {
+    var x: int = 0
+    while (x < b.width) {
+      let p: Colour = b.pixels[y][x]
+      if (p.R > maxv) {
+        maxv = p.R
+      }
+      if (p.G > maxv) {
+        maxv = p.G
+      }
+      if (p.B > maxv) {
+        maxv = p.B
+      }
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  var out: string = (((((("P3\n# generated from Bitmap.writeppmp3\n" + str(b.width)) + " ") + str(b.height)) + "\n") + str(maxv)) + "\n")
+  var numsize: int = len(str(maxv))
+  y = (b.height - 1)
+  while (y >= 0) {
+    var line: string = ""
+    var x: int = 0
+    while (x < b.width) {
+      let p: Colour = b.pixels[y][x]
+      line = ((((((line + "   ") + pad(p.R, numsize)) + " ") + pad(p.G, numsize)) + " ") + pad(p.B, numsize))
+      x = (x + 1)
+    }
+    out = (out + line)
+    if (y > 0) {
+      out = (out + "\n")
+    } else {
+      out = (out + "\n")
+    }
+    y = (y - 1)
+  }
+  return out
+}
+fun main() {
+  let black: Colour = Colour {R: 0, G: 0, B: 0}
+  let white: Colour = Colour {R: 255, G: 255, B: 255}
+  var bm: Bitmap = newBitmap(4, 4, black)
+  fillRect(bm, 1, 0, 1, 2, white)
+  setPixel(bm, 3, 3, Colour {R: 127, G: 0, B: 63})
+  let ppm: string = writePPMP3(bm)
+  print(ppm)
+}
+main()

@@ -122,6 +122,10 @@ func inferBinaryType(env *Env, b *parser.BinaryExpr) Type {
 						res = Int64Type{}
 						break
 					}
+					if isBigRat(left) || isBigRat(right) {
+						res = BigRatType{}
+						break
+					}
 					if (isFloat(left) || isFloat(right)) &&
 						(isInt(left) || isFloat(left) || isInt64(left)) &&
 						(isInt(right) || isFloat(right) || isInt64(right)) {
@@ -753,8 +757,21 @@ func ResultType(op string, left, right Type) Type {
 	switch op {
 	case "+", "-", "*", "/", "%":
 		if isNumeric(left) && isNumeric(right) {
+			if isBigRat(left) || isBigRat(right) {
+				return BigRatType{}
+			}
+			if isBigInt(left) || isBigInt(right) {
+				return BigIntType{}
+			}
+			if (isInt64(left) && (isInt64(right) || isInt(right))) ||
+				(isInt64(right) && isInt(left)) {
+				return Int64Type{}
+			}
 			if isFloat(left) || isFloat(right) {
 				return FloatType{}
+			}
+			if isInt(left) && isInt(right) {
+				return IntType{}
 			}
 			return IntType{}
 		}
@@ -873,6 +890,7 @@ func equalTypes(a, b Type) bool {
 func isInt64(t Type) bool  { _, ok := t.(Int64Type); return ok }
 func isInt(t Type) bool    { _, ok := t.(IntType); return ok }
 func isBigInt(t Type) bool { _, ok := t.(BigIntType); return ok }
+func isBigRat(t Type) bool { _, ok := t.(BigRatType); return ok }
 func isFloat(t Type) bool {
 	_, ok := t.(FloatType)
 	if ok {

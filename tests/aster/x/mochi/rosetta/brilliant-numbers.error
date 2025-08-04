@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/brilliant-numbers.mochi:104:28
+
+104 |   return {"bc": brilliant, "next": next}
+    |                            ^
+
+help:
+  Ensure map keys and values share types

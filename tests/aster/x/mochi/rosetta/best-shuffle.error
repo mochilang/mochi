@@ -1,0 +1,8 @@
+error[A005]: list element type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/best-shuffle.mochi:28:10
+
+ 28 |   return [res, sd]
+    |          ^
+
+help:
+  Ensure all list elements share a type

@@ -1,0 +1,8 @@
+error[A024]: unknown function input
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bulls-and-cows.mochi:36:17
+
+ 36 |     let guess = input()
+    |                 ^
+
+help:
+  Declare input before use

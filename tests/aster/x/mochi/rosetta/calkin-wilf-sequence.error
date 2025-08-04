@@ -1,0 +1,8 @@
+error[A011]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/calkin-wilf-sequence.mochi:1:59
+
+  1 | fun bigrat(a: int, b: int): bigrat { return (a as bigrat) / (b as bigrat) }
+    |                                                           ^
+
+help:
+  Use numeric operands

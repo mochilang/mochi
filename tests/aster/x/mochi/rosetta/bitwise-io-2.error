@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:77:23
+
+ 77 |   return {"val": out, "eof": false}
+    |                       ^
+
+help:
+  Ensure map keys and values share types

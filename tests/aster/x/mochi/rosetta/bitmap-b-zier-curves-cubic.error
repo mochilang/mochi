@@ -1,0 +1,8 @@
+error[A007]: map entry type mismatch
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-b-zier-curves-cubic.mochi:29:39
+
+ 29 |   return {"cols": cols, "rows": rows, "data": d}
+    |                                       ^
+
+help:
+  Ensure map keys and values share types

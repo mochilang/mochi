@@ -1,0 +1,8 @@
+error[A024]: unknown function substr
+  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-a-ppm-file.mochi:51:14
+
+ 51 |     let ch = substr(s, i, i+1)
+    |              ^
+
+help:
+  Declare substr before use

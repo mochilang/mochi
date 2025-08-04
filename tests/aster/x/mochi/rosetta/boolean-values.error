@@ -1,0 +1,8 @@
+error[A024]: unknown function lower
+  --> /workspace/mochi/tests/rosetta/x/Mochi/boolean-values.mochi:3:11
+
+  3 |   let l = lower(s)
+    |           ^
+
+help:
+  Declare lower before use

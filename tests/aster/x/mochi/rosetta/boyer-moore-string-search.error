@@ -1,0 +1,8 @@
+error[A024]: unknown function substring
+  --> /workspace/mochi/tests/rosetta/x/Mochi/boyer-moore-string-search.mochi:23:26
+
+ 23 |     let idx = indexOfStr(substring(h, start, hlen), n)
+    |                          ^
+
+help:
+  Declare substring before use

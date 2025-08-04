@@ -1,0 +1,91 @@
+fun image(): list<list<int>> {
+  return [[0, 0, 10000], [65535, 65535, 65535], [65535, 65535, 65535]]
+}
+fun histogram(g: list<list<int>>, bins: int): list<int> {
+  if (bins <= 0) {
+    bins = len(g[0])
+  }
+  var h: list<int>
+  var i: int = 0
+  while (i < bins) {
+    h = append(h, 0)
+    i = (i + 1)
+  }
+  var y: int = 0
+  while (y < len(g)) {
+    var row: list<int> = g[y]
+    var x: int = 0
+    while (x < len(row)) {
+      var p: int = row[x]
+      var idx: int = ((((p * ((bins - 1)))) / 65535)) as int
+      h[idx] = (h[idx] + 1)
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  return h
+}
+fun medianThreshold(h: list<int>): int {
+  var lb: int = 0
+  var ub: int = (len(h) - 1)
+  var lSum: int = 0
+  var uSum: int = 0
+  while (lb <= ub) {
+    if ((lSum + h[lb]) < (uSum + h[ub])) {
+      lSum = (lSum + h[lb])
+      lb = (lb + 1)
+    } else {
+      uSum = (uSum + h[ub])
+      ub = (ub - 1)
+    }
+  }
+  return ((((ub * 65535)) / len(h))) as int
+}
+fun threshold(g: list<list<int>>, t: int): list<list<int>> {
+  var out: list<list<int>>
+  var y: int = 0
+  while (y < len(g)) {
+    var row: list<int> = g[y]
+    var newRow: list<int>
+    var x: int = 0
+    while (x < len(row)) {
+      if (row[x] < t) {
+        newRow = append(newRow, 0)
+      } else {
+        newRow = append(newRow, 65535)
+      }
+      x = (x + 1)
+    }
+    out = append(out, newRow)
+    y = (y + 1)
+  }
+  return out
+}
+fun printImage(g: list<list<int>>) {
+  var y: int = 0
+  while (y < len(g)) {
+    var row: list<int> = g[y]
+    var line: string = ""
+    var x: int = 0
+    while (x < len(row)) {
+      if (row[x] == 0) {
+        line = (line + "0")
+      } else {
+        line = (line + "1")
+      }
+      x = (x + 1)
+    }
+    print(line)
+    y = (y + 1)
+  }
+}
+fun main() {
+  let img: list<list<int>> = image()
+  let h: list<int> = histogram(img, 0)
+  print(("Histogram: " + str(h)))
+  let t: int = medianThreshold(h)
+  print(("Threshold: " + str(t)))
+  let bw: list<list<int>> = threshold(img, t)
+  printImage(bw)
+}
+main()
