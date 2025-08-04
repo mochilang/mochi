@@ -10,7 +10,7 @@ fun shuffle(xs: list<int>): list<int> {
   }
   return arr
 }
-fun doTrials(trials: int, np: int, strategy: string): void {
+fun doTrials(trials: int, np: int, strategy: string) {
   var pardoned: int = 0
   var t: int = 0
   while (t < trials) {
@@ -72,7 +72,7 @@ fun doTrials(trials: int, np: int, strategy: string): void {
   let rf: float = (((pardoned as float) / (trials as float)) * 100)
   print((((((("  strategy = " + strategy) + "  pardoned = ") + str(pardoned)) + " relative frequency = ") + str(rf)) + "%"))
 }
-fun main(): void {
+fun main() {
   let trials: int = 1000
   for np in [10, 100] {
     print((((("Results from " + str(trials)) + " trials with ") + str(np)) + " prisoners:\n"))

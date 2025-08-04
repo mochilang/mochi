@@ -9,7 +9,7 @@ fun pfacSum(i: int): int {
   }
   return sum
 }
-fun main(): void {
+fun main() {
   var d: int = 0
   var a: int = 0
   var pnum: int = 0

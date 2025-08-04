@@ -7,7 +7,7 @@ fun bottles(n: int): string {
   }
   return (str(n) + " bottles")
 }
-fun main(): void {
+fun main() {
   var i: int = 99
   while (i > 0) {
     print((bottles(i) + " of beer on the wall"))
