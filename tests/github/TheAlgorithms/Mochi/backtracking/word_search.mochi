@@ -1,0 +1,92 @@
+/*
+Word Search - Backtracking
+
+Given a 2D grid of characters and a target word, determine if the word
+can be formed by sequentially adjacent cells (horizontally or vertically).
+Each cell may be used at most once. The algorithm performs a depth-first
+search from every cell, exploring neighbors recursively while tracking
+visited cells to avoid reuse. If any path matches the entire word, the
+search succeeds.
+
+Time complexity is O(m*n*4^k) in the worst case where m*n is the size of
+the grid and k is the length of the word. Space complexity is O(k) for
+the recursion stack and visited tracking.
+*/
+
+fun contains(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun get_point_key(len_board: int, len_board_column: int, row: int, column: int): int {
+  return len_board * len_board_column * row + column
+}
+
+fun search_from(board: list<list<string>>, word: string, row: int, column: int, word_index: int, visited: list<int>): bool {
+  if board[row][column] != substring(word, word_index, word_index + 1) {
+    return false
+  }
+  if word_index == len(word) - 1 {
+    return true
+  }
+  let len_board = len(board)
+  let len_board_column = len(board[0])
+  let dir_i = [0,0,-1,1]
+  let dir_j = [1,-1,0,0]
+  var k = 0
+  while k < 4 {
+    let next_i = row + dir_i[k]
+    let next_j = column + dir_j[k]
+    if !(0 <= next_i && next_i < len_board && 0 <= next_j && next_j < len_board_column) {
+      k = k + 1
+      continue
+    }
+    let key = get_point_key(len_board, len_board_column, next_i, next_j)
+    if contains(visited, key) {
+      k = k + 1
+      continue
+    }
+    let new_visited = append(visited, key)
+    if search_from(board, word, next_i, next_j, word_index + 1, new_visited) {
+      return true
+    }
+    k = k + 1
+  }
+  return false
+}
+
+fun word_exists(board: list<list<string>>, word: string): bool {
+  let len_board = len(board)
+  let len_board_column = len(board[0])
+  var i = 0
+  while i < len_board {
+    var j = 0
+    while j < len_board_column {
+      let key = get_point_key(len_board, len_board_column, i, j)
+      let visited = append([] as list<int>, key)
+      if search_from(board, word, i, j, 0, visited) {
+        return true
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let board = [["A","B","C","E"],
+               ["S","F","C","S"],
+               ["A","D","E","E"]]
+  print(word_exists(board, "ABCCED"))
+  print(word_exists(board, "SEE"))
+  print(word_exists(board, "ABCB"))
+}
+
+main()
