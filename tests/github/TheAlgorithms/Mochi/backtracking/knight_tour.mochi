@@ -1,0 +1,93 @@
+/*
+  Knight's Tour: backtracking search for an open tour on an n×n chessboard.
+  The knight must visit every square exactly once without returning to the
+  starting square. This implementation explores all legal moves recursively,
+  marking squares with the step count. If a dead end is reached the algorithm
+  backtracks, unmarking the square and trying another move.  The search is
+  attempted from every starting position until a complete tour is found or all
+  options are exhausted.
+*/
+
+fun get_valid_pos(position: list<int>, n: int): list<list<int>> {
+  let y = position[0]
+  let x = position[1]
+  let positions = [
+    [y + 1, x + 2],
+    [y - 1, x + 2],
+    [y + 1, x - 2],
+    [y - 1, x - 2],
+    [y + 2, x + 1],
+    [y + 2, x - 1],
+    [y - 2, x + 1],
+    [y - 2, x - 1],
+  ]
+  var permissible: list<list<int>> = []
+  for idx in 0..len(positions) {
+    let inner = positions[idx]
+    let y_test = inner[0]
+    let x_test = inner[1]
+    if y_test >= 0 && y_test < n && x_test >= 0 && x_test < n {
+      permissible = append(permissible, inner)
+    }
+  }
+  return permissible
+}
+
+fun is_complete(board: list<list<int>>): bool {
+  for i in 0..len(board) {
+    let row = board[i]
+    for j in 0..len(row) {
+      if row[j] == 0 {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+fun open_knight_tour_helper(board: list<list<int>>, pos: list<int>, curr: int): bool {
+  if is_complete(board) {
+    return true
+  }
+  let moves = get_valid_pos(pos, len(board))
+  for i in 0..len(moves) {
+    let position = moves[i]
+    let y = position[0]
+    let x = position[1]
+    if board[y][x] == 0 {
+      board[y][x] = curr + 1
+      if open_knight_tour_helper(board, position, curr + 1) {
+        return true
+      }
+      board[y][x] = 0
+    }
+  }
+  return false
+}
+
+fun open_knight_tour(n: int): list<list<int>> {
+  var board: list<list<int>> = []
+  for i in 0..n {
+    var row: list<int> = []
+    for j in 0..n {
+      row = append(row, 0)
+    }
+    board = append(board, row)
+  }
+
+  for i in 0..n {
+    for j in 0..n {
+      board[i][j] = 1
+      if open_knight_tour_helper(board, [i, j], 1) {
+        return board
+      }
+      board[i][j] = 0
+    }
+  }
+  print("Open Knight Tour cannot be performed on a board of size " + str(n))
+  return board
+}
+
+// Example usage
+let board = open_knight_tour(1)
+print(board[0][0])
