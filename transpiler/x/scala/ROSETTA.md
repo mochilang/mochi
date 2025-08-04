@@ -3,7 +3,7 @@
 Generated Scala code for Rosetta tasks in `tests/rosetta/x/Mochi`. Each program has a `.scala` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
 
 ## Golden Test Checklist (448/491)
-_Last updated: 2025-08-04 22:53 +0700_
+_Last updated: 2025-08-05 00:39 +0700_
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -312,7 +312,7 @@ _Last updated: 2025-08-04 22:53 +0700_
 | 303 | dining-philosophers-2 | ✓ | 6µs | 8.7 MB |
 | 304 | disarium-numbers | ✓ | 7.149ms | 8.7 MB |
 | 305 | discordian-date | ✓ | 6µs | 8.7 MB |
-| 306 | display-a-linear-combination | ✓ | 10µs | 8.7 MB |
+| 306 | display-a-linear-combination | ✓ | 11µs | 8.7 MB |
 | 307 | display-an-outline-as-a-nested-table | error |  |  |
 | 308 | distance-and-bearing | error |  |  |
 | 309 | distributed-programming | error |  |  |
