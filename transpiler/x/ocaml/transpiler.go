@@ -925,7 +925,9 @@ func (r *ReturnStmt) emit(w io.Writer) {
 			r.Expr.emit(w)
 			fmt.Fprintf(w, ") : %s)", ocamlType(currentRetTyp))
 		} else {
+			io.WriteString(w, "Obj.repr (")
 			r.Expr.emit(w)
+			io.WriteString(w, ")")
 		}
 	} else {
 		io.WriteString(w, "()")
@@ -1012,7 +1014,13 @@ func (f *FunStmt) emitWith(w io.Writer, prefix string) {
 	if !f.EndsWithReturn {
 		if f.Ret != nil {
 			io.WriteString(w, "  __ret := ")
-			f.Ret.emit(w)
+			if f.RetTyp != "" {
+				f.Ret.emit(w)
+			} else {
+				io.WriteString(w, "Obj.repr (")
+				f.Ret.emit(w)
+				io.WriteString(w, ")")
+			}
 			io.WriteString(w, ";\n")
 		}
 		io.WriteString(w, "    !__ret\n")
@@ -2833,6 +2841,26 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 
+	if b.Op == "%" && (b.Typ == "float" || b.Ltyp == "float" || b.Rtyp == "float") {
+		io.WriteString(w, "(Float.rem ")
+		if (b.Typ == "float" || b.Ltyp == "float" || b.Rtyp == "float") && b.Ltyp == "int" {
+			io.WriteString(w, "float_of_int (")
+			b.Left.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Left.emit(w)
+		}
+		io.WriteString(w, " ")
+		if (b.Typ == "float" || b.Ltyp == "float" || b.Rtyp == "float") && b.Rtyp == "int" {
+			io.WriteString(w, "float_of_int (")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			b.Right.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	op := b.Op
 	if b.Op == "%" {
 		op = "mod"
@@ -5842,7 +5870,9 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 						ex = &CastExpr{Expr: ex, Type: "list_to_any"}
 					}
 				} else {
-					if ptyp == "int" {
+					if at == "" || at == "list" || at == "map" || at == "func" || strings.HasPrefix(at, "map-") || strings.HasPrefix(at, "list-") && !strings.HasPrefix(ptyp, at) {
+						ex = &CastExpr{Expr: ex, Type: "obj_to_" + ptyp}
+					} else if ptyp == "int" {
 						ex = &CastExpr{Expr: ex, Type: "int_to_obj"}
 					} else if ptyp == "float" {
 						if at == "int" {

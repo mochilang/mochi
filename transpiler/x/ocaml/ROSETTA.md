@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 347/491
+Completed programs: 349/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -391,15 +391,15 @@ Completed programs: 347/491
 | 383 | exponentiation-order | ✓ | 136.0µs | 344B |
 | 384 | exponentiation-with-infix-operators-in-or-operating-on-the-base | ✓ |  |  |
 | 385 | extend-your-language | ✓ | 19.0µs | 448B |
-| 386 | extensible-prime-generator | ✓ |  |  |
-| 387 | extreme-floating-point-values | error |  |  |
-| 388 | faces-from-a-mesh-2 | error |  |  |
-| 389 | faces-from-a-mesh | error |  |  |
-| 390 | factorial-base-numbers-indexing-permutations-of-a-collection | error |  |  |
+| 386 | extensible-prime-generator | ✓ | 43.91s | 1.13GB |
+| 387 | extreme-floating-point-values | ✓ | 256.0µs | 15.70KB |
+| 388 | faces-from-a-mesh-2 | ✓ | 396.0µs | 45.23KB |
+| 389 | faces-from-a-mesh | ✓ | 389.0µs | 45.23KB |
+| 390 | factorial-base-numbers-indexing-permutations-of-a-collection |   |  |  |
 | 391 | factorial-primes | ✓ | 2.0ms | 1.78KB |
 | 392 | factorial | ✓ | 1.0ms | 330.30KB |
-| 393 | factorions | ✓ | 3.99s | 843.26MB |
-| 394 | factors-of-a-mersenne-number | ✓ |  |  |
+| 393 | factorions | ✓ | 3.84s | 843.26MB |
+| 394 | factors-of-a-mersenne-number |   |  |  |
 | 395 | factors-of-an-integer | ✓ | 13.75s | 13.27KB |
 | 396 | fairshare-between-two-and-more | ✓ |  |  |
 | 397 | farey-sequence | ✓ | 1.0ms | 126.62KB |
@@ -497,4 +497,4 @@ Completed programs: 347/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 08:16 +0700
+Last updated 2025-08-04 09:20 +0700

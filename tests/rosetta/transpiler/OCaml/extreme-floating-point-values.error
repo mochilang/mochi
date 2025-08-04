@@ -1,8 +1,0 @@
-exit status 2
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/extreme-floating-point-values.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "Extreme-floating-point-values" is not a valid module name.
-File "/workspace/mochi/tests/rosetta/transpiler/OCaml/extreme-floating-point-values.ml", line 178, characters 34-40:
-178 |   ignore (validateNaN (Obj.repr ((posInf mod 1.0))) ("Inf % 1"));
-                                        ^^^^^^
-Error: This expression has type float but an expression was expected of type
-         int
