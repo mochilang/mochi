@@ -3659,9 +3659,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		} else if strings.HasPrefix(iterTyp, "list") {
 			vtyp = "int"
 		}
-		if strings.HasPrefix(iterTyp, "map") {
-			vtyp = "string"
-		}
+                if iterTyp == "" || iterTyp == "dyn" {
+                        vtyp = "string"
+                }
+                if strings.HasPrefix(iterTyp, "map") {
+                        vtyp = "string"
+                }
 		vars[st.For.Name] = VarInfo{typ: vtyp}
 		body, err := transpileStmts(st.For.Body, env, vars)
 		if err != nil {
@@ -4549,10 +4552,18 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				valTyp := strings.TrimPrefix(typ, "map-")
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
 				typ = valTyp
-			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
-				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn, KeyTyp: idxTyp}
-				typ = "int"
-			} else if strings.HasPrefix(typ, "list-") {
+                        } else if typ == "map" || strings.HasPrefix(typ, "map{") {
+                                expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "map", Dyn: dyn, KeyTyp: idxTyp}
+                                typ = "map"
+                        } else if typ == "" || typ == "dyn" {
+                                if idxTyp == "int" {
+                                        expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
+                                        typ = ""
+                                } else {
+                                        expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "dyn", Dyn: true, KeyTyp: idxTyp}
+                                        typ = "dyn"
+                                }
+                        } else if strings.HasPrefix(typ, "list-") {
 				elemTyp := strings.TrimPrefix(typ, "list-")
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp, ColTyp: typ}
 				typ = elemTyp

@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 370/491
+Completed programs: 372/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -467,10 +467,10 @@ Completed programs: 370/491
 | 459 | four-bit-adder-1 | ✓ | 164.0µs | 1.78KB |
 | 460 | four-is-magic |   |  |  |
 | 461 | four-is-the-number-of-letters-in-the-... |   |  |  |
-| 462 | fractal-tree |   |  |  |
-| 463 | fractran |   |  |  |
-| 464 | french-republican-calendar |   |  |  |
-| 465 | ftp |   |  |  |
+| 462 | fractal-tree | error |  |  |
+| 463 | fractran | ✓ | 3.16s | 3.09GB |
+| 464 | french-republican-calendar | ✓ | 129.0µs | 1.45KB |
+| 465 | ftp | error |  |  |
 | 466 | function-frequency |   |  |  |
 | 467 | function-prototype |   |  |  |
 | 468 | functional-coverage-tree |   |  |  |
@@ -497,4 +497,4 @@ Completed programs: 370/491
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 16:02 +0700
+Last updated 2025-08-04 16:58 +0700
