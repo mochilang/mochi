@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 415/491
-Last updated: 2025-08-04 08:03 +0700
+Completed: 423/491
+Last updated: 2025-08-04 08:11 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -488,13 +488,13 @@ Last updated: 2025-08-04 08:03 +0700
 | 479 | gray-code | ✓ | 362µs | 3.3 MB |
 | 480 | gui-component-interaction | ✓ | 573µs | 3.1 MB |
 | 481 | gui-enabling-disabling-of-controls | ✓ | 304µs | 3.1 MB |
-| 482 | gui-maximum-window-dimensions |   |  |  |
+| 482 | gui-maximum-window-dimensions | ✓ | 360µs | 3.1 MB |
 | 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
+| 484 | image-noise | ✓ | 48.07ms | 3.1 MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 285.061ms | 3.2 MB |
 | 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 487 | nim-game | ✓ | 539µs | 3.0 MB |
+| 488 | plasma-effect | ✓ | 8.275ms | 3.1 MB |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 626µs | 3.1 MB |
+| 490 | window-management | ✓ | 417µs | 3.1 MB |
+| 491 | zumkeller-numbers | ✓ | 8.845835s | 3.3 MB |
