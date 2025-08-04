@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (410/491)
-Last updated: 2025-08-04 01:13 UTC
+## Checklist (420/491)
+Last updated: 2025-08-04 02:01 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -371,16 +371,16 @@ Last updated: 2025-08-04 01:13 UTC
 | 362 | euclid-mullin-sequence |   |  |  |
 | 363 | euler-method | ✓ | 12ms | 13.6 MB |
 | 364 | eulers-constant-0.5772... | ✓ | 37ms | 12.7 MB |
-| 365 | eulers-identity |   |  |  |
-| 366 | eulers-sum-of-powers-conjecture |   |  |  |
-| 367 | evaluate-binomial-coefficients |   |  |  |
-| 368 | even-or-odd |   |  |  |
-| 369 | events |   |  |  |
-| 370 | evolutionary-algorithm |   |  |  |
-| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call |   |  |  |
-| 372 | exceptions |   |  |  |
-| 373 | executable-library |   |  |  |
-| 374 | execute-a-markov-algorithm |   |  |  |
+| 365 | eulers-identity | ✓ |  |  |
+| 366 | eulers-sum-of-powers-conjecture | ✓ | 12.262s | 18.2 MB |
+| 367 | evaluate-binomial-coefficients | ✓ |  |  |
+| 368 | even-or-odd | ✓ | 1ms | 12.8 MB |
+| 369 | events | ✓ |  |  |
+| 370 | evolutionary-algorithm | ✓ | 2.32s | 12.6 MB |
+| 371 | exceptions-catch-an-exception-thrown-in-a-nested-call | ✓ |  |  |
+| 372 | exceptions | ✓ |  |  |
+| 373 | executable-library | ✓ | 1m28.238s | 12.4 MB |
+| 374 | execute-a-markov-algorithm | ✓ | 29ms | 14.5 MB |
 | 375 | execute-a-system-command |   |  |  |
 | 376 | execute-brain- |   |  |  |
 | 377 | execute-computer-zero-1 |   |  |  |

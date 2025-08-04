@@ -1,0 +1,8 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+program start
+program sleeping
+task start
+program signaling event
+event reset by task

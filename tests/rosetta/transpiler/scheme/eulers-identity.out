@@ -1,0 +1,4 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+(7.565070792026063e-11+1.0348087996209086e-11i)

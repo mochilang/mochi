@@ -1,0 +1,6 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+let's foo...
+Recovered from runtime error: index out of range [12] with length 0
+glad that's over.
