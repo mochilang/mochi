@@ -1,0 +1,8 @@
+error[A018]: list index must be int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:49:17
+
+ 49 |     var t = tens[(n / 10) as int]
+    |                 ^
+
+help:
+  Use an int index

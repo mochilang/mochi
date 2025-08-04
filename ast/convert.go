@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/alecthomas/participle/v2/lexer"
+
 	"mochi/parser"
 )
 
 func FromProgram(p *parser.Program) *Node {
-	root := &Node{Kind: "program"}
+	root := &Node{Kind: "program", Pos: p.Pos}
 	if p.Package != "" {
 		root.Value = p.Package
 	}
@@ -21,7 +23,7 @@ func FromProgram(p *parser.Program) *Node {
 func FromStatement(s *parser.Statement) *Node {
 	switch {
 	case s.Let != nil:
-		n := &Node{Kind: "let", Value: s.Let.Name}
+		n := &Node{Kind: "let", Value: s.Let.Name, Pos: s.Let.Pos}
 		if s.Let.Type != nil {
 			n.Children = append(n.Children, FromTypeRef(s.Let.Type))
 		}
@@ -31,7 +33,7 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Var != nil:
-		n := &Node{Kind: "var", Value: s.Var.Name}
+		n := &Node{Kind: "var", Value: s.Var.Name, Pos: s.Var.Pos}
 		if s.Var.Type != nil {
 			n.Children = append(n.Children, FromTypeRef(s.Var.Type))
 		}
@@ -45,13 +47,14 @@ func FromStatement(s *parser.Statement) *Node {
 			return &Node{
 				Kind:  "assign",
 				Value: s.Assign.Name,
+				Pos:   s.Assign.Pos,
 				Children: []*Node{
 					FromExpr(s.Assign.Value),
 				},
 			}
 		}
 		// Build target expression with fields and indexes
-		target := &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
+		target := &parser.PostfixExpr{Target: &parser.Primary{Pos: s.Assign.Pos, Selector: &parser.SelectorExpr{Root: s.Assign.Name}}}
 		for _, f := range s.Assign.Field {
 			target.Ops = append(target.Ops, &parser.PostfixOp{Field: f})
 		}
@@ -60,11 +63,12 @@ func FromStatement(s *parser.Statement) *Node {
 		}
 		return &Node{
 			Kind:     "assign",
+			Pos:      s.Assign.Pos,
 			Children: []*Node{FromPostfixExpr(target), FromExpr(s.Assign.Value)},
 		}
 
 	case s.Fun != nil:
-		n := &Node{Kind: "fun", Value: s.Fun.Name}
+		n := &Node{Kind: "fun", Value: s.Fun.Name, Pos: s.Fun.Pos}
 		for _, param := range s.Fun.Params {
 			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {
@@ -82,16 +86,16 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Return != nil:
-		return &Node{Kind: "return", Children: []*Node{FromExpr(s.Return.Value)}}
+		return &Node{Kind: "return", Pos: s.Return.Pos, Children: []*Node{FromExpr(s.Return.Value)}}
 
 	case s.Break != nil:
-		return &Node{Kind: "break"}
+		return &Node{Kind: "break", Pos: s.Break.Pos}
 
 	case s.Continue != nil:
-		return &Node{Kind: "continue"}
+		return &Node{Kind: "continue", Pos: s.Continue.Pos}
 
 	case s.Update != nil:
-		n := &Node{Kind: "update", Value: s.Update.Target}
+		n := &Node{Kind: "update", Value: s.Update.Target, Pos: s.Update.Pos}
 		mapExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: s.Update.Set}}}}}
 		n.Children = append(n.Children, &Node{Kind: "set", Children: []*Node{FromExpr(mapExpr)}})
 		if s.Update.Where != nil {
@@ -112,7 +116,7 @@ func FromStatement(s *parser.Statement) *Node {
 		return fromForStmt(s.For)
 
 	case s.Agent != nil:
-		n := &Node{Kind: "agent", Value: s.Agent.Name}
+		n := &Node{Kind: "agent", Value: s.Agent.Name, Pos: s.Agent.Pos}
 		for _, block := range s.Agent.Body {
 			switch {
 			case block.Let != nil:
@@ -302,12 +306,19 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 // --- Expression Conversion ---
 
 func FromExpr(e *parser.Expr) *Node {
+	if e == nil {
+		return &Node{Kind: "unknown"}
+	}
 	// Convert a parser expression into an AST node while preserving
 	// operator precedence. The parser flattens binary operations so we
 	// rebuild the tree using a simple shunting-yard style algorithm.
 
 	operands := []*Node{FromUnary(e.Binary.Left)}
-	ops := []string{}
+	type opInfo struct {
+		op  string
+		pos lexer.Position
+	}
+	ops := []opInfo{}
 
 	prec := func(op string) int {
 		switch op {
@@ -327,13 +338,13 @@ func FromExpr(e *parser.Expr) *Node {
 	}
 
 	reduce := func(p int) {
-		for len(ops) > 0 && prec(ops[len(ops)-1]) >= p {
-			op := ops[len(ops)-1]
+		for len(ops) > 0 && prec(ops[len(ops)-1].op) >= p {
+			info := ops[len(ops)-1]
 			ops = ops[:len(ops)-1]
 			right := operands[len(operands)-1]
 			left := operands[len(operands)-2]
 			operands = operands[:len(operands)-2]
-			operands = append(operands, &Node{Kind: "binary", Value: op, Children: []*Node{left, right}})
+			operands = append(operands, &Node{Kind: "binary", Value: info.op, Pos: info.pos, Children: []*Node{left, right}})
 		}
 	}
 
@@ -344,7 +355,7 @@ func FromExpr(e *parser.Expr) *Node {
 		}
 		reduce(prec(val))
 		operands = append(operands, FromPostfixExpr(op.Right))
-		ops = append(ops, val)
+		ops = append(ops, opInfo{op: val, pos: op.Pos})
 	}
 	reduce(0)
 
@@ -372,7 +383,7 @@ func FromUnary(u *parser.Unary) *Node {
 				}
 			}
 		}
-		n = &Node{Kind: "unary", Value: op, Children: []*Node{n}}
+		n = &Node{Kind: "unary", Value: op, Pos: u.Pos, Children: []*Node{n}}
 	}
 	return n
 }
@@ -381,7 +392,7 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 	n := FromPrimary(p.Target)
 	for _, op := range p.Ops {
 		if idx := op.Index; idx != nil {
-			idxNode := &Node{Kind: "index", Children: []*Node{n}}
+			idxNode := &Node{Kind: "index", Pos: idx.Pos, Children: []*Node{n}}
 			if idx.Colon == nil {
 				if idx.Start != nil {
 					idxNode.Children = append(idxNode.Children, FromExpr(idx.Start))
@@ -396,15 +407,15 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 			}
 			n = idxNode
 		} else if call := op.Call; call != nil {
-			callNode := &Node{Kind: "call", Children: []*Node{n}}
+			callNode := &Node{Kind: "call", Pos: call.Pos, Children: []*Node{n}}
 			for _, a := range call.Args {
 				callNode.Children = append(callNode.Children, FromExpr(a))
 			}
 			n = callNode
 		} else if cast := op.Cast; cast != nil {
-			n = &Node{Kind: "cast", Children: []*Node{n, FromTypeRef(cast.Type)}}
+			n = &Node{Kind: "cast", Pos: cast.Pos, Children: []*Node{n, FromTypeRef(cast.Type)}}
 		} else if field := op.Field; field != nil {
-			n = &Node{Kind: "selector", Value: field.Name, Children: []*Node{n}}
+			n = &Node{Kind: "selector", Value: field.Name, Pos: field.Pos, Children: []*Node{n}}
 		}
 	}
 	return n
@@ -413,7 +424,7 @@ func FromPostfixExpr(p *parser.PostfixExpr) *Node {
 func FromPrimary(p *parser.Primary) *Node {
 	switch {
 	case p.FunExpr != nil:
-		n := &Node{Kind: "funexpr"}
+		n := &Node{Kind: "funexpr", Pos: p.FunExpr.Pos}
 		for _, param := range p.FunExpr.Params {
 			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {
@@ -433,21 +444,21 @@ func FromPrimary(p *parser.Primary) *Node {
 		return n
 
 	case p.Call != nil:
-		n := &Node{Kind: "call", Value: p.Call.Func}
+		n := &Node{Kind: "call", Value: p.Call.Func, Pos: p.Call.Pos}
 		for _, arg := range p.Call.Args {
 			n.Children = append(n.Children, FromExpr(arg))
 		}
 		return n
 
 	case p.Selector != nil:
-		root := &Node{Kind: "selector", Value: p.Selector.Root}
+		root := &Node{Kind: "selector", Value: p.Selector.Root, Pos: p.Pos}
 		for _, field := range p.Selector.Tail {
 			root = &Node{Kind: "selector", Value: field, Children: []*Node{root}}
 		}
 		return root
 
 	case p.Struct != nil:
-		n := &Node{Kind: "struct", Value: p.Struct.Name}
+		n := &Node{Kind: "struct", Value: p.Struct.Name, Pos: p.Pos}
 		for _, field := range p.Struct.Fields {
 			n.Children = append(n.Children, &Node{
 				Kind:     "field",
@@ -458,17 +469,18 @@ func FromPrimary(p *parser.Primary) *Node {
 		return n
 
 	case p.List != nil:
-		n := &Node{Kind: "list"}
+		n := &Node{Kind: "list", Pos: p.Pos}
 		for _, el := range p.List.Elems {
 			n.Children = append(n.Children, FromExpr(el))
 		}
 		return n
 
 	case p.Map != nil:
-		n := &Node{Kind: "map"}
+		n := &Node{Kind: "map", Pos: p.Pos}
 		for _, entry := range p.Map.Items {
 			n.Children = append(n.Children, &Node{
 				Kind: "entry",
+				Pos:  entry.Pos,
 				Children: []*Node{
 					FromExpr(entry.Key),
 					FromExpr(entry.Value),
@@ -478,7 +490,7 @@ func FromPrimary(p *parser.Primary) *Node {
 		return n
 
 	case p.Query != nil:
-		n := &Node{Kind: "query", Value: p.Query.Var}
+		n := &Node{Kind: "query", Value: p.Query.Var, Pos: p.Pos}
 		n.Children = append(n.Children, &Node{Kind: "source", Children: []*Node{FromExpr(p.Query.Source)}})
 		for _, f := range p.Query.Froms {
 			fn := &Node{Kind: "from", Value: f.Var}
@@ -591,17 +603,19 @@ func FromPrimary(p *parser.Primary) *Node {
 	case p.Lit != nil:
 		switch {
 		case p.Lit.Float != nil:
-			return &Node{Kind: "float", Value: *p.Lit.Float}
+			return &Node{Kind: "float", Value: *p.Lit.Float, Pos: p.Lit.Pos}
 		case p.Lit.Int != nil:
-			return &Node{Kind: "int", Value: *p.Lit.Int}
+			return &Node{Kind: "int", Value: *p.Lit.Int, Pos: p.Lit.Pos}
 		case p.Lit.Str != nil:
-			return &Node{Kind: "string", Value: *p.Lit.Str}
+			return &Node{Kind: "string", Value: *p.Lit.Str, Pos: p.Lit.Pos}
 		case p.Lit.Bool != nil:
-			return &Node{Kind: "bool", Value: bool(*p.Lit.Bool)}
+			return &Node{Kind: "bool", Value: bool(*p.Lit.Bool), Pos: p.Lit.Pos}
+		case p.Lit.Null:
+			return &Node{Kind: "null", Pos: p.Lit.Pos}
 		}
 
 	case p.Group != nil:
-		return &Node{Kind: "group", Children: []*Node{FromExpr(p.Group)}}
+		return &Node{Kind: "group", Pos: p.Pos, Children: []*Node{FromExpr(p.Group)}}
 	}
 
 	return &Node{Kind: "unknown"}

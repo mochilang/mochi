@@ -1,0 +1,73 @@
+let dim: int = 16
+fun newPile(d: int): list<list<int>> {
+  var b: list<list<int>>
+  var y: int = 0
+  while (y < d) {
+    var row: list<int>
+    var x: int = 0
+    while (x < d) {
+      row = append(row, 0)
+      x = (x + 1)
+    }
+    b = append(b, row)
+    y = (y + 1)
+  }
+  return b
+}
+fun handlePile(pile: list<list<int>>, x: int, y: int): list<list<int>> {
+  if (pile[y][x] >= 4) {
+    pile[y][x] = (pile[y][x] - 4)
+    if (y > 0) {
+      pile[(y - 1)][x] = (pile[(y - 1)][x] + 1)
+      if (pile[(y - 1)][x] >= 4) {
+        pile = handlePile(pile, x, (y - 1))
+      }
+    }
+    if (x > 0) {
+      pile[y][(x - 1)] = (pile[y][(x - 1)] + 1)
+      if (pile[y][(x - 1)] >= 4) {
+        pile = handlePile(pile, (x - 1), y)
+      }
+    }
+    if (y < (dim - 1)) {
+      pile[(y + 1)][x] = (pile[(y + 1)][x] + 1)
+      if (pile[(y + 1)][x] >= 4) {
+        pile = handlePile(pile, x, (y + 1))
+      }
+    }
+    if (x < (dim - 1)) {
+      pile[y][(x + 1)] = (pile[y][(x + 1)] + 1)
+      if (pile[y][(x + 1)] >= 4) {
+        pile = handlePile(pile, (x + 1), y)
+      }
+    }
+    pile = handlePile(pile, x, y)
+  }
+  return pile
+}
+fun drawPile(pile: list<list<int>>, d: int): any {
+  let chars: list<string> = [" ", "░", "▓", "█"]
+  var row: int = 0
+  while (row < d) {
+    var line: string = ""
+    var col: int = 0
+    while (col < d) {
+      var v: int = pile[row][col]
+      if (v > 3) {
+        v = 3
+      }
+      line = (line + chars[v])
+      col = (col + 1)
+    }
+    print(line)
+    row = (row + 1)
+  }
+}
+fun main(): any {
+  var pile: list<list<int>> = newPile(16)
+  let hdim: int = 7
+  pile[hdim][hdim] = 16
+  pile = handlePile(pile, hdim, hdim)
+  drawPile(pile, 16)
+}
+main()

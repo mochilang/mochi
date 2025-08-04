@@ -1,0 +1,8 @@
+error[A002]: type mismatch for d: Beast vs Dog
+  --> /workspace/mochi/tests/rosetta/x/Mochi/abstract-type.mochi:34:3
+
+ 34 |   let d: Beast = Dog { kind: "labrador", name: "Max" }
+    |   ^
+
+help:
+  Ensure d matches

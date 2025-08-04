@@ -1,0 +1,13 @@
+var door: int = 1
+var incrementer: int = 0
+for current in 1..101 {
+  var line: string = (("Door " + str(current)) + " ")
+  if (current == door) {
+    line = (line + "Open")
+    incrementer = (incrementer + 1)
+    door = ((door + (2 * incrementer)) + 1)
+  } else {
+    line = (line + "Closed")
+  }
+  print(line)
+}

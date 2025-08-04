@@ -1,0 +1,8 @@
+error[A011]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/100-prisoners.mochi:73:32
+
+ 73 |   let rf = (pardoned as float) / (trials as float) * 100.0
+    |                                ^
+
+help:
+  Use numeric operands

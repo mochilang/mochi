@@ -1,0 +1,8 @@
+error[A001]: var doors missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/100-doors.mochi:5:1
+
+  5 | var doors = []
+    | ^
+
+help:
+  Declare doors with a value

@@ -5,12 +5,22 @@ import (
 	"strings"
 )
 
+var builtinFns = map[string]string{
+	"len":    "int",
+	"int":    "int",
+	"float":  "float",
+	"string": "string",
+	"bool":   "bool",
+	"now":    "int",
+	"str":    "string",
+}
+
 // Decorate performs a simple type inference on the program and makes all
 // variable declarations explicit. It returns a new Program with type
 // annotations inserted. If type checking fails an error is returned.
 func Decorate(p *Program) (*Program, error) {
 	if p == nil || p.File == nil {
-		return nil, fmt.Errorf("nil program")
+		return nil, errNilProgram(nil)
 	}
 	cp := cloneProgram(p)
 	env := map[string]*Node{}
@@ -31,9 +41,60 @@ func decorateNode(n *Node, env map[string]*Node) error {
 				return err
 			}
 		}
+	case "type":
+		if len(n.Children) > 0 && n.Children[0].Kind == "field" {
+			env[n.Text] = cloneNode(n)
+			return nil
+		}
+		for _, c := range n.Children {
+			if err := decorateNode(c, env); err != nil {
+				return err
+			}
+		}
+	case "fun":
+		idx := 0
+		for idx < len(n.Children) && n.Children[idx].Kind == "param" {
+			idx++
+		}
+		var ret *Node
+		if idx < len(n.Children) && n.Children[idx].Kind == "type" {
+			ret = n.Children[idx]
+			idx++
+		} else {
+			ret = &Node{Kind: "type", Text: "any"}
+			n.Children = append(n.Children, nil)
+			copy(n.Children[idx+1:], n.Children[idx:])
+			n.Children[idx] = ret
+			idx++
+		}
+		env[n.Text] = cloneNode(ret)
+		local := map[string]*Node{}
+		for k, v := range env {
+			local[k] = cloneNode(v)
+		}
+		for i := 0; i < idx; i++ {
+			if n.Children[i].Kind != "param" {
+				continue
+			}
+			param := n.Children[i]
+			var pt *Node
+			if len(param.Children) > 0 {
+				pt = param.Children[0]
+			} else {
+				pt = &Node{Kind: "type", Text: "any"}
+				param.Children = append([]*Node{pt}, param.Children...)
+			}
+			local[param.Text] = cloneNode(pt)
+		}
+		for _, c := range n.Children[idx:] {
+			if err := decorateNode(c, local); err != nil {
+				return err
+			}
+		}
+		return nil
 	case "let", "var":
 		if len(n.Children) == 0 {
-			return fmt.Errorf("%s %s missing expression", n.Kind, n.Text)
+			return errMissingExpr(n.Kind, n.Text, n)
 		}
 		if n.Children[0].Kind == "type" {
 			// already typed, verify expression matches if present
@@ -44,7 +105,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 					return err
 				}
 				if !typeEqual(want, got) {
-					return fmt.Errorf("type mismatch for %s: %s vs %s", n.Text, typeString(want), typeString(got))
+					return errVarTypeMismatch(n.Text, want, got, n)
 				}
 			}
 			env[n.Text] = cloneNode(n.Children[0])
@@ -80,14 +141,49 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 	case "bool":
 		return &Node{Kind: "type", Text: "bool"}, nil
 	case "selector":
-		t, ok := env[n.Text]
-		if !ok {
-			return nil, fmt.Errorf("undefined variable %s", n.Text)
+		if len(n.Children) == 0 {
+			t, ok := env[n.Text]
+			if !ok {
+				return nil, errUndefinedVar(n.Text, n)
+			}
+			return cloneNode(t), nil
 		}
-		return cloneNode(t), nil
+		recv, err := inferType(n.Children[0], env)
+		if err != nil {
+			return nil, err
+		}
+		def, ok := env[recv.Text]
+		if !ok || len(def.Children) == 0 || def.Children[0].Kind != "field" {
+			return nil, errNotStruct(recv, n)
+		}
+		for _, f := range def.Children {
+			if f.Kind == "field" && f.Text == n.Text {
+				if len(f.Children) > 0 {
+					return cloneNode(f.Children[0]), nil
+				}
+				return &Node{Kind: "type", Text: "any"}, nil
+			}
+		}
+		return nil, errUnknownField(n.Text, def, n)
+	case "call":
+		var fname string
+		if n.Text != "" {
+			fname = n.Text
+		} else if len(n.Children) > 0 && n.Children[0].Kind == "selector" {
+			fname = n.Children[0].Text
+		}
+		if fname != "" {
+			if t, ok := env[fname]; ok {
+				return cloneNode(t), nil
+			}
+			if bt, ok := builtinFns[fname]; ok {
+				return &Node{Kind: "type", Text: bt}, nil
+			}
+		}
+		return &Node{Kind: "type", Text: "any"}, nil
 	case "group":
 		if len(n.Children) != 1 {
-			return nil, fmt.Errorf("group expects one child")
+			return nil, errGroupOneChild(n)
 		}
 		return inferType(n.Children[0], env)
 	case "list":
@@ -104,7 +200,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				return nil, err
 			}
 			if !typeEqual(elem, t) {
-				return nil, fmt.Errorf("list element type mismatch")
+				return nil, errListElemMismatch(n)
 			}
 		}
 		return &Node{Kind: "type", Text: "list", Children: []*Node{elem}}, nil
@@ -114,7 +210,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		}
 		first := n.Children[0]
 		if len(first.Children) < 2 {
-			return nil, fmt.Errorf("invalid map entry")
+			return nil, errInvalidMapEntry(first)
 		}
 		keyType, err := inferKeyType(first.Children[0], env)
 		if err != nil {
@@ -126,7 +222,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		}
 		for _, e := range n.Children[1:] {
 			if len(e.Children) < 2 {
-				return nil, fmt.Errorf("invalid map entry")
+				return nil, errInvalidMapEntry(e)
 			}
 			k, err := inferKeyType(e.Children[0], env)
 			if err != nil {
@@ -137,13 +233,47 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				return nil, err
 			}
 			if !typeEqual(keyType, k) || !typeEqual(valType, v) {
-				return nil, fmt.Errorf("map entry type mismatch")
+				return nil, errMapEntryTypeMismatch(e)
 			}
 		}
 		return &Node{Kind: "type", Text: "map", Children: []*Node{keyType, valType}}, nil
+	case "index":
+		if len(n.Children) != 2 {
+			return &Node{Kind: "type", Text: "any"}, nil
+		}
+		base, err := inferType(n.Children[0], env)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := inferType(n.Children[1], env)
+		if err != nil {
+			return nil, err
+		}
+		switch base.Text {
+		case "list":
+			if idx.Text != "int" {
+				return nil, errListIndexNotInt(n)
+			}
+			if len(base.Children) > 0 {
+				return cloneNode(base.Children[0]), nil
+			}
+			return &Node{Kind: "type", Text: "any"}, nil
+		case "map":
+			if len(base.Children) < 2 {
+				return &Node{Kind: "type", Text: "any"}, nil
+			}
+			keyT := base.Children[0]
+			valT := base.Children[1]
+			if !typeEqual(keyT, idx) {
+				return nil, errMapIndexTypeMismatch(keyT, idx, n)
+			}
+			return cloneNode(valT), nil
+		default:
+			return nil, errIndexNonIndexable(base, n)
+		}
 	case "binary":
 		if len(n.Children) != 2 {
-			return nil, fmt.Errorf("binary expects two operands")
+			return nil, errBinaryTwoOperands(n)
 		}
 		left, err := inferType(n.Children[0], env)
 		if err != nil {
@@ -156,12 +286,12 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		switch n.Text {
 		case "&&", "||":
 			if left.Text != "bool" || right.Text != "bool" {
-				return nil, fmt.Errorf("boolean operator on non-bool")
+				return nil, errBoolOpNonBool(n)
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "==", "!=", "<", ">", "<=", ">=":
 			if !typeEqual(left, right) {
-				return nil, fmt.Errorf("comparison type mismatch")
+				return nil, errComparisonMismatch(n)
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "+", "-", "*", "/", "%":
@@ -169,24 +299,24 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				if n.Text == "+" && left.Text == "string" && right.Text == "string" {
 					return &Node{Kind: "type", Text: "string"}, nil
 				}
-				return nil, fmt.Errorf("invalid string operation")
+				return nil, errInvalidStringOp(n)
 			}
 			if left.Text == "float" || right.Text == "float" {
 				if !isNumeric(left.Text) || !isNumeric(right.Text) {
-					return nil, fmt.Errorf("numeric op with non-numeric")
+					return nil, errNumericOpNonNumeric(n)
 				}
 				return &Node{Kind: "type", Text: "float"}, nil
 			}
 			if left.Text == "int" && right.Text == "int" {
 				return &Node{Kind: "type", Text: "int"}, nil
 			}
-			return nil, fmt.Errorf("numeric op with non-numeric")
+			return nil, errNumericOpNonNumeric(n)
 		default:
-			return nil, fmt.Errorf("unknown binary operator %s", n.Text)
+			return nil, errUnknownBinaryOp(n.Text, n)
 		}
 	case "unary":
 		if len(n.Children) != 1 {
-			return nil, fmt.Errorf("unary expects one operand")
+			return nil, errUnaryOneOperand(n)
 		}
 		t, err := inferType(n.Children[0], env)
 		if err != nil {
@@ -195,17 +325,42 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		switch n.Text {
 		case "!":
 			if t.Text != "bool" {
-				return nil, fmt.Errorf("! on non-bool")
+				return nil, errBangNonBool(n)
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "+", "-":
 			if !isNumeric(t.Text) {
-				return nil, fmt.Errorf("numeric unary on non-numeric")
+				return nil, errNumericOpNonNumeric(n)
 			}
 			return t, nil
 		default:
-			return nil, fmt.Errorf("unknown unary operator %s", n.Text)
+			return nil, errUnknownUnaryOp(n.Text, n)
 		}
+	case "struct":
+		def, ok := env[n.Text]
+		if ok && len(def.Children) > 0 && def.Children[0].Kind == "field" {
+			for _, f := range n.Children {
+				if len(f.Children) == 0 {
+					continue
+				}
+				fieldDef := findField(def, f.Text)
+				if fieldDef == nil {
+					return nil, errUnknownField(f.Text, def, f)
+				}
+				want := &Node{Kind: "type", Text: "any"}
+				if len(fieldDef.Children) > 0 {
+					want = fieldDef.Children[0]
+				}
+				got, err := inferType(f.Children[0], env)
+				if err != nil {
+					return nil, err
+				}
+				if !typeEqual(want, got) {
+					return nil, errVarTypeMismatch(f.Text, want, got, f)
+				}
+			}
+		}
+		return &Node{Kind: "type", Text: n.Text}, nil
 	default:
 		// Fallback to any
 		return &Node{Kind: "type", Text: "any"}, nil
@@ -259,6 +414,18 @@ func cloneProgram(p *Program) *Program {
 		return &Program{}
 	}
 	return &Program{File: &ProgramNode{Node: *cloneNode(&p.File.Node)}}
+}
+
+func findField(def *Node, name string) *Node {
+	if def == nil {
+		return nil
+	}
+	for _, f := range def.Children {
+		if f.Kind == "field" && f.Text == name {
+			return f
+		}
+	}
+	return nil
 }
 
 func typeString(n *Node) string {

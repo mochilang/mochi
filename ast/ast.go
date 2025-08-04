@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
 )
 
 // Node is a simplified, uniform AST representation (inspired by Lisp)
 type Node struct {
-	Kind     string
-	Value    any
+	Kind  string
+	Value any
+	Pos   lexer.Position
+
 	Children []*Node
 }
 

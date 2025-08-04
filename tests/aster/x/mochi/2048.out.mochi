@@ -1,0 +1,327 @@
+let SIZE: int = 4
+type Board {
+  cells: list<list<int>>
+}
+type SpawnResult {
+  board: Board
+  full: bool
+}
+type SlideResult {
+  row: list<int>
+  gain: int
+}
+type MoveResult {
+  board: Board
+  score: int
+  moved: bool
+}
+fun newBoard(): Board {
+  var b: list<list<int>>
+  var y: int = 0
+  while (y < SIZE) {
+    var row: list<int>
+    var x: int = 0
+    while (x < SIZE) {
+      row = append(row, 0)
+      x = (x + 1)
+    }
+    b = append(b, row)
+    y = (y + 1)
+  }
+  return Board {cells: b}
+}
+fun spawnTile(b: Board): SpawnResult {
+  var grid: list<list<int>> = b.cells
+  var empty: list<list<int>>
+  var y: int = 0
+  while (y < SIZE) {
+    var x: int = 0
+    while (x < SIZE) {
+      if (grid[y][x] == 0) {
+        empty = append(empty, [x, y])
+      }
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  if (len(empty) == 0) {
+    return SpawnResult {board: b, full: true}
+  }
+  var idx: int = (now() % len(empty))
+  let cell: list<int> = empty[idx]
+  var val: int = 4
+  if ((now() % 10) < 9) {
+    val = 2
+  }
+  grid[cell[1]][cell[0]] = val
+  return SpawnResult {board: Board {cells: grid}, full: (len(empty) == 1)}
+}
+fun pad(n: int): string {
+  var s: string = str(n)
+  var pad: int = (4 - len(s))
+  var i: int = 0
+  var out: string = ""
+  while (i < pad) {
+    out = (out + " ")
+    i = (i + 1)
+  }
+  return (out + s)
+}
+fun draw(b: Board, score: int): any {
+  print(("Score: " + str(score)))
+  var y: int = 0
+  while (y < SIZE) {
+    print("+----+----+----+----+")
+    var line: string = "|"
+    var x: int = 0
+    while (x < SIZE) {
+      var v: int = b.cells[y][x]
+      if (v == 0) {
+        line = (line + "    |")
+      } else {
+        line = ((line + pad(v)) + "|")
+      }
+      x = (x + 1)
+    }
+    print(line)
+    y = (y + 1)
+  }
+  print("+----+----+----+----+")
+  print("W=Up S=Down A=Left D=Right Q=Quit")
+}
+fun reverseRow(r: list<int>): list<int> {
+  var out: list<int>
+  var i: int = (len(r) - 1)
+  while (i >= 0) {
+    out = append(out, r[i])
+    i = (i - 1)
+  }
+  return out
+}
+fun slideLeft(row: list<int>): SlideResult {
+  var xs: list<int>
+  var i: int = 0
+  while (i < len(row)) {
+    if (row[i] != 0) {
+      xs = append(xs, row[i])
+    }
+    i = (i + 1)
+  }
+  var res: list<int>
+  var gain: int = 0
+  i = 0
+  while (i < len(xs)) {
+    if (((i + 1) < len(xs)) && (xs[i] == xs[(i + 1)])) {
+      let v: int = (xs[i] * 2)
+      gain = (gain + v)
+      res = append(res, v)
+      i = (i + 2)
+    } else {
+      res = append(res, xs[i])
+      i = (i + 1)
+    }
+  }
+  while (len(res) < SIZE) {
+    res = append(res, 0)
+  }
+  return SlideResult {row: res, gain: gain}
+}
+fun moveLeft(b: Board, score: int): MoveResult {
+  var grid: list<list<int>> = b.cells
+  var moved: bool = false
+  var y: int = 0
+  while (y < SIZE) {
+    let r: SlideResult = slideLeft(grid[y])
+    let new: list<int> = r.row
+    score = (score + r.gain)
+    var x: int = 0
+    while (x < SIZE) {
+      if (grid[y][x] != new[x]) {
+        moved = true
+      }
+      grid[y][x] = new[x]
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  return MoveResult {board: Board {cells: grid}, score: score, moved: moved}
+}
+fun moveRight(b: Board, score: int): MoveResult {
+  var grid: list<list<int>> = b.cells
+  var moved: bool = false
+  var y: int = 0
+  while (y < SIZE) {
+    var rev: list<int> = reverseRow(grid[y])
+    let r: SlideResult = slideLeft(rev)
+    rev = r.row
+    score = (score + r.gain)
+    rev = reverseRow(rev)
+    var x: int = 0
+    while (x < SIZE) {
+      if (grid[y][x] != rev[x]) {
+        moved = true
+      }
+      grid[y][x] = rev[x]
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  return MoveResult {board: Board {cells: grid}, score: score, moved: moved}
+}
+fun getCol(b: Board, x: int): list<int> {
+  var col: list<int>
+  var y: int = 0
+  while (y < SIZE) {
+    col = append(col, b.cells[y][x])
+    y = (y + 1)
+  }
+  return col
+}
+fun setCol(b: Board, x: int, col: list<int>): any {
+  var rows: list<list<int>> = b.cells
+  var y: int = 0
+  while (y < SIZE) {
+    var row: list<int> = rows[y]
+    row[x] = col[y]
+    rows[y] = row
+    y = (y + 1)
+  }
+  b.cells = rows
+}
+fun moveUp(b: Board, score: int): MoveResult {
+  var grid: list<list<int>> = b.cells
+  var moved: bool = false
+  var x: int = 0
+  while (x < SIZE) {
+    var col: list<int> = getCol(b, x)
+    let r: SlideResult = slideLeft(col)
+    let new: list<int> = r.row
+    score = (score + r.gain)
+    var y: int = 0
+    while (y < SIZE) {
+      if (grid[y][x] != new[y]) {
+        moved = true
+      }
+      grid[y][x] = new[y]
+      y = (y + 1)
+    }
+    x = (x + 1)
+  }
+  return MoveResult {board: Board {cells: grid}, score: score, moved: moved}
+}
+fun moveDown(b: Board, score: int): MoveResult {
+  var grid: list<list<int>> = b.cells
+  var moved: bool = false
+  var x: int = 0
+  while (x < SIZE) {
+    var col: list<int> = reverseRow(getCol(b, x))
+    let r: SlideResult = slideLeft(col)
+    col = r.row
+    score = (score + r.gain)
+    col = reverseRow(col)
+    var y: int = 0
+    while (y < SIZE) {
+      if (grid[y][x] != col[y]) {
+        moved = true
+      }
+      grid[y][x] = col[y]
+      y = (y + 1)
+    }
+    x = (x + 1)
+  }
+  return MoveResult {board: Board {cells: grid}, score: score, moved: moved}
+}
+fun hasMoves(b: Board): bool {
+  var y: int = 0
+  while (y < SIZE) {
+    var x: int = 0
+    while (x < SIZE) {
+      if (b.cells[y][x] == 0) {
+        return true
+      }
+      if (((x + 1) < SIZE) && (b.cells[y][x] == b.cells[y][(x + 1)])) {
+        return true
+      }
+      if (((y + 1) < SIZE) && (b.cells[y][x] == b.cells[(y + 1)][x])) {
+        return true
+      }
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  return false
+}
+fun has2048(b: Board): bool {
+  var y: int = 0
+  while (y < SIZE) {
+    var x: int = 0
+    while (x < SIZE) {
+      if (b.cells[y][x] >= 2048) {
+        return true
+      }
+      x = (x + 1)
+    }
+    y = (y + 1)
+  }
+  return false
+}
+var board: Board = newBoard()
+var r: SpawnResult = spawnTile(board)
+board = r.board
+var full: bool = r.full
+r = spawnTile(board)
+board = r.board
+full = r.full
+var score: int = 0
+draw(board, score)
+while true {
+  print("Move: ")
+  let cmd: any = input()
+  var moved: bool = false
+  if ((cmd == "a") || (cmd == "A")) {
+    let m: MoveResult = moveLeft(board, score)
+    board = m.board
+    score = m.score
+    moved = m.moved
+  }
+  if ((cmd == "d") || (cmd == "D")) {
+    let m: MoveResult = moveRight(board, score)
+    board = m.board
+    score = m.score
+    moved = m.moved
+  }
+  if ((cmd == "w") || (cmd == "W")) {
+    let m: MoveResult = moveUp(board, score)
+    board = m.board
+    score = m.score
+    moved = m.moved
+  }
+  if ((cmd == "s") || (cmd == "S")) {
+    let m: MoveResult = moveDown(board, score)
+    board = m.board
+    score = m.score
+    moved = m.moved
+  }
+  if ((cmd == "q") || (cmd == "Q")) {
+    break
+  }
+  if moved {
+    let r2: SpawnResult = spawnTile(board)
+    board = r2.board
+    full = r2.full
+    if (full && (!hasMoves(board))) {
+      draw(board, score)
+      print("Game Over")
+      break
+    }
+  }
+  draw(board, score)
+  if has2048(board) {
+    print("You win!")
+    break
+  }
+  if !hasMoves(board) {
+    print("Game Over")
+    break
+  }
+}
