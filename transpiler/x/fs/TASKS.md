@@ -1,3 +1,7 @@
+## Progress (2025-08-04 20:44 +0700)
+- fs transpiler: fix array indexing and preserve global order
+- Generated F# for 103/105 programs (103 passing)
+
 ## Progress (2025-08-04 20:03 +0700)
 - scheme: add fetch support and rosetta outputs
 - Generated F# for 103/105 programs (103 passing)

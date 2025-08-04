@@ -3528,26 +3528,37 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
-		if transpileEnv != nil {
-			if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
-				if ft, ok := vt.(types.FuncType); ok {
-					if inner, ok2 := ft.Return.(types.FuncType); ok2 {
-						inner.Return = types.AnyType{}
-						ft.Return = inner
-					} else {
-						ft.Return = types.AnyType{}
-					}
-					transpileEnv.SetVar(st.Fun.Name, ft, false)
-				}
-			}
-		}
-		prevReturn := currentReturn
-		currentReturn = retType
-		body := make([]Stmt, len(st.Fun.Body))
-		for i, s := range st.Fun.Body {
-			cs, err := convertStmt(s)
-			if err != nil {
-				varTypes = save
+               if transpileEnv != nil {
+                       if vt, err := transpileEnv.GetVar(st.Fun.Name); err == nil {
+                               if ft, ok := vt.(types.FuncType); ok {
+                                       if inner, ok2 := ft.Return.(types.FuncType); ok2 {
+                                               inner.Return = types.AnyType{}
+                                               ft.Return = inner
+                                       } else {
+                                               ft.Return = types.AnyType{}
+                                       }
+                                       transpileEnv.SetVar(st.Fun.Name, ft, false)
+                               }
+                       }
+               }
+               // Register function signature before processing body so that recursive
+               // calls can correctly infer the return type.
+               if varTypes == nil {
+                       varTypes = map[string]string{}
+               }
+               varTypes[st.Fun.Name] = retType
+               if definedFuncs == nil {
+                       definedFuncs = map[string]bool{}
+               }
+               definedFuncs[st.Fun.Name] = true
+
+               prevReturn := currentReturn
+               currentReturn = retType
+               body := make([]Stmt, len(st.Fun.Body))
+               for i, s := range st.Fun.Body {
+                       cs, err := convertStmt(s)
+                       if err != nil {
+                               varTypes = save
 				currentReturn = prevReturn
 				return nil, err
 			}
@@ -3941,19 +3952,24 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					fn = "String.length"
 				case "map":
 					fn = "Seq.length"
-				case "group":
-					if id, ok := args[0].(*IdentExpr); ok {
-						field := &FieldExpr{Target: id, Name: "items"}
-						return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
-					}
-				case "obj":
-					cast := &CastExpr{Expr: args[0], Type: "string"}
-					return &CallExpr{Func: "String.length", Args: []Expr{cast}}, nil
-				}
-			}
-			return &CallExpr{Func: fn, Args: args}, nil
-		case "str":
-			if len(args) == 1 {
+                               case "group":
+                                       if id, ok := args[0].(*IdentExpr); ok {
+                                               field := &FieldExpr{Target: id, Name: "items"}
+                                               return &CallExpr{Func: "Array.length", Args: []Expr{field}}, nil
+                                       }
+                               case "obj":
+                                       // Fallback for values with dynamic type. Attempt to treat the
+                                       // value as an array; if it's not, the generated code may fail
+                                       // at runtime, but this handles common cases where `len` is used
+                                       // on a list packaged as `any`.
+                                       cast := &CastExpr{Expr: args[0], Type: "System.Array"}
+                                       field := &FieldExpr{Target: cast, Name: "Length"}
+                                       return field, nil
+                               }
+                       }
+                       return &CallExpr{Func: fn, Args: args}, nil
+               case "str":
+                       if len(args) == 1 {
 				t := inferType(args[0])
 				if t == "array" || strings.HasSuffix(t, " array") || strings.HasSuffix(t, " list") || strings.HasPrefix(t, "list<") {
 					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
