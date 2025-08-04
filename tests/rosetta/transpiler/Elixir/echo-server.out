@@ -1,0 +1,8 @@
+0: 127.0.0.1:12321 <-> 127.0.0.1
+hello
+0: closed
+{
+  "duration_us": 3004,
+  "memory_bytes": 0,
+  "name": "main"
+}

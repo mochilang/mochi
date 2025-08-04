@@ -1,0 +1,31 @@
+eban numbers up to and including 1000:
+"2 4 6 30 32 34 36 40 42 44 46 50 52 54 56 60 62 64 66"
+count = 19
+
+eban numbers between 1000 and 4000 (inclusive):
+"2000 2002 2004 2006 2030 2032 2034 2036 2040 2042 2044 2046 2050 2052 2054 2056 2060 2062 2064 2066 4000"
+count = 21
+
+eban numbers up to and including 10000:
+count = 79
+
+eban numbers up to and including 100000:
+count = 399
+
+eban numbers up to and including 1000000:
+count = 399
+
+eban numbers up to and including 10000000:
+count = 1599
+
+eban numbers up to and including 100000000:
+count = 7999
+
+eban numbers up to and including 1000000000:
+count = 7999
+
+{
+  "duration_us": 25705,
+  "memory_bytes": 17672,
+  "name": "main"
+}

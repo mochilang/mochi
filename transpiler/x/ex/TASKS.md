@@ -1,5 +1,5 @@
-## Progress (2025-08-04 10:46 +0700)
-- Commit 60dca8c3de: kt: add split helper and handle pow2/nullable vars
+## Progress (2025-08-04 15:54 +0700)
+- Commit 3e64fb3e53: handle map iteration in Kotlin transpiler
 - Generated Elixir for 102/105 programs
 - Updated README checklist and outputs
 - Improved code emission and type inference
