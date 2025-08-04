@@ -31,6 +31,10 @@ function _str($x) {
     if ($x === null) return 'null';
     return strval($x);
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _iadd($a, $b) {
     if (function_exists('bcadd')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -115,7 +119,7 @@ $__start = _now();
   if (!isPrime($n) && $n % 3 != 0 && $n % 5 != 0) {
   $bn = $n;
   if (_imod($repunit, $bn) == 0) {
-  $deceptive = array_merge($deceptive, [$n]);
+  $deceptive = _append($deceptive, $n);
   $count = $count + 1;
 };
 }

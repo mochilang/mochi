@@ -34,6 +34,10 @@ function _str($x) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 function _intdiv($a, $b) {
     if (function_exists('bcdiv')) {
         $sa = is_int($a) ? strval($a) : (is_string($a) ? $a : sprintf('%.0f', $a));
@@ -51,13 +55,13 @@ $__start = _now();
   $rev = [];
   $x = $n;
   while ($x > 0) {
-  $rev = array_merge($rev, [$x % 10]);
+  $rev = _append($rev, $x % 10);
   $x = intval((_intdiv($x, 10)));
 };
   $out = [];
   $i = count($rev) - 1;
   while ($i >= 0) {
-  $out = array_merge($out, [$rev[$i]]);
+  $out = _append($out, $rev[$i]);
   $i = $i - 1;
 };
   return $out;
@@ -102,7 +106,7 @@ $__start = _now();
   $i = 0;
   while ($i < strlen($s)) {
   if ($i + strlen($sep) <= strlen($s) && substr($s, $i, $i + strlen($sep) - $i) == $sep) {
-  $parts = array_merge($parts, [$cur]);
+  $parts = _append($parts, $cur);
   $cur = '';
   $i = $i + strlen($sep);
 } else {
@@ -110,7 +114,7 @@ $__start = _now();
   $i = $i + 1;
 }
 };
-  $parts = array_merge($parts, [$cur]);
+  $parts = _append($parts, $cur);
   return $parts;
 };
   function mochi_parseIntStr($str) {
@@ -176,7 +180,7 @@ $__start = _now();
 }
 };
   if ($count == 1) {
-  $cyclops = array_merge($cyclops, [$i]);
+  $cyclops = _append($cyclops, $i);
 };
 }
   $i = $i + 1;
@@ -198,7 +202,7 @@ First such number > 10 million is ' . commatize($fi[0]) . ' at zero-based index 
   $primes = [];
   foreach ($cyclops as $n) {
   if (isPrime($n)) {
-  $primes = array_merge($primes, [$n]);
+  $primes = _append($primes, $n);
 }
 };
   echo rtrim('
@@ -223,10 +227,10 @@ First such number > 10 million is ' . commatize($fp[0]) . ' at zero-based index 
   $splitp = explode('0', $ps);
   $noMiddle = parseIntStr($splitp[0] . $splitp[1], 10);
   if (isPrime($noMiddle)) {
-  $bpcyclops = array_merge($bpcyclops, [$p]);
+  $bpcyclops = _append($bpcyclops, $p);
 }
   if ($ps == reverseStr($ps)) {
-  $ppcyclops = array_merge($ppcyclops, [$p]);
+  $ppcyclops = _append($ppcyclops, $p);
 }
 };
   echo rtrim('
@@ -263,7 +267,7 @@ First such number > 10 million is ' . commatize($fpp[0]) . ' at zero-based index
 };
   main();
 $__end = _now();
-$__end_mem = memory_get_usage();
+$__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));
 $__mem_diff = max(0, $__end_mem - $__start_mem);
 $__bench = ["duration_us" => $__duration, "memory_bytes" => $__mem_diff, "name" => "main"];

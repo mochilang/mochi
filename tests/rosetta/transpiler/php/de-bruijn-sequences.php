@@ -34,6 +34,10 @@ function _str($x) {
 function parseIntStr($s, $base = 10) {
     return intval($s, intval($base));
 }
+function _append($arr, $x) {
+    $arr[] = $x;
+    return $arr;
+}
 $__start_mem = memory_get_usage();
 $__start = _now();
   function dbRec($k, $n, $t, $p, &$a, $seq) {
@@ -41,7 +45,7 @@ $__start = _now();
   if ($n % $p == 0) {
   $j = 1;
   while ($j <= $p) {
-  $seq = array_merge($seq, [$a[$j]]);
+  $seq = _append($seq, $a[$j]);
   $j = $j + 1;
 };
 };
@@ -66,7 +70,7 @@ $__start = _now();
   $a = [];
   $i = 0;
   while ($i < $k * $n) {
-  $a = array_merge($a, [0]);
+  $a = _append($a, 0);
   $i = $i + 1;
 };
   $seq = [];
@@ -105,7 +109,7 @@ $__start = _now();
   $found = [];
   $i = 0;
   while ($i < 10000) {
-  $found = array_merge($found, [0]);
+  $found = _append($found, 0);
   $i = $i + 1;
 };
   $j = 0;
@@ -121,10 +125,10 @@ $__start = _now();
   $k = 0;
   while ($k < 10000) {
   if ($found[$k] == 0) {
-  $errs = array_merge($errs, ['    PIN number ' . padLeft($k, 4) . ' missing']);
+  $errs = _append($errs, '    PIN number ' . padLeft($k, 4) . ' missing');
 } else {
   if ($found[$k] > 1) {
-  $errs = array_merge($errs, ['    PIN number ' . padLeft($k, 4) . ' occurs ' . _str($found[$k]) . ' times']);
+  $errs = _append($errs, '    PIN number ' . padLeft($k, 4) . ' occurs ' . _str($found[$k]) . ' times');
 };
 }
   $k = $k + 1;
