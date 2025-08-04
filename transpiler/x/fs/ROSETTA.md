@@ -426,7 +426,7 @@ This file is auto-generated from rosetta tests.
 | 419 | filter | ✓ | 336µs | 45.4 KB |
 | 420 | find-chess960-starting-position-identifier-2 | ✓ | 310µs | 55.4 KB |
 | 421 | find-chess960-starting-position-identifier | ✓ | 304µs | 54.3 KB |
-| 422 | find-common-directory-path | ✓ | 359µs | 48.0 KB |
+| 422 | find-common-directory-path | ✓ | 515µs | 42.5 KB |
 | 423 | find-duplicate-files | ✓ | 470µs | 57.2 KB |
 | 424 | find-largest-left-truncatable-prime-in-a-given-base | ✓ | 893µs | 45.9 KB |
 | 425 | find-limit-of-recursion | ✓ | 350µs | 49.8 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-05 00:41 +0700
+Last updated: 2025-08-05 01:14 +0700
