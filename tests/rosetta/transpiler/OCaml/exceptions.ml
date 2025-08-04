@@ -27,10 +27,26 @@ let nil = Obj.repr 0
 
 exception Return
 
-let rec main () =
+let rec foo () =
+  let __ret = ref "" in
+  (try
+  print_endline ("let's foo...");
+  let a = ref (([] : int list)) in
+  if (12 >= List.length (!a)) then (
+  __ret := (Obj.magic (("runtime error: index out of range [12] with length " ^ (string_of_int (List.length (!a))))) : string); raise Return
+  );
+  a := (List.mapi (fun __i __x -> if __i = 12 then 0 else __x) (!a));
+  __ret := (Obj.magic ("") : string); raise Return
+  with Return -> !__ret)
+
+and main () =
   let __ret = ref (Obj.magic 0) in
   (try
-  print_endline ("Hello World!");
+  let err = foo () in
+  if (String.length (err) > 0) then (
+  print_endline (("Recovered from " ^ err));
+  );
+  print_endline ("glad that's over.");
     !__ret
   with Return -> !__ret)
 

@@ -593,10 +593,17 @@ func typeString(t types.Type) string {
 		return "map-" + val
 	case types.FuncType:
 		ret := typeString(tt.Return)
-		if ret != "" {
-			return "func-" + ret
+		if ret == "" {
+			ret = ""
 		}
-		return "func"
+		n := len(tt.Params)
+		if n == 0 {
+			n = 1
+		}
+		for i := 0; i < n; i++ {
+			ret = "func-" + ret
+		}
+		return ret
 	case types.StructType:
 		fields := make([]string, len(tt.Order))
 		for i, name := range tt.Order {
@@ -5111,12 +5118,11 @@ func convertFunExpr(fn *parser.FunExpr, env *types.Env, vars map[string]VarInfo)
 			body = append(casts, body...)
 		}
 		var ret Expr
-		if last := fn.BlockBody[len(fn.BlockBody)-1]; last.Return != nil && last.Return.Value != nil {
-			r, _, err := convertExpr(last.Return.Value, child, fnVars)
-			if err != nil {
-				return nil, "", err
+		if len(body) > 0 {
+			if r, ok := body[len(body)-1].(*ReturnStmt); ok {
+				ret = r.Expr
+				body = body[:len(body)-1]
 			}
-			ret = r
 		}
 		return &FuncExpr{Params: params, Body: body, Ret: ret}, "func", nil
 	}
