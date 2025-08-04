@@ -1,5 +1,0 @@
-run: exit status 1
-  File "/workspace/mochi/tests/rosetta/transpiler/Python/ftp.py", line 51
-    def login(conn, user, pass):
-                          ^^^^
-SyntaxError: invalid syntax
