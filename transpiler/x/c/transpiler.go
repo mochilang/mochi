@@ -775,7 +775,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	} else if strings.HasSuffix(typ, "[]") {
 		base := strings.TrimSuffix(typ, "[]")
 		if lst, ok := d.Value.(*ListLit); ok {
-			if indent == 0 {
+			if indent == 0 && len(lst.Elems) > 0 {
 				fmt.Fprintf(w, "%s %s_init[%d] = {", base, d.Name, len(lst.Elems))
 				for i, e := range lst.Elems {
 					if i > 0 {
@@ -3357,6 +3357,10 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 		stmt, err := compileStmt(env, st)
 		if err != nil {
 			return nil, err
+		}
+		if len(extraFuncs) > 0 {
+			p.Functions = append(p.Functions, extraFuncs...)
+			extraFuncs = nil
 		}
 		if stmt != nil {
 			if st.Let != nil || st.Var != nil {

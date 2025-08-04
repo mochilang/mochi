@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (150/491) - Last updated 2025-08-04 09:23 +0700:
+Checklist of programs that currently transpile and run (155/491) - Last updated 2025-08-04 11:06 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -179,11 +179,11 @@ Checklist of programs that currently transpile and run (150/491) - Last updated 
 | 172 | cartesian-product-of-two-or-more-lists-3 |  |  |  |
 | 173 | cartesian-product-of-two-or-more-lists-4 |  |  |  |
 | 174 | case-sensitivity-of-identifiers |  |  |  |
-| 175 | casting-out-nines |  |  |  |
-| 176 | catalan-numbers-1 |  |  |  |
-| 177 | catalan-numbers-2 |  |  |  |
-| 178 | catalan-numbers-pascals-triangle |  |  |  |
-| 179 | catamorphism |  |  |  |
+| 175 | casting-out-nines | ✓ | 4.38ms | 2.7 MB |
+| 176 | catalan-numbers-1 | ✓ | 219us | 1.4 MB |
+| 177 | catalan-numbers-2 | ✓ | 223us | 1.4 MB |
+| 178 | catalan-numbers-pascals-triangle | ✓ | 219us | 1.6 MB |
+| 179 | catamorphism | ✓ | 209us | 1.6 MB |
 | 180 | catmull-clark-subdivision-surface |  |  |  |
 | 181 | chaocipher |  |  |  |
 | 182 | chaos-game |  |  |  |
