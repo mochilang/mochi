@@ -2437,24 +2437,34 @@ func gatherMutVars(stmts []Stmt, env *types.Env) []string {
 			switch t := s.(type) {
 			case *LetStmt:
 				locals[t.Name] = struct{}{}
-			case *AssignStmt:
-				if _, ok := locals[t.Name]; ok {
-					break
-				}
-				if !moduleMode || !isGlobalVar(t.Name) {
-					set[t.Name] = struct{}{}
-				}
-			case *IfStmt:
-				for _, v := range t.Vars {
-					if _, ok := locals[v]; ok {
-						continue
-					}
-					if _, err := env.IsMutable(v); err == nil {
-						if !moduleMode || !isGlobalVar(v) {
-							set[v] = struct{}{}
-						}
-					}
-				}
+case *AssignStmt:
+if _, ok := locals[t.Name]; ok {
+break
+}
+// If the variable exists in the current environment treat it as a local
+// mutation even if a global variable with the same name also exists.
+if _, err := env.IsMutable(t.Name); err == nil {
+set[t.Name] = struct{}{}
+break
+}
+if !moduleMode || !isGlobalVar(t.Name) {
+set[t.Name] = struct{}{}
+}
+case *IfStmt:
+for _, v := range t.Vars {
+if _, ok := locals[v]; ok {
+continue
+}
+// Prefer a local variable in the current environment even if a global
+// variable with the same name exists.
+if _, err := env.IsMutable(v); err == nil {
+set[v] = struct{}{}
+continue
+}
+if !moduleMode || !isGlobalVar(v) {
+set[v] = struct{}{}
+}
+}
 				walk(t.Then)
 				walk(t.Else)
 			case *ForStmt:

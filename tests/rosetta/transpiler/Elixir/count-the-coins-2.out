@@ -1,6 +1,6 @@
 amount, ways to make change: 1000 2103596
 {
-  "duration_us": 63334,
-  "memory_bytes": 79576,
+  "duration_us": 61435,
+  "memory_bytes": 133944,
   "name": "main"
 }

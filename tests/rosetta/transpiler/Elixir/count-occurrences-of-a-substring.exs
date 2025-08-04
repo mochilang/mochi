@@ -116,56 +116,53 @@ defmodule Main do
   defp _environ() do
     System.get_env() |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
   end
-  def countChange(amount) do
+  def countOccurrences(s, sub) do
     try do
-      ways = []
+      if _len(sub) == 0 do
+        throw {:return, _len(s) + 1}
+      end
+      cnt = 0
       i = 0
-      while_fun = fn while_fun, i, ways ->
-        if i <= amount do
-          ways = (ways ++ [0])
-          i = i + 1
-          while_fun.(while_fun, i, ways)
+      step = _len(sub)
+      while_fun = fn while_fun, cnt, i ->
+        if i + step <= _len(s) do
+          {cnt, i} = if _slice(s, i, i + step - (i)) == sub do
+            cnt = cnt + 1
+            i = i + step
+            {cnt, i}
+          else
+            i = i + 1
+            {cnt, i}
+          end
+          while_fun.(while_fun, cnt, i)
         else
-          {i, ways}
+          {cnt, i}
         end
       end
-      {i, ways} = try do
-          while_fun.(while_fun, i, ways)
+      {cnt, i} = try do
+          while_fun.(while_fun, cnt, i)
         catch
-          {:break, {i, ways}} -> {i, ways}
+          {:break, {cnt, i}} -> {cnt, i}
         end
 
-      ways = List.replace_at(ways, 0, 1)
-      {ways} = Enum.reduce([100, 50, 25, 10, 5, 1], {ways}, fn coin, {ways} ->
-        j = coin
-        while_fun_2 = fn while_fun_2, j, ways ->
-          if j <= amount do
-            ways = List.replace_at(ways, j, Enum.at(ways, j) + Enum.at(ways, j - coin))
-            j = j + 1
-            while_fun_2.(while_fun_2, j, ways)
-          else
-            {j, ways}
-          end
-        end
-        {j, ways} = try do
-            while_fun_2.(while_fun_2, j, ways)
-          catch
-            {:break, {j, ways}} -> {j, ways}
-          end
-
-        {ways}
-      end)
-      throw {:return, Enum.at(ways, amount)}
+      throw {:return, cnt}
     catch
       {:return, val} -> val
     end
   end
-  Process.put(:amount, 1000)
   def main() do
+    try do
+      IO.puts(Kernel.inspect(Main.countOccurrences("the three truths", "th")))
+      IO.puts(Kernel.inspect(Main.countOccurrences("ababababab", "abab")))
+    catch
+      {:return, val} -> val
+    end
+  end
+  def bench_main() do
     :erlang.garbage_collect()
     mem_start = _mem()
     t_start = _bench_now()
-    IO.puts(((("amount, ways to make change: " <> Kernel.to_string(Process.get(:amount))) <> " ") <> Kernel.inspect(Main.countChange(Process.get(:amount)))))
+    main()
     mem_end = _mem()
     duration_us = max(_bench_now() - t_start, 1)
     :erlang.garbage_collect()
@@ -173,4 +170,4 @@ defmodule Main do
     IO.puts("{\n  \"duration_us\": #{duration_us},\n  \"memory_bytes\": #{mem_diff},\n  \"name\": \"main\"\n}")
   end
 end
-Main.main()
+Main.bench_main()

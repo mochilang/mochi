@@ -136,31 +136,45 @@ defmodule Main do
         end
 
       ways = List.replace_at(ways, 0, 1)
-      {ways} = Enum.reduce([100, 50, 25, 10, 5, 1], {ways}, fn coin, {ways} ->
-        j = coin
-        while_fun_2 = fn while_fun_2, j, ways ->
-          if j <= amount do
-            ways = List.replace_at(ways, j, Enum.at(ways, j) + Enum.at(ways, j - coin))
-            j = j + 1
-            while_fun_2.(while_fun_2, j, ways)
-          else
-            {j, ways}
+      coins = [1, 5, 10, 25]
+      idx = 0
+      while_fun_2 = fn while_fun_2, idx, ways ->
+        if idx < _len(coins) do
+          coin = Enum.at(coins, idx)
+          j = coin
+          while_fun_3 = fn while_fun_3, j, ways ->
+            if j <= amount do
+              ways = List.replace_at(ways, j, Enum.at(ways, j) + Enum.at(ways, j - coin))
+              j = j + 1
+              while_fun_3.(while_fun_3, j, ways)
+            else
+              {j, ways}
+            end
           end
-        end
-        {j, ways} = try do
-            while_fun_2.(while_fun_2, j, ways)
-          catch
-            {:break, {j, ways}} -> {j, ways}
-          end
+          {j, ways} = try do
+              while_fun_3.(while_fun_3, j, ways)
+            catch
+              {:break, {j, ways}} -> {j, ways}
+            end
 
-        {ways}
-      end)
+          idx = idx + 1
+          while_fun_2.(while_fun_2, idx, ways)
+        else
+          {idx, ways}
+        end
+      end
+      {idx, ways} = try do
+          while_fun_2.(while_fun_2, idx, ways)
+        catch
+          {:break, {idx, ways}} -> {idx, ways}
+        end
+
       throw {:return, Enum.at(ways, amount)}
     catch
       {:return, val} -> val
     end
   end
-  Process.put(:amount, 1000)
+  Process.put(:amount, 10)
   def main() do
     :erlang.garbage_collect()
     mem_start = _mem()

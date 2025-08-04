@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (197/491)
-_Last updated: 2025-08-04 02:38 +0000_
+## Rosetta Test Checklist (205/491)
+_Last updated: 2025-08-04 10:05 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -245,16 +245,16 @@ _Last updated: 2025-08-04 02:38 +0000_
 | 237 | copy-a-string-2 | ✓ | 188us | 0 B |
 | 238 | copy-stdin-to-stdout-1 | ✓ | 1.88ms | 17.3 KB |
 | 239 | copy-stdin-to-stdout-2 | ✓ | 1.65ms | 17.3 KB |
-| 240 | count-in-factors |  |  |  |
-| 241 | count-in-octal-1 |  |  |  |
-| 242 | count-in-octal-2 |  |  |  |
-| 243 | count-in-octal-3 |  |  |  |
-| 244 | count-in-octal-4 |  |  |  |
-| 245 | count-occurrences-of-a-substring |  |  |  |
-| 246 | count-the-coins-1 |  |  |  |
-| 247 | count-the-coins-2 | ✓ | 63.33ms | 77.7 KB |
-| 248 | cramers-rule | ✓ |  |  |
-| 249 | crc-32-1 |  |  |  |
+| 240 | count-in-factors | ✓ | 5.20ms | 32.7 KB |
+| 241 | count-in-octal-1 | ✓ | 9.38ms | 7.7 KB |
+| 242 | count-in-octal-2 | ✓ | 1.10s | 12.5 KB |
+| 243 | count-in-octal-3 | ✓ | 2.21ms | 12.5 KB |
+| 244 | count-in-octal-4 | ✓ | 4.59ms | 17.3 KB |
+| 245 | count-occurrences-of-a-substring | ✓ | 1.87ms | 9.6 KB |
+| 246 | count-the-coins-1 | ✓ | 4.14ms | 25.0 KB |
+| 247 | count-the-coins-2 | ✓ | 61.44ms | 130.8 KB |
+| 248 | cramers-rule | ✓ | 2.22ms | 25.0 KB |
+| 249 | crc-32-1 | ✓ | 407us | 45.2 KB |
 | 250 | crc-32-2 |  |  |  |
 | 251 | create-a-file-on-magnetic-tape |  |  |  |
 | 252 | create-a-file |  |  |  |
