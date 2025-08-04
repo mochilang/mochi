@@ -223,15 +223,18 @@ func emitStrExpr(w io.Writer, e Expr) {
 }
 
 func varBaseType(name string) string {
-	if t, ok := varTypes[name]; ok && t != "" {
-		return strings.TrimSuffix(t, "[]")
-	}
-	if currentEnv != nil {
-		if tt, err := currentEnv.GetVar(name); err == nil {
-			return strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
-		}
-	}
-	return ""
+        if t, ok := varTypes[name]; ok && t != "" {
+                return strings.TrimSuffix(t, "[]")
+        }
+        if ds, ok := declStmts[name]; ok && ds.Type != "" {
+                return strings.TrimSuffix(ds.Type, "[]")
+        }
+        if currentEnv != nil {
+                if tt, err := currentEnv.GetVar(name); err == nil {
+                        return strings.TrimSuffix(cTypeFromMochiType(tt), "[]")
+                }
+        }
+        return ""
 }
 
 func fieldBaseType(varName, field string) string {
@@ -933,9 +936,19 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			if ds, ok := declStmts[a.Name]; ok {
 				ds.Value = nil
 			}
-			base := varBaseType(a.Name)
-			writeIndent(w, indent)
-			switch base {
+                        base := varBaseType(a.Name)
+                        if base == "" {
+                                switch call.Args[1].(type) {
+                                case *StringLit:
+                                        base = "const char*"
+                                case *FloatLit:
+                                        base = "double"
+                                default:
+                                        base = "int"
+                                }
+                        }
+                        writeIndent(w, indent)
+                        switch base {
 			case "int":
 				needListAppendInt = true
 				fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", a.Name, a.Name, a.Name)
@@ -3048,9 +3061,8 @@ func (p *Program) Emit() []byte {
 		st := structTypes[name]
 		fmt.Fprintf(&buf, "struct %s {\n", name)
 		for _, field := range st.Order {
-			if ft, ok := st.Fields[field]; ok {
-				ft = types.ResolveTypeRef(ft, currentEnv)
-				if ffunc, ok2 := ft.(types.FuncType); ok2 {
+                        if ft, ok := st.Fields[field]; ok {
+                                if ffunc, ok2 := ft.(types.FuncType); ok2 {
 					var params []string
 					for _, p := range ffunc.Params {
 						params = append(params, cTypeFromMochiType(p))
