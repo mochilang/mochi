@@ -1,0 +1,7 @@
+let i: int = 1
+let f: float = 1.5
+let s: string = "hi"
+let b: bool = ((1 < 2) && (2 < 3))
+let lst: list<int> = [1, 2, 3]
+let mp: map<string, int> = {"a": 1, "b": 2}
+
