@@ -2469,7 +2469,14 @@ func (f *ForStmt) emit(w io.Writer) {
 		}
 		io.WriteString(w, "}\n        end")
 	}
-	io.WriteString(w, "\n    end\nend,\n{")
+	io.WriteString(w, ";\n        _ -> {")
+	for i, p := range f.Params {
+		if i > 0 {
+			io.WriteString(w, ", ")
+		}
+		io.WriteString(w, p)
+	}
+	io.WriteString(w, "}\n    end\nend,\n{")
 	for i, a := range f.Next {
 		if i > 0 {
 			io.WriteString(w, ", ")

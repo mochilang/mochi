@@ -1,14 +1,1 @@
-exit status 127
-/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl:29:1: Warning: function mochi_pad_start/3 is unused
-%   29| mochi_pad_start(S, Len, Ch) ->
-%     | ^
-
-escript: exception error: no case clause matching ["TA"]
-  in function  main:'-distinct/1-Fun_5_loop/5-1-'/6 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 108)
-  in call from main:'-distinct/1-Fun_4_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 126)
-  in call from main:'-distinct/1-Fun_4_loop/3-0-'/3 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 132)
-  in call from main:distinct/1 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 140)
-  in call from main:deduplicate/1 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 229)
-  in call from main:shortestcommonsuperstring/1 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 294)
-  in call from main:'-main/0-Fun_17_loop/2-0-'/2 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 397)
-  in call from main:main/0 (/workspace/mochi/tests/rosetta/transpiler/erl/bioinformatics-global-alignment.erl, line 402)
+timeout

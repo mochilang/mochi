@@ -1,3 +1,7 @@
+## Progress (2025-08-04 15:16 +0700)
+- kt: handle stdout and refine var typing (de164682f4)
+- Regenerated golden files - 103/105 vm valid programs passing
+
 ## Progress (2025-07-28 01:16 +0700)
 - fix java transpiler list type inference (68d913c5a0)
 - Regenerated golden files - 103/104 vm valid programs passing
