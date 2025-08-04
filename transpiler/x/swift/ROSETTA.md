@@ -2,8 +2,8 @@
 
 Generated Swift code for Mochi Rosetta programs in `tests/rosetta/x/Mochi`. Outputs are stored in `tests/rosetta/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed: 430/491
-Last updated: 2025-08-04 21:11 +0700
+Completed: 431/491
+Last updated: 2025-08-04 21:23 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -492,7 +492,7 @@ Last updated: 2025-08-04 21:11 +0700
 | 483 | http | ✓ | 161.752ms | 13.3 MB |
 | 484 | image-noise | ✓ | 48.07ms | 3.1 MB |
 | 485 | loops-increment-loop-index-within-loop-body | ✓ | 285.061ms | 3.2 MB |
-| 486 | md5 |   |  |  |
+| 486 | md5 | ✓ | 1.606ms | 3.5 MB |
 | 487 | nim-game | ✓ | 539µs | 3.0 MB |
 | 488 | plasma-effect | ✓ | 8.275ms | 3.1 MB |
 | 489 | sorting-algorithms-bubble-sort | ✓ | 626µs | 3.1 MB |
