@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 15:54 +0700
+Last updated: 2025-08-04 16:54 +0700
 
-Completed tasks: **358/491**
+Completed tasks: **359/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -315,7 +315,7 @@ Completed tasks: **358/491**
 | 304 | disarium-numbers | ✓ | 1.44s | 828.2 KB |
 | 305 | discordian-date | ✓ | 8.09ms | 123.9 KB |
 | 306 | display-a-linear-combination | ✓ | 15.58ms | 123.1 KB |
-| 307 | display-an-outline-as-a-nested-table |  |  |  |
+| 307 | display-an-outline-as-a-nested-table | ✓ | 25.14ms | 106.1 KB |
 | 308 | distance-and-bearing |  |  |  |
 | 309 | distributed-programming |  |  |  |
 | 310 | diversity-prediction-theorem | ✓ | 17.96ms | 115.4 KB |
