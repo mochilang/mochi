@@ -75,7 +75,7 @@ Compiled and ran: 477/491
 | 66 | arithmetic-evaluation | ✓ | 7.395ms | 428.0 KB |
 | 67 | arithmetic-geometric-mean-calculate-pi | ✓ | 7.218ms | 12.0 MB |
 | 68 | arithmetic-geometric-mean | ✓ | 13.01ms | 2.0 MB |
-| 69 | arithmetic-integer-1 | ✓ |  |  |
+| 69 | arithmetic-integer-1 | ✓ | 25.623ms | 10.7 MB |
 | 70 | arithmetic-integer-2 | ✓ |  |  |
 | 71 | arithmetic-numbers | ✓ |  |  |
 | 72 | arithmetic-rational | ✓ |  |  |
@@ -499,4 +499,4 @@ Compiled and ran: 477/491
 | 490 | window-management | ✓ | 11.069ms | 2.1 MB |
 | 491 | zumkeller-numbers | ✓ | 1.389357s | 3.9 MB |
 
-_Last updated: 2025-08-04 15:16 +0700_
+_Last updated: 2025-08-04 15:58 +0700_
