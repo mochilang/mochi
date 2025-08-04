@@ -1,9 +1,9 @@
 # Java Rosetta Transpiler Output
 
 Generated Java code for programs in `tests/rosetta/x/Mochi`. Each program has a `.java` file produced by the transpiler and a `.out` file with its runtime output. Compilation or execution errors are captured in `.error` files.
-Last updated: 2025-08-04 18:36 GMT+7
+Last updated: 2025-08-04 21:01 GMT+7
 
-## Rosetta Checklist (445/491)
+## Rosetta Checklist (452/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 23.0ms | 245.84KB |
@@ -490,10 +490,10 @@ Last updated: 2025-08-04 18:36 GMT+7
 | 482 | gui-maximum-window-dimensions | ✓ | 32.0ms | 78.64KB |
 | 483 | http | ✓ | 425.0ms | 2.37MB |
 | 484 | image-noise | ✓ | 327.0ms | 82.17KB |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
-| 487 | nim-game |   |  |  |
-| 488 | plasma-effect |   |  |  |
-| 489 | sorting-algorithms-bubble-sort |   |  |  |
-| 490 | window-management |   |  |  |
-| 491 | zumkeller-numbers |   |  |  |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 1.14s | 81.08KB |
+| 486 | md5 | ✓ | 85.0ms | 266.67KB |
+| 487 | nim-game | ✓ | 41.0ms | 45.32KB |
+| 488 | plasma-effect | ✓ | 40.0ms | 680B |
+| 489 | sorting-algorithms-bubble-sort | ✓ | 34.0ms | 37.65KB |
+| 490 | window-management | ✓ | 55.0ms | 99.58KB |
+| 491 | zumkeller-numbers | ✓ | 2.14s | 94.22KB |

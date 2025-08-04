@@ -44,6 +44,7 @@ var needRepeat bool
 var needFetch bool
 var fetchStructs map[string]bool
 var needSHA256 bool
+var needMD5Hex bool
 var needRuneLen bool
 var needSubstr bool
 var needArrGetI bool
@@ -1909,7 +1910,8 @@ func (l *ListLit) emit(w io.Writer) {
 			t := inferType(l.Elems[0])
 			same := true
 			for _, el := range l.Elems[1:] {
-				if inferType(el) != t {
+				et := inferType(el)
+				if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
 					same = false
 					break
 				}
@@ -1952,7 +1954,7 @@ func (l *ListLit) emit(w io.Writer) {
 			}
 			if t == "" {
 				t = et
-			} else if et != t {
+			} else if et != t && !(t == "string" && et == "String") && !(t == "String" && et == "string") {
 				same = false
 				break
 			}
@@ -3502,6 +3504,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	needAppendBool = false
 	needPadStart = false
 	needSHA256 = false
+	needMD5Hex = false
 	needBigRat = false
 	needModPow2 = false
 	needRuneLen = false
@@ -4871,6 +4874,12 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 							expr = &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}
 						} else if fe.Name == "Add" && len(args) == 2 {
 							expr = &BinaryExpr{Left: args[0], Op: "+", Right: args[1]}
+						} else if fe.Name == "MD5Hex" && len(args) == 1 {
+							needMD5Hex = true
+							if funcRet != nil {
+								funcRet["_md5hex"] = "String"
+							}
+							expr = &CallExpr{Func: "_md5hex", Args: args}
 						} else {
 							expr = &MethodCallExpr{Target: fe.Target, Name: fe.Name, Args: args}
 						}
@@ -5367,7 +5376,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			if i == 0 || lt == "" {
 				lt = t
-			} else if t != lt {
+			} else if t != lt && !(t == "string" && lt == "String") && !(t == "String" && lt == "string") {
 				same = false
 				break
 			}
@@ -6356,6 +6365,17 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("            for (int i = 0; i < hash.length; i++) out[i] = hash[i] & 0xff;\n")
 		buf.WriteString("            return out;\n")
 		buf.WriteString("        } catch (Exception e) { return new int[0]; }\n")
+		buf.WriteString("    }\n")
+	}
+	if needMD5Hex {
+		buf.WriteString("\n    static String _md5hex(String s) {\n")
+		buf.WriteString("        try {\n")
+		buf.WriteString("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"MD5\");\n")
+		buf.WriteString("            byte[] hash = md.digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8));\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("            for (byte b : hash) sb.append(String.format(\"%02x\", b & 0xff));\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        } catch (Exception e) { return \"\"; }\n")
 		buf.WriteString("    }\n")
 	}
 	if needCastInt2D {
