@@ -1,5 +1,7 @@
 # 🍡 Mochi Programming Language
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/mochilang/mochi)
+
 **Mochi** is a small, statically typed programming language built for clarity, safety, and expressiveness — whether you're writing tools, processing real-time data, or powering intelligent agents.
 
 Mochi is:
