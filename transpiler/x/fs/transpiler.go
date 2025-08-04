@@ -80,6 +80,7 @@ var (
 	benchMain      bool
 	usesDictAdd    bool
 	currentReturn  string
+	funcDepth      int
 	methodDefs     []Stmt
 	definedFuncs   map[string]bool
 	funcParamTypes map[string][]string
@@ -3005,6 +3006,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesDictAdd = false
 	usesSafeIndex = false
 	currentReturn = ""
+	funcDepth = 0
 	p := &Program{}
 	for _, st := range prog.Statements {
 		conv, err := convertStmt(st)
@@ -3616,23 +3618,28 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			varTypes = map[string]string{}
 		}
 		varTypes[st.Fun.Name] = retType
-		if definedFuncs == nil {
-			definedFuncs = map[string]bool{}
+		if funcDepth == 0 {
+			if definedFuncs == nil {
+				definedFuncs = map[string]bool{}
+			}
+			definedFuncs[st.Fun.Name] = true
 		}
-		definedFuncs[st.Fun.Name] = true
 
 		prevReturn := currentReturn
 		currentReturn = retType
+		funcDepth++
 		body := make([]Stmt, len(st.Fun.Body))
 		for i, s := range st.Fun.Body {
 			cs, err := convertStmt(s)
 			if err != nil {
 				varTypes = save
 				currentReturn = prevReturn
+				funcDepth--
 				return nil, err
 			}
 			body[i] = cs
 		}
+		funcDepth--
 		currentReturn = prevReturn
 		varTypes = save
 		if benchMain && st.Fun.Name == "main" {
@@ -3640,7 +3647,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			body = []Stmt{&BenchStmt{Name: "main", Body: body}}
 		}
 		varTypes[st.Fun.Name] = retType
-		definedFuncs[st.Fun.Name] = true
+		if funcDepth == 0 {
+			definedFuncs[st.Fun.Name] = true
+		}
 		if funcParamTypes == nil {
 			funcParamTypes = map[string][]string{}
 		}
