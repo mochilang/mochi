@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (190/491)
-_Last updated: 2025-08-04 07:49 +0700_
+## Rosetta Test Checklist (191/491)
+_Last updated: 2025-08-04 01:28 +0000_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -238,7 +238,7 @@ _Last updated: 2025-08-04 07:49 +0700_
 | 230 | constrained-random-points-on-a-circle-2 | ✓ | 6.65ms | 110.6 KB |
 | 231 | continued-fraction | ✓ | 2.05ms | 25.0 KB |
 | 232 | convert-decimal-number-to-rational | ✓ | 220us | 25.3 KB |
-| 233 | convert-seconds-to-compound-duration |  |  |  |
+| 233 | convert-seconds-to-compound-duration | ✓ | 2.66ms | 12.5 KB |
 | 234 | convex-hull |  |  |  |
 | 235 | conways-game-of-life |  |  |  |
 | 236 | copy-a-string-1 |  |  |  |
