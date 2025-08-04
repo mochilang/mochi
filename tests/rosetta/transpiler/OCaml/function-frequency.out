@@ -1,0 +1,10 @@
+func 4
+len 3
+fmt.Println 3
+make 2
+f.Offset 2
+import true
+ioutil.ReadFile true
+token.NewFileSet true
+parser.ParseFile true
+fs.File true
