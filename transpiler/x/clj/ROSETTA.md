@@ -1,7 +1,7 @@
 # Clojure Rosetta Transpiler
 
-Completed: 184/491
-Last updated: 2025-08-04 09:01 +0700
+Completed: 190/491
+Last updated: 2025-08-04 09:31 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -145,12 +145,12 @@ Last updated: 2025-08-04 09:01 +0700
 | 138 | bulls-and-cows-player | ✓ | 57.844ms | 22.6 MB |
 | 139 | bulls-and-cows |   |  |  |
 | 140 | burrows-wheeler-transform | ✓ | 310.894ms | 23.3 MB |
-| 141 | caesar-cipher-1 |   |  |  |
-| 142 | caesar-cipher-2 |   |  |  |
-| 143 | calculating-the-value-of-e |   |  |  |
-| 144 | calendar---for-real-programmers-1 |   |  |  |
-| 145 | calendar---for-real-programmers-2 |   |  |  |
-| 146 | calendar |   |  |  |
+| 141 | caesar-cipher-1 | ✓ | 64.723ms | 23.3 MB |
+| 142 | caesar-cipher-2 | ✓ | 65.003ms | 23.1 MB |
+| 143 | calculating-the-value-of-e | ✓ | 33.041ms | 21.6 MB |
+| 144 | calendar---for-real-programmers-1 | ✓ | 56.418ms | 21.0 MB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 53.253ms | 21.0 MB |
+| 146 | calendar | ✓ | 58.446ms | 21.0 MB |
 | 147 | calkin-wilf-sequence |   |  |  |
 | 148 | call-a-foreign-language-function |   |  |  |
 | 149 | call-a-function-1 |   |  |  |

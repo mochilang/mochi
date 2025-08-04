@@ -1,0 +1,2 @@
+WARNING: Implicit use of clojure.main with options is deprecated, use -M /workspace/mochi/tests/rosetta/transpiler/Clojure/calculating-the-value-of-e.clj
+e = 2.718281828459046
