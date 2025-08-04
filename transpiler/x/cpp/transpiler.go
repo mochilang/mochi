@@ -6994,6 +6994,9 @@ func defaultValueForType(t string) string {
 	if t == "std::any" {
 		return "std::any{}"
 	}
+	if isStructType(t) {
+		return t + "{}"
+	}
 	return "{}"
 }
 
@@ -7044,15 +7047,36 @@ func exprType(e Expr) string {
 			return fmt.Sprintf("std::vector<%s>", v.ElemType)
 		}
 		if len(v.Elems) > 0 {
-			first := exprType(v.Elems[0])
+			first := ""
+			for _, e := range v.Elems {
+				if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 {
+					continue
+				}
+				first = exprType(e)
+				break
+			}
+			if first == "" {
+				return "std::vector<int64_t>"
+			}
 			uniform := true
-			for _, e := range v.Elems[1:] {
+			for _, e := range v.Elems {
+				if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 {
+					continue
+				}
 				if exprType(e) != first {
 					uniform = false
 					break
 				}
 			}
 			if uniform {
+				et := elementTypeFromListType(first)
+				if et != "" {
+					for _, e := range v.Elems {
+						if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+							ll.ElemType = et
+						}
+					}
+				}
 				return fmt.Sprintf("std::vector<%s>", first)
 			}
 			if currentProgram != nil {
@@ -7137,37 +7161,37 @@ func exprType(e Expr) string {
 			return ret
 		}
 		return "auto"
-       case *BinaryExpr:
-               switch v.Op {
-               case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
-                       return "bool"
-               case "+", "-", "*", "/", "%":
-                       lt := exprType(v.Left)
-                       rt := exprType(v.Right)
-                       if v.Op == "+" && (lt == "std::string" || rt == "std::string") {
-                               return "std::string"
-                       }
-                       if lt == "double" || rt == "double" {
-                               return "double"
-                       }
-                       if lt == rt {
-                               return lt
-                       }
-                       if lt == "int64_t" && rt == "int64_t" {
-                               return "int64_t"
-                       }
-                       return "auto"
-               default:
-                       return "auto"
-               }
-       case *InExpr:
-               return "bool"
-       case *IfExpr:
-               t := exprType(v.Then)
-               e2 := exprType(v.Else)
-               if t == e2 {
-                       return t
-               }
+	case *BinaryExpr:
+		switch v.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return "bool"
+		case "+", "-", "*", "/", "%":
+			lt := exprType(v.Left)
+			rt := exprType(v.Right)
+			if v.Op == "+" && (lt == "std::string" || rt == "std::string") {
+				return "std::string"
+			}
+			if lt == "double" || rt == "double" {
+				return "double"
+			}
+			if lt == rt {
+				return lt
+			}
+			if lt == "int64_t" && rt == "int64_t" {
+				return "int64_t"
+			}
+			return "auto"
+		default:
+			return "auto"
+		}
+	case *InExpr:
+		return "bool"
+	case *IfExpr:
+		t := exprType(v.Then)
+		e2 := exprType(v.Else)
+		if t == e2 {
+			return t
+		}
 		return "auto"
 	case *LenExpr:
 		return "int"
