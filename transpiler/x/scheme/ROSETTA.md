@@ -2,8 +2,8 @@
 
 Generated Scheme code for Rosetta Code tasks under `tests/rosetta/x/Mochi`.
 
-## Checklist (454/491)
-Last updated: 2025-08-04 10:19 UTC
+## Checklist (456/491)
+Last updated: 2025-08-04 13:16 UTC
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -491,8 +491,8 @@ Last updated: 2025-08-04 10:19 UTC
 | 482 | gui-maximum-window-dimensions | ✓ | 1ms | 12.9 MB |
 | 483 | http | ✓ | 65ms | 12.6 MB |
 | 484 | image-noise | ✓ | 776ms | 12.7 MB |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 35.453s | 13.0 MB |
+| 486 | md5 | ✓ | 4ms | 16.9 MB |
 | 487 | nim-game | ✓ |  |  |
 | 488 | plasma-effect | ✓ | 487ms | 13.3 MB |
 | 489 | sorting-algorithms-bubble-sort | ✓ |  |  |

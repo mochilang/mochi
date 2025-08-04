@@ -35,6 +35,7 @@ var usesJSON bool
 var usesBench bool
 var usesSubprocess bool
 var usesFetch bool
+var needMD5Hex bool
 var benchMain bool
 var returnStack []Symbol
 var unionConsts map[string]int
@@ -209,6 +210,9 @@ func header() []byte {
 	prelude += "(import (srfi 69))\n"
 	prelude += "(import (srfi 1))\n"
 	prelude += "(define _list list)\n"
+	if needMD5Hex {
+		prelude += "(import (chibi crypto md5))\n"
+	}
 	if usesInput {
 		prelude += "(import (chibi io))\n"
 	}
@@ -259,17 +263,17 @@ func header() []byte {
 	if usesEnviron {
 		prelude += "(define (_environ)\n  (map (lambda (p) (string-append (car p) \"=\" (cdr p)))\n       (get-environment-variables)))\n"
 	}
-        if usesSubprocess {
-                prelude += "(import (chibi process))\n"
-                prelude += "(define (subprocess.getoutput cmd) (process->string cmd))\n"
-        }
-        if usesJSON {
-                prelude += "(import (chibi json))\n"
-        }
-        if usesFetch {
-                prelude += "(define (_fetch url) (let ((d (string->json (process->string (string-append \"curl -s \" url))))) (if (and (list? d) (pair? d) (pair? (car d))) (alist->hash-table (map (lambda (p) (cons (symbol->string (car p)) (cdr p))) d)) d)))\n"
-        }
-        prelude += `(define (to-str x)
+	if usesSubprocess {
+		prelude += "(import (chibi process))\n"
+		prelude += "(define (subprocess.getoutput cmd) (process->string cmd))\n"
+	}
+	if usesJSON {
+		prelude += "(import (chibi json))\n"
+	}
+	if usesFetch {
+		prelude += "(define (_fetch url) (let ((d (string->json (process->string (string-append \"curl -s \" url))))) (if (and (list? d) (pair? d) (pair? (car d))) (alist->hash-table (map (lambda (p) (cons (symbol->string (car p)) (cdr p))) d)) d)))\n"
+	}
+	prelude += `(define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
         ((hash-table? x)
@@ -942,7 +946,30 @@ func convertStmt(st *parser.Statement) (Node, error) {
 		}
 		return &List{Elems: append([]Node{Symbol("begin")}, defs...)}, nil
 	case st.Import != nil:
-		// imports have no effect in the Scheme transpiler
+		if st.Import.Auto && st.Import.Path == "mochi/runtime/ffi/go/testpkg" {
+			alias := st.Import.As
+			if alias == "" {
+				alias = "testpkg"
+			}
+			needHash = true
+			needMD5Hex = true
+			obj := Symbol(alias)
+			defs := []Node{
+				&List{Elems: []Node{Symbol("define"), obj, &List{Elems: []Node{Symbol("make-hash-table")}}}},
+				&List{Elems: []Node{
+					Symbol("hash-table-set!"),
+					obj,
+					StringLit("MD5Hex"),
+					&List{Elems: []Node{
+						Symbol("lambda"),
+						&List{Elems: []Node{Symbol("s")}},
+						&List{Elems: []Node{Symbol("md5"), Symbol("s")}},
+					}},
+				}},
+			}
+			return &List{Elems: append([]Node{Symbol("begin")}, defs...)}, nil
+		}
+		// other imports have no effect in the Scheme transpiler
 		return nil, nil
 	case st.ExternFun != nil:
 		name := st.ExternFun.Root
@@ -981,12 +1008,13 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesLookupHost = false
 	usesGetEnv = false
 	usesEnviron = false
-        usesBench = false
-        usesSubprocess = false
-        usesFetch = false
-        unionConsts = map[string]int{}
-        unionConstOrder = nil
-        methodNames = map[string]struct{}{}
+	usesBench = false
+	usesSubprocess = false
+	usesFetch = false
+	needMD5Hex = false
+	unionConsts = map[string]int{}
+	unionConstOrder = nil
+	methodNames = map[string]struct{}{}
 	currentMethodFields = nil
 	externFuncs = map[string]struct{}{}
 	forms, err := convertStmts(prog.Statements)
@@ -1562,30 +1590,30 @@ func convertParserPrimary(p *parser.Primary) (Node, error) {
 		}
 		needHash = true
 		pairs := []Node{Symbol("_list")}
-                for _, f := range p.Struct.Fields {
-                        v, err := convertParserExpr(f.Value)
-                        if err != nil {
-                                return nil, err
-                        }
-                        pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
-                        pairs = append(pairs, pair)
-                }
-                return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
-       case p.Fetch != nil:
-               url, err := convertParserExpr(p.Fetch.URL)
-               if err != nil {
-                       return nil, err
-               }
-               usesJSON = true
-               usesSubprocess = true
-               usesFetch = true
-               return &List{Elems: []Node{Symbol("_fetch"), url}}, nil
-       case p.Query != nil:
-                if n, err := convertGroupByJoinQuery(p.Query); err == nil {
-                        return n, nil
-                }
-                if n, err := convertGroupByQuery(p.Query); err == nil {
-                        return n, nil
+		for _, f := range p.Struct.Fields {
+			v, err := convertParserExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			pair := &List{Elems: []Node{Symbol("cons"), StringLit(f.Name), v}}
+			pairs = append(pairs, pair)
+		}
+		return &List{Elems: []Node{Symbol("alist->hash-table"), &List{Elems: pairs}}}, nil
+	case p.Fetch != nil:
+		url, err := convertParserExpr(p.Fetch.URL)
+		if err != nil {
+			return nil, err
+		}
+		usesJSON = true
+		usesSubprocess = true
+		usesFetch = true
+		return &List{Elems: []Node{Symbol("_fetch"), url}}, nil
+	case p.Query != nil:
+		if n, err := convertGroupByJoinQuery(p.Query); err == nil {
+			return n, nil
+		}
+		if n, err := convertGroupByQuery(p.Query); err == nil {
+			return n, nil
 		}
 		if n, err := convertRightJoinQuery(p.Query); err == nil {
 			return n, nil
