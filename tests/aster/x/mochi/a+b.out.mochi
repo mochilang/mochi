@@ -1,0 +1,6 @@
+fun main() {
+  let a: any = int(input())
+  let b: any = int(input())
+  print((a + b))
+}
+main()

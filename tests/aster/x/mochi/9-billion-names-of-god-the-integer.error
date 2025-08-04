@@ -1,0 +1,5 @@
+error[D012]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/9-billion-names-of-god-the-integer.mochi:5:21
+
+  5 |   while n > 1 && a[n-1] == 0 {
+    |                     ^

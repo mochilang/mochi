@@ -82,6 +82,9 @@ func FromStatement(s *parser.Statement) *Node {
 		return n
 
 	case s.Return != nil:
+		if s.Return.Value == nil {
+			return &Node{Kind: "return"}
+		}
 		return &Node{Kind: "return", Children: []*Node{FromExpr(s.Return.Value)}}
 
 	case s.Break != nil:
@@ -183,6 +186,17 @@ func FromStatement(s *parser.Statement) *Node {
 // --- Control Flow Helpers ---
 
 func fromIfStmt(stmt *parser.IfStmt) *Node {
+	if stmt == nil {
+		return nil
+	}
+	if stmt.Cond == nil {
+		// Treat a nil condition as an implicit else block produced by the
+		// parser. This avoids nil pointer panics when sequential `if`
+		// statements are represented as an if/else-if chain with a final
+		// else clause lacking a condition.
+		return &Node{Kind: "block", Children: mapStatements(stmt.Then)}
+	}
+
 	n := &Node{Kind: "if", Children: []*Node{FromExpr(stmt.Cond)}}
 
 	thenBlock := &Node{Kind: "block", Children: mapStatements(stmt.Then)}

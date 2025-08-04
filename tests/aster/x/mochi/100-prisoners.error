@@ -1,0 +1,5 @@
+error[D012]: numeric op with non-numeric
+  --> /workspace/mochi/tests/rosetta/x/Mochi/100-prisoners.mochi:5:19
+
+  5 |     let j = now() % (i + 1)
+    |                   ^

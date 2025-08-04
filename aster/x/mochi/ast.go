@@ -12,6 +12,9 @@ type Option struct {
 	// underlying AST currently lacks precise offsets these fields remain
 	// zero even when requested.
 	WithPositions bool
+	// Filename associates parsed programs with a source file so diagnostics
+	// can show snippets.
+	Filename string
 }
 
 // Node represents a simplified Mochi AST node. Leaf nodes that carry a textual
@@ -60,7 +63,9 @@ type (
 
 // Program represents a parsed Mochi file. The root node is the program itself.
 type Program struct {
-	File *ProgramNode `json:"file"`
+	File     *ProgramNode `json:"file"`
+	Source   string       `json:"-"`
+	Filename string       `json:"-"`
 }
 
 // convert transforms a node from the generic ast package into our Node

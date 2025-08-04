@@ -1,17 +1,33 @@
 package mochi
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
+
+	"github.com/alecthomas/participle/v2/lexer"
+)
+
+var (
+	srcLines [][]byte
+	srcFile  string
 )
 
 // Decorate performs a simple type inference on the program and makes all
 // variable declarations explicit. It returns a new Program with type
 // annotations inserted. If type checking fails an error is returned.
-func Decorate(p *Program) (*Program, error) {
+func Decorate(p *Program) (prog *Program, err error) {
 	if p == nil || p.File == nil {
-		return nil, fmt.Errorf("nil program")
+		return nil, errNilProgram()
 	}
+	srcLines = bytes.Split([]byte(p.Source), []byte("\n"))
+	srcFile = p.Filename
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("%v", r)
+			prog = nil
+		}
+	}()
 	cp := cloneProgram(p)
 	env := map[string]*Node{}
 	if err := decorateNode(&cp.File.Node, env); err != nil {
@@ -31,9 +47,42 @@ func decorateNode(n *Node, env map[string]*Node) error {
 				return err
 			}
 		}
+	case "fun":
+		var ret *Node
+		for _, c := range n.Children {
+			if c.Kind == "type" {
+				ret = c
+				break
+			}
+		}
+		if ret != nil {
+			env[n.Text] = cloneNode(ret)
+		} else {
+			env[n.Text] = &Node{Kind: "type", Text: "any"}
+		}
+		local := map[string]*Node{}
+		for k, v := range env {
+			local[k] = v
+		}
+		for _, c := range n.Children {
+			if c.Kind == "param" && len(c.Children) > 0 {
+				local[c.Text] = cloneNode(c.Children[0])
+			}
+		}
+		for _, c := range n.Children {
+			switch c.Kind {
+			case "param", "type":
+				continue
+			default:
+				if err := decorateNode(c, local); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
 	case "let", "var":
 		if len(n.Children) == 0 {
-			return fmt.Errorf("%s %s missing expression", n.Kind, n.Text)
+			return errMissingExpression(position(n), n.Kind, n.Text)
 		}
 		if n.Children[0].Kind == "type" {
 			// already typed, verify expression matches if present
@@ -44,7 +93,7 @@ func decorateNode(n *Node, env map[string]*Node) error {
 					return err
 				}
 				if !typeEqual(want, got) {
-					return fmt.Errorf("type mismatch for %s: %s vs %s", n.Text, typeString(want), typeString(got))
+					return errTypeMismatch(position(n), n.Text, typeString(want), typeString(got))
 				}
 			}
 			env[n.Text] = cloneNode(n.Children[0])
@@ -79,15 +128,26 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		return &Node{Kind: "type", Text: "string"}, nil
 	case "bool":
 		return &Node{Kind: "type", Text: "bool"}, nil
+	case "type":
+		// Named type reference or struct literal
+		return &Node{Kind: "type", Text: n.Text}, nil
 	case "selector":
+		if len(n.Children) > 0 {
+			// Field access like obj.field: ensure base is valid but do not
+			// require the field name to exist in the environment.
+			if _, err := inferType(n.Children[0], env); err != nil {
+				return nil, err
+			}
+			return &Node{Kind: "type", Text: "any"}, nil
+		}
 		t, ok := env[n.Text]
 		if !ok {
-			return nil, fmt.Errorf("undefined variable %s", n.Text)
+			return nil, errUndefinedVariable(position(n), n.Text)
 		}
 		return cloneNode(t), nil
 	case "group":
 		if len(n.Children) != 1 {
-			return nil, fmt.Errorf("group expects one child")
+			return nil, errGroupOneChild(position(n))
 		}
 		return inferType(n.Children[0], env)
 	case "list":
@@ -104,7 +164,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				return nil, err
 			}
 			if !typeEqual(elem, t) {
-				return nil, fmt.Errorf("list element type mismatch")
+				return nil, errListElementMismatch(position(n))
 			}
 		}
 		return &Node{Kind: "type", Text: "list", Children: []*Node{elem}}, nil
@@ -114,7 +174,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		}
 		first := n.Children[0]
 		if len(first.Children) < 2 {
-			return nil, fmt.Errorf("invalid map entry")
+			return nil, errInvalidMapEntry(position(first))
 		}
 		keyType, err := inferKeyType(first.Children[0], env)
 		if err != nil {
@@ -126,7 +186,7 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		}
 		for _, e := range n.Children[1:] {
 			if len(e.Children) < 2 {
-				return nil, fmt.Errorf("invalid map entry")
+				return nil, errInvalidMapEntry(position(e))
 			}
 			k, err := inferKeyType(e.Children[0], env)
 			if err != nil {
@@ -137,13 +197,40 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				return nil, err
 			}
 			if !typeEqual(keyType, k) || !typeEqual(valType, v) {
-				return nil, fmt.Errorf("map entry type mismatch")
+				return nil, errMapEntryMismatch(position(e))
 			}
 		}
 		return &Node{Kind: "type", Text: "map", Children: []*Node{keyType, valType}}, nil
+	case "struct":
+		// Struct literal; fields are type-checked separately.
+		return &Node{Kind: "type", Text: n.Text}, nil
+	case "call":
+		if n.Text != "" {
+			if t, ok := env[n.Text]; ok {
+				return cloneNode(t), nil
+			}
+			switch n.Text {
+			case "str":
+				return &Node{Kind: "type", Text: "string"}, nil
+			case "len":
+				return &Node{Kind: "type", Text: "int"}, nil
+			case "now":
+				return &Node{Kind: "type", Text: "int"}, nil
+			default:
+				return &Node{Kind: "type", Text: "any"}, nil
+			}
+		}
+		if len(n.Children) > 0 {
+			if fn := n.Children[0]; fn.Text != "" {
+				if t, ok := env[fn.Text]; ok {
+					return cloneNode(t), nil
+				}
+			}
+		}
+		return &Node{Kind: "type", Text: "any"}, nil
 	case "binary":
 		if len(n.Children) != 2 {
-			return nil, fmt.Errorf("binary expects two operands")
+			return nil, errBinaryOperands(position(n))
 		}
 		left, err := inferType(n.Children[0], env)
 		if err != nil {
@@ -156,12 +243,12 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		switch n.Text {
 		case "&&", "||":
 			if left.Text != "bool" || right.Text != "bool" {
-				return nil, fmt.Errorf("boolean operator on non-bool")
+				return nil, errBoolOpNonBool(position(n))
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "==", "!=", "<", ">", "<=", ">=":
 			if !typeEqual(left, right) {
-				return nil, fmt.Errorf("comparison type mismatch")
+				return nil, errComparisonMismatch(position(n))
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "+", "-", "*", "/", "%":
@@ -169,24 +256,24 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 				if n.Text == "+" && left.Text == "string" && right.Text == "string" {
 					return &Node{Kind: "type", Text: "string"}, nil
 				}
-				return nil, fmt.Errorf("invalid string operation")
+				return nil, errInvalidStringOperation(position(n))
 			}
 			if left.Text == "float" || right.Text == "float" {
 				if !isNumeric(left.Text) || !isNumeric(right.Text) {
-					return nil, fmt.Errorf("numeric op with non-numeric")
+					return nil, errNumericNonNumeric(position(n))
 				}
 				return &Node{Kind: "type", Text: "float"}, nil
 			}
 			if left.Text == "int" && right.Text == "int" {
 				return &Node{Kind: "type", Text: "int"}, nil
 			}
-			return nil, fmt.Errorf("numeric op with non-numeric")
+			return nil, errNumericNonNumeric(position(n))
 		default:
-			return nil, fmt.Errorf("unknown binary operator %s", n.Text)
+			return nil, errUnknownBinary(position(n), n.Text)
 		}
 	case "unary":
 		if len(n.Children) != 1 {
-			return nil, fmt.Errorf("unary expects one operand")
+			return nil, errUnaryOperand(position(n))
 		}
 		t, err := inferType(n.Children[0], env)
 		if err != nil {
@@ -195,16 +282,16 @@ func inferType(n *Node, env map[string]*Node) (*Node, error) {
 		switch n.Text {
 		case "!":
 			if t.Text != "bool" {
-				return nil, fmt.Errorf("! on non-bool")
+				return nil, errBangNonBool(position(n))
 			}
 			return &Node{Kind: "type", Text: "bool"}, nil
 		case "+", "-":
 			if !isNumeric(t.Text) {
-				return nil, fmt.Errorf("numeric unary on non-numeric")
+				return nil, errUnaryNonNumeric(position(n))
 			}
 			return t, nil
 		default:
-			return nil, fmt.Errorf("unknown unary operator %s", n.Text)
+			return nil, errUnknownUnary(position(n), n.Text)
 		}
 	default:
 		// Fallback to any
@@ -223,6 +310,23 @@ func inferKeyType(n *Node, env map[string]*Node) (*Node, error) {
 
 func isNumeric(t string) bool {
 	return t == "int" || t == "float"
+}
+
+func position(n *Node) lexer.Position {
+	if n == nil {
+		return lexer.Position{Filename: srcFile}
+	}
+	if n.Start > 0 {
+		return lexer.Position{Filename: srcFile, Line: n.Start, Column: n.StartCol + 1}
+	}
+	if len(srcLines) > 0 && n.Text != "" {
+		for i, line := range srcLines {
+			if idx := bytes.Index(line, []byte(n.Text)); idx >= 0 {
+				return lexer.Position{Filename: srcFile, Line: i + 1, Column: idx + 1}
+			}
+		}
+	}
+	return lexer.Position{Filename: srcFile}
 }
 
 func typeEqual(a, b *Node) bool {
@@ -258,7 +362,11 @@ func cloneProgram(p *Program) *Program {
 	if p == nil || p.File == nil {
 		return &Program{}
 	}
-	return &Program{File: &ProgramNode{Node: *cloneNode(&p.File.Node)}}
+	return &Program{
+		File:     &ProgramNode{Node: *cloneNode(&p.File.Node)},
+		Source:   p.Source,
+		Filename: p.Filename,
+	}
 }
 
 func typeString(n *Node) string {

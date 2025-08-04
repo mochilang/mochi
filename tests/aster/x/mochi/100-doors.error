@@ -1,0 +1,5 @@
+error[D001]: var doors missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/100-doors.mochi:1:8
+
+  1 | // 100 doors problem implemented in Mochi
+    |        ^

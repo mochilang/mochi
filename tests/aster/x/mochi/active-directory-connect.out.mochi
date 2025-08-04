@@ -1,0 +1,23 @@
+type LDAPClient {
+  Base: string
+  Host: string
+  Port: int
+  UseSSL: bool
+  BindDN: string
+  BindPassword: string
+  UserFilter: string
+  GroupFilter: string
+  Attributes: list<string>
+}
+fun connect(client: LDAPClient): bool {
+  return ((client.Host != "") && (client.Port > 0))
+}
+fun main() {
+  let client: LDAPClient = LDAPClient {Base: "dc=example,dc=com", Host: "ldap.example.com", Port: 389, UseSSL: false, BindDN: "uid=readonlyuser,ou=People,dc=example,dc=com", BindPassword: "readonlypassword", UserFilter: "(uid=%s)", GroupFilter: "(memberUid=%s)", Attributes: ["givenName", "sn", "mail", "uid"]}
+  if connect(client) {
+    print(("Connected to " + client.Host))
+  } else {
+    print("Failed to connect")
+  }
+}
+main()

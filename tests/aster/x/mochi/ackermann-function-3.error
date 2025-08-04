@@ -1,0 +1,5 @@
+error[D002]: type mismatch for result: bigint vs int
+  --> /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:5:7
+
+  5 |   var result: bigint = 1
+    |       ^

@@ -1,0 +1,5 @@
+error[D001]: var valid missing expression
+  --> /workspace/mochi/tests/rosetta/x/Mochi/4-rings-or-4-squares-puzzle.mochi:3:5
+
+  3 | fun validComb(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
+    |     ^
