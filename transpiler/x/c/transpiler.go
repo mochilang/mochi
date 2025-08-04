@@ -153,6 +153,19 @@ func emitLensExpr(w io.Writer, e Expr) {
 		io.WriteString(w, "."+v.Name+"_lens")
 	case *CallExpr:
 		io.WriteString(w, v.Func+"_lens")
+	case *ListLit:
+		io.WriteString(w, "(size_t[]){")
+		for i, e := range v.Elems {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			if lst, ok := e.(*ListLit); ok {
+				fmt.Fprintf(w, "%d", len(lst.Elems))
+			} else {
+				io.WriteString(w, "0")
+			}
+		}
+		io.WriteString(w, "}")
 	default:
 		io.WriteString(w, "NULL")
 	}
@@ -464,7 +477,6 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 	}
 	var pre string
 	var tmpName string
-	var tmpLen string
 	if len(c.Args) > 0 {
 		if ce, ok := c.Args[0].(*CallExpr); ok {
 			if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
@@ -472,17 +484,18 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 				tempCounter++
 				ceCopy := *ce
 				decl := listPtrType(ret)
-				tmpLen = tmpName + "_len"
+				var buf bytes.Buffer
 				if ce.Func == "_slice_int" || ce.Func == "_slice_double" || ce.Func == "_slice_str" {
+					tmpLen := tmpName + "_len"
 					if len(ceCopy.Args) == 5 {
 						ceCopy.Args[4] = &UnaryExpr{Op: "&", Expr: &VarRef{Name: tmpLen}}
 					}
+					ceCopy.emitExpr(&buf)
+					pre = fmt.Sprintf("size_t %s = 0;\n%s %s = %s;\n", tmpLen, decl, tmpName, buf.String())
 				} else {
-					tmpLen = ce.Func + "_len"
+					ceCopy.emitExpr(&buf)
+					pre = fmt.Sprintf("%s %s = %s;\n", decl, tmpName, buf.String())
 				}
-				var buf bytes.Buffer
-				ceCopy.emitExpr(&buf)
-				pre = fmt.Sprintf("size_t %s = 0;\n%s %s = %s;\n", tmpLen, decl, tmpName, buf.String())
 				varTypes[tmpName] = ret
 			}
 		}
@@ -505,10 +518,7 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		}
 		if i == 0 && tmpName != "" {
 			io.WriteString(w, tmpName)
-			if strings.HasSuffix(paramType, "[]") {
-				io.WriteString(w, ", ")
-				io.WriteString(w, tmpLen)
-			}
+			emitExtraArgs(w, paramType, a)
 			first = false
 			continue
 		}
@@ -4899,6 +4909,7 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 	if ret == "double" {
 		markMath()
 	}
+	funcReturnTypes[name] = ret
 
 	if n := len(fn.BlockBody); n > 0 && fn.BlockBody[n-1].Return != nil {
 		if inner := detectFunExpr(fn.BlockBody[n-1].Return.Value); inner != nil {

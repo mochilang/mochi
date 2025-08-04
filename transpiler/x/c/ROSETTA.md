@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (168/491) - Last updated 2025-08-04 17:03 +0700:
+Checklist of programs that currently transpile and run (173/491) - Last updated 2025-08-04 20:02 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -201,11 +201,11 @@ Checklist of programs that currently transpile and run (168/491) - Last updated 
 | 194 | checkpoint-synchronization-4 | ✓ | 504us | 1.4 MB |
 | 195 | chernicks-carmichael-numbers | ✓ | 112.80ms | 4.9 MB |
 | 196 | cheryls-birthday | ✓ | 385us | 1.5 MB |
-| 197 | chinese-remainder-theorem |  |  |  |
-| 198 | chinese-zodiac |  |  |  |
-| 199 | cholesky-decomposition-1 |  |  |  |
-| 200 | cholesky-decomposition |  |  |  |
-| 201 | chowla-numbers |  |  |  |
+| 197 | chinese-remainder-theorem | ✓ | 1.03ms | 1.4 MB |
+| 198 | chinese-zodiac | ✓ | 430us | 1.5 MB |
+| 199 | cholesky-decomposition-1 | ✓ | 584us | 1.5 MB |
+| 200 | cholesky-decomposition | ✓ | 1.02ms | 1.5 MB |
+| 201 | chowla-numbers | ✓ | 391us | 1.5 MB |
 | 202 | church-numerals-1 |  |  |  |
 | 203 | church-numerals-2 |  |  |  |
 | 204 | circles-of-given-radius-through-two-points |  |  |  |
