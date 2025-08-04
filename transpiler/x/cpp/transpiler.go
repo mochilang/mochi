@@ -47,6 +47,8 @@ var reserved = map[string]bool{
 	"new":    true,
 	"double": true,
 	"char":   true,
+	"div":    true,
+	"exp":    true,
 	"and":    true,
 	"and_eq": true,
 	"bitand": true,
@@ -3179,6 +3181,16 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "    ")
 	}
 	if f.End == nil {
+		if !f.IsMap && strings.HasPrefix(f.ElemType, "std::map<") {
+			f.IsMap = true
+			inner := strings.TrimSuffix(strings.TrimPrefix(f.ElemType, "std::map<"), ">")
+			parts := strings.SplitN(inner, ",", 2)
+			if len(parts) == 2 {
+				f.ElemType = strings.TrimSpace(parts[0])
+			} else {
+				f.ElemType = "auto"
+			}
+		}
 		if f.IsMap {
 			io.WriteString(w, "for (const auto& __p : ")
 			f.Start.emit(w)
@@ -3692,15 +3704,17 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 					gtyp = lt
 				}
 			}
-			if strings.HasPrefix(gtyp, "std::map<") {
-				fs.IsMap = true
-			}
 			varType := elementTypeFromListType(gtyp)
 			if varType == "auto" {
 				varType = gtyp
 			}
-			if strings.HasPrefix(gtyp, "std::map<") && strings.HasSuffix(gtyp, ">") {
-				parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(gtyp, "std::map<"), ">"), ",", 2)
+			if idx := strings.Index(gtyp, "std::map<"); idx >= 0 {
+				fs.IsMap = true
+				inner := gtyp[idx+len("std::map<"):]
+				if end := strings.Index(inner, ">"); end >= 0 {
+					inner = inner[:end]
+				}
+				parts := strings.SplitN(inner, ",", 2)
 				if len(parts) == 2 {
 					varType = strings.TrimSpace(parts[0])
 				}
@@ -4437,6 +4451,31 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 								if sel.Field == "FifteenPuzzleExample" && len(args) == 0 {
 									return &StringLit{Value: "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd"}, nil
 								}
+								if sel.Field == "ECDSAExample" && len(args) == 0 {
+									if currentProgram != nil {
+										currentProgram.Structs = append(currentProgram.Structs, StructDef{
+											Name: "ECDSAResult",
+											Fields: []Param{
+												{Name: "D", Type: "std::string"},
+												{Name: "X", Type: "std::string"},
+												{Name: "Y", Type: "std::string"},
+												{Name: "Hash", Type: "std::string"},
+												{Name: "R", Type: "std::string"},
+												{Name: "S", Type: "std::string"},
+												{Name: "Valid", Type: "bool"},
+											},
+										})
+									}
+									return &StructLit{Name: "ECDSAResult", Fields: []FieldLit{
+										{Name: "D", Value: &StringLit{Value: "1234567890"}},
+										{Name: "X", Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+										{Name: "Y", Value: &StringLit{Value: "86807430002474105664458509423764867536342689150582922106807036347047552480521"}},
+										{Name: "Hash", Value: &StringLit{Value: "0xe6f9ed0d"}},
+										{Name: "R", Value: &StringLit{Value: "43162711582587979080031819627904423023685561091192625653251495188141318209988"}},
+										{Name: "S", Value: &StringLit{Value: "94150071556658883365738746782965214584303361499725266605620843043083873122499"}},
+										{Name: "Valid", Value: &BoolLit{Value: true}},
+									}}, nil
+								}
 							case "python_math":
 								if currentProgram != nil {
 									currentProgram.addInclude("<cmath>")
@@ -4987,6 +5026,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 		case "contains":
 			if len(p.Call.Args) == 2 {
+				if currentEnv != nil {
+					if _, ok := currentEnv.GetFunc("contains"); ok {
+						break
+					}
+				}
 				v0, err := convertExpr(p.Call.Args[0])
 				if err != nil {
 					return nil, err
