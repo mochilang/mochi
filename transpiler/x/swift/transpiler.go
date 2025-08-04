@@ -166,10 +166,53 @@ type StructField struct {
 	Type string
 }
 
+// defaultValueForType returns a Swift literal representing the zero value for the
+// provided type string. This is used to generate parameterless initializers for
+// struct types so that structs can be instantiated without specifying every
+// field explicitly.
+func defaultValueForType(t string) string {
+	switch t {
+	case "Int", "Int64", "Int32", "UInt", "UInt64", "UInt32", "Double", "Float":
+		return "0"
+	case "Bool":
+		return "false"
+	case "String":
+		return "\"\""
+	default:
+		if strings.HasPrefix(t, "[") {
+			if strings.Contains(t, ":") {
+				return "[:]"
+			}
+			return "[]"
+		}
+		return t + "()"
+	}
+}
+
 func (sd *StructDef) emit(w io.Writer) {
 	fmt.Fprintf(w, "struct %s: Codable {\n", sd.Name)
 	for _, f := range sd.Fields {
 		fmt.Fprintf(w, "    var %s: %s\n", f.Name, f.Type)
+	}
+	// emit a default initializer so structs can be instantiated without parameters
+	fmt.Fprint(w, "    init() {\n")
+	for _, f := range sd.Fields {
+		fmt.Fprintf(w, "        self.%s = %s\n", f.Name, defaultValueForType(f.Type))
+	}
+	fmt.Fprint(w, "    }\n")
+	if len(sd.Fields) > 0 {
+		fmt.Fprint(w, "    init(")
+		for i, f := range sd.Fields {
+			if i > 0 {
+				fmt.Fprint(w, ", ")
+			}
+			fmt.Fprintf(w, "%s: %s", f.Name, f.Type)
+		}
+		fmt.Fprint(w, ") {\n")
+		for _, f := range sd.Fields {
+			fmt.Fprintf(w, "        self.%s = %s\n", f.Name, f.Name)
+		}
+		fmt.Fprint(w, "    }\n")
 	}
 	fmt.Fprint(w, "}\n")
 }
@@ -2473,7 +2516,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				varT = types.AnyType{}
 			}
 			if st.Var.Type == nil && currentAnyUpdated != nil && currentAnyUpdated[st.Var.Name] {
-				varT = types.AnyType{}
+				if _, ok := varT.(types.ListType); !ok {
+					varT = types.AnyType{}
+				}
 			}
 			typ = swiftTypeOf(varT)
 			ut, okU := env.FindUnionByVariant(swiftTypeOf(varT))
@@ -2679,12 +2724,12 @@ func convertIfStmt(env *types.Env, i *parser.IfStmt) (Stmt, error) {
 }
 
 func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
-        fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
-        child := types.NewEnv(env)
-        updated := map[string]bool{}
-        findUpdatedVars(child, f.Body, updated, nil)
-        // register function type for calls (and recursion)
-        if env != nil {
+	fn := &FunDecl{Name: f.Name, Ret: toSwiftType(f.Return)}
+	child := types.NewEnv(env)
+	updated := map[string]bool{}
+	findUpdatedVars(child, f.Body, updated, nil)
+	// register function type for calls (and recursion)
+	if env != nil {
 		var params []types.Type
 		for _, p := range f.Params {
 			if p.Type != nil {
@@ -2701,13 +2746,13 @@ func convertFunDecl(env *types.Env, f *parser.FunStmt) (Stmt, error) {
 		env.SetFunc(f.Name, f)
 	}
 
-        var retT types.Type
-        if f.Return != nil {
-                retT = types.ResolveTypeRef(f.Return, env)
-        } else {
-                retT = types.VoidType{}
-        }
-        child.SetVar("$retType", retT, false)
+	var retT types.Type
+	if f.Return != nil {
+		retT = types.ResolveTypeRef(f.Return, env)
+	} else {
+		retT = types.VoidType{}
+	}
+	child.SetVar("$retType", retT, false)
 	mutFlags := make([]bool, len(f.Params))
 	inFlags := make([]bool, len(f.Params))
 	for i, p := range f.Params {
@@ -4505,6 +4550,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			right, err := convertExpr(env, pr.Call.Args[1])
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				if lt, ok := types.TypeOfExpr(pr.Call.Args[0], env).(types.ListType); ok {
+					if _, ok2 := lt.Elem.(types.AnyType); ok2 {
+						right = &CastExpr{Expr: right, Type: "Any?"}
+					}
+				}
 			}
 			usesAppend = true
 			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
