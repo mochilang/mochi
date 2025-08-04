@@ -159,8 +159,8 @@ mochi_gcd(A, B) ->
         _ -> mochi_gcd(B1, A1 rem B1)
     end.
 
-mochi_bigrat(N) -> mochi_bigrat(N, 1);
-mochi_bigrat({Num, Den}) -> mochi_bigrat(Num, Den);
+mochi_bigrat(N) when is_integer(N) -> mochi_bigrat(N, 1);
+mochi_bigrat({Num, Den}) -> mochi_bigrat(Num, Den).
 mochi_bigrat(N, D) ->
     D0 = case D of undefined -> 1; _ -> D end,
     case D0 < 0 of
@@ -182,9 +182,8 @@ mochi_div(A, B) ->
     mochi_bigrat(mochi_num(A)*mochi_denom(B), mochi_denom(A)*mochi_num(B)).
 mochi_cmp(A, B) ->
     mochi_num(A)*mochi_denom(B) - mochi_num(B)*mochi_denom(A).
-Num(X) -> mochi_num(X).
-Denom(X) -> mochi_denom(X).
-Repeat(S, N) -> mochi_repeat(S, N).
+num(X) -> mochi_num(X).
+denom(X) -> mochi_denom(X).
 `
 
 const helperRepeat = `
@@ -1311,6 +1310,16 @@ func isBigRatType(t types.Type) bool {
 	return ok
 }
 
+func isBigRatExpr(e Expr) bool {
+	if ce, ok := e.(*CallExpr); ok {
+		switch ce.Func {
+		case "mochi_bigrat", "mochi_add", "mochi_sub", "mochi_mul", "mochi_div":
+			return true
+		}
+	}
+	return false
+}
+
 func isIntType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.BigIntType, types.AnyType:
@@ -1430,6 +1439,11 @@ func exprType(e Expr, env *types.Env, ctx *context) types.Type {
 			}
 		case types.ListType:
 			return tt.Elem
+		}
+	case *CallExpr:
+		switch v.Func {
+		case "mochi_bigrat", "mochi_add", "mochi_sub", "mochi_mul", "mochi_div":
+			return types.BigRatType{}
 		}
 	}
 	return nil
@@ -2936,7 +2950,7 @@ func mapOp(op string) string {
 
 func builtinFunc(name string) bool {
 	switch name {
-	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "bigrat", "num", "denom", "split":
+	case "print", "append", "avg", "count", "len", "str", "sum", "min", "max", "values", "keys", "exists", "contains", "sha256", "json", "now", "input", "int", "abs", "upper", "lower", "indexOf", "parseIntStr", "indexof", "parseintstr", "repeat", "padstart", "bigrat", "num", "denom", "split":
 		return true
 	default:
 		return false
@@ -4314,7 +4328,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 	}
 	isFloatType := func(t types.Type) bool {
 		switch t.(type) {
-		case types.FloatType, types.BigRatType:
+		case types.FloatType:
 			return true
 		default:
 			return false
@@ -4371,7 +4385,7 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 					}
 				}
 				if (op == "+" || op == "-" || op == "*" || op == "/" || op == "<" || op == "<=" || op == ">" || op == ">=" || op == "==" || op == "!=") &&
-					(isBigRatType(typesList[i]) || isBigRatType(typesList[i+1])) {
+					(isBigRatType(typesList[i]) || isBigRatType(typesList[i+1]) || isBigRatExpr(l) || isBigRatExpr(r)) {
 					useBigRat = true
 					l = ensureBigRatExpr(l, typesList[i])
 					r = ensureBigRatExpr(r, typesList[i+1])
@@ -5049,6 +5063,9 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 		} else if ce.Func == "indexof" && len(ce.Args) == 2 {
 			useIndexOf = true
 			return &CallExpr{Func: "mochi_index_of", Args: ce.Args}, nil
+		} else if ce.Func == "padstart" && len(ce.Args) == 3 {
+			usePadStart = true
+			return &CallExpr{Func: "mochi_pad_start", Args: ce.Args}, nil
 		} else if ce.Func == "repeat" && len(ce.Args) == 2 {
 			useRepeat = true
 			useToInt = true
