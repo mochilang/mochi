@@ -29,6 +29,7 @@ var elixirReserved = map[string]struct{}{
 	"end":  {},
 	"node": {},
 	"div":  {},
+	"rem":  {},
 }
 
 func sanitizeIdent(name string) string {
@@ -62,6 +63,9 @@ var builtinAliases map[string]string
 
 // globalVars tracks variables defined before the first function declaration.
 var globalVars map[string]struct{}
+
+// methodFuncs tracks names of struct methods for implicit self calls.
+var methodFuncs map[string]struct{}
 
 func isGlobalVar(name string) bool {
 	_, ok := globalVars[name]
@@ -1894,6 +1898,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	res := &Program{}
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
+	methodFuncs = make(map[string]struct{})
 	moduleMode = false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -2290,6 +2295,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		for _, m := range st.Type.Members {
 			if m.Field != nil {
 				fields = append(fields, m.Field.Name)
+			} else if m.Method != nil {
+				env.SetFunc(m.Method.Name, m.Method)
+				methodFuncs[m.Method.Name] = struct{}{}
 			}
 		}
 		for _, m := range st.Type.Members {
@@ -3541,10 +3549,11 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 			args[i] = ex
 		}
-		name := sanitizeCallName(p.Call.Func)
+		orig := p.Call.Func
+		name := sanitizeCallName(orig)
 		if _, err := env.GetVar(name); err == nil {
-			if _, ok := env.GetFunc(p.Call.Func); ok {
-				name = "Main." + sanitizeFuncName(p.Call.Func)
+			if _, ok := env.GetFunc(orig); ok {
+				name = "Main." + sanitizeFuncName(orig)
 			}
 		}
 		if idx := strings.Index(name, "."); idx > 0 {
@@ -3803,6 +3812,26 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				enc := &CallExpr{Func: "Jason.encode!", Args: []Expr{args[0]}}
 				return &CallExpr{Func: "IO.puts", Args: []Expr{enc}}, nil
 			}
+		}
+		if fn, ok := env.GetFunc(orig); ok {
+			if _, err := env.GetVar("self"); err == nil {
+				if _, ok := methodFuncs[orig]; ok && len(args) == len(fn.Params) {
+					args = append([]Expr{&VarRef{Name: "self"}}, args...)
+				}
+			}
+			if len(args) < len(fn.Params) {
+				remain := fn.Params[len(args):]
+				params := make([]string, len(remain))
+				callArgs := append([]Expr{}, args...)
+				for i, p := range remain {
+					params[i] = p.Name
+					callArgs = append(callArgs, &VarRef{Name: p.Name})
+				}
+				call := &CallExpr{Func: sanitizeFuncName(orig), Args: callArgs}
+				body := []Stmt{&ExprStmt{Expr: call}}
+				return &AnonFun{Params: params, Body: body}, nil
+			}
+			return &CallExpr{Func: sanitizeFuncName(orig), Args: args}, nil
 		}
 		if fn, ok := env.GetFunc(name); ok {
 			if len(args) < len(fn.Params) {

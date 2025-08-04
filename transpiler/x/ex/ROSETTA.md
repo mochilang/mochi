@@ -2,8 +2,8 @@
 
 Generated Elixir code from Mochi Rosetta programs lives in `tests/rosetta/transpiler/Elixir`.
 
-## Rosetta Test Checklist (225/491)
-_Last updated: 2025-08-04 10:46 +0700_
+## Rosetta Test Checklist (229/491)
+_Last updated: 2025-08-04 11:28 +0700_
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ |  |  |
@@ -284,10 +284,10 @@ _Last updated: 2025-08-04 10:46 +0700_
 | 276 | death-star |  |  |  |
 | 277 | deceptive-numbers | ✓ | 21.55ms | 45.2 KB |
 | 278 | deconvolution-1d-2 | ✓ | 8.21ms | 25.0 KB |
-| 279 | deconvolution-1d-3 |  |  |  |
-| 280 | deconvolution-1d |  |  |  |
-| 281 | deepcopy-1 |  |  |  |
-| 282 | define-a-primitive-data-type |  |  |  |
+| 279 | deconvolution-1d-3 | ✓ | 2.60ms | 12.5 KB |
+| 280 | deconvolution-1d | ✓ | 2.49ms | 25.0 KB |
+| 281 | deepcopy-1 | ✓ | 3.59ms | 12.5 KB |
+| 282 | define-a-primitive-data-type | ✓ | 8.13ms | 17.3 KB |
 | 283 | delegates |  |  |  |
 | 284 | demings-funnel |  |  |  |
 | 285 | department-numbers |  |  |  |
