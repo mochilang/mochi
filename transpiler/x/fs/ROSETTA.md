@@ -2,7 +2,7 @@
 
 This file is auto-generated from rosetta tests.
 
-## Rosetta Golden Test Checklist (396/491)
+## Rosetta Golden Test Checklist (399/491)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | 100-doors-2 | ✓ | 151µs | 41.3 KB |
@@ -417,10 +417,10 @@ This file is auto-generated from rosetta tests.
 | 410 | fibonacci-word-fractal | ✓ | 336µs | 44.0 KB |
 | 411 | fibonacci-word | ✓ | 141.333ms | 46.1 MB |
 | 412 | file-extension-is-in-extensions-list | ✓ | 727µs | 64.8 KB |
-| 413 | file-input-output-1 |   | 203µs | 33.7 KB |
-| 414 | file-input-output-2 |   | 209µs | 41.7 KB |
+| 413 | file-input-output-1 |   |  |  |
+| 414 | file-input-output-2 |   |  |  |
 | 415 | file-input-output-3 | ✓ | 216µs | 30.5 KB |
-| 416 | file-modification-time |   | 202µs | 33.7 KB |
+| 416 | file-modification-time |   |  |  |
 | 417 | file-size-distribution | ✓ | 357µs | 50.5 KB |
 | 418 | file-size | ✓ | 457µs | 67.2 KB |
 | 419 | filter | ✓ | 336µs | 45.4 KB |
@@ -436,11 +436,11 @@ This file is auto-generated from rosetta tests.
 | 429 | find-the-last-sunday-of-each-month | ✓ | 337µs | 60.0 KB |
 | 430 | find-the-missing-permutation | ✓ | 338µs | 41.7 KB |
 | 431 | first-class-environments | ✓ | 336µs | 45.9 KB |
-| 432 | first-class-functions-use-numbers-analogously |   |  |  |
+| 432 | first-class-functions-use-numbers-analogously | ✓ | 313µs | 42.7 KB |
 | 433 | first-power-of-2-that-has-leading-decimal-digits-of-12 |   |  |  |
 | 434 | five-weekends | ✓ | 375µs | 41.1 KB |
-| 435 | fivenum-1 |   | 346µs | 42.5 KB |
-| 436 | fivenum-2 |   | 339µs | 42.5 KB |
+| 435 | fivenum-1 | ✓ | 346µs | 42.5 KB |
+| 436 | fivenum-2 | ✓ | 339µs | 42.5 KB |
 | 437 | fivenum-3 | ✓ | 347µs | 42.5 KB |
 | 438 | fixed-length-records-1 | ✓ | 341µs | 57.4 KB |
 | 439 | fixed-length-records-2 | ✓ | 358µs | 48.8 KB |
@@ -497,4 +497,4 @@ This file is auto-generated from rosetta tests.
 | 490 | window-management | ✓ | 371µs | 45.5 KB |
 | 491 | zumkeller-numbers | ✓ | 44.206ms | 86.9 KB |
 
-Last updated: 2025-08-04 22:35 +0700
+Last updated: 2025-08-05 00:29 +0700
