@@ -920,18 +920,24 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	c.Fn.emit(w)
-	if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
-		return
-	}
-	fmt.Fprint(w, "(")
-	for i, a := range c.Args {
-		if i > 0 {
-			fmt.Fprint(w, ", ")
-		}
-		a.emit(w)
-	}
-	fmt.Fprint(w, ")")
+        if n, ok := c.Fn.(*Name); ok && n.Name == "panic" && len(c.Args) == 1 {
+                fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+                c.Args[0].emit(w)
+                fmt.Fprint(w, "))")
+                return
+        }
+        c.Fn.emit(w)
+        if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
+                return
+        }
+        fmt.Fprint(w, "(")
+        for i, a := range c.Args {
+                if i > 0 {
+                        fmt.Fprint(w, ", ")
+                }
+                a.emit(w)
+        }
+        fmt.Fprint(w, ")")
 }
 
 type StringLit struct{ Value string }
