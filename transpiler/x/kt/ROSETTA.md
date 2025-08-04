@@ -2,9 +2,9 @@
 
 Generated Kotlin sources for Rosetta Code tests are stored in `tests/rosetta/transpiler/Kotlin`.
 
-Last updated: 2025-08-04 10:22 +0700
+Last updated: 2025-08-04 10:46 +0700
 
-Completed tasks: **321/491**
+Completed tasks: **331/491**
 
 ### Checklist
 | Index | Name | Status | Duration | Memory |
@@ -266,16 +266,16 @@ Completed tasks: **321/491**
 | 255 | create-an-object-at-a-given-address | ✓ | 18.33ms | 133.7 KB |
 | 256 | csv-data-manipulation | ✓ | 7.11ms | 142.9 KB |
 | 257 | csv-to-html-translation-1 | ✓ | 23.20ms | 127.3 KB |
-| 258 | csv-to-html-translation-2 |  |  |  |
-| 259 | csv-to-html-translation-3 |  |  |  |
-| 260 | csv-to-html-translation-4 |  |  |  |
-| 261 | csv-to-html-translation-5 |  |  |  |
-| 262 | cuban-primes |  |  |  |
-| 263 | cullen-and-woodall-numbers |  |  |  |
-| 264 | cumulative-standard-deviation |  |  |  |
-| 265 | currency |  |  |  |
-| 266 | currying |  |  |  |
-| 267 | curzon-numbers |  |  |  |
+| 258 | csv-to-html-translation-2 | ✓ | 22.27ms | 117.9 KB |
+| 259 | csv-to-html-translation-3 | ✓ | 9.85ms | 133.1 KB |
+| 260 | csv-to-html-translation-4 | ✓ | 6.16ms | 133.3 KB |
+| 261 | csv-to-html-translation-5 | ✓ | 22.91ms | 122.3 KB |
+| 262 | cuban-primes | ✓ | 4.93s | 831.4 KB |
+| 263 | cullen-and-woodall-numbers | ✓ | 23.83ms | 113.4 KB |
+| 264 | cumulative-standard-deviation | ✓ | 17.46ms | 113.7 KB |
+| 265 | currency | ✓ | 15.31ms | 116.7 KB |
+| 266 | currying | ✓ | 13.74ms | 117.0 KB |
+| 267 | curzon-numbers | ✓ | 576.56ms | 829.1 KB |
 | 268 | cusip |  |  |  |
 | 269 | cyclops-numbers |  |  |  |
 | 270 | damm-algorithm |  |  |  |
