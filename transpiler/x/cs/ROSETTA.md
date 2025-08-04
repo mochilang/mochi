@@ -1,7 +1,7 @@
 # Rosetta C# Transpiler Output
 
-Completed programs: 477/491
-Last updated: 2025-08-04 18:30 +0700
+Completed programs: 478/491
+Last updated: 2025-08-04 21:00 +0700
 
 ## Checklist
 | Index | Name | Status | Duration | Memory |
@@ -172,16 +172,16 @@ Last updated: 2025-08-04 18:30 +0700
 | 164 | call-an-object-method | ✓ | 9µs |  |
 | 165 | camel-case-and-snake-case | ✓ | 17.133ms | 1.2MB |
 | 166 | canny-edge-detector | ✓ | 15.567ms | 1.2MB |
-| 167 | canonicalize-cidr | ✓ | 19.786ms | 2.7MB |
-| 168 | cantor-set | ✓ | 14.6ms | 1.2MB |
-| 169 | carmichael-3-strong-pseudoprimes | ✓ | 3.128ms | 44.9KB |
-| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 12.956ms | 1.1MB |
-| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 15.338ms | 1.3MB |
-| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 14.442ms | 1.2MB |
-| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 15.979ms | 1.2MB |
-| 174 | case-sensitivity-of-identifiers | ✓ | 2.829ms | 16.0KB |
-| 175 | casting-out-nines |   | 15.831ms | 2.8MB |
-| 176 | catalan-numbers-1 | ✓ | 2.816ms | 16.0KB |
+| 167 | canonicalize-cidr | ✓ | 2.673ms | 281.8KB |
+| 168 | cantor-set | ✓ | 3.184ms | 143.7KB |
+| 169 | carmichael-3-strong-pseudoprimes | ✓ | 2.841ms | 46.2KB |
+| 170 | cartesian-product-of-two-or-more-lists-1 | ✓ | 2.438ms | 20.8KB |
+| 171 | cartesian-product-of-two-or-more-lists-2 | ✓ | 2.433ms | 57.7KB |
+| 172 | cartesian-product-of-two-or-more-lists-3 | ✓ | 2.965ms | 70.8KB |
+| 173 | cartesian-product-of-two-or-more-lists-4 | ✓ | 2.636ms | 68.1KB |
+| 174 | case-sensitivity-of-identifiers | ✓ | 2.488ms | 19.5KB |
+| 175 | casting-out-nines | ✓ | 10.687ms | 2.8MB |
+| 176 | catalan-numbers-1 | ✓ | 2.1ms | 17.1KB |
 | 177 | catalan-numbers-2 | ✓ | 2.737ms | 16.0KB |
 | 178 | catalan-numbers-pascals-triangle | ✓ | 2.768ms | 24.1KB |
 | 179 | catamorphism | ✓ | 2.81ms | 16.0KB |
