@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,8 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (sieve limit) (call/cc (lambda (ret1) (let ((primes (_list))) (begin (let ((i 0)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i limit) (begin (set! primes (append primes (_list #t))) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (list-set! primes 0 #f) (list-set! primes 1 #f) (let ((p 2)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< (* p p) limit) (begin (if (list-ref primes p) (begin (let ((k (* p p))) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (< k limit) (begin (list-set! primes k #f) (set! k (+ k p)) (loop6)) (quote ()))))) (loop6))))))) (quote ())) (set! p (+ p 1)) (loop4)) (quote ()))))) (loop4)))) (ret1 primes))))))))))
-(define (goldbachCount primes n) (call/cc (lambda (ret8) (let ((c 0)) (begin (let ((i 1)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (<= i (quotient n 2)) (begin (if (and (list-ref primes i) (list-ref primes (- n i))) (begin (set! c (+ c 1))) (quote ())) (set! i (+ i 1)) (loop9)) (quote ()))))) (loop9)))) (ret8 c))))))))
-(define (pad n) (call/cc (lambda (ret11) (begin (if (< n 10) (begin (ret11 (string-append "  " (to-str n)))) (quote ())) (if (< n 100) (begin (ret11 (string-append " " (to-str n)))) (quote ())) (ret11 (to-str n))))))
-(define (main) (call/cc (lambda (ret12) (let ((primes (sieve 1000))) (begin (_display (to-str "The first 100 Goldbach numbers:")) (newline) (let ((line "")) (begin (let ((n 2)) (begin (let ((count 0)) (begin (call/cc (lambda (break14) (letrec ((loop13 (lambda () (if (< count 100) (begin (let ((v (goldbachCount primes (* 2 n)))) (begin (set! line (string-append (string-append line (pad v)) " ")) (set! count (+ count 1)) (set! n (+ n 1)) (if (equal? (modulo count 10) 0) (begin (_display (to-str (_substring line 0 (- (_len line) 1)))) (newline) (set! line "")) (quote ())))) (loop13)) (quote ()))))) (loop13)))) (let ((val (goldbachCount primes 1000))) (begin (_display (to-str (string-append "\nThe 1,000th Goldbach number = " (to-str val)))) (newline))))))))))))))
-(main)
+(let ((start15 (current-jiffy)) (jps18 (jiffies-per-second))) (begin (define (sieve limit) (call/cc (lambda (ret1) (let ((primes (_list))) (begin (let ((i 0)) (begin (call/cc (lambda (break3) (letrec ((loop2 (lambda () (if (< i limit) (begin (set! primes (append primes (_list #t))) (set! i (+ i 1)) (loop2)) (quote ()))))) (loop2)))) (list-set! primes 0 #f) (list-set! primes 1 #f) (let ((p 2)) (begin (call/cc (lambda (break5) (letrec ((loop4 (lambda () (if (< (* p p) limit) (begin (if (list-ref primes p) (begin (let ((k (* p p))) (begin (call/cc (lambda (break7) (letrec ((loop6 (lambda () (if (< k limit) (begin (list-set! primes k #f) (set! k (+ k p)) (loop6)) (quote ()))))) (loop6))))))) (quote ())) (set! p (+ p 1)) (loop4)) (quote ()))))) (loop4)))) (ret1 primes)))))))))) (define (goldbachCount primes n) (call/cc (lambda (ret8) (let ((c 0)) (begin (let ((i 1)) (begin (call/cc (lambda (break10) (letrec ((loop9 (lambda () (if (<= i (quotient n 2)) (begin (if (and (list-ref primes i) (list-ref primes (- n i))) (begin (set! c (+ c 1))) (quote ())) (set! i (+ i 1)) (loop9)) (quote ()))))) (loop9)))) (ret8 c)))))))) (define (pad n) (call/cc (lambda (ret11) (begin (if (< n 10) (begin (ret11 (string-append "  " (to-str n)))) (quote ())) (if (< n 100) (begin (ret11 (string-append " " (to-str n)))) (quote ())) (ret11 (to-str n)))))) (define (main) (call/cc (lambda (ret12) (let ((primes (sieve 1000))) (begin (_display (to-str "The first 100 Goldbach numbers:")) (newline) (let ((line "")) (begin (let ((n 2)) (begin (let ((count 0)) (begin (call/cc (lambda (break14) (letrec ((loop13 (lambda () (if (< count 100) (begin (let ((v (goldbachCount primes (* 2 n)))) (begin (set! line (string-append (string-append line (pad v)) " ")) (set! count (+ count 1)) (set! n (+ n 1)) (if (equal? (modulo count 10) 0) (begin (_display (to-str (_substring line 0 (- (_len line) 1)))) (newline) (set! line "")) (quote ())))) (loop13)) (quote ()))))) (loop13)))) (let ((val (goldbachCount primes 1000))) (begin (_display (to-str (string-append "\nThe 1,000th Goldbach number = " (to-str val)))) (newline)))))))))))))) (main) (let ((end16 (current-jiffy))) (let ((dur17 (quotient (* (- end16 start15) 1000000) jps18))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur17) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

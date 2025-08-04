@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 16:05 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,6 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(define (a) (call/cc (lambda (ret1) (begin))))
-(define (b x y) (call/cc (lambda (ret2) (begin))))
-(define (c nums) (call/cc (lambda (ret3) (begin))))
+(let ((start4 (current-jiffy)) (jps7 (jiffies-per-second))) (begin (define (a) (call/cc (lambda (ret1) (begin)))) (define (b x y) (call/cc (lambda (ret2) (begin)))) (define (c nums) (call/cc (lambda (ret3) (begin)))) (let ((end5 (current-jiffy))) (let ((dur6 (quotient (* (- end5 start4) 1000000) jps7))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur6) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))

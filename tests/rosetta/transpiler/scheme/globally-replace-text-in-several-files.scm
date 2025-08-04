@@ -1,4 +1,4 @@
-;; Generated on 2025-08-04 17:04 +0700
+;; Generated on 2025-08-04 22:39 +0700
 (import (scheme base))
 (import (scheme time))
 (import (chibi string))
@@ -6,6 +6,9 @@
 (import (srfi 69))
 (import (srfi 1))
 (define _list list)
+(import (chibi time))
+(define (_mem) (* 1024 (resource-usage-max-rss (get-resource-usage resource-usage/self))))
+(import (chibi json))
 (define (to-str x)
   (cond ((pair? x)
          (string-append "[" (string-join (map to-str x) ", ") "]"))
@@ -87,5 +90,4 @@
   (cond ((string? x) (string-length x))
         ((hash-table? x) (hash-table-size x))
         (else (length x))))
-(_display (to-str "Would replace 'Goodbye London!' with 'Hello New York!' in a.txt b.txt c.txt"))
-(newline)
+(let ((start1 (current-jiffy)) (jps4 (jiffies-per-second))) (begin (_display (to-str "Would replace 'Goodbye London!' with 'Hello New York!' in a.txt b.txt c.txt")) (newline) (let ((end2 (current-jiffy))) (let ((dur3 (quotient (* (- end2 start1) 1000000) jps4))) (begin (_display (string-append "{\n  \"duration_us\": " (number->string dur3) ",\n  \"memory_bytes\": " (number->string (_mem)) ",\n  \"name\": \"main\"\n}")) (newline))))))
