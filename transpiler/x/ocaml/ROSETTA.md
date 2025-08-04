@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 373/491
+Completed programs: 392/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -472,29 +472,29 @@ Completed programs: 373/491
 | 464 | french-republican-calendar | ✓ | 129.0µs | 1.45KB |
 | 465 | ftp | error |  |  |
 | 466 | function-frequency | ✓ | 1.0ms | 159.14KB |
-| 467 | function-prototype |   |  |  |
-| 468 | functional-coverage-tree |   |  |  |
-| 469 | fusc-sequence |   |  |  |
-| 470 | gamma-function |   |  |  |
-| 471 | general-fizzbuzz |   |  |  |
-| 472 | generic-swap |   |  |  |
-| 473 | get-system-command-output |   |  |  |
-| 474 | giuga-numbers |   |  |  |
-| 475 | globally-replace-text-in-several-files |   |  |  |
-| 476 | goldbachs-comet |   |  |  |
-| 477 | golden-ratio-convergence |   |  |  |
-| 478 | graph-colouring |   |  |  |
-| 479 | gray-code |   |  |  |
-| 480 | gui-component-interaction |   |  |  |
-| 481 | gui-enabling-disabling-of-controls |   |  |  |
-| 482 | gui-maximum-window-dimensions |   |  |  |
-| 483 | http |   |  |  |
-| 484 | image-noise |   |  |  |
-| 485 | loops-increment-loop-index-within-loop-body |   |  |  |
-| 486 | md5 |   |  |  |
+| 467 | function-prototype | ✓ | 1.0µs | 208B |
+| 468 | functional-coverage-tree | ✓ | 686.0µs | 75.44KB |
+| 469 | fusc-sequence | ✓ | 328.0µs | 63.67KB |
+| 470 | gamma-function | ✓ | 394.0µs | 49.02KB |
+| 471 | general-fizzbuzz | ✓ | 229.0µs | 2.57KB |
+| 472 | generic-swap | ✓ | 86.0µs | 512B |
+| 473 | get-system-command-output | ✓ | 15.0µs | 208B |
+| 474 | giuga-numbers | ✓ | 122.0µs | 2.09KB |
+| 475 | globally-replace-text-in-several-files | ✓ | 17.0µs | 208B |
+| 476 | goldbachs-comet | ✓ | 85.0ms | 43.95MB |
+| 477 | golden-ratio-convergence | ✓ | 133.0µs | 3.26KB |
+| 478 | graph-colouring | ✓ | 17.0µs | 208B |
+| 479 | gray-code | ✓ | 210.0µs | 14.66KB |
+| 480 | gui-component-interaction | ✓ | 108.0µs | 912B |
+| 481 | gui-enabling-disabling-of-controls | ✓ | 188.0µs | 13.62KB |
+| 482 | gui-maximum-window-dimensions | ✓ | 88.0µs | 832B |
+| 483 | http | error |  |  |
+| 484 | image-noise | ✓ | 29.0ms | 73.12MB |
+| 485 | loops-increment-loop-index-within-loop-body | ✓ | 212.0ms | 21.30KB |
+| 486 | md5 | ✓ | 23.0µs | 1.55KB |
 | 487 | nim-game |   |  |  |
 | 488 | plasma-effect |   |  |  |
 | 489 | sorting-algorithms-bubble-sort |   |  |  |
 | 490 | window-management |   |  |  |
 | 491 | zumkeller-numbers |   |  |  |
-Last updated 2025-08-04 19:20 +0700
+Last updated 2025-08-04 21:09 +0700

@@ -1,0 +1,48 @@
+TOP COVERAGE = 69902330.852080
+
+NAME HIERARCHY                 | WEIGHT | COVERAGE |
+cleaning                        |    1   | 69902330.849616 |
+    house1                      |   40   | 69902330.848296 |
+        bedrooms                |    1   | 69902330.847672 |
+        bathrooms               |    1   | 69902330.846912 |
+            bathroom1           |    1   | 69902330.846304 |
+            bathroom2           |    1   | 69902330.845696 |
+            outside_lavatory    |    1   | 69902330.845156 |
+        attic                   |    1   | 69902330.844488 |
+        kitchen                 |    1   | 69902330.843852 |
+        living_rooms            |    1   | 69902330.843096 |
+            lounge              |    1   | 69902330.842452 |
+            dining_room         |    1   | 69902330.841868 |
+            conservatory        |    1   | 69902330.841292 |
+            playroom            |    1   | 69902330.840672 |
+        basement                |    1   | 69902330.840048 |
+        garage                  |    1   | 69902330.839396 |
+        garden                  |    1   | 69902330.838744 |
+    house2                      |   60   | 69902330.836968 |
+        upstairs                |    1   | 69902330.835976 |
+            bedrooms            |    1   | 69902330.835172 |
+                suite_1         |    1   | 69902330.834536 |
+                suite_2         |    1   | 69902330.833900 |
+                bedroom_3       |    1   | 69902330.833284 |
+                bedroom_4       |    1   | 69902330.832668 |
+            bathroom            |    1   | 69902330.832048 |
+            toilet              |    1   | 69902330.831404 |
+            attics              |    1   | 69902330.830760 |
+        groundfloor             |    1   | 69902330.829744 |
+            kitchen             |    1   | 69902330.829112 |
+            living_rooms        |    1   | 69902330.828352 |
+                lounge          |    1   | 69902330.827704 |
+                dining_room     |    1   | 69902330.827104 |
+                conservatory    |    1   | 69902330.826512 |
+                playroom        |    1   | 69902330.825884 |
+            wet_room_&_toilet   |    1   | 69902330.825352 |
+            garage              |    1   | 69902330.824708 |
+            garden              |    1   | 69902330.824064 |
+            hot_tub_suite       |    1   | 69902330.823500 |
+        basement                |    1   | 69902330.822724 |
+            cellars             |    1   | 69902330.822092 |
+            wine_cellar         |    1   | 69902330.821508 |
+            cinema              |    1   | 69902330.820864 |
+
+If the coverage of the Cinema node were increased from 0.75 to 1
+the top level coverage would increase by 69902330.818568 to 69902330.818688

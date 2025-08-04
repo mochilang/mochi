@@ -968,7 +968,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	io.WriteString(w, "  let finish = _now () in\n")
 	io.WriteString(w, "  let mem_end = _mem () in\n")
 	io.WriteString(w, "  let dur = (finish - start) / 1000 in\n")
-	io.WriteString(w, "  let mem_bytes = max 0 (mem_end - mem_start) in\n")
+	io.WriteString(w, "  let mem_bytes = Stdlib.max 0 (mem_end - mem_start) in\n")
 	fmt.Fprintf(w, "  Printf.printf \"{\\n  \\\"duration_us\\\": %%d,\\n  \\\"memory_bytes\\\": %%d,\\n  \\\"name\\\": \\\"%%s\\\"\\n}\\n\" dur mem_bytes %q;\n", b.Name)
 }
 
@@ -2210,6 +2210,8 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 			io.WriteString(w, "Printf.sprintf \"%.15f\" (")
 			ix.emit(w)
 			io.WriteString(w, ")")
+		} else if ix.Typ == "" || ix.Typ == "string" {
+			ix.emit(w)
 		} else {
 			io.WriteString(w, "string_of_int (")
 			ix.emit(w)
@@ -3659,12 +3661,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		} else if strings.HasPrefix(iterTyp, "list") {
 			vtyp = "int"
 		}
-                if iterTyp == "" || iterTyp == "dyn" {
-                        vtyp = "string"
-                }
-                if strings.HasPrefix(iterTyp, "map") {
-                        vtyp = "string"
-                }
+		if iterTyp == "" || iterTyp == "dyn" {
+			vtyp = "string"
+		}
+		if strings.HasPrefix(iterTyp, "map") {
+			vtyp = "string"
+		}
 		vars[st.For.Name] = VarInfo{typ: vtyp}
 		body, err := transpileStmts(st.For.Body, env, vars)
 		if err != nil {
@@ -4552,18 +4554,18 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				valTyp := strings.TrimPrefix(typ, "map-")
 				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: idxTyp}
 				typ = valTyp
-                        } else if typ == "map" || strings.HasPrefix(typ, "map{") {
-                                expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "map", Dyn: dyn, KeyTyp: idxTyp}
-                                typ = "map"
-                        } else if typ == "" || typ == "dyn" {
-                                if idxTyp == "int" {
-                                        expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
-                                        typ = ""
-                                } else {
-                                        expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "dyn", Dyn: true, KeyTyp: idxTyp}
-                                        typ = "dyn"
-                                }
-                        } else if strings.HasPrefix(typ, "list-") {
+			} else if typ == "map" || strings.HasPrefix(typ, "map{") {
+				expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "map", Dyn: dyn, KeyTyp: idxTyp}
+				typ = "map"
+			} else if typ == "" || typ == "dyn" {
+				if idxTyp == "int" {
+					expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: "", ColTyp: typ}
+					typ = ""
+				} else {
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "dyn", Dyn: true, KeyTyp: idxTyp}
+					typ = "dyn"
+				}
+			} else if strings.HasPrefix(typ, "list-") {
 				elemTyp := strings.TrimPrefix(typ, "list-")
 				expr = &IndexExpr{Col: expr, Index: idxExpr, Typ: elemTyp, ColTyp: typ}
 				typ = elemTyp
@@ -4769,6 +4771,16 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 								}
 								expr = &BinaryExpr{Left: left, Op: "+", Right: right, Typ: "int", Ltyp: "int", Rtyp: "int"}
 								typ = "int"
+								i++
+								continue
+							} else if field == "MD5Hex" && len(op.Call.Args) == 1 {
+								arg, _, err := convertExpr(op.Call.Args[0], env, vars)
+								if err != nil {
+									return nil, "", err
+								}
+								inner := &FuncCall{Name: "Digest.string", Args: []Expr{arg}, Ret: "string"}
+								expr = &FuncCall{Name: "Digest.to_hex", Args: []Expr{inner}, Ret: "string"}
+								typ = "string"
 								i++
 								continue
 							}
