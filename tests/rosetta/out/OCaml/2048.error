@@ -1,7 +1,0 @@
-ocamlc: exit status 2
-File "/tmp/2048.ml", line 1:
-Warning 24 [bad-module-name]: bad source file name: "2048" is not a valid module name.
-File "/tmp/2048.ml", line 159, characters 0-3:
-159 | let rec slideLeft (row : int list) : (string * Obj.t) list =
-      ^^^
-Error: Syntax error

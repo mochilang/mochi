@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from Rosetta Code programs in `tests/rosetta/x/Mochi`.
 
-Completed programs: 398/491
+Completed programs: 399/491
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
@@ -12,7 +12,7 @@ Completed programs: 398/491
 | 4 | 100-prisoners | ✓ |  |  |
 | 5 | 15-puzzle-game | ✓ |  |  |
 | 6 | 15-puzzle-solver | ✓ | 22.0µs | 208B |
-| 7 | 2048 | error |  |  |
+| 7 | 2048 | ✓ | 860.0µs | 77.64KB |
 | 8 | 21-game | ✓ | 161.0µs | 512B |
 | 9 | 24-game-solve | ✓ |  |  |
 | 10 | 24-game | ✓ | 21.0µs | 952B |
@@ -497,4 +497,4 @@ Completed programs: 398/491
 | 489 | sorting-algorithms-bubble-sort | ✓ | 167.0µs | 14.48KB |
 | 490 | window-management | ✓ | 114.0µs | 8.48KB |
 | 491 | zumkeller-numbers | ✓ | 38.93s | 16.63GB |
-Last updated 2025-08-04 22:41 +0700
+Last updated 2025-08-05 00:30 +0700
