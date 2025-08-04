@@ -1261,27 +1261,23 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		return
 	}
 
+	var leftBuf, rightBuf bytes.Buffer
+	b.Left.emit(&leftBuf)
+	b.Right.emit(&rightBuf)
+	left := strings.TrimRight(leftBuf.String(), "\n")
+	right := strings.TrimLeft(rightBuf.String(), "\n")
+
 	switch b.Op {
 	case "&&", "||", "<", "<=", ">", ">=", "==", "!=":
-		fmt.Fprint(w, "(")
-		b.Left.emit(w)
-		fmt.Fprintf(w, " %s ", b.Op)
-		b.Right.emit(w)
-		fmt.Fprint(w, ")")
+		fmt.Fprintf(w, "(%s %s %s)", left, b.Op, right)
 		return
 	case "%":
 		if b.FloatMod {
-			fmt.Fprint(w, "(")
-			b.Left.emit(w)
-			fmt.Fprint(w, ".truncatingRemainder(dividingBy: ")
-			b.Right.emit(w)
-			fmt.Fprint(w, "))")
+			fmt.Fprintf(w, "(%s.truncatingRemainder(dividingBy: %s))", left, right)
 			return
 		}
 	}
 
-	fmt.Fprint(w, "(")
-	b.Left.emit(w)
 	var op string
 	switch b.Op {
 	case "+":
@@ -1307,9 +1303,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	default:
 		op = b.Op
 	}
-	fmt.Fprintf(w, " %s ", op)
-	b.Right.emit(w)
-	fmt.Fprint(w, ")")
+	fmt.Fprintf(w, "(%s %s %s)", left, op, right)
 }
 
 type UnaryExpr struct {
@@ -3962,6 +3956,8 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 			origBaseType := baseType
 			if env != nil {
 				if types.IsStringType(baseType) {
+					isStr = true
+				} else if ot, ok := baseType.(types.OptionType); ok && types.IsStringType(ot.Elem) {
 					isStr = true
 				}
 				if m, ok := baseType.(types.MapType); ok {
