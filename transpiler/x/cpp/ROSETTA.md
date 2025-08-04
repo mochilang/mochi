@@ -2,7 +2,7 @@
 
 This directory stores C++ code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.cpp` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (295/491) - Last updated 2025-08-04 10:15 +0700:
+Checklist of programs that currently transpile and run (315/491) - Last updated 2025-08-04 11:08 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 525.0µs | 256.00KB |
@@ -322,28 +322,28 @@ Checklist of programs that currently transpile and run (295/491) - Last updated 
 | 315 | doubly-linked-list-definition-1 | ✓ | 2.0µs | 3.34MB |
 | 316 | doubly-linked-list-definition-2 |   |  |  |
 | 317 | doubly-linked-list-element-definition |   |  |  |
-| 318 | doubly-linked-list-traversal |   |  |  |
-| 319 | dragon-curve |   |  |  |
-| 320 | draw-a-clock |   |  |  |
-| 321 | draw-a-cuboid |   |  |  |
-| 322 | draw-a-pixel-1 |   |  |  |
-| 323 | draw-a-rotating-cube |   |  |  |
-| 324 | draw-a-sphere |   |  |  |
-| 325 | duffinian-numbers |   |  |  |
-| 326 | dutch-national-flag-problem |   |  |  |
-| 327 | dynamic-variable-names |   |  |  |
-| 328 | earliest-difference-between-prime-gaps |   |  |  |
-| 329 | eban-numbers |   |  |  |
-| 330 | ecdsa-example |   |  |  |
-| 331 | echo-server |   |  |  |
+| 318 | doubly-linked-list-traversal | ✓ | 220.0µs | 3.58MB |
+| 319 | dragon-curve | ✓ | 1.0ms | 3.70MB |
+| 320 | draw-a-clock | ✓ | 142.0µs | 3.57MB |
+| 321 | draw-a-cuboid | ✓ | 965.0µs | 3.53MB |
+| 322 | draw-a-pixel-1 | ✓ | 3.04s | 8.25MB |
+| 323 | draw-a-rotating-cube | ✓ | 89.0ms | 3.76MB |
+| 324 | draw-a-sphere | ✓ | 3.0ms | 3.63MB |
+| 325 | duffinian-numbers | ✓ | 65.0ms | 3.70MB |
+| 326 | dutch-national-flag-problem | ✓ | 223.0µs | 3.60MB |
+| 327 | dynamic-variable-names | ✓ | 252.0µs | 3.77MB |
+| 328 | earliest-difference-between-prime-gaps | ✓ | 353.0µs | 3.56MB |
+| 329 | eban-numbers | ✓ | 3.0ms | 3.64MB |
+| 330 | ecdsa-example | ✓ | 161.0µs | 3.70MB |
+| 331 | echo-server | ✓ | 171.0µs | 3.53MB |
 | 332 | eertree |   |  |  |
-| 333 | egyptian-division | ✓ | 273.0µs | 3.69MB |
-| 334 | ekg-sequence-convergence |   |  |  |
-| 335 | element-wise-operations |   |  |  |
-| 336 | elementary-cellular-automaton-infinite-length |   |  |  |
-| 337 | elementary-cellular-automaton-random-number-generator |   |  |  |
-| 338 | elementary-cellular-automaton |   |  |  |
-| 339 | elliptic-curve-arithmetic |   |  |  |
+| 333 | egyptian-division | ✓ | 171.0µs | 3.48MB |
+| 334 | ekg-sequence-convergence | ✓ | 5.0ms | 3.49MB |
+| 335 | element-wise-operations | ✓ | 1.0ms | 3.66MB |
+| 336 | elementary-cellular-automaton-infinite-length | ✓ | 2.0ms | 3.48MB |
+| 337 | elementary-cellular-automaton-random-number-generator | ✓ |  |  |
+| 338 | elementary-cellular-automaton | ✓ | 678.0µs | 3.48MB |
+| 339 | elliptic-curve-arithmetic | ✓ | 319.0µs | 3.78MB |
 | 340 | elliptic-curve-digital-signature-algorithm |   |  |  |
 | 341 | emirp-primes |   |  |  |
 | 342 | empty-directory |   |  |  |
