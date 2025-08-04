@@ -1203,7 +1203,13 @@ func (c *CastExpr) emit(w io.Writer) {
 			}
 		} else {
 			needsBigInt = true
-			if _, ok := c.Value.(*IntLit); ok || isBigIntExpr(c.Value) {
+			if il, ok := c.Value.(*IntLit); ok {
+				if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
+					fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
+				} else {
+					fmt.Fprintf(w, "BigInt(%d)", il.Value)
+				}
+			} else if isBigIntExpr(c.Value) {
 				c.Value.emit(w)
 			} else {
 				typ := inferType(c.Value)
@@ -2238,15 +2244,20 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		targetType := inferTypeWithEnv(target, env)
 		valType := inferTypeWithEnv(e, env)
 		if targetType != "" && targetType != "Any" && (valType == "" || valType == "Any") {
-			if n, ok := target.(*Name); ok {
-				if vs, ok2 := varDecls[n.Name]; ok2 {
-					vs.Type = "Any"
-					localVarTypes[n.Name] = "Any"
-					targetType = "Any"
+			if nn, ok := e.(*Name); ok && nn.Name == "null" {
+				e = &CastExpr{Value: &Name{Name: "null"}, Type: targetType}
+				valType = targetType
+			} else {
+				if n, ok := target.(*Name); ok {
+					if vs, ok2 := varDecls[n.Name]; ok2 {
+						vs.Type = "Any"
+						localVarTypes[n.Name] = "Any"
+						targetType = "Any"
+					}
 				}
-			}
-			if targetType != "Any" {
-				e = &CastExpr{Value: e, Type: targetType}
+				if targetType != "Any" {
+					e = &CastExpr{Value: e, Type: targetType}
+				}
 			}
 		} else if targetType == "Int" && valType == "BigInt" {
 			e = &FieldExpr{Receiver: e, Name: "toInt"}
@@ -3229,9 +3240,17 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 			if strings.HasPrefix(listType, "ArrayBuffer[") {
 				elemTyp := strings.TrimSuffix(strings.TrimPrefix(listType, "ArrayBuffer["), "]")
 				if elemTyp != "" {
-					et := inferTypeWithEnv(args[1], env)
-					if et == "" || et == "Any" || et != elemTyp {
+					if _, ok := args[1].(*ListLit); ok {
 						args[1] = &CastExpr{Value: args[1], Type: elemTyp}
+					} else {
+						et := inferTypeWithEnv(args[1], env)
+						if et == "" || et == "Any" || et != elemTyp {
+							args[1] = &CastExpr{Value: args[1], Type: elemTyp}
+						} else if elemTyp == "BigInt" {
+							if _, ok := args[1].(*IntLit); ok {
+								args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
+							}
+						}
 					}
 				}
 			}
@@ -4630,6 +4649,8 @@ func inferType(e Expr) string {
 				"math.tan", "math.asin", "math.acos", "math.atan",
 				"math.sqrt", "math.pow":
 				return "Double"
+			case "BigInt":
+				return "BigInt"
 			}
 		case *FieldExpr:
 			if recv, ok := fn.Receiver.(*Name); ok {
