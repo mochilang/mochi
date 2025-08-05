@@ -1,0 +1,128 @@
+/*
+Gradient Descent for Linear Hypothesis Function
+-----------------------------------------------
+This program implements batch gradient descent to minimize the cost of a
+linear hypothesis function for a small training set. Each training example
+has three features and an associated output value. The hypothesis function
+includes a bias term and three feature weights.
+
+Algorithm:
+1. Start with an initial parameter vector [bias, w1, w2, w3].
+2. Repeatedly update each parameter by subtracting the learning rate times
+   the partial derivative of the cost function with respect to that parameter.
+   The derivative for the bias uses just the prediction error; derivatives
+   for the weights also multiply by the corresponding feature value.
+3. Continue until successive parameter vectors are within specified absolute
+   and relative error tolerances.
+4. After convergence, test the learned parameters on unseen data and print
+   both the true and predicted outputs.
+
+This implementation uses only Mochi standard features and no FFI.
+*/
+
+type DataPoint = { x: list<float>, y: float }
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun hypothesis_value(input: list<float>, params: list<float>): float {
+  var value = params[0]
+  var i = 0
+  while i < len(input) {
+    value = value + input[i] * params[i + 1]
+    i = i + 1
+  }
+  return value
+}
+
+fun calc_error(dp: DataPoint, params: list<float>): float {
+  return hypothesis_value(dp.x, params) - dp.y
+}
+
+fun summation_of_cost_derivative(index: int, params: list<float>, data: list<DataPoint>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(data) {
+    let dp = data[i]
+    let e = calc_error(dp, params)
+    if index == (-1) {
+      sum = sum + e
+    } else {
+      sum = sum + e * dp.x[index]
+    }
+    i = i + 1
+  }
+  return sum
+}
+
+fun get_cost_derivative(index: int, params: list<float>, data: list<DataPoint>): float {
+  return summation_of_cost_derivative(index, params, data) / (len(data) as float)
+}
+
+fun allclose(a: list<float>, b: list<float>, atol: float, rtol: float): bool {
+  var i = 0
+  while i < len(a) {
+    let diff = absf(a[i] - b[i])
+    let limit = atol + rtol * absf(b[i])
+    if diff > limit {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun run_gradient_descent(train_data: list<DataPoint>, initial_params: list<float>): list<float> {
+  let learning_rate = 0.009
+  let absolute_error_limit = 0.000002
+  let relative_error_limit = 0.0
+  var j = 0
+  var params = initial_params
+  while true {
+    j = j + 1
+    var temp: list<float> = []
+    var i = 0
+    while i < len(params) {
+      let deriv = get_cost_derivative(i - 1, params, train_data)
+      temp = append(temp, params[i] - learning_rate * deriv)
+      i = i + 1
+    }
+    if allclose(params, temp, absolute_error_limit, relative_error_limit) {
+      print("Number of iterations:" + str(j))
+      break
+    }
+    params = temp
+  }
+  return params
+}
+
+fun test_gradient_descent(test_data: list<DataPoint>, params: list<float>) {
+  var i = 0
+  while i < len(test_data) {
+    let dp = test_data[i]
+    print("Actual output value:" + str(dp.y))
+    print("Hypothesis output:" + str(hypothesis_value(dp.x, params)))
+    i = i + 1
+  }
+}
+
+let train_data: list<DataPoint> = [
+  DataPoint{ x: [5.0, 2.0, 3.0], y: 15.0 },
+  DataPoint{ x: [6.0, 5.0, 9.0], y: 25.0 },
+  DataPoint{ x: [11.0, 12.0, 13.0], y: 41.0 },
+  DataPoint{ x: [1.0, 1.0, 1.0], y: 8.0 },
+  DataPoint{ x: [11.0, 12.0, 13.0], y: 41.0 },
+]
+
+let test_data: list<DataPoint> = [
+  DataPoint{ x: [515.0, 22.0, 13.0], y: 555.0 },
+  DataPoint{ x: [61.0, 35.0, 49.0], y: 150.0 },
+]
+
+var parameter_vector: list<float> = [2.0, 4.0, 1.0, 5.0]
+
+parameter_vector = run_gradient_descent(train_data, parameter_vector)
+print("\nTesting gradient descent for a linear hypothesis function.\n")
+test_gradient_descent(test_data, parameter_vector)
