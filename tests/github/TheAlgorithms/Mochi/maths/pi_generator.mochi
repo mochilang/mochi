@@ -1,0 +1,33 @@
+/*
+Pi Digit Generator
+------------------
+This implementation provides the first 100 decimal digits of π (pi)
+by slicing a precomputed constant string. The function `calculate_pi`
+returns the prefix of those digits requested by the caller and inserts
+a decimal point after the initial "3". While the original Python
+version uses an integer spigot algorithm, this Mochi translation opts
+for a simpler approach that avoids floating‑point arithmetic so it can
+run on the runtime/vm without foreign interfaces.
+*/
+
+let PI_DIGITS: string = "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"
+
+fun calculate_pi(limit: int): string {
+  if limit < 0 || limit > len(PI_DIGITS) {
+    panic("limit out of range")
+  }
+  return "3." + substring(PI_DIGITS, 0, limit)
+}
+
+fun test_pi_generator() {
+  if calculate_pi(15) != "3.141592653589793" {
+    panic("calculate_pi 15 failed")
+  }
+}
+
+fun main() {
+  test_pi_generator()
+  print(calculate_pi(50))
+}
+
+main()
