@@ -1,0 +1,62 @@
+/*
+Gas Station Problem
+-------------------
+Given two lists representing the amount of gas available and the cost to
+travel to the next station for each station on a circular route, determine
+from which station a car can start with an empty tank and complete one full
+trip around the circuit. If it's not possible, return -1.
+
+Algorithm:
+1. Compute total gas and total cost; if total gas is less than total cost,
+   the journey is impossible.
+2. Otherwise, iterate through the stations accumulating the net gas
+   (gas_quantity - cost). When the net gas becomes negative, the current
+   start cannot work so reset the start to the next station and reset the
+   net gas to zero. The remaining stations still have a viable solution.
+
+This greedy method runs in O(n) time for n stations.
+*/
+
+type GasStation = { gas_quantity: int, cost: int }
+
+fun get_gas_stations(gas_quantities: list<int>, costs: list<int>): list<GasStation> {
+  var stations: list<GasStation> = []
+  var i = 0
+  while i < len(gas_quantities) {
+    stations = append(stations, GasStation{ gas_quantity: gas_quantities[i], cost: costs[i] })
+    i = i + 1
+  }
+  return stations
+}
+
+fun can_complete_journey(gas_stations: list<GasStation>): int {
+  var total_gas = 0
+  var total_cost = 0
+  var i = 0
+  while i < len(gas_stations) {
+    total_gas = total_gas + gas_stations[i]["gas_quantity"]
+    total_cost = total_cost + gas_stations[i]["cost"]
+    i = i + 1
+  }
+  if total_gas < total_cost {
+    return -1
+  }
+  var start = 0
+  var net = 0
+  i = 0
+  while i < len(gas_stations) {
+    let station = gas_stations[i]
+    net = net + station["gas_quantity"] - station["cost"]
+    if net < 0 {
+      start = i + 1
+      net = 0
+    }
+    i = i + 1
+  }
+  return start
+}
+
+let example1 = get_gas_stations([1, 2, 3, 4, 5], [3, 4, 5, 1, 2])
+print(str(can_complete_journey(example1)))
+let example2 = get_gas_stations([2, 3, 4], [3, 4, 3])
+print(str(can_complete_journey(example2)))
