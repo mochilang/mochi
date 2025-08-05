@@ -1,0 +1,64 @@
+/*
+Optimal Merge Pattern
+
+Given multiple sorted files with different lengths, merge them into a
+single sorted file with minimal total cost.  Merging two files of sizes
+m and n costs m + n.  The greedy strategy repeatedly merges the two
+smallest files, appending their combined size back into the list and
+accumulating the cost.  This approach yields the optimal merge cost,
+analogous to constructing a Huffman tree.
+
+Algorithm:
+1. While more than one file remains, find the two smallest sizes.
+2. Remove them, sum them and append the sum.
+3. Add the sum to the running total cost.
+4. Continue until only one file is left.
+
+Time Complexity: O(n^2) using linear scans to locate minima.
+*/
+
+fun index_of_min(xs: list<int>): int {
+  var min_idx = 0
+  var i = 1
+  while i < len(xs) {
+    if xs[i] < xs[min_idx] {
+      min_idx = i
+    }
+    i = i + 1
+  }
+  return min_idx
+}
+
+fun remove_at(xs: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun optimal_merge_pattern(files: list<int>): int {
+  var arr = files
+  var optimal_merge_cost = 0
+  while len(arr) > 1 {
+    var temp = 0
+    var k = 0
+    while k < 2 {
+      let min_idx = index_of_min(arr)
+      temp = temp + arr[min_idx]
+      arr = remove_at(arr, min_idx)
+      k = k + 1
+    }
+    arr = append(arr, temp)
+    optimal_merge_cost = optimal_merge_cost + temp
+  }
+  return optimal_merge_cost
+}
+
+print(optimal_merge_pattern([2, 3, 4]))
+print(optimal_merge_pattern([5, 10, 20, 30, 30]))
+print(optimal_merge_pattern([8, 8, 8, 8, 8]))
