@@ -1,0 +1,48 @@
+/*
+Convert between common pressure units using conversion factors relative to atmospheres.
+
+Each unit is associated with two coefficients: `from_factor` converts a value to
+atmospheres and `to_factor` converts from atmospheres back to that unit. To transform a
+measurement from one unit to another we multiply by the source unit's `from_factor` and the
+destination unit's `to_factor`. The implementation validates unit names and runs in constant
+time.
+*/
+
+type FromTo {
+  from_factor: float
+  to_factor: float
+}
+
+let PRESSURE_CONVERSION: map<string, FromTo> = {
+  "atm": FromTo{from_factor: 1.0, to_factor: 1.0},
+  "pascal": FromTo{from_factor: 0.0000098, to_factor: 101325.0},
+  "bar": FromTo{from_factor: 0.986923, to_factor: 1.01325},
+  "kilopascal": FromTo{from_factor: 0.00986923, to_factor: 101.325},
+  "megapascal": FromTo{from_factor: 9.86923, to_factor: 0.101325},
+  "psi": FromTo{from_factor: 0.068046, to_factor: 14.6959},
+  "inHg": FromTo{from_factor: 0.0334211, to_factor: 29.9213},
+  "torr": FromTo{from_factor: 0.00131579, to_factor: 760.0},
+}
+
+fun pressure_conversion(value: float, from_type: string, to_type: string): float {
+  if !(from_type in PRESSURE_CONVERSION) {
+    let keys = Object.keys(PRESSURE_CONVERSION).join(", ")
+    panic("Invalid 'from_type' value: '" + from_type + "'  Supported values are:\n" + keys)
+  }
+  if !(to_type in PRESSURE_CONVERSION) {
+    let keys = Object.keys(PRESSURE_CONVERSION).join(", ")
+    panic("Invalid 'to_type' value: '" + to_type + ".  Supported values are:\n" + keys)
+  }
+  let from = PRESSURE_CONVERSION[from_type]
+  let to = PRESSURE_CONVERSION[to_type]
+  return value * from.from_factor * to.to_factor
+}
+
+print(pressure_conversion(4.0, "atm", "pascal"))
+print(pressure_conversion(1.0, "pascal", "psi"))
+print(pressure_conversion(1.0, "bar", "atm"))
+print(pressure_conversion(3.0, "kilopascal", "bar"))
+print(pressure_conversion(2.0, "megapascal", "psi"))
+print(pressure_conversion(4.0, "psi", "torr"))
+print(pressure_conversion(1.0, "inHg", "atm"))
+print(pressure_conversion(1.0, "torr", "psi"))
