@@ -1,0 +1,57 @@
+/*
+Simulate a NOR logic gate and generate its truth table.
+
+A NOR gate outputs 1 only when both binary inputs are 0; otherwise it outputs 0.
+This is equivalent to performing a logical OR followed by negation. The program
+implements the NOR operation and constructs a formatted truth table showing all
+possible input combinations. The complexity is O(1) since there are only four
+input pairs to evaluate.
+*/
+
+fun nor_gate(input_1: int, input_2: int): int {
+  if input_1 == 0 && input_2 == 0 {
+    return 1
+  }
+  return 0
+}
+
+fun center(s: string, width: int): string {
+  var total = width - len(s)
+  if total <= 0 {
+    return s
+  }
+  var left = total / 2
+  var right = total - left
+  var res = s
+  var i = 0
+  while i < left {
+    res = " " + res
+    i = i + 1
+  }
+  var j = 0
+  while j < right {
+    res = res + " "
+    j = j + 1
+  }
+  return res
+}
+
+fun make_table_row(i: int, j: int): string {
+  let output = nor_gate(i, j)
+  return "| " + center(str(i), 8) + " | " + center(str(j), 8) + " | " + center(str(output), 8) + " |"
+}
+
+fun truth_table(): string {
+  return "Truth Table of NOR Gate:\n" +
+         "| Input 1 | Input 2 | Output  |\n" +
+         make_table_row(0, 0) + "\n" +
+         make_table_row(0, 1) + "\n" +
+         make_table_row(1, 0) + "\n" +
+         make_table_row(1, 1)
+}
+
+print(nor_gate(0, 0))
+print(nor_gate(0, 1))
+print(nor_gate(1, 0))
+print(nor_gate(1, 1))
+print(truth_table())
