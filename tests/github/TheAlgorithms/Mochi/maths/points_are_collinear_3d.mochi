@@ -1,0 +1,103 @@
+/*
+Check if three points are collinear in 3D space.
+
+The algorithm mirrors the Python version from TheAlgorithms project.
+Given three 3D points A, B and C, it determines whether they lie on a
+single straight line.  The steps are:
+
+1. Build vectors AB and AC from the input points.
+2. Compute the cross product of these vectors.  If AB and AC are
+   parallel then their cross product is the zero vector.
+3. Instead of computing the magnitude of the cross product, check
+   directly whether each component is zero after rounding to a given
+   accuracy.  This avoids square roots and division while still
+   providing a reliable test for collinearity.
+
+All data types are explicit and no foreign function interfaces are
+used so the program can execute on the runtime/vm.
+*/
+
+type Point3d {
+  x: float
+  y: float
+  z: float
+}
+
+type Vector3d {
+  x: float
+  y: float
+  z: float
+}
+
+fun create_vector(p1: Point3d, p2: Point3d): Vector3d {
+  let vx = p2.x - p1.x
+  let vy = p2.y - p1.y
+  let vz = p2.z - p1.z
+  return Vector3d { x: vx, y: vy, z: vz }
+}
+
+fun get_3d_vectors_cross(ab: Vector3d, ac: Vector3d): Vector3d {
+  let cx = ab.y * ac.z - ab.z * ac.y
+  let cy = ab.z * ac.x - ab.x * ac.z
+  let cz = ab.x * ac.y - ab.y * ac.x
+  return Vector3d { x: cx, y: cy, z: cz }
+}
+
+fun pow10(exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+fun round_float(x: float, digits: int): float {
+  let factor = pow10(digits)
+  var v = x * factor
+  if v >= 0.0 {
+    v = v + 0.5
+  } else {
+    v = v - 0.5
+  }
+  let t = v as int
+  return (t as float) / factor
+}
+
+fun is_zero_vector(v: Vector3d, accuracy: int): bool {
+  return round_float(v.x, accuracy) == 0.0 &&
+         round_float(v.y, accuracy) == 0.0 &&
+         round_float(v.z, accuracy) == 0.0
+}
+
+fun are_collinear(a: Point3d, b: Point3d, c: Point3d, accuracy: int): bool {
+  let ab = create_vector(a, b)
+  let ac = create_vector(a, c)
+  let cross = get_3d_vectors_cross(ab, ac)
+  return is_zero_vector(cross, accuracy)
+}
+
+fun test_are_collinear() {
+  let p1 = Point3d { x: 0.0, y: 0.0, z: 0.0 }
+  let p2 = Point3d { x: 1.0, y: 1.0, z: 1.0 }
+  let p3 = Point3d { x: 2.0, y: 2.0, z: 2.0 }
+  if !are_collinear(p1, p2, p3, 10) { panic("collinear test failed") }
+
+  let q3 = Point3d { x: 1.0, y: 2.0, z: 3.0 }
+  if are_collinear(p1, p2, q3, 10) { panic("non-collinear test failed") }
+}
+
+fun main() {
+  test_are_collinear()
+  let a = Point3d { x: 4.802293498137402, y: 3.536233125455244, z: 0.0 }
+  let b = Point3d { x: -2.186788107953106, y: -9.24561398001649, z: 7.141509524846482 }
+  let c = Point3d { x: 1.530169574640268, y: -2.447927606600034, z: 3.343487096469054 }
+  print(str(are_collinear(a, b, c, 10)))
+  let d = Point3d { x: 2.399001826862445, y: -2.452009976680793, z: 4.464656666157666 }
+  let e = Point3d { x: -3.682816335934376, y: 5.753788986533145, z: 9.490993909044244 }
+  let f = Point3d { x: 1.962903518985307, y: 3.741415730125627, z: 7.0 }
+  print(str(are_collinear(d, e, f, 10)))
+}
+
+main()
