@@ -1,0 +1,156 @@
+/*
+Performs two-dimensional convolution on a grayscale image represented as a
+matrix of integers.  The algorithm mirrors the behavior of image convolution
+in numerical libraries by:
+
+1. Padding the input image by replicating edge values so that the kernel can
+   be applied at border pixels.
+2. Using an "im2col" transformation that slides a window over the padded
+   image and unfolds each k×k neighborhood into a row of a matrix.
+3. Flattening the convolution kernel into a vector and computing the dot
+   product with each row of the transformed image to obtain the output
+   pixel value.
+
+The implementation below uses lists exclusively and avoids any external
+libraries.  It demonstrates the convolution with a simple 5×5 image and a
+3×3 Laplacian kernel.
+*/
+
+fun pad_edge(image: list<list<int>>, pad_size: int): list<list<int>> {
+  let height = len(image)
+  let width = len(image[0])
+  let new_height = height + pad_size * 2
+  let new_width = width + pad_size * 2
+  var padded: list<list<int>> = []
+  var i = 0
+  while i < new_height {
+    var row: list<int> = []
+    var src_i = i
+    if src_i < pad_size { src_i = 0 }
+    if src_i >= height + pad_size { src_i = height - 1 }
+    else { src_i = src_i - pad_size }
+    var j = 0
+    while j < new_width {
+      var src_j = j
+      if src_j < pad_size { src_j = 0 }
+      if src_j >= width + pad_size { src_j = width - 1 }
+      else { src_j = src_j - pad_size }
+      row = append(row, image[src_i][src_j])
+      j = j + 1
+    }
+    padded = append(padded, row)
+    i = i + 1
+  }
+  return padded
+}
+
+fun im2col(image: list<list<int>>, block_h: int, block_w: int): list<list<int>> {
+  let rows = len(image)
+  let cols = len(image[0])
+  let dst_height = rows - block_h + 1
+  let dst_width = cols - block_w + 1
+  var image_array: list<list<int>> = []
+  var i = 0
+  while i < dst_height {
+    var j = 0
+    while j < dst_width {
+      var window: list<int> = []
+      var bi = 0
+      while bi < block_h {
+        var bj = 0
+        while bj < block_w {
+          window = append(window, image[i + bi][j + bj])
+          bj = bj + 1
+        }
+        bi = bi + 1
+      }
+      image_array = append(image_array, window)
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return image_array
+}
+
+fun flatten(matrix: list<list<int>>): list<int> {
+  var out: list<int> = []
+  var i = 0
+  while i < len(matrix) {
+    var j = 0
+    while j < len(matrix[i]) {
+      out = append(out, matrix[i][j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun dot(a: list<int>, b: list<int>): int {
+  var sum = 0
+  var i = 0
+  while i < len(a) {
+    sum = sum + a[i] * b[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun img_convolve(image: list<list<int>>, kernel: list<list<int>>): list<list<int>> {
+  let height = len(image)
+  let width = len(image[0])
+  let k_size = len(kernel)
+  let pad_size = k_size / 2
+  let padded = pad_edge(image, pad_size)
+  let image_array = im2col(padded, k_size, k_size)
+  let kernel_flat = flatten(kernel)
+  var dst: list<list<int>> = []
+  var idx = 0
+  var i = 0
+  while i < height {
+    var row: list<int> = []
+    var j = 0
+    while j < width {
+      let val = dot(image_array[idx], kernel_flat)
+      row = append(row, val)
+      idx = idx + 1
+      j = j + 1
+    }
+    dst = append(dst, row)
+    i = i + 1
+  }
+  return dst
+}
+
+fun print_matrix(m: list<list<int>>) {
+  var i = 0
+  while i < len(m) {
+    var line = ""
+    var j = 0
+    while j < len(m[i]) {
+      if j > 0 { line = line + " " }
+      line = line + str(m[i][j])
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+// Demonstration with a 5x5 image and a Laplacian kernel
+let image = [
+  [1, 2, 3, 0, 0],
+  [4, 5, 6, 0, 0],
+  [7, 8, 9, 0, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0],
+]
+
+let laplace_kernel = [
+  [0, 1, 0],
+  [1, -4, 1],
+  [0, 1, 0],
+]
+
+let result = img_convolve(image, laplace_kernel)
+print_matrix(result)
