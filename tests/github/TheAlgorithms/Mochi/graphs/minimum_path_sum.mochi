@@ -1,0 +1,73 @@
+/*
+Compute the minimal path sum in a grid of non-negative integers using dynamic programming.
+
+Starting at the top-left cell, you may move only right or down until reaching
+the bottom-right cell. Each move adds the destination cell's value to the
+running total. The goal is to find a path with the lowest possible sum.
+
+Algorithm:
+1. Precompute cumulative sums along the first row since only moves to the right
+   are possible there.
+2. For each subsequent row, update each cell with the cell value plus the
+   minimum of its left neighbor and the value above it (which already stores the
+   minimal sum to reach that position).
+3. The value in the bottom-right cell after processing is the minimal path sum.
+
+Time complexity: O(m * n) for an m by n grid.
+Space complexity: O(1) extra space as the grid is updated in place.
+*/
+
+fun fill_row(current_row: list<int>, row_above: list<int>): list<int> {
+  current_row[0] = current_row[0] + row_above[0]
+  var cell_n = 1
+  while cell_n < len(current_row) {
+    let left = current_row[cell_n - 1]
+    let up = row_above[cell_n]
+    if left < up {
+      current_row[cell_n] = current_row[cell_n] + left
+    } else {
+      current_row[cell_n] = current_row[cell_n] + up
+    }
+    cell_n = cell_n + 1
+  }
+  return current_row
+}
+
+fun min_path_sum(grid: list<list<int>>): int {
+  if len(grid) == 0 || len(grid[0]) == 0 {
+    error("The grid does not contain the appropriate information")
+  }
+
+  var cell_n = 1
+  while cell_n < len(grid[0]) {
+    grid[0][cell_n] = grid[0][cell_n] + grid[0][cell_n - 1]
+    cell_n = cell_n + 1
+  }
+
+  var row_above = grid[0]
+  var row_n = 1
+  while row_n < len(grid) {
+    let current_row = grid[row_n]
+    grid[row_n] = fill_row(current_row, row_above)
+    row_above = grid[row_n]
+    row_n = row_n + 1
+  }
+
+  return grid[len(grid) - 1][len(grid[0]) - 1]
+}
+
+let grid1: list<list<int>> = [
+  [1, 3, 1],
+  [1, 5, 1],
+  [4, 2, 1],
+]
+print(str(min_path_sum(grid1)))
+
+let grid2: list<list<int>> = [
+  [1, 0, 5, 6, 7],
+  [8, 9, 0, 4, 2],
+  [4, 4, 4, 5, 1],
+  [9, 6, 3, 1, 0],
+  [8, 4, 3, 2, 7],
+]
+print(str(min_path_sum(grid2)))
