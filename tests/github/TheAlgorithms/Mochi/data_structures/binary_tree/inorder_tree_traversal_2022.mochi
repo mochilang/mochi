@@ -1,0 +1,98 @@
+/*
+Perform inorder traversal on a binary search tree.
+
+Each node stores an integer value and indices of its left and right
+children. A child index of -1 means the child is absent. Nodes are kept
+in a list inside a TreeState record. Values are inserted iteratively by
+walking from the root and linking a new node when a null child is
+encountered. Inorder traversal recursively processes the left subtree,
+current node, then the right subtree, producing values in ascending
+order. The traversal visits each node exactly once, giving O(n) time
+complexity.
+*/
+
+type Node {
+  data: int
+  left: int
+  right: int
+}
+
+type TreeState {
+  nodes: list<Node>
+  root: int
+}
+
+fun new_node(state: TreeState, value: int): int {
+  state.nodes = append(state.nodes, Node{ data: value, left: (-1), right: (-1) })
+  return len(state.nodes) - 1
+}
+
+fun insert(state: TreeState, value: int) {
+  if state.root == (-1) {
+    state.root = new_node(state, value)
+    return
+  }
+  var current = state.root
+  var nodes = state.nodes
+  while true {
+    var node = nodes[current]
+    if value < node.data {
+      if node.left == (-1) {
+        node.left = new_node(state, value)
+        nodes[current] = node
+        state.nodes = nodes
+        return
+      }
+      current = node.left
+    } else {
+      if node.right == (-1) {
+        node.right = new_node(state, value)
+        nodes[current] = node
+        state.nodes = nodes
+        return
+      }
+      current = node.right
+    }
+  }
+}
+
+fun inorder(state: TreeState, idx: int): list<int> {
+  if idx == (-1) {
+    return []
+  }
+  let node = state.nodes[idx]
+  var result = inorder(state, node.left)
+  result = append(result, node.data)
+  let right_part = inorder(state, node.right)
+  var i = 0
+  while i < len(right_part) {
+    result = append(result, right_part[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun make_tree(): TreeState {
+  var state = TreeState{ nodes: [], root: (-1) }
+  insert(state, 15)
+  insert(state, 10)
+  insert(state, 25)
+  insert(state, 6)
+  insert(state, 14)
+  insert(state, 20)
+  insert(state, 60)
+  return state
+}
+
+fun main() {
+  let state = make_tree()
+  print("Printing values of binary search tree in Inorder Traversal.")
+  print(inorder(state, state.root))
+}
+
+main()
+
+test "inorder traversal" {
+  let state = make_tree()
+  expect inorder(state, state.root) == [6, 10, 14, 15, 20, 25, 60]
+}
