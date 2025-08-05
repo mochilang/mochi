@@ -1,0 +1,67 @@
+/*
+Vicsek Fractal Generator
+
+This program prints a Vicsek fractal using ASCII characters. The fractal
+is constructed recursively:
+
+1. The base case of order 0 is a single filled cell represented by '#'.
+2. For each higher order, the previous pattern is placed in the center
+   and in the four cardinal directions of a 3x3 grid of blocks, leaving
+   the corners empty. Each block is itself a copy of the pattern from the
+   previous order.
+3. Repeating this process yields the classic cross-shaped Vicsek fractal
+   exhibiting self-similarity at every scale.
+
+The resulting pattern is returned as a list of strings and printed line by line.
+*/
+
+fun repeat_char(c: string, count: int): string {
+  var s = ""
+  var i = 0
+  while i < count {
+    s = s + c
+    i = i + 1
+  }
+  return s
+}
+
+fun vicsek(order: int): list<string> {
+  if order == 0 { return ["#"] }
+  let prev = vicsek(order - 1)
+  let size = len(prev)
+  let blank = repeat_char(" ", size)
+  var result: list<string> = []
+
+  var i = 0
+  while i < size {
+    result = append(result, blank + prev[i] + blank)
+    i = i + 1
+  }
+  i = 0
+  while i < size {
+    result = append(result, prev[i] + prev[i] + prev[i])
+    i = i + 1
+  }
+  i = 0
+  while i < size {
+    result = append(result, blank + prev[i] + blank)
+    i = i + 1
+  }
+  return result
+}
+
+fun print_pattern(pattern: list<string>): void {
+  var i = 0
+  while i < len(pattern) {
+    print(pattern[i])
+    i = i + 1
+  }
+}
+
+fun main(): void {
+  let depth = 3
+  let pattern = vicsek(depth)
+  print_pattern(pattern)
+}
+
+main()
