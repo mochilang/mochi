@@ -1,0 +1,33 @@
+/*
+Chebyshev distance between two n-dimensional points.
+
+Given two points represented as lists of floats, the Chebyshev or
+chessboard distance is the maximum absolute difference between their
+corresponding coordinates.  If the points have different dimensions the
+computation is undefined and the function panics.  The algorithm simply
+iterates over both lists simultaneously and tracks the largest absolute
+deviation.
+
+Time complexity: O(n) for n coordinates.  Space complexity: O(1).
+*/
+
+fun abs(x: float): float {
+  if x >= 0.0 { return x } else { return -x }
+}
+
+fun chebyshev_distance(point_a: list<float>, point_b: list<float>): float {
+  if len(point_a) != len(point_b) {
+    panic("Both points must have the same dimension.")
+  }
+  var max_diff = 0.0
+  var i = 0
+  while i < len(point_a) {
+    let diff = abs(point_a[i] - point_b[i])
+    if diff > max_diff { max_diff = diff }
+    i = i + 1
+  }
+  return max_diff
+}
+
+print(chebyshev_distance([1.0, 1.0], [2.0, 2.0]))
+print(chebyshev_distance([1.0, 1.0, 9.0], [2.0, 2.0, -5.2]))
