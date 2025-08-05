@@ -1,0 +1,36 @@
+/*
+Two Sum Problem
+----------------
+Given a list of integers and a target value, find the indices of the two
+numbers that add up to the target. Each input has exactly one solution and
+no element can be used twice.
+
+Algorithm:
+1. Iterate over the list storing each number's index in a hash map keyed by
+   the number itself. Indices are saved offset by one to distinguish between
+   a real index 0 and a missing key.
+2. For each element, compute its complement (target - value) and check if
+   it's already in the map using the `in` operator. If found, return the
+   stored index (minus one) alongside the current index.
+3. If no pair sums to the target, return an empty list.
+
+The approach runs in O(n) time with O(n) extra space. Pure Mochi implementation
+that relies solely on built-in types so it executes on runtime/vm without FFI.
+*/
+
+fun two_sum(nums: list<int>, target: int): list<int> {
+  var chk_map: map<int, int> = {}
+  var idx = 0
+  while idx < len(nums) {
+    let val = nums[idx]
+    let compl = target - val
+    if compl in chk_map {
+      return [chk_map[compl] - 1, idx]
+    }
+    chk_map[val] = idx + 1
+    idx = idx + 1
+  }
+  return []
+}
+
+print(str(two_sum([2, 7, 11, 15], 9)))
