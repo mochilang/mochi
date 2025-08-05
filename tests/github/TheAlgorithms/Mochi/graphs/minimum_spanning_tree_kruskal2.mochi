@@ -1,0 +1,139 @@
+/*
+Construct a minimum spanning tree using Kruskal's algorithm.
+
+Kruskal's algorithm sorts all edges of an undirected weighted graph by weight
+and adds them one by one, skipping edges that would create a cycle. A disjoint
+set union (union-find) data structure tracks connected components with path
+compression and union by rank.
+
+Time Complexity: O(E log E) due to sorting E edges. Space Complexity: O(V + E).
+*/
+
+type Edge { u: int, v: int, w: int }
+
+type Graph { edges: list<Edge>, num_nodes: int }
+
+type DS { parent: list<int>, rank: list<int> }
+
+type FindResult { ds: DS, root: int }
+
+fun new_graph(): Graph {
+  return Graph{ edges: [], num_nodes: 0 }
+}
+
+fun add_edge(g: Graph, u: int, v: int, w: int): Graph {
+  var es = g.edges
+  es = append(es, Edge{ u: u, v: v, w: w })
+  var n = g.num_nodes
+  if u > n { n = u }
+  if v > n { n = v }
+  return Graph{ edges: es, num_nodes: n }
+}
+
+fun make_ds(n: int): DS {
+  var parent: list<int> = []
+  var rank: list<int> = []
+  var i = 0
+  while i <= n {
+    parent = append(parent, i)
+    rank = append(rank, 0)
+    i = i + 1
+  }
+  return DS{ parent: parent, rank: rank }
+}
+
+fun find_set(ds: DS, x: int): FindResult {
+  if ds.parent[x] == x {
+    return FindResult{ ds: ds, root: x }
+  }
+  let res = find_set(ds, ds.parent[x])
+  var p = res.ds.parent
+  p[x] = res.root
+  return FindResult{ ds: DS{ parent: p, rank: res.ds.rank }, root: res.root }
+}
+
+fun union_set(ds: DS, x: int, y: int): DS {
+  let fx = find_set(ds, x)
+  let ds1 = fx.ds
+  let x_root = fx.root
+  let fy = find_set(ds1, y)
+  var ds2 = fy.ds
+  let y_root = fy.root
+  if x_root == y_root { return ds2 }
+  var p = ds2.parent
+  var r = ds2.rank
+  if r[x_root] > r[y_root] {
+    p[y_root] = x_root
+  } else {
+    p[x_root] = y_root
+    if r[x_root] == r[y_root] {
+      r[y_root] = r[y_root] + 1
+    }
+  }
+  return DS{ parent: p, rank: r }
+}
+
+fun sort_edges(edges: list<Edge>): list<Edge> {
+  var arr = edges
+  var i = 1
+  while i < len(arr) {
+    let key = arr[i]
+    var j = i - 1
+    while j >= 0 {
+      let temp = arr[j]
+      if temp.w > key.w || (temp.w == key.w && (temp.u > key.u || (temp.u == key.u && temp.v > key.v))) {
+        arr[j + 1] = temp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun kruskal(g: Graph): Graph {
+  var edges = sort_edges(g.edges)
+  var ds = make_ds(g.num_nodes)
+  var mst_edges: list<Edge> = []
+  var i = 0
+  var added = 0
+  while added < g.num_nodes - 1 && i < len(edges) {
+    let e = edges[i]
+    i = i + 1
+    let fu = find_set(ds, e.u)
+    ds = fu.ds
+    let ru = fu.root
+    let fv = find_set(ds, e.v)
+    ds = fv.ds
+    let rv = fv.root
+    if ru != rv {
+      mst_edges = append(mst_edges, e)
+      added = added + 1
+      ds = union_set(ds, ru, rv)
+    }
+  }
+  return Graph{ edges: mst_edges, num_nodes: g.num_nodes }
+}
+
+fun print_mst(g: Graph) {
+  var es = sort_edges(g.edges)
+  for e in es {
+    print(str(e.u) + "-" + str(e.v) + ":" + str(e.w))
+  }
+}
+
+fun main() {
+  var g = new_graph()
+  g = add_edge(g, 1, 2, 1)
+  g = add_edge(g, 2, 3, 2)
+  g = add_edge(g, 3, 4, 1)
+  g = add_edge(g, 3, 5, 100)
+  g = add_edge(g, 4, 5, 5)
+  let mst = kruskal(g)
+  print_mst(mst)
+}
+
+main()
