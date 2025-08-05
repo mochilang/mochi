@@ -1,0 +1,94 @@
+/*
+Lempel-Ziv-Welch (LZW) decompression for bit strings.
+
+The compressed input is a string of "0" and "1" characters representing
+variable-width codes.  The decoder starts with a lexicon containing mappings
+"0"->"0" and "1"->"1".  While scanning the bit stream, the current prefix is
+extended until it matches an entry in the lexicon.  The corresponding value is
+appended to the output and the lexicon is updated with two new entries derived
+from that value.  Whenever the number of codes reaches a power of two, all
+lexicon keys are prefixed with "0" to increase the code width.
+
+This version operates purely on strings without any file I/O and mirrors the
+logic of the Python implementation from TheAlgorithms project.  It runs in
+O(n) time for an input of n bits.
+*/
+
+fun list_contains(xs: list<string>, v: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == v {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_power_of_two(n: int): bool {
+  if n < 1 { return false }
+  var x = n
+  while x > 1 {
+    if x % 2 != 0 {
+      return false
+    }
+    x = x / 2
+  }
+  return true
+}
+
+fun bin_string(n: int): string {
+  if n == 0 { return "0" }
+  var res = ""
+  var x = n
+  while x > 0 {
+    let bit = x % 2
+    res = str(bit) + res
+    x = x / 2
+  }
+  return res
+}
+
+fun decompress_data(data_bits: string): string {
+  var lexicon: map<string,string> = {"0": "0", "1": "1"}
+  var keys: list<string> = ["0", "1"]
+  var result: string = ""
+  var curr_string: string = ""
+  var index: int = 2
+  var i = 0
+  while i < len(data_bits) {
+    curr_string = curr_string + substring(data_bits, i, i + 1)
+    if !list_contains(keys, curr_string) {
+      i = i + 1
+      continue
+    }
+    let last_match_id = lexicon[curr_string]
+    result = result + last_match_id
+    lexicon[curr_string] = last_match_id + "0"
+    if is_power_of_two(index) {
+      var new_lex: map<string,string> = {}
+      var new_keys: list<string> = []
+      var j = 0
+      while j < len(keys) {
+        let curr_key = keys[j]
+        new_lex["0" + curr_key] = lexicon[curr_key]
+        new_keys = append(new_keys, "0" + curr_key)
+        j = j + 1
+      }
+      lexicon = new_lex
+      keys = new_keys
+    }
+    let new_key = bin_string(index)
+    lexicon[new_key] = last_match_id + "1"
+    keys = append(keys, new_key)
+    index = index + 1
+    curr_string = ""
+    i = i + 1
+  }
+  return result
+}
+
+// Example usage
+let sample: string = "1011001"
+let decompressed = decompress_data(sample)
+print(decompressed)
