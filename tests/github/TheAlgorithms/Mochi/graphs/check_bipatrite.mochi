@@ -1,0 +1,38 @@
+/*
+Check Bipartite Graph using BFS
+-------------------------------
+A graph is bipartite if vertices can be colored with two
+colors such that no edge connects vertices of the same
+color. This implementation uses Breadth-First Search to
+assign colors while traversing each connected component.
+If a conflict is found (an edge connecting same-colored
+vertices) the graph is not bipartite.
+*/
+
+fun is_bipartite_bfs(graph: map<int, list<int>>): bool {
+  var visited: map<int, int> = {}
+  for node in graph {
+    if !(node in visited) {
+      var queue: list<int> = []
+      queue = append(queue, node)
+      visited[node] = 0
+      while len(queue) > 0 {
+        let curr = queue[0]
+        queue = queue[1:len(queue)]
+        for neighbor in graph[curr] {
+          if !(neighbor in visited) {
+            visited[neighbor] = 1 - visited[curr]
+            queue = append(queue, neighbor)
+          } else if visited[neighbor] == visited[curr] {
+            return false
+          }
+        }
+      }
+    }
+  }
+  return true
+}
+
+let graph: map<int, list<int>> = {0: [1, 3], 1: [0, 2], 2: [1, 3], 3: [0, 2]}
+print(str(is_bipartite_bfs(graph)))
+
