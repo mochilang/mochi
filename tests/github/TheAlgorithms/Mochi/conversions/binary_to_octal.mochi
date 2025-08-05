@@ -1,0 +1,44 @@
+/*
+Convert a binary string to its octal representation.
+
+The algorithm first validates the input: the string must be non-empty and
+contain only the characters '0' or '1'.  To perform the conversion, the
+binary string is left-padded with zeros until its length is a multiple of
+three.  The padded string is then processed in groups of three bits.  Each
+group is interpreted as a 3-bit binary number (from most significant to
+least significant bit) and mapped to its corresponding octal digit.
+The resulting digits are concatenated to form the final octal string.
+*/
+
+fun bin_to_octal(bin_string: string): string {
+  var i = 0
+  while i < len(bin_string) {
+    let c = bin_string[i]
+    if !(c == "0" || c == "1") {
+      panic("Non-binary value was passed to the function")
+    }
+    i = i + 1
+  }
+  if len(bin_string) == 0 {
+    panic("Empty string was passed to the function")
+  }
+  var padded = bin_string
+  while len(padded) % 3 != 0 {
+    padded = "0" + padded
+  }
+  var oct_string = ""
+  var index = 0
+  while index < len(padded) {
+    let group = padded[index:index+3]
+    let b0 = if group[0] == "1" { 1 } else { 0 }
+    let b1 = if group[1] == "1" { 1 } else { 0 }
+    let b2 = if group[2] == "1" { 1 } else { 0 }
+    let oct_val = b0 * 4 + b1 * 2 + b2
+    oct_string = oct_string + str(oct_val)
+    index = index + 3
+  }
+  return oct_string
+}
+
+print(bin_to_octal("1111"))
+print(bin_to_octal("101010101010011"))
