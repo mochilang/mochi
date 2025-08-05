@@ -1,0 +1,68 @@
+/*
+Integer Square Root
+-------------------
+This program implements a binary search algorithm to compute the integer square
+root of a non-negative integer. Given an input `num`, the integer square root is
+the greatest integer `r` such that r * r <= num. The algorithm performs the
+following steps:
+
+1. Validate that `num` is non-negative, otherwise panic.
+2. Handle trivial cases where `num` is 0 or 1 by returning `num` directly.
+3. Use binary search on the range [0, num // 2] to find the largest `mid` whose
+   square does not exceed `num`.
+4. Adjust search bounds based on comparison of `mid * mid` with `num` until the
+   correct integer square root is found.
+
+The search runs in O(log n) time where n is the value of `num`, and uses only
+standard Mochi features without any foreign function interfaces so it can run on
+`runtime/vm`.
+*/
+
+fun integer_square_root(num: int): int {
+  if num < 0 {
+    panic("num must be non-negative integer")
+  }
+  if num < 2 {
+    return num
+  }
+  var left_bound: int = 0
+  var right_bound: int = num / 2
+  while left_bound <= right_bound {
+    let mid = left_bound + (right_bound - left_bound) / 2
+    let mid_squared = mid * mid
+    if mid_squared == num {
+      return mid
+    }
+    if mid_squared < num {
+      left_bound = mid + 1
+    } else {
+      right_bound = mid - 1
+    }
+  }
+  return right_bound
+}
+
+fun test_integer_square_root() {
+  let expected: list<int> = [0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4]
+  var i = 0
+  while i < len(expected) {
+    let result = integer_square_root(i)
+    if result != expected[i] {
+      panic("test failed at index " + str(i))
+    }
+    i = i + 1
+  }
+  if integer_square_root(625) != 25 {
+    panic("sqrt of 625 incorrect")
+  }
+  if integer_square_root(2147483647) != 46340 {
+    panic("sqrt of max int incorrect")
+  }
+}
+
+fun main() {
+  test_integer_square_root()
+  print(str(integer_square_root(625)))
+}
+
+main()
