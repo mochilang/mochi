@@ -1,0 +1,47 @@
+/*
+Numerical Integration via the Trapezoidal Rule
+---------------------------------------------
+Approximates the definite integral of f(x) = x^2 over a closed interval
+[a, b] by partitioning the range into equal subintervals of width h.
+The extended trapezoidal rule computes the area under the curve by
+summing the areas of trapezoids formed between successive points:
+  integral ≈ h/2 * f(a) + Σ h * f(x_i) + h/2 * f(b)
+where x_i are the internal points a + i*h.  As the number of steps
+increases the approximation converges toward the exact integral.
+*/
+
+fun f(x: float): float {
+  return x * x
+}
+
+fun make_points(a: float, b: float, h: float): list<float> {
+  var xs: list<float> = []
+  var x: float = a + h
+  while x <= (b - h) {
+    xs = append(xs, x)
+    x = x + h
+  }
+  return xs
+}
+
+fun trapezoidal_rule(boundary: list<float>, steps: float): float {
+  let h: float = (boundary[1] - boundary[0]) / steps
+  let a: float = boundary[0]
+  let b: float = boundary[1]
+  let xs: list<float> = make_points(a, b, h)
+  var y: float = (h / 2.0) * f(a)
+  var i: int = 0
+  while i < len(xs) {
+    y = y + h * f(xs[i])
+    i = i + 1
+  }
+  y = y + (h / 2.0) * f(b)
+  return y
+}
+
+let a: float = 0.0
+let b: float = 1.0
+let steps: float = 10.0
+let boundary: list<float> = [a, b]
+let y: float = trapezoidal_rule(boundary, steps)
+print("y = " + str(y))
