@@ -1,0 +1,83 @@
+/*
+Compute the builtin voltage of a pn junction diode using semiconductor doping
+concentrations.
+
+Physics background:
+The potential difference across the depletion region of a pn junction is given by
+
+  V_bi = (k * T / q) * ln(N_d * N_a / n_i^2)
+
+where k is the Boltzmann constant, T is absolute temperature,
+q is the elementary charge (electron volt expressed in joules),
+N_d and N_a are donor and acceptor concentrations,
+and n_i is the intrinsic carrier concentration.
+
+Algorithm:
+1. Validate that all concentrations are positive.
+2. Ensure donor and acceptor concentrations exceed the intrinsic concentration.
+3. Apply the formula above using a series expansion to approximate the natural log.
+
+The computation runs in constant time.
+*/
+
+fun pow10(n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+let BOLTZMANN: float = 1.380649 / pow10(23)
+let ELECTRON_VOLT: float = 1.602176634 / pow10(19)
+let TEMPERATURE: float = 300.0
+
+fun ln_series(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun ln(x: float): float {
+  var y = x
+  var k = 0
+  while y >= 10.0 {
+    y = y / 10.0
+    k = k + 1
+  }
+  while y < 1.0 {
+    y = y * 10.0
+    k = k - 1
+  }
+  return ln_series(y) + (k as float) * ln_series(10.0)
+}
+
+fun builtin_voltage(donor_conc: float, acceptor_conc: float, intrinsic_conc: float): float {
+  if donor_conc <= 0.0 {
+    panic("Donor concentration should be positive")
+  }
+  if acceptor_conc <= 0.0 {
+    panic("Acceptor concentration should be positive")
+  }
+  if intrinsic_conc <= 0.0 {
+    panic("Intrinsic concentration should be positive")
+  }
+  if donor_conc <= intrinsic_conc {
+    panic("Donor concentration should be greater than intrinsic concentration")
+  }
+  if acceptor_conc <= intrinsic_conc {
+    panic("Acceptor concentration should be greater than intrinsic concentration")
+  }
+  return BOLTZMANN * TEMPERATURE * ln((donor_conc * acceptor_conc) / (intrinsic_conc * intrinsic_conc)) / ELECTRON_VOLT
+}
+
+print(str(builtin_voltage(pow10(17), pow10(17), pow10(10))))
