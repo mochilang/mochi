@@ -1,0 +1,71 @@
+/*
+Modified Euler Method for Ordinary Differential Equations
+---------------------------------------------------------
+
+The classic Euler method estimates the solution of an initial value problem
+\(y' = f(x,y)\) by taking a single forward slope at each step.  Accuracy
+suffers because the slope can change across the interval.  The modified Euler
+method (also known as Heun's method) improves this by averaging the slope at
+the beginning and the end of the step:
+
+  y_pred = y_k + h * f(x_k, y_k)
+  y_{k+1} = y_k + (h/2) * ( f(x_k, y_k) + f(x_k + h, y_pred) )
+
+Given an ODE function and initial values, the implementation below computes the
+sequence of y-values for x in \[x0, x_end] using step size h.  It avoids foreign
+function interfaces so it can run on runtime/vm.
+*/
+
+fun ceil_float(x: float): int {
+  let i = x as int
+  if x > (i as float) { return i + 1 }
+  return i
+}
+
+fun exp_approx(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun euler_modified(ode_func: fun(float, float): float, y0: float, x0: float, step: float, x_end: float): list<float> {
+  let n = ceil_float((x_end - x0) / step)
+  var y: list<float> = [y0]
+  var x = x0
+  var k = 0
+  while k < n {
+    let y_predict = y[k] + step * ode_func(x, y[k])
+    let slope1 = ode_func(x, y[k])
+    let slope2 = ode_func(x + step, y_predict)
+    let y_next = y[k] + (step / 2.0) * (slope1 + slope2)
+    y = append(y, y_next)
+    x = x + step
+    k = k + 1
+  }
+  return y
+}
+
+fun f1(x: float, y: float): float {
+  return -2.0 * x * y * y
+}
+
+fun f2(x: float, y: float): float {
+  return -2.0 * y + (x * x * x) * exp_approx(-2.0 * x)
+}
+
+fun main() {
+  let y1 = euler_modified(f1, 1.0, 0.0, 0.2, 1.0)
+  print(y1[len(y1) - 1])
+
+  let y2 = euler_modified(f2, 1.0, 0.0, 0.1, 0.3)
+  print(y2[len(y2) - 1])
+}
+
+main()
+
