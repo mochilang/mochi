@@ -1,0 +1,42 @@
+/*
+Floor Function
+--------------
+Computes the greatest integer less than or equal to a given floating-point
+number. The algorithm truncates the input toward zero and, if the fractional
+part is negative, subtracts one to adjust for numbers below zero.
+
+1. Convert the input to an integer using truncation.
+2. If the original number minus this integer is non-negative, return the
+   integer.
+3. Otherwise subtract one to account for negative fractions.
+
+The module includes tests comparing results across a set of positive and
+negative values to confirm correctness against expected outcomes.
+*/
+
+fun floor(x: float): int {
+  let i = int(x)
+  if x - float(i) >= 0.0 {
+    return i
+  }
+  return i - 1
+}
+
+fun test_floor() {
+  let nums: list<float> = [1.0, -1.0, 0.0, 0.0, 1.1, -1.1, 1.0, -1.0, 1000000000.0]
+  let expected: list<int> = [1, -1, 0, 0, 1, -2, 1, -1, 1000000000]
+  var idx = 0
+  while idx < len(nums) {
+    if floor(nums[idx]) != expected[idx] {
+      panic("floor test failed")
+    }
+    idx = idx + 1
+  }
+}
+
+fun main() {
+  test_floor()
+  print(str(floor(-1.1)))
+}
+
+main()
