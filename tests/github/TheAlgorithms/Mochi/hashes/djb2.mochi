@@ -1,0 +1,51 @@
+/*
+DJB2 string hash
+
+This implementation ports the classic djb2 hash algorithm by Dan
+Bernstein. It starts with the magic value 5381 and for each character
+in the input string multiplies the current hash by 33 before adding
+the character's ASCII code. The final result is constrained to
+32 bits by taking the remainder modulo 2^32. The algorithm runs in
+O(n) time for an input of length n and uses constant extra space.
+
+Example:
+djb2("Algorithms") -> 3782405311
+djb2("scramble bits") -> 1609059040
+*/
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let digits = "0123456789"
+  var idx = index_of(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = index_of(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  idx = index_of(digits, ch)
+  if idx >= 0 { return 48 + idx }
+  if ch == " " { return 32 }
+  return 0
+}
+
+fun djb2(s: string): int {
+  var hash_value = 5381
+  var i = 0
+  while i < len(s) {
+    hash_value = hash_value * 33 + ord(s[i])
+    hash_value = hash_value % 4294967296
+    i = i + 1
+  }
+  return hash_value
+}
+
+print(djb2("Algorithms"))
+print(djb2("scramble bits"))
