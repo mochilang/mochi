@@ -1,0 +1,201 @@
+/*
+Solve the Travelling Salesman Problem using an Ant Colony Optimization (ACO)
+metaheuristic.  A set of ants construct tours by probabilistically selecting the
+next city based on two factors: the pheromone trail strength on edges and a
+heuristic desirability given by the inverse of the distance.  After all ants
+build their tours, pheromone is evaporated globally and new pheromone is
+deposited proportional to the quality of each tour.  Repeating this process
+iteratively converges toward shorter routes.
+
+This implementation mirrors the Python version in TheAlgorithms repository but
+uses only pure Mochi constructs.  It builds a full pheromone matrix, selects
+next cities with a weighted random choice, and updates pheromones after each
+iteration.  The square root function is approximated with Newton's method to
+avoid external dependencies.  Time complexity for each iteration is
+O(ants * cities^2).
+*/
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun rand_float(): float {
+  return (now() % 1000000) as float / 1000000.0
+}
+
+fun pow_float(base: float, exp: float): float {
+  var result = 1.0
+  var i = 0
+  let e = exp as int
+  while i < e {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun distance(city1: list<int>, city2: list<int>): float {
+  let dx = (city1[0] - city2[0]) as float
+  let dy = (city1[1] - city2[1]) as float
+  return sqrtApprox(dx * dx + dy * dy)
+}
+
+fun choose_weighted(options: list<int>, weights: list<float>): int {
+  var total = 0.0
+  var i = 0
+  while i < len(weights) {
+    total = total + weights[i]
+    i = i + 1
+  }
+  let r = rand_float() * total
+  var accum = 0.0
+  i = 0
+  while i < len(weights) {
+    accum = accum + weights[i]
+    if r <= accum {
+      return options[i]
+    }
+    i = i + 1
+  }
+  return options[len(options) - 1]
+}
+
+fun city_select(pheromone: list<list<float>>, current: int, unvisited: list<int>, alpha: float, beta: float, cities: map<int, list<int>>): int {
+  var probs: list<float> = []
+  var i = 0
+  while i < len(unvisited) {
+    let city = unvisited[i]
+    let dist = distance(cities[city], cities[current])
+    let trail = pheromone[city][current]
+    let prob = pow_float(trail, alpha) * pow_float(1.0 / dist, beta)
+    probs = append(probs, prob)
+    i = i + 1
+  }
+  return choose_weighted(unvisited, probs)
+}
+
+fun pheromone_update(pheromone: list<list<float>>, cities: map<int, list<int>>, evaporation: float, ants_route: list<list<int>>, q: float): list<list<float>> {
+  let n = len(pheromone)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n {
+      pheromone[i][j] = pheromone[i][j] * evaporation
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var a = 0
+  while a < len(ants_route) {
+    let route = ants_route[a]
+    var total = 0.0
+    var r = 0
+    while r < len(route) - 1 {
+      total = total + distance(cities[route[r]], cities[route[r + 1]])
+      r = r + 1
+    }
+    let delta = q / total
+    r = 0
+    while r < len(route) - 1 {
+      let u = route[r]
+      let v = route[r + 1]
+      pheromone[u][v] = pheromone[u][v] + delta
+      pheromone[v][u] = pheromone[u][v]
+      r = r + 1
+    }
+    a = a + 1
+  }
+  return pheromone
+}
+
+fun remove_value(lst: list<int>, val: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(lst) {
+    if lst[i] != val {
+      res = append(res, lst[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun ant_colony(cities: map<int, list<int>>, ants_num: int, iterations: int, evaporation: float, alpha: float, beta: float, q: float) {
+  let n = len(cities)
+  var pheromone: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 1.0)
+      j = j + 1
+    }
+    pheromone = append(pheromone, row)
+    i = i + 1
+  }
+  var best_path: list<int> = []
+  var best_distance = 1000000000.0
+  var iter = 0
+  while iter < iterations {
+    var ants_route: list<list<int>> = []
+    var k = 0
+    while k < ants_num {
+      var route: list<int> = [0]
+      var unvisited: list<int> = []
+      for key in cities {
+        if key != 0 {
+          unvisited = append(unvisited, key)
+        }
+      }
+      var current = 0
+      while len(unvisited) > 0 {
+        let next_city = city_select(pheromone, current, unvisited, alpha, beta, cities)
+        route = append(route, next_city)
+        unvisited = remove_value(unvisited, next_city)
+        current = next_city
+      }
+      route = append(route, 0)
+      ants_route = append(ants_route, route)
+      k = k + 1
+    }
+    pheromone = pheromone_update(pheromone, cities, evaporation, ants_route, q)
+    var a = 0
+    while a < len(ants_route) {
+      let route = ants_route[a]
+      var dist = 0.0
+      var r = 0
+      while r < len(route) - 1 {
+        dist = dist + distance(cities[route[r]], cities[route[r + 1]])
+        r = r + 1
+      }
+      if dist < best_distance {
+        best_distance = dist
+        best_path = route
+      }
+      a = a + 1
+    }
+    iter = iter + 1
+  }
+  print("best_path = " + str(best_path))
+  print("best_distance = " + str(best_distance))
+}
+
+let cities: map<int, list<int>> = {
+  0: [0, 0],
+  1: [0, 5],
+  2: [3, 8],
+  3: [8, 10],
+  4: [12, 8],
+  5: [12, 4],
+  6: [8, 0],
+  7: [6, 2],
+}
+
+ant_colony(cities, 10, 20, 0.7, 1.0, 5.0, 10.0)
