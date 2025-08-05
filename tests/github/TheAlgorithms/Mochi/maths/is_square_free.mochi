@@ -1,0 +1,38 @@
+/*
+Square-Free Checker
+-------------------
+Determine if a number is square-free based on its prime factors.
+A square-free number has no repeated prime factors. Given a list of
+prime factors, the algorithm verifies that every factor appears at
+most once.
+
+Algorithm:
+1. Iterate through the list using two indices.
+2. Compare each factor with all factors that follow it.
+3. If any duplicate is found, return false.
+4. If no duplicates are found, return true.
+
+Examples:
+- [1, 2, 3, 4] -> true
+- [1, 1, 2, 3, 4] -> false
+- [1, 2, 2, 5] -> false
+*/
+
+fun is_square_free(factors: list<int>): bool {
+  var i = 0
+  while i < len(factors) {
+    var j = i + 1
+    while j < len(factors) {
+      if factors[i] == factors[j] {
+        return false
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+print(str(is_square_free([1, 2, 3, 4])))
+print(str(is_square_free([1, 1, 2, 3, 4])))
+print(str(is_square_free([1, 2, 2, 5])))
