@@ -1,0 +1,96 @@
+/*
+Next Greater Element
+
+Given an array of numbers, for each element find the first greater element to
+its right. If no such element exists, -1 is used. The problem is demonstrated
+with three implementations:
+
+1. next_greatest_element_slow: brute-force nested loops. O(n^2)
+2. next_greatest_element_fast: slightly cleaner loop structure. O(n^2)
+3. next_greatest_element: stack-based linear-time solution. O(n)
+
+The stack version iterates from left to right maintaining indices of elements
+whose next greater element is not yet found. When a larger element appears,
+indices are popped and their next greater element is recorded.
+*/
+
+let arr = [-10.0, -5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, 3.0, 4.0, -21.0, -10.0, -5.0, -1.0, 0.0]
+let expect = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
+
+fun next_greatest_element_slow(xs: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(xs) {
+    var next: float = -1.0
+    var j = i + 1
+    while j < len(xs) {
+      if xs[i] < xs[j] {
+        next = xs[j]
+        break
+      }
+      j = j + 1
+    }
+    res = append(res, next)
+    i = i + 1
+  }
+  return res
+}
+
+fun next_greatest_element_fast(xs: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(xs) {
+    var next: float = -1.0
+    var j = i + 1
+    while j < len(xs) {
+      let inner = xs[j]
+      if xs[i] < inner {
+        next = inner
+        break
+      }
+      j = j + 1
+    }
+    res = append(res, next)
+    i = i + 1
+  }
+  return res
+}
+
+fun set_at_float(xs: list<float>, idx: int, value: float): list<float> {
+  var i = 0
+  var res: list<float> = []
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun next_greatest_element(xs: list<float>): list<float> {
+  var res: list<float> = []
+  var k = 0
+  while k < len(xs) {
+    res = append(res, -1.0)
+    k = k + 1
+  }
+  var stack: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    while len(stack) > 0 && xs[i] > xs[stack[len(stack) - 1]] {
+      let idx = stack[len(stack) - 1]
+      stack = stack[0:len(stack) - 1]
+      res = set_at_float(res, idx, xs[i])
+    }
+    stack = append(stack, i)
+    i = i + 1
+  }
+  return res
+}
+
+print(str(next_greatest_element_slow(arr)))
+print(str(next_greatest_element_fast(arr)))
+print(str(next_greatest_element(arr)))
