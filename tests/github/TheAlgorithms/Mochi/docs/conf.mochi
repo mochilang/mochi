@@ -1,0 +1,33 @@
+/*
+Parse project name from a pyproject.toml snippet.
+
+The original Python configuration file uses the `sphinx_pyproject`
+package to load project metadata from `pyproject.toml` and sets the
+`project` variable to that name.  This Mochi version demonstrates the
+same idea without external libraries by scanning a small TOML string for
+the `name` key and extracting its quoted value.
+*/
+
+fun parse_project_name(toml: string): string {
+  var i = 0
+  var name = ""
+  let n = len(toml)
+  while i + 4 < n {
+    if toml[i] == "n" && toml[i + 1] == "a" && toml[i + 2] == "m" && toml[i + 3] == "e" {
+      i = i + 4
+      while i < n && toml[i] != "\"" { i = i + 1 }
+      i = i + 1
+      while i < n && toml[i] != "\"" {
+        name = name + toml[i]
+        i = i + 1
+      }
+      return name
+    }
+    i = i + 1
+  }
+  return name
+}
+
+let pyproject = "[project]\nname = \"thealgorithms-python\""
+let project = parse_project_name(pyproject)
+print(project)
