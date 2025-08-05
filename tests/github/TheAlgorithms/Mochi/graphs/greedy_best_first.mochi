@@ -1,0 +1,196 @@
+/*
+Greedy Best-First Search on a grid
+---------------------------------
+Given a 2D grid where 0 represents a free cell and 1 represents an obstacle,
+find a path from the upper-left corner to the lower-right corner.
+The search maintains an open list of frontier nodes ordered by the Manhattan
+distance heuristic to the goal. At each step the node with smallest heuristic
+is expanded and its free neighbors are added. The algorithm stops when the
+goal is reached or when no path exists. The resulting path is marked on the
+grid with the value 2.
+*/
+
+type Pos { y: int, x: int }
+
+type Node {
+  pos_x: int,
+  pos_y: int,
+  goal_x: int,
+  goal_y: int,
+  g_cost: int,
+  f_cost: int,
+  path: list<Pos>
+}
+
+fun abs(x: int): int {
+  if x < 0 { return 0 - x }
+  return x
+}
+
+fun manhattan(x1: int, y1: int, x2: int, y2: int): int {
+  return abs(x1 - x2) + abs(y1 - y2)
+}
+
+fun clone_path(p: list<Pos>): list<Pos> {
+  var res: list<Pos> = []
+  var i = 0
+  while i < len(p) {
+    res = append(res, p[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun make_node(pos_x: int, pos_y: int, goal_x: int, goal_y: int, g_cost: int, path: list<Pos>): Node {
+  let f = manhattan(pos_x, pos_y, goal_x, goal_y)
+  return Node { pos_x: pos_x, pos_y: pos_y, goal_x: goal_x, goal_y: goal_y, g_cost: g_cost, f_cost: f, path: path }
+}
+
+let delta: list<Pos> = [
+  Pos { y: -1, x: 0 },
+  Pos { y: 0, x: -1 },
+  Pos { y: 1, x: 0 },
+  Pos { y: 0, x: 1 }
+]
+
+fun node_equal(a: Node, b: Node): bool {
+  return a.pos_x == b.pos_x && a.pos_y == b.pos_y
+}
+
+fun contains(nodes: list<Node>, node: Node): bool {
+  var i = 0
+  while i < len(nodes) {
+    if node_equal(nodes[i], node) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun sort_nodes(nodes: list<Node>): list<Node> {
+  var arr: list<Node> = nodes
+  var i = 1
+  while i < len(arr) {
+    let key_node = arr[i]
+    var j = i - 1
+    while j >= 0 {
+      let temp = arr[j]
+      if temp.f_cost > key_node.f_cost {
+        arr[j + 1] = temp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    arr[j + 1] = key_node
+    i = i + 1
+  }
+  return arr
+}
+
+fun get_successors(grid: list<list<int>>, parent: Node, target: Pos): list<Node> {
+  var res: list<Node> = []
+  var i = 0
+  while i < len(delta) {
+    let d = delta[i]
+    let pos_x = parent.pos_x + d.x
+    let pos_y = parent.pos_y + d.y
+    if pos_x >= 0 && pos_x < len(grid[0]) && pos_y >= 0 && pos_y < len(grid) && grid[pos_y][pos_x] == 0 {
+      var new_path = clone_path(parent.path)
+      new_path = append(new_path, Pos { y: pos_y, x: pos_x })
+      res = append(res, make_node(pos_x, pos_y, target.x, target.y, parent.g_cost + 1, new_path))
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun greedy_best_first(grid: list<list<int>>, init: Pos, goal: Pos): list<Pos> {
+  let start_path: list<Pos> = [init]
+  let start = make_node(init.x, init.y, goal.x, goal.y, 0, start_path)
+  var open_nodes: list<Node> = [start]
+  var closed_nodes: list<Node> = []
+  while len(open_nodes) > 0 {
+    open_nodes = sort_nodes(open_nodes)
+    let current = open_nodes[0]
+    var new_open: list<Node> = []
+    var idx = 1
+    while idx < len(open_nodes) {
+      new_open = append(new_open, open_nodes[idx])
+      idx = idx + 1
+    }
+    open_nodes = new_open
+    if current.pos_x == goal.x && current.pos_y == goal.y {
+      return current.path
+    }
+    closed_nodes = append(closed_nodes, current)
+    let successors = get_successors(grid, current, goal)
+    var i = 0
+    while i < len(successors) {
+      let child = successors[i]
+      if (!contains(closed_nodes, child)) && (!contains(open_nodes, child)) {
+        open_nodes = append(open_nodes, child)
+      }
+      i = i + 1
+    }
+  }
+  let r: list<Pos> = [init]
+  return r
+}
+
+let TEST_GRIDS: list<list<list<int>>> = [
+  [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0],
+    [1, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+  ],
+  [
+    [0, 0, 0, 1, 1, 0, 0],
+    [0, 0, 0, 0, 1, 0, 1],
+    [0, 0, 0, 1, 1, 0, 0],
+    [0, 1, 0, 0, 1, 0, 0],
+    [1, 0, 0, 1, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0],
+  ],
+  [
+    [0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0],
+    [0, 0, 1, 0, 1],
+    [1, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0],
+  ],
+]
+
+fun print_grid(grid: list<list<int>>) {
+  var i = 0
+  while i < len(grid) {
+    print(str(grid[i]))
+    i = i + 1
+  }
+}
+
+fun main() {
+  var idx = 0
+  while idx < len(TEST_GRIDS) {
+    print("==grid-" + str(idx + 1) + "==")
+    var grid = TEST_GRIDS[idx]
+    let init = Pos { y: 0, x: 0 }
+    let goal = Pos { y: len(grid) - 1, x: len(grid[0]) - 1 }
+    print_grid(grid)
+    print("------")
+    let path = greedy_best_first(grid, init, goal)
+    var j = 0
+    while j < len(path) {
+      let p = path[j]
+      grid[p.y][p.x] = 2
+      j = j + 1
+    }
+    print_grid(grid)
+    idx = idx + 1
+  }
+}
+
+main()
