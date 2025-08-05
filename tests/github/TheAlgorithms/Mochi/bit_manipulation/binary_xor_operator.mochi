@@ -1,0 +1,54 @@
+/*
+Binary XOR Operator
+Given two non-negative integers, compute the bitwise exclusive OR and return its binary representation.
+The integers are converted to binary strings of equal length by padding with leading zeros and comparing
+corresponding bits. If bits differ the result bit is 1; otherwise it is 0. The final string is prefixed with "0b".
+This implementation mirrors the Python version using manual string operations.
+Time complexity is O(n) where n is the number of bits of the larger input.
+*/
+
+fun int_to_binary(n: int): string {
+  if n == 0 { return "0" }
+  var res = ""
+  var num = n
+  while num > 0 {
+    res = str(num % 2) + res
+    num = num / 2
+  }
+  return res
+}
+
+fun pad_left(s: string, width: int): string {
+  var res = s
+  while len(res) < width {
+    res = "0" + res
+  }
+  return res
+}
+
+fun binary_xor(a: int, b: int): string {
+  if a < 0 || b < 0 { panic("the value of both inputs must be positive") }
+  let a_bin = int_to_binary(a)
+  let b_bin = int_to_binary(b)
+  let max_len = if len(a_bin) > len(b_bin) { len(a_bin) } else { len(b_bin) }
+  let a_pad = pad_left(a_bin, max_len)
+  let b_pad = pad_left(b_bin, max_len)
+  var i = 0
+  var result = ""
+  while i < max_len {
+    if a_pad[i] != b_pad[i] {
+      result = result + "1"
+    } else {
+      result = result + "0"
+    }
+    i = i + 1
+  }
+  return "0b" + result
+}
+
+print(binary_xor(25, 32))
+print(binary_xor(37, 50))
+print(binary_xor(21, 30))
+print(binary_xor(58, 73))
+print(binary_xor(0, 255))
+print(binary_xor(256, 256))
