@@ -1,0 +1,56 @@
+/*
+Digital Differential Analyzer (DDA) Line Drawing Algorithm
+---------------------------------------------------------
+Given two endpoints of a line segment on a 2D grid, the DDA algorithm
+increments the coordinate values in equal steps from the start point to the
+end point.  The number of steps equals the larger of |dx| or |dy| so that
+at each iteration we advance at most one pixel in either axis.  By adding
+a fractional increment to x and y and rounding to the nearest integer, we
+obtain all intermediate integer coordinates along the line.
+This routine runs in O(max(|dx|, |dy|)) time using O(1) extra space.
+*/
+
+type Point {
+  x: int,
+  y: int,
+}
+
+fun abs_int(n: int): int {
+  if n < 0 {
+    return -n
+  }
+  return n
+}
+
+fun round_int(x: float): int {
+  return (x + 0.5) as int
+}
+
+fun digital_differential_analyzer_line(p1: Point, p2: Point): list<Point> {
+  let dx = p2.x - p1.x
+  let dy = p2.y - p1.y
+  let abs_dx = abs_int(dx)
+  let abs_dy = abs_int(dy)
+  let steps = if abs_dx > abs_dy { abs_dx } else { abs_dy }
+  let x_increment = (dx as float) / (steps as float)
+  let y_increment = (dy as float) / (steps as float)
+  var coordinates: list<Point> = []
+  var x = p1.x as float
+  var y = p1.y as float
+  var i = 0
+  while i < steps {
+    x = x + x_increment
+    y = y + y_increment
+    let point = Point{x: round_int(x), y: round_int(y)}
+    coordinates = append(coordinates, point)
+    i = i + 1
+  }
+  return coordinates
+}
+
+fun main() {
+  let result = digital_differential_analyzer_line(Point{x:1, y:1}, Point{x:4, y:4})
+  print(result)
+}
+
+main()
