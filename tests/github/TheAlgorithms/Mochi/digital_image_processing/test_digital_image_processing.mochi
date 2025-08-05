@@ -1,0 +1,312 @@
+/*
+Digital Image Processing Tests
+------------------------------
+This Mochi program recreates a subset of operations from the
+TheAlgorithms/Python digital image processing tests.  It operates on a
+small 3×3 grayscale image and demonstrates several classic algorithms:
+
+1. Negative transformation: invert each pixel value.
+2. Contrast adjustment: scale pixels relative to mid gray.
+3. Gaussian kernel generation: produce a simple 3×3 normalized kernel.
+4. Convolution: apply a Laplacian kernel to the image.
+5. Median filter: reduce noise by replacing each pixel with the median of
+   its neighbourhood.
+6. Sobel filter: compute an approximate gradient magnitude for edges.
+7. Local Binary Pattern (LBP): encode the local structure around each
+   pixel as an 8‑bit value.
+
+The results of each operation are printed to allow verification.
+*/
+
+fun clamp_byte(x: int): int {
+  if x < 0 { return 0 }
+  if x > 255 { return 255 }
+  return x
+}
+
+fun convert_to_negative(img: list<list<int>>): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      row = append(row, 255 - img[y][x])
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun change_contrast(img: list<list<int>>, factor: int): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      let p = img[y][x]
+      var v = ((p - 128) * factor) / 100 + 128
+      v = clamp_byte(v)
+      row = append(row, v)
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun gen_gaussian_kernel(n: int, sigma: float): list<list<float>> {
+  // Precomputed 3x3 kernel used for demonstration.
+  if n == 3 {
+    return [
+      [1.0/16.0, 2.0/16.0, 1.0/16.0],
+      [2.0/16.0, 4.0/16.0, 2.0/16.0],
+      [1.0/16.0, 2.0/16.0, 1.0/16.0]
+    ]
+  }
+  var k: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    k = append(k, row)
+    i = i + 1
+  }
+  return k
+}
+
+fun img_convolve(img: list<list<int>>, kernel: list<list<float>>): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      var acc = 0.0
+      var ky = 0
+      while ky < len(kernel) {
+        var kx = 0
+        while kx < len(kernel[0]) {
+          let iy = y + ky - 1
+          let ix = x + kx - 1
+          var pixel = 0
+          if iy >= 0 && iy < h && ix >= 0 && ix < w {
+            pixel = img[iy][ix]
+          }
+          acc = acc + kernel[ky][kx] * (1.0 * pixel)
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      row = append(row, int(acc))
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun sort_ints(xs: list<int>): list<int> {
+  var arr = xs
+  var i = 0
+  while i < len(arr) {
+    var j = 0
+    while j < len(arr) - 1 - i {
+      if arr[j] > arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun median_filter(img: list<list<int>>, k: int): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  let offset = k / 2
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      var vals: list<int> = []
+      var ky = 0
+      while ky < k {
+        var kx = 0
+        while kx < k {
+          let iy = y + ky - offset
+          let ix = x + kx - offset
+          var pixel = 0
+          if iy >= 0 && iy < h && ix >= 0 && ix < w {
+            pixel = img[iy][ix]
+          }
+          vals = append(vals, pixel)
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      let sorted = sort_ints(vals)
+      row = append(row, sorted[len(sorted) / 2])
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun iabs(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun sobel_filter(img: list<list<int>>): list<list<int>> {
+  let gx = [[1, 0, -1], [2, 0, -2], [1, 0, -1]]
+  let gy = [[1, 2, 1], [0, 0, 0], [-1, -2, -1]]
+  let h = len(img)
+  let w = len(img[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      var sx = 0
+      var sy = 0
+      var ky = 0
+      while ky < 3 {
+        var kx = 0
+        while kx < 3 {
+          let iy = y + ky - 1
+          let ix = x + kx - 1
+          var pixel = 0
+          if iy >= 0 && iy < h && ix >= 0 && ix < w {
+            pixel = img[iy][ix]
+          }
+          sx = sx + gx[ky][kx] * pixel
+          sy = sy + gy[ky][kx] * pixel
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      row = append(row, iabs(sx) + iabs(sy))
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun get_neighbors_pixel(img: list<list<int>>, x: int, y: int): list<int> {
+  let h = len(img)
+  let w = len(img[0])
+  var neighbors: list<int> = []
+  var dy = -1
+  while dy <= 1 {
+    var dx = -1
+    while dx <= 1 {
+      if !(dx == 0 && dy == 0) {
+        let ny = y + dy
+        let nx = x + dx
+        var val = 0
+        if ny >= 0 && ny < h && nx >= 0 && nx < w {
+          val = img[ny][nx]
+        }
+        neighbors = append(neighbors, val)
+      }
+      dx = dx + 1
+    }
+    dy = dy + 1
+  }
+  return neighbors
+}
+
+fun pow2(e: int): int {
+  var r = 1
+  var i = 0
+  while i < e {
+    r = r * 2
+    i = i + 1
+  }
+  return r
+}
+
+fun local_binary_value(img: list<list<int>>, x: int, y: int): int {
+  let center = img[y][x]
+  let neighbors = get_neighbors_pixel(img, x, y)
+  var v = 0
+  var i = 0
+  while i < len(neighbors) {
+    if neighbors[i] >= center {
+      v = v + pow2(i)
+    }
+    i = i + 1
+  }
+  return v
+}
+
+fun local_binary_pattern(img: list<list<int>>): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      row = append(row, local_binary_value(img, x, y))
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+let img: list<list<int>> = [
+  [52, 55, 61],
+  [62, 59, 55],
+  [63, 65, 66]
+]
+
+let negative = convert_to_negative(img)
+let contrast = change_contrast(img, 110)
+let kernel = gen_gaussian_kernel(3, 1.0)
+let laplace: list<list<float>> = [
+  [0.25, 0.5, 0.25],
+  [0.5, -3.0, 0.5],
+  [0.25, 0.5, 0.25]
+]
+let convolved = img_convolve(img, laplace)
+let medianed = median_filter(img, 3)
+let sobel = sobel_filter(img)
+let lbp_img = local_binary_pattern(img)
+
+print(negative)
+print(contrast)
+print(kernel)
+print(convolved)
+print(medianed)
+print(sobel)
+print(lbp_img)
