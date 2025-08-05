@@ -1,0 +1,52 @@
+/*
+Bisection Method for Root Finding
+---------------------------------
+Given a continuous function f(x) and an interval [a, b] where f(a) and f(b)
+have opposite signs, the bisection method repeatedly halves the interval to
+locate a root of f. On each iteration, the midpoint m = (a + b) / 2 is
+computed. If f(m) is zero or the interval width falls below 1e-7, the current
+midpoint is returned. Otherwise, the half-interval where the sign changes is
+used for the next iteration. This process guarantees convergence for continuous
+functions with opposite-signed endpoints.
+
+This implementation mirrors the Python version from TheAlgorithms and uses only
+core Mochi features so it can run on the runtime/vm without FFI.
+*/
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun bisection(f: fun(float): float, a: float, b: float): float {
+  var start: float = a
+  var end: float = b
+  if f(a) == 0.0 { return a }
+  if f(b) == 0.0 { return b }
+  if f(a) * f(b) > 0.0 {
+    panic("could not find root in given interval.")
+  }
+  var mid: float = start + (end - start) / 2.0
+  while abs_float(start - mid) > 0.0000001 {
+    let fmid: float = f(mid)
+    if fmid == 0.0 {
+      return mid
+    }
+    if fmid * f(start) < 0.0 {
+      end = mid
+    } else {
+      start = mid
+    }
+    mid = start + (end - start) / 2.0
+  }
+  return mid
+}
+
+fun f(x: float): float {
+  return x * x * x - 2.0 * x - 5.0
+}
+
+fun main() {
+  print(str(bisection(f, 1.0, 1000.0)))
+}
+
+main()
