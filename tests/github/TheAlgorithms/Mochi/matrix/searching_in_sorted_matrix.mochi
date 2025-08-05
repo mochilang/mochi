@@ -1,0 +1,49 @@
+/*
+Search in a Sorted Matrix
+-------------------------
+Given a matrix where each row and each column is sorted in ascending order,
+this algorithm locates a target value using the so‑called staircase search.
+Starting from the bottom‑left element, it moves upward when the current value
+is greater than the target and rightward when it is smaller.  If the target is
+found, the 1‑indexed row and column are reported; otherwise a not‑found message
+is printed.  The search examines at most m + n elements for an m×n matrix.
+*/
+
+fun search_in_sorted_matrix(mat: list<list<float>>, m: int, n: int, key: float) {
+  var i = m - 1
+  var j = 0
+  while i >= 0 && j < n {
+    if key == mat[i][j] {
+      print("Key " + str(key) + " found at row- " + str(i + 1) + " column- " + str(j + 1))
+      return
+    }
+    if key < mat[i][j] {
+      i = i - 1
+    } else {
+      j = j + 1
+    }
+  }
+  print("Key " + str(key) + " not found")
+}
+
+fun main() {
+  let mat: list<list<float>> = [
+    [2.0, 5.0, 7.0],
+    [4.0, 8.0, 13.0],
+    [9.0, 11.0, 15.0],
+    [12.0, 17.0, 20.0]
+  ]
+  search_in_sorted_matrix(mat, len(mat), len(mat[0]), 5.0)
+  search_in_sorted_matrix(mat, len(mat), len(mat[0]), 21.0)
+
+  let mat2: list<list<float>> = [
+    [2.1, 5.0, 7.0],
+    [4.0, 8.0, 13.0],
+    [9.0, 11.0, 15.0],
+    [12.0, 17.0, 20.0]
+  ]
+  search_in_sorted_matrix(mat2, len(mat2), len(mat2[0]), 2.1)
+  search_in_sorted_matrix(mat2, len(mat2), len(mat2[0]), 2.2)
+}
+
+main()
