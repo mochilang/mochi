@@ -1,0 +1,72 @@
+/*
+Carrier Concentration Relationships in Semiconductors
+
+In intrinsic and doped semiconductors the electron concentration (n),
+hole concentration (p) and intrinsic carrier concentration (ni) obey the
+mass-action law: n * p = ni^2.  Knowing any two values allows the third
+one to be computed directly:
+  • n = ni^2 / p when n is unknown
+  • p = ni^2 / n when p is unknown
+  • ni = sqrt(n * p) when ni is unknown
+
+The function below accepts three floating point arguments where exactly
+one must be zero to indicate the missing value.  It validates that the
+provided concentrations are non-negative and determines the missing one
+using the relationships above.  The result is returned as a structure
+containing the name of the computed quantity and its value.
+*/
+
+type CarrierResult {
+  name: string
+  value: float
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun carrier_concentration(
+  electron_conc: float,
+  hole_conc: float,
+  intrinsic_conc: float
+): CarrierResult {
+  var zero_count = 0
+  if electron_conc == 0.0 { zero_count = zero_count + 1 }
+  if hole_conc == 0.0 { zero_count = zero_count + 1 }
+  if intrinsic_conc == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 {
+    panic("You cannot supply more or less than 2 values")
+  }
+  if electron_conc < 0.0 {
+    panic("Electron concentration cannot be negative in a semiconductor")
+  }
+  if hole_conc < 0.0 {
+    panic("Hole concentration cannot be negative in a semiconductor")
+  }
+  if intrinsic_conc < 0.0 {
+    panic("Intrinsic concentration cannot be negative in a semiconductor")
+  }
+  if electron_conc == 0.0 {
+    return CarrierResult { name: "electron_conc", value: (intrinsic_conc * intrinsic_conc) / hole_conc }
+  }
+  if hole_conc == 0.0 {
+    return CarrierResult { name: "hole_conc", value: (intrinsic_conc * intrinsic_conc) / electron_conc }
+  }
+  if intrinsic_conc == 0.0 {
+    return CarrierResult { name: "intrinsic_conc", value: sqrtApprox(electron_conc * hole_conc) }
+  }
+  return CarrierResult { name: "", value: -1.0 }
+}
+
+let r1 = carrier_concentration(25.0, 100.0, 0.0)
+print(r1.name + ", " + str(r1.value))
+let r2 = carrier_concentration(0.0, 1600.0, 200.0)
+print(r2.name + ", " + str(r2.value))
+let r3 = carrier_concentration(1000.0, 0.0, 1200.0)
+print(r3.name + ", " + str(r3.value))
