@@ -1,0 +1,38 @@
+/*
+Triangular Numbers
+------------------
+This program computes triangular numbers. A triangular number counts
+objects arranged in an equilateral triangle. The nth triangular number
+is the sum 1 + 2 + ... + n which simplifies to n * (n + 1) / 2.
+
+Algorithm:
+1. Ensure the input position is non-negative, otherwise panic.
+2. Compute position * (position + 1) / 2 using integer arithmetic.
+3. Provide simple tests mirroring the Python version.
+
+The implementation avoids foreign function interfaces so it can run on
+the runtime/vm and does not use the `any` type.
+*/
+
+fun triangular_number(position: int): int {
+  if position < 0 {
+    panic("position must be non-negative")
+  }
+  return position * (position + 1) / 2
+}
+
+fun test_triangular_number() {
+  if triangular_number(1) != 1 {
+    panic("triangular_number(1) failed")
+  }
+  if triangular_number(3) != 6 {
+    panic("triangular_number(3) failed")
+  }
+}
+
+fun main() {
+  test_triangular_number()
+  print(triangular_number(10))
+}
+
+main()
