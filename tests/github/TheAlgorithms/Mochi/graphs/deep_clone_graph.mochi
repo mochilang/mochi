@@ -1,0 +1,95 @@
+/*
+Deep Clone of an Undirected Graph
+
+Given a reference to a node in a connected undirected graph where each node
+contains an integer value and a list of neighboring nodes, create a deep copy
+of the entire graph. The cloned graph must contain new nodes with the same
+structure; modifying the clone should not affect the original.
+
+Algorithm
+1. Perform a depth‑first search with memoization.
+2. Maintain a mapping from node values to their cloned nodes. Each value is
+   assumed to be unique within the graph and acts as the node's identifier.
+3. When visiting a node:
+   - If it has been cloned before, return the stored clone to handle cycles.
+   - Otherwise create a placeholder clone, recursively clone all neighbors,
+     and then attach the cloned neighbor list.
+
+This approach visits each node and edge once. Time complexity is O(V + E) and
+space complexity is O(V) for the recursion stack and the mapping.
+*/
+
+type Node =
+  Nil
+  | N(value: int, neighbors: list<Node>)
+
+fun deep_clone_graph(node: Node): Node {
+  var clones: map<int, Node> = {}
+
+  fun dfs(n: Node): Node {
+    return match n {
+      Nil => Nil {}
+      N(v, neigh) => {
+        var result: Node = Nil
+        if v in clones {
+          result = clones[v]
+        } else {
+          // create placeholder to break cycles
+          clones[v] = N { value: v, neighbors: [] as list<Node> }
+
+          var cloned_neighbors: list<Node> = []
+          for nb in neigh {
+            cloned_neighbors = cloned_neighbors + [dfs(nb)]
+          }
+
+          let node_copy = N { value: v, neighbors: cloned_neighbors }
+          clones[v] = node_copy
+          result = node_copy
+        }
+        return result
+      }
+    }
+  }
+
+  return dfs(node)
+}
+
+fun serialize(node: Node): string {
+  var seen: map<int, bool> = {}
+  var lines: list<string> = []
+
+  fun dfs(n: Node) {
+    match n {
+      Nil => {}
+      N(v, neigh) => {
+        if v in seen { return }
+        seen[v] = true
+        var vals: list<int> = []
+        for nb in neigh {
+          match nb {
+            Nil => {}
+            N(val, _) => { vals = vals + [val] }
+          }
+        }
+        lines = lines + [str(v) + ":" + str(vals)]
+        for nb in neigh { dfs(nb) }
+      }
+    }
+  }
+
+  dfs(node)
+  return join(lines, "\n")
+}
+
+fun main() {
+  // Example graph: 1 -> 2 -> 3 -> 4
+  let g4 = N { value: 4, neighbors: [] }
+  let g3 = N { value: 3, neighbors: [g4] }
+  let g2 = N { value: 2, neighbors: [g3] }
+  let g1 = N { value: 1, neighbors: [g2] }
+
+  let clone = deep_clone_graph(g1)
+  print(serialize(clone))
+}
+
+main()
