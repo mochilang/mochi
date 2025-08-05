@@ -1,0 +1,210 @@
+/*
+Implement a min-heap data structure supporting decrease-key operations.
+
+A min-heap stores elements so that the smallest key is always at the root.
+It can be represented as an array where children of index i are at
+2*i + 1 and 2*i + 2. Building the heap from an unsorted array is done by
+"sift-down" operations from the middle of the array toward the root. Each
+sift-down or sift-up preserves the heap property by swapping a node with its
+smaller child or parent. All operations run in O(log n) time.
+
+This implementation keeps auxiliary maps from node names to their current
+index and value so we can decrease a key in O(log n) by updating the value
+and sifting up.
+*/
+
+type Node {
+  name: string
+  val: int
+}
+
+type MinHeap {
+  heap: list<Node>
+  idx_of_element: map<string, int>
+  heap_dict: map<string, int>
+}
+
+fun get_parent_idx(idx: int): int {
+  return (idx - 1) / 2
+}
+
+fun get_left_child_idx(idx: int): int {
+  return idx * 2 + 1
+}
+
+fun get_right_child_idx(idx: int): int {
+  return idx * 2 + 2
+}
+
+fun remove_key(m: map<string, int>, k: string): map<string, int> {
+  var out: map<string, int> = {}
+  for key in m {
+    if key != k {
+      out[key] = m[key]
+    }
+  }
+  return out
+}
+
+fun slice_without_last(xs: list<Node>): list<Node> {
+  var res: list<Node> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun sift_down(mh: MinHeap, idx: int) {
+  var heap = mh.heap
+  var idx_map = mh.idx_of_element
+  var i = idx
+  while true {
+    let left = get_left_child_idx(i)
+    let right = get_right_child_idx(i)
+    var smallest = i
+    if left < len(heap) && heap[left].val < heap[smallest].val {
+      smallest = left
+    }
+    if right < len(heap) && heap[right].val < heap[smallest].val {
+      smallest = right
+    }
+    if smallest != i {
+      let tmp = heap[i]
+      heap[i] = heap[smallest]
+      heap[smallest] = tmp
+      idx_map[heap[i].name] = i
+      idx_map[heap[smallest].name] = smallest
+      i = smallest
+    } else {
+      break
+    }
+  }
+  mh.heap = heap
+  mh.idx_of_element = idx_map
+}
+
+fun sift_up(mh: MinHeap, idx: int) {
+  var heap = mh.heap
+  var idx_map = mh.idx_of_element
+  var i = idx
+  var p = get_parent_idx(i)
+  while p >= 0 && heap[p].val > heap[i].val {
+    let tmp = heap[p]
+    heap[p] = heap[i]
+    heap[i] = tmp
+    idx_map[heap[p].name] = p
+    idx_map[heap[i].name] = i
+    i = p
+    p = get_parent_idx(i)
+  }
+  mh.heap = heap
+  mh.idx_of_element = idx_map
+}
+
+fun new_min_heap(array: list<Node>): MinHeap {
+  var idx_map: map<string, int> = {}
+  var val_map: map<string, int> = {}
+  var heap = array
+  var i = 0
+  while i < len(array) {
+    let n = array[i]
+    idx_map[n.name] = i
+    val_map[n.name] = n.val
+    i = i + 1
+  }
+  var mh = MinHeap { heap: heap, idx_of_element: idx_map, heap_dict: val_map }
+  var start = get_parent_idx(len(array) - 1)
+  while start >= 0 {
+    sift_down(mh, start)
+    start = start - 1
+  }
+  return mh
+}
+
+fun peek(mh: MinHeap): Node {
+  return mh.heap[0]
+}
+
+fun remove_min(mh: MinHeap): Node {
+  var heap = mh.heap
+  var idx_map = mh.idx_of_element
+  var val_map = mh.heap_dict
+  let last_idx = len(heap) - 1
+  let top = heap[0]
+  let last = heap[last_idx]
+  heap[0] = last
+  idx_map[last.name] = 0
+  heap = slice_without_last(heap)
+  idx_map = remove_key(idx_map, top.name)
+  val_map = remove_key(val_map, top.name)
+  mh.heap = heap
+  mh.idx_of_element = idx_map
+  mh.heap_dict = val_map
+  if len(heap) > 0 {
+    sift_down(mh, 0)
+  }
+  return top
+}
+
+fun insert(mh: MinHeap, node: Node) {
+  var heap = mh.heap
+  var idx_map = mh.idx_of_element
+  var val_map = mh.heap_dict
+  heap = append(heap, node)
+  let idx = len(heap) - 1
+  idx_map[node.name] = idx
+  val_map[node.name] = node.val
+  mh.heap = heap
+  mh.idx_of_element = idx_map
+  mh.heap_dict = val_map
+  sift_up(mh, idx)
+}
+
+fun is_empty(mh: MinHeap): bool {
+  return len(mh.heap) == 0
+}
+
+fun get_value(mh: MinHeap, key: string): int {
+  return mh.heap_dict[key]
+}
+
+fun decrease_key(mh: MinHeap, node: Node, new_value: int) {
+  var heap = mh.heap
+  var val_map = mh.heap_dict
+  var idx_map = mh.idx_of_element
+  let idx = idx_map[node.name]
+  if !(heap[idx].val > new_value) { panic("newValue must be less than current value") }
+  node.val = new_value
+  heap[idx].val = new_value
+  val_map[node.name] = new_value
+  mh.heap = heap
+  mh.heap_dict = val_map
+  sift_up(mh, idx)
+}
+
+fun node_to_string(n: Node): string {
+  return "Node(" + n.name + ", " + str(n.val) + ")"
+}
+
+var r = Node { name: "R", val: -1 }
+var b = Node { name: "B", val: 6 }
+var a = Node { name: "A", val: 3 }
+var x = Node { name: "X", val: 1 }
+var e = Node { name: "E", val: 4 }
+
+var my_min_heap = new_min_heap([r, b, a, x, e])
+
+print("Min Heap - before decrease key")
+for n in my_min_heap.heap {
+  print(node_to_string(n))
+}
+
+print("Min Heap - After decrease key of node [B -> -17]")
+decrease_key(my_min_heap, b, -17)
+for n in my_min_heap.heap {
+  print(node_to_string(n))
+}
+
+print(str(get_value(my_min_heap, "B")))

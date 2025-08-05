@@ -1,0 +1,13 @@
+Min Heap - before decrease key
+Node(R, -1)
+Node(B, 6)
+Node(A, 3)
+Node(X, 1)
+Node(E, 4)
+Min Heap - After decrease key of node [B -> -17]
+Node(R, -1)
+Node(B, -17)
+Node(A, 3)
+Node(X, 1)
+Node(E, 4)
+-17
