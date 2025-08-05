@@ -1,0 +1,100 @@
+/*
+Finds the contiguous subarray within a list of numbers that has the
+maximum possible sum. This implementation uses the classic
+Divide-and-Conquer approach. The array is split around a midpoint and
+the best subarray is the maximum of the left half, right half, or the
+best subarray crossing the midpoint. Both halves are solved
+recursively. The crossing subarray is obtained by scanning left from
+the midpoint for the best prefix and right for the best suffix. The
+overall running time is O(n log n) where n is the length of the array.
+*/
+
+type Result = {
+  start: int,
+  end: int,
+  sum: float,
+}
+
+fun max_cross_sum(arr: list<float>, low: int, mid: int, high: int): Result {
+  var left_sum: float = -1000000000000000000.0
+  var max_left = -1
+  var sum: float = 0.0
+  var i = mid
+  while i >= low {
+    sum = sum + arr[i]
+    if sum > left_sum {
+      left_sum = sum
+      max_left = i
+    }
+    i = i - 1
+  }
+
+  var right_sum: float = -1000000000000000000.0
+  var max_right = -1
+  sum = 0.0
+  i = mid + 1
+  while i <= high {
+    sum = sum + arr[i]
+    if sum > right_sum {
+      right_sum = sum
+      max_right = i
+    }
+    i = i + 1
+  }
+
+  return Result { start: max_left, end: max_right, sum: left_sum + right_sum }
+}
+
+fun max_subarray(arr: list<float>, low: int, high: int): Result {
+  if len(arr) == 0 {
+    return Result { start: -1, end: -1, sum: 0.0 }
+  }
+  if low == high {
+    return Result { start: low, end: high, sum: arr[low] }
+  }
+
+  let mid = (low + high) / 2
+  let left = max_subarray(arr, low, mid)
+  let right = max_subarray(arr, mid + 1, high)
+  let cross = max_cross_sum(arr, low, mid, high)
+
+  if left.sum >= right.sum && left.sum >= cross.sum {
+    return left
+  }
+  if right.sum >= left.sum && right.sum >= cross.sum {
+    return right
+  }
+  return cross
+}
+
+fun show(res: Result) {
+  print("[" + str(res.start) + ", " + str(res.end) + ", " + str(res.sum) + "]")
+}
+
+fun main() {
+  let nums1: list<float> = [-2.0, 1.0, -3.0, 4.0, -1.0, 2.0, 1.0, -5.0, 4.0]
+  let res1 = max_subarray(nums1, 0, len(nums1) - 1)
+  show(res1)
+
+  let nums2: list<float> = [2.0, 8.0, 9.0]
+  let res2 = max_subarray(nums2, 0, len(nums2) - 1)
+  show(res2)
+
+  let nums3: list<float> = [0.0, 0.0]
+  let res3 = max_subarray(nums3, 0, len(nums3) - 1)
+  show(res3)
+
+  let nums4: list<float> = [-1.0, 0.0, 1.0]
+  let res4 = max_subarray(nums4, 0, len(nums4) - 1)
+  show(res4)
+
+  let nums5: list<float> = [-2.0, -3.0, -1.0, -4.0, -6.0]
+  let res5 = max_subarray(nums5, 0, len(nums5) - 1)
+  show(res5)
+
+  let nums6: list<float> = []
+  let res6 = max_subarray(nums6, 0, 0)
+  show(res6)
+}
+
+main()
