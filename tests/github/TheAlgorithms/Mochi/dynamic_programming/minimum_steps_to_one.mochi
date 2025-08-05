@@ -1,0 +1,50 @@
+/*
+Compute the minimum number of operations to reduce a positive integer to 1.
+Allowed operations are:
+  * subtract 1
+  * if divisible by 2, divide by 2
+  * if divisible by 3, divide by 3
+This implementation uses bottom-up dynamic programming.
+A table of size n+1 stores the best known step counts. Each entry i updates
+its reachable states i+1, 2*i and 3*i if within bounds. The algorithm
+runs in O(n) time and uses O(n) space.
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun min_int(a: int, b: int): int {
+  if a < b { return a }
+  return b
+}
+
+fun min_steps_to_one(number: int): int {
+  if number <= 0 {
+    return 0
+  }
+  var table = make_list(number + 1, number + 1)
+  table[1] = 0
+  var i = 1
+  while i < number {
+    table[i + 1] = min_int(table[i + 1], table[i] + 1)
+    if i * 2 <= number {
+      table[i * 2] = min_int(table[i * 2], table[i] + 1)
+    }
+    if i * 3 <= number {
+      table[i * 3] = min_int(table[i * 3], table[i] + 1)
+    }
+    i = i + 1
+  }
+  return table[number]
+}
+
+print(str(min_steps_to_one(10)))
+print(str(min_steps_to_one(15)))
+print(str(min_steps_to_one(6)))
