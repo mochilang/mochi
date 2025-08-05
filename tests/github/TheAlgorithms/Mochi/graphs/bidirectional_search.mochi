@@ -1,0 +1,201 @@
+/*
+Bidirectional Search for Shortest Path in Unweighted Graph
+
+This algorithm simultaneously performs breadth-first search from the
+start and goal nodes. Each frontier expands one level at a time until
+an intersection is found, meaning a node has been explored from both
+directions. Once intersected, the path from start to goal is built by
+following parent pointers from the intersection back to both start and
+goal. This reduces the search space from O(b^d) to roughly O(b^(d/2))
+for branching factor b and distance d.
+
+The implementation uses explicit queues and parent maps for both
+directions. A queue is represented by a list and a head index. A map
+value of -1 denotes the root node which has no parent.
+*/
+
+type ExpandResult {
+  queue: list<int>,
+  head: int,
+  parents: map<int, int>,
+  visited: map<int, bool>,
+  intersection: int,
+  found: bool,
+}
+
+fun expand_search(
+  graph: map<int, list<int>>,
+  queue: list<int>,
+  head: int,
+  parents: map<int, int>,
+  visited: map<int, bool>,
+  opposite_visited: map<int, bool>
+): ExpandResult {
+  if head >= len(queue) {
+    return ExpandResult { queue: queue, head: head, parents: parents, visited: visited, intersection: 0 - 1, found: false }
+  }
+  let current = queue[head]
+  head = head + 1
+  let neighbors = graph[current]
+  var q = queue
+  var p = parents
+  var v = visited
+  var i = 0
+  while i < len(neighbors) {
+    let neighbor = neighbors[i]
+    if v[neighbor] {
+      i = i + 1
+      continue
+    }
+    v[neighbor] = true
+    p[neighbor] = current
+    q = append(q, neighbor)
+    if opposite_visited[neighbor] {
+      return ExpandResult { queue: q, head: head, parents: p, visited: v, intersection: neighbor, found: true }
+    }
+    i = i + 1
+  }
+  return ExpandResult { queue: q, head: head, parents: p, visited: v, intersection: 0 - 1, found: false }
+}
+
+fun construct_path(current: int, parents: map<int, int>): list<int> {
+  var path: list<int> = []
+  var node = current
+  while node != 0 - 1 {
+    path = append(path, node)
+    node = parents[node]
+  }
+  return path
+}
+
+fun reverse_list(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(xs)
+  while i > 0 {
+    i = i - 1
+    res = append(res, xs[i])
+  }
+  return res
+}
+
+type SearchResult {
+  path: list<int>,
+  ok: bool,
+}
+
+fun bidirectional_search(g: map<int, list<int>>, start: int, goal: int): SearchResult {
+  if start == goal {
+    return SearchResult { path: [start], ok: true }
+  }
+  var forward_parents: map<int, int> = {}
+  forward_parents[start] = 0 - 1
+  var backward_parents: map<int, int> = {}
+  backward_parents[goal] = 0 - 1
+  var forward_visited: map<int, bool> = {}
+  forward_visited[start] = true
+  var backward_visited: map<int, bool> = {}
+  backward_visited[goal] = true
+  var forward_queue: list<int> = [start]
+  var backward_queue: list<int> = [goal]
+  var forward_head = 0
+  var backward_head = 0
+  var intersection = 0 - 1
+  while forward_head < len(forward_queue) && backward_head < len(backward_queue) && intersection == 0 - 1 {
+    var res = expand_search(g, forward_queue, forward_head, forward_parents, forward_visited, backward_visited)
+    forward_queue = res.queue
+    forward_head = res.head
+    forward_parents = res.parents
+    forward_visited = res.visited
+    if res.found {
+      intersection = res.intersection
+      break
+    }
+    res = expand_search(g, backward_queue, backward_head, backward_parents, backward_visited, forward_visited)
+    backward_queue = res.queue
+    backward_head = res.head
+    backward_parents = res.parents
+    backward_visited = res.visited
+    if res.found {
+      intersection = res.intersection
+      break
+    }
+  }
+  if intersection == 0 - 1 {
+    return SearchResult { path: [], ok: false }
+  }
+  var forward_path = construct_path(intersection, forward_parents)
+  forward_path = reverse_list(forward_path)
+  var back_start = backward_parents[intersection]
+  var backward_path = construct_path(back_start, backward_parents)
+  var result = forward_path
+  var j = 0
+  while j < len(backward_path) {
+    result = append(result, backward_path[j])
+    j = j + 1
+  }
+  return SearchResult { path: result, ok: true }
+}
+
+fun is_edge(g: map<int, list<int>>, u: int, v: int): bool {
+  let neighbors = g[u]
+  var i = 0
+  while i < len(neighbors) {
+    if neighbors[i] == v {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun path_exists(g: map<int, list<int>>, path: list<int>): bool {
+  if len(path) == 0 {
+    return false
+  }
+  var i = 0
+  while i + 1 < len(path) {
+    if !is_edge(g, path[i], path[i + 1]) {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun print_path(g: map<int, list<int>>, s: int, t: int) {
+  let res = bidirectional_search(g, s, t)
+  if res.ok && path_exists(g, res.path) {
+    print("Path from " + str(s) + " to " + str(t) + ": " + str(res.path))
+  } else {
+    print("Path from " + str(s) + " to " + str(t) + ": None")
+  }
+}
+
+fun main() {
+  let graph: map<int, list<int>> = {
+    0: [1, 2],
+    1: [0, 3, 4],
+    2: [0, 5, 6],
+    3: [1, 7],
+    4: [1, 8],
+    5: [2, 9],
+    6: [2, 10],
+    7: [3, 11],
+    8: [4, 11],
+    9: [5, 11],
+    10: [6, 11],
+    11: [7, 8, 9, 10],
+  }
+  print_path(graph, 0, 11)
+  print_path(graph, 5, 5)
+  let disconnected: map<int, list<int>> = {
+    0: [1, 2],
+    1: [0],
+    2: [0],
+    3: [4],
+    4: [3],
+  }
+  print_path(disconnected, 0, 3)
+}
+
+main()
