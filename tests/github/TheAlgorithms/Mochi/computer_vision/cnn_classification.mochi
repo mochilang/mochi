@@ -1,0 +1,149 @@
+/*
+Convolutional Neural Network Classification (Simplified)
+
+This program demonstrates the forward pass of a minimal
+convolutional neural network.  The goal is to classify a
+small 5x5 grayscale image as "Normal" or "Abnormality detected".
+
+The algorithm follows the typical CNN pipeline:
+1. Convolution with a 3x3 kernel followed by ReLU activation.
+2. 2x2 max pooling to reduce spatial size.
+3. Flattening of the feature map.
+4. Dense layer with sigmoid activation that outputs a probability.
+   The weights are fixed to illustrate the mechanics rather than
+   train a real medical model.
+*/
+
+fun conv2d(image: list<list<float>>, kernel: list<list<float>>): list<list<float>> {
+  let rows = len(image)
+  let cols = len(image[0])
+  let k = len(kernel)
+  var output: list<list<float>> = []
+  var i = 0
+  while i <= rows - k {
+    var row: list<float> = []
+    var j = 0
+    while j <= cols - k {
+      var sum: float = 0.0
+      var ki = 0
+      while ki < k {
+        var kj = 0
+        while kj < k {
+          sum = sum + image[i + ki][j + kj] * kernel[ki][kj]
+          kj = kj + 1
+        }
+        ki = ki + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    output = append(output, row)
+    i = i + 1
+  }
+  return output
+}
+
+fun relu_matrix(m: list<list<float>>): list<list<float>> {
+  var out: list<list<float>> = []
+  for row in m {
+    var new_row: list<float> = []
+    for v in row {
+      if v > 0.0 {
+        new_row = append(new_row, v)
+      } else {
+        new_row = append(new_row, 0.0)
+      }
+    }
+    out = append(out, new_row)
+  }
+  return out
+}
+
+fun max_pool2x2(m: list<list<float>>): list<list<float>> {
+  let rows = len(m)
+  let cols = len(m[0])
+  var out: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var new_row: list<float> = []
+    var j = 0
+    while j < cols {
+      var max_val = m[i][j]
+      if m[i][j + 1] > max_val { max_val = m[i][j + 1] }
+      if m[i + 1][j] > max_val { max_val = m[i + 1][j] }
+      if m[i + 1][j + 1] > max_val { max_val = m[i + 1][j + 1] }
+      new_row = append(new_row, max_val)
+      j = j + 2
+    }
+    out = append(out, new_row)
+    i = i + 2
+  }
+  return out
+}
+
+fun flatten(m: list<list<float>>): list<float> {
+  var res: list<float> = []
+  for row in m {
+    for v in row {
+      res = append(res, v)
+    }
+  }
+  return res
+}
+
+fun dense(inputs: list<float>, weights: list<float>, bias: float): float {
+  var s: float = bias
+  var i = 0
+  while i < len(inputs) {
+    s = s + inputs[i] * weights[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i = 1
+  while i <= 10 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + exp_approx(-x))
+}
+
+let image: list<list<float>> = [
+  [0.0,1.0,1.0,0.0,0.0,0.0],
+  [0.0,1.0,1.0,0.0,0.0,0.0],
+  [0.0,0.0,1.0,1.0,0.0,0.0],
+  [0.0,0.0,1.0,1.0,0.0,0.0],
+  [0.0,0.0,0.0,0.0,0.0,0.0],
+  [0.0,0.0,0.0,0.0,0.0,0.0]
+]
+
+let kernel: list<list<float>> = [
+  [1.0,0.0,-1.0],
+  [1.0,0.0,-1.0],
+  [1.0,0.0,-1.0]
+]
+
+let conv = conv2d(image, kernel)
+let activated = relu_matrix(conv)
+let pooled = max_pool2x2(activated)
+let flat = flatten(pooled)
+let weights: list<float> = [0.5, -0.4, 0.3, 0.1]
+let bias: float = 0.0
+let output = dense(flat, weights, bias)
+let probability = sigmoid(output)
+if probability >= 0.5 {
+  print("Abnormality detected")
+} else {
+  print("Normal")
+}
+print("Probability:")
+print(probability)
