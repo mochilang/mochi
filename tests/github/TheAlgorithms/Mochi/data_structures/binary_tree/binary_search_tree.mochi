@@ -1,0 +1,97 @@
+/*
+Implement a Binary Search Tree (BST) that supports insertion, search,
+inorder traversal, finding minimum and maximum values, and deletion.
+
+Each node is a list `[value, left, right]` where the child entries are
+either nested nodes or `null`.  This functional structure allows us to
+construct and return new trees without mutating shared state.
+
+* `insert` places a new value by descending left or right until an
+  empty position is found.
+* `search` checks for membership following the BST property.
+* `inorder` collects values in sorted order by visiting left subtree,
+  node, then right subtree.
+* `find_min` and `find_max` walk to the extreme descendants.
+* `delete` removes a value and maintains the BST property.  When a node
+  has two children it is replaced by the minimum value in its right
+  subtree.
+
+All operations run in O(h) time where h is the tree height.  A balanced
+BST has h = log n while a degenerate tree has h = n.  Space usage is O(n)
+for n stored values.
+*/
+
+fun create_node(value: int): list<any> {
+  return [value, null, null]
+}
+
+fun insert(node: list<any>, value: int): list<any> {
+  if node == null { return create_node(value) }
+  if value < node[0] {
+    node[1] = insert(node[1], value)
+  } else if value > node[0] {
+    node[2] = insert(node[2], value)
+  }
+  return node
+}
+
+fun search(node: list<any>, value: int): bool {
+  if node == null { return false }
+  if value == node[0] { return true }
+  if value < node[0] {
+    return search(node[1], value)
+  }
+  return search(node[2], value)
+}
+
+fun inorder(node: list<any>, acc: list<int>): list<int> {
+  if node == null { return acc }
+  let left_acc = inorder(node[1], acc)
+  let with_node = append(left_acc, node[0])
+  return inorder(node[2], with_node)
+}
+
+fun find_min(node: list<any>): int {
+  var current = node
+  while current[1] != null { current = current[1] }
+  return current[0]
+}
+
+fun find_max(node: list<any>): int {
+  var current = node
+  while current[2] != null { current = current[2] }
+  return current[0]
+}
+
+fun delete(node: list<any>, value: int): list<any> {
+  if node == null { return null }
+  if value < node[0] {
+    node[1] = delete(node[1], value)
+  } else if value > node[0] {
+    node[2] = delete(node[2], value)
+  } else {
+    if node[1] == null { return node[2] }
+    if node[2] == null { return node[1] }
+    let min_val = find_min(node[2])
+    node[0] = min_val
+    node[2] = delete(node[2], min_val)
+  }
+  return node
+}
+
+fun main() {
+  var root: list<any> = null
+  let nums: list<int> = [8, 3, 6, 1, 10, 14, 13, 4, 7]
+  for v in nums {
+    root = insert(root, v)
+  }
+  print(str(inorder(root, [])))
+  print(search(root, 6))
+  print(search(root, 20))
+  print(find_min(root))
+  print(find_max(root))
+  root = delete(root, 6)
+  print(str(inorder(root, [])))
+}
+
+main()
