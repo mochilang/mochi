@@ -1,0 +1,45 @@
+/*
+Lucas Numbers
+-------------
+The Lucas sequence L_n is defined by the recurrence:
+  L_0 = 2
+  L_1 = 1
+  L_n = L_{n-1} + L_{n-2} for n > 1
+These numbers are similar to Fibonacci numbers but start with 2 and 1.
+
+This file implements two ways to compute the nth Lucas number:
+1. recursive_lucas_number uses direct recursion, leading to exponential
+   time complexity O(2^n) due to repeated subproblems.
+2. dynamic_lucas_number iteratively builds the sequence in linear time
+   O(n) by updating the two latest values.
+
+Both functions take a non‑negative integer n and return the nth Lucas number.
+*/
+
+fun recursive_lucas_number(n: int): int {
+  if n == 0 { return 2 }
+  if n == 1 { return 1 }
+  return recursive_lucas_number(n - 1) + recursive_lucas_number(n - 2)
+}
+
+fun dynamic_lucas_number(n: int): int {
+  var a: int = 2
+  var b: int = 1
+  var i: int = 0
+  while i < n {
+    let next: int = a + b
+    a = b
+    b = next
+    i = i + 1
+  }
+  return a
+}
+
+print(str(recursive_lucas_number(1)))
+print(str(recursive_lucas_number(20)))
+print(str(recursive_lucas_number(0)))
+print(str(recursive_lucas_number(5)))
+print(str(dynamic_lucas_number(1)))
+print(str(dynamic_lucas_number(20)))
+print(str(dynamic_lucas_number(0)))
+print(str(dynamic_lucas_number(25)))
