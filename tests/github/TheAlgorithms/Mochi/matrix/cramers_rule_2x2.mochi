@@ -1,0 +1,64 @@
+/*
+Cramer's Rule for 2x2 Linear Systems
+------------------------------------
+This program solves a system of two linear equations of the form:
+  a1*x + b1*y = c1
+  a2*x + b2*y = c2
+using Cramer's rule. It computes the determinant of the coefficient
+matrix and the determinants with replaced constants to find x and y.
+Degenerate cases are handled:
+- If the determinant is zero and the numerators are also zero, the
+  system has infinite solutions (consistent).
+- If the determinant is zero but any numerator is nonzero, the system
+  is inconsistent and has no solution.
+- If both coefficients of x and y in the two equations are zero, the
+  system is invalid.
+The implementation avoids external dependencies so it can run on the
+runtime/vm.
+*/
+
+fun cramers_rule_2x2(eq1: list<float>, eq2: list<float>): list<float> {
+  if len(eq1) != 3 || len(eq2) != 3 {
+    panic("Please enter a valid equation.")
+  }
+  if eq1[0] == 0.0 && eq1[1] == 0.0 && eq2[0] == 0.0 && eq2[1] == 0.0 {
+    panic("Both a & b of two equations can't be zero.")
+  }
+  let a1 = eq1[0]
+  let b1 = eq1[1]
+  let c1 = eq1[2]
+  let a2 = eq2[0]
+  let b2 = eq2[1]
+  let c2 = eq2[2]
+
+  let determinant = a1 * b2 - a2 * b1
+  let determinant_x = c1 * b2 - c2 * b1
+  let determinant_y = a1 * c2 - a2 * c1
+
+  if determinant == 0.0 {
+    if determinant_x == 0.0 && determinant_y == 0.0 {
+      panic("Infinite solutions. (Consistent system)")
+    }
+    panic("No solution. (Inconsistent system)")
+  }
+  if determinant_x == 0.0 && determinant_y == 0.0 {
+    return [0.0, 0.0]
+  }
+  let x = determinant_x / determinant
+  let y = determinant_y / determinant
+  return [x, y]
+}
+
+fun test_cramers_rule_2x2() {
+  let r1 = cramers_rule_2x2([2.0, 3.0, 0.0], [5.0, 1.0, 0.0])
+  if r1[0] != 0.0 || r1[1] != 0.0 { panic("Test1 failed") }
+  let r2 = cramers_rule_2x2([0.0, 4.0, 50.0], [2.0, 0.0, 26.0])
+  if r2[0] != 13.0 || r2[1] != 12.5 { panic("Test2 failed") }
+}
+
+fun main() {
+  test_cramers_rule_2x2()
+  print(cramers_rule_2x2([11.0, 2.0, 30.0], [1.0, 0.0, 4.0]))
+}
+
+main()
