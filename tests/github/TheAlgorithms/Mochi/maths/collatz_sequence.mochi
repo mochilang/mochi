@@ -1,0 +1,31 @@
+/*
+Collatz Sequence
+----------------
+Generate the Collatz sequence for a given positive integer n. Starting from n,
+repeat the following until reaching 1:
+  - If n is even, divide it by two.
+  - If n is odd, multiply by three and add one.
+The Collatz conjecture states that this process always eventually reaches 1 for
+all positive integers. This implementation constructs the full sequence as a
+list of integers using only Mochi primitives so it can run on the runtime/vm.
+*/
+
+fun collatz_sequence(n: int): list<int> {
+  if n < 1 {
+    error("Sequence only defined for positive integers")
+  }
+  var sequence: list<int> = [n]
+  var current = n
+  while current != 1 {
+    if current % 2 == 0 {
+      current = current / 2
+    } else {
+      current = 3 * current + 1
+    }
+    sequence = append(sequence, current)
+  }
+  return sequence
+}
+
+print(str(collatz_sequence(4)))
+print(str(collatz_sequence(11)))
