@@ -1,0 +1,53 @@
+/*
+Diameter of Binary Tree
+
+The diameter (or width) of a binary tree is the number of nodes on the longest
+path between any two leaves. This implementation models the tree using arrays
+of child indices. The diameter at a node equals the sum of the depths of its
+left and right subtrees plus one for the node itself. Depth is the length of
+the longest path from a node down to a leaf. Both values are computed
+recursively.
+
+The sample tree:
+
+        1
+       / \
+      2   3
+     / \
+    4   5
+
+has diameter 4 through path 4-2-1-3. The code constructs this tree and prints
+the diameter for the root and its child subtrees.
+*/
+
+let left: list<int> = [0, 2, 4, 0, 0, 0]
+let right: list<int> = [0, 3, 5, 0, 0, 0]
+
+fun depth(i: int): int {
+  if i == 0 {
+    return 0
+  }
+  let left_depth = depth(left[i])
+  let right_depth = depth(right[i])
+  if left_depth > right_depth {
+    return left_depth + 1
+  }
+  return right_depth + 1
+}
+
+fun diameter(i: int): int {
+  if i == 0 {
+    return 0
+  }
+  let left_depth = depth(left[i])
+  let right_depth = depth(right[i])
+  return left_depth + right_depth + 1
+}
+
+fun main() {
+  print("root.diameter() = " + str(diameter(1)))
+  print("root.left.diameter() = " + str(diameter(left[1])))
+  print("root.right.diameter() = " + str(diameter(right[1])))
+}
+
+main()
