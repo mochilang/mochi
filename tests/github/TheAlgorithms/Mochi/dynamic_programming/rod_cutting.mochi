@@ -1,0 +1,58 @@
+/*
+Rod Cutting Problem
+-------------------
+Given a rod of length `n` and a list of prices where `prices[i - 1]` is the price of
+an `i`-unit piece, determine the maximum revenue obtainable by cutting the rod into
+smaller pieces or by selling it whole.  This implementation uses a bottom-up dynamic
+programming approach:
+
+1. Build a table `max_rev` where `max_rev[i]` stores the best revenue for a rod of
+   length `i`.
+2. For each length `i` from 1 to `n`, consider all first cuts `j` (1 ≤ j ≤ i) and
+   update `max_rev[i]` with `prices[j - 1] + max_rev[i - j]` if it yields a higher
+   revenue.
+3. The algorithm runs in O(n^2) time and O(n) space.
+*/
+
+fun enforce_args(n: int, prices: list<int>) {
+  if n < 0 {
+    panic("n must be non-negative")
+  }
+  if n > len(prices) {
+    panic("price list is shorter than n")
+  }
+}
+
+fun bottom_up_cut_rod(n: int, prices: list<int>): int {
+  enforce_args(n, prices)
+  var max_rev: list<int>
+  var i = 0
+  while i <= n {
+    if i == 0 {
+      max_rev = append(max_rev, 0)
+    } else {
+      max_rev = append(max_rev, -2147483648)
+    }
+    i = i + 1
+  }
+
+  var length = 1
+  while length <= n {
+    var best = max_rev[length]
+    var j = 1
+    while j <= length {
+      let candidate = prices[j - 1] + max_rev[length - j]
+      if candidate > best {
+        best = candidate
+      }
+      j = j + 1
+    }
+    max_rev[length] = best
+    length = length + 1
+  }
+  return max_rev[n]
+}
+
+let prices = [1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
+print(bottom_up_cut_rod(4, prices))
+print(bottom_up_cut_rod(10, prices))
