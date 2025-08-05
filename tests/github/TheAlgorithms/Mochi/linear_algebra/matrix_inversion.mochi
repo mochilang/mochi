@@ -1,0 +1,105 @@
+/*
+Matrix inversion solves for a matrix B such that A * B = I where A is a
+non-singular square matrix and I is the identity matrix.  This implementation
+uses Gauss–Jordan elimination:
+
+1. Augment the matrix with the identity matrix [A | I].
+2. For each column, select a pivot and swap rows to move a non-zero pivot
+   into place.  If no such pivot exists the matrix is singular.
+3. Normalize the pivot row by dividing by the pivot value so the pivot becomes 1.
+4. Use the pivot row to eliminate the current column in all other rows.
+5. After processing all columns the left block becomes I and the right block
+   becomes A⁻¹.
+
+Time complexity is O(n^3) for an n × n matrix.
+*/
+
+fun invert_matrix(matrix: list<list<float>>): list<list<float>> {
+  let n = len(matrix)
+  // Create augmented matrix [A | I]
+  var aug: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, matrix[i][j])
+      j = j + 1
+    }
+    var k = 0
+    while k < n {
+      if i == k {
+        row = append(row, 1.0)
+      } else {
+        row = append(row, 0.0)
+      }
+      k = k + 1
+    }
+    aug = append(aug, row)
+    i = i + 1
+  }
+
+  var col = 0
+  while col < n {
+    // find pivot row
+    var pivot_row = col
+    var r = col
+    while r < n {
+      if aug[r][col] != 0.0 {
+        pivot_row = r
+        break
+      }
+      r = r + 1
+    }
+    if aug[pivot_row][col] == 0.0 {
+      panic("Matrix is not invertible")
+    }
+    if pivot_row != col {
+      let temp = aug[col]
+      aug[col] = aug[pivot_row]
+      aug[pivot_row] = temp
+    }
+    // normalize pivot row
+    let pivot = aug[col][col]
+    var c = 0
+    while c < 2 * n {
+      aug[col][c] = aug[col][c] / pivot
+      c = c + 1
+    }
+    // eliminate other rows
+    var r2 = 0
+    while r2 < n {
+      if r2 != col {
+        let factor = aug[r2][col]
+        var c2 = 0
+        while c2 < 2 * n {
+          aug[r2][c2] = aug[r2][c2] - factor * aug[col][c2]
+          c2 = c2 + 1
+        }
+      }
+      r2 = r2 + 1
+    }
+    col = col + 1
+  }
+
+  // extract inverse from augmented matrix
+  var inv: list<list<float>> = []
+  var r3 = 0
+  while r3 < n {
+    var row: list<float> = []
+    var c3 = 0
+    while c3 < n {
+      row = append(row, aug[r3][c3 + n])
+      c3 = c3 + 1
+    }
+    inv = append(inv, row)
+    r3 = r3 + 1
+  }
+  return inv
+}
+
+var mat: list<list<float>> = [[4.0, 7.0], [2.0, 6.0]]
+print("Original Matrix:")
+print(mat)
+print("Inverted Matrix:")
+print(invert_matrix(mat))
