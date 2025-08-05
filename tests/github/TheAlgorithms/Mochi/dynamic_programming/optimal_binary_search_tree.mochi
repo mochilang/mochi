@@ -1,0 +1,141 @@
+/*
+Optimal Binary Search Tree
+--------------------------
+Given a set of keys with search frequencies, construct a binary search tree
+with the minimum possible search cost. The dynamic programming algorithm
+builds tables `dp` (minimal cost), `total` (sum of frequencies), and `root`
+(selected root index) for all subranges. The algorithm is O(n^2) with Knuth's
+optimization reducing the root candidate range for each interval. The tree is
+printed by recursively following the `root` table.
+*/
+
+type Node {
+  key: int,
+  freq: int
+}
+
+fun sort_nodes(nodes: list<Node>): list<Node> {
+  var arr: list<Node> = nodes
+  var i = 1
+  while i < len(arr) {
+    let key_node = arr[i]
+    var j = i - 1
+    while j >= 0 {
+      let temp = arr[j]
+      if temp.key > key_node.key {
+        arr[j + 1] = temp
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    arr[j + 1] = key_node
+    i = i + 1
+  }
+  return arr
+}
+
+fun print_node(n: Node) {
+  print("Node(key=" + str(n.key) + ", freq=" + str(n.freq) + ")")
+}
+
+fun print_binary_search_tree(root: list<list<int>>, keys: list<int>, i: int, j: int, parent: int, is_left: bool) {
+  if i > j || i < 0 || j > len(root) - 1 { return }
+  let node = root[i][j]
+  if parent == (-1) {
+    print(str(keys[node]) + " is the root of the binary search tree.")
+  } else {
+    if is_left {
+      print(str(keys[node]) + " is the left child of key " + str(parent) + ".")
+    } else {
+      print(str(keys[node]) + " is the right child of key " + str(parent) + ".")
+    }
+  }
+  print_binary_search_tree(root, keys, i, node - 1, keys[node], true)
+  print_binary_search_tree(root, keys, node + 1, j, keys[node], false)
+}
+
+fun find_optimal_binary_search_tree(original_nodes: list<Node>) {
+  var nodes: list<Node> = sort_nodes(original_nodes)
+  let n = len(nodes)
+  var keys: list<int> = []
+  var freqs: list<int> = []
+  var i = 0
+  while i < n {
+    let node = nodes[i]
+    keys = append(keys, node.key)
+    freqs = append(freqs, node.freq)
+    i = i + 1
+  }
+  var dp: list<list<int>> = []
+  var total: list<list<int>> = []
+  var root: list<list<int>> = []
+  i = 0
+  while i < n {
+    var dp_row: list<int> = []
+    var total_row: list<int> = []
+    var root_row: list<int> = []
+    var j = 0
+    while j < n {
+      if i == j {
+        dp_row = append(dp_row, freqs[i])
+        total_row = append(total_row, freqs[i])
+        root_row = append(root_row, i)
+      } else {
+        dp_row = append(dp_row, 0)
+        total_row = append(total_row, 0)
+        root_row = append(root_row, 0)
+      }
+      j = j + 1
+    }
+    dp = append(dp, dp_row)
+    total = append(total, total_row)
+    root = append(root, root_row)
+    i = i + 1
+  }
+  var interval_length = 2
+  let INF = 2147483647
+  while interval_length <= n {
+    i = 0
+    while i < n - interval_length + 1 {
+      let j = i + interval_length - 1
+      dp[i][j] = INF
+      total[i][j] = total[i][j - 1] + freqs[j]
+      var r = root[i][j - 1]
+      while r <= root[i + 1][j] {
+        let left = if r != i { dp[i][r - 1] } else { 0 }
+        let right = if r != j { dp[r + 1][j] } else { 0 }
+        let cost = left + total[i][j] + right
+        if dp[i][j] > cost {
+          dp[i][j] = cost
+          root[i][j] = r
+        }
+        r = r + 1
+      }
+      i = i + 1
+    }
+    interval_length = interval_length + 1
+  }
+  print("Binary search tree nodes:")
+  i = 0
+  while i < n {
+    print_node(nodes[i])
+    i = i + 1
+  }
+  print("\nThe cost of optimal BST for given tree nodes is " + str(dp[0][n - 1]) + ".")
+  print_binary_search_tree(root, keys, 0, n - 1, (-1), false)
+}
+
+fun main() {
+  let nodes = [
+    Node { key: 12, freq: 8 },
+    Node { key: 10, freq: 34 },
+    Node { key: 20, freq: 50 },
+    Node { key: 42, freq: 3 },
+    Node { key: 25, freq: 40 },
+    Node { key: 37, freq: 30 }
+  ]
+  find_optimal_binary_search_tree(nodes)
+}
+
+main()
