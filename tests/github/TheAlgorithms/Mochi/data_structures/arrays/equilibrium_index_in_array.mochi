@@ -1,0 +1,40 @@
+/*
+Find the equilibrium index of an integer array.
+
+An equilibrium index is a position such that the sum of elements to its left
+is equal to the sum of elements to its right. We first compute the total sum
+of the array, then scan from left to right maintaining the sum of visited
+elements. For each position we subtract the current element from the remaining
+total to get the right sum and compare with the left sum. The algorithm runs
+in O(n) time and O(1) extra space.
+*/
+
+fun equilibrium_index(arr: list<int>): int {
+  var total = 0
+  var i = 0
+  while i < len(arr) {
+    total = total + arr[i]
+    i = i + 1
+  }
+
+  var left = 0
+  i = 0
+  while i < len(arr) {
+    total = total - arr[i]
+    if left == total {
+      return i
+    }
+    left = left + arr[i]
+    i = i + 1
+  }
+  return -1
+}
+
+var arr1: list<int> = [-7, 1, 5, 2, -4, 3, 0]
+print(equilibrium_index(arr1))
+var arr2: list<int> = [1, 2, 3, 4, 5]
+print(equilibrium_index(arr2))
+var arr3: list<int> = [1, 1, 1, 1, 1]
+print(equilibrium_index(arr3))
+var arr4: list<int> = [2, 4, 6, 8, 10, 3]
+print(equilibrium_index(arr4))
