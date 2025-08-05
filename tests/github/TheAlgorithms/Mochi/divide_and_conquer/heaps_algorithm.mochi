@@ -1,0 +1,47 @@
+/*
+Generate all permutations of a list using Heap's algorithm.
+The algorithm recursively fixes the last element of the first k items and
+swaps elements to produce each permutation from the previous one with a
+single swap. This minimizes data movement compared to plain recursion.
+For a list of length n it yields n! permutations and runs in O(n!) time
+with O(n) additional space for the recursion stack and current list.
+*/
+
+fun permute(k: int, arr: list<int>, res: list<list<int> >): list<list<int> > {
+  if k == 1 {
+    let copy: list<int> = arr[0:]
+    return append(res, copy)
+  }
+  res = permute(k - 1, arr, res)
+  var i: int = 0
+  while i < k - 1 {
+    if k % 2 == 0 {
+      let temp = arr[i]
+      arr[i] = arr[k - 1]
+      arr[k - 1] = temp
+    } else {
+      let temp = arr[0]
+      arr[0] = arr[k - 1]
+      arr[k - 1] = temp
+    }
+    res = permute(k - 1, arr, res)
+    i = i + 1
+  }
+  return res
+}
+
+fun heaps(arr: list<int>): list<list<int> > {
+  if len(arr) <= 1 {
+    return [arr[0:]]
+  }
+  var res: list<list<int> > = [] as list<list<int> >
+  res = permute(len(arr), arr, res)
+  return res
+}
+
+fun main() {
+  let perms = heaps([1, 2, 3])
+  print(perms)
+}
+
+main()
