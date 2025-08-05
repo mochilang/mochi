@@ -1,0 +1,140 @@
+/*
+Prim's Minimum Spanning Tree Algorithm (Variant)
+------------------------------------------------
+This program implements Prim's algorithm for computing a minimum spanning tree
+of an undirected weighted graph.  It maintains a set of tree vertices and, at
+each step, selects the smallest weight edge connecting the tree to a new vertex.
+
+Implementation details:
+- The graph is stored as a map from each vertex to a map of neighbouring vertices
+  and edge weights.
+- A simple list-based priority queue keeps track of the best edge weight for each
+  vertex not yet in the tree.  The queue supports key updates by linear search.
+- Distances in this implementation represent the total cost from the start
+  vertex along the tree path (matching the behaviour of the Python version from
+  TheAlgorithms).
+
+Time complexity: O(V^2) due to the list-based priority queue.
+Space complexity: O(V) for the distance and parent maps.
+*/
+
+type QueueNode {
+  node: string
+  weight: int
+}
+
+type MSTResult {
+  dist: map<string, int>
+  parent: map<string, string>
+}
+
+fun prims_algo(graph: map<string, map<string, int>>): MSTResult {
+  let INF = 2147483647
+  var dist: map<string, int> = {}
+  var parent: map<string, string> = {}
+  var queue: list<QueueNode> = []
+
+  for node in graph {
+    dist[node] = INF
+    parent[node] = ""
+    queue = append(queue, QueueNode { node: node, weight: INF })
+  }
+
+  if len(queue) == 0 {
+    return MSTResult { dist: dist, parent: parent }
+  }
+
+  // extract initial node
+  var min_idx = 0
+  var i = 1
+  while i < len(queue) {
+    if queue[i].weight < queue[min_idx].weight {
+      min_idx = i
+    }
+    i = i + 1
+  }
+  let start_node = queue[min_idx]
+  let start = start_node.node
+  var new_q: list<QueueNode> = []
+  var j = 0
+  while j < len(queue) {
+    if j != min_idx {
+      new_q = append(new_q, queue[j])
+    }
+    j = j + 1
+  }
+  queue = new_q
+  dist[start] = 0
+  for neighbour in graph[start] {
+    let w = graph[start][neighbour]
+    if dist[neighbour] > dist[start] + w {
+      dist[neighbour] = dist[start] + w
+      parent[neighbour] = start
+      var k = 0
+      while k < len(queue) {
+        if queue[k].node == neighbour {
+          queue[k].weight = dist[neighbour]
+          break
+        }
+        k = k + 1
+      }
+    }
+  }
+
+  while len(queue) > 0 {
+    var best_idx = 0
+    var p = 1
+    while p < len(queue) {
+      if queue[p].weight < queue[best_idx].weight {
+        best_idx = p
+      }
+      p = p + 1
+    }
+    let node_entry = queue[best_idx]
+    let node = node_entry.node
+    var tmp: list<QueueNode> = []
+    var q = 0
+    while q < len(queue) {
+      if q != best_idx {
+        tmp = append(tmp, queue[q])
+      }
+      q = q + 1
+    }
+    queue = tmp
+    for neighbour in graph[node] {
+      let w = graph[node][neighbour]
+      if dist[neighbour] > dist[node] + w {
+        dist[neighbour] = dist[node] + w
+        parent[neighbour] = node
+        var r = 0
+        while r < len(queue) {
+          if queue[r].node == neighbour {
+            queue[r].weight = dist[neighbour]
+            break
+          }
+          r = r + 1
+        }
+      }
+    }
+  }
+
+  return MSTResult { dist: dist, parent: parent }
+}
+
+fun iabs(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+var graph: map<string, map<string, int>> = {}
+graph["a"] = {"b": 3, "c": 15}
+graph["b"] = {"a": 3, "c": 10, "d": 100}
+graph["c"] = {"a": 15, "b": 10, "d": 5}
+graph["d"] = {"b": 100, "c": 5}
+
+let res = prims_algo(graph)
+let dist = res.dist
+
+print(str(iabs(dist["a"] - dist["b"])))
+print(str(iabs(dist["d"] - dist["b"])))
+print(str(iabs(dist["a"] - dist["c"])))
