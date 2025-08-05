@@ -1,0 +1,113 @@
+/*
+Haversine Distance Between Two Geographic Points
+-----------------------------------------------
+Computes the great-circle distance between two latitude/longitude pairs
+using the Haversine formula.  Earth is approximated as an oblate spheroid
+specified by the WGS84 semi-major axis (AXIS_A) and semi-minor axis
+(AXIS_B).  The algorithm:
+  1. Convert input degrees to radians.
+  2. Apply a small flattening correction to convert geodetic latitude to
+     reduced latitude.
+  3. Compute the haversine of differences in latitude and longitude.
+  4. Use these values to obtain the central angle and distance.
+
+The implementation provides pure Mochi approximations for trigonometric
+and square-root functions via Taylor series, Newton's method, and
+rational formulas to avoid FFI usage.  Time complexity is O(1).
+*/
+
+let PI: float = 3.141592653589793
+let AXIS_A: float = 6378137.0
+let AXIS_B: float = 6356752.314245
+let RADIUS: float = 6378137.0
+
+fun to_radians(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun tan_approx(x: float): float {
+  return sin_taylor(x) / cos_taylor(x)
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 {
+    let val = atanApprox(y/x)
+    return val
+  }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y/x) + PI }
+    return atanApprox(y/x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun asinApprox(x: float): float {
+  let denom = sqrtApprox(1.0 - x * x)
+  let res = atan2Approx(x, denom)
+  return res
+}
+
+fun haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float): float {
+  let flattening = (AXIS_A - AXIS_B) / AXIS_A
+  let phi_1 = atanApprox((1.0 - flattening) * tan_approx(to_radians(lat1)))
+  let phi_2 = atanApprox((1.0 - flattening) * tan_approx(to_radians(lat2)))
+  let lambda_1 = to_radians(lon1)
+  let lambda_2 = to_radians(lon2)
+  var sin_sq_phi = sin_taylor((phi_2 - phi_1) / 2.0)
+  var sin_sq_lambda = sin_taylor((lambda_2 - lambda_1) / 2.0)
+  sin_sq_phi = sin_sq_phi * sin_sq_phi
+  sin_sq_lambda = sin_sq_lambda * sin_sq_lambda
+  let h_value = sqrtApprox(sin_sq_phi + cos_taylor(phi_1) * cos_taylor(phi_2) * sin_sq_lambda)
+  return 2.0 * RADIUS * asinApprox(h_value)
+}
+
+let SAN_FRANCISCO: list<float> = [37.774856, -122.424227]
+let YOSEMITE: list<float> = [37.864742, -119.537521]
+
+print(str(haversine_distance(SAN_FRANCISCO[0], SAN_FRANCISCO[1], YOSEMITE[0], YOSEMITE[1])))
