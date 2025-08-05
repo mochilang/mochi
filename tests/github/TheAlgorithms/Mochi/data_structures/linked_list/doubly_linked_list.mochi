@@ -1,0 +1,131 @@
+/*
+Implement a doubly linked list for integers using a plain array to store node values.
+Although the underlying structure is an array, operations simulate a traditional
+list that can insert and delete at both ends or at arbitrary indices.  Each
+operation returns a new list because Mochi values are immutable.  Supported
+features include insertion at head, tail, or any index, deletion from those
+positions, removal by value, conversion to string form, length queries, and
+emptiness checks.  The demonstration builds a list, performs several updates,
+and prints intermediate results.
+*/
+
+type DoublyLinkedList {
+  data: list<int>
+}
+
+fun empty_list(): DoublyLinkedList {
+  return DoublyLinkedList { data: [] }
+}
+
+fun length(list: DoublyLinkedList): int {
+  return len(list.data)
+}
+
+fun is_empty(list: DoublyLinkedList): bool {
+  return len(list.data) == 0
+}
+
+fun to_string(list: DoublyLinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var s = str(list.data[0])
+  var i = 1
+  while i < len(list.data) {
+    s = s + "->" + str(list.data[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun insert_nth(list: DoublyLinkedList, index: int, value: int): DoublyLinkedList {
+  if index < 0 || index > len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  while i < index {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  res = append(res, value)
+  while i < len(list.data) {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  return DoublyLinkedList { data: res }
+}
+
+fun insert_head(list: DoublyLinkedList, value: int): DoublyLinkedList {
+  return insert_nth(list, 0, value)
+}
+
+fun insert_tail(list: DoublyLinkedList, value: int): DoublyLinkedList {
+  return insert_nth(list, len(list.data), value)
+}
+
+type DeleteResult {
+  list: DoublyLinkedList
+  value: int
+}
+
+fun delete_nth(list: DoublyLinkedList, index: int): DeleteResult {
+  if index < 0 || index >= len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  var removed = 0
+  while i < len(list.data) {
+    if i == index {
+      removed = list.data[i]
+    } else {
+      res = append(res, list.data[i])
+    }
+    i = i + 1
+  }
+  return DeleteResult { list: DoublyLinkedList { data: res }, value: removed }
+}
+
+fun delete_head(list: DoublyLinkedList): DeleteResult {
+  return delete_nth(list, 0)
+}
+
+fun delete_tail(list: DoublyLinkedList): DeleteResult {
+  return delete_nth(list, len(list.data) - 1)
+}
+
+fun delete_value(list: DoublyLinkedList, value: int): DeleteResult {
+  var idx = 0
+  var found = false
+  while idx < len(list.data) {
+    if list.data[idx] == value {
+      found = true
+      break
+    }
+    idx = idx + 1
+  }
+  if !found { panic("value not found") }
+  return delete_nth(list, idx)
+}
+
+fun main() {
+  var dll = empty_list()
+  dll = insert_tail(dll, 1)
+  dll = insert_tail(dll, 2)
+  dll = insert_tail(dll, 3)
+  print(to_string(dll))
+  dll = insert_head(dll, 0)
+  print(to_string(dll))
+  dll = insert_nth(dll, 2, 9)
+  print(to_string(dll))
+  var res = delete_nth(dll, 2)
+  dll = res.list
+  print(res.value)
+  print(to_string(dll))
+  res = delete_tail(dll)
+  dll = res.list
+  print(res.value)
+  print(to_string(dll))
+  res = delete_value(dll, 1)
+  dll = res.list
+  print(res.value)
+  print(to_string(dll))
+}
+
+main()
+
