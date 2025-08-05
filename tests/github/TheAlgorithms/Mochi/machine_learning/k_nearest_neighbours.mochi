@@ -1,0 +1,111 @@
+/*
+K-Nearest Neighbours (kNN)
+
+Given labelled training data, kNN classifies a new point based on the majority
+label among its k closest neighbours. Distances are measured with the Euclidean
+metric. This implementation calculates distances through explicit loops and
+selects the k smallest by repeated linear scans.
+
+Time complexity: O(n * k) for classifying one point with n training samples.
+*/
+
+type PointLabel {
+  point: list<float>
+  label: int
+}
+
+type KNN {
+  data: list<PointLabel>
+  labels: list<string>
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun make_knn(train_data: list<list<float>>, train_target: list<int>, class_labels: list<string>): KNN {
+  var items: list<PointLabel> = []
+  var i = 0
+  while i < len(train_data) {
+    let pl = PointLabel{ point: train_data[i], label: train_target[i] }
+    items = append(items, pl)
+    i = i + 1
+  }
+  return KNN{ data: items, labels: class_labels }
+}
+
+fun euclidean_distance(a: list<float>, b: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(a) {
+    let diff = a[i] - b[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sqrtApprox(sum)
+}
+
+type DistLabel {
+  dist: float
+  label: int
+}
+
+fun classify(knn: KNN, pred_point: list<float>, k: int): string {
+  var distances: list<DistLabel> = []
+  var i = 0
+  while i < len(knn.data) {
+    let d = euclidean_distance(knn.data[i].point, pred_point)
+    distances = append(distances, DistLabel{ dist: d, label: knn.data[i].label })
+    i = i + 1
+  }
+  var votes: list<int> = []
+  var count = 0
+  while count < k {
+    var min_index = 0
+    var j = 1
+    while j < len(distances) {
+      if distances[j].dist < distances[min_index].dist {
+        min_index = j
+      }
+      j = j + 1
+    }
+    votes = append(votes, distances[min_index].label)
+    distances[min_index].dist = 1e18
+    count = count + 1
+  }
+  var tally: list<int> = []
+  var t = 0
+  while t < len(knn.labels) {
+    tally = append(tally, 0)
+    t = t + 1
+  }
+  var v = 0
+  while v < len(votes) {
+    let lbl = votes[v]
+    tally[lbl] = tally[lbl] + 1
+    v = v + 1
+  }
+  var max_idx = 0
+  var m = 1
+  while m < len(tally) {
+    if tally[m] > tally[max_idx] {
+      max_idx = m
+    }
+    m = m + 1
+  }
+  return knn.labels[max_idx]
+}
+
+let train_X = [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [0.5, 0.5], [3.0, 3.0], [2.0, 3.0], [3.0, 2.0]]
+let train_y = [0, 0, 0, 0, 1, 1, 1]
+let classes = ["A", "B"]
+let knn = make_knn(train_X, train_y, classes)
+let point = [1.2, 1.2]
+print(classify(knn, point, 5))
