@@ -1,0 +1,31 @@
+/*
+Compute the resonant frequency of an LC circuit.
+
+An LC circuit consists of an inductor (L) and a capacitor (C). The
+circuit oscillates at its resonant frequency:
+    f = 1 / (2 * pi * sqrt(L * C))
+This implementation validates that L and C are positive and uses a
+Newton’s method approximation for the square root to avoid external
+libraries. The algorithm runs in constant time.
+*/
+
+let PI = 3.141592653589793
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun resonant_frequency(inductance: float, capacitance: float): float {
+  if inductance <= 0.0 { panic("Inductance cannot be 0 or negative") }
+  if capacitance <= 0.0 { panic("Capacitance cannot be 0 or negative") }
+  let denom = 2.0 * PI * sqrtApprox(inductance * capacitance)
+  return 1.0 / denom
+}
+
+print(resonant_frequency(10.0, 5.0))
