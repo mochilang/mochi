@@ -1,0 +1,104 @@
+/*
+Implement a first-in first-out queue using a singly linked list.
+
+Nodes store string data and the index of the next node. The queue keeps a list of
+nodes along with indexes of the front and rear entries. Enqueue appends a node to
+the list and updates the previous rear's next index; dequeue returns the data at
+the front index and advances it to the next node. When the queue becomes empty,
+both indexes reset to 0 - 1. Additional helpers compute length, check emptiness,
+convert the queue to a readable string, and clear all elements. Enqueue and
+dequeue operate in O(1) time, while length and string conversion traverse O(n).
+*/
+
+type Node {
+  data: string
+  next: int
+}
+
+type LinkedQueue {
+  nodes: list<Node>
+  front: int
+  rear: int
+}
+
+fun new_queue(): LinkedQueue {
+  return LinkedQueue { nodes: [], front: 0 - 1, rear: 0 - 1 }
+}
+
+fun is_empty(q: LinkedQueue): bool {
+  return q.front == 0 - 1
+}
+
+fun put(q: LinkedQueue, item: string): void {
+  let node = Node { data: item, next: 0 - 1 }
+  q.nodes = append(q.nodes, node)
+  let idx = len(q.nodes) - 1
+  if q.front == 0 - 1 {
+    q.front = idx
+    q.rear = idx
+  } else {
+    var nodes = q.nodes
+    nodes[q.rear].next = idx
+    q.nodes = nodes
+    q.rear = idx
+  }
+}
+
+fun get(q: LinkedQueue): string {
+  if is_empty(q) {
+    panic("dequeue from empty queue")
+  }
+  let idx = q.front
+  let node = q.nodes[idx]
+  q.front = node.next
+  if q.front == 0 - 1 {
+    q.rear = 0 - 1
+  }
+  return node.data
+}
+
+fun length(q: LinkedQueue): int {
+  var count = 0
+  var idx = q.front
+  while idx != 0 - 1 {
+    count = count + 1
+    idx = q.nodes[idx].next
+  }
+  return count
+}
+
+fun to_string(q: LinkedQueue): string {
+  var res = ""
+  var idx = q.front
+  var first = true
+  while idx != 0 - 1 {
+    let node = q.nodes[idx]
+    if first {
+      res = node.data
+      first = false
+    } else {
+      res = res + " <- " + node.data
+    }
+    idx = node.next
+  }
+  return res
+}
+
+fun clear(q: LinkedQueue): void {
+  q.nodes = []
+  q.front = 0 - 1
+  q.rear = 0 - 1
+}
+
+let queue = new_queue()
+print(str(is_empty(queue)))
+put(queue, "5")
+put(queue, "9")
+put(queue, "python")
+print(str(is_empty(queue)))
+print(get(queue))
+put(queue, "algorithms")
+print(get(queue))
+print(get(queue))
+print(get(queue))
+print(str(is_empty(queue)))
