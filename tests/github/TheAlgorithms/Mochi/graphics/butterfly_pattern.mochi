@@ -1,0 +1,58 @@
+/*
+Generate a symmetric butterfly star pattern.
+
+Given an integer n, the pattern consists of
+n-1 rows of increasing stars, a middle row
+with 2*n - 1 stars, and n-1 rows of decreasing
+stars.  Each non-middle row i contains i stars on
+the left, i stars on the right and 2*(n-i)-1 spaces
+in between.  The algorithm constructs each line
+individually and joins them with newline characters.
+Time complexity is O(n^2) due to string creation and
+the pattern size.  Space complexity is O(n^2) for the
+accumulated output.
+*/
+
+fun repeat_char(ch: string, count: int): string {
+  var result = ""
+  var i = 0
+  while i < count {
+    result = result + ch
+    i = i + 1
+  }
+  return result
+}
+
+fun butterfly_pattern(n: int): string {
+  var lines: list<string> = []
+  var i = 1
+  while i < n {
+    let left = repeat_char("*", i)
+    let mid = repeat_char(" ", 2 * (n - i) - 1)
+    let right = repeat_char("*", i)
+    lines = append(lines, left + mid + right)
+    i = i + 1
+  }
+  lines = append(lines, repeat_char("*", 2 * n - 1))
+  var j = n - 1
+  while j > 0 {
+    let left = repeat_char("*", j)
+    let mid = repeat_char(" ", 2 * (n - j) - 1)
+    let right = repeat_char("*", j)
+    lines = append(lines, left + mid + right)
+    j = j - 1
+  }
+  var out = ""
+  var k = 0
+  while k < len(lines) {
+    if k > 0 {
+      out = out + "\n"
+    }
+    out = out + lines[k]
+    k = k + 1
+  }
+  return out
+}
+
+print(butterfly_pattern(3))
+print(butterfly_pattern(5))
