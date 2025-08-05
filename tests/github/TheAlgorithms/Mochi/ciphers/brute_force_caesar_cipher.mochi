@@ -1,0 +1,45 @@
+/*
+Brute Force Caesar Cipher Decryption
+
+Given an encrypted message composed of uppercase letters, this algorithm
+attempts every possible shift of the Caesar cipher (0-25) to recover the
+original text. For each key, characters in the message that appear in the
+English alphabet are shifted backward by the key amount, wrapping around
+from 'A' to 'Z' as necessary. Nonalphabetic characters are copied directly.
+
+Time complexity is O(26 * n) = O(n) for a message of length n because each
+character is processed once for every possible key.
+*/
+
+let LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun decrypt(message: string): void {
+  for key in 0..len(LETTERS) {
+    var translated = ""
+    for i in 0..len(message) {
+      let symbol = substring(message, i, i + 1)
+      let idx = index_of(LETTERS, symbol)
+      if idx != 0 - 1 {
+        var num = idx - key
+        if num < 0 {
+          num = num + len(LETTERS)
+        }
+        translated = translated + substring(LETTERS, num, num + 1)
+      } else {
+        translated = translated + symbol
+      }
+    }
+    print("Decryption using Key #" + str(key) + ": " + translated)
+  }
+}
+
+decrypt("TMDETUX PMDVU")
