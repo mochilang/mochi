@@ -1,0 +1,122 @@
+/*
+Implement a double-ended queue (deque) of integers using a list as the
+underlying storage.  Elements can be added or removed from both the front
+and the back.  The implementation provides operations push_back, push_front,
+extend_back, extend_front, pop_back, pop_front, is_empty, length, and
+to_string.  Adding or removing at the front requires shifting elements and
+therefore runs in O(n) time for n elements affected.  Adding to or removing
+from the back is O(1).  The demonstration builds a deque, performs several
+operations, and prints intermediate states and removed values.
+*/
+
+type Deque {
+  data: list<int>
+}
+
+fun empty_deque(): Deque {
+  return Deque { data: [] }
+}
+
+fun push_back(dq: Deque, value: int): Deque {
+  return Deque { data: append(dq.data, value) }
+}
+
+fun push_front(dq: Deque, value: int): Deque {
+  var res: list<int> = [value]
+  var i = 0
+  while i < len(dq.data) {
+    res = append(res, dq.data[i])
+    i = i + 1
+  }
+  return Deque { data: res }
+}
+
+fun extend_back(dq: Deque, values: list<int>): Deque {
+  var res = dq.data
+  var i = 0
+  while i < len(values) {
+    res = append(res, values[i])
+    i = i + 1
+  }
+  return Deque { data: res }
+}
+
+fun extend_front(dq: Deque, values: list<int>): Deque {
+  var res: list<int> = []
+  var i = len(values) - 1
+  while i >= 0 {
+    res = append(res, values[i])
+    i = i - 1
+  }
+  var j = 0
+  while j < len(dq.data) {
+    res = append(res, dq.data[j])
+    j = j + 1
+  }
+  return Deque { data: res }
+}
+
+type PopResult {
+  deque: Deque
+  value: int
+}
+
+fun pop_back(dq: Deque): PopResult {
+  if len(dq.data) == 0 { panic("pop from empty deque") }
+  var res: list<int> = []
+  var i = 0
+  while i < len(dq.data) - 1 {
+    res = append(res, dq.data[i])
+    i = i + 1
+  }
+  return PopResult { deque: Deque { data: res }, value: dq.data[len(dq.data) - 1] }
+}
+
+fun pop_front(dq: Deque): PopResult {
+  if len(dq.data) == 0 { panic("popleft from empty deque") }
+  var res: list<int> = []
+  var i = 1
+  while i < len(dq.data) {
+    res = append(res, dq.data[i])
+    i = i + 1
+  }
+  return PopResult { deque: Deque { data: res }, value: dq.data[0] }
+}
+
+fun is_empty(dq: Deque): bool {
+  return len(dq.data) == 0
+}
+
+fun length(dq: Deque): int {
+  return len(dq.data)
+}
+
+fun to_string(dq: Deque): string {
+  if len(dq.data) == 0 { return "[]" }
+  var s = "[" + str(dq.data[0])
+  var i = 1
+  while i < len(dq.data) {
+    s = s + ", " + str(dq.data[i])
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun main() {
+  var dq = empty_deque()
+  dq = push_back(dq, 2)
+  dq = push_front(dq, 1)
+  dq = extend_back(dq, [3, 4])
+  dq = extend_front(dq, [0])
+  print(to_string(dq))
+  var r = pop_back(dq)
+  dq = r.deque
+  print(r.value)
+  r = pop_front(dq)
+  dq = r.deque
+  print(r.value)
+  print(to_string(dq))
+  print(is_empty(empty_deque()))
+}
+
+main()
