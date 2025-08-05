@@ -1,0 +1,185 @@
+/*
+Hash table with open addressing and linear probing.
+
+The table stores integers in an array.  A slot is either empty or holds a
+value.  To insert an element, compute `key % size` to get the index.  If the
+slot is empty store the value.  On collision, probe subsequent indices
+(linear probing) until an empty slot is found.  When the table fills up the
+capacity is expanded to the next prime number greater than twice the current
+size and all surviving values are reinserted.
+
+This demonstrates basic hash table operations: hashing, collision
+resolution, and rehashing.  It runs in average O(1) time per operation but
+rehashing requires O(n) time to reinsert the existing values.
+*/
+
+type HashTable = {
+  size_table: int,
+  values: list<int>,
+  filled: list<bool>,
+  charge_factor: int,
+  lim_charge: float,
+}
+
+fun repeat_int(n: int, val: int): list<int> {
+  var res: list<int>
+  var i = 0
+  while i < n {
+    res = append(res, val)
+    i = i + 1
+  }
+  return res
+}
+
+fun repeat_bool(n: int, val: bool): list<bool> {
+  var res: list<bool>
+  var i = 0
+  while i < n {
+    res = append(res, val)
+    i = i + 1
+  }
+  return res
+}
+
+fun set_int(xs: list<int>, idx: int, value: int): list<int> {
+  var res: list<int>
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun set_bool(xs: list<bool>, idx: int, value: bool): list<bool> {
+  var res: list<bool>
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun create_table(size_table: int, charge_factor: int, lim_charge: float): HashTable {
+  return HashTable{
+    size_table: size_table,
+    values: repeat_int(size_table, 0),
+    filled: repeat_bool(size_table, false),
+    charge_factor: charge_factor,
+    lim_charge: lim_charge,
+  }
+}
+
+fun hash_function(ht: HashTable, key: int): int {
+  var k = key % ht.size_table
+  if k < 0 { k = k + ht.size_table }
+  return k
+}
+
+fun is_prime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  var i = 3
+  while i * i <= n {
+    if n % i == 0 { return false }
+    i = i + 2
+  }
+  return true
+}
+
+fun next_prime(value: int, factor: int): int {
+  var candidate = value * factor + 1
+  while ! is_prime(candidate) {
+    candidate = candidate + 1
+  }
+  return candidate
+}
+
+fun set_value(ht: HashTable, key: int, data: int): HashTable {
+  let new_values = set_int(ht.values, key, data)
+  let new_filled = set_bool(ht.filled, key, true)
+  return HashTable{
+    size_table: ht.size_table,
+    values: new_values,
+    filled: new_filled,
+    charge_factor: ht.charge_factor,
+    lim_charge: ht.lim_charge,
+  }
+}
+
+fun collision_resolution(ht: HashTable, key: int): int {
+  var new_key = hash_function(ht, key + 1)
+  var steps = 0
+  while ht.filled[new_key] {
+    new_key = hash_function(ht, new_key + 1)
+    steps = steps + 1
+    if steps >= ht.size_table { return -1 }
+  }
+  return new_key
+}
+
+fun rehashing(ht: HashTable): HashTable {
+  var survivors: list<int>
+  var i = 0
+  while i < len(ht.values) {
+    if ht.filled[i] {
+      survivors = append(survivors, ht.values[i])
+    }
+    i = i + 1
+  }
+  let new_size = next_prime(ht.size_table, 2)
+  var new_ht = create_table(new_size, ht.charge_factor, ht.lim_charge)
+  i = 0
+  while i < len(survivors) {
+    new_ht = insert_data(new_ht, survivors[i])
+    i = i + 1
+  }
+  return new_ht
+}
+
+fun insert_data(ht: HashTable, data: int): HashTable {
+  let key = hash_function(ht, data)
+  if ! ht.filled[key] {
+    return set_value(ht, key, data)
+  }
+  if ht.values[key] == data {
+    return ht
+  }
+  let new_key = collision_resolution(ht, key)
+  if new_key >= 0 {
+    return set_value(ht, new_key, data)
+  }
+  let resized = rehashing(ht)
+  return insert_data(resized, data)
+}
+
+fun keys(ht: HashTable): list<list<int>> {
+  var res: list<list<int>>
+  var i = 0
+  while i < len(ht.values) {
+    if ht.filled[i] {
+      res = append(res, [i, ht.values[i]])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  var ht = create_table(3, 1, 0.75)
+  ht = insert_data(ht, 17)
+  ht = insert_data(ht, 18)
+  ht = insert_data(ht, 99)
+  print(keys(ht))
+}
+
+main()
