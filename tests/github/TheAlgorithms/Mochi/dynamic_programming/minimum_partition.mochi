@@ -1,0 +1,92 @@
+/*
+Minimum Subset Sum Difference
+-----------------------------
+Partition a list of integers into two subsets such that the absolute
+difference between the subset sums is minimized.
+
+Dynamic Programming Approach:
+1. Let n be the number of elements and s the total sum.
+2. Build a boolean table dp of size (n+1) x (s+1) where dp[i][j] is true
+   if some subset of the first i numbers has sum j.
+3. Initialize dp[i][0] = true for all i (empty subset has sum 0).
+4. Fill the table iteratively: for each number we either take it or skip it.
+5. Scan the last row from s/2 down to 0 to find the closest achievable
+   sum to s/2.  The minimum difference is s - 2*j for this j.
+
+Time Complexity:  O(n * s)
+Space Complexity: O(n * s)
+*/
+
+fun find_min(numbers: list<int>): int {
+  let n = len(numbers)
+  var s = 0
+  var idx = 0
+  while idx < n {
+    s = s + numbers[idx]
+    idx = idx + 1
+  }
+
+  var dp: list<list<bool>> = []
+  var i = 0
+  while i <= n {
+    var row: list<bool> = []
+    var j = 0
+    while j <= s {
+      row = append(row, false)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+
+  i = 0
+  while i <= n {
+    dp[i][0] = true
+    i = i + 1
+  }
+
+  var j = 1
+  while j <= s {
+    dp[0][j] = false
+    j = j + 1
+  }
+
+  i = 1
+  while i <= n {
+    j = 1
+    while j <= s {
+      dp[i][j] = dp[i - 1][j]
+      if numbers[i - 1] <= j {
+        if dp[i - 1][j - numbers[i - 1]] {
+          dp[i][j] = true
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  var diff = 0
+  j = s / 2
+  while j >= 0 {
+    if dp[n][j] {
+      diff = s - 2 * j
+      break
+    }
+    j = j - 1
+  }
+  return diff
+}
+
+print(str(find_min([1, 2, 3, 4, 5])))
+print(str(find_min([5, 5, 5, 5, 5])))
+print(str(find_min([5, 5, 5, 5])))
+print(str(find_min([3])))
+print(str(find_min([])))
+print(str(find_min([1, 2, 3, 4])))
+print(str(find_min([0, 0, 0, 0])))
+print(str(find_min([-1, -5, 5, 1])))
+print(str(find_min([9, 9, 9, 9, 9])))
+print(str(find_min([1, 5, 10, 3])))
+print(str(find_min([-1, 0, 1])))
+print(str(find_min([10, 9, 8, 7, 6, 5, 4, 3, 2, 1])))
