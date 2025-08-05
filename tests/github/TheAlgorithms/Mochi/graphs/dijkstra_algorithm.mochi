@@ -1,0 +1,87 @@
+/*
+Dijkstra's shortest path algorithm.
+
+Given a weighted directed graph with non‑negative edge weights, the goal is
+to compute the minimum distance from a starting node to every other node.
+This implementation uses a simple array based approach instead of a priority
+queue.  It repeatedly selects the unvisited node with the smallest tentative
+distance and relaxes its outgoing edges.  The time complexity is
+O(V^2 + E) for a graph with V vertices and E edges.
+*/
+
+// Edge in the adjacency list
+type Edge = { node: int, weight: int }
+
+fun make_int_list(n: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun make_bool_list(n: int): list<bool> {
+  var lst: list<bool> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, false)
+    i = i + 1
+  }
+  return lst
+}
+
+fun dijkstra(graph: list<list<Edge>>, src: int): list<int> {
+  let n = len(graph)
+  var dist = make_int_list(n, 1000000000)
+  var visited = make_bool_list(n)
+  dist[src] = 0
+  var count = 0
+  while count < n {
+    var u: int = -1
+    var min_dist = 1000000000
+    var i = 0
+    while i < n {
+      if !visited[i] && dist[i] < min_dist {
+        min_dist = dist[i]
+        u = i
+      }
+      i = i + 1
+    }
+    if u < 0 {
+      break
+    }
+    visited[u] = true
+    var j = 0
+    while j < len(graph[u]) {
+      let e = graph[u][j]
+      let v = e.node
+      let w = e.weight
+      if !visited[v] {
+        let new_dist = dist[u] + w
+        if new_dist < dist[v] {
+          dist[v] = new_dist
+        }
+      }
+      j = j + 1
+    }
+    count = count + 1
+  }
+  return dist
+}
+
+let graph: list<list<Edge>> = [
+  [Edge{ node:1, weight:10 }, Edge{ node:3, weight:5 }],
+  [Edge{ node:2, weight:1 }, Edge{ node:3, weight:2 }],
+  [Edge{ node:4, weight:4 }],
+  [Edge{ node:1, weight:3 }, Edge{ node:2, weight:9 }, Edge{ node:4, weight:2 }],
+  [Edge{ node:0, weight:7 }, Edge{ node:2, weight:6 }]
+]
+
+let dist = dijkstra(graph, 0)
+print(str(dist[0]))
+print(str(dist[1]))
+print(str(dist[2]))
+print(str(dist[3]))
+print(str(dist[4]))
