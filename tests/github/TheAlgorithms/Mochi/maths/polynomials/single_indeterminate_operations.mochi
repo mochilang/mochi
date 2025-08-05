@@ -1,0 +1,202 @@
+/*
+Single Indeterminate Polynomial Operations
+
+This module defines a Polynomial type representing a polynomial in one
+variable with coefficients stored from lowest to highest degree.
+It implements common operations:
+
+- add: sum two polynomials of possibly different degrees
+- sub: subtract by adding the negation
+- neg: negate all coefficients
+- mul: multiply using convolution of coefficients
+- evaluate: compute the value at a given point
+- derivative: differentiate term by term
+- integral: integrate and add an optional constant term
+- equals / not_equals: structural comparison
+- poly_to_string: human readable representation
+
+The test constructs p(x) = 1 + 2x + 3x^2 and verifies basic operations.
+The program prints its derivative for runtime/vm output.
+*/
+
+type Polynomial {
+  degree: int,
+  coefficients: list<float>
+}
+
+fun copy_list(xs: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(xs) {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun polynomial_new(degree: int, coeffs: list<float>): Polynomial {
+  if len(coeffs) != degree + 1 {
+    panic("The number of coefficients should be equal to the degree + 1.")
+  }
+  return Polynomial { degree: degree, coefficients: copy_list(coeffs) }
+}
+
+fun add(p: Polynomial, q: Polynomial): Polynomial {
+  if p.degree > q.degree {
+    var coeffs = copy_list(p.coefficients)
+    var i = 0
+    while i <= q.degree {
+      coeffs[i] = coeffs[i] + q.coefficients[i]
+      i = i + 1
+    }
+    return Polynomial { degree: p.degree, coefficients: coeffs }
+  } else {
+    var coeffs = copy_list(q.coefficients)
+    var i = 0
+    while i <= p.degree {
+      coeffs[i] = coeffs[i] + p.coefficients[i]
+      i = i + 1
+    }
+    return Polynomial { degree: q.degree, coefficients: coeffs }
+  }
+}
+
+fun neg(p: Polynomial): Polynomial {
+  var coeffs: list<float> = []
+  var i = 0
+  while i <= p.degree {
+    coeffs = append(coeffs, -p.coefficients[i])
+    i = i + 1
+  }
+  return Polynomial { degree: p.degree, coefficients: coeffs }
+}
+
+fun sub(p: Polynomial, q: Polynomial): Polynomial {
+  return add(p, neg(q))
+}
+
+fun mul(p: Polynomial, q: Polynomial): Polynomial {
+  var size = p.degree + q.degree + 1
+  var coeffs: list<float> = []
+  var i = 0
+  while i < size {
+    coeffs = append(coeffs, 0.0)
+    i = i + 1
+  }
+  i = 0
+  while i <= p.degree {
+    var j = 0
+    while j <= q.degree {
+      coeffs[i + j] = coeffs[i + j] + p.coefficients[i] * q.coefficients[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return Polynomial { degree: p.degree + q.degree, coefficients: coeffs }
+}
+
+fun power(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun evaluate(p: Polynomial, x: float): float {
+  var result = 0.0
+  var i = 0
+  while i <= p.degree {
+    result = result + p.coefficients[i] * power(x, i)
+    i = i + 1
+  }
+  return result
+}
+
+fun poly_to_string(p: Polynomial): string {
+  var s = ""
+  var i = p.degree
+  while i >= 0 {
+    let coeff = p.coefficients[i]
+    if coeff != 0.0 {
+      if len(s) > 0 {
+        if coeff > 0.0 { s = s + " + " }
+        else { s = s + " - " }
+      } else {
+        if coeff < 0.0 { s = s + "-" }
+      }
+      let abs_coeff = if coeff < 0.0 { -coeff } else { coeff }
+      if i == 0 {
+        s = s + str(abs_coeff)
+      } else if i == 1 {
+        s = s + str(abs_coeff) + "x"
+      } else {
+        s = s + str(abs_coeff) + "x^" + str(i)
+      }
+    }
+    i = i - 1
+  }
+  if s == "" { s = "0" }
+  return s
+}
+
+fun derivative(p: Polynomial): Polynomial {
+  if p.degree == 0 {
+    return Polynomial { degree: 0, coefficients: [0.0] }
+  }
+  var coeffs: list<float> = []
+  var i = 0
+  while i < p.degree {
+    coeffs = append(coeffs, p.coefficients[i + 1] * float(i + 1))
+    i = i + 1
+  }
+  return Polynomial { degree: p.degree - 1, coefficients: coeffs }
+}
+
+fun integral(p: Polynomial, constant: float): Polynomial {
+  var coeffs: list<float> = [constant]
+  var i = 0
+  while i <= p.degree {
+    coeffs = append(coeffs, p.coefficients[i] / float(i + 1))
+    i = i + 1
+  }
+  return Polynomial { degree: p.degree + 1, coefficients: coeffs }
+}
+
+fun equals(p: Polynomial, q: Polynomial): bool {
+  if p.degree != q.degree { return false }
+  var i = 0
+  while i <= p.degree {
+    if p.coefficients[i] != q.coefficients[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun not_equals(p: Polynomial, q: Polynomial): bool {
+  return !equals(p, q)
+}
+
+fun test_polynomial() {
+  let p = polynomial_new(2, [1.0, 2.0, 3.0])
+  let q = polynomial_new(2, [1.0, 2.0, 3.0])
+  if poly_to_string(add(p, q)) != "6x^2 + 4x + 2" { panic("add failed") }
+  if poly_to_string(sub(p, q)) != "0" { panic("sub failed") }
+  if evaluate(p, 2.0) != 17.0 { panic("evaluate failed") }
+  if poly_to_string(derivative(p)) != "6x + 2" { panic("derivative failed") }
+  let integ = poly_to_string(integral(p, 0.0))
+  if integ != "1x^3 + 1x^2 + 1x" { panic("integral failed") }
+  if !equals(p, q) { panic("equals failed") }
+  if not_equals(p, q) { panic("not_equals failed") }
+}
+
+fun main() {
+  test_polynomial()
+  let p = polynomial_new(2, [1.0, 2.0, 3.0])
+  let d = derivative(p)
+  print(poly_to_string(d))
+}
+
+main()
