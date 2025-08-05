@@ -1,0 +1,46 @@
+/*
+Generate Hamming numbers (also called regular numbers) which are
+positive integers of the form 2^i * 3^j * 5^k for non‑negative
+integers i, j, and k.
+
+The algorithm maintains three indices i, j, and k that track the
+position of the next multiples of 2, 3, and 5 respectively.  At each
+step the smallest candidate among these multiples is appended to the
+sequence and the corresponding index is advanced.  This produces the
+numbers in ascending order without duplicates.
+
+Time complexity: O(n) to generate the first n numbers.
+*/
+
+fun hamming(n: int): list<int> {
+  if n < 1 { panic("n_element should be a positive number") }
+  var hamming_list: list<int> = [1]
+  var i: int = 0
+  var j: int = 0
+  var k: int = 0
+  var index: int = 1
+  while index < n {
+    while hamming_list[i] * 2 <= hamming_list[len(hamming_list) - 1] {
+      i = i + 1
+    }
+    while hamming_list[j] * 3 <= hamming_list[len(hamming_list) - 1] {
+      j = j + 1
+    }
+    while hamming_list[k] * 5 <= hamming_list[len(hamming_list) - 1] {
+      k = k + 1
+    }
+    let m1: int = hamming_list[i] * 2
+    let m2: int = hamming_list[j] * 3
+    let m3: int = hamming_list[k] * 5
+    var next: int = m1
+    if m2 < next { next = m2 }
+    if m3 < next { next = m3 }
+    hamming_list = append(hamming_list, next)
+    index = index + 1
+  }
+  return hamming_list
+}
+
+print(hamming(5))
+print(hamming(10))
+print(hamming(15))
