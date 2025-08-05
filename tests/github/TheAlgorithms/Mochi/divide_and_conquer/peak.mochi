@@ -1,0 +1,35 @@
+/*
+Find the peak value in a unimodal list using divide and conquer.
+A unimodal list increases up to a single peak and then decreases.
+By comparing the middle element with its right neighbor we can decide
+which half still contains the peak: if the middle is smaller, search the
+right half; otherwise search the left half. Repeating this binary search
+narrows the range until the peak is found. This runs in O(log n) time.
+
+The program demonstrates the algorithm on five sample lists from the
+Python implementation and prints their peaks.
+*/
+
+fun peak(lst: list<int>): int {
+  var low = 0
+  var high = len(lst) - 1
+  while low < high {
+    let mid = (low + high) / 2
+    if lst[mid] < lst[mid + 1] {
+      low = mid + 1
+    } else {
+      high = mid
+    }
+  }
+  return lst[low]
+}
+
+fun main() {
+  print(str(peak([1, 2, 3, 4, 5, 4, 3, 2, 1])))
+  print(str(peak([1, 10, 9, 8, 7, 6, 5, 4])))
+  print(str(peak([1, 9, 8, 7])))
+  print(str(peak([1, 2, 3, 4, 5, 6, 7, 0])))
+  print(str(peak([1, 2, 3, 4, 3, 2, 1, 0, -1, -2])))
+}
+
+main()
