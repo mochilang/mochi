@@ -1,0 +1,23 @@
+/*
+Simulate a NAND logic gate.
+
+A NAND gate outputs 0 only when both inputs are non-zero (True);
+otherwise it outputs 1. This is equivalent to applying a NOT
+operation to the result of an AND gate. Each input is treated
+according to standard truthiness where any non-zero integer counts
+as True.
+
+The algorithm runs in constant time and space.
+*/
+
+fun nand_gate(a: int, b: int): int {
+  if a != 0 && b != 0 {
+    return 0
+  }
+  return 1
+}
+
+print(nand_gate(0, 0))
+print(nand_gate(0, 1))
+print(nand_gate(1, 0))
+print(nand_gate(1, 1))
