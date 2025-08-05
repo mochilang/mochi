@@ -1,0 +1,92 @@
+/*
+Distribute Coins in a Binary Tree
+
+Given a binary tree where each node contains some coins and the total number of coins equals
+the number of nodes, redistribute the coins so every node has exactly one coin. In one move,
+a coin may be transferred between a node and its parent. The goal is to minimize the number
+of moves required for this redistribution.
+
+The algorithm performs three depth‑first traversals:
+1. count_nodes: counts nodes in the tree.
+2. count_coins: sums coins stored in each node.
+3. dfs: returns the excess coins in a subtree while updating a global move counter.
+   The excess equals a node's coins plus excess from children minus one coin needed
+   for the node itself. The moves added are the absolute amounts transferred to
+   each child.
+
+Time complexity: O(n) where n is the number of nodes.
+Space complexity: O(h) for recursion depth, h being tree height.
+*/
+
+type TreeNode {
+  data: int,
+  left: int,
+  right: int
+}
+
+fun count_nodes(nodes: list<TreeNode>, idx: int): int {
+  if idx == 0 { return 0 }
+  let node: TreeNode = nodes[idx]
+  return count_nodes(nodes, node.left) + count_nodes(nodes, node.right) + 1
+}
+
+fun count_coins(nodes: list<TreeNode>, idx: int): int {
+  if idx == 0 { return 0 }
+  let node: TreeNode = nodes[idx]
+  return count_coins(nodes, node.left) + count_coins(nodes, node.right) + node.data
+}
+
+var total_moves: int = 0
+
+fun iabs(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun dfs(nodes: list<TreeNode>, idx: int): int {
+  if idx == 0 { return 0 }
+  let node: TreeNode = nodes[idx]
+  let left_excess: int = dfs(nodes, node.left)
+  let right_excess: int = dfs(nodes, node.right)
+  let abs_left: int = iabs(left_excess)
+  let abs_right: int = iabs(right_excess)
+  total_moves = total_moves + abs_left + abs_right
+  return node.data + left_excess + right_excess - 1
+}
+
+fun distribute_coins(nodes: list<TreeNode>, root: int): int {
+  if root == 0 { return 0 }
+  if count_nodes(nodes, root) != count_coins(nodes, root) {
+    panic("The nodes number should be same as the number of coins")
+  }
+  total_moves = 0
+  dfs(nodes, root)
+  return total_moves
+}
+
+fun main() {
+  let example1: list<TreeNode> = [
+    TreeNode{ data: 0, left: 0, right: 0 },
+    TreeNode{ data: 3, left: 2, right: 3 },
+    TreeNode{ data: 0, left: 0, right: 0 },
+    TreeNode{ data: 0, left: 0, right: 0 }
+  ]
+  let example2: list<TreeNode> = [
+    TreeNode{ data: 0, left: 0, right: 0 },
+    TreeNode{ data: 0, left: 2, right: 3 },
+    TreeNode{ data: 3, left: 0, right: 0 },
+    TreeNode{ data: 0, left: 0, right: 0 }
+  ]
+  let example3: list<TreeNode> = [
+    TreeNode{ data: 0, left: 0, right: 0 },
+    TreeNode{ data: 0, left: 2, right: 3 },
+    TreeNode{ data: 0, left: 0, right: 0 },
+    TreeNode{ data: 3, left: 0, right: 0 }
+  ]
+  print(distribute_coins(example1, 1))
+  print(distribute_coins(example2, 1))
+  print(distribute_coins(example3, 1))
+  print(distribute_coins([TreeNode{data:0,left:0,right:0}], 0))
+}
+
+main()
