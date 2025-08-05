@@ -1,0 +1,61 @@
+/*
+Lempel-Ziv-Welch (LZW) compression for binary strings.
+Start with a dictionary containing "0" and "1" mapped to codes 0 and 1.
+Scan the input, extending the current sequence while it exists in the
+dictionary. When a new sequence is encountered, output the code of the
+previous sequence and add the new sequence to the dictionary with the next
+available code. The codes are emitted in binary form and concatenated to
+produce the compressed bit stream. The algorithm runs in O(n) time where n
+is the length of the input.
+*/
+
+fun to_binary(n: int): string {
+  if n == 0 {
+    return "0"
+  }
+  var num = n
+  var res = ""
+  while num > 0 {
+    let bit = num % 2
+    res = str(bit) + res
+    num = num / 2
+  }
+  return res
+}
+
+fun contains_key_int(m: map<string, int>, key: string): bool {
+  for k in keys(m) {
+    if k == key {
+      return true
+    }
+  }
+  return false
+}
+
+fun lzw_compress(bits: string): string {
+  var dict: map<string, int> = {"0": 0, "1": 1}
+  var current = ""
+  var result = ""
+  var index = 2
+  var i = 0
+  while i < len(bits) {
+    let ch = bits[i]
+    let candidate = current + ch
+    if contains_key_int(dict, candidate) {
+      current = candidate
+    } else {
+      result = result + to_binary(dict[current])
+      dict[candidate] = index
+      index = index + 1
+      current = ch
+    }
+    i = i + 1
+  }
+  if current != "" {
+    result = result + to_binary(dict[current])
+  }
+  return result
+}
+
+let data = "01001100100111"
+print(lzw_compress(data))
