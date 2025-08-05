@@ -1,0 +1,119 @@
+/*
+Chaos Machine pseudo-random number generator using logistic maps.
+
+The machine keeps a buffer of m state values and associated parameters.
+The push operation injects an integer seed into every state. Each state
+uses the logistic map r * x * (1 - x) where r in [3,4) and x in [0,1).
+Orbit and trajectory are changed with an evolution parameter derived
+from the seed and neighbouring states. After processing all states the
+machine time increases.
+
+The pull operation selects one state based on the current machine time.
+It iterates the logistic map t times while slightly changing the
+parameter. Two other states are mixed with an arithmetic xorshift to
+produce 32-bit pseudo-random output without relying on bitwise
+operators.
+
+Functions provided:
+  reset() - initialise the machine.
+  push(machine, seed) - mix a seed into the internal state.
+  pull(machine) - generate a value and updated state.
+*/
+
+let K: list<float> = [0.33, 0.44, 0.55, 0.44, 0.33]
+let t: int = 3
+let size: int = 5
+
+type Machine { buffer: list<float>, params: list<float>, time: int }
+type PullResult { value: int, machine: Machine }
+
+fun round_dec(x: float, n: int): float {
+  var m10 = 1.0
+  var i = 0
+  while i < n {
+    m10 = m10 * 10.0
+    i = i + 1
+  }
+  let y = x * m10 + 0.5
+  return (1.0 * int(y)) / m10
+}
+
+fun reset(): Machine {
+  return Machine{buffer: K, params: [0.0, 0.0, 0.0, 0.0, 0.0], time: 0}
+}
+
+fun push(m: Machine, seed: int): Machine {
+  var buf = m.buffer
+  var par = m.params
+  var i = 0
+  while i < len(buf) {
+    let value = buf[i]
+    let e = (1.0 * seed) / value
+    var next_value = buf[(i + 1) % size] + e
+    next_value = next_value - (1.0 * int(next_value))
+    var r = par[i] + e
+    r = r - (1.0 * int(r))
+    r = r + 3.0
+    buf[i] = round_dec(r * next_value * (1.0 - next_value), 10)
+    par[i] = r
+    i = i + 1
+  }
+  return Machine{buffer: buf, params: par, time: m.time + 1}
+}
+
+fun xor(a: int, b: int): int {
+  var aa = a
+  var bb = b
+  var res = 0
+  var bit = 1
+  while aa > 0 || bb > 0 {
+    let abit = aa % 2
+    let bbit = bb % 2
+    if abit != bbit { res = res + bit }
+    aa = aa / 2
+    bb = bb / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+fun xorshift(x: int, y: int): int {
+  var xv = x
+  var yv = y
+  xv = xor(xv, yv / 8192)
+  yv = xor(yv, xv * 131072)
+  xv = xor(xv, yv / 32)
+  return xv
+}
+
+fun pull(m: Machine): PullResult {
+  var buf = m.buffer
+  var par = m.params
+  let key = m.time % size
+  var i = 0
+  while i < t {
+    let r = par[key]
+    let value = buf[key]
+    buf[key] = round_dec(r * value * (1.0 - value), 10)
+    var new_r = (1.0 * m.time) * 0.01 + r * 1.01
+    new_r = new_r - (1.0 * int(new_r))
+    par[key] = new_r + 3.0
+    i = i + 1
+  }
+  let x = int(buf[(key + 2) % size] * 10000000000.0)
+  let y = int(buf[(key + size - 2) % size] * 10000000000.0)
+  let new_machine = Machine{buffer: buf, params: par, time: m.time + 1}
+  let value = xorshift(x, y) % 0xFFFFFFFF
+  return PullResult{value: value, machine: new_machine}
+}
+
+var machine = reset()
+var i = 0
+while i < 100 {
+  machine = push(machine, i)
+  i = i + 1
+}
+let res = pull(machine)
+print(res.value)
+print(res.machine.buffer)
+print(res.machine.params)
