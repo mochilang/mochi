@@ -1,0 +1,95 @@
+/*
+Constructs a non-recursive segment tree supporting range queries and point updates.
+The tree is stored in a list where indices n..2n-1 hold the original array and
+indices 1..n-1 hold internal nodes.  Building fills the leaves then iteratively
+combines children using a provided associative function.  Updates replace a leaf
+and recompute ancestors by moving upward.  Queries climb from the segment ends,
+combining selected nodes when moving toward the root.  This iterative approach
+uses O(n) space and performs each update or range query in O(log n) time.
+*/
+
+fun build(arr: list<int>, combine: fun(int, int): int): list<int> {
+  let n = len(arr)
+  var st: list<int> = []
+  var i = 0
+  while i < 2 * n {
+    st = append(st, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    st[n + i] = arr[i]
+    i = i + 1
+  }
+  i = n - 1
+  while i > 0 {
+    st[i] = combine(st[i * 2], st[i * 2 + 1])
+    i = i - 1
+  }
+  return st
+}
+
+fun update(st: list<int>, n: int, combine: fun(int, int): int, p: int, v: int) {
+  var idx: int = p + n
+  st[idx] = v
+  while idx > 1 {
+    idx = (idx / 2) as int
+    st[idx] = combine(st[idx * 2], st[idx * 2 + 1])
+  }
+}
+
+fun query(st: list<int>, n: int, combine: fun(int, int): int, left: int, right: int): int {
+  var l: int = left + n
+  var r: int = right + n
+  var res = 0
+  var has = false
+  while l <= r {
+    if l % 2 == 1 {
+      if !has {
+        res = st[l]
+        has = true
+      } else {
+        res = combine(res, st[l])
+      }
+      l = l + 1
+    }
+    if r % 2 == 0 {
+      if !has {
+        res = st[r]
+        has = true
+      } else {
+        res = combine(res, st[r])
+      }
+      r = r - 1
+    }
+    l = (l / 2) as int
+    r = (r / 2) as int
+  }
+  return res
+}
+
+fun add(a: int, b: int): int { return a + b }
+fun min_int(a: int, b: int): int { if a < b { return a } else { return b } }
+fun max_int(a: int, b: int): int { if a > b { return a } else { return b } }
+
+let arr1 = [1, 2, 3]
+let st1 = build(arr1, add)
+print(str(query(st1, len(arr1), add, 0, 2)))
+
+let arr2 = [3, 1, 2]
+let st2 = build(arr2, min_int)
+print(str(query(st2, len(arr2), min_int, 0, 2)))
+
+let arr3 = [2, 3, 1]
+let st3 = build(arr3, max_int)
+print(str(query(st3, len(arr3), max_int, 0, 2)))
+
+let arr4 = [1, 5, 7, -1, 6]
+let n4 = len(arr4)
+let st4 = build(arr4, add)
+update(st4, n4, add, 1, -1)
+update(st4, n4, add, 2, 3)
+print(str(query(st4, n4, add, 1, 2)))
+print(str(query(st4, n4, add, 1, 1)))
+update(st4, n4, add, 4, 1)
+print(str(query(st4, n4, add, 3, 4)))
