@@ -1,0 +1,70 @@
+/*
+Carmichael Number Check
+
+A Carmichael number n is a composite integer that satisfies
+  b^(n-1) mod n = 1
+for all integers b such that 1 < b < n and gcd(b, n) = 1.
+This property makes Carmichael numbers counterexamples to
+Fermat's primality test.
+
+Algorithm:
+1. Define gcd using Euclid's algorithm to determine if two numbers are coprime.
+2. Implement modular exponentiation power(x, y, m) recursively:
+   - If y == 0 return 1.
+   - Compute temp = power(x, y/2, m) modulo m.
+   - Square temp and, if y is odd, multiply by x; take modulus m after each multiplication.
+3. For n > 0, iterate b from 2 to n - 1.
+   - If gcd(b, n) == 1 and power(b, n - 1, n) != 1, then n is not Carmichael.
+4. If the loop finishes, n satisfies the Carmichael condition.
+
+Time complexity is O(n log n) due to the loop and modular exponentiation.
+*/
+
+fun abs_int(x: int): int {
+  if x < 0 {
+    return -x
+  }
+  return x
+}
+
+fun gcd(a: int, b: int): int {
+  if a == 0 {
+    return abs_int(b)
+  }
+  return gcd(b % a, a)
+}
+
+fun power(x: int, y: int, m: int): int {
+  if y == 0 {
+    return 1 % m
+  }
+  var temp = power(x, y / 2, m) % m
+  temp = (temp * temp) % m
+  if y % 2 == 1 {
+    temp = (temp * x) % m
+  }
+  return temp
+}
+
+fun is_carmichael_number(n: int): bool {
+  if n <= 0 {
+    panic("Number must be positive")
+  }
+  var b = 2
+  while b < n {
+    if gcd(b, n) == 1 {
+      if power(b, n - 1, n) != 1 {
+        return false
+      }
+    }
+    b = b + 1
+  }
+  return true
+}
+
+print(str(power(2, 15, 3)))
+print(str(power(5, 1, 30)))
+print(str(is_carmichael_number(4)))
+print(str(is_carmichael_number(561)))
+print(str(is_carmichael_number(562)))
+print(str(is_carmichael_number(1105)))
