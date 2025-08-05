@@ -1,0 +1,61 @@
+/*
+Detect whether a singly linked list contains a loop.
+Each node stores an integer and the index of its successor; -1 marks the end.
+Floyd's cycle detection algorithm moves a slow pointer one step at a time and
+a fast pointer two steps at a time. If the list contains a loop, the pointers
+will eventually meet; otherwise the fast pointer reaches the end.
+
+The demonstration builds lists analogous to the Python version:
+1) 1->2->3->4 without a loop.
+2) The last node is linked back to the second node creating a loop.
+3) 5->6->5->6 where values repeat but nodes are distinct (no loop).
+4) A single-node list.
+The expected outputs are false, true, false, and false.
+*/
+
+type Node {
+  data: int,
+  next: int
+}
+
+fun has_loop(nodes: list<Node>, head: int): bool {
+  var slow = head
+  var fast = head
+  while fast != 0 - 1 {
+    let fast_node1 = nodes[fast]
+    if fast_node1.next == 0 - 1 { return false }
+    let fast_node2 = nodes[fast_node1.next]
+    if fast_node2.next == 0 - 1 { return false }
+    let slow_node = nodes[slow]
+    slow = slow_node.next
+    fast = fast_node2.next
+    if slow == fast { return true }
+  }
+  return false
+}
+
+fun make_nodes(values: list<int>): list<Node> {
+  var nodes: list<Node> = []
+  var i = 0
+  while i < len(values) {
+    let next_idx = if i == len(values) - 1 { 0 - 1 } else { i + 1 }
+    nodes = append(nodes, Node { data: values[i], next: next_idx })
+    i = i + 1
+  }
+  return nodes
+}
+
+fun main() {
+  var list1 = make_nodes([1, 2, 3, 4])
+  print(str(has_loop(list1, 0)))
+  list1[3].next = 1
+  print(str(has_loop(list1, 0)))
+
+  let list2 = make_nodes([5, 6, 5, 6])
+  print(str(has_loop(list2, 0)))
+
+  let list3 = make_nodes([1])
+  print(str(has_loop(list3, 0)))
+}
+
+main()
