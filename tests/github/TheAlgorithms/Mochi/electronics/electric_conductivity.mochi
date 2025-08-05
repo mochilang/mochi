@@ -1,0 +1,62 @@
+/*
+Electric Conductivity Calculations
+
+Given any two of the three parameters—electric conductivity, electron
+concentration, or electron mobility—compute the missing third value
+using σ = n * μ * q where:
+  σ is conductivity,
+  n is electron concentration,
+  μ is electron mobility,
+  q is the electron charge (1.6021e-19 C).
+
+The function accepts zeros to indicate which value to compute.
+It validates that exactly one parameter is zero and none are negative,
+then returns a record identifying the computed quantity and its value.
+*/
+
+let ELECTRON_CHARGE: float = 0.00000000000000000016021
+
+type Result {
+  kind: string,
+  value: float,
+}
+
+fun electric_conductivity(conductivity: float, electron_conc: float, mobility: float): Result {
+  var zero_count = 0
+  if conductivity == 0.0 {
+    zero_count = zero_count + 1
+  }
+  if electron_conc == 0.0 {
+    zero_count = zero_count + 1
+  }
+  if mobility == 0.0 {
+    zero_count = zero_count + 1
+  }
+  if zero_count != 1 {
+    panic("You cannot supply more or less than 2 values")
+  }
+  if conductivity < 0.0 {
+    panic("Conductivity cannot be negative")
+  }
+  if electron_conc < 0.0 {
+    panic("Electron concentration cannot be negative")
+  }
+  if mobility < 0.0 {
+    panic("mobility cannot be negative")
+  }
+  if conductivity == 0.0 {
+    return Result { kind: "conductivity", value: mobility * electron_conc * ELECTRON_CHARGE }
+  }
+  if electron_conc == 0.0 {
+    return Result { kind: "electron_conc", value: conductivity / (mobility * ELECTRON_CHARGE) }
+  }
+  return Result { kind: "mobility", value: conductivity / (electron_conc * ELECTRON_CHARGE) }
+}
+
+let r1 = electric_conductivity(25.0, 100.0, 0.0)
+let r2 = electric_conductivity(0.0, 1600.0, 200.0)
+let r3 = electric_conductivity(1000.0, 0.0, 1200.0)
+
+print(r1.kind + " " + str(r1.value))
+print(r2.kind + " " + str(r2.value))
+print(r3.kind + " " + str(r3.value))
