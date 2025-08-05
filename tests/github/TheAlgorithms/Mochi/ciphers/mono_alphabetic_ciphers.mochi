@@ -1,0 +1,91 @@
+/*
+Monoalphabetic Substitution Cipher
+
+This cipher substitutes each letter in the plaintext with a corresponding letter
+from a fixed key. The key is a permutation of the alphabet that defines the
+mapping. To encrypt, each plaintext letter is replaced by the letter at the same
+position in the key. To decrypt, the process is reversed, mapping characters
+from the key back to the standard alphabet.
+
+Non-alphabetic characters are left unchanged. The algorithm iterates through the
+input message, finds the index of each letter (case-insensitive) in the source
+alphabet (either the standard alphabet for encryption or the key for
+decryption), and appends the matching character from the target alphabet,
+preserving the original case. Time complexity is O(n) for a message of length n.
+*/
+
+let LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun find_char(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun encrypt_message(key: string, message: string): string {
+  let chars_a = key
+  let chars_b = LETTERS
+  var translated = ""
+  var i = 0
+  while i < len(message) {
+    let symbol = message[i]
+    let upper_sym = upper(symbol)
+    let sym_index = find_char(chars_a, upper_sym)
+    if sym_index >= 0 {
+      let sub_char = chars_b[sym_index]
+      if symbol == upper_sym {
+        translated = translated + upper(sub_char)
+      } else {
+        translated = translated + lower(sub_char)
+      }
+    } else {
+      translated = translated + symbol
+    }
+    i = i + 1
+  }
+  return translated
+}
+
+fun decrypt_message(key: string, message: string): string {
+  let chars_a = LETTERS
+  let chars_b = key
+  var translated = ""
+  var i = 0
+  while i < len(message) {
+    let symbol = message[i]
+    let upper_sym = upper(symbol)
+    let sym_index = find_char(chars_a, upper_sym)
+    if sym_index >= 0 {
+      let sub_char = chars_b[sym_index]
+      if symbol == upper_sym {
+        translated = translated + upper(sub_char)
+      } else {
+        translated = translated + lower(sub_char)
+      }
+    } else {
+      translated = translated + symbol
+    }
+    i = i + 1
+  }
+  return translated
+}
+
+fun main(): void {
+  let message = "Hello World"
+  let key = "QWERTYUIOPASDFGHJKLZXCVBNM"
+  let mode = "decrypt"
+  var translated = ""
+  if mode == "encrypt" {
+    translated = encrypt_message(key, message)
+  } else {
+    if mode == "decrypt" {
+      translated = decrypt_message(key, message)
+    }
+  }
+  print("Using the key " + key + ", the " + mode + "ed message is: " + translated)
+}
+
+main()
