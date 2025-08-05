@@ -1,0 +1,54 @@
+/*
+Determine whether a string can be segmented into a space-separated sequence
+of dictionary words using dynamic programming.
+
+We store the dictionary in a map for constant-time lookups and use
+bottom-up dynamic programming. A boolean array `dp` of length `n+1`
+tracks whether the prefix ending at position `i` can be segmented. For
+each position we try all earlier split points and mark `dp[i]` true when a
+valid word is found. The algorithm runs in O(n^2) time and O(n) space.
+*/
+
+fun build_set(words: list<string>): map<string, bool> {
+  var m: map<string, bool> = {}
+  for w in words {
+    m[w] = true
+  }
+  return m
+}
+
+fun word_break(s: string, words: list<string>): bool {
+  let n = len(s)
+  let dict = build_set(words)
+  var dp: list<bool> = []
+  var i = 0
+  while i <= n {
+    dp = append(dp, false)
+    i = i + 1
+  }
+  dp[0] = true
+  i = 1
+  while i <= n {
+    var j = 0
+    while j < i {
+      if dp[j] {
+        let sub = s[j:i]
+        if sub in dict {
+          dp[i] = true
+          j = i
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[n]
+}
+
+fun print_bool(b: bool) {
+  if b { print("true") } else { print("false") }
+}
+
+print_bool(word_break("applepenapple", ["apple", "pen"]))
+print_bool(word_break("catsandog", ["cats", "dog", "sand", "and", "cat"]))
+print_bool(word_break("cars", ["car", "ca", "rs"]))
