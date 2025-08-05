@@ -1,0 +1,172 @@
+/*
+  Implementation of a Red–Black Tree using an array based representation.
+
+  Each node stores [value, color, parent, left, right] where color is
+  0 for black and 1 for red.  The tree maintains the red–black properties
+  by performing rotations and recoloring after each insertion.
+*/
+
+let LABEL: int = 0
+let COLOR: int = 1
+let PARENT: int = 2
+let LEFT: int = 3
+let RIGHT: int = 4
+let NEG_ONE: int = -1
+
+type RBTree = { nodes: list<list<int>>, root: int }
+
+fun make_tree(): RBTree {
+  return RBTree{ nodes: [], root: -1 }
+}
+
+fun rotate_left(t: RBTree, x: int): RBTree {
+  var nodes = t.nodes
+  let y = nodes[x][RIGHT]
+  let yLeft = nodes[y][LEFT]
+  nodes[x][RIGHT] = yLeft
+  if yLeft != NEG_ONE {
+    nodes[yLeft][PARENT] = x
+  }
+  let xParent = nodes[x][PARENT]
+  nodes[y][PARENT] = xParent
+  if xParent == NEG_ONE {
+    t.root = y
+  } else if x == nodes[xParent][LEFT] {
+    nodes[xParent][LEFT] = y
+  } else {
+    nodes[xParent][RIGHT] = y
+  }
+  nodes[y][LEFT] = x
+  nodes[x][PARENT] = y
+  t.nodes = nodes
+  return t
+}
+
+fun rotate_right(t: RBTree, x: int): RBTree {
+  var nodes = t.nodes
+  let y = nodes[x][LEFT]
+  let yRight = nodes[y][RIGHT]
+  nodes[x][LEFT] = yRight
+  if yRight != NEG_ONE {
+    nodes[yRight][PARENT] = x
+  }
+  let xParent = nodes[x][PARENT]
+  nodes[y][PARENT] = xParent
+  if xParent == NEG_ONE {
+    t.root = y
+  } else if x == nodes[xParent][RIGHT] {
+    nodes[xParent][RIGHT] = y
+  } else {
+    nodes[xParent][LEFT] = y
+  }
+  nodes[y][RIGHT] = x
+  nodes[x][PARENT] = y
+  t.nodes = nodes
+  return t
+}
+
+fun insert_fix(t: RBTree, z: int): RBTree {
+  var nodes = t.nodes
+  while z != t.root && nodes[nodes[z][PARENT]][COLOR] == 1 {
+    if nodes[z][PARENT] == nodes[nodes[nodes[z][PARENT]][PARENT]][LEFT] {
+      let y = nodes[nodes[nodes[z][PARENT]][PARENT]][RIGHT]
+      if y != NEG_ONE && nodes[y][COLOR] == 1 {
+        nodes[nodes[z][PARENT]][COLOR] = 0
+        nodes[y][COLOR] = 0
+        let gp = nodes[nodes[z][PARENT]][PARENT]
+        nodes[gp][COLOR] = 1
+        z = gp
+      } else {
+        if z == nodes[nodes[z][PARENT]][RIGHT] {
+          z = nodes[z][PARENT]
+          t.nodes = nodes
+          t = rotate_left(t, z)
+          nodes = t.nodes
+        }
+        nodes[nodes[z][PARENT]][COLOR] = 0
+        let gp = nodes[nodes[z][PARENT]][PARENT]
+        nodes[gp][COLOR] = 1
+        t.nodes = nodes
+        t = rotate_right(t, gp)
+        nodes = t.nodes
+      }
+    } else {
+      let y = nodes[nodes[nodes[z][PARENT]][PARENT]][LEFT]
+      if y != NEG_ONE && nodes[y][COLOR] == 1 {
+        nodes[nodes[z][PARENT]][COLOR] = 0
+        nodes[y][COLOR] = 0
+        let gp = nodes[nodes[z][PARENT]][PARENT]
+        nodes[gp][COLOR] = 1
+        z = gp
+      } else {
+        if z == nodes[nodes[z][PARENT]][LEFT] {
+          z = nodes[z][PARENT]
+          t.nodes = nodes
+          t = rotate_right(t, z)
+          nodes = t.nodes
+        }
+        nodes[nodes[z][PARENT]][COLOR] = 0
+        let gp = nodes[nodes[z][PARENT]][PARENT]
+        nodes[gp][COLOR] = 1
+        t.nodes = nodes
+        t = rotate_left(t, gp)
+        nodes = t.nodes
+      }
+    }
+  }
+  nodes = t.nodes
+  nodes[t.root][COLOR] = 0
+  t.nodes = nodes
+  return t
+}
+
+fun tree_insert(t: RBTree, v: int): RBTree {
+  var nodes = t.nodes
+  let node: list<int> = [v, 1, -1, -1, -1]
+  nodes = append(nodes, node)
+  let idx: int = len(nodes) - 1
+  var y: int = NEG_ONE
+  var x: int = t.root
+  while x != NEG_ONE {
+    y = x
+    if v < nodes[x][LABEL] {
+      x = nodes[x][LEFT]
+    } else {
+      x = nodes[x][RIGHT]
+    }
+  }
+  nodes[idx][PARENT] = y
+  if y == NEG_ONE {
+    t.root = idx
+  } else if v < nodes[y][LABEL] {
+    nodes[y][LEFT] = idx
+  } else {
+    nodes[y][RIGHT] = idx
+  }
+  t.nodes = nodes
+  t = insert_fix(t, idx)
+  return t
+}
+
+fun inorder(t: RBTree, x: int, acc: list<int>): list<int> {
+  if x == NEG_ONE { return acc }
+  acc = inorder(t, t.nodes[x][LEFT], acc)
+  acc = append(acc, t.nodes[x][LABEL])
+  acc = inorder(t, t.nodes[x][RIGHT], acc)
+  return acc
+}
+
+fun main() {
+  var t = make_tree()
+  let values = [10, 20, 30, 15, 25, 5, 1]
+  var i = 0
+  while i < len(values) {
+    t = tree_insert(t, values[i])
+    i = i + 1
+  }
+  var res: list<int> = []
+  res = inorder(t, t.root, res)
+  print(str(res))
+}
+
+main()
