@@ -1,0 +1,89 @@
+/*
+Solve a system of linear equations using Gaussian elimination.
+
+An augmented matrix is built from the coefficient matrix and the RHS vector.
+Forward elimination converts the matrix into upper triangular form by
+eliminating entries below the diagonal. Back substitution then solves the
+resulting triangular system.
+
+Time complexity: O(n^3) for an n x n system.
+*/
+
+fun retroactive_resolution(coefficients: list<list<float>>, vector: list<list<float>>): list<list<float>> {
+  let rows = len(coefficients)
+  var x: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var inner: list<float> = []
+    inner = append(inner, 0.0)
+    x = append(x, inner)
+    i = i + 1
+  }
+  var r = rows - 1
+  while r >= 0 {
+    var total = 0.0
+    var c = r + 1
+    while c < rows {
+      total = total + coefficients[r][c] * x[c][0]
+      c = c + 1
+    }
+    x[r][0] = (vector[r][0] - total) / coefficients[r][r]
+    r = r - 1
+  }
+  return x
+}
+
+fun gaussian_elimination(coefficients: list<list<float>>, vector: list<list<float>>): list<list<float>> {
+  let rows = len(coefficients)
+  let columns = len(coefficients[0])
+  if rows != columns {
+    return []
+  }
+  var augmented: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < columns {
+      row = append(row, coefficients[i][j])
+      j = j + 1
+    }
+    row = append(row, vector[i][0])
+    augmented = append(augmented, row)
+    i = i + 1
+  }
+  var row_idx = 0
+  while row_idx < rows - 1 {
+    let pivot = augmented[row_idx][row_idx]
+    var col = row_idx + 1
+    while col < rows {
+      let factor = augmented[col][row_idx] / pivot
+      var k = row_idx
+      while k < columns + 1 {
+        augmented[col][k] = augmented[col][k] - factor * augmented[row_idx][k]
+        k = k + 1
+      }
+      col = col + 1
+    }
+    row_idx = row_idx + 1
+  }
+  var coeffs: list<list<float>> = []
+  var vec: list<list<float>> = []
+  var r = 0
+  while r < rows {
+    var row: list<float> = []
+    var c = 0
+    while c < columns {
+      row = append(row, augmented[r][c])
+      c = c + 1
+    }
+    coeffs = append(coeffs, row)
+    vec = append(vec, [augmented[r][columns]])
+    r = r + 1
+  }
+  let x = retroactive_resolution(coeffs, vec)
+  return x
+}
+
+print(gaussian_elimination([[1.0, -4.0, -2.0], [5.0, 2.0, -2.0], [1.0, -1.0, 0.0]], [[-2.0], [-3.0], [4.0]]))
+print(gaussian_elimination([[1.0, 2.0], [5.0, 2.0]], [[5.0], [5.0]]))
