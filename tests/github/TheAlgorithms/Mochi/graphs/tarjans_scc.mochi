@@ -1,0 +1,100 @@
+/*
+Tarjan's Strongly Connected Components Algorithm
+
+Given a directed graph, Tarjan's algorithm discovers all strongly
+connected components (SCCs) in a single depth-first search.  Each node
+is assigned an increasing `index` when first visited and a `lowlink`
+value representing the lowest index reachable from that node by
+following edges.  Nodes are pushed onto a stack as the search
+progresses.  When a node's `lowlink` equals its `index`, it forms the
+root of an SCC and all nodes on the stack up to that point belong to
+the same component.
+
+The algorithm runs in O(|V| + |E|) time for a graph with V vertices and
+E edges and uses linear extra space for the stacks and arrays.
+*/
+
+fun tarjan(g: list<list<int>>): list<list<int>> {
+  let n = len(g)
+  var stack: list<int> = []
+  var on_stack: list<bool> = []
+  var index_of: list<int> = []
+  var lowlink_of: list<int> = []
+  var i = 0
+  while i < n {
+    on_stack = append(on_stack, false)
+    index_of = append(index_of, -1)
+    lowlink_of = append(lowlink_of, -1)
+    i = i + 1
+  }
+  var components: list<list<int>> = []
+
+  fun strong_connect(v: int, index: int): int {
+    index_of[v] = index
+    lowlink_of[v] = index
+    var current_index = index + 1
+    stack = append(stack, v)
+    on_stack[v] = true
+    for w in g[v] {
+      if index_of[w] == -1 {
+        current_index = strong_connect(w, current_index)
+        if lowlink_of[w] < lowlink_of[v] { lowlink_of[v] = lowlink_of[w] }
+      } else if on_stack[w] {
+        if lowlink_of[w] < lowlink_of[v] { lowlink_of[v] = lowlink_of[w] }
+      }
+    }
+    if lowlink_of[v] == index_of[v] {
+      var component: list<int> = []
+      var w = stack[len(stack) - 1]
+      stack = stack[0:len(stack) - 1]
+      on_stack[w] = false
+      component = append(component, w)
+      while w != v {
+        w = stack[len(stack) - 1]
+        stack = stack[0:len(stack) - 1]
+        on_stack[w] = false
+        component = append(component, w)
+      }
+      components = append(components, component)
+    }
+    return current_index
+  }
+
+  var v = 0
+  while v < n {
+    if index_of[v] == -1 { strong_connect(v, 0) }
+    v = v + 1
+  }
+  return components
+}
+
+fun create_graph(n: int, edges: list<list<int>>): list<list<int>> {
+  var g: list<list<int>> = []
+  var i = 0
+  while i < n {
+    g = append(g, [])
+    i = i + 1
+  }
+  for e in edges {
+    let u = e[0]
+    let v = e[1]
+    g[u] = append(g[u], v)
+  }
+  return g
+}
+
+fun main() {
+  let n_vertices = 7
+  let source: list<int> = [0, 0, 1, 2, 3, 3, 4, 4, 6]
+  let target: list<int> = [1, 3, 2, 0, 1, 4, 5, 6, 5]
+  var edges: list<list<int>> = []
+  var i = 0
+  while i < len(source) {
+    edges = append(edges, [source[i], target[i]])
+    i = i + 1
+  }
+  let g = create_graph(n_vertices, edges)
+  print(str(tarjan(g)))
+}
+
+main()
