@@ -1,0 +1,85 @@
+/*
+Convert an octal string to a decimal integer.
+The string may include an optional leading '-' and spaces at the
+start or end. After trimming spaces and handling the sign, each
+character must be a digit between 0 and 7. The algorithm scans the
+digits from left to right and accumulates the decimal value using the
+positional base-8 method: result = 8 * result + digit. If the input
+contains non-octal characters or is empty, the function prints an error
+message and returns 0.
+
+Time complexity: O(n) for n digits; space complexity: O(1).
+*/
+
+fun panic(msg: string) {
+  print(msg)
+}
+
+fun trim_spaces(s: string): string {
+  var start = 0
+  var end = len(s) - 1
+  while start <= end && substring(s, start, start + 1) == " " {
+    start = start + 1
+  }
+  while end >= start && substring(s, end, end + 1) == " " {
+    end = end - 1
+  }
+  if start > end { return "" }
+  return substring(s, start, end + 1)
+}
+
+fun char_to_digit(ch: string): int {
+  if ch == "0" { return 0 }
+  if ch == "1" { return 1 }
+  if ch == "2" { return 2 }
+  if ch == "3" { return 3 }
+  if ch == "4" { return 4 }
+  if ch == "5" { return 5 }
+  if ch == "6" { return 6 }
+  if ch == "7" { return 7 }
+  panic("Non-octal value was passed to the function")
+  return 0
+}
+
+fun oct_to_decimal(oct_string: string): int {
+  var s = trim_spaces(oct_string)
+  if len(s) == 0 {
+    panic("Empty string was passed to the function")
+    return 0
+  }
+
+  var is_negative = false
+  if substring(s, 0, 1) == "-" {
+    is_negative = true
+    s = substring(s, 1, len(s))
+  }
+
+  if len(s) == 0 {
+    panic("Non-octal value was passed to the function")
+    return 0
+  }
+
+  var decimal_number = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    let digit = char_to_digit(ch)
+    decimal_number = 8 * decimal_number + digit
+    i = i + 1
+  }
+  if is_negative {
+    decimal_number = -decimal_number
+  }
+  return decimal_number
+}
+
+fun main() {
+  print(str(oct_to_decimal("1")))
+  print(str(oct_to_decimal("-1")))
+  print(str(oct_to_decimal("12")))
+  print(str(oct_to_decimal(" 12   ")))
+  print(str(oct_to_decimal("-45")))
+  print(str(oct_to_decimal("0")))
+}
+
+main()
