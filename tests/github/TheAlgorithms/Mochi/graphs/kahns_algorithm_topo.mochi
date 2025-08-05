@@ -1,0 +1,87 @@
+/*
+Topological sorting of a Directed Acyclic Graph (DAG) using
+Kahn's algorithm.
+
+The algorithm computes a linear ordering of the vertices such that
+for every directed edge u -> v, vertex u appears before v.
+
+Steps:
+1. Compute the indegree of every vertex.
+2. Initialize a queue with all vertices having indegree 0.
+3. Repeatedly remove a vertex from the queue, append it to the
+   ordering and decrease the indegree of its neighbors.  When a
+   neighbor's indegree drops to 0, enqueue it.
+4. If every vertex is processed the ordering is valid.  Otherwise
+a cycle exists and no topological order is possible.
+
+Time complexity: O(V + E)
+*/
+
+fun topological_sort(graph: map<int, list<int>>): list<int> {
+  var indegree: list<int> = []
+  var i = 0
+  while i < len(graph) {
+    indegree = append(indegree, 0)
+    i = i + 1
+  }
+  for edges in values(graph) {
+    var j = 0
+    while j < len(edges) {
+      let v = edges[j]
+      indegree[v] = indegree[v] + 1
+      j = j + 1
+    }
+  }
+  var queue: list<int> = []
+  i = 0
+  while i < len(indegree) {
+    if indegree[i] == 0 {
+      queue = append(queue, i)
+    }
+    i = i + 1
+  }
+  var order: list<int> = []
+  var head = 0
+  var processed = 0
+  while head < len(queue) {
+    let v = queue[head]
+    head = head + 1
+    processed = processed + 1
+    order = append(order, v)
+    let neighbors = graph[v]
+    var k = 0
+    while k < len(neighbors) {
+      let nb = neighbors[k]
+      indegree[nb] = indegree[nb] - 1
+      if indegree[nb] == 0 {
+        queue = append(queue, nb)
+      }
+      k = k + 1
+    }
+  }
+  if processed != len(graph) {
+    return null
+  }
+  return order
+}
+
+fun main() {
+  let graph: map<int, list<int>> = {
+    0: [1, 2],
+    1: [3],
+    2: [3],
+    3: [4, 5],
+    4: [],
+    5: []
+  }
+  print(topological_sort(graph))
+
+  let cyclic: map<int, list<int>> = {
+    0: [1],
+    1: [2],
+    2: [0]
+  }
+  print(topological_sort(cyclic))
+}
+
+main()
