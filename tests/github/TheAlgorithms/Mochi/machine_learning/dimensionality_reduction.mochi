@@ -1,0 +1,8 @@
+/*
+Dimensionality reduction placeholder.
+*/
+fun main() {
+  print("placeholder")
+}
+
+main()
