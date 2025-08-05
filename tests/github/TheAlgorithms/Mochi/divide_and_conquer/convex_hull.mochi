@@ -1,0 +1,80 @@
+/*
+Convex Hull via Divide and Conquer (Monotone Chain)
+--------------------------------------------------
+Given a set of 2D points, compute the vertices of the convex polygon
+that encloses them all.  The algorithm sorts the points lexicographically
+and constructs lower and upper hulls, discarding points that would create
+clockwise turns.  The concatenation of these hulls yields the convex hull.
+This is a classic divide and conquer approach with O(n log n) time
+complexity due to sorting.
+*/
+
+type Point {
+  x: int
+  y: int
+}
+
+fun cross(o: Point, a: Point, b: Point): int {
+  return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+}
+
+fun sortPoints(ps: list<Point>): list<Point> {
+  var arr = ps
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      let p = arr[j]
+      let q = arr[j + 1]
+      if p.x > q.x || (p.x == q.x && p.y > q.y) {
+        arr[j] = q
+        arr[j + 1] = p
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun convex_hull(ps: list<Point>): list<Point> {
+  ps = sortPoints(ps)
+  var lower: list<Point> = []
+  for p in ps {
+    while len(lower) >= 2 && cross(lower[len(lower) - 2], lower[len(lower) - 1], p) <= 0 {
+      lower = lower[:len(lower) - 1]
+    }
+    lower = append(lower, p)
+  }
+  var upper: list<Point> = []
+  var i = len(ps) - 1
+  while i >= 0 {
+    let p = ps[i]
+    while len(upper) >= 2 && cross(upper[len(upper) - 2], upper[len(upper) - 1], p) <= 0 {
+      upper = upper[:len(upper) - 1]
+    }
+    upper = append(upper, p)
+    i = i - 1
+  }
+  var hull = lower[:len(lower) - 1]
+  var j = 0
+  while j < len(upper) - 1 {
+    hull = append(hull, upper[j])
+    j = j + 1
+  }
+  return hull
+}
+
+test "convex hull" {
+  let pts: list<Point> = [
+    Point{x:0, y:3}, Point{x:2, y:2}, Point{x:1, y:1}, Point{x:2, y:1},
+    Point{x:3, y:0}, Point{x:0, y:0}, Point{x:3, y:3}, Point{x:2, y: -1},
+    Point{x:2, y: -4}, Point{x:1, y: -3},
+  ]
+  let hull = convex_hull(pts)
+  expect hull == [
+    Point{x:0, y:0}, Point{x:1, y: -3}, Point{x:2, y: -4},
+    Point{x:3, y:0}, Point{x:3, y:3}, Point{x:0, y:3},
+  ]
+}
