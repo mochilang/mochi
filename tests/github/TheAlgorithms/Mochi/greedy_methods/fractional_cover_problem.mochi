@@ -1,0 +1,55 @@
+/*
+Solve the fractional cover problem (fractional knapsack). We are given
+items, each with a weight and value, and a maximum capacity. We may take
+any fraction of an item. To maximize total value the greedy strategy is to
+select items in order of decreasing value-to-weight ratio and take as much
+as possible of each until the capacity is exhausted.
+
+This implementation sorts the items by their ratio using a dataset query
+and then iteratively consumes each item, taking the minimum of the remaining
+capacity and the item's weight while accumulating value. Sorting takes
+O(n log n) time and the greedy pass is O(n). The greedy choice is optimal for
+fractional knapsack because the ratio ordering yields a globally optimal
+solution.
+*/
+
+type Item {
+  weight: int,
+  value: int,
+}
+
+fun ratio(item: Item): float {
+  return (item.value as float) / (item.weight as float)
+}
+
+fun fractional_cover(items: list<Item>, capacity: int): float {
+  if capacity < 0 {
+    panic("Capacity cannot be negative")
+  }
+  var total: float = 0.0
+  var remaining: int = capacity
+  let sorted = from it in items sort by -ratio(it) select it
+  var idx = 0
+  while idx < len(sorted) && remaining > 0 {
+    let item = sorted[idx]
+    let take = if item.weight < remaining { item.weight } else { remaining }
+    total = total + (take as float) * ratio(item)
+    remaining = remaining - take
+    idx = idx + 1
+  }
+  return total
+}
+
+let items1 = [Item{weight:10, value:60}, Item{weight:20, value:100}, Item{weight:30, value:120}]
+print(str(fractional_cover(items1, 50)))
+
+let items2 = [Item{weight:20, value:100}, Item{weight:30, value:120}, Item{weight:10, value:60}]
+print(str(fractional_cover(items2, 25)))
+
+let items3: list<Item> = []
+print(str(fractional_cover(items3, 50)))
+
+let items4 = [Item{weight:10, value:60}]
+print(str(fractional_cover(items4, 5)))
+print(str(fractional_cover(items4, 1)))
+print(str(fractional_cover(items4, 0)))
