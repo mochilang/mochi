@@ -1,0 +1,197 @@
+/*
+Compute the maximum flow in a directed graph that may contain multiple
+sources and sinks using the push–relabel algorithm.
+
+The input graph is represented as an adjacency matrix of capacities.
+If more than one source or sink is supplied, a super source and a super
+sink are added with edges of large capacity connecting to the original
+vertices.  The algorithm maintains for each vertex a height and an
+excess amount of incoming flow.  Starting with a preflow from the source,
+it repeatedly pushes flow to admissible neighbours (those with remaining
+capacity and lower height) and relabels vertices when no push is
+possible.  Vertices that become higher are moved to the front of the
+processing list, implementing the relabel‑to‑front heuristic.  The sum of
+preflow leaving the source after the process terminates is the maximum
+flow.
+*/
+
+fun push_relabel_max_flow(graph: list<list<int>>, sources: list<int>, sinks: list<int>): int {
+  if len(sources) == 0 || len(sinks) == 0 { return 0 }
+  var g: list<list<int>> = graph
+  var source_index: int = sources[0]
+  var sink_index: int = sinks[0]
+  if len(sources) > 1 || len(sinks) > 1 {
+    var max_input_flow = 0
+    var i = 0
+    while i < len(sources) {
+      var j = 0
+      while j < len(g[sources[i]]) {
+        max_input_flow = max_input_flow + g[sources[i]][j]
+        j = j + 1
+      }
+      i = i + 1
+    }
+    var size = len(g) + 1
+    var new_graph: list<list<int>> = []
+    var zero_row: list<int> = []
+    var j = 0
+    while j < size {
+      zero_row = append(zero_row, 0)
+      j = j + 1
+    }
+    new_graph = append(new_graph, zero_row)
+    var r = 0
+    while r < len(g) {
+      var row: list<int> = [0]
+      var c = 0
+      while c < len(g[r]) {
+        row = append(row, g[r][c])
+        c = c + 1
+      }
+      new_graph = append(new_graph, row)
+      r = r + 1
+    }
+    g = new_graph
+    i = 0
+    while i < len(sources) {
+      g[0][sources[i] + 1] = max_input_flow
+      i = i + 1
+    }
+    source_index = 0
+    size = len(g) + 1
+    new_graph = []
+    r = 0
+    while r < len(g) {
+      var row2 = g[r]
+      row2 = append(row2, 0)
+      new_graph = append(new_graph, row2)
+      r = r + 1
+    }
+    var last_row: list<int> = []
+    j = 0
+    while j < size {
+      last_row = append(last_row, 0)
+      j = j + 1
+    }
+    new_graph = append(new_graph, last_row)
+    g = new_graph
+    i = 0
+    while i < len(sinks) {
+      g[sinks[i] + 1][size - 1] = max_input_flow
+      i = i + 1
+    }
+    sink_index = size - 1
+  }
+
+  let n = len(g)
+  var preflow: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    preflow = append(preflow, row)
+    i = i + 1
+  }
+  var heights: list<int> = []
+  i = 0
+  while i < n {
+    heights = append(heights, 0)
+    i = i + 1
+  }
+  var excesses: list<int> = []
+  i = 0
+  while i < n {
+    excesses = append(excesses, 0)
+    i = i + 1
+  }
+  heights[source_index] = n
+  i = 0
+  while i < n {
+    var bandwidth = g[source_index][i]
+    preflow[source_index][i] = preflow[source_index][i] + bandwidth
+    preflow[i][source_index] = preflow[i][source_index] - bandwidth
+    excesses[i] = excesses[i] + bandwidth
+    i = i + 1
+  }
+
+  var vertices_list: list<int> = []
+  i = 0
+  while i < n {
+    if i != source_index && i != sink_index {
+      vertices_list = append(vertices_list, i)
+    }
+    i = i + 1
+  }
+
+  var idx = 0
+  while idx < len(vertices_list) {
+    var v = vertices_list[idx]
+    var prev_height = heights[v]
+    while excesses[v] > 0 {
+      var nb = 0
+      while nb < n {
+        if g[v][nb] - preflow[v][nb] > 0 && heights[v] > heights[nb] {
+          var delta = excesses[v]
+          var capacity = g[v][nb] - preflow[v][nb]
+          if delta > capacity { delta = capacity }
+          preflow[v][nb] = preflow[v][nb] + delta
+          preflow[nb][v] = preflow[nb][v] - delta
+          excesses[v] = excesses[v] - delta
+          excesses[nb] = excesses[nb] + delta
+        }
+        nb = nb + 1
+      }
+      var min_height = -1
+      nb = 0
+      while nb < n {
+        if g[v][nb] - preflow[v][nb] > 0 {
+          if min_height == -1 || heights[nb] < min_height {
+            min_height = heights[nb]
+          }
+        }
+        nb = nb + 1
+      }
+      if min_height != -1 {
+        heights[v] = min_height + 1
+      } else {
+        break
+      }
+    }
+    if heights[v] > prev_height {
+      var vertex = vertices_list[idx]
+      var j = idx
+      while j > 0 {
+        vertices_list[j] = vertices_list[j - 1]
+        j = j - 1
+      }
+      vertices_list[0] = vertex
+      idx = 0
+    } else {
+      idx = idx + 1
+    }
+  }
+
+  var flow = 0
+  i = 0
+  while i < n {
+    flow = flow + preflow[source_index][i]
+    i = i + 1
+  }
+  if flow < 0 { flow = -flow }
+  return flow
+}
+
+let graph: list<list<int>> = [
+  [0, 7, 0, 0],
+  [0, 0, 6, 0],
+  [0, 0, 0, 8],
+  [9, 0, 0, 0],
+]
+let sources: list<int> = [0]
+let sinks: list<int> = [3]
+let result = push_relabel_max_flow(graph, sources, sinks)
+print("maximum flow is " + str(result))
