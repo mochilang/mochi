@@ -1,0 +1,98 @@
+/*
+Swap the even-positioned bits with the odd-positioned bits in a
+32‑bit integer.
+
+For each pair of bits (i, i+1):
+ 1. Extract bit i and bit i+1.
+ 2. Move bit i to position i+1 and bit i+1 to position i.
+ 3. Accumulate the swapped bits in the result.
+
+This implementation avoids native bitwise operators by using
+arithmetic. Bit extraction uses division and modulo to get the bit at a
+given position, and shifts are simulated with repeated multiplication
+or division by 2.  Negative inputs are converted to their 32‑bit
+two's‑complement representation before processing. The algorithm
+runs in O(1) time since the loop always iterates over 32 bit pairs.
+*/
+
+fun pad_left_num(n: int): string {
+  var s = str(n)
+  while len(s) < 5 {
+    s = " " + s
+  }
+  return s
+}
+
+fun to_binary(n: int): string {
+  var sign = ""
+  var num = n
+  if num < 0 {
+    sign = "-"
+    num = 0 - num
+  }
+  var bits = ""
+  while num > 0 {
+    bits = str(num % 2) + bits
+    num = (num - (num % 2)) / 2
+  }
+  if bits == "" { bits = "0" }
+  let min_width = 8
+  while len(bits) < (min_width - len(sign)) {
+    bits = "0" + bits
+  }
+  return sign + bits
+}
+
+fun show_bits(before: int, after: int): string {
+  return pad_left_num(before) + ": " + to_binary(before) + "\n" +
+         pad_left_num(after) + ": " + to_binary(after)
+}
+
+fun lshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun rshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = (result - (result % 2)) / 2
+    i = i + 1
+  }
+  return result
+}
+
+fun swap_odd_even_bits(num: int): int {
+  var n = num
+  if n < 0 {
+    n = n + 4294967296 // convert to 32-bit unsigned
+  }
+  var result = 0
+  var i = 0
+  while i < 32 {
+    let bit1 = rshift(n, i) % 2
+    let bit2 = rshift(n, i + 1) % 2
+    result = result + lshift(bit1, i + 1) + lshift(bit2, i)
+    i = i + 2
+  }
+  return result
+}
+
+fun main() {
+  var nums: list<int> = [-1, 0, 1, 2, 3, 4, 23, 24]
+  var i = 0
+  while i < len(nums) {
+    let n = nums[i]
+    print(show_bits(n, swap_odd_even_bits(n)))
+    print("")
+    i = i + 1
+  }
+}
+
+main()
