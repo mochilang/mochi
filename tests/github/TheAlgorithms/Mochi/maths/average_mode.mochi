@@ -1,0 +1,148 @@
+/*
+Compute the statistical mode of a list of values.
+The mode is the value or values that occur most frequently.
+This implementation provides two functions:
+
+- `mode_int` for lists of integers
+- `mode_string` for lists of strings
+
+Both functions count occurrences of each element, determine the maximum
+frequency, collect all elements matching that frequency without
+duplicates, and return the resulting list sorted.
+*/
+
+fun contains_int(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun contains_string(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun count_int(xs: list<int>, x: int): int {
+  var cnt = 0
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun count_string(xs: list<string>, x: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun sort_int(xs: list<int>): list<int> {
+  var arr = xs
+  var i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[i] {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun sort_string(xs: list<string>): list<string> {
+  var arr = xs
+  var i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[i] {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun mode_int(lst: list<int>): list<int> {
+  if len(lst) == 0 { return [] }
+  var counts: list<int> = []
+  var i = 0
+  while i < len(lst) {
+    counts = append(counts, count_int(lst, lst[i]))
+    i = i + 1
+  }
+  var max_count = 0
+  i = 0
+  while i < len(counts) {
+    if counts[i] > max_count { max_count = counts[i] }
+    i = i + 1
+  }
+  var modes: list<int> = []
+  i = 0
+  while i < len(lst) {
+    if counts[i] == max_count {
+      let v = lst[i]
+      if !contains_int(modes, v) {
+        modes = append(modes, v)
+      }
+    }
+    i = i + 1
+  }
+  return sort_int(modes)
+}
+
+fun mode_string(lst: list<string>): list<string> {
+  if len(lst) == 0 { return [] }
+  var counts: list<int> = []
+  var i = 0
+  while i < len(lst) {
+    counts = append(counts, count_string(lst, lst[i]))
+    i = i + 1
+  }
+  var max_count = 0
+  i = 0
+  while i < len(counts) {
+    if counts[i] > max_count { max_count = counts[i] }
+    i = i + 1
+  }
+  var modes: list<string> = []
+  i = 0
+  while i < len(lst) {
+    if counts[i] == max_count {
+      let v = lst[i]
+      if !contains_string(modes, v) {
+        modes = append(modes, v)
+      }
+    }
+    i = i + 1
+  }
+  return sort_string(modes)
+}
+
+print(mode_int([2, 3, 4, 5, 3, 4, 2, 5, 2, 2, 4, 2, 2, 2]))
+print(mode_int([3, 4, 5, 3, 4, 2, 5, 2, 2, 4, 4, 2, 2, 2]))
+print(mode_int([3, 4, 5, 3, 4, 2, 5, 2, 2, 4, 4, 4, 2, 2, 4, 2]))
+print(mode_string(["x", "y", "y", "z"]))
+print(mode_string(["x", "x", "y", "y", "z"]))
