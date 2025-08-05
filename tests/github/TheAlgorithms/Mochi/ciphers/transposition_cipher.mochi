@@ -1,0 +1,91 @@
+/*
+Transposition Cipher (Route Cipher)
+
+This algorithm encrypts text by arranging the characters of the plaintext
+into rows with a fixed number of columns given by the key, then reading the
+columns sequentially. Decryption reverses this by reconstructing the grid
+and reading row-wise.
+
+Steps:
+1. Encryption:
+   - For each column index from 0 to key - 1, collect characters starting
+     from that index and stepping by key to build the ciphertext.
+
+2. Decryption:
+   - Determine the number of columns in the plaintext grid using the key
+     and message length.
+   - Fill the columns with characters from the ciphertext, accounting for
+     any empty boxes in the final column.
+   - Concatenate the columns to obtain the original message.
+
+This implementation provides functions for both encryption and decryption,
+and interacts with the user to perform either operation.
+*/
+fun join_strings(xs: list<string>): string {
+  var res: string = ""
+  var i: int = 0
+  while i < len(xs) {
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun encrypt_message(key: int, message: string): string {
+  var result: string = ""
+  var col: int = 0
+  while col < key {
+    var pointer: int = col
+    while pointer < len(message) {
+      result = result + substring(message, pointer, pointer + 1)
+      pointer = pointer + key
+    }
+    col = col + 1
+  }
+  return result
+}
+
+fun decrypt_message(key: int, message: string): string {
+  let num_cols: int = (len(message) + key - 1) / key
+  let num_rows: int = key
+  let num_shaded_boxes: int = (num_cols * num_rows) - len(message)
+  var plain_text: list<string> = []
+  var i: int = 0
+  while i < num_cols {
+    plain_text = append(plain_text, "")
+    i = i + 1
+  }
+  var col: int = 0
+  var row: int = 0
+  var index: int = 0
+  while index < len(message) {
+    plain_text[col] = plain_text[col] + substring(message, index, index + 1)
+    col = col + 1
+    if col == num_cols || (col == num_cols - 1 && row >= num_rows - num_shaded_boxes) {
+      col = 0
+      row = row + 1
+    }
+    index = index + 1
+  }
+  return join_strings(plain_text)
+}
+
+fun main() {
+  print("Enter message: ")
+  let message: string = input()
+  let max_key: int = len(message) - 1
+  print("Enter key [2-" + str(max_key) + "]: ")
+  let key: int = int(input())
+  print("Encryption/Decryption [e/d]: ")
+  let mode: string = input()
+  var text: string = ""
+  let first: string = substring(mode, 0, 1)
+  if first == "e" || first == "E" {
+    text = encrypt_message(key, message)
+  } else if first == "d" || first == "D" {
+    text = decrypt_message(key, message)
+  }
+  print("Output:\n" + text + "|")
+}
+
+main()
