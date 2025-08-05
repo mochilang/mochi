@@ -1,0 +1,156 @@
+/*
+Julia Set Visualization
+-----------------------
+This program demonstrates how Julia sets for two functions can be
+computed using pure Mochi:
+  1. The quadratic polynomial f(z) = z^2 + c
+  2. The exponential map      f(z) = e^z + c
+
+For each map we:
+  * create a small grid of complex numbers within a square window
+  * iterate the function a fixed number of times from each starting point
+  * mark the point as "inside" if its orbit stays within an escape radius
+
+The complex arithmetic is implemented manually without foreign
+interfaces.  Exponential, sine and cosine are approximated with Taylor
+series and the modulus uses Newton's method for square roots.
+This mirrors the Python reference while keeping everything in pure Mochi
+and strongly typed (no usage of the "any" type).
+*/
+
+type Complex { re: float, im: float }
+
+fun complex_add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun complex_mul(a: Complex, b: Complex): Complex {
+  let real = a.re * b.re - a.im * b.im
+  let imag = a.re * b.im + a.im * b.re
+  return Complex { re: real, im: imag }
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun complex_abs(a: Complex): float {
+  return sqrtApprox(a.re * a.re + a.im * a.im)
+}
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = 2.0 * (i as float) + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun exp_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1.0
+  while i < 20.0 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1.0
+  }
+  return sum
+}
+
+fun complex_exp(z: Complex): Complex {
+  let e = exp_taylor(z.re)
+  return Complex { re: e * cos_taylor(z.im), im: e * sin_taylor(z.im) }
+}
+
+fun eval_quadratic(c: Complex, z: Complex): Complex {
+  return complex_add(complex_mul(z, z), c)
+}
+
+fun eval_exponential(c: Complex, z: Complex): Complex {
+  return complex_add(complex_exp(z), c)
+}
+
+fun iterate_function(eval_function: fun(Complex, Complex): Complex, c: Complex, nb_iterations: int, z0: Complex, infinity: float): Complex {
+  var z_n = z0
+  var i = 0
+  while i < nb_iterations {
+    z_n = eval_function(c, z_n)
+    if complex_abs(z_n) > infinity { return z_n }
+    i = i + 1
+  }
+  return z_n
+}
+
+fun prepare_grid(window_size: float, nb_pixels: int): list<list<Complex>> {
+  var grid: list<list<Complex>> = []
+  var i = 0
+  while i < nb_pixels {
+    var row: list<Complex> = []
+    var j = 0
+    while j < nb_pixels {
+      let real = -window_size + 2.0 * window_size * (i as float) / ((nb_pixels - 1) as float)
+      let imag = -window_size + 2.0 * window_size * (j as float) / ((nb_pixels - 1) as float)
+      row = append(row, Complex { re: real, im: imag })
+      j = j + 1
+    }
+    grid = append(grid, row)
+    i = i + 1
+  }
+  return grid
+}
+
+fun julia_demo(): void {
+  let grid = prepare_grid(1.0, 5)
+  let c_poly = Complex { re: -0.4, im: 0.6 }
+  let c_exp = Complex { re: -2.0, im: 0.0 }
+  var poly_result: list<list<int>> = []
+  var exp_result: list<list<int>> = []
+  var y = 0
+  while y < len(grid) {
+    var row_poly: list<int> = []
+    var row_exp: list<int> = []
+    var x = 0
+    while x < len(grid[y]) {
+      let z0 = grid[y][x]
+      let z_poly = iterate_function(eval_quadratic, c_poly, 20, z0, 4.0)
+      let z_exp = iterate_function(eval_exponential, c_exp, 10, z0, 10000000000.0)
+      row_poly = append(row_poly, if complex_abs(z_poly) < 2.0 { 1 } else { 0 })
+      row_exp = append(row_exp, if complex_abs(z_exp) < 10000.0 { 1 } else { 0 })
+      x = x + 1
+    }
+    poly_result = append(poly_result, row_poly)
+    exp_result = append(exp_result, row_exp)
+    y = y + 1
+  }
+  print(poly_result)
+  print(exp_result)
+}
+
+julia_demo()
