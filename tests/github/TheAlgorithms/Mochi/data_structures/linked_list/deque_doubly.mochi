@@ -1,0 +1,134 @@
+/*
+Implement a double-ended queue (deque) using a doubly linked list with
+explicit head and tail sentinels.  Each node stores a string value along with
+indexes of its previous and next nodes in an array.  The structure allows
+constant-time insertion and removal at both ends:
+
+* `add_first` inserts a value directly after the head sentinel.
+* `add_last` inserts a value directly before the tail sentinel.
+* `remove_first` and `remove_last` delete and return values at the ends.
+* `front` and `back` access the element at either end without removal.
+
+Nodes are referenced by integer indexes to avoid using a dynamic "any" type.
+A simple demonstration exercises the operations and prints intermediate
+results.
+*/
+
+type Node {
+  data: string,
+  prev: int,
+  next: int,
+}
+
+type LinkedDeque {
+  nodes: list<Node>,
+  header: int,
+  trailer: int,
+  size: int,
+}
+
+fun new_deque(): LinkedDeque {
+  var nodes: list<Node> = []
+  // index 0 -> header, index 1 -> trailer
+  nodes = append(nodes, Node{ data: "", prev: -1, next: 1 })
+  nodes = append(nodes, Node{ data: "", prev: 0, next: -1 })
+  return LinkedDeque{ nodes: nodes, header: 0, trailer: 1, size: 0 }
+}
+
+fun is_empty(d: LinkedDeque): bool { return d.size == 0 }
+
+fun front(d: LinkedDeque): string {
+  if is_empty(d) { panic("List is empty") }
+  let head = d.nodes[d.header]
+  let idx = head.next
+  let node = d.nodes[idx]
+  return node.data
+}
+
+fun back(d: LinkedDeque): string {
+  if is_empty(d) { panic("List is empty") }
+  let tail = d.nodes[d.trailer]
+  let idx = tail.prev
+  let node = d.nodes[idx]
+  return node.data
+}
+
+fun insert(d: LinkedDeque, pred: int, value: string, succ: int): LinkedDeque {
+  var nodes = d.nodes
+  let new_idx = len(nodes)
+  nodes = append(nodes, Node{ data: value, prev: pred, next: succ })
+  var pred_node = nodes[pred]
+  pred_node.next = new_idx
+  nodes[pred] = pred_node
+  var succ_node = nodes[succ]
+  succ_node.prev = new_idx
+  nodes[succ] = succ_node
+  d.nodes = nodes
+  d.size = d.size + 1
+  return d
+}
+
+type DeleteResult {
+  deque: LinkedDeque,
+  value: string,
+}
+
+fun delete(d: LinkedDeque, idx: int): DeleteResult {
+  var nodes = d.nodes
+  let node = nodes[idx]
+  let pred = node.prev
+  let succ = node.next
+  var pred_node = nodes[pred]
+  pred_node.next = succ
+  nodes[pred] = pred_node
+  var succ_node = nodes[succ]
+  succ_node.prev = pred
+  nodes[succ] = succ_node
+  let val = node.data
+  d.nodes = nodes
+  d.size = d.size - 1
+  return DeleteResult{ deque: d, value: val }
+}
+
+fun add_first(d: LinkedDeque, value: string): LinkedDeque {
+  let head = d.nodes[d.header]
+  let succ = head.next
+  return insert(d, d.header, value, succ)
+}
+
+fun add_last(d: LinkedDeque, value: string): LinkedDeque {
+  let tail = d.nodes[d.trailer]
+  let pred = tail.prev
+  return insert(d, pred, value, d.trailer)
+}
+
+fun remove_first(d: LinkedDeque): DeleteResult {
+  if is_empty(d) { panic("remove_first from empty list") }
+  let head = d.nodes[d.header]
+  let idx = head.next
+  return delete(d, idx)
+}
+
+fun remove_last(d: LinkedDeque): DeleteResult {
+  if is_empty(d) { panic("remove_first from empty list") }
+  let tail = d.nodes[d.trailer]
+  let idx = tail.prev
+  return delete(d, idx)
+}
+
+fun main() {
+  var d = new_deque()
+  d = add_first(d, "A")
+  print(front(d))
+  d = add_last(d, "B")
+  print(back(d))
+  var r = remove_first(d)
+  d = r.deque
+  print(r.value)
+  r = remove_last(d)
+  d = r.deque
+  print(r.value)
+  print(str(is_empty(d)))
+}
+
+main()
