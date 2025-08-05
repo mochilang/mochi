@@ -1,0 +1,99 @@
+/*
+Logistic Regression for binary classification.
+
+Given feature vectors x and binary labels y, the algorithm models the
+probability that y = 1 as sigmoid(theta · x). Parameters theta are learned
+using batch gradient descent on the logistic loss. Each iteration computes the
+predicted probability for every sample, accumulates gradients and updates the
+weights. Complexity is O(iterations * m * n) for m samples and n features.
+*/
+
+fun expApprox(x: float): float {
+  var y: float = x
+  var is_neg: bool = false
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term: float = 1.0
+  var sum: float = 1.0
+  var n: int = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun sigmoid(z: float): float {
+  return 1.0 / (1.0 + expApprox(-z))
+}
+
+fun dot(a: list<float>, b: list<float>): float {
+  var s = 0.0
+  var i = 0
+  while i < len(a) {
+    s = s + a[i] * b[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun zeros(n: int): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < n {
+    res = append(res, 0.0)
+    i = i + 1
+  }
+  return res
+}
+
+fun logistic_reg(alpha: float, x: list<list<float>>, y: list<float>, iterations: int): list<float> {
+  let m = len(x)
+  let n = len(x[0])
+  var theta = zeros(n)
+  var iter = 0
+  while iter < iterations {
+    var grad = zeros(n)
+    var i = 0
+    while i < m {
+      let z = dot(x[i], theta)
+      let h = sigmoid(z)
+      var k = 0
+      while k < n {
+        grad[k] = grad[k] + (h - y[i]) * x[i][k]
+        k = k + 1
+      }
+      i = i + 1
+    }
+    var k2 = 0
+    while k2 < n {
+      theta[k2] = theta[k2] - alpha * grad[k2] / (m as float)
+      k2 = k2 + 1
+    }
+    iter = iter + 1
+  }
+  return theta
+}
+
+let x = [
+  [0.5, 1.5],
+  [1.0, 1.0],
+  [1.5, 0.5],
+  [3.0, 3.5],
+  [3.5, 3.0],
+  [4.0, 4.0],
+]
+
+let y = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+
+let alpha = 0.1
+let iterations = 1000
+let theta = logistic_reg(alpha, x, y, iterations)
+
+for i in 0..len(theta) {
+  print(theta[i])
+}
