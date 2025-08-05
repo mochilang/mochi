@@ -1,5 +1,21 @@
 # 📦 CHANGELOG.md
 
+## [0.10.58] – 2025-08-05T15:04:41+07:00
+
+### Added
+
+* Large set of algorithm and data structure examples including knapsack, LIS, Floyd–Warshall and KD-tree implementations
+* Image processing features like Sobel, Gaussian, Gabor and Laplacian filters plus morphological operations
+* Transpiler enhancements covering slice builtins, map iteration, subprocess support and additional Rosetta outputs
+
+### Changed
+
+* Refined type inference and backend capabilities across Kotlin, Swift, Java, C#, Scheme and more
+
+### Fixed
+
+* Corrected Java string length handling, Dart numeric casts and OCaml map indexing
+* Addressed assorted issues in Kotlin, Swift, C++, Elixir and other transpilers
 ## [0.10.57] – 2025-08-04T11:04:01+07:00
 
 ### Added
