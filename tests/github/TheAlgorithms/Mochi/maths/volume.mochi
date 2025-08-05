@@ -1,0 +1,169 @@
+/*
+Volume Calculations for Common Solids
+------------------------------------
+This module provides formulas to compute volumes of various geometric shapes,
+including cubes, spheres, cones, cylinders, torus and more.  The functions
+mirror the implementations in TheAlgorithms/Python project but are written in
+pure Mochi so they can run on runtime/vm.  Each function validates its inputs
+and panics on negative dimensions to emulate Python's ValueError.  The module
+also offers helpers for intersections and unions of two spheres using spherical
+cap computations.  A simple main routine prints sample results for verification.
+*/
+
+let PI = 3.141592653589793
+let SQRT5 = 2.23606797749979
+
+fun minf(a: float, b: float): float {
+  if a < b { return a }
+  return b
+}
+
+fun maxf(a: float, b: float): float {
+  if a > b { return a }
+  return b
+}
+
+fun vol_cube(side_length: float): float {
+  if side_length < 0.0 {
+    panic("vol_cube() only accepts non-negative values")
+  }
+  return side_length * side_length * side_length
+}
+
+fun vol_spherical_cap(height: float, radius: float): float {
+  if height < 0.0 || radius < 0.0 {
+    panic("vol_spherical_cap() only accepts non-negative values")
+  }
+  return (1.0 / 3.0) * PI * height * height * (3.0 * radius - height)
+}
+
+fun vol_sphere(radius: float): float {
+  if radius < 0.0 {
+    panic("vol_sphere() only accepts non-negative values")
+  }
+  return (4.0 / 3.0) * PI * radius * radius * radius
+}
+
+fun vol_spheres_intersect(radius_1: float, radius_2: float, centers_distance: float): float {
+  if radius_1 < 0.0 || radius_2 < 0.0 || centers_distance < 0.0 {
+    panic("vol_spheres_intersect() only accepts non-negative values")
+  }
+  if centers_distance == 0.0 {
+    return vol_sphere(minf(radius_1, radius_2))
+  }
+  let h1 = (radius_1 - radius_2 + centers_distance) * (radius_1 + radius_2 - centers_distance) / (2.0 * centers_distance)
+  let h2 = (radius_2 - radius_1 + centers_distance) * (radius_2 + radius_1 - centers_distance) / (2.0 * centers_distance)
+  return vol_spherical_cap(h1, radius_2) + vol_spherical_cap(h2, radius_1)
+}
+
+fun vol_spheres_union(radius_1: float, radius_2: float, centers_distance: float): float {
+  if radius_1 <= 0.0 || radius_2 <= 0.0 || centers_distance < 0.0 {
+    panic("vol_spheres_union() only accepts non-negative values, non-zero radius")
+  }
+  if centers_distance == 0.0 {
+    return vol_sphere(maxf(radius_1, radius_2))
+  }
+  return vol_sphere(radius_1) + vol_sphere(radius_2) - vol_spheres_intersect(radius_1, radius_2, centers_distance)
+}
+
+fun vol_cuboid(width: float, height: float, length: float): float {
+  if width < 0.0 || height < 0.0 || length < 0.0 {
+    panic("vol_cuboid() only accepts non-negative values")
+  }
+  return width * height * length
+}
+
+fun vol_cone(area_of_base: float, height: float): float {
+  if height < 0.0 || area_of_base < 0.0 {
+    panic("vol_cone() only accepts non-negative values")
+  }
+  return area_of_base * height / 3.0
+}
+
+fun vol_right_circ_cone(radius: float, height: float): float {
+  if height < 0.0 || radius < 0.0 {
+    panic("vol_right_circ_cone() only accepts non-negative values")
+  }
+  return PI * radius * radius * height / 3.0
+}
+
+fun vol_prism(area_of_base: float, height: float): float {
+  if height < 0.0 || area_of_base < 0.0 {
+    panic("vol_prism() only accepts non-negative values")
+  }
+  return area_of_base * height
+}
+
+fun vol_pyramid(area_of_base: float, height: float): float {
+  if height < 0.0 || area_of_base < 0.0 {
+    panic("vol_pyramid() only accepts non-negative values")
+  }
+  return area_of_base * height / 3.0
+}
+
+fun vol_hemisphere(radius: float): float {
+  if radius < 0.0 {
+    panic("vol_hemisphere() only accepts non-negative values")
+  }
+  return radius * radius * radius * PI * 2.0 / 3.0
+}
+
+fun vol_circular_cylinder(radius: float, height: float): float {
+  if height < 0.0 || radius < 0.0 {
+    panic("vol_circular_cylinder() only accepts non-negative values")
+  }
+  return radius * radius * height * PI
+}
+
+fun vol_hollow_circular_cylinder(inner_radius: float, outer_radius: float, height: float): float {
+  if inner_radius < 0.0 || outer_radius < 0.0 || height < 0.0 {
+    panic("vol_hollow_circular_cylinder() only accepts non-negative values")
+  }
+  if outer_radius <= inner_radius {
+    panic("outer_radius must be greater than inner_radius")
+  }
+  return PI * (outer_radius * outer_radius - inner_radius * inner_radius) * height
+}
+
+fun vol_conical_frustum(height: float, radius_1: float, radius_2: float): float {
+  if radius_1 < 0.0 || radius_2 < 0.0 || height < 0.0 {
+    panic("vol_conical_frustum() only accepts non-negative values")
+  }
+  return (1.0 / 3.0) * PI * height * (radius_1 * radius_1 + radius_2 * radius_2 + radius_1 * radius_2)
+}
+
+fun vol_torus(torus_radius: float, tube_radius: float): float {
+  if torus_radius < 0.0 || tube_radius < 0.0 {
+    panic("vol_torus() only accepts non-negative values")
+  }
+  return 2.0 * PI * PI * torus_radius * tube_radius * tube_radius
+}
+
+fun vol_icosahedron(tri_side: float): float {
+  if tri_side < 0.0 {
+    panic("vol_icosahedron() only accepts non-negative values")
+  }
+  return tri_side * tri_side * tri_side * (3.0 + SQRT5) * 5.0 / 12.0
+}
+
+fun main() {
+  print("Volumes:")
+  print("Cube: " + str(vol_cube(2.0)))
+  print("Cuboid: " + str(vol_cuboid(2.0, 2.0, 2.0)))
+  print("Cone: " + str(vol_cone(2.0, 2.0)))
+  print("Right Circular Cone: " + str(vol_right_circ_cone(2.0, 2.0)))
+  print("Prism: " + str(vol_prism(2.0, 2.0)))
+  print("Pyramid: " + str(vol_pyramid(2.0, 2.0)))
+  print("Sphere: " + str(vol_sphere(2.0)))
+  print("Hemisphere: " + str(vol_hemisphere(2.0)))
+  print("Circular Cylinder: " + str(vol_circular_cylinder(2.0, 2.0)))
+  print("Torus: " + str(vol_torus(2.0, 2.0)))
+  print("Conical Frustum: " + str(vol_conical_frustum(2.0, 2.0, 4.0)))
+  print("Spherical cap: " + str(vol_spherical_cap(1.0, 2.0)))
+  print("Spheres intersection: " + str(vol_spheres_intersect(2.0, 2.0, 1.0)))
+  print("Spheres union: " + str(vol_spheres_union(2.0, 2.0, 1.0)))
+  print("Hollow Circular Cylinder: " + str(vol_hollow_circular_cylinder(1.0, 2.0, 3.0)))
+  print("Icosahedron: " + str(vol_icosahedron(2.5)))
+}
+
+main()
