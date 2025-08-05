@@ -1,0 +1,90 @@
+/*
+Given the root of a binary tree, create its mirror image where the left and right
+children of every node are swapped.  This implementation models a tree using
+parallel arrays: `values` holds node values while `left` and `right` store child
+indices (or -1 for missing children).  Mirroring swaps the child indices at each
+node via depth first traversal.
+
+Algorithm:
+1. Starting from the root index, swap the left and right child indices.
+2. Recursively apply the same operation to the new left and right children.
+3. An inorder traversal is used to show the tree structure before and after
+   mirroring.
+
+Each node is visited once, so the time complexity is O(n) for a tree with `n`
+nodes.  The recursion depth corresponds to the height of the tree.
+*/
+
+type Tree {
+  values: list<int>,
+  left: list<int>,
+  right: list<int>,
+  root: int,
+}
+
+fun mirror_node(left: list<int>, right: list<int>, idx: int) {
+  if idx == (-1) {
+    return
+  }
+  let temp = left[idx]
+  left[idx] = right[idx]
+  right[idx] = temp
+  mirror_node(left, right, left[idx])
+  mirror_node(left, right, right[idx])
+}
+
+fun mirror(tree: Tree): Tree {
+  mirror_node(tree.left, tree.right, tree.root)
+  return tree
+}
+
+fun inorder(tree: Tree, idx: int): list<int> {
+  if idx == (-1) {
+    return []
+  }
+  let left_vals = inorder(tree, tree.left[idx])
+  let right_vals = inorder(tree, tree.right[idx])
+  return concat(concat(left_vals, [tree.values[idx]]), right_vals)
+}
+
+fun make_tree_zero(): Tree {
+  return Tree {
+    values: [0],
+    left: [-1],
+    right: [-1],
+    root: 0,
+  }
+}
+
+fun make_tree_seven(): Tree {
+  return Tree {
+    values: [1, 2, 3, 4, 5, 6, 7],
+    left: [1, 3, 5, -1, -1, -1, -1],
+    right: [2, 4, 6, -1, -1, -1, -1],
+    root: 0,
+  }
+}
+
+fun make_tree_nine(): Tree {
+  return Tree {
+    values: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    left: [1, 3, -1, 6, -1, -1, -1, -1, -1],
+    right: [2, 4, 5, 7, 8, -1, -1, -1, -1],
+    root: 0,
+  }
+}
+
+fun main() {
+  let names: list<string> = ["zero", "seven", "nine"]
+  let trees: list<Tree> = [make_tree_zero(), make_tree_seven(), make_tree_nine()]
+  var i = 0
+  while i < len(trees) {
+    let tree = trees[i]
+    print("      The " + names[i] + " tree: " + str(inorder(tree, tree.root)))
+    let mirrored = mirror(tree)
+    print("Mirror of " + names[i] + " tree: " + str(inorder(mirrored, mirrored.root)))
+    i = i + 1
+  }
+}
+
+main()
