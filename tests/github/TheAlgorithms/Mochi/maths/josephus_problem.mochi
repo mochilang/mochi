@@ -1,0 +1,70 @@
+/*
+Josephus Problem
+----------------
+Given a number of people standing in a circle and a fixed step size,
+each step removes the person counted. The process repeats around the
+circle until only one person remains. The goal is to determine the
+position of the survivor.
+
+Algorithms implemented:
+1. josephus_recursive: Uses the classic recurrence
+       f(1) = 0
+       f(n) = (f(n-1) + k) % n
+   returning a 0-based index.
+2. find_winner: Converts the recursive result to a 1-based index.
+3. josephus_iterative: Simulates the elimination by iteratively removing
+elements from a list representing the circle.
+
+Both approaches validate that inputs are positive integers. The
+recursive version runs in O(n) time and uses O(n) stack space, while the
+iterative simulation runs in O(n^2) time due to list rebuilding.
+*/
+
+fun josephus_recursive(num_people: int, step_size: int): int {
+  if num_people <= 0 || step_size <= 0 {
+    panic("num_people or step_size is not a positive integer.")
+  }
+  if num_people == 1 {
+    return 0
+  }
+  return (josephus_recursive(num_people - 1, step_size) + step_size) % num_people
+}
+
+fun find_winner(num_people: int, step_size: int): int {
+  return josephus_recursive(num_people, step_size) + 1
+}
+
+fun remove_at(xs: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun josephus_iterative(num_people: int, step_size: int): int {
+  if num_people <= 0 || step_size <= 0 {
+    panic("num_people or step_size is not a positive integer.")
+  }
+  var circle: list<int> = []
+  var i = 1
+  while i <= num_people {
+    circle = append(circle, i)
+    i = i + 1
+  }
+  var current = 0
+  while len(circle) > 1 {
+    current = (current + step_size - 1) % len(circle)
+    circle = remove_at(circle, current)
+  }
+  return circle[0]
+}
+
+let r = josephus_recursive(7, 3)
+print(str(r))
+print(str(find_winner(7, 3)))
+print(str(josephus_iterative(7, 3)))
