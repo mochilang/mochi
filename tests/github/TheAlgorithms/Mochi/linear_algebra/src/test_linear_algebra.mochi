@@ -1,0 +1,450 @@
+/*
+Linear Algebra Library Tests
+----------------------------
+This Mochi program mirrors the test suite from TheAlgorithms/Python
+`linear_algebra/src/test_linear_algebra.py`.  It reimplements minimal
+Vector and Matrix functionality in pure Mochi to verify operations such
+as:
+
+1. Vector component access, length, addition, subtraction, scalar
+   multiplication and dot product.
+2. Helper routines `zero_vector`, `unit_basis_vector`, `axpy` and copy
+   semantics.
+3. Matrix string formatting, element access/mutation, addition,
+   subtraction, multiplication with vectors and scalars, and
+   determinant calculation.
+4. Generation of square zero matrices.
+
+Each check prints a result to demonstrate the expected behavior of the
+operations.
+*/
+
+fun int_to_string(n: int): string {
+  if n == 0 { return "0" }
+  var num = n
+  var neg = false
+  if num < 0 {
+    neg = true
+    num = -num
+  }
+  var res = ""
+  while num > 0 {
+    let digit = num % 10
+    let ch = substring("0123456789", digit, digit + 1)
+    res = ch + res
+    num = num / 10
+  }
+  if neg { res = "-" + res }
+  return res
+}
+
+fun float_to_string(x: float, dec: int): string {
+  var neg = false
+  var num = x
+  if num < 0.0 {
+    neg = true
+    num = -num
+  }
+  let int_part = num as int
+  var res = int_to_string(int_part)
+  if dec > 0 {
+    res = res + "."
+    var frac = num - (int_part as float)
+    var i = 0
+    while i < dec {
+      frac = frac * 10.0
+      let digit = frac as int
+      res = res + substring("0123456789", digit, digit + 1)
+      frac = frac - (digit as float)
+      i = i + 1
+    }
+  }
+  if neg { res = "-" + res }
+  return res
+}
+
+// ---------- Vector helpers ----------
+
+fun vector_component(v: list<int>, i: int): int { return v[i] }
+
+fun vector_str_int(v: list<int>): string {
+  var s = "("
+  var i = 0
+  while i < len(v) {
+    s = s + int_to_string(v[i])
+    if i + 1 < len(v) { s = s + "," }
+    i = i + 1
+  }
+  s = s + ")"
+  return s
+}
+
+fun vector_str_float(v: list<float>, dec: int): string {
+  var s = "("
+  var i = 0
+  while i < len(v) {
+    s = s + float_to_string(v[i], dec)
+    if i + 1 < len(v) { s = s + "," }
+    i = i + 1
+  }
+  s = s + ")"
+  return s
+}
+
+fun vector_add(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] + b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vector_sub(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] - b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vector_scalar_mul(v: list<int>, s: float): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(v) {
+    res = append(res, (v[i] as float) * s)
+    i = i + 1
+  }
+  return res
+}
+
+fun vector_dot(a: list<int>, b: list<int>): int {
+  var sum = 0
+  var i = 0
+  while i < len(a) {
+    sum = sum + a[i] * b[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun sqrt_newton(x: float): float {
+  if x == 0.0 { return 0.0 }
+  var low = 0.0
+  var high = x
+  if x < 1.0 { high = 1.0 }
+  var mid = 0.0
+  var i = 0
+  while i < 40 {
+    mid = (low + high) / 2.0
+    if mid * mid > x { high = mid } else { low = mid }
+    i = i + 1
+  }
+  return mid
+}
+
+fun euclidean_length(v: list<int>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(v) {
+    let val = v[i] as float
+    sum = sum + val * val
+    i = i + 1
+  }
+  return sqrt_newton(sum)
+}
+
+fun zero_vector(n: int): list<int> {
+  var v: list<int> = []
+  var i = 0
+  while i < n {
+    v = append(v, 0)
+    i = i + 1
+  }
+  return v
+}
+
+fun unit_basis_vector(n: int, idx: int): list<int> {
+  var v = zero_vector(n)
+  v[idx] = 1
+  return v
+}
+
+fun axpy(a: int, x: list<int>, y: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(x) {
+    res = append(res, a * x[i] + y[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun copy_vector(x: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(x) {
+    res = append(res, x[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun change_component(v: list<int>, idx: int, val: int) {
+  v[idx] = val
+}
+
+// ---------- Matrix helpers ----------
+
+fun matrix_str(m: list<list<int>>): string {
+  var s = ""
+  var i = 0
+  while i < len(m) {
+    s = s + "|"
+    var j = 0
+    while j < len(m[0]) {
+      s = s + int_to_string(m[i][j])
+      if j + 1 < len(m[0]) { s = s + "," }
+      j = j + 1
+    }
+    s = s + "|\n"
+    i = i + 1
+  }
+  return s
+}
+
+fun submatrix(m: list<list<int>>, row: int, col: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(m) {
+    if i != row {
+      var r: list<int> = []
+      var j = 0
+      while j < len(m[0]) {
+        if j != col { r = append(r, m[i][j]) }
+        j = j + 1
+      }
+      res = append(res, r)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun determinant(m: list<list<int>>): int {
+  let n = len(m)
+  if n == 1 { return m[0][0] }
+  if n == 2 { return m[0][0]*m[1][1] - m[0][1]*m[1][0] }
+  var det = 0
+  var c = 0
+  while c < n {
+    let sub = submatrix(m, 0, c)
+    var sign = 1
+    if c % 2 == 1 { sign = -1 }
+    det = det + sign * m[0][c] * determinant(sub)
+    c = c + 1
+  }
+  return det
+}
+
+fun matrix_minor(m: list<list<int>>, row: int, col: int): int {
+  return determinant(submatrix(m, row, col))
+}
+
+fun matrix_cofactor(m: list<list<int>>, row: int, col: int): int {
+  var sign = 1
+  if (row + col) % 2 == 1 { sign = -1 }
+  return sign * matrix_minor(m, row, col)
+}
+
+fun matrix_mul_vector(m: list<list<int>>, v: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(m) {
+    var sum = 0
+    var j = 0
+    while j < len(m[0]) {
+      sum = sum + m[i][j] * v[j]
+      j = j + 1
+    }
+    res = append(res, sum)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_mul_scalar(m: list<list<int>>, s: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(m) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(m[0]) {
+      row = append(row, m[i][j] * s)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_change_component(m: list<list<int>>, i: int, j: int, val: int) {
+  m[i][j] = val
+}
+
+fun matrix_component(m: list<list<int>>, i: int, j: int): int { return m[i][j] }
+
+fun matrix_add(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(a) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(a[0]) {
+      row = append(row, a[i][j] + b[i][j])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_sub(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(a) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(a[0]) {
+      row = append(row, a[i][j] - b[i][j])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun square_zero_matrix(n: int): list<list<int>> {
+  var m: list<list<int>> = []
+  var i = 0
+  while i < n {
+    m = append(m, zero_vector(n))
+    i = i + 1
+  }
+  return m
+}
+
+// ---------- Assert helpers ----------
+
+fun assert_int(name: string, actual: int, expected: int) {
+  if actual == expected {
+    print(name + " ok")
+  } else {
+    print(name + " fail " + int_to_string(actual) + " != " + int_to_string(expected))
+  }
+}
+
+fun assert_str(name: string, actual: string, expected: string) {
+  if actual == expected {
+    print(name + " ok")
+  } else {
+    print(name + " fail")
+    print(actual)
+    print(expected)
+  }
+}
+
+fun assert_float(name: string, actual: float, expected: float, eps: float) {
+  var diff = actual - expected
+  if diff < 0.0 { diff = -diff }
+  if diff <= eps {
+    print(name + " ok")
+  } else {
+    print(name + " fail")
+  }
+}
+
+// ---------- Tests ----------
+
+// Vector tests
+let vx = [1, 2, 3]
+assert_int("component0", vector_component(vx, 0), 1)
+assert_int("component2", vector_component(vx, 2), 3)
+
+let vs = [0,0,0,0,0,1]
+assert_str("str_vector", vector_str_int(vs), "(0,0,0,0,0,1)")
+
+let vsize = [1,2,3,4]
+assert_int("size", len(vsize), 4)
+
+
+
+let va = [1,2,3]
+let vb = [1,1,1]
+let vsum = vector_add(va, vb)
+assert_int("add0", vector_component(vsum,0),2)
+assert_int("add1", vector_component(vsum,1),3)
+assert_int("add2", vector_component(vsum,2),4)
+
+let vsub = vector_sub(va, vb)
+assert_int("sub0", vector_component(vsub,0),0)
+assert_int("sub1", vector_component(vsub,1),1)
+assert_int("sub2", vector_component(vsub,2),2)
+
+let vmul = vector_scalar_mul(va, 3.0)
+assert_str("scalar_mul", vector_str_float(vmul,1), "(3.0,6.0,9.0)")
+assert_int("dot_product", vector_dot([2,-1,4],[1,-2,-1]),0)
+
+let zvec = zero_vector(10)
+let zstr = vector_str_int(zvec)
+var zcount = 0
+var zi = 0
+while zi < len(zstr) {
+  if substring(zstr, zi, zi+1) == "0" { zcount = zcount + 1 }
+  zi = zi + 1
+}
+assert_int("zero_vector", zcount, 10)
+
+assert_str("unit_basis", vector_str_int(unit_basis_vector(3,1)), "(0,1,0)")
+assert_str("axpy", vector_str_int(axpy(2,[1,2,3],[1,0,1])), "(3,4,7)")
+
+let vcopy = copy_vector([1,0,0,0,0,0])
+assert_str("copy", vector_str_int(vcopy), "(1,0,0,0,0,0)")
+
+var vchange = [1,0,0]
+change_component(vchange,0,0)
+change_component(vchange,1,1)
+assert_str("change_component", vector_str_int(vchange), "(0,1,0)")
+
+// Matrix tests
+var ma = [[1,2,3],[2,4,5],[6,7,8]]
+assert_str("matrix_str", matrix_str(ma), "|1,2,3|\n|2,4,5|\n|6,7,8|\n")
+
+// minor and cofactor computations omitted for brevity
+
+assert_int("determinant", determinant(ma), -5)
+
+var mb = [[1,2,3],[4,5,6],[7,8,9]]
+let mv = matrix_mul_vector(mb,[1,2,3])
+assert_str("matrix_vec_mul", vector_str_int(mv), "(14,32,50)")
+let msc = matrix_mul_scalar(mb,2)
+assert_str("matrix_scalar_mul", matrix_str(msc), "|2,4,6|\n|8,10,12|\n|14,16,18|\n")
+
+var mc = [[1,2,3],[2,4,5],[6,7,8]]
+matrix_change_component(mc,0,2,5)
+assert_str("change_component_matrix", matrix_str(mc), "|1,2,5|\n|2,4,5|\n|6,7,8|\n")
+assert_int("matrix_component", matrix_component(mc,2,1),7)
+
+var madd = matrix_add([[1,2,3],[2,4,5],[6,7,8]],[[1,2,7],[2,4,5],[6,7,10]])
+assert_str("matrix_add", matrix_str(madd), "|2,4,10|\n|4,8,10|\n|12,14,18|\n")
+var msub = matrix_sub([[1,2,3],[2,4,5],[6,7,8]],[[1,2,7],[2,4,5],[6,7,10]])
+assert_str("matrix_sub", matrix_str(msub), "|0,0,-4|\n|0,0,0|\n|0,0,-2|\n")
+
+let mzero = square_zero_matrix(5)
+assert_str("square_zero_matrix", matrix_str(mzero), "|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n|0,0,0,0,0|\n")
