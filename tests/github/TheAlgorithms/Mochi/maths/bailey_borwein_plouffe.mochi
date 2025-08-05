@@ -1,0 +1,107 @@
+/*
+Bailey–Borwein–Plouffe (BBP) formula to extract hexadecimal digits of pi.
+
+The BBP formula expresses pi as an infinite summation:
+ pi = Σ_{k=0}^{∞} (1/16^k) * (4/(8k+1) - 2/(8k+4) - 1/(8k+5) - 1/(8k+6))
+
+The algorithm computes the nth digit in base 16 without calculating previous digits.
+For a digit position n (1-indexed), compute:
+ (16^(n-1) * pi) = integer_part + fractional_part.
+The desired digit is floor(fractional_part * 16).
+
+To compute the fractional part efficiently, the summation is split:
+- For k < n, compute terms using modular exponentiation to avoid large numbers.
+- For k ≥ n, compute terms directly with negative powers of 16.
+The helper subsum performs this computation for each of the four terms.
+
+Time complexity: O(n + precision) where precision controls the number of terms
+from the tail of the series to mitigate floating point errors.
+*/
+
+fun mod_pow(base: int, exponent: int, modulus: int): int {
+  var result = 1
+  var b = base % modulus
+  var e = exponent
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % modulus
+    }
+    b = (b * b) % modulus
+    e = e / 2
+  }
+  return result
+}
+
+fun pow_float(base: float, exponent: int): float {
+  var exp = exponent
+  var result = 1.0
+  if exp < 0 {
+    exp = -exp
+  }
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  if exponent < 0 {
+    result = 1.0 / result
+  }
+  return result
+}
+
+fun hex_digit(n: int): string {
+  if n < 10 { return str(n) }
+  let letters: list<string> = ["a", "b", "c", "d", "e", "f"]
+  return letters[n - 10]
+}
+
+fun floor_float(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun subsum(digit_pos_to_extract: int, denominator_addend: int, precision: int): float {
+  var total = 0.0
+  var sum_index = 0
+  while sum_index < digit_pos_to_extract + precision {
+    let denominator = 8 * sum_index + denominator_addend
+    if sum_index < digit_pos_to_extract {
+      let exponent = digit_pos_to_extract - 1 - sum_index
+      let exponential_term = mod_pow(16, exponent, denominator)
+      total = total + (exponential_term as float) / (denominator as float)
+    } else {
+      let exponent = digit_pos_to_extract - 1 - sum_index
+      let exponential_term = pow_float(16.0, exponent)
+      total = total + exponential_term / (denominator as float)
+    }
+    sum_index = sum_index + 1
+  }
+  return total
+}
+
+fun bailey_borwein_plouffe(digit_position: int, precision: int): string {
+  if digit_position <= 0 {
+    panic("Digit position must be a positive integer")
+  }
+  if precision < 0 {
+    panic("Precision must be a nonnegative integer")
+  }
+  let sum_result =
+    4.0 * subsum(digit_position, 1, precision) -
+    2.0 * subsum(digit_position, 4, precision) -
+    1.0 * subsum(digit_position, 5, precision) -
+    1.0 * subsum(digit_position, 6, precision)
+  let fraction = sum_result - floor_float(sum_result)
+  let digit = (fraction * 16.0) as int
+  let hd = hex_digit(digit)
+  return hd
+}
+var digits = ""
+var i = 1
+while i <= 10 {
+  digits = digits + bailey_borwein_plouffe(i, 1000)
+  i = i + 1
+}
+print(digits)
+print(bailey_borwein_plouffe(5, 10000))
