@@ -1,0 +1,103 @@
+/*
+Burkes Dithering Algorithm
+
+Converts a color image into a black‑and‑white approximation using
+error diffusion. For each pixel the algorithm:
+1. Converts the BGR color to greyscale using 0.114B + 0.587G + 0.299R.
+2. Compares the greyscale value plus any propagated error against a threshold
+   (commonly half of the maximum intensity).
+3. Sets the output pixel to either 0 or 255 and computes the difference
+   between the desired greyscale and the actual output.
+4. Distributes this error to neighbouring pixels using Burkes' weights:
+         *    8/32  4/32
+   2/32 4/32 8/32 4/32 2/32
+
+This implementation operates on a small sample image to demonstrate the
+technique. The error table is padded to avoid explicit boundary checks.
+Time complexity is O(width * height).
+*/
+
+fun get_greyscale(blue: int, green: int, red: int): int {
+  let b = blue as float
+  let g = green as float
+  let r = red as float
+  return (0.114 * b + 0.587 * g + 0.299 * r) as int
+}
+
+fun zeros(h: int, w: int): list<list<int>> {
+  var table: list<list<int>> = []
+  var i = 0
+  while i < h {
+    var row: list<int> = []
+    var j = 0
+    while j < w {
+      row = append(row, 0)
+      j = j + 1
+    }
+    table = append(table, row)
+    i = i + 1
+  }
+  return table
+}
+
+fun burkes_dither(img: list<list<list<int>>>, threshold: int): list<list<int>> {
+  let height = len(img)
+  let width = len(img[0])
+  var error_table = zeros(height + 1, width + 4)
+  var output: list<list<int>> = []
+  var y = 0
+  while y < height {
+    var row: list<int> = []
+    var x = 0
+    while x < width {
+      let px = img[y][x]
+      let grey = get_greyscale(px[0], px[1], px[2])
+      let total = grey + error_table[y][x + 2]
+      var new_val = 0
+      var current_error = 0
+      if threshold > total {
+        new_val = 0
+        current_error = total
+      } else {
+        new_val = 255
+        current_error = total - 255
+      }
+      row = append(row, new_val)
+      error_table[y][x + 3] = error_table[y][x + 3] + (8 * current_error) / 32
+      error_table[y][x + 4] = error_table[y][x + 4] + (4 * current_error) / 32
+      error_table[y + 1][x + 2] = error_table[y + 1][x + 2] + (8 * current_error) / 32
+      error_table[y + 1][x + 3] = error_table[y + 1][x + 3] + (4 * current_error) / 32
+      error_table[y + 1][x + 4] = error_table[y + 1][x + 4] + (2 * current_error) / 32
+      error_table[y + 1][x + 1] = error_table[y + 1][x + 1] + (4 * current_error) / 32
+      error_table[y + 1][x] = error_table[y + 1][x] + (2 * current_error) / 32
+      x = x + 1
+    }
+    output = append(output, row)
+    y = y + 1
+  }
+  return output
+}
+
+fun main() {
+  let img: list<list<list<int>>> = [
+    [[0, 0, 0], [64, 64, 64], [128, 128, 128], [192, 192, 192]],
+    [[255, 255, 255], [200, 200, 200], [150, 150, 150], [100, 100, 100]],
+    [[30, 144, 255], [255, 0, 0], [0, 255, 0], [0, 0, 255]],
+    [[50, 100, 150], [80, 160, 240], [70, 140, 210], [60, 120, 180]]
+  ]
+  let result = burkes_dither(img, 128)
+  var y = 0
+  while y < len(result) {
+    var line = ""
+    var x = 0
+    while x < len(result[y]) {
+      line = line + str(result[y][x])
+      if x < len(result[y]) - 1 { line = line + " " }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+main()
