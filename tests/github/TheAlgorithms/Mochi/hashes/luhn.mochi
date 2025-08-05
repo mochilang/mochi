@@ -1,0 +1,38 @@
+/*
+Luhn Algorithm Validator
+-----------------------
+The Luhn algorithm validates identification numbers such as credit card
+numbers. Given a string of decimal digits:
+1. Remove the last digit which serves as the check digit.
+2. Starting from the rightmost remaining digit, double every second digit.
+3. If a doubled digit exceeds 9, subtract 9 from it.
+4. Sum all digits including the check digit.
+5. The number is valid if the total modulo 10 equals 0.
+This implementation follows the same steps using only pure Mochi code.
+*/
+
+fun is_luhn(s: string): bool {
+  let n = len(s)
+  if n <= 1 { return false }
+  var check_digit = int(substring(s, n - 1, n))
+  var i = n - 2
+  var even = true
+  while i >= 0 {
+    let digit = int(substring(s, i, i + 1))
+    if even {
+      var doubled = digit * 2
+      if doubled > 9 {
+        doubled = doubled - 9
+      }
+      check_digit = check_digit + doubled
+    } else {
+      check_digit = check_digit + digit
+    }
+    even = !even
+    i = i - 1
+  }
+  return check_digit % 10 == 0
+}
+
+json(is_luhn("79927398713"))
+json(is_luhn("79927398714"))
