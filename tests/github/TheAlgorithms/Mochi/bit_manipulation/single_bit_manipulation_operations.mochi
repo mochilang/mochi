@@ -1,0 +1,67 @@
+/*
+Single-bit manipulation operations without using built-in bitwise operators.
+
+This program demonstrates how to set, clear, flip and query individual bits of an
+integer. Because Mochi's VM lacks native bitwise operators, powers of two are
+computed arithmetically and combined using addition, subtraction and integer
+division.
+
+Functions:
+- pow2 computes 2^n by repeated doubling.
+- set_bit turns a bit at a given position to 1.
+- clear_bit turns a bit at a given position to 0.
+- flip_bit toggles a bit at a given position.
+- is_bit_set checks if a bit is 1.
+- get_bit returns the value of a bit as 0 or 1.
+*/
+
+fun pow2(exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun is_bit_set(number: int, position: int): bool {
+  let shifted = number / pow2(position)
+  let remainder = shifted % 2
+  return remainder == 1
+}
+
+fun set_bit(number: int, position: int): int {
+  if is_bit_set(number, position) {
+    return number
+  }
+  return number + pow2(position)
+}
+
+fun clear_bit(number: int, position: int): int {
+  if is_bit_set(number, position) {
+    return number - pow2(position)
+  }
+  return number
+}
+
+fun flip_bit(number: int, position: int): int {
+  if is_bit_set(number, position) {
+    return number - pow2(position)
+  }
+  return number + pow2(position)
+}
+
+fun get_bit(number: int, position: int): int {
+  if is_bit_set(number, position) {
+    return 1
+  }
+  return 0
+}
+
+// Example usage matching Python doctests
+print(str(set_bit(0b1101, 1)))       // 15
+print(str(clear_bit(0b10010, 1)))    // 16
+print(str(flip_bit(0b101, 1)))       // 7
+print(str(is_bit_set(0b1010, 3)))    // true
+print(str(get_bit(0b1010, 1)))       // 1
