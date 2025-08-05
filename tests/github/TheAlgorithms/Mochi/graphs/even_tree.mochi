@@ -1,0 +1,59 @@
+/*
+Even Tree
+
+Given an undirected tree of N nodes rooted at 1, remove the maximal number of edges so that
+every component in the resulting forest has an even number of nodes. We perform a depth first
+search from the root and compute the size of each subtree. Whenever the size of a subtree is
+even, the edge connecting it to its parent can be removed. We store the count of such subtrees
+and finally report the number of removable edges as that count minus one (the root has no parent
+edge to remove).
+
+The traversal touches each edge once, so the time complexity is O(N) and the space complexity is
+O(N) for the recursion stack and adjacency list.
+*/
+
+var tree: map<int, list<int>> = {}
+
+fun dfs(start: int, visited: map<int, bool>): list<int> {
+  var size = 1
+  var cuts = 0
+  visited[start] = true
+  for v in tree[start] {
+    if !(v in visited) {
+      let res = dfs(v, visited)
+      size = size + res[0]
+      cuts = cuts + res[1]
+    }
+  }
+  if size % 2 == 0 {
+    cuts = cuts + 1
+  }
+  return [size, cuts]
+}
+
+fun even_tree(): int {
+  let visited: map<int, bool> = {}
+  let res = dfs(1, visited)
+  return res[1] - 1
+}
+
+fun main() {
+  let edges: list<list<int>> = [[2,1],[3,1],[4,3],[5,2],[6,1],[7,2],[8,6],[9,8],[10,8]]
+  var i = 0
+  while i < len(edges) {
+    let u = edges[i][0]
+    let v = edges[i][1]
+    if !(u in tree) {
+      tree[u] = []
+    }
+    if !(v in tree) {
+      tree[v] = []
+    }
+    tree[u] = append(tree[u], v)
+    tree[v] = append(tree[v], u)
+    i = i + 1
+  }
+  print(str(even_tree()))
+}
+
+main()
