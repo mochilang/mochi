@@ -1,0 +1,66 @@
+/*
+Palindrome Partitioning - Minimum Cut
+------------------------------------
+Given a string `s`, partition it such that every substring is a palindrome.
+The task is to compute the minimal number of cuts needed so that each
+resulting partition is a palindrome.
+
+Dynamic programming builds two tables:
+- `cut[i]` stores the minimum cuts for prefix `s[0..i]`.
+- `pal[j][i]` indicates whether substring `s[j..i]` is a palindrome.
+
+For each end index `i`, we test all start indices `j <= i`. When `s[j..i]`
+forms a palindrome, we update `cut[i]` using `cut[j-1] + 1` (or `0` if
+`j == 0`). The value `cut[len(s)-1]` is the answer.
+
+Time Complexity: O(n^2)
+Space Complexity: O(n^2)
+*/
+
+fun min_partitions(s: string): int {
+  let n = len(s)
+  var cut: list<int> = []
+  var i = 0
+  while i < n {
+    cut = append(cut, 0)
+    i = i + 1
+  }
+  var pal: list<list<bool>> = []
+  i = 0
+  while i < n {
+    var row: list<bool> = []
+    var j = 0
+    while j < n {
+      row = append(row, false)
+      j = j + 1
+    }
+    pal = append(pal, row)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var mincut = i
+    var j = 0
+    while j <= i {
+      if s[i] == s[j] && (i - j < 2 || pal[j+1][i-1]) {
+        pal[j][i] = true
+        if j == 0 {
+          mincut = 0
+        } else {
+          let candidate = cut[j-1] + 1
+          if candidate < mincut {
+            mincut = candidate
+          }
+        }
+      }
+      j = j + 1
+    }
+    cut[i] = mincut
+    i = i + 1
+  }
+  return cut[n-1]
+}
+
+print(min_partitions("aab"))
+print(min_partitions("aaa"))
+print(min_partitions("ababbbabbababa"))
