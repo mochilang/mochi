@@ -1,0 +1,40 @@
+/*
+Compute the area of the largest rectangle in a histogram.
+Each bar has unit width and integer height. The algorithm maintains
+indices of bars in a stack with increasing heights. When a lower bar
+appears, bars taller than it are popped and their maximal rectangle
+areas are evaluated using the popped height and the width between the
+current index and the new stack top. A sentinel zero height flushes the
+stack at the end. The procedure runs in O(n) time and uses O(n) space.
+*/
+
+fun largest_rectangle_area(heights: list<int>): int {
+  var stack: list<int> = []
+  var max_area = 0
+  var hs = heights
+  hs = append(hs, 0)
+  var i = 0
+  while i < len(hs) {
+    while len(stack) > 0 && hs[i] < hs[stack[len(stack) - 1]] {
+      let top = stack[len(stack) - 1]
+      stack = stack[0:len(stack) - 1]
+      let height = hs[top]
+      var width = i
+      if len(stack) > 0 {
+        width = i - stack[len(stack) - 1] - 1
+      }
+      let area = height * width
+      if area > max_area {
+        max_area = area
+      }
+    }
+    stack = append(stack, i)
+    i = i + 1
+  }
+  return max_area
+}
+
+print(str(largest_rectangle_area([2, 1, 5, 6, 2, 3])))
+print(str(largest_rectangle_area([2, 4])))
+print(str(largest_rectangle_area([6, 2, 5, 4, 5, 1, 6])))
+print(str(largest_rectangle_area([1])))
