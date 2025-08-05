@@ -1,0 +1,163 @@
+/*
+Test common matrix operations such as addition, subtraction, multiplication,
+scalar multiplication, identity matrix generation, and transposition. The
+program defines these operations with dimension checks and applies them to
+sample matrices to verify correctness. Each function requires two dimensional
+matrices with at least 2 rows and 2 columns. Matrix addition and subtraction
+require equal dimensions. Multiplication requires compatible shapes. The
+script demonstrates the operations and prints the resulting matrices.
+*/
+
+fun check_matrix(mat: list<list<float>>) {
+  if len(mat) < 2 || len(mat[0]) < 2 {
+    panic("Expected a matrix with at least 2x2 dimensions")
+  }
+}
+
+fun add(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  check_matrix(a)
+  check_matrix(b)
+  if len(a) != len(b) || len(a[0]) != len(b[0]) {
+    panic("Matrices must have the same dimensions")
+  }
+  let rows = len(a)
+  let cols = len(a[0])
+  var result: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < cols {
+      row = append(row, a[i][j] + b[i][j])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun subtract(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  check_matrix(a)
+  check_matrix(b)
+  if len(a) != len(b) || len(a[0]) != len(b[0]) {
+    panic("Matrices must have the same dimensions")
+  }
+  let rows = len(a)
+  let cols = len(a[0])
+  var result: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < cols {
+      row = append(row, a[i][j] - b[i][j])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun scalar_multiply(a: list<list<float>>, s: float): list<list<float>> {
+  check_matrix(a)
+  let rows = len(a)
+  let cols = len(a[0])
+  var result: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < cols {
+      row = append(row, a[i][j] * s)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun multiply(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  check_matrix(a)
+  check_matrix(b)
+  if len(a[0]) != len(b) {
+    panic("Invalid dimensions for matrix multiplication")
+  }
+  let rows = len(a)
+  let cols = len(b[0])
+  var result: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < cols {
+      var sum = 0.0
+      var k = 0
+      while k < len(b) {
+        sum = sum + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun identity(n: int): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      if i == j {
+        row = append(row, 1.0)
+      } else {
+        row = append(row, 0.0)
+      }
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun transpose(a: list<list<float>>): list<list<float>> {
+  check_matrix(a)
+  let rows = len(a)
+  let cols = len(a[0])
+  var result: list<list<float>> = []
+  var j = 0
+  while j < cols {
+    var row: list<float> = []
+    var i = 0
+    while i < rows {
+      row = append(row, a[i][j])
+      i = i + 1
+    }
+    result = append(result, row)
+    j = j + 1
+  }
+  return result
+}
+
+fun main() {
+  let mat_a = [[12.0, 10.0], [3.0, 9.0]]
+  let mat_b = [[3.0, 4.0], [7.0, 4.0]]
+  let mat_c = [[3.0, 0.0, 2.0], [2.0, 0.0, -2.0], [0.0, 1.0, 1.0]]
+
+  print(str(add(mat_a, mat_b)))
+  print(str(subtract(mat_a, mat_b)))
+  print(str(multiply(mat_a, mat_b)))
+  print(str(scalar_multiply(mat_a, 3.5)))
+  print(str(identity(5)))
+  print(str(transpose(mat_c)))
+}
+
+main()
