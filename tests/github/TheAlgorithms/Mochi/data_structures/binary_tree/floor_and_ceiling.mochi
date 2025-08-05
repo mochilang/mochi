@@ -1,0 +1,74 @@
+/*
+Find the floor and ceiling of a key in a Binary Search Tree (BST).
+
+In a BST every left child is smaller and every right child is larger than
+its parent.  The **floor** of a key is the greatest value ≤ key and the
+**ceiling** is the smallest value ≥ key.  Starting from the root we compare
+the key with the current node:
+- If equal, both floor and ceiling are the node's key.
+- If the key is smaller, the current node becomes the tentative ceiling and we
+  move to the left child.
+- If the key is larger, the node becomes the tentative floor and we move to
+the right child.
+The search ends when a match is found or a null child is reached.  This takes
+O(h) time where *h* is the height of the tree.
+
+The example builds a BST containing the keys 3, 5, 7, 10, 15, 20 and 25.  It
+then queries several keys to display the corresponding floor and ceiling
+values.
+*/
+
+type Node {
+  key: int,
+  left: int,
+  right: int
+}
+
+fun inorder(nodes: list<Node>, idx: int): list<int> {
+  if idx == (-1) {
+    return []
+  }
+  let node = nodes[idx]
+  var result = inorder(nodes, node.left)
+  result = append(result, node.key)
+  result = concat(result, inorder(nodes, node.right))
+  return result
+}
+
+fun floor_ceiling(nodes: list<Node>, idx: int, key: int): list<int> {
+  var floor_val = null
+  var ceiling_val = null
+  var current = idx
+  while current != (-1) {
+    let node = nodes[current]
+    if node.key == key {
+      floor_val = node.key
+      ceiling_val = node.key
+      break
+    }
+    if key < node.key {
+      ceiling_val = node.key
+      current = node.left
+    } else {
+      floor_val = node.key
+      current = node.right
+    }
+  }
+  return [floor_val, ceiling_val]
+}
+
+let tree: list<Node> = [
+  Node { key: 10, left: 1, right: 2 },
+  Node { key: 5, left: 3, right: 4 },
+  Node { key: 20, left: 5, right: 6 },
+  Node { key: 3, left: -1, right: -1 },
+  Node { key: 7, left: -1, right: -1 },
+  Node { key: 15, left: -1, right: -1 },
+  Node { key: 25, left: -1, right: -1 }
+]
+
+print(str(inorder(tree, 0)))
+print(str(floor_ceiling(tree, 0, 8)))
+print(str(floor_ceiling(tree, 0, 14)))
+print(str(floor_ceiling(tree, 0, -1)))
+print(str(floor_ceiling(tree, 0, 30)))
