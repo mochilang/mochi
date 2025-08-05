@@ -1,0 +1,84 @@
+/*
+Fractional Knapsack (Greedy)
+----------------------------
+
+Given arrays `value` and `weight` for `n` items and a knapsack with capacity
+`capacity`, compute the maximal total value that can be placed into the
+knapsack when we are allowed to take fractional portions of an item.
+
+For each item we compute the value-to-weight ratio and greedily pick items
+in decreasing ratio order. For each item:
+  - If it fits, take it entirely.
+  - Otherwise take the remaining capacity fraction of that item.
+
+We return the maximal value obtained and an array `fractions` indicating
+the fraction of each item included.
+
+Time Complexity: O(n^2) due to insertion sort
+Space Complexity: O(n)
+*/
+
+type KnapsackResult { max_value: float, fractions: list<float> }
+
+fun sort_by_ratio(index: list<int>, ratio: list<float>): list<int> {
+  var i = 1
+  while i < len(index) {
+    let key = index[i]
+    let key_ratio = ratio[key]
+    var j = i - 1
+    while j >= 0 && ratio[index[j]] < key_ratio {
+      index[j + 1] = index[j]
+      j = j - 1
+    }
+    index[j + 1] = key
+    i = i + 1
+  }
+  return index
+}
+
+fun fractional_knapsack(value: list<float>, weight: list<float>, capacity: float): KnapsackResult {
+  let n = len(value)
+  var index: list<int> = []
+  var i = 0
+  while i < n {
+    index = append(index, i)
+    i = i + 1
+  }
+  var ratio: list<float> = []
+  i = 0
+  while i < n {
+    ratio = append(ratio, value[i] / weight[i])
+    i = i + 1
+  }
+  index = sort_by_ratio(index, ratio)
+
+  var fractions: list<float> = []
+  i = 0
+  while i < n {
+    fractions = append(fractions, 0.0)
+    i = i + 1
+  }
+  var max_value: float = 0.0
+  var idx = 0
+  while idx < len(index) {
+    let item = index[idx]
+    if weight[item] <= capacity {
+      fractions[item] = 1.0
+      max_value = max_value + value[item]
+      capacity = capacity - weight[item]
+    } else {
+      fractions[item] = capacity / weight[item]
+      max_value = max_value + value[item] * capacity / weight[item]
+      break
+    }
+    idx = idx + 1
+  }
+  return KnapsackResult { max_value: max_value, fractions: fractions }
+}
+
+let v: list<float> = [1.0, 3.0, 5.0, 7.0, 9.0]
+let w: list<float> = [0.9, 0.7, 0.5, 0.3, 0.1]
+
+print(fractional_knapsack(v, w, 5.0))
+print(fractional_knapsack([1.0, 3.0, 5.0, 7.0], [0.9, 0.7, 0.5, 0.3], 30.0))
+print(fractional_knapsack([] as list<float>, [] as list<float>, 30.0))
