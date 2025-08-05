@@ -1,0 +1,44 @@
+/*
+Compute the definite integral of a smooth function using Simpson's rule.
+Simpson's rule partitions [a,b] into an even number of subintervals of width h
+and approximates the integral with (h/3) * (f(a) + f(b) + sum_{i=1}^{n-1} c_i f(x_i)),
+where c_i alternates 4 and 2 for odd and even interior points respectively.
+This example integrates f(x) = x^2 to demonstrate the method.
+Time complexity: O(n) for n steps.
+*/
+
+fun f(x: float): float {
+  return (x - 0.0) * (x - 0.0)
+}
+
+fun make_points(a: float, b: float, h: float): list<float> {
+  var points: list<float> = []
+  var x = a + h
+  while x < (b - h) {
+    points = append(points, x)
+    x = x + h
+  }
+  return points
+}
+
+fun simpson_rule(boundary: list<float>, steps: int): float {
+  if steps <= 0 { panic("Number of steps must be greater than zero") }
+  let a = boundary[0]
+  let b = boundary[1]
+  let h = (b - a) / (steps as float)
+  let pts = make_points(a, b, h)
+  var y = (h / 3.0) * f(a)
+  var cnt = 2
+  var i = 0
+  while i < len(pts) {
+    let coeff = 4.0 - 2.0 * ((cnt % 2) as float)
+    y = y + (h / 3.0) * coeff * f(pts[i])
+    cnt = cnt + 1
+    i = i + 1
+  }
+  y = y + (h / 3.0) * f(b)
+  return y
+}
+
+let result = simpson_rule([0.0, 1.0], 10)
+print(str(result))
