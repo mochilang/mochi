@@ -1,0 +1,37 @@
+/*
+  Krishnamurthy Number (Peterson Number)
+
+  A Krishnamurthy number is a number whose sum of the factorials of its digits
+  equals the number itself. For example, 145 is a Krishnamurthy number because
+  1! + 4! + 5! = 145.
+
+  Algorithm:
+    1. Repeatedly extract the last digit of the number.
+    2. Compute the factorial of each digit using recursion.
+    3. Sum these factorials and compare the result with the original number.
+
+  Time complexity: O(d) where d is the number of digits in the input.
+  Space complexity: O(d) due to the recursion stack in factorial.
+*/
+
+fun factorial(digit: int): int {
+  if digit == 0 || digit == 1 {
+    return 1
+  }
+  return digit * factorial(digit - 1)
+}
+
+fun is_krishnamurthy(n: int): bool {
+  var duplicate = n
+  var fact_sum = 0
+  while duplicate > 0 {
+    let digit = duplicate % 10
+    fact_sum = fact_sum + factorial(digit)
+    duplicate = duplicate / 10
+  }
+  return fact_sum == n
+}
+
+print(str(is_krishnamurthy(145)))
+print(str(is_krishnamurthy(240)))
+print(str(is_krishnamurthy(1)))
