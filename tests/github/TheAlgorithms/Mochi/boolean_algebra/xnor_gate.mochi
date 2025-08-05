@@ -1,0 +1,30 @@
+/*
+Implement the boolean XNOR gate.
+
+An XNOR (exclusive NOR) gate outputs 1 only when both inputs have the
+same value, and outputs 0 when the inputs differ. This is equivalent to
+applying a logical NOT to the XOR of the inputs. The truth table is:
+  ---------------
+  | a | b | out |
+  ---------------
+  | 0 | 0 |  1  |
+  | 0 | 1 |  0  |
+  | 1 | 0 |  0  |
+  | 1 | 1 |  1  |
+  ---------------
+
+The algorithm simply compares the two integer inputs and returns 1 if
+they are equal, otherwise 0. This runs in constant time and space.
+*/
+
+fun xnor_gate(a: int, b: int): int {
+  if a == b {
+    return 1
+  }
+  return 0
+}
+
+print(xnor_gate(0, 0))
+print(xnor_gate(0, 1))
+print(xnor_gate(1, 0))
+print(xnor_gate(1, 1))
