@@ -1,0 +1,76 @@
+/*
+Floyd-Warshall All-Pairs Shortest Paths
+---------------------------------------
+Given a directed graph represented by a weight matrix, possibly with negative
+edge weights, the task is to compute the minimum distance between every pair
+of vertices. The Floyd–Warshall algorithm performs dynamic programming on
+the adjacency matrix, iteratively improving path lengths by allowing each
+vertex as an intermediate. For every pair (i, j) and intermediate k it
+sets dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]). Complexity is
+O(n^3) for n vertices and the algorithm handles negative edges as long as
+there are no negative cycles.
+*/
+
+let INF: float = 1000000000.0
+
+fun floyd_warshall(graph: list<list<float>>): list<list<float>> {
+  let v = len(graph)
+  var dist: list<list<float>> = []
+  var i = 0
+  while i < v {
+    var row: list<float> = []
+    var j = 0
+    while j < v {
+      row = append(row, graph[i][j])
+      j = j + 1
+    }
+    dist = append(dist, row)
+    i = i + 1
+  }
+
+  var k = 0
+  while k < v {
+    var i = 0
+    while i < v {
+      var j = 0
+      while j < v {
+        if dist[i][k] < INF && dist[k][j] < INF && dist[i][k] + dist[k][j] < dist[i][j] {
+          dist[i][j] = dist[i][k] + dist[k][j]
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    k = k + 1
+  }
+  return dist
+}
+
+fun print_dist(dist: list<list<float>>): void {
+  print("\nThe shortest path matrix using Floyd Warshall algorithm\n")
+  var i = 0
+  while i < len(dist) {
+    var j = 0
+    var line = ""
+    while j < len(dist[i]) {
+      if dist[i][j] >= INF / 2.0 {
+        line = line + "INF\t"
+      } else {
+        line = line + str(int(dist[i][j])) + "\t"
+      }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+let graph = [
+  [0.0, 5.0, INF, 10.0],
+  [INF, 0.0, 3.0, INF],
+  [INF, INF, 0.0, 1.0],
+  [INF, INF, INF, 0.0]
+]
+
+let result = floyd_warshall(graph)
+print_dist(result)
