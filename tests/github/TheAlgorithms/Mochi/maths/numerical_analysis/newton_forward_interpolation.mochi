@@ -1,0 +1,78 @@
+/*
+Newton Forward Interpolation
+----------------------------
+Given a set of n equally spaced data points (x0, y0), (x1, y1), ..., (xn-1, yn-1),
+this method estimates the value of the underlying function at a target value.
+It constructs the forward difference table and evaluates
+
+P(x) = y0 + \u03a3 [u(u-1)...(u-k+1)/k!] * \u0394^k y0,
+where u = (x - x0) / (x1 - x0).
+
+This implementation builds the forward difference table iteratively and uses the
+helper function `ucal` to compute the u-product term.
+*/
+
+fun ucal(u: float, p: int): float {
+  var temp: float = u
+  var i: int = 1
+  while i < p {
+    temp = temp * (u - (i as float))
+    i = i + 1
+  }
+  return temp
+}
+
+fun factorial(n: int): float {
+  var result: float = 1.0
+  var i: int = 2
+  while i <= n {
+    result = result * (i as float)
+    i = i + 1
+  }
+  return result
+}
+
+fun newton_forward_interpolation(x: list<float>, y0: list<float>, value: float): float {
+  let n = len(x)
+  var y: list<list<float>> = []
+  var i: int = 0
+  while i < n {
+    var row: list<float> = []
+    var j: int = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    y = append(y, row)
+    i = i + 1
+  }
+
+  i = 0
+  while i < n {
+    y[i][0] = y0[i]
+    i = i + 1
+  }
+
+  var i1: int = 1
+  while i1 < n {
+    var j1: int = 0
+    while j1 < n - i1 {
+      y[j1][i1] = y[j1 + 1][i1 - 1] - y[j1][i1 - 1]
+      j1 = j1 + 1
+    }
+    i1 = i1 + 1
+  }
+
+  let u = (value - x[0]) / (x[1] - x[0])
+  var sum: float = y[0][0]
+  var k: int = 1
+  while k < n {
+    sum = sum + (ucal(u, k) * y[0][k]) / factorial(k)
+    k = k + 1
+  }
+  return sum
+}
+
+let x_points: list<float> = [0.0, 1.0, 2.0, 3.0]
+let y_points: list<float> = [0.0, 1.0, 8.0, 27.0]
+print(str(newton_forward_interpolation(x_points, y_points, 1.5)))
