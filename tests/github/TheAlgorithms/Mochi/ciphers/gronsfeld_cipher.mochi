@@ -1,0 +1,75 @@
+/*
+Gronsfeld Cipher
+
+Encrypts text using the Gronsfeld cipher, a variant of the Vigenère
+cipher where the key is a sequence of digits. The plaintext is converted
+to uppercase and each alphabetic character is shifted by the
+corresponding key digit (cycling through the key). Characters outside the
+alphabet remain unchanged. An empty key triggers a runtime error similar
+to the Python reference implementation.
+
+Time complexity: O(n) for text length n.
+*/
+
+let ASCII_UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let ASCII_LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
+let NEG_ONE = 0 - 1
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return NEG_ONE
+}
+
+fun to_uppercase(s: string): string {
+  var result = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    let idx = index_of(ASCII_LOWERCASE, ch)
+    if idx == NEG_ONE {
+      result = result + ch
+    } else {
+      result = result + substring(ASCII_UPPERCASE, idx, idx + 1)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun gronsfeld(text: string, key: string): string {
+  let ascii_len = len(ASCII_UPPERCASE)
+  let key_len = len(key)
+  if key_len == 0 {
+    panic("integer modulo by zero")
+  }
+  let upper_text = to_uppercase(text)
+  var encrypted = ""
+  var i = 0
+  while i < len(upper_text) {
+    let ch = substring(upper_text, i, i + 1)
+    let idx = index_of(ASCII_UPPERCASE, ch)
+    if idx == NEG_ONE {
+      encrypted = encrypted + ch
+    } else {
+      let key_idx = i % key_len
+      let shift = int(substring(key, key_idx, key_idx + 1))
+      let new_position = (idx + shift) % ascii_len
+      encrypted = encrypted + substring(ASCII_UPPERCASE, new_position, new_position + 1)
+    }
+    i = i + 1
+  }
+  return encrypted
+}
+
+print(gronsfeld("hello", "412"))
+print(gronsfeld("hello", "123"))
+print(gronsfeld("", "123"))
+print(gronsfeld("yes, ¥€$ - _!@#%?", "0"))
+print(gronsfeld("yes, ¥€$ - _!@#%?", "01"))
+print(gronsfeld("yes, ¥€$ - _!@#%?", "012"))
