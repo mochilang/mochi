@@ -1,0 +1,63 @@
+/*
+Sort a list of integers using the merge sort algorithm.
+
+Merge sort is a divide-and-conquer algorithm:
+1. If the list has zero or one element, it is already sorted.
+2. Recursively split the list into two halves until single-element lists remain.
+3. Merge two sorted halves by repeatedly taking the smaller head element from
+   either half and appending it to a result list.
+
+The merge step runs in O(n) time for n elements and requires O(n) auxiliary
+space, while the overall algorithm performs O(n log n) comparisons.
+*/
+
+fun subarray(xs: list<int>, start: int, end: int): list<int> {
+  var result: list<int> = []
+  var k = start
+  while k < end {
+    result = append(result, xs[k])
+    k = k + 1
+  }
+  return result
+}
+
+fun merge(left_half: list<int>, right_half: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(left_half) && j < len(right_half) {
+    if left_half[i] < right_half[j] {
+      result = append(result, left_half[i])
+      i = i + 1
+    } else {
+      result = append(result, right_half[j])
+      j = j + 1
+    }
+  }
+  while i < len(left_half) {
+    result = append(result, left_half[i])
+    i = i + 1
+  }
+  while j < len(right_half) {
+    result = append(result, right_half[j])
+    j = j + 1
+  }
+  return result
+}
+
+fun merge_sort(array: list<int>): list<int> {
+  if len(array) <= 1 {
+    return array
+  }
+  let middle = len(array) / 2
+  let left_half = subarray(array, 0, middle)
+  let right_half = subarray(array, middle, len(array))
+  let sorted_left = merge_sort(left_half)
+  let sorted_right = merge_sort(right_half)
+  return merge(sorted_left, sorted_right)
+}
+
+print(str(merge_sort([5, 3, 1, 4, 2])))
+print(str(merge_sort([-2, 3, -10, 11, 99, 100000, 100, -200])))
+print(str(merge_sort([-200])))
+print(str(merge_sort([])))
