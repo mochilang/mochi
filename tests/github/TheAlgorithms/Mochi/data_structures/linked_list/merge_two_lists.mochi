@@ -1,0 +1,85 @@
+/*
+Merge two sorted lists built from arbitrary integer sequences.
+Each sequence is first sorted and stored in a simple structure that
+emulates a linked list by keeping values in ascending order.
+
+To merge two lists, convert them back to arrays, concatenate, and sort
+the combined array.  This mirrors the approach of the Python version
+which constructs a new SortedLinkedList from the two inputs rather than
+performing in-place node manipulation.
+
+The demonstration creates two lists from sample data, merges them, and
+prints the length and string representation of the merged result.
+Expected output:
+16
+-11 -> -2 -> -1 -> 0 -> 0 -> 1 -> 2 -> 3 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+*/
+
+type SortedLinkedList { values: list<int> }
+
+fun sort_list(nums: list<int>): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len(nums) {
+    arr = append(arr, nums[i])
+    i = i + 1
+  }
+  var j = 0
+  while j < len(arr) {
+    var k = j + 1
+    while k < len(arr) {
+      if arr[k] < arr[j] {
+        let tmp = arr[j]
+        arr[j] = arr[k]
+        arr[k] = tmp
+      }
+      k = k + 1
+    }
+    j = j + 1
+  }
+  return arr
+}
+
+fun make_sorted_linked_list(ints: list<int>): SortedLinkedList {
+  return SortedLinkedList { values: sort_list(ints) }
+}
+
+fun len_sll(sll: SortedLinkedList): int { return len(sll.values) }
+
+fun str_sll(sll: SortedLinkedList): string {
+  var res = ""
+  var i = 0
+  while i < len(sll.values) {
+    res = res + str(sll.values[i])
+    if i + 1 < len(sll.values) { res = res + " -> " }
+    i = i + 1
+  }
+  return res
+}
+
+fun merge_lists(a: SortedLinkedList, b: SortedLinkedList): SortedLinkedList {
+  var combined: list<int> = []
+  var i = 0
+  while i < len(a.values) {
+    combined = append(combined, a.values[i])
+    i = i + 1
+  }
+  i = 0
+  while i < len(b.values) {
+    combined = append(combined, b.values[i])
+    i = i + 1
+  }
+  return make_sorted_linked_list(combined)
+}
+
+fun main() {
+  let test_data_odd: list<int> = [3, 9, -11, 0, 7, 5, 1, -1]
+  let test_data_even: list<int> = [4, 6, 2, 0, 8, 10, 3, -2]
+  let sll_one = make_sorted_linked_list(test_data_odd)
+  let sll_two = make_sorted_linked_list(test_data_even)
+  let merged = merge_lists(sll_one, sll_two)
+  print(str(len_sll(merged)))
+  print(str_sll(merged))
+}
+
+main()
