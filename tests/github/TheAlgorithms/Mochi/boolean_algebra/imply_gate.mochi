@@ -1,0 +1,30 @@
+/*
+Implement an IMPLY logic gate.
+
+Given two binary inputs a and b, the IMPLY gate returns 1 except for the case
+where a = 1 and b = 0.  This is equivalent to the logical expression ¬a ∨ b
+("if a then b").
+
+Truth table:
+  a b | output
+  0 0 | 1
+  0 1 | 1
+  1 0 | 0
+  1 1 | 1
+
+The implementation checks whether the first input is 0 or the second input is 1
+and returns 1 if either condition holds, otherwise 0.  This mirrors the Python
+implementation which uses `input_1 == 0 or input_2 == 1`.
+*/
+
+fun imply_gate(input_1: int, input_2: int): int {
+  if input_1 == 0 || input_2 == 1 {
+    return 1
+  }
+  return 0
+}
+
+print(imply_gate(0, 0))
+print(imply_gate(0, 1))
+print(imply_gate(1, 0))
+print(imply_gate(1, 1))
