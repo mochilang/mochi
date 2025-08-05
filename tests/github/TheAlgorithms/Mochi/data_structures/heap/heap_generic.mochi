@@ -1,0 +1,178 @@
+/*
+Generic Binary Heap
+-------------------
+This implementation provides a generic binary heap that can act as either a
+max-heap or a min-heap depending on a key function supplied at creation.
+Each element is stored as a pair `[item, value]` where `value` is the result
+of applying the key function to the item's priority.  The heap uses an array
+for storage and a map from item to array index (1-based) so that updates and
+deletions can be performed in logarithmic time.  The heap property is
+maintained by `_heapify_up` and `_heapify_down` which swap elements based on
+a simple comparison.
+*/
+
+type Heap {
+  arr: list<list<int>>,
+  pos_map: map<int, int>,
+  size: int,
+  key: fun(int): int
+}
+
+fun new_heap(key: fun(int): int): Heap {
+  return Heap { arr: [], pos_map: {}, size: 0, key: key }
+}
+
+fun parent(i: int): int {
+  if i > 0 { return (i - 1) / 2 }
+  return -1
+}
+
+fun left(i: int, size: int): int {
+  let l = 2 * i + 1
+  if l < size { return l }
+  return -1
+}
+
+fun right(i: int, size: int): int {
+  let r = 2 * i + 2
+  if r < size { return r }
+  return -1
+}
+
+fun swap(h: Heap, i: int, j: int): void {
+  var arr: list<list<int>> = h.arr
+  let item_i = arr[i][0]
+  let item_j = arr[j][0]
+  var pm: map<int, int> = h.pos_map
+  pm[item_i] = j + 1
+  pm[item_j] = i + 1
+  h.pos_map = pm
+  let tmp = arr[i]
+  arr[i] = arr[j]
+  arr[j] = tmp
+  h.arr = arr
+}
+
+fun cmp(h: Heap, i: int, j: int): bool {
+  let arr: list<list<int>> = h.arr
+  return arr[i][1] < arr[j][1]
+}
+
+fun get_valid_parent(h: Heap, i: int): int {
+  var vp = i
+  let l = left(i, h.size)
+  if l != 0 - 1 && cmp(h, l, vp) == false { vp = l }
+  let r = right(i, h.size)
+  if r != 0 - 1 && cmp(h, r, vp) == false { vp = r }
+  return vp
+}
+
+fun heapify_up(h: Heap, index: int): void {
+  var idx = index
+  var p = parent(idx)
+  while p != 0 - 1 && cmp(h, idx, p) == false {
+    swap(h, idx, p)
+    idx = p
+    p = parent(p)
+  }
+}
+
+fun heapify_down(h: Heap, index: int): void {
+  var idx = index
+  var vp = get_valid_parent(h, idx)
+  while vp != idx {
+    swap(h, idx, vp)
+    idx = vp
+    vp = get_valid_parent(h, idx)
+  }
+}
+
+fun update_item(h: Heap, item: int, item_value: int): void {
+  var pm: map<int, int> = h.pos_map
+  if pm[item] == 0 { return }
+  let index: int = pm[item] - 1
+  var arr: list<list<int>> = h.arr
+  arr[index] = [item, h.key(item_value)]
+  h.arr = arr
+  h.pos_map = pm
+  heapify_up(h, index)
+  heapify_down(h, index)
+}
+
+fun delete_item(h: Heap, item: int): void {
+  var pm: map<int, int> = h.pos_map
+  if pm[item] == 0 { return }
+  let index: int = pm[item] - 1
+  pm[item] = 0
+  var arr: list<list<int>> = h.arr
+  let last_index: int = h.size - 1
+  if index != last_index {
+    arr[index] = arr[last_index]
+    let moved = arr[index][0]
+    pm[moved] = index + 1
+  }
+  h.size = h.size - 1
+  h.arr = arr
+  h.pos_map = pm
+  if h.size > index {
+    heapify_up(h, index)
+    heapify_down(h, index)
+  }
+}
+
+fun insert_item(h: Heap, item: int, item_value: int): void {
+  var arr: list<list<int>> = h.arr
+  let arr_len: int = len(arr)
+  if arr_len == h.size {
+    arr = append(arr, [item, h.key(item_value)])
+  } else {
+    arr[h.size] = [item, h.key(item_value)]
+  }
+  var pm: map<int, int> = h.pos_map
+  pm[item] = h.size + 1
+  h.size = h.size + 1
+  h.arr = arr
+  h.pos_map = pm
+  heapify_up(h, h.size - 1)
+}
+
+fun get_top(h: Heap): list<int> {
+  let arr: list<list<int>> = h.arr
+  if h.size > 0 { return arr[0] }
+  return []
+}
+
+fun extract_top(h: Heap): list<int> {
+  let top = get_top(h)
+  if len(top) > 0 { delete_item(h, top[0]) }
+  return top
+}
+
+fun identity(x: int): int { return x }
+fun negate(x: int): int { return 0 - x }
+
+var h = new_heap(identity)
+insert_item(h, 5, 34)
+insert_item(h, 6, 31)
+insert_item(h, 7, 37)
+print(str(get_top(h)))
+print(str(extract_top(h)))
+print(str(extract_top(h)))
+print(str(extract_top(h)))
+
+h = new_heap(negate)
+insert_item(h, 5, 34)
+insert_item(h, 6, 31)
+insert_item(h, 7, 37)
+print(str(get_top(h)))
+print(str(extract_top(h)))
+print(str(extract_top(h)))
+print(str(extract_top(h)))
+insert_item(h, 8, 45)
+insert_item(h, 9, 40)
+insert_item(h, 10, 50)
+print(str(get_top(h)))
+update_item(h, 10, 30)
+print(str(get_top(h)))
+delete_item(h, 10)
+print(str(get_top(h)))
