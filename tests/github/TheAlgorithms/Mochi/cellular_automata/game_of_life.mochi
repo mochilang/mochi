@@ -1,0 +1,112 @@
+/*
+Simulate Conway's Game of Life on a finite square grid.
+
+The board is represented as a list of list of booleans where true
+means a live cell.  For each generation every cell counts its eight
+neighbours and applies the classic rules:
+ 1. Live cell with <2 neighbours dies (under-population).
+ 2. Live cell with 2 or 3 neighbours lives on.
+ 3. Live cell with >3 neighbours dies (over-population).
+ 4. Dead cell with exactly 3 neighbours becomes alive (reproduction).
+
+This implementation seeds a 5x5 grid with a "glider" pattern and
+prints the board for four generations.  Output uses '#' for live cells
+and '.' for dead cells.
+*/
+
+fun count_alive_neighbours(board: list<list<bool>>, row: int, col: int): int {
+  let size = len(board)
+  var alive = 0
+  var dr = -1
+  while dr < 2 {
+    var dc = -1
+    while dc < 2 {
+      let nr = row + dr
+      let nc = col + dc
+      if !(dr == 0 && dc == 0) && nr >= 0 && nr < size && nc >= 0 && nc < size {
+        if board[nr][nc] {
+          alive = alive + 1
+        }
+      }
+      dc = dc + 1
+    }
+    dr = dr + 1
+  }
+  return alive
+}
+
+fun next_state(current: bool, alive: int): bool {
+  var state = current
+  if current {
+    if alive < 2 {
+      state = false
+    } else if alive == 2 || alive == 3 {
+      state = true
+    } else {
+      state = false
+    }
+  } else {
+    if alive == 3 {
+      state = true
+    }
+  }
+  return state
+}
+
+fun step(board: list<list<bool>>): list<list<bool>> {
+  let size = len(board)
+  var new_board: list<list<bool>> = []
+  var r = 0
+  while r < size {
+    var new_row: list<bool> = []
+    var c = 0
+    while c < size {
+      let alive = count_alive_neighbours(board, r, c)
+      let cell = board[r][c]
+      let updated = next_state(cell, alive)
+      new_row = append(new_row, updated)
+      c = c + 1
+    }
+    new_board = append(new_board, new_row)
+    r = r + 1
+  }
+  return new_board
+}
+
+fun show(board: list<list<bool>>) {
+  var r = 0
+  while r < len(board) {
+    var line = ""
+    var c = 0
+    while c < len(board[r]) {
+      if board[r][c] {
+        line = line + "#"
+      } else {
+        line = line + "."
+      }
+      c = c + 1
+    }
+    print(line)
+    r = r + 1
+  }
+}
+
+let glider: list<list<bool>> = [
+  [false, true, false, false, false],
+  [false, false, true, false, false],
+  [true, true, true, false, false],
+  [false, false, false, false, false],
+  [false, false, false, false, false]
+]
+
+var board = glider
+print("Initial")
+show(board)
+
+var i = 0
+while i < 4 {
+  board = step(board)
+  print("\nStep " + str(i + 1))
+  show(board)
+  i = i + 1
+}
