@@ -1,0 +1,108 @@
+/*
+Solve a system of linear equations via Gaussian elimination with partial pivoting.
+
+The input is an augmented matrix where the last column stores the constants.
+For each column the algorithm selects the row with the largest absolute value
+as the pivot (partial pivoting) and swaps it into place.  It then subtracts
+multiples of the pivot row from the rows below to form an upper triangular
+matrix.  Once in triangular form, back substitution yields the solution vector.
+
+This implementation performs all operations using native Mochi lists of
+floats so it can execute on the runtime/vm without any FFI.  The procedure
+runs in O(n^3) time for an n x n system.
+*/
+
+fun panic(msg: string) {
+  print(msg)
+}
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun copy_matrix(src: list<list<float>>): list<list<float>> {
+  var res: list<list<float>> = []
+  var i = 0
+  while i < len(src) {
+    var row_src = src[i]
+    var row: list<float> = []
+    var j = 0
+    while j < len(row_src) {
+      row = append(row, row_src[j])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun solve_linear_system(matrix: list<list<float>>): list<float> {
+  var ab = copy_matrix(matrix)
+  var num_rows = len(ab)
+  var num_cols = len(ab[0]) - 1
+  if num_rows != num_cols {
+    panic("Matrix is not square")
+    return []
+  }
+  var column_num = 0
+  while column_num < num_rows {
+    var i = column_num
+    while i < num_cols {
+      if abs_float(ab[i][column_num]) > abs_float(ab[column_num][column_num]) {
+        var temp = ab[column_num]
+        ab[column_num] = ab[i]
+        ab[i] = temp
+      }
+      i = i + 1
+    }
+    if abs_float(ab[column_num][column_num]) < 0.00000001 {
+      panic("Matrix is singular")
+      return []
+    }
+    if column_num != 0 {
+      i = column_num
+      while i < num_rows {
+        var factor = ab[i][column_num - 1] / ab[column_num - 1][column_num - 1]
+        var j = 0
+        while j < len(ab[i]) {
+          ab[i][j] = ab[i][j] - factor * ab[column_num - 1][j]
+          j = j + 1
+        }
+        i = i + 1
+      }
+    }
+    column_num = column_num + 1
+  }
+  var x_lst: list<float> = []
+  var t = 0
+  while t < num_rows {
+    x_lst = append(x_lst, 0.0)
+    t = t + 1
+  }
+  column_num = num_rows - 1
+  while column_num >= 0 {
+    var x = ab[column_num][num_cols] / ab[column_num][column_num]
+    x_lst[column_num] = x
+    var i = column_num - 1
+    while i >= 0 {
+      ab[i][num_cols] = ab[i][num_cols] - ab[i][column_num] * x
+      i = i - 1
+    }
+    column_num = column_num - 1
+  }
+  return x_lst
+}
+
+var example_matrix: list<list<float>> = [
+  [5.0, -5.0, -3.0, 4.0, -11.0],
+  [1.0, -4.0, 6.0, -4.0, -10.0],
+  [-2.0, -5.0, 4.0, -5.0, -12.0],
+  [-3.0, -3.0, 5.0, -5.0, 8.0],
+]
+
+print("Matrix:")
+print(str(example_matrix))
+var solution = solve_linear_system(example_matrix)
+print(str(solution))
