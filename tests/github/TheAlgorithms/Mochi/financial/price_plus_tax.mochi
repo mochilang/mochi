@@ -1,0 +1,15 @@
+/*
+Price Plus Tax
+--------------
+Given the base price of a good or service and a tax rate expressed as a
+fraction, this algorithm computes the total cost including tax.  The
+final price is obtained by multiplying the price by (1 + tax_rate).
+For example, a price of 100 with a 25% tax rate yields 125.
+*/
+
+fun price_plus_tax(price: float, tax_rate: float): float {
+  return price * (1.0 + tax_rate)
+}
+
+print("price_plus_tax(100, 0.25) = " + str(price_plus_tax(100.0, 0.25)))
+print("price_plus_tax(125.50, 0.05) = " + str(price_plus_tax(125.50, 0.05)))
