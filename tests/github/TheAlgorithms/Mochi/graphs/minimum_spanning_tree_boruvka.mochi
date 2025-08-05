@@ -1,0 +1,129 @@
+/*
+Borůvka's Minimum Spanning Tree Algorithm
+
+This implementation builds an MST for an undirected weighted graph with
+distinct edge weights. The graph is represented as a list of edges
+(u, v, w). Borůvka's algorithm repeatedly selects the cheapest edge
+incident to each component and merges the components using union‑find.
+Because each phase at least halves the number of components, the running
+time is O(E log V) where E is the number of edges and V is the number of
+vertices. The union‑find structure uses path compression and union by
+rank. At the end the MST edges are printed.
+*/
+
+type Edge { u: int, v: int, w: int }
+
+type UF { parent: list<int>, rank: list<int> }
+
+type FindRes { root: int, uf: UF }
+
+fun uf_make(n: int): UF {
+  var p: list<int> = []
+  var r: list<int> = []
+  var i = 0
+  while i < n {
+    p = append(p, i)
+    r = append(r, 0)
+    i = i + 1
+  }
+  return UF{ parent: p, rank: r }
+}
+
+fun uf_find(uf: UF, x: int): FindRes {
+  var p = uf.parent
+  if p[x] != x {
+    let res = uf_find(UF{ parent: p, rank: uf.rank }, p[x])
+    p = res.uf.parent
+    p[x] = res.root
+    return FindRes{ root: res.root, uf: UF{ parent: p, rank: res.uf.rank } }
+  }
+  return FindRes{ root: x, uf: uf }
+}
+
+fun uf_union(uf: UF, x: int, y: int): UF {
+  let fr1 = uf_find(uf, x)
+  var uf1 = fr1.uf
+  let root1 = fr1.root
+  let fr2 = uf_find(uf1, y)
+  uf1 = fr2.uf
+  let root2 = fr2.root
+  if root1 == root2 { return uf1 }
+  var p = uf1.parent
+  var r = uf1.rank
+  if r[root1] > r[root2] {
+    p[root2] = root1
+  } else if r[root1] < r[root2] {
+    p[root1] = root2
+  } else {
+    p[root2] = root1
+    r[root1] = r[root1] + 1
+  }
+  return UF{ parent: p, rank: r }
+}
+
+fun boruvka(n: int, edges: list<Edge>): list<Edge> {
+  var uf = uf_make(n)
+  var num_components = n
+  var mst: list<Edge> = []
+  while num_components > 1 {
+    var cheap: list<int> = []
+    var i = 0
+    while i < n {
+      cheap = append(cheap, 0 - 1)
+      i = i + 1
+    }
+    var idx = 0
+    while idx < len(edges) {
+      let e = edges[idx]
+      let fr1 = uf_find(uf, e.u)
+      uf = fr1.uf
+      let set1 = fr1.root
+      let fr2 = uf_find(uf, e.v)
+      uf = fr2.uf
+      let set2 = fr2.root
+      if set1 != set2 {
+        if cheap[set1] == 0 - 1 || edges[cheap[set1]].w > e.w {
+          cheap[set1] = idx
+        }
+        if cheap[set2] == 0 - 1 || edges[cheap[set2]].w > e.w {
+          cheap[set2] = idx
+        }
+      }
+      idx = idx + 1
+    }
+    var v = 0
+    while v < n {
+      let idxe = cheap[v]
+      if idxe != 0 - 1 {
+        let e = edges[idxe]
+        let fr1 = uf_find(uf, e.u)
+        uf = fr1.uf
+        let set1 = fr1.root
+        let fr2 = uf_find(uf, e.v)
+        uf = fr2.uf
+        let set2 = fr2.root
+        if set1 != set2 {
+          mst = append(mst, e)
+          uf = uf_union(uf, set1, set2)
+          num_components = num_components - 1
+        }
+      }
+      v = v + 1
+    }
+  }
+  return mst
+}
+
+fun main() {
+  let edges: list<Edge> = [
+    Edge{ u: 0, v: 1, w: 1 },
+    Edge{ u: 0, v: 2, w: 2 },
+    Edge{ u: 2, v: 3, w: 3 }
+  ]
+  let mst = boruvka(4, edges)
+  for e in mst {
+    print(str(e.u) + " - " + str(e.v) + " : " + str(e.w))
+  }
+}
+
+main()
