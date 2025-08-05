@@ -1,0 +1,137 @@
+/*
+Decrypt a Caesar cipher using the chi-squared statistic.
+
+This routine brute-forces all possible shifts over a given alphabet and
+measures how closely each decoded text matches expected letter
+frequencies.  For every shift the ciphertext is decoded, then for each
+letter in the alphabet we count its occurrences in the decoded text.
+The chi-squared value is computed as:
+
+    chi += ((occ - expected)^2 / expected) * occ
+
+where `occ` is the number of times the letter appears and `expected` is
+`frequency * occ` based on known letter frequencies.  The shift with the
+smallest chi-squared value is the most likely key.
+*/
+
+type Result {
+  shift: int
+  chi: float
+  decoded: string
+}
+
+fun default_alphabet(): list<string> {
+  return [
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+  ]
+}
+
+fun default_frequencies(): map<string, float> {
+  return {
+    "a": 0.08497, "b": 0.01492, "c": 0.02202, "d": 0.04253,
+    "e": 0.11162, "f": 0.02228, "g": 0.02015, "h": 0.06094,
+    "i": 0.07546, "j": 0.00153, "k": 0.01292, "l": 0.04025,
+    "m": 0.02406, "n": 0.06749, "o": 0.07507, "p": 0.01929,
+    "q": 0.00095, "r": 0.07587, "s": 0.06327, "t": 0.09356,
+    "u": 0.02758, "v": 0.00978, "w": 0.02560, "x": 0.00150,
+    "y": 0.01994, "z": 0.00077
+  }
+}
+
+fun index_of(xs: list<string>, ch: string): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun count_char(s: string, ch: string): int {
+  var count = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch { count = count + 1 }
+    i = i + 1
+  }
+  return count
+}
+
+fun decrypt_caesar_with_chi_squared(
+  ciphertext: string,
+  cipher_alphabet: list<string>,
+  frequencies_dict: map<string, float>,
+  case_sensitive: bool
+): Result {
+  var alphabet_letters = cipher_alphabet
+  if len(alphabet_letters) == 0 {
+    alphabet_letters = default_alphabet()
+  }
+  var frequencies = frequencies_dict
+  if len(frequencies) == 0 {
+    frequencies = default_frequencies()
+  }
+  if !case_sensitive {
+    ciphertext = lower(ciphertext)
+  }
+  var best_shift = 0
+  var best_chi = 0.0
+  var best_text = ""
+  var shift = 0
+  while shift < len(alphabet_letters) {
+    var decrypted = ""
+    var i = 0
+    while i < len(ciphertext) {
+      let ch = substring(ciphertext, i, i + 1)
+      let idx = index_of(alphabet_letters, lower(ch))
+      if idx >= 0 {
+        let m = len(alphabet_letters)
+        var new_idx = (idx - shift) % m
+        if new_idx < 0 { new_idx = new_idx + m }
+        let new_char = alphabet_letters[new_idx]
+        if case_sensitive && ch != lower(ch) {
+          decrypted = decrypted + upper(new_char)
+        } else {
+          decrypted = decrypted + new_char
+        }
+      } else {
+        decrypted = decrypted + ch
+      }
+      i = i + 1
+    }
+    var chi = 0.0
+    let lowered = if case_sensitive { lower(decrypted) } else { decrypted }
+    var j = 0
+    while j < len(alphabet_letters) {
+      let letter = alphabet_letters[j]
+      let occ = count_char(lowered, letter)
+      if occ > 0 {
+        let occf = occ as float
+        let expected = frequencies[letter] * occf
+        let diff = occf - expected
+        chi = chi + ((diff * diff) / expected) * occf
+      }
+      j = j + 1
+    }
+    if shift == 0 || chi < best_chi {
+      best_shift = shift
+      best_chi = chi
+      best_text = decrypted
+    }
+    shift = shift + 1
+  }
+  return Result { shift: best_shift, chi: best_chi, decoded: best_text }
+}
+
+let r1 = decrypt_caesar_with_chi_squared(
+  "dof pz aol jhlzhy jpwoly zv wvwbshy? pa pz avv lhzf av jyhjr!",
+  [], {}, false
+)
+print(str(r1.shift) + ", " + str(r1.chi) + ", " + r1.decoded)
+
+let r2 = decrypt_caesar_with_chi_squared("crybd cdbsxq", [], {}, false)
+print(str(r2.shift) + ", " + str(r2.chi) + ", " + r2.decoded)
+
+let r3 = decrypt_caesar_with_chi_squared("Crybd Cdbsxq", [], {}, true)
+print(str(r3.shift) + ", " + str(r3.chi) + ", " + r3.decoded)
