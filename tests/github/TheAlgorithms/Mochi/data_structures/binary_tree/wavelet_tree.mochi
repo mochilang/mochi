@@ -1,0 +1,175 @@
+/*
+Wavelet Tree Implementation
+
+A wavelet tree is a data structure that answers range queries over
+an array by recursively partitioning values. Each node stores the
+minimum and maximum value of its segment and a `map_left` array that
+records how many elements go to the left child up to each index.
+
+To build the tree, we split the array around a pivot equal to the
+midpoint between the node's min and max. Elements less than or equal to
+the pivot go left; the rest go right. This process continues recursively
+until a node covers a single distinct value.
+
+The structure can then answer queries:
+- `rank_till_index` counts occurrences of a value up to a given index.
+- `rank` counts occurrences within an index range by difference of two
+  prefix ranks.
+- `quantile` finds the k-th smallest value in a subarray.
+- `range_counting` counts values within a numeric range for a subarray.
+
+All operations run in O(log \u03c3) time where \u03c3 is the value range size.
+*/
+
+type Node {
+  minn: int,
+  maxx: int,
+  map_left: list<int>,
+  left: int,
+  right: int,
+}
+
+var nodes: list<Node> = []
+
+fun make_list(length: int, value: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < length {
+    lst = append(lst, value)
+    i = i + 1
+  }
+  return lst
+}
+
+fun min_list(arr: list<int>): int {
+  var m = arr[0]
+  var i = 1
+  while i < len(arr) {
+    if arr[i] < m {
+      m = arr[i]
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun max_list(arr: list<int>): int {
+  var m = arr[0]
+  var i = 1
+  while i < len(arr) {
+    if arr[i] > m {
+      m = arr[i]
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun build_tree(arr: list<int>): int {
+  var n = Node { minn: min_list(arr), maxx: max_list(arr), map_left: make_list(len(arr), 0), left: -1, right: -1 }
+  if n.minn == n.maxx {
+    nodes = append(nodes, n)
+    return len(nodes) - 1
+  }
+  let pivot = (n.minn + n.maxx) / 2
+  var left_arr: list<int> = []
+  var right_arr: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    let num = arr[i]
+    if num <= pivot {
+      left_arr = append(left_arr, num)
+    } else {
+      right_arr = append(right_arr, num)
+    }
+    var ml = n.map_left
+    ml[i] = len(left_arr)
+    n.map_left = ml
+    i = i + 1
+  }
+  if len(left_arr) > 0 {
+    n.left = build_tree(left_arr)
+  }
+  if len(right_arr) > 0 {
+    n.right = build_tree(right_arr)
+  }
+  nodes = append(nodes, n)
+  return len(nodes) - 1
+}
+
+fun rank_till_index(node_idx: int, num: int, index: int): int {
+  if index < 0 || node_idx < 0 {
+    return 0
+  }
+  let node = nodes[node_idx]
+  if node.minn == node.maxx {
+    if node.minn == num { return index + 1 } else { return 0 }
+  }
+  let pivot = (node.minn + node.maxx) / 2
+  if num <= pivot {
+    return rank_till_index(node.left, num, node.map_left[index] - 1)
+  } else {
+    return rank_till_index(node.right, num, index - node.map_left[index])
+  }
+}
+
+fun rank(node_idx: int, num: int, start: int, end: int): int {
+  if start > end {
+    return 0
+  }
+  let rank_till_end = rank_till_index(node_idx, num, end)
+  let rank_before_start = rank_till_index(node_idx, num, start - 1)
+  return rank_till_end - rank_before_start
+}
+
+fun quantile(node_idx: int, index: int, start: int, end: int): int {
+  if index > (end - start) || start > end || node_idx < 0 {
+    return -1
+  }
+  let node = nodes[node_idx]
+  if node.minn == node.maxx {
+    return node.minn
+  }
+  let left_start = if start == 0 { 0 } else { node.map_left[start - 1] }
+  let num_left = node.map_left[end] - left_start
+  if num_left > index {
+    return quantile(node.left, index, left_start, node.map_left[end] - 1)
+  } else {
+    return quantile(node.right, index - num_left, start - left_start, end - node.map_left[end])
+  }
+}
+
+fun range_counting(node_idx: int, start: int, end: int, start_num: int, end_num: int): int {
+  if start > end || node_idx < 0 || start_num > end_num {
+    return 0
+  }
+  let node = nodes[node_idx]
+  if node.minn > end_num || node.maxx < start_num {
+    return 0
+  }
+  if start_num <= node.minn && node.maxx <= end_num {
+    return end - start + 1
+  }
+  let left = range_counting(
+    node.left,
+    if start == 0 { 0 } else { node.map_left[start - 1] },
+    node.map_left[end] - 1,
+    start_num,
+    end_num
+  )
+  let right = range_counting(
+    node.right,
+    start - (if start == 0 { 0 } else { node.map_left[start - 1] }),
+    end - node.map_left[end],
+    start_num,
+    end_num
+  )
+  return left + right
+}
+
+let test_array = [2,1,4,5,6,0,8,9,1,2,0,6,4,2,0,6,5,3,2,7]
+let root = build_tree(test_array)
+print("rank_till_index 6 at 6 -> " + str(rank_till_index(root, 6, 6)))
+print("rank 6 in [3,13] -> " + str(rank(root, 6, 3, 13)))
+print("quantile index 2 in [2,5] -> " + str(quantile(root, 2, 2, 5)))
+print("range_counting [3,7] in [1,10] -> " + str(range_counting(root, 1, 10, 3, 7)))
