@@ -1,0 +1,128 @@
+/*
+Translate text to and from Morse code using lookup tables.
+
+Each supported character is paired with its Morse representation
+in two parallel lists.  To encrypt, the input string is converted to
+uppercase and each character is replaced with its code, separated by
+spaces.  Decryption performs the inverse operation by splitting the
+code on spaces and looking up each pattern.
+
+Both operations run in O(n * m) time where n is the number of symbols
+in the message and m is the size of the lookup table (52 entries).
+The implementation avoids external dependencies and uses only
+primitive types.
+*/
+
+let CHARS: list<string> = [
+  "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+  "1","2","3","4","5","6","7","8","9","0","&","@",
+  ":",",",".","'","\"","?","/","=","+","-","(",")","!"," "
+]
+
+let CODES: list<string> = [
+  ".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--..",
+  ".----","..---","...--","....-",".....","-....","--...","---..","----.","-----",".-...",".--.-.",
+  "---...","--..--",".-.-.-",".----.",".-..-.","..--..","-..-.","-...-",".-.-.","-....-","-.--.","-.--.-","-.-.--","/"
+]
+
+fun to_upper_char(c: string): string {
+  if c == "a" { return "A" }
+  if c == "b" { return "B" }
+  if c == "c" { return "C" }
+  if c == "d" { return "D" }
+  if c == "e" { return "E" }
+  if c == "f" { return "F" }
+  if c == "g" { return "G" }
+  if c == "h" { return "H" }
+  if c == "i" { return "I" }
+  if c == "j" { return "J" }
+  if c == "k" { return "K" }
+  if c == "l" { return "L" }
+  if c == "m" { return "M" }
+  if c == "n" { return "N" }
+  if c == "o" { return "O" }
+  if c == "p" { return "P" }
+  if c == "q" { return "Q" }
+  if c == "r" { return "R" }
+  if c == "s" { return "S" }
+  if c == "t" { return "T" }
+  if c == "u" { return "U" }
+  if c == "v" { return "V" }
+  if c == "w" { return "W" }
+  if c == "x" { return "X" }
+  if c == "y" { return "Y" }
+  if c == "z" { return "Z" }
+  return c
+}
+
+fun to_upper(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    res = res + to_upper_char(s[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun index_of(xs: list<string>, target: string): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == target { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun encrypt(message: string): string {
+  let msg = to_upper(message)
+  var res = ""
+  var i = 0
+  while i < len(msg) {
+    let c = msg[i]
+    let idx = index_of(CHARS, c)
+      if idx >= 0 {
+      if res != "" { res = res + " " }
+      res = res + CODES[idx]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun split_spaces(s: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == " " {
+      if current != "" { res = append(res, current); current = "" }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if current != "" { res = append(res, current) }
+  return res
+}
+
+fun decrypt(message: string): string {
+  let parts = split_spaces(message)
+  var res = ""
+  for code in parts {
+    let idx = index_of(CODES, code)
+    if idx >= 0 { res = res + CHARS[idx] }
+  }
+  return res
+}
+
+let msg = "Morse code here!"
+print(msg)
+let enc = encrypt(msg)
+print(enc)
+let dec = decrypt(enc)
+print(dec)
+
+print(encrypt("Sos!"))
+print(decrypt("... --- ... -.-.--"))
