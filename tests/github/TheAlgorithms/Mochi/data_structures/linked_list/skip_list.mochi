@@ -1,0 +1,178 @@
+/*
+Skip list storing integer keys and values.
+
+A skip list maintains multiple forward pointers for each node, allowing
+logarithmic expected time for search, insertion, and deletion.  Nodes are kept
+in sorted order on level 0; higher levels act as express lanes that skip several
+nodes.  The level of a new node is chosen randomly.  This implementation uses
+arrays to store node fields, keeping the structure fully typed in Mochi.
+
+Operations:
+  - insert(key, value): add or update a key/value pair
+  - find(key): retrieve the value for a key or return -1 when missing
+  - delete(key): remove a key from the list
+  - to_string(): string representation of level-0 keys and values
+
+The demonstration builds a list, inserts several items (including an update),
+deletes one key, and prints the final contents.
+*/
+
+let NIL = 0 - 1
+let MAX_LEVEL = 6
+let P: float = 0.5
+
+var seed = 1
+fun random(): float {
+  seed = (seed * 13 + 7) % 100
+  return (seed as float) / 100.0
+}
+
+fun random_level(): int {
+  var lvl = 1
+  while random() < P && lvl < MAX_LEVEL {
+    lvl = lvl + 1
+  }
+  return lvl
+}
+
+fun empty_forward(): list<int> {
+  var f: list<int> = []
+  var i = 0
+  while i < MAX_LEVEL {
+    f = append(f, NIL)
+    i = i + 1
+  }
+  return f
+}
+
+var node_keys: list<int> = []
+var node_vals: list<int> = []
+var node_forwards: list<list<int>> = []
+var level: int = 1
+
+fun init() {
+  node_keys = [-1]
+  node_vals = [0]
+  node_forwards = [empty_forward()]
+  level = 1
+}
+
+fun insert(key: int, value: int) {
+  var update: list<int> = []
+  var i = 0
+  while i < MAX_LEVEL {
+    update = append(update, 0)
+    i = i + 1
+  }
+
+  var x = 0
+  i = level - 1
+  while i >= 0 {
+    while node_forwards[x][i] != NIL && node_keys[node_forwards[x][i]] < key {
+      x = node_forwards[x][i]
+    }
+    update[i] = x
+    i = i - 1
+  }
+
+  x = node_forwards[x][0]
+  if x != NIL && node_keys[x] == key {
+    node_vals[x] = value
+    return
+  }
+
+  let lvl = random_level()
+  if lvl > level {
+    var j = level
+    while j < lvl {
+      update[j] = 0
+      j = j + 1
+    }
+    level = lvl
+  }
+
+  node_keys = append(node_keys, key)
+  node_vals = append(node_vals, value)
+  var forwards = empty_forward()
+  let idx = len(node_keys) - 1
+  i = 0
+  while i < lvl {
+    forwards[i] = node_forwards[update[i]][i]
+    node_forwards[update[i]][i] = idx
+    i = i + 1
+  }
+  node_forwards = append(node_forwards, forwards)
+}
+
+fun find(key: int): int {
+  var x = 0
+  var i = level - 1
+  while i >= 0 {
+    while node_forwards[x][i] != NIL && node_keys[node_forwards[x][i]] < key {
+      x = node_forwards[x][i]
+    }
+    i = i - 1
+  }
+  x = node_forwards[x][0]
+  if x != NIL && node_keys[x] == key { return node_vals[x] }
+  return -1
+}
+
+fun delete(key: int) {
+  var update: list<int> = []
+  var i = 0
+  while i < MAX_LEVEL {
+    update = append(update, 0)
+    i = i + 1
+  }
+
+  var x = 0
+  i = level - 1
+  while i >= 0 {
+    while node_forwards[x][i] != NIL && node_keys[node_forwards[x][i]] < key {
+      x = node_forwards[x][i]
+    }
+    update[i] = x
+    i = i - 1
+  }
+
+  x = node_forwards[x][0]
+  if x == NIL || node_keys[x] != key { return }
+
+  i = 0
+  while i < level {
+    if node_forwards[update[i]][i] == x {
+      node_forwards[update[i]][i] = node_forwards[x][i]
+    }
+    i = i + 1
+  }
+
+  while level > 1 && node_forwards[0][level - 1] == NIL {
+    level = level - 1
+  }
+}
+
+fun to_string(): string {
+  var s = ""
+  var x = node_forwards[0][0]
+  while x != NIL {
+    if s != "" { s = s + " -> " }
+    s = s + str(node_keys[x]) + ":" + str(node_vals[x])
+    x = node_forwards[x][0]
+  }
+  return s
+}
+
+fun main() {
+  init()
+  insert(2, 2)
+  insert(4, 4)
+  insert(6, 4)
+  insert(4, 5)
+  insert(8, 4)
+  insert(9, 4)
+  delete(4)
+  print(to_string())
+}
+
+main()
