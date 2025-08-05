@@ -1,0 +1,325 @@
+/*
+  A simple matrix implementation in pure Mochi mirroring the
+  functionality of TheAlgorithms/Python ``matrix/matrix_class.py``.
+  The matrix is represented as a struct with a list of row lists.
+  Operations provided include:
+    - retrieving columns and matrix order
+    - generating an identity matrix
+    - computing determinant using Laplace expansion
+    - checking invertibility and producing an inverse
+    - computing minors, cofactors and adjugate
+    - row and column addition
+    - negation, scalar multiplication, addition, subtraction,
+      matrix multiplication and exponentiation
+  All values are floats and the code avoids the ``any`` type so it can
+  run on ``runtime/vm``.
+*/
+
+type Matrix {
+  data: list<list<float>>,
+  rows: int,
+  cols: int
+}
+
+fun make_matrix(values: list<list<float>>): Matrix {
+  let r = len(values)
+  if r == 0 { return Matrix { data: [], rows: 0, cols: 0 } }
+  let c = len(values[0])
+  var i = 0
+  while i < r {
+    if len(values[i]) != c { return Matrix { data: [], rows: 0, cols: 0 } }
+    i = i + 1
+  }
+  return Matrix { data: values, rows: r, cols: c }
+}
+
+fun matrix_columns(m: Matrix): list<list<float>> {
+  var cols: list<list<float>> = []
+  var j = 0
+  while j < m.cols {
+    var col: list<float> = []
+    var i = 0
+    while i < m.rows {
+      col = append(col, m.data[i][j])
+      i = i + 1
+    }
+    cols = append(cols, col)
+    j = j + 1
+  }
+  return cols
+}
+
+fun matrix_identity(m: Matrix): Matrix {
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      let v = if i == j { 1.0 } else { 0.0 }
+      row = append(row, v)
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_minor(m: Matrix, r: int, c: int): float {
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    if i != r {
+      var row: list<float> = []
+      var j = 0
+      while j < m.cols {
+        if j != c { row = append(row, m.data[i][j]) }
+        j = j + 1
+      }
+      vals = append(vals, row)
+    }
+    i = i + 1
+  }
+  let sub = Matrix { data: vals, rows: m.rows - 1, cols: m.cols - 1 }
+  return matrix_determinant(sub)
+}
+
+fun matrix_cofactor(m: Matrix, r: int, c: int): float {
+  let minor = matrix_minor(m, r, c)
+  if (r + c) % 2 == 0 { return minor }
+  return -1.0 * minor
+}
+
+fun matrix_minors(m: Matrix): Matrix {
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      row = append(row, matrix_minor(m, i, j))
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_cofactors(m: Matrix): Matrix {
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      row = append(row, matrix_cofactor(m, i, j))
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_determinant(m: Matrix): float {
+  if m.rows != m.cols { return 0.0 }
+  if m.rows == 0 { return 0.0 }
+  if m.rows == 1 { return m.data[0][0] }
+  if m.rows == 2 {
+    return m.data[0][0] * m.data[1][1] - m.data[0][1] * m.data[1][0]
+  }
+  var sum = 0.0
+  var j = 0
+  while j < m.cols {
+    sum = sum + m.data[0][j] * matrix_cofactor(m, 0, j)
+    j = j + 1
+  }
+  return sum
+}
+
+fun matrix_is_invertible(m: Matrix): bool {
+  return matrix_determinant(m) != 0.0
+}
+
+fun matrix_adjugate(m: Matrix): Matrix {
+  let cof = matrix_cofactors(m)
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      row = append(row, cof.data[j][i])
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_inverse(m: Matrix): Matrix {
+  let det = matrix_determinant(m)
+  if det == 0.0 { return Matrix { data: [], rows: 0, cols: 0 } }
+  let adj = matrix_adjugate(m)
+  return matrix_mul_scalar(adj, 1.0 / det)
+}
+
+fun matrix_add_row(m: Matrix, row: list<float>): Matrix {
+  var newData = m.data
+  newData = append(newData, row)
+  return Matrix { data: newData, rows: m.rows + 1, cols: m.cols }
+}
+
+fun matrix_add_column(m: Matrix, col: list<float>): Matrix {
+  var newData: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    newData = append(newData, append(m.data[i], col[i]))
+    i = i + 1
+  }
+  return Matrix { data: newData, rows: m.rows, cols: m.cols + 1 }
+}
+
+fun matrix_mul_scalar(m: Matrix, s: float): Matrix {
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      row = append(row, m.data[i][j] * s)
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_neg(m: Matrix): Matrix {
+  return matrix_mul_scalar(m, -1.0)
+}
+
+fun matrix_add(a: Matrix, b: Matrix): Matrix {
+  if a.rows != b.rows || a.cols != b.cols { return Matrix { data: [], rows: 0, cols: 0 } }
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < a.cols {
+      row = append(row, a.data[i][j] + b.data[i][j])
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: a.rows, cols: a.cols }
+}
+
+fun matrix_sub(a: Matrix, b: Matrix): Matrix {
+  if a.rows != b.rows || a.cols != b.cols { return Matrix { data: [], rows: 0, cols: 0 } }
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < a.cols {
+      row = append(row, a.data[i][j] - b.data[i][j])
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: a.rows, cols: a.cols }
+}
+
+fun matrix_dot(row: list<float>, col: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(row) {
+    sum = sum + row[i] * col[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun matrix_mul(a: Matrix, b: Matrix): Matrix {
+  if a.cols != b.rows { return Matrix { data: [], rows: 0, cols: 0 } }
+  let bcols = matrix_columns(b)
+  var vals: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < b.cols {
+      row = append(row, matrix_dot(a.data[i], bcols[j]))
+      j = j + 1
+    }
+    vals = append(vals, row)
+    i = i + 1
+  }
+  return Matrix { data: vals, rows: a.rows, cols: b.cols }
+}
+
+fun matrix_pow(m: Matrix, p: int): Matrix {
+  if p == 0 { return matrix_identity(m) }
+  if p < 0 {
+    if matrix_is_invertible(m) { return matrix_pow(matrix_inverse(m), -p) }
+    return Matrix { data: [], rows: 0, cols: 0 }
+  }
+  var result = m
+  var i = 1
+  while i < p {
+    result = matrix_mul(result, m)
+    i = i + 1
+  }
+  return result
+}
+
+fun matrix_to_string(m: Matrix): string {
+  if m.rows == 0 { return "[]" }
+  var s = "["
+  var i = 0
+  while i < m.rows {
+    s = s + "["
+    var j = 0
+    while j < m.cols {
+      s = s + str(m.data[i][j])
+      if j < m.cols - 1 { s = s + " " }
+      j = j + 1
+    }
+    s = s + "]"
+    if i < m.rows - 1 { s = s + "\n " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  let m = make_matrix([[1.0,2.0,3.0],[4.0,5.0,6.0],[7.0,8.0,9.0]])
+  print(matrix_to_string(m))
+  print(str(matrix_columns(m)))
+  print(str(m.rows) + "," + str(m.cols))
+  print(str(matrix_is_invertible(m)))
+  print(matrix_to_string(matrix_identity(m)))
+  print(str(matrix_determinant(m)))
+  print(matrix_to_string(matrix_minors(m)))
+  print(matrix_to_string(matrix_cofactors(m)))
+  print(matrix_to_string(matrix_adjugate(m)))
+  let m2 = matrix_mul_scalar(m, 3.0)
+  print(matrix_to_string(m2))
+  print(matrix_to_string(matrix_add(m, m2)))
+  print(matrix_to_string(matrix_sub(m, m2)))
+  print(matrix_to_string(matrix_pow(m, 3)))
+  let m3 = matrix_add_row(m, [10.0,11.0,12.0])
+  print(matrix_to_string(m3))
+  let m4 = matrix_add_column(m2, [8.0,16.0,32.0])
+  print(matrix_to_string(matrix_mul(m3, m4)))
+}
+
+main()
