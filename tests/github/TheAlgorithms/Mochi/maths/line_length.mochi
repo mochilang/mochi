@@ -1,0 +1,54 @@
+/*
+Arc Length Approximation
+-----------------------
+This program approximates the length of a curve defined by a function f(x)
+between two x-values. The algorithm divides the interval into equal steps,
+computes straight-line distances between successive points on the curve and
+sums them to estimate the total arc length. This mirrors the Python
+implementation from TheAlgorithms repository.
+
+Helper functions implement a simple Newton-Raphson square root routine and a
+hypot function for distance calculations. The main line_length function accepts
+another function along with the interval and number of steps, returning the
+approximate length.
+*/
+
+fun sqrt_newton(n: float): float {
+  if n == 0.0 { return 0.0 }
+  var x = n
+  var i = 0
+  while i < 20 {
+    x = (x + n / x) / 2.0
+    i = i + 1
+  }
+  return x
+}
+
+fun hypot(a: float, b: float): float {
+  return sqrt_newton(a * a + b * b)
+}
+
+fun line_length(fnc: fun(float): float, x_start: float, x_end: float, steps: int): float {
+  var x1 = x_start
+  var fx1 = fnc(x_start)
+  var length = 0.0
+  var i = 0
+  let step = (x_end - x_start) / (1.0 * steps)
+  while i < steps {
+    let x2 = step + x1
+    let fx2 = fnc(x2)
+    length = length + hypot(x2 - x1, fx2 - fx1)
+    x1 = x2
+    fx1 = fx2
+    i = i + 1
+  }
+  return length
+}
+
+fun f1(x: float): float { return x }
+fun f2(x: float): float { return 1.0 }
+fun f3(x: float): float { return (x * x) / 10.0 }
+
+print(line_length(f1, 0.0, 1.0, 10))
+print(line_length(f2, -5.5, 4.5, 100))
+print(line_length(f3, 0.0, 10.0, 1000))
