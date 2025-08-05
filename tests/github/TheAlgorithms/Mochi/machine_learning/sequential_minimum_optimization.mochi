@@ -1,0 +1,139 @@
+/*
+Sequential minimal optimization (SMO) trains a support vector machine (SVM) by
+solving the dual optimization problem.  At each iteration two Lagrange
+multipliers (alphas) are selected and updated analytically while the others are
+held fixed.  This implementation uses a linear kernel and a simple heuristic for
+choosing the second alpha.  Training continues until a full pass over the data
+fails to update any alphas or a maximum number of passes is reached.
+
+The result is a separating hyperplane defined by the support vectors.  The
+implementation uses only basic list and loop operations available in Mochi.
+*/
+fun dot(a: list<float>, b: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(a) {
+    sum = sum + a[i] * b[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun maxf(a: float, b: float): float {
+  if a > b {
+    return a
+  }
+  return b
+}
+
+fun minf(a: float, b: float): float {
+  if a < b {
+    return a
+  }
+  return b
+}
+
+fun absf(x: float): float {
+  if x >= 0.0 {
+    return x
+  }
+  return 0.0 - x
+}
+
+fun predict_raw(samples: list<list<float>>, labels: list<float>, alphas: list<float>, b: float, x: list<float>): float {
+  var res = 0.0
+  var i = 0
+  while i < len(samples) {
+    res = res + alphas[i] * labels[i] * dot(samples[i], x)
+    i = i + 1
+  }
+  return res + b
+}
+
+fun smo_train(samples: list<list<float>>, labels: list<float>, c: float, tol: float, max_passes: int): list<list<float>> {
+  let m = len(samples)
+  var alphas: list<float> = []
+  var i = 0
+  while i < m {
+    alphas = append(alphas, 0.0)
+    i = i + 1
+  }
+  var b = 0.0
+  var passes = 0
+  while passes < max_passes {
+    var num_changed = 0
+    var i1 = 0
+    while i1 < m {
+      let Ei = predict_raw(samples, labels, alphas, b, samples[i1]) - labels[i1]
+      if (labels[i1] * Ei < 0.0 - tol && alphas[i1] < c) || (labels[i1] * Ei > tol && alphas[i1] > 0.0) {
+        var i2 = (i1 + 1) % m
+        let Ej = predict_raw(samples, labels, alphas, b, samples[i2]) - labels[i2]
+        let alpha1_old = alphas[i1]
+        let alpha2_old = alphas[i2]
+        var L = 0.0
+        var H = 0.0
+        if labels[i1] != labels[i2] {
+          L = maxf(0.0, alpha2_old - alpha1_old)
+          H = minf(c, c + alpha2_old - alpha1_old)
+        } else {
+          L = maxf(0.0, alpha2_old + alpha1_old - c)
+          H = minf(c, alpha2_old + alpha1_old)
+        }
+        if L == H {
+          i1 = i1 + 1
+          continue
+        }
+        let eta = 2.0 * dot(samples[i1], samples[i2]) - dot(samples[i1], samples[i1]) - dot(samples[i2], samples[i2])
+        if eta >= 0.0 {
+          i1 = i1 + 1
+          continue
+        }
+        alphas[i2] = alpha2_old - labels[i2] * (Ei - Ej) / eta
+        if alphas[i2] > H {
+          alphas[i2] = H
+        }
+        if alphas[i2] < L {
+          alphas[i2] = L
+        }
+        if absf(alphas[i2] - alpha2_old) < 0.00001 {
+          i1 = i1 + 1
+          continue
+        }
+        alphas[i1] = alpha1_old + labels[i1] * labels[i2] * (alpha2_old - alphas[i2])
+        let b1 = b - Ei - labels[i1] * (alphas[i1] - alpha1_old) * dot(samples[i1], samples[i1]) - labels[i2] * (alphas[i2] - alpha2_old) * dot(samples[i1], samples[i2])
+        let b2 = b - Ej - labels[i1] * (alphas[i1] - alpha1_old) * dot(samples[i1], samples[i2]) - labels[i2] * (alphas[i2] - alpha2_old) * dot(samples[i2], samples[i2])
+        if alphas[i1] > 0.0 && alphas[i1] < c {
+          b = b1
+        } else if alphas[i2] > 0.0 && alphas[i2] < c {
+          b = b2
+        } else {
+          b = (b1 + b2) / 2.0
+        }
+        num_changed = num_changed + 1
+      }
+      i1 = i1 + 1
+    }
+    if num_changed == 0 {
+      passes = passes + 1
+    } else {
+      passes = 0
+    }
+  }
+  return [alphas, [b]]
+}
+
+fun predict(samples: list<list<float>>, labels: list<float>, model: list<list<float>>, x: list<float>): float {
+  let alphas = model[0]
+  let b = model[1][0]
+  let val = predict_raw(samples, labels, alphas, b, x)
+  if val >= 0.0 {
+    return 1.0
+  }
+  return -1.0
+}
+
+let samples = [[2.0, 2.0], [1.5, 1.5], [0.0, 0.0], [0.5, 0.0]]
+let labels = [1.0, 1.0, -1.0, -1.0]
+let model = smo_train(samples, labels, 1.0, 0.001, 10)
+print(predict(samples, labels, model, [1.5, 1.0]))
+print(predict(samples, labels, model, [0.2, 0.1]))
