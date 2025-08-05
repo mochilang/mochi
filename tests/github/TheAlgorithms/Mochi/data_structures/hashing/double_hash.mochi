@@ -1,0 +1,87 @@
+/*
+Resolve collisions in an open addressed hash table using double hashing.
+
+The table stores integers and uses two hash functions:
+  h1(key) = key % size
+  h2(key) = prime - (key % prime)
+where `prime` is the largest prime less than the table size.  When a
+collision occurs, the algorithm probes `index = (index + h2(key)) % size`
+until an empty slot is found.  This approach distributes entries more
+uniformly than linear probing and avoids primary clustering.  Insert and
+lookup operations run in expected O(1) time while the load factor
+remains below 1.
+*/
+
+fun is_prime(n: int): bool {
+  if n < 2 { return false }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun prev_prime(n: int): int {
+  var p = n - 1
+  while p >= 2 {
+    if is_prime(p) { return p }
+    p = p - 1
+  }
+  return 1
+}
+
+fun create_table(size: int): list<int> {
+  var vals: list<int> = []
+  var i = 0
+  while i < size {
+    vals = append(vals, (-1))
+    i = i + 1
+  }
+  return vals
+}
+
+fun hash1(size: int, key: int): int { return key % size }
+
+fun hash2(prime: int, key: int): int { return prime - (key % prime) }
+
+fun insert_double_hash(values: list<int>, size: int, prime: int, value: int): list<int> {
+  var vals = values
+  var idx = hash1(size, value)
+  let step = hash2(prime, value)
+  var count = 0
+  while vals[idx] != (-1) && count < size {
+    idx = (idx + step) % size
+    count = count + 1
+  }
+  if vals[idx] == (-1) {
+    vals[idx] = value
+  }
+  return vals
+}
+
+fun table_keys(values: list<int>): map<int, int> {
+  var res: map<int, int> = {}
+  var i = 0
+  while i < len(values) {
+    if values[i] != (-1) {
+      res[i] = values[i]
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun run_example(size: int, data: list<int>) {
+  let prime = prev_prime(size)
+  var table = create_table(size)
+  var i = 0
+  while i < len(data) {
+    table = insert_double_hash(table, size, prime, data[i])
+    i = i + 1
+  }
+  print(str(table_keys(table)))
+}
+
+run_example(3, [10, 20, 30])
+run_example(4, [10, 20, 30])
