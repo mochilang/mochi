@@ -1,0 +1,98 @@
+/*
+Apparent Power in AC Circuits
+-----------------------------
+Computes the complex apparent power S in a single-phase AC circuit.
+Given voltage magnitude V and current magnitude I with phase angles
+in degrees (\u03b8_v and \u03b8_i), convert each phasor to rectangular form
+and multiply to obtain:
+  S = V * I = (V cos \u03b8_v + j V sin \u03b8_v) * (I cos \u03b8_i + j I sin \u03b8_i)
+The result is a complex number representing real and reactive power.
+The algorithm uses Taylor series for sine and cosine to avoid FFI and
+runs in constant time O(1).
+*/
+
+let PI: float = 3.141592653589793
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun to_radians(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun rect(mag: float, angle: float): list<float> {
+  let c = cos_taylor(angle)
+  let s = sin_taylor(angle)
+  return [mag * c, mag * s]
+}
+
+fun multiply(a: list<float>, b: list<float>): list<float> {
+  return [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]]
+}
+
+fun apparent_power(voltage: float, current: float, voltage_angle: float, current_angle: float): list<float> {
+  let vrad = to_radians(voltage_angle)
+  let irad = to_radians(current_angle)
+  let vrect: list<float> = rect(voltage, vrad)
+  let irect: list<float> = rect(current, irad)
+  let result: list<float> = multiply(vrect, irect)
+  return result
+}
+
+fun approx_equal(a: list<float>, b: list<float>, eps: float): bool {
+  return abs(a[0] - b[0]) < eps && abs(a[1] - b[1]) < eps
+}
+
+test "zero phase" {
+  let s = apparent_power(100.0, 5.0, 0.0, 0.0)
+  let expected = [500.0, 0.0]
+  expect approx_equal(s, expected, 0.001)
+}
+
+test "orthogonal voltage" {
+  let s = apparent_power(100.0, 5.0, 90.0, 0.0)
+  let expected = [0.0, 500.0]
+  expect approx_equal(s, expected, 0.5)
+}
+
+test "negative angles" {
+  let s = apparent_power(100.0, 5.0, -45.0, -60.0)
+  let expected = [-129.40952255126027, -482.9629131445341]
+  expect approx_equal(s, expected, 0.001)
+}
+
+test "another case" {
+  let s = apparent_power(200.0, 10.0, -30.0, -90.0)
+  let expected = [-1000.0, -1732.0508075688776]
+  expect approx_equal(s, expected, 0.001)
+}
