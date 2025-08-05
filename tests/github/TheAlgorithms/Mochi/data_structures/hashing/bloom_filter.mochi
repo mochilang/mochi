@@ -1,0 +1,185 @@
+/*
+Bloom Filter for Probabilistic Set Membership
+
+A Bloom filter is a space-efficient data structure that answers membership
+queries with possible false positives but no false negatives. It uses a bit
+array and multiple hash functions. To add a value, each hash function maps the
+value to a position in the bit array and sets that bit to 1. To test membership,
+all corresponding bits must be 1. The probability of false positives increases
+as more elements are inserted and decreases with a larger bit array.
+
+This implementation keeps the bit array as a list<int> of 0/1 values and employs
+two simple polynomial rolling hash functions instead of cryptographic hashes to
+remain self-contained. The estimated error rate is computed as
+(n_ones / size)^k where k is the number of hash functions.
+
+Functions provided:
+- new_bloom(size): create a filter with all bits zero.
+- bloom_add(filter, value): insert a string into the filter.
+- bloom_exists(filter, value): check if a string might be in the set.
+- format_hash(filter, value): show bits that would be set for a value.
+- bitstring(filter): current bit array as a binary string.
+- estimated_error_rate(filter): estimate probability of false positives.
+
+Time complexity for add and membership tests is O(len(value)).
+*/
+
+let ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ascii) {
+    if ascii[i:i+1] == ch { return 32 + i }
+    i = i + 1
+  }
+  return 0
+}
+
+type Bloom {
+  size: int,
+  bits: list<int>
+}
+
+fun new_bloom(size: int): Bloom {
+  var bits: list<int> = []
+  var i = 0
+  while i < size {
+    bits = append(bits, 0)
+    i = i + 1
+  }
+  return Bloom { size: size, bits: bits }
+}
+
+fun hash1(value: string, size: int): int {
+  var h = 0
+  var i = 0
+  while i < len(value) {
+    h = (h * 31 + ord(value[i:i+1])) % size
+    i = i + 1
+  }
+  return h
+}
+
+fun hash2(value: string, size: int): int {
+  var h = 0
+  var i = 0
+  while i < len(value) {
+    h = (h * 131 + ord(value[i:i+1])) % size
+    i = i + 1
+  }
+  return h
+}
+
+fun hash_positions(value: string, size: int): list<int> {
+  let h1 = hash1(value, size)
+  let h2 = hash2(value, size)
+  var res: list<int> = []
+  res = append(res, h1)
+  res = append(res, h2)
+  return res
+}
+
+fun bloom_add(b: Bloom, value: string): Bloom {
+  let pos = hash_positions(value, b.size)
+  var bits = b.bits
+  var i = 0
+  while i < len(pos) {
+    let idx = b.size - 1 - pos[i]
+    bits[idx] = 1
+    i = i + 1
+  }
+  return Bloom { size: b.size, bits: bits }
+}
+
+fun bloom_exists(b: Bloom, value: string): bool {
+  let pos = hash_positions(value, b.size)
+  var i = 0
+  while i < len(pos) {
+    let idx = b.size - 1 - pos[i]
+    if b.bits[idx] != 1 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun bitstring(b: Bloom): string {
+  var res = ""
+  var i = 0
+  while i < b.size {
+    res = res + str(b.bits[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun format_hash(b: Bloom, value: string): string {
+  let pos = hash_positions(value, b.size)
+  var bits: list<int> = []
+  var i = 0
+  while i < b.size {
+    bits = append(bits, 0)
+    i = i + 1
+  }
+  i = 0
+  while i < len(pos) {
+    let idx = b.size - 1 - pos[i]
+    bits[idx] = 1
+    i = i + 1
+  }
+  var res = ""
+  i = 0
+  while i < b.size {
+    res = res + str(bits[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun estimated_error_rate(b: Bloom): float {
+  var ones = 0
+  var i = 0
+  while i < b.size {
+    if b.bits[i] == 1 { ones = ones + 1 }
+    i = i + 1
+  }
+  let frac = (ones as float) / (b.size as float)
+  return frac * frac
+}
+
+fun any_in(b: Bloom, items: list<string>): bool {
+  var i = 0
+  while i < len(items) {
+    if bloom_exists(b, items[i]) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  var bloom = new_bloom(8)
+  print(bitstring(bloom))
+  print(bloom_exists(bloom, "Titanic"))
+  bloom = bloom_add(bloom, "Titanic")
+  print(bitstring(bloom))
+  print(bloom_exists(bloom, "Titanic"))
+  bloom = bloom_add(bloom, "Avatar")
+  print(bloom_exists(bloom, "Avatar"))
+  print(format_hash(bloom, "Avatar"))
+  print(bitstring(bloom))
+  let not_present = ["The Godfather", "Interstellar", "Parasite", "Pulp Fiction"]
+  var i = 0
+  while i < len(not_present) {
+    let film = not_present[i]
+    print(film + ":" + format_hash(bloom, film))
+    i = i + 1
+  }
+  print(any_in(bloom, not_present))
+  print(bloom_exists(bloom, "Ratatouille"))
+  print(format_hash(bloom, "Ratatouille"))
+  print(str(estimated_error_rate(bloom)))
+  bloom = bloom_add(bloom, "The Godfather")
+  print(str(estimated_error_rate(bloom)))
+  print(bitstring(bloom))
+}
+
+main()
