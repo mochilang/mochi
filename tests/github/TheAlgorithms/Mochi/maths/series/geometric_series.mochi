@@ -1,0 +1,36 @@
+/*
+Geometric Series
+----------------
+Generate the first n terms of a geometric progression given a starting
+value `a` and common ratio `r`. The series takes the form:
+
+    a, a*r, a*r^2, ... , a*r^(n-1)
+
+The function returns an empty list if `n` is not positive or if `a` or `r`
+are zero. Each term after the first is obtained by multiplying the previous
+term by `r`. This implementation avoids any foreign function interfaces so
+it can run entirely on the runtime/vm.
+*/
+
+fun geometric_series(nth_term: float, start_term_a: float, common_ratio_r: float): list<float> {
+  let n = nth_term as int
+  if n <= 0 || start_term_a == 0.0 || common_ratio_r == 0.0 {
+    return []
+  }
+  var series: list<float> = []
+  var current = start_term_a
+  var i = 0
+  while i < n {
+    series = append(series, current)
+    current = current * common_ratio_r
+    i = i + 1
+  }
+  return series
+}
+
+print(geometric_series(4.0, 2.0, 2.0))
+print(geometric_series(4.0, 2.0, -2.0))
+print(geometric_series(4.0, -2.0, 2.0))
+print(geometric_series(-4.0, 2.0, 2.0))
+print(geometric_series(0.0, 100.0, 500.0))
+print(geometric_series(1.0, 1.0, 1.0))
