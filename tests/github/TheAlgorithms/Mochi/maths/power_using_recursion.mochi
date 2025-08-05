@@ -1,0 +1,33 @@
+/*
+Power Using Recursion
+---------------------
+This program computes a base raised to an integer exponent using
+pure recursion.  The recursive function `power` multiplies the base
+by the result of itself called with the exponent decremented by one.
+The recursion bottoms out when the exponent becomes zero, returning 1.
+
+The algorithm mirrors repeated multiplication: b^e = b * b^(e-1).
+Time complexity is O(e) and the call stack depth is also O(e).
+Negative exponents are handled externally by taking the reciprocal of
+the positive exponent result.
+*/
+
+fun power(base: int, exponent: int): int {
+  if exponent == 0 {
+    return 1
+  }
+  return base * power(base, exponent - 1)
+}
+
+fun test_power() {
+  if power(3, 4) != 81 { panic("power(3,4) failed") }
+  if power(2, 0) != 1 { panic("power(2,0) failed") }
+  if power(5, 6) != 15625 { panic("power(5,6) failed") }
+}
+
+fun main() {
+  test_power()
+  print(power(3, 4))
+}
+
+main()
