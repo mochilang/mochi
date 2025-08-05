@@ -1,0 +1,236 @@
+/*
+Matrix operations and linear algebra utilities.
+
+This program reimplements the algorithms from The Algorithms Python
+"matrix_operation.py" using pure Mochi.  It provides routines for:
+  * add           – element-wise sum of multiple matrices
+  * subtract      – element-wise difference of two matrices
+  * scalar_multiply – multiply every element by a scalar
+  * multiply      – matrix multiplication
+  * identity      – generate an n x n identity matrix
+  * transpose     – swap rows and columns
+  * minor         – submatrix with a given row and column removed
+  * determinant   – recursively compute the determinant
+  * inverse       – compute matrix inverse via adjugate and determinant
+
+All matrices are represented as list<list<float>> and the implementation
+avoids any foreign function interfaces.  No usage of the "any" type is
+required.
+*/
+
+fun add(matrices: list<list<list<float>>>): list<list<float>> {
+  let rows = len(matrices[0])
+  let cols = len(matrices[0][0])
+  var r = 0
+  var result: list<list<float>> = []
+  while r < rows {
+    var row: list<float> = []
+    var c = 0
+    while c < cols {
+      var sum = 0.0
+      var m = 0
+      while m < len(matrices) {
+        sum = sum + matrices[m][r][c]
+        m = m + 1
+      }
+      row = append(row, sum)
+      c = c + 1
+    }
+    result = append(result, row)
+    r = r + 1
+  }
+  return result
+}
+
+fun subtract(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  let rows = len(a)
+  let cols = len(a[0])
+  var r = 0
+  var result: list<list<float>> = []
+  while r < rows {
+    var row: list<float> = []
+    var c = 0
+    while c < cols {
+      row = append(row, a[r][c] - b[r][c])
+      c = c + 1
+    }
+    result = append(result, row)
+    r = r + 1
+  }
+  return result
+}
+
+fun scalar_multiply(matrix: list<list<float>>, n: float): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < len(matrix) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(matrix[i]) {
+      row = append(row, matrix[i][j] * n)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun multiply(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  let rowsA = len(a)
+  let colsA = len(a[0])
+  let rowsB = len(b)
+  let colsB = len(b[0])
+  var result: list<list<float>> = []
+  var i = 0
+  while i < rowsA {
+    var row: list<float> = []
+    var j = 0
+    while j < colsB {
+      var sum = 0.0
+      var k = 0
+      while k < colsA {
+        sum = sum + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun identity(n: int): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      if i == j {
+        row = append(row, 1.0)
+      } else {
+        row = append(row, 0.0)
+      }
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun transpose(matrix: list<list<float>>): list<list<float>> {
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var result: list<list<float>> = []
+  var c = 0
+  while c < cols {
+    var row: list<float> = []
+    var r = 0
+    while r < rows {
+      row = append(row, matrix[r][c])
+      r = r + 1
+    }
+    result = append(result, row)
+    c = c + 1
+  }
+  return result
+}
+
+fun minor(matrix: list<list<float>>, row: int, column: int): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < len(matrix) {
+    if i != row {
+      var new_row: list<float> = []
+      var j = 0
+      while j < len(matrix[i]) {
+        if j != column {
+          new_row = append(new_row, matrix[i][j])
+        }
+        j = j + 1
+      }
+      result = append(result, new_row)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun determinant(matrix: list<list<float>>): float {
+  if len(matrix) == 1 {
+    return matrix[0][0]
+  }
+  var det = 0.0
+  var c = 0
+  while c < len(matrix[0]) {
+    let sub = minor(matrix, 0, c)
+    let sign = if c % 2 == 0 { 1.0 } else { -1.0 }
+    det = det + matrix[0][c] * determinant(sub) * sign
+    c = c + 1
+  }
+  return det
+}
+
+fun inverse(matrix: list<list<float>>): list<list<float>> {
+  let det = determinant(matrix)
+  if det == 0.0 {
+    return []
+  }
+  let size = len(matrix)
+  var matrix_minor: list<list<float>> = []
+  var i = 0
+  while i < size {
+    var row: list<float> = []
+    var j = 0
+    while j < size {
+      let m = minor(matrix, i, j)
+      row = append(row, determinant(m))
+      j = j + 1
+    }
+    matrix_minor = append(matrix_minor, row)
+    i = i + 1
+  }
+  var cofactors: list<list<float>> = []
+  i = 0
+  while i < size {
+    var row: list<float> = []
+    var j = 0
+    while j < size {
+      let sign = if (i + j) % 2 == 0 { 1.0 } else { -1.0 }
+      row = append(row, matrix_minor[i][j] * sign)
+      j = j + 1
+    }
+    cofactors = append(cofactors, row)
+    i = i + 1
+  }
+  let adjugate = transpose(cofactors)
+  return scalar_multiply(adjugate, 1.0 / det)
+}
+
+fun main() {
+  let matrix_a = [ [12.0, 10.0], [3.0, 9.0] ]
+  let matrix_b = [ [3.0, 4.0], [7.0, 4.0] ]
+  let matrix_c = [
+    [11.0, 12.0, 13.0, 14.0],
+    [21.0, 22.0, 23.0, 24.0],
+    [31.0, 32.0, 33.0, 34.0],
+    [41.0, 42.0, 43.0, 44.0]
+  ]
+  let matrix_d = [
+    [3.0, 0.0, 2.0],
+    [2.0, 0.0, -2.0],
+    [0.0, 1.0, 1.0]
+  ]
+  print("Add Operation, add(matrix_a, matrix_b) = " + str(add([matrix_a, matrix_b])) + " \n")
+  print("Multiply Operation, multiply(matrix_a, matrix_b) = " + str(multiply(matrix_a, matrix_b)) + " \n")
+  print("Identity: " + str(identity(5)) + "\n")
+  print("Minor of " + str(matrix_c) + " = " + str(minor(matrix_c, 1, 2)) + " \n")
+  print("Determinant of " + str(matrix_b) + " = " + str(determinant(matrix_b)) + " \n")
+  print("Inverse of " + str(matrix_d) + " = " + str(inverse(matrix_d)) + "\n")
+}
+
+main()
