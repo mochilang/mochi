@@ -1,0 +1,54 @@
+/*
+Equivalent Resistance Calculator
+
+This module provides two functions to compute the equivalent resistance of
+multiple resistors connected in parallel or in series. For resistors in
+parallel the reciprocals are summed and the reciprocal of that sum is the
+result:
+
+    Req = 1 / (1/R1 + 1/R2 + ... + 1/Rn)
+
+All resistor values must be positive. For a series connection the values are
+added directly:
+
+    Req = R1 + R2 + ... + Rn
+
+These implementations mirror the Python versions from TheAlgorithms while
+staying purely in Mochi so they can run on the `runtime/vm` without FFI.
+*/
+
+fun resistor_parallel(resistors: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(resistors) {
+    let r = resistors[i]
+    if r <= 0.0 {
+      panic("Resistor at index " + str(i) + " has a negative or zero value!")
+    }
+    sum = sum + 1.0 / r
+    i = i + 1
+  }
+  return 1.0 / sum
+}
+
+fun resistor_series(resistors: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(resistors) {
+    let r = resistors[i]
+    if r < 0.0 {
+      panic("Resistor at index " + str(i) + " has a negative value!")
+    }
+    sum = sum + r
+    i = i + 1
+  }
+  return sum
+}
+
+fun main() {
+  let resistors = [3.21389, 2.0, 3.0]
+  print("Parallel: " + str(resistor_parallel(resistors)))
+  print("Series: " + str(resistor_series(resistors)))
+}
+
+main()
