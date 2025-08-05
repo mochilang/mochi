@@ -1,0 +1,69 @@
+/*
+Prime number utilities.
+
+This program provides two functions:
+
+1. isPrime(n): determines whether an integer n is prime.
+   - Returns false for values < 2 and for even numbers greater than 2.
+   - Checks odd divisors up to the square root of n using i*i <= n.
+
+2. nextPrime(value, factor, desc): returns the next prime relative to
+   `value * factor` searching upward by default. If `desc` is true it
+   searches downward. If the starting value is already prime, the next
+   prime in the given direction is returned.
+
+The implementation avoids external libraries and uses only integer
+arithmetic for primality testing.
+*/
+
+fun isPrime(number: int): bool {
+  if number < 2 {
+    return false
+  }
+  if number < 4 {
+    return true
+  }
+  if number % 2 == 0 {
+    return false
+  }
+  var i = 3
+  while i * i <= number {
+    if number % i == 0 {
+      return false
+    }
+    i = i + 2
+  }
+  return true
+}
+
+fun nextPrime(value: int, factor: int, desc: bool): int {
+  var v = value * factor
+  let firstValue = v
+  while !isPrime(v) {
+    if desc {
+      v = v - 1
+    } else {
+      v = v + 1
+    }
+  }
+  if v == firstValue {
+    if desc {
+      return nextPrime(v - 1, 1, desc)
+    } else {
+      return nextPrime(v + 1, 1, desc)
+    }
+  }
+  return v
+}
+
+print(isPrime(0))
+print(isPrime(1))
+print(isPrime(2))
+print(isPrime(3))
+print(isPrime(27))
+print(isPrime(87))
+print(isPrime(563))
+print(isPrime(2999))
+print(isPrime(67483))
+print(nextPrime(14, 1, false))
+print(nextPrime(14, 1, true))
