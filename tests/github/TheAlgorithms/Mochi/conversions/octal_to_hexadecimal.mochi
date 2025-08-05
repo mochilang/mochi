@@ -1,0 +1,58 @@
+/*
+Convert an octal number given as a string to its hexadecimal representation.
+
+Steps:
+1. Remove an optional "0o" prefix.
+2. Validate that the string is non-empty and contains only digits 0-7.
+3. Convert the octal string to a decimal integer by shifting the accumulated
+   value three bits to the left and incorporating the next digit.
+4. Convert the decimal value to hexadecimal by repeatedly taking the last
+   four bits and mapping them to hexadecimal characters.
+5. Prefix the result with "0x".
+
+The running time is O(n) where n is the length of the input string.
+*/
+
+fun octal_to_hex(octal: string): string {
+  var s = octal
+  if len(s) >= 2 && s[0] == "0" && s[1] == "o" {
+    s = substring(s, 2, len(s))
+  }
+  if len(s) == 0 {
+    panic("Empty string was passed to the function")
+  }
+  var j = 0
+  while j < len(s) {
+    let c = s[j]
+    if c != "0" && c != "1" && c != "2" && c != "3" && c != "4" && c != "5" && c != "6" && c != "7" {
+      panic("Not a Valid Octal Number")
+    }
+    j = j + 1
+  }
+  var decimal = 0
+  var k = 0
+  while k < len(s) {
+    let d = s[k] as int
+    decimal = decimal * 8 + d
+    k = k + 1
+  }
+  let hex_chars = "0123456789ABCDEF"
+  if decimal == 0 {
+    return "0x"
+  }
+  var hex = ""
+  while decimal > 0 {
+    let idx = decimal % 16
+    hex = hex_chars[idx] + hex
+    decimal = decimal / 16
+  }
+  return "0x" + hex
+}
+
+let nums = ["030", "100", "247", "235", "007"]
+var t = 0
+while t < len(nums) {
+  let num = nums[t]
+  print(octal_to_hex(num))
+  t = t + 1
+}
