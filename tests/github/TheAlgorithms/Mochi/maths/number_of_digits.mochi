@@ -1,0 +1,88 @@
+/*
+Number of Digits in an Integer
+------------------------------
+This module provides three strategies to determine the number of decimal
+ digits in a signed integer.  These are direct translations of the
+algorithms from TheAlgorithms/Python project and avoid foreign function
+interfaces so they can run on the Mochi runtime/vm.
+
+1. num_digits(n)
+   Repeatedly divides the absolute value of the input by ten until it
+   becomes zero, counting how many divisions occur.  This mirrors the
+   classic approach and runs in O(log10(n)) time.
+
+2. num_digits_fast(n)
+   Multiplies powers of ten until the power exceeds the absolute value
+   of the input, counting how many multiplications are needed.  This
+   avoids modifying the original number and is more efficient for
+   numbers that fit in machine integers.
+
+3. num_digits_faster(n)
+   Converts the absolute value to a string and returns the string length.
+   While this uses string allocation, it is concise and typically the
+   fastest approach in high level languages.
+
+Each function validates integer input and supports negative numbers by
+examining their absolute value.  The test routine checks several cases
+including positive, negative and zero values.
+*/
+
+fun abs_int(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun num_digits(n: int): int {
+  var x = abs_int(n)
+  var digits = 1
+  while x >= 10 {
+    x = x / 10
+    digits = digits + 1
+  }
+  return digits
+}
+
+fun num_digits_fast(n: int): int {
+  var x = abs_int(n)
+  var digits = 1
+  var power = 10
+  while x >= power {
+    power = power * 10
+    digits = digits + 1
+  }
+  return digits
+}
+
+fun num_digits_faster(n: int): int {
+  let s = str(abs_int(n))
+  return len(s)
+}
+
+fun test_num_digits() {
+  if num_digits(12345) != 5 { panic("num_digits 12345 failed") }
+  if num_digits(123) != 3 { panic("num_digits 123 failed") }
+  if num_digits(0) != 1 { panic("num_digits 0 failed") }
+  if num_digits(-1) != 1 { panic("num_digits -1 failed") }
+  if num_digits(-123456) != 6 { panic("num_digits -123456 failed") }
+
+  if num_digits_fast(12345) != 5 { panic("num_digits_fast 12345 failed") }
+  if num_digits_fast(123) != 3 { panic("num_digits_fast 123 failed") }
+  if num_digits_fast(0) != 1 { panic("num_digits_fast 0 failed") }
+  if num_digits_fast(-1) != 1 { panic("num_digits_fast -1 failed") }
+  if num_digits_fast(-123456) != 6 { panic("num_digits_fast -123456 failed") }
+
+  if num_digits_faster(12345) != 5 { panic("num_digits_faster 12345 failed") }
+  if num_digits_faster(123) != 3 { panic("num_digits_faster 123 failed") }
+  if num_digits_faster(0) != 1 { panic("num_digits_faster 0 failed") }
+  if num_digits_faster(-1) != 1 { panic("num_digits_faster -1 failed") }
+  if num_digits_faster(-123456) != 6 { panic("num_digits_faster -123456 failed") }
+}
+
+fun main() {
+  test_num_digits()
+  print(str(num_digits(12345)))
+  print(str(num_digits_fast(12345)))
+  print(str(num_digits_faster(12345)))
+}
+
+main()
