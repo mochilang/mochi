@@ -1,0 +1,124 @@
+/*
+Implement a queue using only stack-like operations on a list.
+
+The underlying list acts as a stack supporting append at the end. To
+simulate a FIFO queue, we rotate the list by repeatedly moving the
+first element to the back. Enqueue (put) simply appends a new element.
+Dequeue (get) rotates once so that the logical front moves to the end,
+removes that element, rotates the remaining elements back, and returns
+the removed value. `front` peeks at the first element by performing a
+dequeue followed by an enqueue and rotation to restore the original
+order. A length field tracks the number of stored items.
+
+This demonstration enqueues three integers, dequeues one, peeks at the
+front, prints intermediate queue states and the final size.
+*/
+
+type Queue {
+  stack: list<int>
+  length: int
+}
+
+fun empty_queue(): Queue {
+  return Queue { stack: [], length: 0 }
+}
+
+fun put(q: Queue, item: int): Queue {
+  var s = append(q.stack, item)
+  return Queue { stack: s, length: q.length + 1 }
+}
+
+fun drop_first(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 1
+  while i < len(xs) {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun drop_last(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun rotate(q: Queue, rotation: int): Queue {
+  var s = q.stack
+  var i = 0
+  while i < rotation && len(s) > 0 {
+    let temp = s[0]
+    s = drop_first(s)
+    s = append(s, temp)
+    i = i + 1
+  }
+  return Queue { stack: s, length: q.length }
+}
+
+type GetResult {
+  queue: Queue
+  value: int
+}
+
+fun get(q: Queue): GetResult {
+  if q.length == 0 { panic("queue empty") }
+  var q1 = rotate(q, 1)
+  let v = q1.stack[q1.length - 1]
+  var s = drop_last(q1.stack)
+  var q2 = Queue { stack: s, length: q1.length }
+  q2 = rotate(q2, q2.length - 1)
+  q2 = Queue { stack: q2.stack, length: q2.length - 1 }
+  return GetResult { queue: q2, value: v }
+}
+
+type FrontResult {
+  queue: Queue
+  value: int
+}
+
+fun front(q: Queue): FrontResult {
+  let r = get(q)
+  var q2 = put(r.queue, r.value)
+  q2 = rotate(q2, q2.length - 1)
+  return FrontResult { queue: q2, value: r.value }
+}
+
+fun size(q: Queue): int { return q.length }
+
+fun to_string(q: Queue): string {
+  var s = "<"
+  if q.length > 0 {
+    s = s + str(q.stack[0])
+    var i = 1
+    while i < q.length {
+      s = s + ", " + str(q.stack[i])
+      i = i + 1
+    }
+  }
+  s = s + ">"
+  return s
+}
+
+fun main() {
+  var q = empty_queue()
+  q = put(q, 1)
+  q = put(q, 2)
+  q = put(q, 3)
+  print(to_string(q))
+  let g = get(q)
+  q = g.queue
+  print(g.value)
+  print(to_string(q))
+  let f = front(q)
+  q = f.queue
+  print(f.value)
+  print(to_string(q))
+  print(size(q))
+}
+
+main()
