@@ -1,0 +1,82 @@
+/*
+Roman Numeral Conversions
+-------------------------
+This module provides two functions: `roman_to_int` converts a Roman
+numeral string into its integer value, while `int_to_roman` performs the
+reverse conversion. For `roman_to_int` the algorithm scans the string from
+left to right. When a symbol of smaller value appears before a larger
+symbol it is subtracted, otherwise it is added. This handles the standard
+Roman subtractive notation such as IV (4) or CM (900). For `int_to_roman`
+we greedily match the largest Roman numeral values less than or equal to
+the remaining integer, appending their symbols and reducing the number
+until it reaches zero. Both algorithms run in O(n) time where n is the
+length of the input string or number of symbols produced.
+*/
+
+let roman_values: list<int> = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+let roman_symbols: list<string> = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+
+fun char_value(c: string): int {
+  if c == "I" { return 1 }
+  if c == "V" { return 5 }
+  if c == "X" { return 10 }
+  if c == "L" { return 50 }
+  if c == "C" { return 100 }
+  if c == "D" { return 500 }
+  if c == "M" { return 1000 }
+  return 0
+}
+
+fun roman_to_int(roman: string): int {
+  var total = 0
+  var i = 0
+  while i < len(roman) {
+    if i + 1 < len(roman) && char_value(roman[i]) < char_value(roman[i + 1]) {
+      total = total + char_value(roman[i + 1]) - char_value(roman[i])
+      i = i + 2
+    } else {
+      total = total + char_value(roman[i])
+      i = i + 1
+    }
+  }
+  return total
+}
+
+fun int_to_roman(number: int): string {
+  var num = number
+  var res = ""
+  var i = 0
+  while i < len(roman_values) {
+    let value = roman_values[i]
+    let symbol = roman_symbols[i]
+    let factor = num / value
+    num = num % value
+    var j = 0
+    while j < factor {
+      res = res + symbol
+      j = j + 1
+    }
+    if num == 0 {
+      break
+    }
+    i = i + 1
+  }
+  return res
+}
+
+test "roman_to_int" {
+  expect roman_to_int("III") == 3
+  expect roman_to_int("CLIV") == 154
+  expect roman_to_int("MIX") == 1009
+  expect roman_to_int("MMD") == 2500
+  expect roman_to_int("MMMCMXCIX") == 3999
+}
+
+test "int_to_roman" {
+  expect int_to_roman(3) == "III"
+  expect int_to_roman(154) == "CLIV"
+  expect int_to_roman(1009) == "MIX"
+  expect int_to_roman(2500) == "MMD"
+  expect int_to_roman(3999) == "MMMCMXCIX"
+}
+
