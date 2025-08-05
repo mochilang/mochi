@@ -1,0 +1,59 @@
+/*
+Minimum Squares to Represent a Number
+------------------------------------
+Given a non-negative integer `number`, determine the minimum count of perfect square numbers whose sum equals `number`.
+This dynamic programming approach builds an array `answers` where each entry `answers[i]` holds the fewest squares needed
+to compose `i`. For every `i` from 1 to `number`, we consider all squares `j*j` less than or equal to `i` and update the
+minimum using previously computed results.
+
+Time Complexity: O(n * sqrt(n))
+Space Complexity: O(n)
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun int_sqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun minimum_squares_to_represent_a_number(number: int): int {
+  if number < 0 {
+    panic("the value of input must not be a negative number")
+  }
+  if number == 0 {
+    return 1
+  }
+  var answers = make_list(number + 1, -1)
+  answers[0] = 0
+  var i = 1
+  while i <= number {
+    var answer = i
+    let root = int_sqrt(i)
+    var j = 1
+    while j <= root {
+      let current_answer = 1 + answers[i - j * j]
+      if current_answer < answer {
+        answer = current_answer
+      }
+      j = j + 1
+    }
+    answers[i] = answer
+    i = i + 1
+  }
+  return answers[number]
+}
+
+print(minimum_squares_to_represent_a_number(25))
+print(minimum_squares_to_represent_a_number(21))
