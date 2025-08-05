@@ -1,0 +1,65 @@
+/*
+Implement a stack using two queues.
+
+The structure maintains two internal queues represented as lists.  When
+pushing a value, the element is enqueued onto a temporary queue and all
+items from the main queue are dequeued and enqueued onto the temporary
+queue, effectively reversing their order.  The two queues are then
+swapped so the newest element appears at the front of the main queue.
+
+Popping removes the front element of the main queue, mirroring stack
+LIFO behavior.  Peek returns the front element without removal.  This
+implementation uses only Mochi built-in data structures, runs push in
+O(n) time and pop/peek in O(1) time, and avoids any FFI or "any" types.
+*/
+
+type StackWithQueues {
+  main_queue: list<int>,
+  temp_queue: list<int>
+}
+
+fun make_stack(): StackWithQueues {
+  return StackWithQueues { main_queue: [], temp_queue: [] }
+}
+
+fun push(s: StackWithQueues, item: int) {
+  s.temp_queue = append(s.temp_queue, item)
+  while len(s.main_queue) > 0 {
+    s.temp_queue = append(s.temp_queue, s.main_queue[0])
+    s.main_queue = s.main_queue[1:len(s.main_queue)]
+  }
+  let new_main = s.temp_queue
+  s.temp_queue = s.main_queue
+  s.main_queue = new_main
+}
+
+fun pop(s: StackWithQueues): int {
+  if len(s.main_queue) == 0 {
+    panic("pop from empty stack")
+  }
+  let item = s.main_queue[0]
+  s.main_queue = s.main_queue[1:len(s.main_queue)]
+  return item
+}
+
+fun peek(s: StackWithQueues): int {
+  if len(s.main_queue) == 0 {
+    panic("peek from empty stack")
+  }
+  return s.main_queue[0]
+}
+
+fun is_empty(s: StackWithQueues): bool {
+  return len(s.main_queue) == 0
+}
+
+var stack = make_stack()
+push(stack, 1)
+push(stack, 2)
+push(stack, 3)
+print(str(peek(stack)))
+print(str(pop(stack)))
+print(str(peek(stack)))
+print(str(pop(stack)))
+print(str(pop(stack)))
+print(str(is_empty(stack)))
