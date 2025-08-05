@@ -1,0 +1,168 @@
+/*
+Decimal to Fraction Conversion
+------------------------------
+This module converts a decimal number into its simplest fractional
+representation. The algorithm mirrors the Python implementation from
+TheAlgorithms. It works in two stages:
+
+1. **Parsing** – When a string is provided, `parse_decimal` interprets
+the optional sign, integer part, fractional part, and scientific
+notation (e.g. `1.23e2`). The parsed number is represented exactly as an
+integer numerator and a power-of-ten denominator, avoiding floating
+point rounding issues. Negative numbers are supported.
+
+2. **Reduction** – After constructing the numerator and denominator the
+greatest common divisor is computed with the Euclidean algorithm to
+reduce the fraction to lowest terms.
+
+Two public helpers are exposed:
+- `decimal_to_fraction(decimal: float)` accepts a numeric input.
+- `decimal_to_fraction_str(decimal: string)` accepts a string input.
+Both return a `Fraction` struct containing the numerator and denominator.
+
+The functions are implemented without any foreign interfaces so they can
+run inside `runtime/vm`. The test cases below mirror those in the
+original Python version.
+*/
+
+type Fraction { numerator: int, denominator: int }
+
+fun pow10(n: int): int {
+  var result = 1
+  var i = 0
+  while i < n {
+    result = result * 10
+    i = i + 1
+  }
+  return result
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  if x < 0 { x = -x }
+  if y < 0 { y = -y }
+  while y != 0 {
+    let r = x % y
+    x = y
+    y = r
+  }
+  return x
+}
+
+fun parse_decimal(s: string): Fraction {
+  if len(s) == 0 { panic("invalid number") }
+  var idx = 0
+  var sign = 1
+  let first = substring(s, 0, 1)
+  if first == "-" {
+    sign = -1
+    idx = 1
+  } else if first == "+" {
+    idx = 1
+  }
+  var int_part = ""
+  while idx < len(s) {
+    let c = substring(s, idx, idx + 1)
+    if c >= "0" && c <= "9" {
+      int_part = int_part + c
+      idx = idx + 1
+    } else {
+      break
+    }
+  }
+  var frac_part = ""
+  if idx < len(s) && substring(s, idx, idx + 1) == "." {
+    idx = idx + 1
+    while idx < len(s) {
+      let c = substring(s, idx, idx + 1)
+      if c >= "0" && c <= "9" {
+        frac_part = frac_part + c
+        idx = idx + 1
+      } else {
+        break
+      }
+    }
+  }
+  var exp = 0
+  if idx < len(s) && (substring(s, idx, idx + 1) == "e" || substring(s, idx, idx + 1) == "E") {
+    idx = idx + 1
+    var exp_sign = 1
+    if idx < len(s) && substring(s, idx, idx + 1) == "-" {
+      exp_sign = -1
+      idx = idx + 1
+    } else if idx < len(s) && substring(s, idx, idx + 1) == "+" {
+      idx = idx + 1
+    }
+    var exp_str = ""
+    while idx < len(s) {
+      let c = substring(s, idx, idx + 1)
+      if c >= "0" && c <= "9" {
+        exp_str = exp_str + c
+        idx = idx + 1
+      } else {
+        panic("invalid number")
+      }
+    }
+    if len(exp_str) == 0 { panic("invalid number") }
+    exp = exp_sign * int(exp_str)
+  }
+  if idx != len(s) { panic("invalid number") }
+  if len(int_part) == 0 { int_part = "0" }
+  var num_str = int_part + frac_part
+  var numerator = int(num_str)
+  if sign == (0 - 1) { numerator = (0 - numerator) }
+  var denominator = pow10(len(frac_part))
+  if exp > 0 {
+    numerator = numerator * pow10(exp)
+  } else if exp < 0 {
+    denominator = denominator * pow10(-exp)
+  }
+  return Fraction { numerator: numerator, denominator: denominator }
+}
+
+fun reduce(fr: Fraction): Fraction {
+  let g = gcd(fr.numerator, fr.denominator)
+  return Fraction {
+    numerator: fr.numerator / g,
+    denominator: fr.denominator / g,
+  }
+}
+
+fun decimal_to_fraction_str(s: string): Fraction {
+  return reduce(parse_decimal(s))
+}
+
+fun decimal_to_fraction(x: float): Fraction {
+  return decimal_to_fraction_str(str(x))
+}
+
+fun assert_fraction(name: string, fr: Fraction, num: int, den: int) {
+  if fr.numerator != num || fr.denominator != den {
+    panic(name)
+  }
+}
+
+fun test_decimal_to_fraction() {
+  assert_fraction("case1", decimal_to_fraction(2.0), 2, 1)
+  assert_fraction("case2", decimal_to_fraction(89.0), 89, 1)
+  assert_fraction("case3", decimal_to_fraction_str("67"), 67, 1)
+  assert_fraction("case4", decimal_to_fraction_str("45.0"), 45, 1)
+  assert_fraction("case5", decimal_to_fraction(1.5), 3, 2)
+  assert_fraction("case6", decimal_to_fraction_str("6.25"), 25, 4)
+  assert_fraction("case7", decimal_to_fraction(0.0), 0, 1)
+  assert_fraction("case8", decimal_to_fraction(-2.5), -5, 2)
+  assert_fraction("case9", decimal_to_fraction(0.125), 1, 8)
+  assert_fraction("case10", decimal_to_fraction(1000000.25), 4000001, 4)
+  assert_fraction("case11", decimal_to_fraction(1.3333), 13333, 10000)
+  assert_fraction("case12", decimal_to_fraction_str("1.23e2"), 123, 1)
+  assert_fraction("case13", decimal_to_fraction_str("0.500"), 1, 2)
+}
+
+fun main() {
+  test_decimal_to_fraction()
+  let fr = decimal_to_fraction(1.5)
+  print(str(fr.numerator) + "/" + str(fr.denominator))
+}
+
+main()
