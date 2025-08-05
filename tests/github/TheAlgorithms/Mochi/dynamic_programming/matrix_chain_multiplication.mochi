@@ -1,0 +1,67 @@
+/*
+Matrix Chain Multiplication
+---------------------------
+Given a sequence of matrix dimensions, the i-th matrix has size arr[i-1] x arr[i].
+The goal is to determine the minimum number of scalar multiplications needed to
+multiply the chain of matrices.
+
+The function `matrix_chain_multiply` uses bottom-up dynamic programming.
+`dp[i][j]` stores the minimal cost to multiply matrices i..j.  The table is
+filled for increasing chain lengths, yielding O(n^3) time and O(n^2) space.
+
+The implementation returns 0 when fewer than two matrices are provided.
+*/
+
+let INF = 1000000000
+
+fun matrix_chain_multiply(arr: list<int>): int {
+  if len(arr) < 2 { return 0 }
+  let n = len(arr)
+  var dp: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, INF)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  i = n - 1
+  while i > 0 {
+    var j = i
+    while j < n {
+      if i == j {
+        dp[i][j] = 0
+      } else {
+        var k = i
+        while k < j {
+          let cost = dp[i][k] + dp[k + 1][j] + arr[i - 1] * arr[k] * arr[j]
+          if cost < dp[i][j] { dp[i][j] = cost }
+          k = k + 1
+        }
+      }
+      j = j + 1
+    }
+    i = i - 1
+  }
+  return dp[1][n - 1]
+}
+
+test "example" {
+  expect matrix_chain_multiply([1,2,3,4,3]) == 30
+}
+
+test "single matrix" {
+  expect matrix_chain_multiply([10]) == 0
+}
+
+test "two matrices" {
+  expect matrix_chain_multiply([10,20]) == 0
+}
+
+test "cost calculation" {
+  expect matrix_chain_multiply([19,2,19]) == 722
+}
