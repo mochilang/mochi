@@ -1,0 +1,58 @@
+/*
+Adler-32 Checksum
+
+Adler-32 computes a checksum by iterating over each character of the
+input text and maintaining two running sums `a` and `b` modulo 65521,
+the largest prime less than 2^16. For each character its integer code is
+added to `a`, then the new `a` is added to `b`. The final 32-bit hash is
+constructed as `(b << 16) | a`.
+
+This implementation includes a simple `ord` function that maps common
+ASCII letters, digits, and space to their code points so the algorithm
+can operate on plain text strings without external libraries.
+*/
+
+let MOD_ADLER = 65521
+
+fun ord(ch: string): int {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let digits = "0123456789"
+  var i = 0
+  while i < len(lower) {
+    if lower[i] == ch { return 97 + i }
+    i = i + 1
+  }
+  i = 0
+  while i < len(upper) {
+    if upper[i] == ch { return 65 + i }
+    i = i + 1
+  }
+  i = 0
+  while i < len(digits) {
+    if digits[i] == ch { return 48 + i }
+    i = i + 1
+  }
+  if ch == " " { return 32 }
+  return 0
+}
+
+fun adler32(plain_text: string): int {
+  var a = 1
+  var b = 0
+  var i = 0
+  while i < len(plain_text) {
+    let code = ord(plain_text[i])
+    a = (a + code) % MOD_ADLER
+    b = (b + a) % MOD_ADLER
+    i = i + 1
+  }
+  return b * 65536 + a
+}
+
+fun main() {
+  print(str(adler32("Algorithms")))
+  print(str(adler32("go adler em all")))
+}
+
+main()
