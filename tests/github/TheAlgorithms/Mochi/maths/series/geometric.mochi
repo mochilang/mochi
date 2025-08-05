@@ -1,0 +1,107 @@
+/*
+Geometric Series Utilities
+--------------------------
+This module provides two core functions dealing with geometric progressions:
+
+1. is_geometric_series(series): Determines whether a list of numbers forms a
+   geometric series.  A geometric series is one where the ratio between
+   successive terms is constant.  The algorithm computes the ratio of the
+   first two elements then iterates through the list, ensuring each adjacent
+   pair maintains this ratio.  Division by zero immediately yields false to
+   mirror the Python implementation.
+
+2. geometric_mean(series): Calculates the geometric mean of a list of positive
+   numbers.  The mean is the n-th root of the product of the numbers where n is
+   the length of the list.  The product is accumulated iteratively and the
+   root is found using math.pow.
+
+The `main` function runs basic checks to mirror TheAlgorithms/Python tests and
+prints the geometric mean of [2, 4, 8].  All code avoids FFI and any use of the
+`any` type so it can execute within runtime/vm.
+*/
+
+fun is_geometric_series(series: list<float>): bool {
+  if len(series) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  if len(series) == 1 {
+    return true
+  }
+  if series[0] == 0.0 {
+    return false
+  }
+  let ratio = series[1] / series[0]
+  var i = 0
+  while i < len(series) - 1 {
+    if series[i] == 0.0 {
+      return false
+    }
+    if series[i + 1] / series[i] != ratio {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun geometric_mean(series: list<float>): float {
+  if len(series) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  var product = 1.0
+  var i = 0
+  while i < len(series) {
+    product = product * series[i]
+    i = i + 1
+  }
+  let n = len(series)
+  return nth_root(product, n)
+}
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun nth_root(value: float, n: int): float {
+  if value == 0.0 {
+    return 0.0
+  }
+  var low = 0.0
+  var high = value
+  if value < 1.0 {
+    high = 1.0
+  }
+  var mid = (low + high) / 2.0
+  var i = 0
+  while i < 40 {
+    let mp = pow_float(mid, n)
+    if mp > value {
+      high = mid
+    } else {
+      low = mid
+    }
+    mid = (low + high) / 2.0
+    i = i + 1
+  }
+  return mid
+}
+
+fun test_geometric() {
+  let a: list<float> = [2.0, 4.0, 8.0]
+  if !is_geometric_series(a) { panic("expected geometric series") }
+  let b: list<float> = [1.0, 2.0, 3.0]
+  if is_geometric_series(b) { panic("expected non geometric series") }
+}
+
+fun main() {
+  test_geometric()
+  print(geometric_mean([2.0, 4.0, 8.0]))
+}
+
+main()
