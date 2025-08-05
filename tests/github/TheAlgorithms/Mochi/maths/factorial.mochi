@@ -1,0 +1,56 @@
+/*
+Factorial Computation
+---------------------
+This module provides two implementations for computing the factorial of a
+non-negative integer n.
+
+1. factorial(n): iterative multiplication from 1 to n.
+2. factorial_recursive(n): recursive definition using n * factorial_recursive(n - 1).
+
+Both functions validate the input to reject negative numbers. The test routine
+compares results of both implementations for several inputs. The main function
+prints factorial(6) as a demonstration.
+*/
+
+fun factorial(n: int): int {
+  if n < 0 {
+    panic("factorial() not defined for negative values")
+  }
+  var value = 1
+  var i = 1
+  while i <= n {
+    value = value * i
+    i = i + 1
+  }
+  return value
+}
+
+fun factorial_recursive(n: int): int {
+  if n < 0 {
+    panic("factorial() not defined for negative values")
+  }
+  if n <= 1 {
+    return 1
+  }
+  return n * factorial_recursive(n - 1)
+}
+
+fun test_factorial() {
+  var i = 0
+  while i <= 10 {
+    if factorial(i) != factorial_recursive(i) {
+      panic("mismatch between factorial and factorial_recursive")
+    }
+    i = i + 1
+  }
+  if factorial(6) != 720 {
+    panic("factorial(6) should be 720")
+  }
+}
+
+fun main() {
+  test_factorial()
+  print(factorial(6))
+}
+
+main()
