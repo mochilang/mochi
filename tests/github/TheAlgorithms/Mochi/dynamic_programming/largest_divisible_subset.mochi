@@ -1,0 +1,77 @@
+/*
+Find the largest subset of integers such that for every pair (x, y) in the subset,
+one divides the other. The algorithm sorts the numbers in ascending order and uses
+dynamic programming to build the longest chain where each number is divisible by its
+predecessor. A `memo` list stores the length of the longest valid chain ending at each
+index, while a `prev` list tracks predecessors for reconstruction. Zero is treated as
+a universal divisor so that multiple zeros are chained together as in the original
+Python implementation. The subset is reconstructed by following the `prev` indices
+from the element with maximal chain length back to the start.
+*/
+
+fun sort_list(nums: list<int>): list<int> {
+  var arr = nums
+  var i = 1
+  while i < len(arr) {
+    let key = arr[i]
+    var j = i - 1
+    while j >= 0 && arr[j] > key {
+      arr[j + 1] = arr[j]
+      j = j - 1
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun largest_divisible_subset(items: list<int>): list<int> {
+  if len(items) == 0 { return [] }
+  var nums = sort_list(items)
+  let n = len(nums)
+  var memo: list<int> = []
+  var prev: list<int> = []
+  var i = 0
+  while i < n {
+    memo = append(memo, 1)
+    prev = append(prev, i)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var j = 0
+    while j < i {
+      if (nums[j] == 0 || nums[i] % nums[j] == 0) && memo[j] + 1 > memo[i] {
+        memo[i] = memo[j] + 1
+        prev[i] = j
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var ans = 0 - 1
+  var last_index = 0 - 1
+  i = 0
+  while i < n {
+    if memo[i] > ans {
+      ans = memo[i]
+      last_index = i
+    }
+    i = i + 1
+  }
+  if last_index == 0 - 1 { return [] }
+  var result: list<int> = [nums[last_index]]
+  while prev[last_index] != last_index {
+    last_index = prev[last_index]
+    result = append(result, nums[last_index])
+  }
+  return result
+}
+
+fun main() {
+  let items = [1, 16, 7, 8, 4]
+  let subset = largest_divisible_subset(items)
+  print("The longest divisible subset of " + str(items) + " is " + str(subset) + ".")
+}
+
+main()
