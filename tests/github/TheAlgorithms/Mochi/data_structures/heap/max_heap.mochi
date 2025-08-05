@@ -1,0 +1,98 @@
+/*
+Max Heap Implementation
+-----------------------
+This program implements a binary max heap using a dynamic array.
+The heap maintains the largest value at the root. Insertion adds
+an element to the end of the array and repeatedly swaps it with
+its parent until the heap property is restored (swap_up). Removing
+the maximum swaps the root with the last element, truncates the
+array, and pushes the new root down by comparing it with its
+largest child (swap_down).
+
+Operations:
+- insert: O(log n)
+- pop:    O(log n)
+*/
+
+var heap: list<int> = [0]
+var size: int = 0
+
+fun swap_up(i: int) {
+  let temp = heap[i]
+  var idx = i
+  while idx / 2 > 0 {
+    if heap[idx] > heap[idx / 2] {
+      heap[idx] = heap[idx / 2]
+      heap[idx / 2] = temp
+    }
+    idx = idx / 2
+  }
+}
+
+fun insert(value: int) {
+  heap = append(heap, value)
+  size = size + 1
+  swap_up(size)
+}
+
+fun swap_down(i: int) {
+  var idx = i
+  while size >= 2 * idx {
+    let bigger_child =
+      if 2 * idx + 1 > size {
+        2 * idx
+      } else if heap[2 * idx] > heap[2 * idx + 1] {
+        2 * idx
+      } else {
+        2 * idx + 1
+      }
+    let temp = heap[idx]
+    if heap[idx] < heap[bigger_child] {
+      heap[idx] = heap[bigger_child]
+      heap[bigger_child] = temp
+    }
+    idx = bigger_child
+  }
+}
+
+fun shrink() {
+  var new_heap: list<int> = []
+  var i = 0
+  while i <= size {
+    new_heap = append(new_heap, heap[i])
+    i = i + 1
+  }
+  heap = new_heap
+}
+
+fun pop(): int {
+  let max_value = heap[1]
+  heap[1] = heap[size]
+  size = size - 1
+  shrink()
+  swap_down(1)
+  return max_value
+}
+
+fun get_list(): list<int> {
+  var out: list<int> = []
+  var i = 1
+  while i <= size {
+    out = append(out, heap[i])
+    i = i + 1
+  }
+  return out
+}
+
+fun len(): int {
+  return size
+}
+
+insert(6)
+insert(10)
+insert(15)
+insert(12)
+print(pop())
+print(pop())
+print(get_list())
+print(len())
