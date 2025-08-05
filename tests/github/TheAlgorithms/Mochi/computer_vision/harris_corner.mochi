@@ -1,0 +1,118 @@
+/*
+Harris Corner Detector
+----------------------
+This program implements a simplified version of the Harris corner
+algorithm.  Given a grayscale image represented as a 2‑D list of
+integers, the algorithm:
+1. Computes horizontal and vertical image gradients using a simple
+   central difference scheme.
+2. For each pixel, forms the structure tensor components ixx, iyy and
+   ixy by squaring the gradients and multiplying them.
+3. Slides a window across the image and, at each position, computes the
+   sums of the tensor components inside the window.
+4. Calculates the Harris response `r = det(M) - k * trace(M)^2` and marks
+   positions where `r` exceeds a threshold as corners.
+
+The example below runs the detector on a tiny 5×5 image and prints the
+list of detected corner coordinates.
+*/
+
+fun zeros(h: int, w: int): list<list<float>> {
+  var m: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      row = append(row, 0.0)
+      x = x + 1
+    }
+    m = append(m, row)
+    y = y + 1
+  }
+  return m
+}
+
+fun gradient(img: list<list<int>>): list<list<list<float>>> {
+  let h = len(img)
+  let w = len(img[0])
+  var dx = zeros(h, w)
+  var dy = zeros(h, w)
+  var y = 1
+  while y < h - 1 {
+    var x = 1
+    while x < w - 1 {
+      dx[y][x] = (img[y][x + 1] as float) - (img[y][x - 1] as float)
+      dy[y][x] = (img[y + 1][x] as float) - (img[y - 1][x] as float)
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return [dx, dy] as list<list<list<float>>>
+}
+
+fun harris(img: list<list<int>>, k: float, window: int, thresh: float): list<list<int>> {
+  let h = len(img)
+  let w = len(img[0])
+  let grads = gradient(img)
+  let dx = grads[0]
+  let dy = grads[1]
+  var ixx = zeros(h, w)
+  var iyy = zeros(h, w)
+  var ixy = zeros(h, w)
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      let gx = dx[y][x]
+      let gy = dy[y][x]
+      ixx[y][x] = gx * gx
+      iyy[y][x] = gy * gy
+      ixy[y][x] = gx * gy
+      x = x + 1
+    }
+    y = y + 1
+  }
+  let offset = window / 2
+  var corners: list<list<int>> = []
+  y = offset
+  while y < h - offset {
+    var x = offset
+    while x < w - offset {
+      var wxx = 0.0
+      var wyy = 0.0
+      var wxy = 0.0
+      var yy = y - offset
+      while yy <= y + offset {
+        var xx = x - offset
+        while xx <= x + offset {
+          wxx = wxx + ixx[yy][xx]
+          wyy = wyy + iyy[yy][xx]
+          wxy = wxy + ixy[yy][xx]
+          xx = xx + 1
+        }
+        yy = yy + 1
+      }
+      let det = wxx * wyy - (wxy * wxy)
+      let trace = wxx + wyy
+      let r = det - k * (trace * trace)
+      if r > thresh {
+        corners = append(corners, [x, y] as list<int>)
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return corners
+}
+
+let img: list<list<int>> = [
+  [1, 1, 1, 1, 1],
+  [1, 255, 255, 255, 1],
+  [1, 255, 0, 255, 1],
+  [1, 255, 255, 255, 1],
+  [1, 1, 1, 1, 1]
+]
+
+let corners = harris(img, 0.04, 3, 10000000000.0)
+print(corners)
