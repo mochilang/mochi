@@ -1,0 +1,68 @@
+/*
+Transposition cipher file encryption and decryption.
+
+This program demonstrates the columnar transposition cipher used to encrypt
+and decrypt text. Given a numeric key representing the number of columns, the
+plain text is written row-wise into a grid and read column by column to produce
+cipher text. Decryption rebuilds the grid using the key, accounting for empty
+cells in the final row.
+
+The original Python script reads from an input file and writes the translated
+result. This Mochi version focuses on the algorithm itself and runs on a
+sample string.
+*/
+
+fun encrypt_message(key: int, message: string): string {
+  var result = ""
+  var col = 0
+  while col < key {
+    var pointer = col
+    while pointer < len(message) {
+      result = result + message[pointer]
+      pointer = pointer + key
+    }
+    col = col + 1
+  }
+  return result
+}
+
+fun decrypt_message(key: int, message: string): string {
+  let msg_len = len(message)
+  var num_cols = msg_len / key
+  if msg_len % key != 0 { num_cols = num_cols + 1 }
+  let num_rows = key
+  let num_shaded_boxes = num_cols * num_rows - msg_len
+  var plain: list<string> = []
+  var i = 0
+  while i < num_cols {
+    plain = append(plain, "")
+    i = i + 1
+  }
+  var col = 0
+  var row = 0
+  var idx = 0
+  while idx < msg_len {
+    let ch = message[idx]
+    plain[col] = plain[col] + ch
+    col = col + 1
+    if col == num_cols || (col == num_cols - 1 && row >= num_rows - num_shaded_boxes) {
+      col = 0
+      row = row + 1
+    }
+    idx = idx + 1
+  }
+  var result = ""
+  i = 0
+  while i < num_cols {
+    result = result + plain[i]
+    i = i + 1
+  }
+  return result
+}
+
+let key = 6
+let message = "Harshil Darji"
+let encrypted = encrypt_message(key, message)
+print(encrypted)
+let decrypted = decrypt_message(key, encrypted)
+print(decrypted)
