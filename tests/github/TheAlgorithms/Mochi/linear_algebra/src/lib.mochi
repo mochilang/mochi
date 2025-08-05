@@ -1,0 +1,397 @@
+/*
+Linear Algebra helper library implementing basic vector and matrix
+operations.  The module mirrors TheAlgorithms/Python "linear_algebra/src/lib.py"
+and re‑creates its functionality in pure Mochi so it can run on the
+`runtime/vm` without any foreign function interfaces.
+
+Features:
+- Vector operations: creation, addition, subtraction, scalar multiply,
+  dot product, component access/mutation, Euclidean length and angle.
+- Matrix operations: addition, subtraction, scalar multiply,
+  matrix‑vector multiply, minor, cofactor and determinant.
+- Helper constructors for zero vectors/matrices, basis vectors,
+  axpy, and pseudo‑random generation for vectors/matrices using a
+  simple linear congruential generator.
+
+All computations use integers or floats and avoid the `any` type to
+remain compatible with the VM.
+*/
+
+let PI: float = 3.141592653589793
+var seed: int = 123456789
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random_int(a: int, b: int): int {
+  let r = rand() % (b - a + 1)
+  return a + r
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun arcsin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n < 10 {
+    let num = (2.0 * (n as float) - 1.0) * (2.0 * (n as float) - 1.0) * x * x * term
+    let den = (2.0 * (n as float)) * (2.0 * (n as float) + 1.0)
+    term = num / den
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun acos_taylor(x: float): float {
+  return PI / 2.0 - arcsin_taylor(x)
+}
+
+type Vector {
+  components: list<float>
+}
+
+fun vector_len(v: Vector): int { return len(v.components) }
+
+fun vector_to_string(v: Vector): string {
+  var s = "("
+  var i = 0
+  while i < len(v.components) {
+    s = s + str(v.components[i])
+    if i < len(v.components) - 1 { s = s + "," }
+    i = i + 1
+  }
+  s = s + ")"
+  return s
+}
+
+fun vector_add(a: Vector, b: Vector): Vector {
+  let size = vector_len(a)
+  if size != vector_len(b) { return Vector { components: [] } }
+  var res: list<float> = []
+  var i = 0
+  while i < size {
+    res = append(res, a.components[i] + b.components[i])
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun vector_sub(a: Vector, b: Vector): Vector {
+  let size = vector_len(a)
+  if size != vector_len(b) { return Vector { components: [] } }
+  var res: list<float> = []
+  var i = 0
+  while i < size {
+    res = append(res, a.components[i] - b.components[i])
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun vector_eq(a: Vector, b: Vector): bool {
+  if vector_len(a) != vector_len(b) { return false }
+  var i = 0
+  while i < vector_len(a) {
+    if a.components[i] != b.components[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun vector_mul_scalar(v: Vector, s: float): Vector {
+  var res: list<float> = []
+  var i = 0
+  while i < vector_len(v) {
+    res = append(res, v.components[i] * s)
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun vector_dot(a: Vector, b: Vector): float {
+  let size = vector_len(a)
+  if size != vector_len(b) { return 0.0 }
+  var sum = 0.0
+  var i = 0
+  while i < size {
+    sum = sum + a.components[i] * b.components[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun vector_copy(v: Vector): Vector {
+  var res: list<float> = []
+  var i = 0
+  while i < vector_len(v) {
+    res = append(res, v.components[i])
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun vector_component(v: Vector, idx: int): float {
+  return v.components[idx]
+}
+
+fun vector_change_component(v: Vector, pos: int, value: float): Vector {
+  var comps = v.components
+  comps[pos] = value
+  return Vector { components: comps }
+}
+
+fun vector_euclidean_length(v: Vector): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(v.components) {
+    sum = sum + v.components[i] * v.components[i]
+    i = i + 1
+  }
+  var result = sqrtApprox(sum)
+  return result
+}
+
+fun vector_angle(a: Vector, b: Vector, deg: bool): float {
+  let num = vector_dot(a, b)
+  let den = vector_euclidean_length(a) * vector_euclidean_length(b)
+  var ang = acos_taylor(num / den)
+  if deg { ang = ang * 180.0 / PI }
+  return ang
+}
+
+fun zero_vector(d: int): Vector {
+  var res: list<float> = []
+  var i = 0
+  while i < d {
+    res = append(res, 0.0)
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun unit_basis_vector(d: int, pos: int): Vector {
+  var res: list<float> = []
+  var i = 0
+  while i < d {
+    if i == pos { res = append(res, 1.0) }
+    else { res = append(res, 0.0) }
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+fun axpy(s: float, x: Vector, y: Vector): Vector {
+  return vector_add(vector_mul_scalar(x, s), y)
+}
+
+fun random_vector(n: int, a: int, b: int): Vector {
+  var res: list<float> = []
+  var i = 0
+  while i < n {
+    res = append(res, random_int(a, b) as float)
+    i = i + 1
+  }
+  return Vector { components: res }
+}
+
+type Matrix {
+  data: list<list<float>>,
+  width: int,
+  height: int
+}
+
+fun matrix_to_string(m: Matrix): string {
+  var ans = ""
+  var i = 0
+  while i < m.height {
+    ans = ans + "|"
+    var j = 0
+    while j < m.width {
+      ans = ans + str(m.data[i][j])
+      if j < m.width - 1 { ans = ans + "," }
+      j = j + 1
+    }
+    ans = ans + "|\n"
+    i = i + 1
+  }
+  return ans
+}
+
+fun matrix_add(a: Matrix, b: Matrix): Matrix {
+  if a.width != b.width || a.height != b.height {
+    return Matrix { data: [], width: 0, height: 0 }
+  }
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < a.height {
+    var row: list<float> = []
+    var j = 0
+    while j < a.width {
+      row = append(row, a.data[i][j] + b.data[i][j])
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return Matrix { data: mat, width: a.width, height: a.height }
+}
+
+fun matrix_sub(a: Matrix, b: Matrix): Matrix {
+  if a.width != b.width || a.height != b.height {
+    return Matrix { data: [], width: 0, height: 0 }
+  }
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < a.height {
+    var row: list<float> = []
+    var j = 0
+    while j < a.width {
+      row = append(row, a.data[i][j] - b.data[i][j])
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return Matrix { data: mat, width: a.width, height: a.height }
+}
+
+fun matrix_mul_vector(m: Matrix, v: Vector): Vector {
+  if len(v.components) != m.width { return Vector { components: [] } }
+  var res = zero_vector(m.height)
+  var i = 0
+  while i < m.height {
+    var sum = 0.0
+    var j = 0
+    while j < m.width {
+      sum = sum + m.data[i][j] * v.components[j]
+      j = j + 1
+    }
+    res = vector_change_component(res, i, sum)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_mul_scalar(m: Matrix, s: float): Matrix {
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < m.height {
+    var row: list<float> = []
+    var j = 0
+    while j < m.width {
+      row = append(row, m.data[i][j] * s)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return Matrix { data: mat, width: m.width, height: m.height }
+}
+
+fun matrix_component(m: Matrix, x: int, y: int): float {
+  return m.data[x][y]
+}
+
+fun matrix_change_component(m: Matrix, x: int, y: int, value: float): Matrix {
+  var data = m.data
+  data[x][y] = value
+  return Matrix { data: data, width: m.width, height: m.height }
+}
+
+fun matrix_minor(m: Matrix, x: int, y: int): float {
+  if m.height != m.width { return 0.0 }
+  var minor: list<list<float>> = []
+  var i = 0
+  while i < m.height {
+    if i != x {
+      var row: list<float> = []
+      var j = 0
+      while j < m.width {
+        if j != y { row = append(row, m.data[i][j]) }
+        j = j + 1
+      }
+      minor = append(minor, row)
+    }
+    i = i + 1
+  }
+  let sub = Matrix { data: minor, width: m.width - 1, height: m.height - 1 }
+  return matrix_determinant(sub)
+}
+
+fun matrix_cofactor(m: Matrix, x: int, y: int): float {
+  let sign = if (x + y) % 2 == 0 { 1.0 } else { -1.0 }
+  return sign * matrix_minor(m, x, y)
+}
+
+fun matrix_determinant(m: Matrix): float {
+  if m.height != m.width { return 0.0 }
+  if m.height == 0 { return 0.0 }
+  if m.height == 1 { return m.data[0][0] }
+  if m.height == 2 {
+    return m.data[0][0] * m.data[1][1] - m.data[0][1] * m.data[1][0]
+  }
+  var sum = 0.0
+  var y = 0
+  while y < m.width {
+    sum = sum + m.data[0][y] * matrix_cofactor(m, 0, y)
+    y = y + 1
+  }
+  return sum
+}
+
+fun square_zero_matrix(n: int): Matrix {
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return Matrix { data: mat, width: n, height: n }
+}
+
+fun random_matrix(w: int, h: int, a: int, b: int): Matrix {
+  var mat: list<list<float>> = []
+  var i = 0
+  while i < h {
+    var row: list<float> = []
+    var j = 0
+    while j < w {
+      row = append(row, random_int(a, b) as float)
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return Matrix { data: mat, width: w, height: h }
+}
+
+fun main() {
+  let v1 = Vector { components: [1.0, 2.0, 3.0] }
+  let v2 = Vector { components: [4.0, 5.0, 6.0] }
+  print(vector_to_string(vector_add(v1, v2)))
+  print(str(vector_dot(v1, v2)))
+  print(str(vector_euclidean_length(v1)))
+  let m = Matrix { data: [[1.0, 2.0], [3.0, 4.0]], width: 2, height: 2 }
+  print(str(matrix_determinant(m)))
+}
+
+main()
