@@ -1,0 +1,75 @@
+/*
+Diffie-Hellman Key Exchange
+
+This program demonstrates the Diffie-Hellman key exchange, a method for two
+parties to establish a shared secret over an insecure channel.  Both parties
+agree on a large prime \(p\) and a generator \(g\).  Each participant selects a
+private key \(a\) or \(b\), computes a public key \(g^a \bmod p\) or \(g^b \bmod p\),
+and exchanges the public keys.  The shared secret is then \(g^{ab} \bmod p\), which
+can be computed as \(B^a \bmod p\) or \(A^b \bmod p\).  An eavesdropper knowing only
+\(g\), \(p\), and the public keys cannot feasibly recover the private keys.
+
+This implementation uses a small prime (23) and generator (5) to keep arithmetic
+within 64-bit integers.  A linear congruential generator provides pseudorandom
+private keys, and modular exponentiation is performed via exponentiation by
+squaring.  The resulting shared key is printed in hexadecimal form for both
+participants to verify they match.
+*/
+
+fun int_to_hex(n: int): string {
+  if n == 0 { return "0" }
+  let digits = "0123456789abcdef"
+  var num = n
+  var res = ""
+  while num > 0 {
+    let d = num % 16
+    res = digits[d] + res
+    num = num / 16
+  }
+  return res
+}
+
+var seed = 123456789
+fun rand_int(): int {
+  seed = (1103515245 * seed + 12345) % 2147483648
+  return seed
+}
+
+let PRIME = 23
+
+fun mod_pow(base: int, exp: int): int {
+  var result = 1
+  var b = base % PRIME
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = (result * b) % PRIME }
+    b = (b * b) % PRIME
+    e = e / 2
+  }
+  return result
+}
+
+fun is_valid_public_key(key: int): bool {
+  if key < 2 || key > PRIME - 2 { return false }
+  return mod_pow(key, (PRIME - 1) / 2) == 1
+}
+
+fun generate_private_key(): int {
+  return rand_int() % (PRIME - 2) + 2
+}
+
+let generator = 5
+
+let alice_private = generate_private_key()
+let alice_public = mod_pow(generator, alice_private)
+let bob_private = generate_private_key()
+let bob_public = mod_pow(generator, bob_private)
+
+if !is_valid_public_key(alice_public) { panic("Invalid public key") }
+if !is_valid_public_key(bob_public) { panic("Invalid public key") }
+
+let alice_shared = mod_pow(bob_public, alice_private)
+let bob_shared = mod_pow(alice_public, bob_private)
+
+print(int_to_hex(alice_shared))
+print(int_to_hex(bob_shared))
