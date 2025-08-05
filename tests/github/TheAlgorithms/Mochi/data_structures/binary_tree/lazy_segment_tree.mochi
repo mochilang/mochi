@@ -1,0 +1,145 @@
+/*
+Lazy Segment Tree for Range Updates and Queries
+
+This implementation maintains an array that supports range assignment updates
+and range maximum queries in O(log n) time. Each node of the segment tree stores
+the maximum value of its interval. Updates are "lazy": when a range is updated,
+the change is recorded in a separate lazy array and propagated to children only
+when necessary. A flag array indicates nodes with pending updates. This approach
+avoids repeatedly updating all elements inside a range and ensures logarithmic
+performance for both operations.
+*/
+
+fun init_int_array(n: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < 4 * n + 5 {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return arr
+}
+
+fun init_bool_array(n: int): list<bool> {
+  var arr: list<bool> = []
+  var i = 0
+  while i < 4 * n + 5 {
+    arr = append(arr, false)
+    i = i + 1
+  }
+  return arr
+}
+
+fun left(idx: int): int { return idx * 2 }
+fun right(idx: int): int { return idx * 2 + 1 }
+
+fun build(segment_tree: list<int>, idx: int, l: int, r: int, a: list<int>) {
+  if l == r {
+    segment_tree[idx] = a[l - 1]
+  } else {
+    let mid = (l + r) / 2
+    build(segment_tree, left(idx), l, mid, a)
+    build(segment_tree, right(idx), mid + 1, r, a)
+    let lv = segment_tree[left(idx)]
+    let rv = segment_tree[right(idx)]
+    if lv > rv {
+      segment_tree[idx] = lv
+    } else {
+      segment_tree[idx] = rv
+    }
+  }
+}
+
+fun update(segment_tree: list<int>, lazy: list<int>, flag: list<bool>, idx: int, l: int, r: int, a: int, b: int, val: int) {
+  if flag[idx] {
+    segment_tree[idx] = lazy[idx]
+    flag[idx] = false
+    if l != r {
+      lazy[left(idx)] = lazy[idx]
+      lazy[right(idx)] = lazy[idx]
+      flag[left(idx)] = true
+      flag[right(idx)] = true
+    }
+  }
+  if r < a || l > b {
+    return
+  }
+  if l >= a && r <= b {
+    segment_tree[idx] = val
+    if l != r {
+      lazy[left(idx)] = val
+      lazy[right(idx)] = val
+      flag[left(idx)] = true
+      flag[right(idx)] = true
+    }
+    return
+  }
+  let mid = (l + r) / 2
+  update(segment_tree, lazy, flag, left(idx), l, mid, a, b, val)
+  update(segment_tree, lazy, flag, right(idx), mid + 1, r, a, b, val)
+  let lv = segment_tree[left(idx)]
+  let rv = segment_tree[right(idx)]
+  if lv > rv {
+    segment_tree[idx] = lv
+  } else {
+    segment_tree[idx] = rv
+  }
+}
+
+let NEG_INF: int = -1000000000
+
+fun query(segment_tree: list<int>, lazy: list<int>, flag: list<bool>, idx: int, l: int, r: int, a: int, b: int): int {
+  if flag[idx] {
+    segment_tree[idx] = lazy[idx]
+    flag[idx] = false
+    if l != r {
+      lazy[left(idx)] = lazy[idx]
+      lazy[right(idx)] = lazy[idx]
+      flag[left(idx)] = true
+      flag[right(idx)] = true
+    }
+  }
+  if r < a || l > b {
+    return NEG_INF
+  }
+  if l >= a && r <= b {
+    return segment_tree[idx]
+  }
+  let mid = (l + r) / 2
+  let q1 = query(segment_tree, lazy, flag, left(idx), l, mid, a, b)
+  let q2 = query(segment_tree, lazy, flag, right(idx), mid + 1, r, a, b)
+  if q1 > q2 {
+    return q1
+  } else {
+    return q2
+  }
+}
+
+fun segtree_to_string(segment_tree: list<int>, lazy: list<int>, flag: list<bool>, n: int): string {
+  var res = "["
+  var i = 1
+  while i <= n {
+    let v = query(segment_tree, lazy, flag, 1, 1, n, i, i)
+    res = res + str(v)
+    if i < n {
+      res = res + ", "
+    }
+    i = i + 1
+  }
+  res = res + "]"
+  return res
+}
+
+let A: list<int> = [1, 2, -4, 7, 3, -5, 6, 11, -20, 9, 14, 15, 5, 2, -8]
+let n = 15
+var segment_tree = init_int_array(n)
+var lazy = init_int_array(n)
+var flag = init_bool_array(n)
+build(segment_tree, 1, 1, n, A)
+print(query(segment_tree, lazy, flag, 1, 1, n, 4, 6))
+print(query(segment_tree, lazy, flag, 1, 1, n, 7, 11))
+print(query(segment_tree, lazy, flag, 1, 1, n, 7, 12))
+update(segment_tree, lazy, flag, 1, 1, n, 1, 3, 111)
+print(query(segment_tree, lazy, flag, 1, 1, n, 1, 15))
+update(segment_tree, lazy, flag, 1, 1, n, 7, 8, 235)
+print(segtree_to_string(segment_tree, lazy, flag, n))
