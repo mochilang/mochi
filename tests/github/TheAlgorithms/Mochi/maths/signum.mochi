@@ -1,0 +1,48 @@
+/*
+Signum Function
+---------------
+Implements the mathematical signum function which extracts the sign of a
+real number. The function returns:
+  * -1 when the input is negative,
+  *  1 when the input is positive, and
+  *  0 when the input is exactly zero.
+
+Algorithm: compare the number against zero. If it is less than zero return -1,
+if greater than zero return 1, otherwise return 0. This mirrors the behavior
+of the Python implementation from TheAlgorithms repository.
+
+A small test suite verifies correctness for integers and floating point values.
+The main routine runs the tests and prints the signum of 12, -12 and 0, each on
+its own line so the runtime/vm can capture the expected output.
+*/
+
+fun signum(num: float): int {
+  if num < 0.0 {
+    return -1
+  }
+  if num > 0.0 {
+    return 1
+  }
+  return 0
+}
+
+fun test_signum() {
+  if signum(5.0) != 1 { panic("signum(5) failed") }
+  if signum(-5.0) != (-1) { panic("signum(-5) failed") }
+  if signum(0.0) != 0 { panic("signum(0) failed") }
+  if signum(10.5) != 1 { panic("signum(10.5) failed") }
+  if signum(-10.5) != (-1) { panic("signum(-10.5) failed") }
+  if signum(0.000001) != 1 { panic("signum(1e-6) failed") }
+  if signum(-0.000001) != (-1) { panic("signum(-1e-6) failed") }
+  if signum(123456789.0) != 1 { panic("signum(123456789) failed") }
+  if signum(-123456789.0) != (-1) { panic("signum(-123456789) failed") }
+}
+
+fun main() {
+  test_signum()
+  print(signum(12.0))
+  print(signum(-12.0))
+  print(signum(0.0))
+}
+
+main()
