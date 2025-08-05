@@ -6522,6 +6522,14 @@ func listElemEqual(a, b Expr) bool {
 }
 
 func isConstExpr(e Expr) bool {
+	// Variable references may point to constant values in Mochi, but in C
+	// a global initializer cannot rely on the value of another variable.
+	// Treat them as non-constant so that top-level assignments referencing
+	// other variables are emitted as runtime assignments instead of invalid
+	// constant initializers.
+	if _, ok := e.(*VarRef); ok {
+		return false
+	}
 	if _, ok := evalInt(e); ok {
 		return true
 	}
