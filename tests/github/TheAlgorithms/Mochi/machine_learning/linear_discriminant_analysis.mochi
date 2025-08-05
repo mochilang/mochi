@@ -1,0 +1,217 @@
+/*
+Linear Discriminant Analysis (LDA)
+
+This program demonstrates a basic form of LDA for one‑dimensional data.
+Given multiple classes with approximately Gaussian distributions and equal
+variance, LDA estimates class means, a shared variance and prior
+probabilities. New samples are classified by computing the linear
+discriminant value for each class:
+
+  g_k(x) = x * (mu_k / sigma2) - (mu_k^2 / (2 * sigma2)) + ln(P_k)
+
+The implementation is self contained with no foreign function interface.
+It includes:
+• A simple linear congruential generator producing uniform random numbers.
+• Polynomial approximations for cosine, square root and natural log.
+• Functions mirroring the Python version: gaussian_distribution,
+  y_generator, calculate_mean, calculate_probabilities,
+  calculate_variance, predict_y_values and accuracy.
+The main routine builds a small synthetic data set of three classes and
+prints the predicted labels together with the classification accuracy.
+*/
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+var seed = 1
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (rand() as float) / 2147483648.0
+}
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun cos(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y4 = y2 * y2
+  let y6 = y4 * y2
+  return 1.0 - y2/2.0 + y4/24.0 - y6/720.0
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun ln(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun gaussian_distribution(mean: float, std_dev: float, instance_count: int): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < instance_count {
+    let u1 = random()
+    let u2 = random()
+    let r = sqrtApprox(-2.0 * ln(u1))
+    let theta = TWO_PI * u2
+    let z = r * cos(theta)
+    res = append(res, mean + z * std_dev)
+    i = i + 1
+  }
+  return res
+}
+
+fun y_generator(class_count: int, instance_count: list<int>): list<int> {
+  var res: list<int> = []
+  var k = 0
+  while k < class_count {
+    var i = 0
+    while i < instance_count[k] {
+      res = append(res, k)
+      i = i + 1
+    }
+    k = k + 1
+  }
+  return res
+}
+
+fun calculate_mean(instance_count: int, items: list<float>): float {
+  var total = 0.0
+  var i = 0
+  while i < instance_count {
+    total = total + items[i]
+    i = i + 1
+  }
+  return total / (instance_count as float)
+}
+
+fun calculate_probabilities(instance_count: int, total_count: int): float {
+  return (instance_count as float) / (total_count as float)
+}
+
+fun calculate_variance(items: list<list<float>>, means: list<float>, total_count: int): float {
+  var squared_diff: list<float> = []
+  var i = 0
+  while i < len(items) {
+    var j = 0
+    while j < len(items[i]) {
+      let diff = items[i][j] - means[i]
+      squared_diff = append(squared_diff, diff * diff)
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var sum_sq = 0.0
+  var k = 0
+  while k < len(squared_diff) {
+    sum_sq = sum_sq + squared_diff[k]
+    k = k + 1
+  }
+  let n_classes = len(means)
+  return (1.0 / ((total_count - n_classes) as float)) * sum_sq
+}
+
+fun predict_y_values(x_items: list<list<float>>, means: list<float>, variance: float, probabilities: list<float>): list<int> {
+  var results: list<int> = []
+  var i = 0
+  while i < len(x_items) {
+    var j = 0
+    while j < len(x_items[i]) {
+      var temp: list<float> = []
+      var k = 0
+      while k < len(x_items) {
+        let discr = x_items[i][j] * (means[k] / variance) - (means[k] * means[k]) / (2.0 * variance) + ln(probabilities[k])
+        temp = append(temp, discr)
+        k = k + 1
+      }
+      var max_idx = 0
+      var max_val = temp[0]
+      var t = 1
+      while t < len(temp) {
+        if temp[t] > max_val {
+          max_val = temp[t]
+          max_idx = t
+        }
+        t = t + 1
+      }
+      results = append(results, max_idx)
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return results
+}
+
+fun accuracy(actual_y: list<int>, predicted_y: list<int>): float {
+  var correct = 0
+  var i = 0
+  while i < len(actual_y) {
+    if actual_y[i] == predicted_y[i] {
+      correct = correct + 1
+    }
+    i = i + 1
+  }
+  return (correct as float) / (len(actual_y) as float) * 100.0
+}
+
+fun main() {
+  seed = 1
+  let counts: list<int> = [20, 20, 20]
+  let means: list<float> = [5.0, 10.0, 15.0]
+  let std_dev = 1.0
+  var x: list<list<float>> = []
+  var i = 0
+  while i < len(counts) {
+    x = append(x, gaussian_distribution(means[i], std_dev, counts[i]))
+    i = i + 1
+  }
+  let y = y_generator(len(counts), counts)
+  var actual_means: list<float> = []
+  i = 0
+  while i < len(counts) {
+    actual_means = append(actual_means, calculate_mean(counts[i], x[i]))
+    i = i + 1
+  }
+  var total_count = 0
+  i = 0
+  while i < len(counts) {
+    total_count = total_count + counts[i]
+    i = i + 1
+  }
+  var probabilities: list<float> = []
+  i = 0
+  while i < len(counts) {
+    probabilities = append(probabilities, calculate_probabilities(counts[i], total_count))
+    i = i + 1
+  }
+  let variance = calculate_variance(x, actual_means, total_count)
+  let predicted = predict_y_values(x, actual_means, variance, probabilities)
+  print(predicted)
+  print(accuracy(y, predicted))
+}
+
+main()
+
