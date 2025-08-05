@@ -1,0 +1,206 @@
+/*
+Hash Map with Open Addressing and Linear Probing
+
+Replicates the HashMap from TheAlgorithms/Python using a list of buckets
+and linear probing to resolve collisions. Each bucket tracks a state:
+
+  state = 0  -> never used
+  state = 1  -> occupied
+  state = 2  -> deleted
+
+The table doubles when 75% full and halves when under half that density.
+All keys and values are integers.
+*/
+
+type Bucket {
+  state: int
+  key: int
+  val: int
+}
+
+type HashMap {
+  buckets: list<Bucket>
+  len: int
+  cap_num: int
+  cap_den: int
+  initial_size: int
+}
+
+fun make_buckets(n: int): list<Bucket> {
+  var buckets: list<Bucket>
+  var i: int = 0
+  while i < n {
+    buckets = append(buckets, Bucket{ state: 0, key: 0, val: 0 })
+    i = i + 1
+  }
+  return buckets
+}
+
+fun hashmap_new(initial_size: int): HashMap {
+  return HashMap{
+    buckets: make_buckets(initial_size),
+    len: 0,
+    cap_num: 3,
+    cap_den: 4,
+    initial_size: initial_size
+  }
+}
+
+fun bucket_index(hm: HashMap, key: int): int {
+  var ind: int = key % len(hm.buckets)
+  if ind < 0 {
+    ind = ind + len(hm.buckets)
+  }
+  return ind
+}
+
+fun next_index(hm: HashMap, ind: int): int {
+  return (ind + 1) % len(hm.buckets)
+}
+
+fun try_set(hm: HashMap, ind: int, key: int, val: int): bool {
+  var buckets = hm.buckets
+  let b = buckets[ind]
+  if b.state == 0 || b.state == 2 {
+    buckets[ind] = Bucket{ state: 1, key: key, val: val }
+    hm.buckets = buckets
+    hm.len = hm.len + 1
+    return true
+  }
+  if b.key == key {
+    buckets[ind] = Bucket{ state: 1, key: key, val: val }
+    hm.buckets = buckets
+    return true
+  }
+  return false
+}
+
+fun is_full(hm: HashMap): bool {
+  let limit = len(hm.buckets) * hm.cap_num / hm.cap_den
+  return hm.len >= limit
+}
+
+fun is_sparse(hm: HashMap): bool {
+  if len(hm.buckets) <= hm.initial_size {
+    return false
+  }
+  let limit = len(hm.buckets) * hm.cap_num / (2 * hm.cap_den)
+  return hm.len < limit
+}
+
+fun resize(hm: HashMap, new_size: int) {
+  let old = hm.buckets
+  hm.buckets = make_buckets(new_size)
+  hm.len = 0
+  var i: int = 0
+  while i < len(old) {
+    let it = old[i]
+    if it.state == 1 {
+      add_item(hm, it.key, it.val)
+    }
+    i = i + 1
+  }
+}
+
+fun size_up(hm: HashMap) {
+  resize(hm, len(hm.buckets) * 2)
+}
+
+fun size_down(hm: HashMap) {
+  resize(hm, len(hm.buckets) / 2)
+}
+
+fun add_item(hm: HashMap, key: int, val: int) {
+  var ind: int = bucket_index(hm, key)
+  var i: int = 0
+  while i < len(hm.buckets) {
+    if try_set(hm, ind, key, val) {
+      break
+    }
+    ind = next_index(hm, ind)
+    i = i + 1
+  }
+}
+
+fun hashmap_set(hm: HashMap, key: int, val: int) {
+  if is_full(hm) {
+    size_up(hm)
+  }
+  add_item(hm, key, val)
+}
+
+fun hashmap_get(hm: HashMap, key: int): int {
+  var buckets = hm.buckets
+  var ind: int = bucket_index(hm, key)
+  var i: int = 0
+  while i < len(buckets) {
+    let it = buckets[ind]
+    if it.state == 0 {
+      break
+    }
+    if it.state == 1 && it.key == key {
+      return it.val
+    }
+    ind = next_index(hm, ind)
+    i = i + 1
+  }
+  return 0
+}
+
+fun hashmap_del(hm: HashMap, key: int) {
+  var buckets = hm.buckets
+  var ind: int = bucket_index(hm, key)
+  var i: int = 0
+  while i < len(buckets) {
+    let it = buckets[ind]
+    if it.state == 0 {
+      print("KeyError: " + str(key))
+      return
+    }
+    if it.state == 1 && it.key == key {
+      buckets[ind] = Bucket{ state: 2, key: 0, val: 0 }
+      hm.buckets = buckets
+      hm.len = hm.len - 1
+      break
+    }
+    ind = next_index(hm, ind)
+    i = i + 1
+  }
+  if is_sparse(hm) {
+    size_down(hm)
+  }
+}
+
+fun hashmap_len(hm: HashMap): int {
+  return hm.len
+}
+
+fun hashmap_repr(hm: HashMap): string {
+  var out: string = "HashMap("
+  var first: bool = true
+  var i: int = 0
+  while i < len(hm.buckets) {
+    let b = hm.buckets[i]
+    if b.state == 1 {
+      if !first {
+        out = out + ", "
+      } else {
+        first = false
+      }
+      out = out + str(b.key) + ": " + str(b.val)
+    }
+    i = i + 1
+  }
+  out = out + ")"
+  return out
+}
+
+var hm = hashmap_new(5)
+hashmap_set(hm, 1, 10)
+hashmap_set(hm, 2, 20)
+hashmap_set(hm, 3, 30)
+print(hashmap_repr(hm))
+print(str(hashmap_get(hm, 2)))
+hashmap_del(hm, 1)
+print(hashmap_repr(hm))
+print(str(hashmap_len(hm)))
