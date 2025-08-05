@@ -1,0 +1,95 @@
+/*
+Abbreviation using dynamic programming.
+
+Given two strings `a` and `b`, determine whether `a` can be transformed
+into `b` by capitalizing zero or more lowercase letters and deleting the
+remaining lowercase letters. Uppercase letters must already match and may
+not be altered. We build an (n+1) x (m+1) boolean table `dp` where
+`dp[i][j]` indicates if the first `i` characters of `a` can form the first
+`j` characters of `b`. For each character in `a` we either capitalize it to
+match `b[j]` or delete it if it is lowercase. The algorithm runs in
+`O(n*m)` time and space.
+*/
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = index_of(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = index_of(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  return "?"
+}
+
+fun to_upper_char(c: string): string {
+  let code = ord(c)
+  if code >= 97 && code <= 122 { return chr(code - 32) }
+  return c
+}
+
+fun is_lower(c: string): bool {
+  let code = ord(c)
+  return code >= 97 && code <= 122
+}
+
+fun abbr(a: string, b: string): bool {
+  let n = len(a)
+  let m = len(b)
+  var dp: list<list<bool>> = []
+  var i = 0
+  while i <= n {
+    var row: list<bool> = []
+    var j = 0
+    while j <= m {
+      row = append(row, false)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  dp[0][0] = true
+  i = 0
+  while i < n {
+    var j = 0
+    while j <= m {
+      if dp[i][j] {
+        if j < m && to_upper_char(a[i]) == b[j] {
+          dp[i+1][j+1] = true
+        }
+        if is_lower(a[i]) {
+          dp[i+1][j] = true
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[n][m]
+}
+fun print_bool(b: bool) {
+  if b {
+    print("true")
+  } else {
+    print("false")
+  }
+}
+
+print_bool(abbr("daBcd", "ABC"))
+print_bool(abbr("dBcd", "ABC"))
