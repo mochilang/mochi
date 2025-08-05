@@ -1,0 +1,46 @@
+/*
+Adjust the brightness of a grayscale image by adding a constant level to
+all pixel values.
+
+The image is represented as a 2D list of integers in the range [0, 255].
+A brightness `level` between -255 and 255 is added to each pixel and the
+result is clipped to stay within the valid range.  A positive level makes
+the image brighter while a negative level darkens it.  This mirrors the
+Python implementation that applies a uniform offset to every pixel using
+PIL's point operation.
+
+The algorithm iterates over every pixel once, so its time complexity is
+O(rows * cols) for an image with those dimensions.
+*/
+
+fun clamp(value: int): int {
+  if value < 0 { return 0 }
+  if value > 255 { return 255 }
+  return value
+}
+
+fun change_brightness(img: list<list<int>>, level: int): list<list<int>> {
+  if level < (-255) || level > 255 {
+    panic("level must be between -255 and 255")
+  }
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(img) {
+    var row_res: list<int> = []
+    var j = 0
+    while j < len(img[i]) {
+      row_res = append(row_res, clamp(img[i][j] + level))
+      j = j + 1
+    }
+    result = append(result, row_res)
+    i = i + 1
+  }
+  return result
+}
+
+let sample: list<list<int>> = [
+  [100, 150],
+  [200, 250]
+]
+print(change_brightness(sample, 30))
+print(change_brightness(sample, -60))
