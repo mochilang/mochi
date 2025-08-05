@@ -1,0 +1,102 @@
+/*
+Find the smallest range covering elements from K sorted lists
+
+Given k sorted lists of integers, determine the smallest inclusive range [a, b]
+that contains at least one number from each list. The algorithm keeps a min
+heap of the current elements from each list and tracks the maximum value among
+those elements. Each step removes the smallest element, updates the best range
+and pushes the next element from the corresponding list. When any list is
+exhausted the process stops.
+
+This implementation uses a linear scan to select the minimum instead of a true
+heap but the behaviour matches the Python version. Complexity is O(nk) where
+n is the total number of elements and k is the number of lists.
+*/
+
+type HeapItem {
+  value: int
+  list_idx: int
+  elem_idx: int
+}
+
+let INF = 1000000000
+
+fun smallest_range(nums: list<list<int>>): list<int> {
+  var heap: list<HeapItem> = []
+  var current_max = -INF
+
+  var i = 0
+  while i < len(nums) {
+    let first_val = nums[i][0]
+    heap = append(heap, HeapItem { value: first_val, list_idx: i, elem_idx: 0 })
+    if first_val > current_max {
+      current_max = first_val
+    }
+    i = i + 1
+  }
+
+  var best: list<int> = [-INF, INF]
+
+  while len(heap) > 0 {
+    var min_idx = 0
+    var j = 1
+    while j < len(heap) {
+      let hj = heap[j]
+      let hmin = heap[min_idx]
+      if hj.value < hmin.value {
+        min_idx = j
+      }
+      j = j + 1
+    }
+    let item = heap[min_idx]
+
+    var new_heap: list<HeapItem> = []
+    var k = 0
+    while k < len(heap) {
+      if k != min_idx {
+        new_heap = append(new_heap, heap[k])
+      }
+      k = k + 1
+    }
+    heap = new_heap
+
+    let current_min = item.value
+    if current_max - current_min < best[1] - best[0] {
+      best = [current_min, current_max]
+    }
+
+    if item.elem_idx == len(nums[item.list_idx]) - 1 {
+      break
+    }
+
+    let next_val = nums[item.list_idx][item.elem_idx + 1]
+    heap = append(heap, HeapItem { value: next_val, list_idx: item.list_idx, elem_idx: item.elem_idx + 1 })
+    if next_val > current_max {
+      current_max = next_val
+    }
+  }
+
+  return best
+}
+
+fun list_to_string(arr: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    s = s + str(arr[i])
+    if i < len(arr) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun main() {
+  let result1 = smallest_range([[4, 10, 15, 24, 26], [0, 9, 12, 20], [5, 18, 22, 30]])
+  print(list_to_string(result1))
+  let result2 = smallest_range([[1, 2, 3], [1, 2, 3], [1, 2, 3]])
+  print(list_to_string(result2))
+}
+
+main()
