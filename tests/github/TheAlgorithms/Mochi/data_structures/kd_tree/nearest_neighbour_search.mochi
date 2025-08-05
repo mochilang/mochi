@@ -1,0 +1,96 @@
+/*
+Perform nearest neighbor search in a k-dimensional tree (KD-Tree).
+The KD-Tree stores points in k-dimensional space where each node splits
+space along an axis cycling through the dimensions. To locate the nearest
+point to a query, we traverse the tree choosing the subtree that is closer
+to the query along the splitting axis. While descending, we track the
+closest point encountered. After exploring the nearer subtree we may need
+to explore the other subtree if the hypersphere around the query with radius
+equal to the current best distance intersects the splitting plane.
+This recursive search visits only nodes that could contain a closer point,
+reducing the average complexity to O(log n) for balanced trees.
+
+Below we build a small 2-D KD-Tree of seven points and query three points.
+For each query we print the nearest point, its squared distance and the
+number of visited nodes.
+*/
+
+type KDNode {
+  point: list<float>
+  left: int
+  right: int
+}
+
+type SearchResult {
+  point: list<float>
+  distance: float
+  nodes_visited: int
+}
+
+fun square_distance(a: list<float>, b: list<float>): float {
+  var i = 0
+  var total: float = 0.0
+  while i < len(a) {
+    let diff = a[i] - b[i]
+    total = total + diff * diff
+    i = i + 1
+  }
+  return total
+}
+
+fun search(nodes: list<KDNode>, index: int, query_point: list<float>, depth: int, best: SearchResult): SearchResult {
+  if index == -1 {
+    return best
+  }
+  var result = best
+  result.nodes_visited = result.nodes_visited + 1
+  let node = nodes[index]
+  let current_point = node.point
+  let current_dist = square_distance(query_point, current_point)
+  if len(result.point) == 0 || current_dist < result.distance {
+    result.point = current_point
+    result.distance = current_dist
+  }
+  let k = len(query_point)
+  let axis = depth % k
+  var nearer = node.left
+  var further = node.right
+  if query_point[axis] > current_point[axis] {
+    nearer = node.right
+    further = node.left
+  }
+  result = search(nodes, nearer, query_point, depth + 1, result)
+  let diff = query_point[axis] - current_point[axis]
+  if diff * diff < result.distance {
+    result = search(nodes, further, query_point, depth + 1, result)
+  }
+  return result
+}
+
+fun nearest_neighbour_search(nodes: list<KDNode>, root: int, query_point: list<float>): SearchResult {
+  let initial = SearchResult { point: [], distance: 1.0e30, nodes_visited: 0 }
+  return search(nodes, root, query_point, 0, initial)
+}
+
+let nodes: list<KDNode> = [
+  KDNode { point: [9.0, 1.0], left: 1, right: 4 },
+  KDNode { point: [2.0, 7.0], left: 2, right: 3 },
+  KDNode { point: [3.0, 6.0], left: -1, right: -1 },
+  KDNode { point: [6.0, 12.0], left: -1, right: -1 },
+  KDNode { point: [17.0, 15.0], left: 5, right: 6 },
+  KDNode { point: [13.0, 15.0], left: -1, right: -1 },
+  KDNode { point: [10.0, 19.0], left: -1, right: -1 }
+]
+
+let queries: list<list<float>> = [
+  [9.0, 2.0],
+  [12.0, 15.0],
+  [1.0, 3.0]
+]
+
+var q = 0
+while q < len(queries) {
+  let res = nearest_neighbour_search(nodes, 0, queries[q])
+  print(str(res.point) + " " + str(res.distance) + " " + str(res.nodes_visited) + "\n")
+  q = q + 1
+}
