@@ -1,0 +1,24 @@
+/*
+Hexagonal Numbers
+-----------------
+A hexagonal number counts dots that can form a regular hexagon. The nth
+hexagonal number H_n represents the number of distinct dots in a pattern of
+n concentric hexagons sharing a common vertex.  It is given by the closed
+form formula:
+
+  H_n = n * (2n - 1)
+
+This implementation mirrors TheAlgorithms Python version. It validates that
+the input is a positive integer and computes H_n directly from the formula.
+The sequence begins 1, 6, 15, 28, ...
+*/
+
+fun hexagonal(n: int): int {
+  if n < 1 { panic("Input must be a positive integer") }
+  return n * (2 * n - 1)
+}
+
+let samples: list<int> = [4, 11, 22]
+for s in samples {
+  print(hexagonal(s))
+}
