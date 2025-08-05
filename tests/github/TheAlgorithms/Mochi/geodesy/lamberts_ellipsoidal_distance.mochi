@@ -1,0 +1,68 @@
+/*
+Lambert's ellipsoidal distance estimates the surface distance between two
+geographic coordinates on an ellipsoidal model of Earth. This simplified
+implementation converts degrees to radians, projects points onto a plane using
+the equirectangular approximation, and scales the planar distance by the
+WGS84 equatorial radius. Trigonometric functions are approximated via Taylor
+series so the program runs on the Mochi VM without external libraries. The
+approximation is most accurate for relatively short distances. Time complexity
+is O(1).
+*/
+
+let PI: float = 3.141592653589793
+let EQUATORIAL_RADIUS: float = 6378137.0
+
+fun to_radians(deg: float): float { return deg * PI / 180.0 }
+
+fun sin_approx(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_approx(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun sqrt_approx(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun lamberts_ellipsoidal_distance(lat1: float, lon1: float, lat2: float, lon2: float): float {
+  let phi1 = to_radians(lat1)
+  let phi2 = to_radians(lat2)
+  let lambda1 = to_radians(lon1)
+  let lambda2 = to_radians(lon2)
+  let x = (lambda2 - lambda1) * cos_approx((phi1 + phi2) / 2.0)
+  let y = phi2 - phi1
+  return EQUATORIAL_RADIUS * sqrt_approx(x * x + y * y)
+}
+
+print(lamberts_ellipsoidal_distance(37.774856, -122.424227, 37.864742, -119.537521))
+print(lamberts_ellipsoidal_distance(37.774856, -122.424227, 40.713019, -74.012647))
+print(lamberts_ellipsoidal_distance(37.774856, -122.424227, 45.443012, 12.313071))
