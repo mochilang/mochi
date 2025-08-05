@@ -1,0 +1,63 @@
+/*
+ROT13 Cipher
+
+Applies the ROT13 substitution cipher to a string. Each alphabetical
+character is rotated by 13 positions within the alphabet. Characters
+outside A-Z and a-z remain unchanged. Applying the function twice returns
+the original message.
+
+Algorithm:
+1. For each character in the input string:
+   - If it is uppercase, shift within "A"-"Z" by n positions.
+   - If it is lowercase, shift within "a"-"z" by n positions.
+   - Otherwise leave it unchanged.
+2. Concatenate the transformed characters.
+
+Time complexity is O(len(s)).
+*/
+
+let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let lowercase = "abcdefghijklmnopqrstuvwxyz"
+
+fun index_of(s: string, c: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == c {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun dencrypt(s: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    let idx_u = index_of(uppercase, ch)
+    if idx_u >= 0 {
+      let new_idx = (idx_u + n) % 26
+      out = out + substring(uppercase, new_idx, new_idx + 1)
+    } else {
+      let idx_l = index_of(lowercase, ch)
+      if idx_l >= 0 {
+        let new_idx = (idx_l + n) % 26
+        out = out + substring(lowercase, new_idx, new_idx + 1)
+      } else {
+        out = out + ch
+      }
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let msg = "My secret bank account number is 173-52946 so don't tell anyone!!"
+  let s = dencrypt(msg, 13)
+  print(s)
+  print(str(dencrypt(s, 13) == msg))
+}
+
+main()
