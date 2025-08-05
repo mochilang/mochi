@@ -1,0 +1,91 @@
+/*
+Detect cycles in a singly linked list using Floyd's tortoise and hare
+algorithm.  The list is represented only by an array of next indexes:
+next[i] holds the index of the successor of node i and the sentinel
+-1 (0 - 1) denotes the end of the list.  Two cursors traverse the list
+at different speeds: the slow cursor advances one node while the fast
+cursor advances two.  If a cycle exists they eventually point to the
+same index; otherwise the fast cursor reaches the sentinel and the
+search terminates.  Helper functions build the list structure without
+mutation.  The demonstration creates a cycle and prints whether one was
+detected.
+*/
+
+type LinkedList {
+  next: list<int>,
+  head: int
+}
+
+let NULL = 0 - 1
+
+fun empty_list(): LinkedList {
+  return LinkedList { next: [] as list<int>, head: NULL }
+}
+
+fun add_node(list: LinkedList, value: int): LinkedList {
+  var nexts = list.next
+  let new_index = len(nexts)
+  nexts = append(nexts, NULL)
+  if list.head == NULL {
+    return LinkedList { next: nexts, head: new_index }
+  }
+  var last = list.head
+  while nexts[last] != NULL {
+    last = nexts[last]
+  }
+  var new_nexts: list<int> = [] as list<int>
+  var i = 0
+  while i < len(nexts) {
+    if i == last {
+      new_nexts = append(new_nexts, new_index)
+    } else {
+      new_nexts = append(new_nexts, nexts[i])
+    }
+    i = i + 1
+  }
+  return LinkedList { next: new_nexts, head: list.head }
+}
+
+fun set_next(list: LinkedList, index: int, next_index: int): LinkedList {
+  var nexts = list.next
+  var new_nexts: list<int> = [] as list<int>
+  var i = 0
+  while i < len(nexts) {
+    if i == index {
+      new_nexts = append(new_nexts, next_index)
+    } else {
+      new_nexts = append(new_nexts, nexts[i])
+    }
+    i = i + 1
+  }
+  return LinkedList { next: new_nexts, head: list.head }
+}
+
+fun detect_cycle(list: LinkedList): bool {
+  if list.head == NULL {
+    return false
+  }
+  let nexts = list.next
+  var slow = list.head
+  var fast = list.head
+  while fast != NULL && nexts[fast] != NULL {
+    slow = nexts[slow]
+    fast = nexts[nexts[fast]]
+    if slow == fast {
+      return true
+    }
+  }
+  return false
+}
+
+fun main() {
+  var ll = empty_list()
+  ll = add_node(ll, 1)
+  ll = add_node(ll, 2)
+  ll = add_node(ll, 3)
+  ll = add_node(ll, 4)
+  ll = set_next(ll, 3, 1)
+  print(detect_cycle(ll))
+}
+
+main()
