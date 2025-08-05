@@ -1,0 +1,10 @@
+parse error:
+  [31;1merror[P001][0;22m: tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9: unexpected token "var" (expected "}")
+  --> tests/github/TheAlgorithms/Mochi/graphs/deep_clone_graph.mochi:33:9
+
+[90m 33[0m |         var result: Node = Nil
+    | [31;1m        ^[0;22m
+
+[33mhelp:[0m
+  Check for a missing `{` or `}` to close the block.
+exit status 1
