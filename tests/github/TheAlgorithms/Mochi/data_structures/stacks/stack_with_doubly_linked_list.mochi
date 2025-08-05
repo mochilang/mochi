@@ -1,0 +1,126 @@
+/*
+Implement a stack of integers using a doubly linked list represented by
+an array of nodes.  Each node stores its value and the indexes of the
+next and previous nodes.  The stack tracks the index of the head node,
+which corresponds to the top of the stack.  Pushing creates a new node
+at the head and updates links.  Popping removes the head node, returns
+its value, and relinks the remaining list.  Additional operations
+include peeking at the top element, computing the size, checking for
+emptiness, and printing the stack from top to bottom.  The demonstration
+pushes four values, prints the stack, pops twice, prints again, and
+reports whether the stack is empty.
+*/
+
+type Node {
+  data: int,
+  next: int,
+  prev: int,
+}
+
+type Stack {
+  nodes: list<Node>,
+  head: int,
+}
+
+fun empty_stack(): Stack {
+  return Stack { nodes: [], head: 0 - 1 }
+}
+
+fun push(stack: Stack, value: int): Stack {
+  var nodes = stack.nodes
+  let idx = len(nodes)
+  var new_node = Node { data: value, next: stack.head, prev: 0 - 1 }
+  nodes = append(nodes, new_node)
+  if stack.head != 0 - 1 {
+    var head_node = nodes[stack.head]
+    head_node.prev = idx
+    nodes[stack.head] = head_node
+  }
+  return Stack { nodes: nodes, head: idx }
+}
+
+type PopResult {
+  stack: Stack,
+  value: int,
+  ok: bool,
+}
+
+fun pop(stack: Stack): PopResult {
+  if stack.head == 0 - 1 {
+    return PopResult { stack: stack, value: 0, ok: false }
+  }
+  var nodes = stack.nodes
+  var head_node = nodes[stack.head]
+  let value = head_node.data
+  let next_idx = head_node.next
+  if next_idx != 0 - 1 {
+    var next_node = nodes[next_idx]
+    next_node.prev = 0 - 1
+    nodes[next_idx] = next_node
+  }
+  let new_stack = Stack { nodes: nodes, head: next_idx }
+  return PopResult { stack: new_stack, value: value, ok: true }
+}
+
+type TopResult {
+  value: int,
+  ok: bool,
+}
+
+fun top(stack: Stack): TopResult {
+  if stack.head == 0 - 1 {
+    return TopResult { value: 0, ok: false }
+  }
+  let node = stack.nodes[stack.head]
+  return TopResult { value: node.data, ok: true }
+}
+
+fun size(stack: Stack): int {
+  var count = 0
+  var idx = stack.head
+  while idx != 0 - 1 {
+    count = count + 1
+    let node = stack.nodes[idx]
+    idx = node.next
+  }
+  return count
+}
+
+fun is_empty(stack: Stack): bool {
+  return stack.head == 0 - 1
+}
+
+fun print_stack(stack: Stack) {
+  print("stack elements are:")
+  var idx = stack.head
+  var s = ""
+  while idx != 0 - 1 {
+    let node = stack.nodes[idx]
+    s = s + str(node.data) + "->"
+    idx = node.next
+  }
+  if len(s) > 0 {
+    print(s)
+  }
+}
+
+fun main() {
+  var stack = empty_stack()
+  print("Stack operations using Doubly LinkedList")
+  stack = push(stack, 4)
+  stack = push(stack, 5)
+  stack = push(stack, 6)
+  stack = push(stack, 7)
+  print_stack(stack)
+  let t = top(stack)
+  if t.ok { print("Top element is " + str(t.value)) } else { print("Top element is None") }
+  print("Size of the stack is " + str(size(stack)))
+  var p = pop(stack)
+  stack = p.stack
+  p = pop(stack)
+  stack = p.stack
+  print_stack(stack)
+  print("stack is empty: " + str(is_empty(stack)))
+}
+
+main()
