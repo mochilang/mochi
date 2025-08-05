@@ -1,0 +1,97 @@
+/*
+Flip image augmentation for object detection.
+
+The program mirrors an image either horizontally or vertically and adjusts
+its bounding boxes accordingly.  Images are represented as 2D lists of
+integers and bounding boxes use the common YOLO format
+[class, x_center, y_center, width, height] with values normalized between
+0 and 1.  When flipping horizontally the new x-center becomes 1 - x;
+when flipping vertically the new y-center becomes 1 - y.  This simple
+operation increases training data diversity without collecting new
+images.
+*/
+
+fun flip_horizontal_image(img: list<list<int>>): list<list<int>> {
+  var flipped: list<list<int>> = []
+  var i = 0
+  while i < len(img) {
+    var row = img[i]
+    var j = len(row) - 1
+    var new_row: list<int> = []
+    while j >= 0 {
+      new_row = append(new_row, row[j])
+      j = j - 1
+    }
+    flipped = append(flipped, new_row)
+    i = i + 1
+  }
+  return flipped
+}
+
+fun flip_vertical_image(img: list<list<int>>): list<list<int>> {
+  var flipped: list<list<int>> = []
+  var i = len(img) - 1
+  while i >= 0 {
+    flipped = append(flipped, img[i])
+    i = i - 1
+  }
+  return flipped
+}
+
+fun flip_horizontal_boxes(boxes: list<list<float>>): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < len(boxes) {
+    var b = boxes[i]
+    let x_new = 1.0 - b[1]
+    result = append(result, [b[0], x_new, b[2], b[3], b[4]])
+    i = i + 1
+  }
+  return result
+}
+
+fun flip_vertical_boxes(boxes: list<list<float>>): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < len(boxes) {
+    var b = boxes[i]
+    let y_new = 1.0 - b[2]
+    result = append(result, [b[0], b[1], y_new, b[3], b[4]])
+    i = i + 1
+  }
+  return result
+}
+
+fun print_image(img: list<list<int>>) {
+  var i = 0
+  while i < len(img) {
+    var row = img[i]
+    var j = 0
+    var line = ""
+    while j < len(row) {
+      line = line + str(row[j]) + " "
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+let image = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+let boxes: list<list<float>> = [[0.0, 0.25, 0.25, 0.5, 0.5], [1.0, 0.75, 0.75, 0.5, 0.5]]
+
+print("Original image:")
+print_image(image)
+print(str(boxes))
+
+print("Horizontal flip:")
+let h_img = flip_horizontal_image(image)
+let h_boxes = flip_horizontal_boxes(boxes)
+print_image(h_img)
+print(str(h_boxes))
+
+print("Vertical flip:")
+let v_img = flip_vertical_image(image)
+let v_boxes = flip_vertical_boxes(boxes)
+print_image(v_img)
+print(str(v_boxes))
