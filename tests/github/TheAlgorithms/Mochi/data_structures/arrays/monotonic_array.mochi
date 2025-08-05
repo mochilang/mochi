@@ -1,0 +1,31 @@
+/*
+Determine whether a list of integers is monotonic (entirely nondecreasing or nonincreasing).
+
+The algorithm scans the list once, tracking two flags that represent whether the sequence
+remains nondecreasing and nonincreasing. For each adjacent pair of numbers, if the order
+violates a monotonic trend the corresponding flag is cleared. After processing all pairs,
+if either flag remains true the list is monotonic. This runs in O(n) time and O(1) extra space.
+*/
+
+fun is_monotonic(nums: list<int>): bool {
+  if len(nums) <= 2 {
+    return true
+  }
+  var increasing = true
+  var decreasing = true
+  var i = 0
+  while i < len(nums) - 1 {
+    if nums[i] > nums[i + 1] {
+      increasing = false
+    }
+    if nums[i] < nums[i + 1] {
+      decreasing = false
+    }
+    i = i + 1
+  }
+  return increasing || decreasing
+}
+
+print(str(is_monotonic([1, 2, 2, 3])))
+print(str(is_monotonic([6, 5, 4, 4])))
+print(str(is_monotonic([1, 3, 2])))
