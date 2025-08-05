@@ -1,0 +1,68 @@
+/*
+Maximum Difference Pair via Divide and Conquer
+
+Given an array of integers, find two elements a[i] and a[j] with i <= j
+such that the difference a[j] - a[i] is maximized. The algorithm splits
+the array recursively into halves, computes the optimal pair for each
+half, and also considers a cross pair using the minimum value from the
+left half and the maximum value from the right half. The best among
+these three candidates is returned. The recursion depth is O(log n) and
+only linear work is done per level, yielding O(n log n) time.
+*/
+
+fun min_slice(a: list<int>, start: int, end: int): int {
+  var m = a[start]
+  var i = start + 1
+  while i < end {
+    if a[i] < m { m = a[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun max_slice(a: list<int>, start: int, end: int): int {
+  var m = a[start]
+  var i = start + 1
+  while i < end {
+    if a[i] > m { m = a[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun max_diff_range(a: list<int>, start: int, end: int): list<int> {
+  if end - start == 1 {
+    let v = a[start]
+    return [v, v]
+  }
+  let mid = (start + end) / 2
+  let left = max_diff_range(a, start, mid)
+  let right = max_diff_range(a, mid, end)
+  let small1 = left[0]
+  let big1 = left[1]
+  let small2 = right[0]
+  let big2 = right[1]
+  let min_left = min_slice(a, start, mid)
+  let max_right = max_slice(a, mid, end)
+  let cross_diff = max_right - min_left
+  let left_diff = big1 - small1
+  let right_diff = big2 - small2
+  if right_diff > cross_diff && right_diff > left_diff {
+    return [small2, big2]
+  } else if left_diff > cross_diff {
+    return [small1, big1]
+  } else {
+    return [min_left, max_right]
+  }
+}
+
+fun max_difference(a: list<int>): list<int> {
+  return max_diff_range(a, 0, len(a))
+}
+
+fun main() {
+  let result = max_difference([5, 11, 2, 1, 7, 9, 0, 7])
+  print(str(result))
+}
+
+main()
