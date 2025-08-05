@@ -1,0 +1,54 @@
+/*
+Degrees to Radians Conversion
+-----------------------------
+This module converts an angle measured in degrees to its value in radians.
+The relationship between the two units is:
+
+    radians = degrees / (180 / PI)
+
+A constant for PI is defined locally so the implementation runs without any
+foreign function interface.  The module includes a few sanity tests mirroring
+those in the corresponding Python version.
+*/
+
+let PI = 3.141592653589793
+
+fun radians(degree: float): float {
+  return degree / (180.0 / PI)
+}
+
+fun abs_float(x: float): float {
+  if x < 0.0 {
+    return -x
+  }
+  return x
+}
+
+fun almost_equal(a: float, b: float): bool {
+  return abs_float(a - b) <= 0.00000001
+}
+
+fun test_radians() {
+  if !almost_equal(radians(180.0), PI) {
+    panic("radians 180 failed")
+  }
+  if !almost_equal(radians(92.0), 1.6057029118347832) {
+    panic("radians 92 failed")
+  }
+  if !almost_equal(radians(274.0), 4.782202150464463) {
+    panic("radians 274 failed")
+  }
+  if !almost_equal(radians(109.82), 1.9167205845401725) {
+    panic("radians 109.82 failed")
+  }
+}
+
+fun main() {
+  test_radians()
+  print(str(radians(180.0)))
+  print(str(radians(92.0)))
+  print(str(radians(274.0)))
+  print(str(radians(109.82)))
+}
+
+main()
