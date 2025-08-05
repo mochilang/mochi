@@ -1,0 +1,124 @@
+/*
+Implement a binary max heap for numeric values using an array.
+
+A max heap maintains the largest element at the root while each parent
+node is greater than or equal to its children.  This array-based
+implementation mirrors the Python version and supports the core
+operations:
+
+1. `build_max_heap` rearranges an unsorted array into a valid heap by
+   calling `max_heapify` on each non-leaf node from right to left.
+2. `extract_max` removes the maximum element by swapping the root with
+the last item and restoring the heap property.
+3. `insert` appends a new value then fixes violations by heapifying
+   upward from the parent indices.
+4. `heap_sort` repeatedly swaps the root with the last unsorted element
+   to produce a sorted array in ascending order.
+
+Each helper uses explicit index arithmetic rather than pointers.  The
+worst-case time complexities are O(n) for building the heap and O(log n)
+for insert and extract operations.
+*/
+
+fun parent_index(child_idx: int): int {
+  if child_idx > 0 { return (child_idx - 1) / 2 }
+  return -1
+}
+
+fun left_child_idx(parent_idx: int): int {
+  return 2 * parent_idx + 1
+}
+
+fun right_child_idx(parent_idx: int): int {
+  return 2 * parent_idx + 2
+}
+
+fun max_heapify(h: list<float>, heap_size: int, index: int) {
+  var largest = index
+  let left = left_child_idx(index)
+  let right = right_child_idx(index)
+  if left < heap_size && h[left] > h[largest] {
+    largest = left
+  }
+  if right < heap_size && h[right] > h[largest] {
+    largest = right
+  }
+  if largest != index {
+    let temp = h[index]
+    h[index] = h[largest]
+    h[largest] = temp
+    max_heapify(h, heap_size, largest)
+  }
+}
+
+fun build_max_heap(h: list<float>): int {
+  var heap_size = len(h)
+  var i = heap_size / 2 - 1
+  while i >= 0 {
+    max_heapify(h, heap_size, i)
+    i = i - 1
+  }
+  return heap_size
+}
+
+fun extract_max(h: list<float>, heap_size: int): float {
+  let max_value = h[0]
+  h[0] = h[heap_size - 1]
+  max_heapify(h, heap_size - 1, 0)
+  return max_value
+}
+
+fun insert(h: list<float>, heap_size: int, value: float): int {
+  if heap_size < len(h) {
+    h[heap_size] = value
+  } else {
+    h = append(h, value)
+  }
+  heap_size = heap_size + 1
+  var idx = (heap_size - 1) / 2
+  while idx >= 0 {
+    max_heapify(h, heap_size, idx)
+    idx = (idx - 1) / 2
+  }
+  return heap_size
+}
+
+fun heap_sort(h: list<float>, heap_size: int) {
+  var size = heap_size
+  var j = size - 1
+  while j > 0 {
+    let temp = h[0]
+    h[0] = h[j]
+    h[j] = temp
+    size = size - 1
+    max_heapify(h, size, 0)
+    j = j - 1
+  }
+}
+
+fun heap_to_string(h: list<float>, heap_size: int): string {
+  var s = "["
+  var i = 0
+  while i < heap_size {
+    s = s + str(h[i])
+    if i < heap_size - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+var heap: list<float> = [103.0, 9.0, 1.0, 7.0, 11.0, 15.0, 25.0, 201.0, 209.0, 107.0, 5.0]
+var size = build_max_heap(heap)
+print(heap_to_string(heap, size))
+
+let m = extract_max(heap, size)
+size = size - 1
+print(str(m))
+print(heap_to_string(heap, size))
+
+size = insert(heap, size, 100.0)
+print(heap_to_string(heap, size))
+
+heap_sort(heap, size)
+print(heap_to_string(heap, size))
