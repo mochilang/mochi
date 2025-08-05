@@ -1,0 +1,74 @@
+/*
+Neville's Method for Polynomial Interpolation
+---------------------------------------------
+This program evaluates a polynomial that passes through a set of given
+points using Neville's recursive interpolation scheme.  Given sequences
+of x and y values and a target x0, the algorithm constructs a triangular
+matrix q where each q[j][i] stores the ith order interpolated value using
+points up to index j.  The recurrence relation is
+
+q[j][i] = ((x0 - x[j - i + 1]) * q[j][i - 1] - (x0 - x[j]) * q[j - 1][i - 1]) /
+          (x[j] - x[j - i + 1])
+
+The final approximation at x0 is q[n-1][n-1].  The function also returns
+the full interpolation table for inspection.  The implementation uses
+only Mochi primitives so it can run on runtime/vm without FFI.
+*/
+
+type NevilleResult { value: float, table: list<list<float>> }
+
+fun neville_interpolate(x_points: list<float>, y_points: list<float>, x0: float): NevilleResult {
+  let n = len(x_points)
+  var q: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    q = append(q, row)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    q[i][1] = y_points[i]
+    i = i + 1
+  }
+  var col = 2
+  while col < n {
+    var row_idx = col
+    while row_idx < n {
+      q[row_idx][col] = ((x0 - x_points[row_idx - col + 1]) * q[row_idx][col - 1] -
+                         (x0 - x_points[row_idx]) * q[row_idx - 1][col - 1]) /
+                        (x_points[row_idx] - x_points[row_idx - col + 1])
+      row_idx = row_idx + 1
+    }
+    col = col + 1
+  }
+  return NevilleResult { value: q[n - 1][n - 1], table: q }
+}
+
+fun test_neville() {
+  let xs: list<float> = [1.0, 2.0, 3.0, 4.0, 6.0]
+  let ys: list<float> = [6.0, 7.0, 8.0, 9.0, 11.0]
+  let r1 = neville_interpolate(xs, ys, 5.0)
+  if r1.value != 10.0 {
+    panic("neville_interpolate at 5 failed")
+  }
+  let r2 = neville_interpolate(xs, ys, 99.0)
+  if r2.value != 104.0 {
+    panic("neville_interpolate at 99 failed")
+  }
+}
+
+fun main() {
+  test_neville()
+  let xs: list<float> = [1.0, 2.0, 3.0, 4.0, 6.0]
+  let ys: list<float> = [6.0, 7.0, 8.0, 9.0, 11.0]
+  let r = neville_interpolate(xs, ys, 5.0)
+  print(r.value)
+}
+
+main()
