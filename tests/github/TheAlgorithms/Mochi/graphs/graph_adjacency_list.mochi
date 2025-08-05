@@ -1,0 +1,162 @@
+/*
+Graph adjacency list data structure.
+
+This program implements a graph using a map from integer vertices to
+lists of neighboring vertices.  Operations include adding and removing
+vertices and edges, checking for their existence, and clearing the
+entire graph.  The graph can be either directed or undirected; for an
+undirected graph each edge is stored in both adjacency lists.
+
+The demonstration builds a small undirected graph, adds a vertex and an
+edge, queries an edge, removes an edge and a vertex, and prints the
+adjacency map after each major operation.
+*/
+
+type Graph {
+  adj: map<string, list<string>>,
+  directed: bool
+}
+
+fun create_graph(vertices: list<string>, edges: list<list<string>>, directed: bool): Graph {
+  var adj: map<string, list<string>> = {}
+  for v in vertices {
+    adj[v] = []
+  }
+  for e in edges {
+    let s = e[0]
+    let d = e[1]
+    if !(s in adj) { adj[s] = [] }
+    if !(d in adj) { adj[d] = [] }
+    adj[s] = append(adj[s], d)
+    if !directed {
+      adj[d] = append(adj[d], s)
+    }
+  }
+  return Graph { adj: adj, directed: directed }
+}
+
+fun add_vertex(graph: Graph, v: string): Graph {
+  if v in graph.adj {
+    panic("vertex exists")
+  }
+  var adj: map<string, list<string>> = {}
+  for k in graph.adj {
+    adj[k] = graph.adj[k]
+  }
+  adj[v] = []
+  return Graph { adj: adj, directed: graph.directed }
+}
+
+fun remove_from_list(lst: list<string>, value: string): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(lst) {
+    if lst[i] != value {
+      res = append(res, lst[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun remove_key(m: map<string, list<string>>, key: string): map<string, list<string>> {
+  var res: map<string, list<string>> = {}
+  for k in m {
+    if k != key {
+      res[k] = m[k]
+    }
+  }
+  return res
+}
+
+fun add_edge(graph: Graph, s: string, d: string): Graph {
+  if ((! (s in graph.adj)) || (! (d in graph.adj))) {
+    panic("vertex missing")
+  }
+  if contains_edge(graph, s, d) {
+    panic("edge exists")
+  }
+  var adj: map<string, list<string>> = {}
+  for k in graph.adj {
+    adj[k] = graph.adj[k]
+  }
+  var list_s = adj[s]
+  list_s = append(list_s, d)
+  adj[s] = list_s
+  if !graph.directed {
+    var list_d = adj[d]
+    list_d = append(list_d, s)
+    adj[d] = list_d
+  }
+  return Graph { adj: adj, directed: graph.directed }
+}
+
+fun remove_edge(graph: Graph, s: string, d: string): Graph {
+  if ((! (s in graph.adj)) || (! (d in graph.adj))) {
+    panic("vertex missing")
+  }
+  if !contains_edge(graph, s, d) {
+    panic("edge missing")
+  }
+  var adj: map<string, list<string>> = {}
+  for k in graph.adj {
+    adj[k] = graph.adj[k]
+  }
+  adj[s] = remove_from_list(adj[s], d)
+  if !graph.directed {
+    adj[d] = remove_from_list(adj[d], s)
+  }
+  return Graph { adj: adj, directed: graph.directed }
+}
+
+fun remove_vertex(graph: Graph, v: string): Graph {
+  if !(v in graph.adj) {
+    panic("vertex missing")
+  }
+  var adj: map<string, list<string>> = {}
+  for k in graph.adj {
+    if k != v {
+      adj[k] = remove_from_list(graph.adj[k], v)
+    }
+  }
+  return Graph { adj: adj, directed: graph.directed }
+}
+
+fun contains_vertex(graph: Graph, v: string): bool {
+  return v in graph.adj
+}
+
+fun contains_edge(graph: Graph, s: string, d: string): bool {
+  if ((! (s in graph.adj)) || (! (d in graph.adj))) {
+    panic("vertex missing")
+  }
+  for x in graph.adj[s] {
+    if x == d {
+      return true
+    }
+  }
+  return false
+}
+
+fun clear_graph(graph: Graph): Graph {
+  return Graph { adj: {}, directed: graph.directed }
+}
+
+fun to_string(graph: Graph): string {
+  return str(graph.adj)
+}
+
+fun main() {
+  let vertices = ["1","2","3","4"]
+  let edges: list<list<string>> = [["1","2"], ["2","3"], ["3","4"]]
+  var g = create_graph(vertices, edges, false)
+  print(to_string(g))
+  g = add_vertex(g, "5")
+  g = add_edge(g, "4", "5")
+  print(str(contains_edge(g, "4", "5")))
+  g = remove_edge(g, "1", "2")
+  g = remove_vertex(g, "3")
+  print(to_string(g))
+}
+
+main()
