@@ -1,0 +1,62 @@
+/*
+Sieve of Eratosthenes
+---------------------
+Given an upper bound n, the sieve of Eratosthenes efficiently finds all
+prime numbers up to n. The algorithm maintains a boolean array marking
+whether each number is composite. Starting from 2, it repeatedly selects
+the next unmarked number p and marks all multiples of p starting from p^2.
+This process only needs to run up to sqrt(n), after which any remaining
+unmarked numbers are prime. The complexity is O(n log log n) with O(n)
+space and uses only Mochi primitives so it runs on runtime/vm.
+*/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun prime_sieve(num: int): list<int> {
+  if num <= 0 {
+    panic("Invalid input, please enter a positive integer.")
+  }
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= num {
+    sieve = append(sieve, true)
+    i = i + 1
+  }
+  var prime: list<int> = []
+  var start = 2
+  let end = isqrt(num)
+  while start <= end {
+    if sieve[start] {
+      prime = append(prime, start)
+      var j = start * start
+      while j <= num {
+        if sieve[j] {
+          sieve[j] = false
+        }
+        j = j + start
+      }
+    }
+    start = start + 1
+  }
+  var k = end + 1
+  while k <= num {
+    if sieve[k] {
+      prime = append(prime, k)
+    }
+    k = k + 1
+  }
+  return prime
+}
+
+print(str(prime_sieve(50)))
+print(str(prime_sieve(25)))
+print(str(prime_sieve(10)))
+print(str(prime_sieve(9)))
+print(str(prime_sieve(2)))
+print(str(prime_sieve(1)))
