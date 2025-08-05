@@ -1,0 +1,58 @@
+/*
+Generate the first n terms of the p-series: 1 + 1/2^p + ... + 1/n^p.
+
+A p-series generalizes the harmonic series. Each term is 1/i^p for i starting at 1.
+This implementation produces a list of string representations of each term.
+
+Algorithm:
+1. If nth_term <= 0 return empty list.
+2. For i from 1 to nth_term:
+   a. When i == 1 append "1".
+   b. Otherwise append "1 / " + pow_string(i, power).
+3. pow_string handles integer and negative powers by repeated multiplication.
+
+Time complexity: O(n * |p|) due to repeated multiplication for each term.
+Space complexity: O(n) for the resulting list of strings.
+*/
+fun pow_string(base: int, exp: int): string {
+  if exp >= 0 {
+    var res = 1
+    var i = 0
+    while i < exp {
+      res = res * base
+      i = i + 1
+    }
+    return str(res)
+  }
+  var e = -exp
+  var res: float = 1.0
+  var b = base * 1.0
+  var i = 0
+  while i < e {
+    res = res * b
+    i = i + 1
+  }
+  let value = 1.0 / res
+  return str(value)
+}
+
+fun p_series(nth_term: int, power: int): list<string> {
+  var series: list<string> = []
+  if nth_term <= 0 { return series }
+  var i = 1
+  while i <= nth_term {
+    if i == 1 {
+      series = append(series, "1")
+    } else {
+      series = append(series, "1 / " + pow_string(i, power))
+    }
+    i = i + 1
+  }
+  return series
+}
+
+print(p_series(5, 2))
+print(p_series(-5, 2))
+print(p_series(5, -2))
+print(p_series(0, 0))
+print(p_series(1, 1))
