@@ -1,0 +1,18 @@
+/*
+Wheatstone Bridge Solver
+------------------------
+Computes the unknown resistance in a Wheatstone bridge circuit when
+three resistances (R1, R2, and R3) are known. The bridge balances when
+R1/R2 = R3/Rx. Rearranging gives Rx = (R2 / R1) * R3. All resistances
+must be positive; otherwise the function panics. Time complexity is O(1).
+*/
+
+fun wheatstone_solver(resistance_1: float, resistance_2: float, resistance_3: float): float {
+  if resistance_1 <= 0.0 || resistance_2 <= 0.0 || resistance_3 <= 0.0 {
+    panic("All resistance values must be positive")
+  }
+  return (resistance_2 / resistance_1) * resistance_3
+}
+
+print(wheatstone_solver(2.0, 4.0, 5.0))
+print(wheatstone_solver(356.0, 234.0, 976.0))
