@@ -1,0 +1,125 @@
+/*
+Viterbi Algorithm for Hidden Markov Models
+
+Given a sequence of observations and a hidden Markov model, this algorithm
+computes the most probable sequence of hidden states.  For each observation it
+keeps:
+  - `probs[state][observation]`: probability of the most likely path ending in
+    `state` after seeing `observation`.
+  - `ptrs[state][observation]`: previous state that led to that probability.
+
+Initialization uses the start probabilities and emission of the first
+observation.  Each subsequent step considers all transitions from previous
+states and keeps the best one.  Finally the best last state is chosen and the
+path is reconstructed by following the stored pointers backwards.
+
+Time complexity is O(|states|^2 * |observations|) and memory
+O(|states| * |observations|).
+*/
+
+fun key(state: string, obs: string): string { return state + "|" + obs }
+
+fun viterbi(
+  observations: list<string>,
+  states: list<string>,
+  start_p: map<string, float>,
+  trans_p: map<string, map<string, float>>,
+  emit_p: map<string, map<string, float>>
+): list<string> {
+  if len(observations) == 0 || len(states) == 0 {
+    panic("empty parameters")
+  }
+  var probs: map<string, float> = {}
+  var ptrs: map<string, string> = {}
+
+  let first_obs = observations[0]
+  var i = 0
+  while i < len(states) {
+    let state = states[i]
+    probs[key(state, first_obs)] = start_p[state] * emit_p[state][first_obs]
+    ptrs[key(state, first_obs)] = ""
+    i = i + 1
+  }
+
+  var t = 1
+  while t < len(observations) {
+    let obs = observations[t]
+    var j = 0
+    while j < len(states) {
+      let state = states[j]
+      var max_prob: float = -1.0
+      var prev_state = ""
+      var k = 0
+      while k < len(states) {
+        let state0 = states[k]
+        let obs0 = observations[t - 1]
+        let prob_prev = probs[key(state0, obs0)]
+        let prob = prob_prev * trans_p[state0][state] * emit_p[state][obs]
+        if prob > max_prob {
+          max_prob = prob
+          prev_state = state0
+        }
+        k = k + 1
+      }
+      probs[key(state, obs)] = max_prob
+      ptrs[key(state, obs)] = prev_state
+      j = j + 1
+    }
+    t = t + 1
+  }
+
+  var path: list<string> = []
+  var n = 0
+  while n < len(observations) {
+    path = append(path, "")
+    n = n + 1
+  }
+  let last_obs = observations[len(observations) - 1]
+  var max_final: float = -1.0
+  var last_state = ""
+  var m = 0
+  while m < len(states) {
+    let state = states[m]
+    let prob = probs[key(state, last_obs)]
+    if prob > max_final {
+      max_final = prob
+      last_state = state
+    }
+    m = m + 1
+  }
+  let last_index: int = len(observations) - 1
+  path[last_index] = last_state
+  var idx: int = last_index
+  while idx > 0 {
+    let obs = observations[idx]
+    let prev = ptrs[key(path[idx], obs)]
+    path[idx - 1] = prev
+    idx = idx - 1
+  }
+  return path
+}
+
+fun join_words(words: list<string>): string {
+  var res = ""
+  var i = 0
+  while i < len(words) {
+    if i > 0 { res = res + " " }
+    res = res + words[i]
+    i = i + 1
+  }
+  return res
+}
+
+var observations: list<string> = ["normal", "cold", "dizzy"]
+var states: list<string> = ["Healthy", "Fever"]
+var start_p: map<string, float> = {"Healthy": 0.6, "Fever": 0.4}
+var trans_p: map<string, map<string, float>> = {
+  "Healthy": {"Healthy": 0.7, "Fever": 0.3},
+  "Fever": {"Healthy": 0.4, "Fever": 0.6}
+}
+var emit_p: map<string, map<string, float>> = {
+  "Healthy": {"normal": 0.5, "cold": 0.4, "dizzy": 0.1},
+  "Fever": {"normal": 0.1, "cold": 0.3, "dizzy": 0.6}
+}
+let result = viterbi(observations, states, start_p, trans_p, emit_p)
+print(join_words(result))
