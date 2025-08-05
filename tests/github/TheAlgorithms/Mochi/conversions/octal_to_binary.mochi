@@ -1,0 +1,48 @@
+/*
+Convert an octal string to its binary representation.
+
+The algorithm validates that the input is non-empty and contains only
+characters 0-7. Each digit is cast to an integer and converted to a
+3-bit binary string via repeated division by two, padding with leading
+zeros. Concatenating these segments yields the final binary string.
+This runs in O(n) time for n digits and uses O(1) extra space besides
+the output buffer.
+*/
+
+fun octal_to_binary(octal_number: string): string {
+  if len(octal_number) == 0 {
+    panic("Empty string was passed to the function")
+  }
+  let octal_digits = "01234567"
+  var binary_number = ""
+  var i = 0
+  while i < len(octal_number) {
+    let digit = octal_number[i]
+    var valid = false
+    var j = 0
+    while j < len(octal_digits) {
+      if digit == octal_digits[j] {
+        valid = true
+        break
+      }
+      j = j + 1
+    }
+    if !valid {
+      panic("Non-octal value was passed to the function")
+    }
+    var value = digit as int
+    var k = 0
+    var binary_digit = ""
+    while k < 3 {
+      binary_digit = str(value % 2) + binary_digit
+      value = value / 2
+      k = k + 1
+    }
+    binary_number = binary_number + binary_digit
+    i = i + 1
+  }
+  return binary_number
+}
+
+print(octal_to_binary("17"))
+print(octal_to_binary("7"))
