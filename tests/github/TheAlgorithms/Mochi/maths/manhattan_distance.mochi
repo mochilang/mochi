@@ -1,0 +1,51 @@
+/*
+Manhattan Distance
+------------------
+Computes the Manhattan (taxicab) distance between two points in the same
+n-dimensional space. Each point is represented as a list of coordinates and
+the distance is the sum of absolute differences of corresponding components.
+
+The function validates that both input lists are non-empty and of equal length.
+It runs in O(n) time and uses O(1) extra space.
+
+Functions:
+- manhattan_distance(a: list<float>, b: list<float>): float
+    Validate inputs and iteratively sum absolute differences.
+- manhattan_distance_one_liner(a: list<float>, b: list<float>): float
+    Convenience wrapper around manhattan_distance.
+*/
+
+fun abs_val(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun validate_point(p: list<float>) {
+  if len(p) == 0 {
+    panic("Missing an input")
+  }
+}
+
+fun manhattan_distance(a: list<float>, b: list<float>): float {
+  validate_point(a)
+  validate_point(b)
+  if len(a) != len(b) {
+    panic("Both points must be in the same n-dimensional space")
+  }
+  var total: float = 0.0
+  var i: int = 0
+  while i < len(a) {
+    total = total + abs_val(a[i] - b[i])
+    i = i + 1
+  }
+  return total
+}
+
+fun manhattan_distance_one_liner(a: list<float>, b: list<float>): float {
+  return manhattan_distance(a, b)
+}
+
+print(str(manhattan_distance([1.0,1.0], [2.0,2.0])))
+print(str(manhattan_distance([1.5,1.5], [2.0,2.0])))
+print(str(manhattan_distance_one_liner([1.5,1.5], [2.5,2.0])))
+print(str(manhattan_distance_one_liner([-3.0,-3.0,-3.0], [0.0,0.0,0.0])))
