@@ -1,0 +1,49 @@
+/*
+Compute the missing component of electrical impedance.
+
+In an AC circuit, impedance (Z) combines resistance (R) and reactance (X)
+through the relation Z = sqrt(R^2 + X^2).
+
+Given any two of these values and setting the unknown one to 0, this function
+returns a map with the name and value of the missing quantity. If not exactly
+one argument is 0, the function panics.
+
+All operations use basic arithmetic and run in constant time.
+*/
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun electrical_impedance(resistance: float, reactance: float, impedance: float): map<string, float> {
+  var zero_count = 0
+  if resistance == 0.0 { zero_count = zero_count + 1 }
+  if reactance == 0.0 { zero_count = zero_count + 1 }
+  if impedance == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 {
+    panic("One and only one argument must be 0")
+  }
+  if resistance == 0.0 {
+    let value = sqrtApprox(impedance*impedance - reactance*reactance)
+    return {"resistance": value}
+  } else if reactance == 0.0 {
+    let value = sqrtApprox(impedance*impedance - resistance*resistance)
+    return {"reactance": value}
+  } else if impedance == 0.0 {
+    let value = sqrtApprox(resistance*resistance + reactance*reactance)
+    return {"impedance": value}
+  } else {
+    panic("Exactly one argument must be 0")
+  }
+}
+
+print(electrical_impedance(3.0, 4.0, 0.0))
+print(electrical_impedance(0.0, 4.0, 5.0))
+print(electrical_impedance(3.0, 0.0, 5.0))
