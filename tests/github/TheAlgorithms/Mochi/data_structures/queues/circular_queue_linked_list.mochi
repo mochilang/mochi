@@ -1,0 +1,94 @@
+/*
+Implement a fixed-capacity circular queue using a linked list structure.  Each
+node stores a string value and links to its successor and predecessor, forming a
+ring.  The queue tracks indexes of the front and rear nodes inside parallel
+arrays for node data and links.  Enqueue advances the rear pointer and inserts
+at the tail, while dequeue retrieves the front value and advances the front
+pointer.  When the rear's next index equals the front the queue is full.  An
+empty queue occurs when front equals rear and its data is an empty string.
+All operations run in O(1) time.
+*/
+
+type CircularQueue {
+  data: list<string>
+  next: list<int>
+  prev: list<int>
+  front: int
+  rear: int
+}
+
+type DequeueResult {
+  queue: CircularQueue
+  value: string
+}
+
+fun create_queue(capacity: int): CircularQueue {
+  var data: list<string> = []
+  var next: list<int> = []
+  var prev: list<int> = []
+  var i = 0
+  while i < capacity {
+    data = append(data, "")
+    next = append(next, (i + 1) % capacity)
+    prev = append(prev, (i - 1 + capacity) % capacity)
+    i = i + 1
+  }
+  return CircularQueue { data: data, next: next, prev: prev, front: 0, rear: 0 }
+}
+
+fun is_empty(q: CircularQueue): bool {
+  return q.front == q.rear && q.data[q.front] == ""
+}
+
+fun check_can_perform(q: CircularQueue) {
+  if is_empty(q) { panic("Empty Queue") }
+}
+
+fun check_is_full(q: CircularQueue) {
+  if q.next[q.rear] == q.front { panic("Full Queue") }
+}
+
+fun peek(q: CircularQueue): string {
+  check_can_perform(q)
+  return q.data[q.front]
+}
+
+fun enqueue(q: CircularQueue, value: string): CircularQueue {
+  check_is_full(q)
+  if !is_empty(q) {
+    q.rear = q.next[q.rear]
+  }
+  var data = q.data
+  data[q.rear] = value
+  q.data = data
+  return q
+}
+
+fun dequeue(q: CircularQueue): DequeueResult {
+  check_can_perform(q)
+  var data = q.data
+  let val = data[q.front]
+  data[q.front] = ""
+  q.data = data
+  if q.front != q.rear {
+    q.front = q.next[q.front]
+  }
+  return DequeueResult { queue: q, value: val }
+}
+
+fun main() {
+  var q = create_queue(3)
+  print(str(is_empty(q)))
+  q = enqueue(q, "a")
+  q = enqueue(q, "b")
+  print(peek(q))
+  var res = dequeue(q)
+  q = res.queue
+  print(res.value)
+  res = dequeue(q)
+  q = res.queue
+  print(res.value)
+  print(str(is_empty(q)))
+}
+
+main()
