@@ -1,0 +1,126 @@
+/*
+Finding Bridges in an Undirected Graph
+
+A bridge (or cut edge) is an edge whose removal increases the number of
+connected components of a graph. Bridges reveal critical connections in
+networks, such as vulnerable communication links. This implementation
+uses a depth-first search to assign each vertex an increasing discovery
+index and to compute the smallest reachable index ("low" value) for each
+vertex via back edges. An edge from `at` to `to` is a bridge when
+`ids[at] < low[to]`, meaning no back edge from the subtree rooted at `to`
+reaches `at` or an ancestor of `at`.
+
+The algorithm runs in O(V + E) time for a graph with V vertices and E
+edges, using O(V) space for tracking discovery indices, low values, and
+visited flags.
+*/
+
+type DfsResult = { id: int, bridges: list<list<int>> }
+
+fun dfs(graph: map<int, list<int>>, at: int, parent: int, visited: list<bool>, ids: list<int>, low: list<int>, id: int, bridges: list<list<int>>): DfsResult {
+  visited[at] = true
+  ids[at] = id
+  low[at] = id
+  var current_id = id + 1
+  var res_bridges = bridges
+  for to in graph[at] {
+    if to == parent {
+      // skip the edge leading back to parent
+    } else if !visited[to] {
+      let result = dfs(graph, to, at, visited, ids, low, current_id, res_bridges)
+      current_id = result.id
+      res_bridges = result.bridges
+      if low[at] > low[to] { low[at] = low[to] }
+      if ids[at] < low[to] {
+        let edge = if at < to { [at, to] } else { [to, at] }
+        res_bridges = append(res_bridges, edge)
+      }
+    } else {
+      if low[at] > ids[to] { low[at] = ids[to] }
+    }
+  }
+  return DfsResult{ id: current_id, bridges: res_bridges }
+}
+
+fun compute_bridges(graph: map<int, list<int>>): list<list<int>> {
+  let n = len(graph)
+  var visited: list<bool> = []
+  var ids: list<int> = []
+  var low: list<int> = []
+  var i = 0
+  while i < n {
+    visited = append(visited, false)
+    ids = append(ids, 0)
+    low = append(low, 0)
+    i = i + 1
+  }
+  var bridges: list<list<int>> = []
+  var id = 0
+  i = 0
+  while i < n {
+    if !visited[i] {
+      let result = dfs(graph, i, -1, visited, ids, low, id, bridges)
+      id = result.id
+      bridges = result.bridges
+    }
+    i = i + 1
+  }
+  return bridges
+}
+
+fun get_demo_graph(index: int): map<int, list<int>> {
+  if index == 0 {
+    return {
+      0: [1, 2],
+      1: [0, 2],
+      2: [0, 1, 3, 5],
+      3: [2, 4],
+      4: [3],
+      5: [2, 6, 8],
+      6: [5, 7],
+      7: [6, 8],
+      8: [5, 7],
+    }
+  }
+  if index == 1 {
+    return {
+      0: [6],
+      1: [9],
+      2: [4, 5],
+      3: [4],
+      4: [2, 3],
+      5: [2],
+      6: [0, 7],
+      7: [6],
+      8: [],
+      9: [1],
+    }
+  }
+  if index == 2 {
+    return {
+      0: [4],
+      1: [6],
+      2: [],
+      3: [5, 6, 7],
+      4: [0, 6],
+      5: [3, 8, 9],
+      6: [1, 3, 4, 7],
+      7: [3, 6, 8, 9],
+      8: [5, 7],
+      9: [5, 7],
+    }
+  }
+  return {
+    0: [1, 3],
+    1: [0, 2, 4],
+    2: [1, 3, 4],
+    3: [0, 2, 4],
+    4: [1, 2, 3],
+  }
+}
+
+print(compute_bridges(get_demo_graph(0)))
+print(compute_bridges(get_demo_graph(1)))
+print(compute_bridges(get_demo_graph(2)))
+print(compute_bridges(get_demo_graph(3)))
+print(compute_bridges({}))
