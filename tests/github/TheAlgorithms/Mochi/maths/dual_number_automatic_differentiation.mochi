@@ -1,0 +1,197 @@
+/*
+Dual Number Automatic Differentiation
+-------------------------------------
+This implementation uses dual numbers to compute exact derivatives of
+single-variable functions. Each Dual value stores a real component and a
+list of epsilon coefficients, representing derivatives of increasing order.
+Addition and multiplication rules propagate these coefficients, allowing us
+to evaluate a function and read its derivatives from the dual terms.
+
+differentiate(f, position, order) constructs a dual number at the desired
+position with first derivative 1 and applies function f. The nth derivative
+is retrieved from the epsilon coefficients and scaled by n! (factorial).
+The algorithm mirrors TheAlgorithms/Python's dual_number_automatic_differentiation.
+*/
+
+type Dual {
+  real: float,
+  duals: list<float>,
+}
+
+fun make_dual(real: float, rank: int): Dual {
+  var ds: list<float> = []
+  var i = 0
+  while i < rank {
+    ds = append(ds, 1.0)
+    i = i + 1
+  }
+  return Dual { real: real, duals: ds }
+}
+
+fun dual_from_list(real: float, ds: list<float>): Dual {
+  return Dual { real: real, duals: ds }
+}
+
+fun dual_add(a: Dual, b: Dual): Dual {
+  var s_dual: list<float> = []
+  var i = 0
+  while i < len(a.duals) {
+    s_dual = append(s_dual, a.duals[i])
+    i = i + 1
+  }
+  var o_dual: list<float> = []
+  var j = 0
+  while j < len(b.duals) {
+    o_dual = append(o_dual, b.duals[j])
+    j = j + 1
+  }
+  if len(s_dual) > len(o_dual) {
+    var diff = len(s_dual) - len(o_dual)
+    var k = 0
+    while k < diff {
+      o_dual = append(o_dual, 1.0)
+      k = k + 1
+    }
+  } else if len(s_dual) < len(o_dual) {
+    var diff2 = len(o_dual) - len(s_dual)
+    var k2 = 0
+    while k2 < diff2 {
+      s_dual = append(s_dual, 1.0)
+      k2 = k2 + 1
+    }
+  }
+  var new_duals: list<float> = []
+  var idx = 0
+  while idx < len(s_dual) {
+    new_duals = append(new_duals, s_dual[idx] + o_dual[idx])
+    idx = idx + 1
+  }
+  return Dual { real: a.real + b.real, duals: new_duals }
+}
+
+fun dual_add_real(a: Dual, b: float): Dual {
+  var ds: list<float> = []
+  var i = 0
+  while i < len(a.duals) {
+    ds = append(ds, a.duals[i])
+    i = i + 1
+  }
+  return Dual { real: a.real + b, duals: ds }
+}
+
+fun dual_mul(a: Dual, b: Dual): Dual {
+  let new_len = len(a.duals) + len(b.duals) + 1
+  var new_duals: list<float> = []
+  var idx = 0
+  while idx < new_len {
+    new_duals = append(new_duals, 0.0)
+    idx = idx + 1
+  }
+  var i = 0
+  while i < len(a.duals) {
+    var j = 0
+    while j < len(b.duals) {
+      let pos = i + j + 1
+      let val = new_duals[pos] + a.duals[i] * b.duals[j]
+      new_duals[pos] = val
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var k = 0
+  while k < len(a.duals) {
+    let val = new_duals[k] + a.duals[k] * b.real
+    new_duals[k] = val
+    k = k + 1
+  }
+  var l = 0
+  while l < len(b.duals) {
+    let val = new_duals[l] + b.duals[l] * a.real
+    new_duals[l] = val
+    l = l + 1
+  }
+  return Dual { real: a.real * b.real, duals: new_duals }
+}
+
+fun dual_mul_real(a: Dual, b: float): Dual {
+  var ds: list<float> = []
+  var i = 0
+  while i < len(a.duals) {
+    ds = append(ds, a.duals[i] * b)
+    i = i + 1
+  }
+  return Dual { real: a.real * b, duals: ds }
+}
+
+fun dual_pow(x: Dual, n: int): Dual {
+  if n < 0 {
+    panic("power must be a positive integer")
+  }
+  if n == 0 {
+    return Dual { real: 1.0, duals: [] }
+  }
+  var res = x
+  var i = 1
+  while i < n {
+    res = dual_mul(res, x)
+    i = i + 1
+  }
+  return res
+}
+
+fun factorial(n: int): float {
+  var res: float = 1.0
+  var i = 2
+  while i <= n {
+    res = res * (i as float)
+    i = i + 1
+  }
+  return res
+}
+
+fun differentiate(func: fun(Dual): Dual, position: float, order: int): float {
+  let d = make_dual(position, 1)
+  let result = func(d)
+  if order == 0 {
+    return result.real
+  }
+  return result.duals[order - 1] * factorial(order)
+}
+
+fun test_differentiate() {
+  fun f1(x: Dual): Dual {
+    return dual_pow(x, 2)
+  }
+  if differentiate(f1, 2.0, 2) != 2.0 {
+    panic("f1 failed")
+  }
+  fun f2(x: Dual): Dual {
+    return dual_mul(dual_pow(x, 2), dual_pow(x, 4))
+  }
+  if differentiate(f2, 9.0, 2) != 196830.0 {
+    panic("f2 failed")
+  }
+  fun f3(y: Dual): Dual {
+    return dual_mul_real(dual_pow(dual_add_real(y, 3.0), 6), 0.5)
+  }
+  if differentiate(f3, 3.5, 4) != 7605.0 {
+    panic("f3 failed")
+  }
+  fun f4(y: Dual): Dual {
+    return dual_pow(y, 2)
+  }
+  if differentiate(f4, 4.0, 3) != 0.0 {
+    panic("f4 failed")
+  }
+}
+
+fun main() {
+  test_differentiate()
+  fun f(y: Dual): Dual {
+    return dual_mul(dual_pow(y, 2), dual_pow(y, 4))
+  }
+  let res = differentiate(f, 9.0, 2)
+  print(res)
+}
+
+main()
