@@ -1,0 +1,257 @@
+/*
+Apply the Sobel operator to a grayscale image represented as a 2-D list of
+integers. The Sobel filter highlights edges by computing horizontal and
+vertical intensity gradients with two 3×3 kernels:
+
+kernel_x = [-1 0 1; -2 0 2; -1 0 1]
+kernel_y = [ 1 2 1;  0 0 0; -1 -2 -1]
+
+Algorithm steps:
+1. Pad the image by replicating edge pixels.
+2. Convolve the padded image with each kernel.
+3. Take the absolute value of each response and normalize to [0,255].
+4. Compute gradient magnitude sqrt(gx^2 + gy^2) and normalize.
+5. Compute gradient direction using atan2(gy, gx).
+
+The function returns two matrices: gradient magnitude and orientation.
+All computations are performed using pure Mochi without external libraries.
+*/
+
+let PI = 3.141592653589793
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x == 0.0 {
+    if y > 0.0 { return PI/2.0 }
+    if y < 0.0 { return -PI/2.0 }
+    return 0.0
+  }
+  let a = atanApprox(y/x)
+  if x > 0.0 { return a }
+  if y >= 0.0 { return a + PI }
+  return a - PI
+}
+
+fun zeros(h: int, w: int): list<list<float>> {
+  var m: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      row = append(row, 0.0)
+      x = x + 1
+    }
+    m = append(m, row)
+    y = y + 1
+  }
+  return m
+}
+
+fun pad_edge(img: list<list<float>>, pad: int): list<list<float>> {
+  let h = len(img)
+  let w = len(img[0])
+  var out = zeros(h + pad*2, w + pad*2)
+  var y = 0
+  while y < h + pad*2 {
+    var x = 0
+    while x < w + pad*2 {
+      var sy = y - pad
+      if sy < 0 { sy = 0 }
+      if sy >= h { sy = h - 1 }
+      var sx = x - pad
+      if sx < 0 { sx = 0 }
+      if sx >= w { sx = w - 1 }
+      out[y][x] = img[sy][sx]
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+fun img_convolve(img: list<list<float>>, kernel: list<list<int>>): list<list<float>> {
+  let h = len(img)
+  let w = len(img[0])
+  let k = len(kernel)
+  let pad = k / 2
+  let padded = pad_edge(img, pad)
+  var out = zeros(h, w)
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      var sum = 0.0
+      var i = 0
+      while i < k {
+        var j = 0
+        while j < k {
+          sum = sum + padded[y + i][x + j] * (kernel[i][j] as float)
+          j = j + 1
+        }
+        i = i + 1
+      }
+      out[y][x] = sum
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+fun abs_matrix(mat: list<list<float>>): list<list<float>> {
+  let h = len(mat)
+  let w = len(mat[0])
+  var out = zeros(h, w)
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      let v = mat[y][x]
+      if v < 0.0 { out[y][x] = -v } else { out[y][x] = v }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+fun max_matrix(mat: list<list<float>>): float {
+  var max_val = mat[0][0]
+  var y = 0
+  while y < len(mat) {
+    var x = 0
+    while x < len(mat[0]) {
+      if mat[y][x] > max_val { max_val = mat[y][x] }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return max_val
+}
+
+fun scale_matrix(mat: list<list<float>>, factor: float): list<list<float>> {
+  let h = len(mat)
+  let w = len(mat[0])
+  var out = zeros(h, w)
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      out[y][x] = mat[y][x] * factor
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+fun sobel_filter(image: list<list<int>>): list<list<list<float>>> {
+  let h = len(image)
+  let w = len(image[0])
+  var img: list<list<float>> = []
+  var y0 = 0
+  while y0 < h {
+    var row: list<float> = []
+    var x0 = 0
+    while x0 < w {
+      row = append(row, image[y0][x0] as float)
+      x0 = x0 + 1
+    }
+    img = append(img, row)
+    y0 = y0 + 1
+  }
+  let kernel_x: list<list<int>> = [[-1,0,1],[-2,0,2],[-1,0,1]]
+  let kernel_y: list<list<int>> = [[1,2,1],[0,0,0],[-1,-2,-1]]
+  var dst_x = abs_matrix(img_convolve(img, kernel_x))
+  var dst_y = abs_matrix(img_convolve(img, kernel_y))
+  let max_x = max_matrix(dst_x)
+  let max_y = max_matrix(dst_y)
+  dst_x = scale_matrix(dst_x, 255.0 / max_x)
+  dst_y = scale_matrix(dst_y, 255.0 / max_y)
+  var mag = zeros(h, w)
+  var theta = zeros(h, w)
+  var y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      let gx = dst_x[y][x]
+      let gy = dst_y[y][x]
+      mag[y][x] = sqrtApprox(gx*gx + gy*gy)
+      theta[y][x] = atan2Approx(gy, gx)
+      x = x + 1
+    }
+    y = y + 1
+  }
+  let max_m = max_matrix(mag)
+  mag = scale_matrix(mag, 255.0 / max_m)
+  return [mag, theta]
+}
+
+fun print_matrix_int(mat: list<list<float>>) {
+  var y = 0
+  while y < len(mat) {
+    var line = ""
+    var x = 0
+    while x < len(mat[y]) {
+      line = line + str(mat[y][x] as int)
+      if x < len(mat[y]) - 1 { line = line + " " }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+fun print_matrix_float(mat: list<list<float>>) {
+  var y = 0
+  while y < len(mat) {
+    var line = ""
+    var x = 0
+    while x < len(mat[y]) {
+      line = line + str(mat[y][x])
+      if x < len(mat[y]) - 1 { line = line + " " }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+fun main() {
+  let img: list<list<int>> = [
+    [10,10,10,10,10],
+    [10,50,50,50,10],
+    [10,50,80,50,10],
+    [10,50,50,50,10],
+    [10,10,10,10,10]
+  ]
+  let res = sobel_filter(img)
+  let mag = res[0]
+  let theta = res[1]
+  print_matrix_int(mag)
+  print_matrix_float(theta)
+}
+
+main()
