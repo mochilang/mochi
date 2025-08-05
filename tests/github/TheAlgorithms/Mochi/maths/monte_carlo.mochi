@@ -1,0 +1,120 @@
+/*
+Monte Carlo Estimation
+----------------------
+This module implements basic Monte Carlo techniques using only
+pure Mochi features. A simple linear congruential generator
+produces deterministic pseudo-random numbers so the program can
+run on the runtime/vm without external libraries.
+
+1. `pi_estimator(iterations)` drops random points inside a
+   square and approximates π from the proportion that fall in
+the inscribed unit circle.
+2. `area_under_curve_estimator(iterations, f, min_value, max_value)`
+   estimates the definite integral of a non-negative function by
+   averaging random samples. It is exercised by
+   `area_under_line_estimator_check` for f(x)=x and
+   `pi_estimator_using_area_under_curve` for the upper half of a
+   circle of radius 2, whose area equals π.
+*/
+
+let PI = 3.141592653589793
+var rand_seed: int = 123456789
+
+fun rand_float(): float {
+  rand_seed = (1103515245 * rand_seed + 12345) % 2147483648
+  return (rand_seed as float) / 2147483648.0
+}
+
+fun rand_range(min_val: float, max_val: float): float {
+  return rand_float() * (max_val - min_val) + min_val
+}
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x == 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun pi_estimator(iterations: int) {
+  var inside = 0.0
+  var i = 0
+  while i < iterations {
+    let x = rand_range(-1.0, 1.0)
+    let y = rand_range(-1.0, 1.0)
+    if x * x + y * y <= 1.0 {
+      inside = inside + 1.0
+    }
+    i = i + 1
+  }
+  let proportion = inside / (iterations as float)
+  let pi_estimate = proportion * 4.0
+  print("The estimated value of pi is", pi_estimate)
+  print("The numpy value of pi is", PI)
+  print("The total error is", abs_float(PI - pi_estimate))
+}
+
+fun area_under_curve_estimator(
+  iterations: int,
+  f: fun(float): float,
+  min_value: float,
+  max_value: float
+): float {
+  var sum = 0.0
+  var i = 0
+  while i < iterations {
+    let x = rand_range(min_value, max_value)
+    sum = sum + f(x)
+    i = i + 1
+  }
+  let expected = sum / (iterations as float)
+  return expected * (max_value - min_value)
+}
+
+fun area_under_line_estimator_check(
+  iterations: int,
+  min_value: float,
+  max_value: float
+) {
+  fun identity_function(x: float): float { return x }
+  let estimated_value = area_under_curve_estimator(iterations, identity_function, min_value, max_value)
+  let expected_value = (max_value * max_value - min_value * min_value) / 2.0
+  print("******************")
+  print("Estimating area under y=x where x varies from", min_value)
+  print("Estimated value is", estimated_value)
+  print("Expected value is", expected_value)
+  print("Total error is", abs_float(estimated_value - expected_value))
+  print("******************")
+}
+
+fun pi_estimator_using_area_under_curve(iterations: int) {
+  fun semi_circle(x: float): float {
+    let y = 4.0 - x * x
+    let s = sqrtApprox(y)
+    return s
+  }
+  let estimated_value = area_under_curve_estimator(iterations, semi_circle, 0.0, 2.0)
+  print("******************")
+  print("Estimating pi using area_under_curve_estimator")
+  print("Estimated value is", estimated_value)
+  print("Expected value is", PI)
+  print("Total error is", abs_float(estimated_value - PI))
+  print("******************")
+}
+
+fun main() {
+  pi_estimator(1000)
+  area_under_line_estimator_check(1000, 0.0, 1.0)
+  pi_estimator_using_area_under_curve(1000)
+}
+
+main()
