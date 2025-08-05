@@ -1,0 +1,77 @@
+/*
+Find the minimum element in a list using two strategies.
+
+1. Iterative scan: traverse the list once, keeping track of the smallest
+   element seen so far. This runs in O(n) time with O(1) extra memory.
+2. Divide and conquer: recursively split the list into halves, compute the
+   minimum of each half, and return the smaller of the two. This also runs in
+   O(n) time but uses O(log n) stack space due to recursion. Negative indices
+   are supported similar to Python by translating them into positive offsets.
+
+Both functions panic on empty input or if indices fall outside the valid range.
+*/
+
+fun find_min_iterative(nums: list<float>): float {
+  if len(nums) == 0 {
+    panic("find_min_iterative() arg is an empty sequence")
+  }
+  var min_num = nums[0]
+  var i = 0
+  while i < len(nums) {
+    let num = nums[i]
+    if num < min_num {
+      min_num = num
+    }
+    i = i + 1
+  }
+  return min_num
+}
+
+fun find_min_recursive(nums: list<float>, left: int, right: int): float {
+  let n = len(nums)
+  if n == 0 {
+    panic("find_min_recursive() arg is an empty sequence")
+  }
+  if left >= n || left < (0 - n) || right >= n || right < (0 - n) {
+    panic("list index out of range")
+  }
+  var l = left
+  var r = right
+  if l < 0 { l = n + l }
+  if r < 0 { r = n + r }
+  if l == r {
+    return nums[l]
+  }
+  let mid = (l + r) / 2
+  let left_min = find_min_recursive(nums, l, mid)
+  let right_min = find_min_recursive(nums, mid + 1, r)
+  if left_min <= right_min {
+    return left_min
+  }
+  return right_min
+}
+
+fun test_find_min() {
+  let a: list<float> = [3.0, 2.0, 1.0]
+  if find_min_iterative(a) != 1.0 { panic("iterative test1 failed") }
+  if find_min_recursive(a, 0, len(a) - 1) != 1.0 { panic("recursive test1 failed") }
+
+  let b: list<float> = [-3.0, -2.0, -1.0]
+  if find_min_iterative(b) != (-3.0) { panic("iterative test2 failed") }
+  if find_min_recursive(b, 0, len(b) - 1) != (-3.0) { panic("recursive test2 failed") }
+
+  let c: list<float> = [3.0, -3.0, 0.0]
+  if find_min_iterative(c) != (-3.0) { panic("iterative test3 failed") }
+  if find_min_recursive(c, 0, len(c) - 1) != (-3.0) { panic("recursive test3 failed") }
+
+  let d: list<float> = [1.0, 3.0, 5.0, 7.0, 9.0, 2.0, 4.0, 6.0, 8.0, 10.0]
+  if find_min_recursive(d, (0 - len(d)), (0 - 1)) != 1.0 { panic("negative index test failed") }
+}
+
+fun main() {
+  test_find_min()
+  let sample: list<float> = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, -3.0, 24.0, -56.0]
+  print(str(find_min_iterative(sample)))
+}
+
+main()
