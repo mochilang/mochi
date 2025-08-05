@@ -1,0 +1,92 @@
+/*
+3D Vector Utilities for 2D Rendering
+
+convert_to_2d projects a 3D point (x, y, z) onto a 2D plane using a
+simple perspective transformation. Given the viewer's distance and a
+scaling factor, each coordinate is transformed as:
+  projected_x = ((x * distance) / (z + distance)) * scale
+  projected_y = ((y * distance) / (z + distance)) * scale
+
+rotate turns a 3D point around one of the principal axes ('x', 'y', or 'z')
+by a given angle in degrees. The angle is wrapped within [0, 360) and
+adjusted with the same factor used in the Python reference:
+  angle = (angle % 360) / 450 * 180 / PI
+Rotation matrices for each axis are applied.  The algorithm relies on
+Taylor-series approximations for sine and cosine to remain pure Mochi.
+Both helpers run in constant time O(1).
+*/
+
+let PI: float = 3.141592653589793
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun modf(x: float, m: float): float {
+  return x - floor(x / m) * m
+}
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun convert_to_2d(x: float, y: float, z: float, scale: float, distance: float): list<float> {
+  let projected_x = ((x * distance) / (z + distance)) * scale
+  let projected_y = ((y * distance) / (z + distance)) * scale
+  return [projected_x, projected_y]
+}
+
+fun rotate(x: float, y: float, z: float, axis: string, angle: float): list<float> {
+  var angle = modf(angle, 360.0) / 450.0 * 180.0 / PI
+  angle = modf(angle, 2.0 * PI)
+  if angle > PI { angle = angle - 2.0 * PI }
+  if axis == "z" {
+    let new_x = x * cos_taylor(angle) - y * sin_taylor(angle)
+    let new_y = y * cos_taylor(angle) + x * sin_taylor(angle)
+    let new_z = z
+    return [new_x, new_y, new_z]
+  }
+  if axis == "x" {
+    let new_y = y * cos_taylor(angle) - z * sin_taylor(angle)
+    let new_z = z * cos_taylor(angle) + y * sin_taylor(angle)
+    let new_x = x
+    return [new_x, new_y, new_z]
+  }
+  if axis == "y" {
+    let new_x = x * cos_taylor(angle) - z * sin_taylor(angle)
+    let new_z = z * cos_taylor(angle) + x * sin_taylor(angle)
+    let new_y = y
+    return [new_x, new_y, new_z]
+  }
+  print("not a valid axis, choose one of 'x', 'y', 'z'")
+  return [0.0, 0.0, 0.0]
+}
+
+print(str(convert_to_2d(1.0, 2.0, 3.0, 10.0, 10.0)))
+print(str(rotate(1.0, 2.0, 3.0, "y", 90.0)))
