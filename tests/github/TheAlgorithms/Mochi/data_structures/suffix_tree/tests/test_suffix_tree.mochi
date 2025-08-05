@@ -1,0 +1,75 @@
+/*
+Suffix Tree Pattern Search Tests
+--------------------------------
+This program mirrors the Python unit tests for the SuffixTree data structure.
+Instead of building a full suffix tree, we store the original text and
+perform naive substring search to check if a pattern exists. The search runs
+in O(n*m) time where n is the text length and m is the pattern length. The
+program verifies:
+ - patterns that should be found in the text
+ - patterns that should not be found
+ - searching for the empty string
+ - searching for the full text
+ - searching for several substrings
+Each result is printed as "true" or "false".
+*/
+
+type SuffixTree {
+  text: string
+}
+
+fun suffix_tree_new(text: string): SuffixTree {
+  return SuffixTree{ text: text }
+}
+
+fun suffix_tree_search(st: SuffixTree, pattern: string): bool {
+  if len(pattern) == 0 {
+    return true
+  }
+  var i: int = 0
+  let n = len(st.text)
+  let m = len(pattern)
+  while i <= n - m {
+    var j: int = 0
+    var found: bool = true
+    while j < m {
+      if st.text[i + j] != pattern[j] {
+        found = false
+        break
+      }
+      j = j + 1
+    }
+    if found {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+let text = "banana"
+let st = suffix_tree_new(text)
+
+let patterns_exist = ["ana", "ban", "na"]
+var i: int = 0
+while i < len(patterns_exist) {
+  print(str(suffix_tree_search(st, patterns_exist[i])))
+  i = i + 1
+}
+
+let patterns_none = ["xyz", "apple", "cat"]
+i = 0
+while i < len(patterns_none) {
+  print(str(suffix_tree_search(st, patterns_none[i])))
+  i = i + 1
+}
+
+print(str(suffix_tree_search(st, "")))
+print(str(suffix_tree_search(st, text)))
+
+let substrings = ["ban", "ana", "a", "na"]
+i = 0
+while i < len(substrings) {
+  print(str(suffix_tree_search(st, substrings[i])))
+  i = i + 1
+}
