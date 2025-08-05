@@ -1,0 +1,17 @@
+/*
+NOT Gate: outputs the logical complement of a single binary input.
+
+Given an integer representing a bit (0 or 1), return 1 when the input is 0
+and 0 when the input is 1. This mirrors the behaviour of a boolean NOT gate
+and runs in constant time.
+*/
+
+fun not_gate(input: int): int {
+  if input == 0 {
+    return 1
+  }
+  return 0
+}
+
+print(not_gate(0))
+print(not_gate(1))
