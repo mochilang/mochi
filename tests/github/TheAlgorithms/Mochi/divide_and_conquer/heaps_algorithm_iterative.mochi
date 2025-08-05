@@ -1,0 +1,62 @@
+/*
+Heap's iterative algorithm generates all permutations of a list by swapping
+only two elements between successive permutations. It maintains a counter
+array that tracks the number of swaps for each index. Starting with the
+initial list, the algorithm iterates over indices, performing a swap based on
+the current index and its counter. After each swap, the permutation is stored
+and the process repeats until all n! permutations are produced. The time
+complexity is O(n!) and the algorithm uses O(n) additional space for the
+counter array.
+*/
+
+fun copy_list(arr: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    result = append(result, arr[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun heaps(arr: list<int>): list<list<int>> {
+  if len(arr) <= 1 {
+    let single: list<list<int>> = []
+    return append(single, copy_list(arr))
+  }
+
+  let n = len(arr)
+  var c: list<int> = []
+  var i = 0
+  while i < n {
+    c = append(c, 0)
+    i = i + 1
+  }
+
+  var res: list<list<int>> = []
+  res = append(res, copy_list(arr))
+
+  i = 0
+  while i < n {
+    if c[i] < i {
+      if i % 2 == 0 {
+        let temp = arr[0]
+        arr[0] = arr[i]
+        arr[i] = temp
+      } else {
+        let temp = arr[c[i]]
+        arr[c[i]] = arr[i]
+        arr[i] = temp
+      }
+      res = append(res, copy_list(arr))
+      c[i] = c[i] + 1
+      i = 0
+    } else {
+      c[i] = 0
+      i = i + 1
+    }
+  }
+  return res
+}
+
+print(str(heaps([1, 2, 3])))
