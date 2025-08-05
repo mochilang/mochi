@@ -1,0 +1,162 @@
+/*
+Graph Using an Adjacency Matrix
+--------------------------------
+This example builds a simple unweighted graph where edges are stored in an
+adjacency matrix.  Vertices are mapped to indices in the matrix so that
+checking or updating an edge is an O(1) operation.  The structure supports
+adding and removing vertices and edges as well as membership checks.
+The implementation is written in pure Mochi and uses only built-in
+lists and maps without any use of the "any" type.
+*/
+
+type Graph {
+  directed: bool,
+  vertex_to_index: map<int, int>,
+  adj_matrix: list<list<int>>
+}
+
+fun make_graph(vertices: list<int>, edges: list<list<int>>, directed: bool): Graph {
+  var g = Graph { directed: directed, vertex_to_index: {}, adj_matrix: [] }
+  var i = 0
+  while i < len(vertices) {
+    add_vertex(g, vertices[i])
+    i = i + 1
+  }
+  var j = 0
+  while j < len(edges) {
+    let e = edges[j]
+    add_edge(g, e[0], e[1])
+    j = j + 1
+  }
+  return g
+}
+
+fun contains_vertex(g: Graph, v: int): bool {
+  return v in g.vertex_to_index
+}
+
+fun add_vertex(g: Graph, v: int) {
+  if contains_vertex(g, v) {
+    panic("vertex already exists")
+  }
+  var matrix = g.adj_matrix
+  var i = 0
+  while i < len(matrix) {
+    matrix[i] = append(matrix[i], 0)
+    i = i + 1
+  }
+  var row: list<int> = []
+  var j = 0
+  while j < len(matrix) + 1 {
+    row = append(row, 0)
+    j = j + 1
+  }
+  matrix = append(matrix, row)
+  g.adj_matrix = matrix
+  var idx_map = g.vertex_to_index
+  idx_map[v] = len(matrix) - 1
+  g.vertex_to_index = idx_map
+}
+
+fun remove_key(m: map<int, int>, k: int): map<int, int> {
+  var out: map<int, int> = {}
+  for key in m {
+    if key != k {
+      out[key] = m[key]
+    }
+  }
+  return out
+}
+
+fun decrement_indices(m: map<int, int>, start: int): map<int, int> {
+  var out: map<int, int> = {}
+  for key in m {
+    let idx = m[key]
+    if idx > start {
+      out[key] = idx - 1
+    } else {
+      out[key] = idx
+    }
+  }
+  return out
+}
+
+fun remove_vertex(g: Graph, v: int) {
+  if !contains_vertex(g, v) {
+    panic("vertex does not exist")
+  }
+  let idx = (g.vertex_to_index)[v]
+  var new_matrix: list<list<int>> = []
+  var i = 0
+  while i < len(g.adj_matrix) {
+    if i != idx {
+      let row = g.adj_matrix[i]
+      var new_row: list<int> = []
+      var j = 0
+      while j < len(row) {
+        if j != idx {
+          new_row = append(new_row, row[j])
+        }
+        j = j + 1
+      }
+      new_matrix = append(new_matrix, new_row)
+    }
+    i = i + 1
+  }
+  g.adj_matrix = new_matrix
+  var m = remove_key(g.vertex_to_index, v)
+  g.vertex_to_index = decrement_indices(m, idx)
+}
+
+fun add_edge(g: Graph, u: int, v: int) {
+  if !(contains_vertex(g, u) && contains_vertex(g, v)) {
+    panic("missing vertex")
+  }
+  let i = (g.vertex_to_index)[u]
+  let j = (g.vertex_to_index)[v]
+  var matrix = g.adj_matrix
+  matrix[i][j] = 1
+  if !g.directed {
+    matrix[j][i] = 1
+  }
+  g.adj_matrix = matrix
+}
+
+fun remove_edge(g: Graph, u: int, v: int) {
+  if !(contains_vertex(g, u) && contains_vertex(g, v)) {
+    panic("missing vertex")
+  }
+  let i = (g.vertex_to_index)[u]
+  let j = (g.vertex_to_index)[v]
+  var matrix = g.adj_matrix
+  matrix[i][j] = 0
+  if !g.directed {
+    matrix[j][i] = 0
+  }
+  g.adj_matrix = matrix
+}
+
+fun contains_edge(g: Graph, u: int, v: int): bool {
+  if !(contains_vertex(g, u) && contains_vertex(g, v)) {
+    panic("missing vertex")
+  }
+  let i = (g.vertex_to_index)[u]
+  let j = (g.vertex_to_index)[v]
+  let matrix = g.adj_matrix
+  return matrix[i][j] == 1
+}
+
+fun clear_graph(g: Graph) {
+  g.vertex_to_index = {}
+  g.adj_matrix = []
+}
+
+// Demonstration
+var g = make_graph([1, 2, 3], [[1, 2], [2, 3]], false)
+print(str(g.adj_matrix))
+print(str(contains_edge(g, 1, 2)))
+print(str(contains_edge(g, 2, 1)))
+remove_edge(g, 1, 2)
+print(str(contains_edge(g, 1, 2)))
+remove_vertex(g, 2)
+print(str(g.adj_matrix))
