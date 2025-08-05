@@ -1,0 +1,119 @@
+/*
+0-1 Breadth-First Search for shortest path in a graph with edge weights 0 or 1.
+The algorithm maintains distances and uses a double-ended queue to process
+vertices in O(E + V) time. Edges of weight 0 are pushed to the front and
+weight 1 to the back so vertices are explored in nondecreasing distance.
+The graph is stored as an adjacency list of edges. If no path exists between
+start and finish vertices the function panics.
+*/
+
+type Edge {
+  destination_vertex: int,
+  weight: int,
+}
+
+type AdjacencyList {
+  graph: list<list<Edge>>,
+  size: int,
+}
+
+fun new_adjacency_list(size: int): AdjacencyList {
+  var g: list<list<Edge>> = []
+  var i = 0
+  while i < size {
+    g = append(g, [])
+    i = i + 1
+  }
+  return AdjacencyList { graph: g, size: size }
+}
+
+fun add_edge(al: AdjacencyList, from_vertex: int, to_vertex: int, weight: int) {
+  if !(weight == 0 || weight == 1) { panic("Edge weight must be either 0 or 1.") }
+  if to_vertex < 0 || to_vertex >= al.size { panic("Vertex indexes must be in [0; size).") }
+  var g = al.graph
+  let edges = g[from_vertex]
+  g[from_vertex] = append(edges, Edge { destination_vertex: to_vertex, weight: weight })
+  al.graph = g
+}
+
+fun push_front(q: list<int>, v: int): list<int> {
+  var res: list<int> = [v]
+  var i = 0
+  while i < len(q) {
+    res = append(res, q[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun pop_front(q: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 1
+  while i < len(q) {
+    res = append(res, q[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun front(q: list<int>): int {
+  return q[0]
+}
+
+fun get_shortest_path(al: AdjacencyList, start_vertex: int, finish_vertex: int): int {
+  var queue: list<int> = [start_vertex]
+  var distances: list<int> = []
+  var i = 0
+  while i < al.size {
+    distances = append(distances, -1)
+    i = i + 1
+  }
+  distances[start_vertex] = 0
+  while len(queue) > 0 {
+    let current_vertex = front(queue)
+    queue = pop_front(queue)
+    let current_distance = distances[current_vertex]
+    var edges = al.graph[current_vertex]
+    var j = 0
+    while j < len(edges) {
+      let edge = edges[j]
+      let new_distance = current_distance + edge.weight
+      let dest = edge.destination_vertex
+      let dest_distance = distances[dest]
+      if dest_distance >= 0 && new_distance >= dest_distance {
+        j = j + 1
+        continue
+      }
+      distances[dest] = new_distance
+      if edge.weight == 0 {
+        queue = push_front(queue, dest)
+      } else {
+        queue = append(queue, dest)
+      }
+      j = j + 1
+    }
+  }
+  let result = distances[finish_vertex]
+  if result < 0 { panic("No path from start_vertex to finish_vertex.") }
+  return result
+}
+
+let g = new_adjacency_list(11)
+add_edge(g, 0, 1, 0)
+add_edge(g, 0, 3, 1)
+add_edge(g, 1, 2, 0)
+add_edge(g, 2, 3, 0)
+add_edge(g, 4, 2, 1)
+add_edge(g, 4, 5, 1)
+add_edge(g, 4, 6, 1)
+add_edge(g, 5, 9, 0)
+add_edge(g, 6, 7, 1)
+add_edge(g, 7, 8, 1)
+add_edge(g, 8, 10, 1)
+add_edge(g, 9, 7, 0)
+add_edge(g, 9, 10, 1)
+
+print(str(get_shortest_path(g, 0, 3)))
+print(str(get_shortest_path(g, 4, 10)))
+print(str(get_shortest_path(g, 4, 8)))
+print(str(get_shortest_path(g, 0, 1)))
