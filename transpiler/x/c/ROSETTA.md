@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (193/491) - Last updated 2025-08-05 01:12 +0700:
+Checklist of programs that currently transpile and run (194/491) - Last updated 2025-08-05 02:43 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -141,16 +141,16 @@ Checklist of programs that currently transpile and run (193/491) - Last updated 
 | 134 | brazilian-numbers | ✓ | 3.80s | 8.7 KB |
 | 135 | break-oo-privacy | ✓ | 377us | 5.4 KB |
 | 136 | brilliant-numbers |  |  |  |
-| 137 | brownian-tree | ✓ | 19.39s | 682.6 KB |
-| 138 | bulls-and-cows-player | ✓ | 1.38ms | 1.9 MB |
+| 137 | brownian-tree | ✓ | 19.12s | 2.7 MB |
+| 138 | bulls-and-cows-player | ✓ | 1.74ms | 2.0 MB |
 | 139 | bulls-and-cows |  |  |  |
-| 140 | burrows-wheeler-transform | ✓ | 4.10ms | 1.9 MB |
-| 141 | caesar-cipher-1 | ✓ | 993us | 248.2 KB |
-| 142 | caesar-cipher-2 | ✓ | 1.17ms | 248.2 KB |
-| 143 | calculating-the-value-of-e |  |  |  |
-| 144 | calendar---for-real-programmers-1 | ✓ | 475us | 34.4 KB |
-| 145 | calendar---for-real-programmers-2 | ✓ | 422us | 34.4 KB |
-| 146 | calendar | ✓ | 802us | 1.7 MB |
+| 140 | burrows-wheeler-transform | ✓ | 2.69ms | 1.8 MB |
+| 141 | caesar-cipher-1 | ✓ | 1.35ms | 1.8 MB |
+| 142 | caesar-cipher-2 | ✓ | 1.09ms | 1.8 MB |
+| 143 | calculating-the-value-of-e | ✓ | 225us | 1.4 MB |
+| 144 | calendar---for-real-programmers-1 | ✓ | 407us | 1.8 MB |
+| 145 | calendar---for-real-programmers-2 | ✓ | 534us | 1.6 MB |
+| 146 | calendar | ✓ | 687us | 1.7 MB |
 | 147 | calkin-wilf-sequence | ✓ | 594us | 2.2 MB |
 | 148 | call-a-foreign-language-function | ✓ | 325us | 1.6 MB |
 | 149 | call-a-function-1 | ✓ | 20us | 0 B |
