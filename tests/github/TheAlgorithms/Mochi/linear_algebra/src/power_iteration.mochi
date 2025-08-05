@@ -1,0 +1,110 @@
+/*
+Power Iteration for Largest Eigenvalue/Eigenvector
+
+This program implements the classic power iteration algorithm in pure
+Mochi.  Given a square matrix A and a non‑zero starting vector v, the
+algorithm repeatedly multiplies by A and normalizes the result.  The
+sequence converges to the eigenvector associated with the largest
+eigenvalue (in magnitude).  The Rayleigh quotient v^T A v gives an
+approximation of that eigenvalue at each step.
+
+The iteration stops when successive eigenvalue estimates differ by less
+than a given tolerance or when a maximum number of iterations is
+reached.  Matrix–vector multiplication and vector operations are coded
+explicitly, and everything is strongly typed with no FFI or "any" type.
+
+This implementation handles real matrices and vectors only.
+Complexity: each iteration performs O(n^2) work for an n×n matrix.
+*/
+
+type PowerResult {
+  eigenvalue: float
+  eigenvector: list<float>
+}
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x == 0.0 { return 0.0 }
+  var guess: float = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun dot(a: list<float>, b: list<float>): float {
+  var sum: float = 0.0
+  var i = 0
+  while i < len(a) {
+    sum = sum + a[i] * b[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun mat_vec_mult(mat: list<list<float>>, vec: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(mat) {
+    res = append(res, dot(mat[i], vec))
+    i = i + 1
+  }
+  return res
+}
+
+fun norm(vec: list<float>): float {
+  var sum: float = 0.0
+  var i = 0
+  while i < len(vec) {
+    sum = sum + vec[i] * vec[i]
+    i = i + 1
+  }
+  var root = sqrtApprox(sum)
+  return root
+}
+
+fun normalize(vec: list<float>): list<float> {
+  let n = norm(vec)
+  var res: list<float> = []
+  var i = 0
+  while i < len(vec) {
+    res = append(res, vec[i] / n)
+    i = i + 1
+  }
+  return res
+}
+
+fun power_iteration(matrix: list<list<float>>, vector: list<float>, error_tol: float, max_iterations: int): PowerResult {
+  var v = normalize(vector)
+  var lambda_prev = 0.0
+  var lambda = 0.0
+  var err = 1000000000000.0
+  var iterations = 0
+  while err > error_tol && iterations < max_iterations {
+    let w = mat_vec_mult(matrix, v)
+    v = normalize(w)
+    let mv = mat_vec_mult(matrix, v)
+    lambda = dot(v, mv)
+    let denom = if lambda != 0.0 { abs(lambda) } else { 1.0 }
+    err = abs(lambda - lambda_prev) / denom
+    lambda_prev = lambda
+    iterations = iterations + 1
+  }
+  return PowerResult { eigenvalue: lambda, eigenvector: v }
+}
+
+let input_matrix: list<list<float>> = [
+  [41.0, 4.0, 20.0],
+  [4.0, 26.0, 30.0],
+  [20.0, 30.0, 50.0],
+]
+let vector: list<float> = [41.0, 4.0, 20.0]
+let result = power_iteration(input_matrix, vector, 0.000000000001, 100)
+print(str(result.eigenvalue))
+print(str(result.eigenvector))
