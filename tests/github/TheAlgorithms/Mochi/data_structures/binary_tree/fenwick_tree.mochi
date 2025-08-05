@@ -1,0 +1,189 @@
+/*
+Fenwick Tree (Binary Indexed Tree)
+
+This data structure maintains a list of prefix sums that allows
+updates and range sum queries in logarithmic time.  For an array of
+size N, the tree stores partial sums where each index covers the
+least significant set bit range.  Updating an element propagates the
+change to subsequent ranges with index += index & -index, while
+querying a prefix walks back using index -= index & -index.
+
+Construction from an array runs in O(N) by copying the array and
+propagating each value to its parent.  Operations supported here:
+  - add: increment an index by a value
+  - update: set an index to a new value
+  - prefix: sum of [0, right)
+  - query: sum of [left, right)
+  - get: value at an index
+  - get_array: reconstruct the original array
+  - rank_query: find largest index with prefix <= value (assuming
+    non‑negative values)
+
+All operations avoid external libraries and run in O(log N) except
+construction and get_array which are O(N).
+*/
+
+type FenwickTree {
+  size: int,
+  tree: list<int>,
+}
+
+fun fenwick_from_list(arr: list<int>): FenwickTree {
+  let size = len(arr)
+  var tree: list<int> = []
+  var i = 0
+  while i < size {
+    tree = append(tree, arr[i])
+    i = i + 1
+  }
+  i = 1
+  while i < size {
+    let j = fenwick_next(i)
+    if j < size {
+      tree[j] = tree[j] + tree[i]
+    }
+    i = i + 1
+  }
+  return FenwickTree{ size: size, tree: tree }
+}
+
+fun fenwick_empty(size: int): FenwickTree {
+  var tree: list<int> = []
+  var i = 0
+  while i < size {
+    tree = append(tree, 0)
+    i = i + 1
+  }
+  return FenwickTree{ size: size, tree: tree }
+}
+
+fun fenwick_get_array(f: FenwickTree): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < f.size {
+    arr = append(arr, f.tree[i])
+    i = i + 1
+  }
+  i = f.size - 1
+  while i > 0 {
+    let j = fenwick_next(i)
+    if j < f.size {
+      arr[j] = arr[j] - arr[i]
+    }
+    i = i - 1
+  }
+  return arr
+}
+
+fun bit_and(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua != 0 || ub != 0 {
+    if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun low_bit(x: int): int {
+  if x == 0 { return 0 }
+  return x - bit_and(x, x - 1)
+}
+
+fun fenwick_next(index: int): int {
+  return index + low_bit(index)
+}
+
+fun fenwick_prev(index: int): int {
+  return index - low_bit(index)
+}
+
+fun fenwick_add(f: FenwickTree, index: int, value: int): FenwickTree {
+  var tree = f.tree
+  if index == 0 {
+    tree[0] = tree[0] + value
+    return FenwickTree{ size: f.size, tree: tree }
+  }
+  var i = index
+  while i < f.size {
+    tree[i] = tree[i] + value
+    i = fenwick_next(i)
+  }
+  return FenwickTree{ size: f.size, tree: tree }
+}
+
+fun fenwick_update(f: FenwickTree, index: int, value: int): FenwickTree {
+  let current = fenwick_get(f, index)
+  return fenwick_add(f, index, value - current)
+}
+
+fun fenwick_prefix(f: FenwickTree, right: int): int {
+  if right == 0 {
+    return 0
+  }
+  var result = f.tree[0]
+  var r = right - 1
+  while r > 0 {
+    result = result + f.tree[r]
+    r = fenwick_prev(r)
+  }
+  return result
+}
+
+fun fenwick_query(f: FenwickTree, left: int, right: int): int {
+  return fenwick_prefix(f, right) - fenwick_prefix(f, left)
+}
+
+fun fenwick_get(f: FenwickTree, index: int): int {
+  return fenwick_query(f, index, index + 1)
+}
+
+fun fenwick_rank_query(f: FenwickTree, value: int): int {
+  var v = value - f.tree[0]
+  if v < 0 {
+    return -1
+  }
+  var j = 1
+  while j * 2 < f.size {
+    j = j * 2
+  }
+  var i = 0
+  var jj = j
+  while jj > 0 {
+    if i + jj < f.size && f.tree[i + jj] <= v {
+      v = v - f.tree[i + jj]
+      i = i + jj
+    }
+    jj = jj / 2
+  }
+  return i
+}
+
+// Example usage demonstrating the operations
+let f_base = fenwick_from_list([1, 2, 3, 4, 5])
+print(fenwick_get_array(f_base))
+
+var f = fenwick_from_list([1, 2, 3, 4, 5])
+f = fenwick_add(f, 0, 1)
+f = fenwick_add(f, 1, 2)
+f = fenwick_add(f, 2, 3)
+f = fenwick_add(f, 3, 4)
+f = fenwick_add(f, 4, 5)
+print(fenwick_get_array(f))
+
+let f2 = fenwick_from_list([1, 2, 3, 4, 5])
+print(fenwick_prefix(f2, 3))
+print(fenwick_query(f2, 1, 4))
+
+let f3 = fenwick_from_list([1, 2, 0, 3, 0, 5])
+print(fenwick_rank_query(f3, 0))
+print(fenwick_rank_query(f3, 2))
+print(fenwick_rank_query(f3, 1))
+print(fenwick_rank_query(f3, 3))
+print(fenwick_rank_query(f3, 5))
+print(fenwick_rank_query(f3, 6))
+print(fenwick_rank_query(f3, 11))
