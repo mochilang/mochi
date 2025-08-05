@@ -1,0 +1,60 @@
+/*
+Isolate Decimal Part of a Number
+-------------------------------
+Given a floating-point `number` and an integer `digit_amount`,
+this function extracts the fractional component of `number`.
+If `digit_amount` > 0, the fractional part is rounded to that
+many decimal places using manual arithmetic so the code can run
+on the `runtime/vm` without foreign function interfaces.
+Otherwise, the full fractional portion is returned.
+
+Algorithm:
+1. Convert `number` to an integer to obtain its whole part.
+2. Subtract the whole part from the original number to get the fraction.
+3. If rounding is requested, multiply by 10^n, add 0.5, apply floor,
+   then divide by 10^n.
+*/
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun decimal_isolate(number: float, digit_amount: int): float {
+  let whole: int = number as int
+  let frac = number - (whole as float)
+  if digit_amount > 0 {
+    return round(frac, digit_amount)
+  }
+  return frac
+}
+
+fun main() {
+  print(str(decimal_isolate(1.53, 0)))
+  print(str(decimal_isolate(35.345, 1)))
+  print(str(decimal_isolate(35.345, 2)))
+  print(str(decimal_isolate(35.345, 3)))
+  print(str(decimal_isolate(-14.789, 3)))
+  print(str(decimal_isolate(0.0, 2)))
+  print(str(decimal_isolate(-14.123, 1)))
+  print(str(decimal_isolate(-14.123, 2)))
+  print(str(decimal_isolate(-14.123, 3)))
+}
+
+main()
