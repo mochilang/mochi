@@ -1,0 +1,91 @@
+/*
+Count paths in a binary tree that sum to a target.
+
+The algorithm enumerates every downward path that starts at any node.
+For each node we perform a depth-first search that accumulates the sum
+of values along the current path. Each time the running sum equals the
+target we increment the count. Then we recursively repeat this process
+for the left and right subtrees to consider all possible starting
+points. The worst-case time complexity is O(n^2) because each node may
+start a DFS that visits all descendants, and space complexity is O(h)
+for the recursion depth where h is the height of the tree.
+*/
+
+type Tree =
+  Empty
+  | Node(left: Tree, value: int, right: Tree)
+
+fun dfs(node: Tree, target: int, current: int): int {
+  return match node {
+    Empty => 0
+    Node(l, v, r) =>
+      (if current + v == target { 1 } else { 0 }) +
+      dfs(l, target, current + v) +
+      dfs(r, target, current + v)
+  }
+}
+
+fun path_sum(node: Tree, target: int): int {
+  return match node {
+    Empty => 0
+    Node(l, v, r) => dfs(node, target, 0) + path_sum(l, target) + path_sum(r, target)
+  }
+}
+
+fun sample_tree_one(): Tree {
+  return Node {
+    value: 10,
+    left: Node {
+      value: 5,
+      left: Node {
+        value: 3,
+        left: Node { value: 3, left: Empty, right: Empty },
+        right: Node { value: -2, left: Empty, right: Empty },
+      },
+      right: Node {
+        value: 2,
+        left: Empty,
+        right: Node { value: 1, left: Empty, right: Empty },
+      },
+    },
+    right: Node {
+      value: -3,
+      left: Empty,
+      right: Node { value: 11, left: Empty, right: Empty },
+    },
+  }
+}
+
+fun sample_tree_two(): Tree {
+  return Node {
+    value: 10,
+    left: Node {
+      value: 5,
+      left: Node {
+        value: 3,
+        left: Node { value: 3, left: Empty, right: Empty },
+        right: Node { value: -2, left: Empty, right: Empty },
+      },
+      right: Node {
+        value: 2,
+        left: Empty,
+        right: Node { value: 1, left: Empty, right: Empty },
+      },
+    },
+    right: Node {
+      value: -3,
+      left: Empty,
+      right: Node { value: 10, left: Empty, right: Empty },
+    },
+  }
+}
+
+fun main() {
+  let tree1 = sample_tree_one()
+  print(path_sum(tree1, 8))
+  print(path_sum(tree1, 7))
+  let tree2 = sample_tree_two()
+  print(path_sum(tree2, 8))
+}
+
+main()
