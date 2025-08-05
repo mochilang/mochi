@@ -1,0 +1,88 @@
+/*
+Hardy–Ramanujan Theorem Demonstration
+-------------------------------------
+For most natural numbers n, the number of distinct prime factors 
+ω(n) is close to ln ln n. This program counts the distinct prime 
+factors of a given integer using trial division and compares the 
+result with ln ln n computed via a series approximation.
+
+Functions:
+- exact_prime_factor_count(n): counts distinct prime factors by removing
+  factor 2 and then odd factors up to sqrt(n).
+- ln(x): natural logarithm using scaling by powers of two and a Taylor
+  series on (x-1)/(x+1).
+- floor(x): largest integer not greater than x.
+- round4(x): round a float to four decimal places.
+
+The main routine evaluates n = 51242183 and prints ω(n) alongside ln ln n.
+*/
+
+fun exact_prime_factor_count(n: int): int {
+  var count = 0
+  var num = n
+  if num % 2 == 0 {
+    count = count + 1
+    while num % 2 == 0 {
+      num = num / 2
+    }
+  }
+  var i = 3
+  while i * i <= num {
+    if num % i == 0 {
+      count = count + 1
+      while num % i == 0 {
+        num = num / i
+      }
+    }
+    i = i + 2
+  }
+  if num > 2 {
+    count = count + 1
+  }
+  return count
+}
+
+fun ln(x: float): float {
+  let ln2 = 0.6931471805599453
+  var y = x
+  var k = 0.0
+  while y > 2.0 {
+    y = y / 2.0
+    k = k + ln2
+  }
+  while y < 1.0 {
+    y = y * 2.0
+    k = k - ln2
+  }
+  let t = (y - 1.0) / (y + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return k + 2.0 * sum
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun round4(x: float): float {
+  let m = 10000.0
+  return floor(x * m + 0.5) / m
+}
+
+fun main() {
+  let n = 51242183
+  let count = exact_prime_factor_count(n)
+  print("The number of distinct prime factors is/are " + str(count))
+  let loglog = ln(ln(n as float))
+  print("The value of log(log(n)) is " + str(round4(loglog)))
+}
+
+main()
