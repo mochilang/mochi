@@ -1,0 +1,26 @@
+/*
+  Determine the position of the highest set bit in a non-negative integer.
+
+  The algorithm repeatedly divides the number by two, counting how many
+  divisions are required before it becomes zero. Each division discards the
+  least significant bit, so the number of steps equals the index of the most
+  significant '1' bit (using 1-based indexing). If the input is zero, the
+  function returns 0 as no bits are set. The runtime is O(log n) because the
+  value is halved each iteration.
+*/
+fun highest_set_bit_position(number: int): int {
+  if number < 0 { panic("number must be non-negative") }
+  var position = 0
+  var n = number
+  while n > 0 {
+    position = position + 1
+    n = n / 2
+  }
+  return position
+}
+
+print(str(highest_set_bit_position(25)))
+print(str(highest_set_bit_position(37)))
+print(str(highest_set_bit_position(1)))
+print(str(highest_set_bit_position(4)))
+print(str(highest_set_bit_position(0)))
