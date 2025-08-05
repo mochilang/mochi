@@ -1,0 +1,93 @@
+/*
+Floyd-Warshall All-Pairs Shortest Paths
+
+This program computes the shortest distances between every pair of vertices
+in a directed weighted graph using the Floyd-Warshall algorithm. The graph is
+represented by an adjacency matrix `dp` where `dp[i][j]` holds the current best
+known distance from vertex `i` to vertex `j`. The algorithm iteratively treats
+each vertex `k` as an intermediate node and relaxes all pairs `(i, j)` by taking
+the minimum of the existing distance and the path going through `k`:
+
+  dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j])
+
+After processing all vertices, `dp` contains the minimum distances between every
+pair of nodes. The time complexity is O(n^3) and space complexity is O(n^2).
+*/
+
+let INF: int = 1000000000
+
+type Graph {
+  n: int,
+  dp: list<list<int>>
+}
+
+fun new_graph(n: int): Graph {
+  var dp: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      if i == j {
+        row = append(row, 0)
+      } else {
+        row = append(row, INF)
+      }
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  return Graph { n: n, dp: dp }
+}
+
+fun add_edge(g: Graph, u: int, v: int, w: int): void {
+  var dp: list<list<int>> = g.dp
+  var row: list<int> = dp[u]
+  row[v] = w
+  dp[u] = row
+  g.dp = dp
+}
+
+fun floyd_warshall(g: Graph): void {
+  var dp: list<list<int>> = g.dp
+  var k = 0
+  while k < g.n {
+    var i = 0
+    while i < g.n {
+      var j = 0
+      while j < g.n {
+        let alt = dp[i][k] + dp[k][j]
+        var row: list<int> = dp[i]
+        if alt < row[j] {
+          row[j] = alt
+          dp[i] = row
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    k = k + 1
+  }
+  g.dp = dp
+}
+
+fun show_min(g: Graph, u: int, v: int): int {
+  return g.dp[u][v]
+}
+
+var graph = new_graph(5)
+add_edge(graph, 0, 2, 9)
+add_edge(graph, 0, 4, 10)
+add_edge(graph, 1, 3, 5)
+add_edge(graph, 2, 3, 7)
+add_edge(graph, 3, 0, 10)
+add_edge(graph, 3, 1, 2)
+add_edge(graph, 3, 2, 1)
+add_edge(graph, 3, 4, 6)
+add_edge(graph, 4, 1, 3)
+add_edge(graph, 4, 2, 4)
+add_edge(graph, 4, 3, 9)
+floyd_warshall(graph)
+print(str(show_min(graph, 1, 4)))
+print(str(show_min(graph, 0, 3)))
