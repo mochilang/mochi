@@ -1,0 +1,122 @@
+/*
+Serialize and Deserialize Binary Tree
+-------------------------------------
+
+This program demonstrates how to serialize a binary tree into a comma
+separated string using preorder traversal and how to reconstruct the
+tree from that string. Null children are recorded as the literal
+"null" so the structure can be perfectly rebuilt.
+
+Serialization visits each node in the order: current node, left
+subtree, then right subtree. Each visit appends the node's value to the
+output, or "null" if the node is absent.
+
+Deserialization consumes the comma separated values one by one,
+recursively creating nodes and assigning their left and right children.
+Since the traversal includes explicit null markers, the process runs in
+O(n) time for n nodes and results in an exact copy of the original
+binary tree.
+
+The example builds a small tree, serializes it, deserializes the string
+and prints both serializations along with a check that they match.
+*/
+
+
+type TreeNode =
+  Empty
+  | Node(left: TreeNode, value: int, right: TreeNode)
+
+type BuildResult {
+  node: TreeNode,
+  next: int,
+}
+
+fun digit(ch: string): int {
+  let digits = "0123456789"
+  var i = 0
+  while i < len(digits) {
+    if substring(digits, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun to_int(s: string): int {
+  var i = 0
+  var sign = 1
+  if len(s) > 0 && substring(s, 0, 1) == "-" {
+    sign = -1
+    i = 1
+  }
+  var num = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    num = num * 10 + digit(ch)
+    i = i + 1
+  }
+  return sign * num
+}
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun serialize(node: TreeNode): string {
+  return match node {
+    Empty => "null"
+    Node(l, v, r) => str(v) + "," + serialize(l) + "," + serialize(r)
+  }
+}
+
+fun build(nodes: list<string>, idx: int): BuildResult {
+  let value = nodes[idx]
+  if value == "null" {
+    return BuildResult { node: Empty {}, next: idx + 1 }
+  }
+  let left_res = build(nodes, idx + 1)
+  let right_res = build(nodes, left_res.next)
+  let node = Node { left: left_res.node, value: to_int(value), right: right_res.node }
+  return BuildResult { node: node, next: right_res.next }
+}
+
+fun deserialize(data: string): TreeNode {
+  let nodes = split(data, ",")
+  let res = build(nodes, 0)
+  return res.node
+}
+
+fun five_tree(): TreeNode {
+  let left_child = Node { value: 2, left: Empty {}, right: Empty {} }
+  let right_left = Node { value: 4, left: Empty {}, right: Empty {} }
+  let right_right = Node { value: 5, left: Empty {}, right: Empty {} }
+  let right_child = Node { value: 3, left: right_left, right: right_right }
+  return Node { value: 1, left: left_child, right: right_child }
+}
+
+fun main() {
+  let root = five_tree()
+  let serial = serialize(root)
+  print(serial)
+  let rebuilt = deserialize(serial)
+  let serial2 = serialize(rebuilt)
+  print(serial2)
+  print(serial == serial2)
+}
+
+main()
