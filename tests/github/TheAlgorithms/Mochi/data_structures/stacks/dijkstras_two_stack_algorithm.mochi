@@ -1,0 +1,76 @@
+/*
+Dijkstra's Two-Stack Algorithm for Expression Evaluation
+
+This algorithm evaluates fully parenthesized arithmetic expressions composed of
+single-digit operands and the operators +, -, *, and /. It maintains two stacks:
+one for operators and one for operands. The rules are:
+ 1. Ignore '(' characters.
+ 2. When a digit is read, push its numeric value onto the operand stack.
+ 3. When an operator is read, push it onto the operator stack.
+ 4. When ')' is read, pop an operator and the top two operands, apply the
+    operator, and push the result back on the operand stack.
+After scanning the entire string, the operand stack holds the final result.
+
+Example: "(5 + ((4 * 2) * (2 + 3)))" evaluates to 45.
+*/
+
+fun is_digit(ch: string): bool {
+  return ch == "0" || ch == "1" || ch == "2" || ch == "3" || ch == "4" || ch == "5" || ch == "6" || ch == "7" || ch == "8" || ch == "9"
+}
+
+fun slice_without_last_int(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun slice_without_last_string(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun dijkstras_two_stack_algorithm(equation: string): int {
+  var operand_stack: list<int> = []
+  var operator_stack: list<string> = []
+  var idx = 0
+  while idx < len(equation) {
+    let ch = substring(equation, idx, idx + 1)
+    if is_digit(ch) {
+      operand_stack = append(operand_stack, int(ch))
+    } else if ch == "+" || ch == "-" || ch == "*" || ch == "/" {
+      operator_stack = append(operator_stack, ch)
+    } else if ch == ")" {
+      let opr = operator_stack[len(operator_stack) - 1]
+      operator_stack = slice_without_last_string(operator_stack)
+      let num1 = operand_stack[len(operand_stack) - 1]
+      operand_stack = slice_without_last_int(operand_stack)
+      let num2 = operand_stack[len(operand_stack) - 1]
+      operand_stack = slice_without_last_int(operand_stack)
+      let total =
+        if opr == "+" {
+          num2 + num1
+        } else if opr == "-" {
+          num2 - num1
+        } else if opr == "*" {
+          num2 * num1
+        } else {
+          num2 / num1
+        }
+      operand_stack = append(operand_stack, total)
+    }
+    idx = idx + 1
+  }
+  return operand_stack[len(operand_stack) - 1]
+}
+
+let equation = "(5 + ((4 * 2) * (2 + 3)))"
+print(equation + " = " + str(dijkstras_two_stack_algorithm(equation)))
