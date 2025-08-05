@@ -1,0 +1,18 @@
+/*
+Simulate an OR logic gate.
+The output is 1 (True) if either of the two inputs is 1, and 0 only when both inputs are 0.
+This uses a simple membership test on the list of inputs: if value 1 is present, the gate
+outputs 1. The algorithm runs in O(1) time as it checks only two inputs.
+*/
+
+fun or_gate(input_1: int, input_2: int): int {
+  if 1 in [input_1, input_2] {
+    return 1
+  }
+  return 0
+}
+
+print(or_gate(0, 0))
+print(or_gate(0, 1))
+print(or_gate(1, 0))
+print(or_gate(1, 1))
