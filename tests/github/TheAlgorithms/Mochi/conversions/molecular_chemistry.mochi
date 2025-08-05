@@ -1,0 +1,45 @@
+/*
+Perform common molecular chemistry conversions using the ideal gas law.
+
+- molarity_to_normality: converts molarity (moles per liter) to normality
+  by multiplying by the substance's n-factor.
+- moles_to_pressure: computes gas pressure from moles, volume and
+  temperature using p = nRT / V.
+- moles_to_volume: derives gas volume from pV = nRT solving for V.
+- pressure_and_volume_to_temperature: solves pV = nRT for temperature T.
+
+All functions return the result rounded to the nearest integer.  The gas
+constant R is 0.0821 L·atm/(mol·K).
+*/
+
+fun round_to_int(x: float): int {
+  if x >= 0.0 {
+    return int(x + 0.5)
+  }
+  return int(x - 0.5)
+}
+
+fun molarity_to_normality(nfactor: float, moles: float, volume: float): int {
+  return round_to_int((moles / volume) * nfactor)
+}
+
+fun moles_to_pressure(volume: float, moles: float, temperature: float): int {
+  return round_to_int((moles * 0.0821 * temperature) / volume)
+}
+
+fun moles_to_volume(pressure: float, moles: float, temperature: float): int {
+  return round_to_int((moles * 0.0821 * temperature) / pressure)
+}
+
+fun pressure_and_volume_to_temperature(pressure: float, moles: float, volume: float): int {
+  return round_to_int((pressure * volume) / (0.0821 * moles))
+}
+
+print(str(molarity_to_normality(2.0, 3.1, 0.31)))
+print(str(molarity_to_normality(4.0, 11.4, 5.7)))
+print(str(moles_to_pressure(0.82, 3.0, 300.0)))
+print(str(moles_to_pressure(8.2, 5.0, 200.0)))
+print(str(moles_to_volume(0.82, 3.0, 300.0)))
+print(str(moles_to_volume(8.2, 5.0, 200.0)))
+print(str(pressure_and_volume_to_temperature(0.82, 1.0, 2.0)))
+print(str(pressure_and_volume_to_temperature(8.2, 5.0, 3.0)))
