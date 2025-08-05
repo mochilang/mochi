@@ -1,0 +1,29 @@
+/*
+SHA-256 Hash Function
+
+This program demonstrates computing SHA-256 digests. Mochi provides a
+built-in `sha256` function that returns the 32 byte digest of a string.
+The helper `bytes_to_hex` converts the digest to a hexadecimal string
+for display. Two sample strings are hashed to verify the function.
+*/
+
+let HEX = "0123456789abcdef"
+
+fun byte_to_hex(b: int): string {
+  let hi = b / 16
+  let lo = b % 16
+  return HEX[hi] + HEX[lo]
+}
+
+fun bytes_to_hex(bs: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(bs) {
+    res = res + byte_to_hex(bs[i])
+    i = i + 1
+  }
+  return res
+}
+
+print(bytes_to_hex(sha256("Python")))
+print(bytes_to_hex(sha256("hello world")))
