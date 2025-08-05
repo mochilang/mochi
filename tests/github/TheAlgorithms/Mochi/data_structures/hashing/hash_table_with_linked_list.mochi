@@ -1,0 +1,127 @@
+/*
+Hash Table with Linked List Buckets
+
+This structure stores integers in a fixed number of buckets.  A value is
+hashed to an index and inserted at the front of a list stored at that
+bucket.  Each bucket can hold up to `charge_factor` items.  Collisions are
+handled by chaining: if a bucket is not yet at capacity, the new value is
+prepended to that bucket's list.  When a bucket is full and every bucket has
+at least one list (no empty slots), linear probing searches for the next
+bucket with available space.  If none exists the table is reported full.
+
+The `balanced_factor` function reports how full the table is by computing the
+fraction of unused positions relative to the maximum capacity.  All code is
+pure Mochi with explicit types and uses no foreign interfaces.
+*/
+
+type HashTableWithLinkedList {
+  size_table: int,
+  charge_factor: int,
+  values: list<list<int>>,
+  keys: map<int, list<int>>
+}
+
+fun make_table(size_table: int, charge_factor: int): HashTableWithLinkedList {
+  var vals: list<list<int>> = []
+  var i = 0
+  while i < size_table {
+    vals = append(vals, [])
+    i = i + 1
+  }
+  return HashTableWithLinkedList {
+    size_table: size_table,
+    charge_factor: charge_factor,
+    values: vals,
+    keys: {}
+  }
+}
+
+fun hash_function(ht: HashTableWithLinkedList, key: int): int {
+  var res = key % ht.size_table
+  if res < 0 { res = res + ht.size_table }
+  return res
+}
+
+fun prepend(lst: list<int>, value: int): list<int> {
+  var result: list<int> = [value]
+  var i = 0
+  while i < len(lst) {
+    result = append(result, lst[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun set_value(ht: HashTableWithLinkedList, key: int, data: int) {
+  let current = ht.values[key]
+  let updated = prepend(current, data)
+  var vals = ht.values
+  vals[key] = updated
+  ht.values = vals
+  var ks = ht.keys
+  ks[key] = updated
+  ht.keys = ks
+}
+
+fun count_empty(ht: HashTableWithLinkedList): int {
+  var count = 0
+  var i = 0
+  while i < len(ht.values) {
+    if len(ht.values[i]) == 0 { count = count + 1 }
+    i = i + 1
+  }
+  return count
+}
+
+fun balanced_factor(ht: HashTableWithLinkedList): float {
+  var total = 0
+  var i = 0
+  while i < len(ht.values) {
+    total = total + (ht.charge_factor - len(ht.values[i]))
+    i = i + 1
+  }
+  return (total as float) / (ht.size_table as float) * (ht.charge_factor as float)
+}
+
+fun collision_resolution(ht: HashTableWithLinkedList, key: int): int {
+  if !(len(ht.values[key]) == ht.charge_factor && count_empty(ht) == 0) {
+    return key
+  }
+  var new_key = (key + 1) % ht.size_table
+  var steps = 0
+  while len(ht.values[new_key]) == ht.charge_factor && steps < ht.size_table - 1 {
+    new_key = (new_key + 1) % ht.size_table
+    steps = steps + 1
+  }
+  if len(ht.values[new_key]) < ht.charge_factor {
+    return new_key
+  }
+  return -1
+}
+
+fun insert(ht: HashTableWithLinkedList, data: int) {
+  var key = hash_function(ht, data)
+  if len(ht.values[key]) == 0 || len(ht.values[key]) < ht.charge_factor {
+    set_value(ht, key, data)
+    return
+  }
+  var dest = collision_resolution(ht, key)
+  if dest >= 0 {
+    set_value(ht, dest, data)
+  } else {
+    print("table full")
+  }
+}
+
+fun main() {
+  var ht = make_table(3, 2)
+  insert(ht, 10)
+  insert(ht, 20)
+  insert(ht, 30)
+  insert(ht, 40)
+  insert(ht, 50)
+  print(str(ht.values))
+  print(str(balanced_factor(ht)))
+}
+
+main()
