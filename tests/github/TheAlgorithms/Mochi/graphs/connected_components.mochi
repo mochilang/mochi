@@ -1,0 +1,41 @@
+/*
+Find connected components in an undirected graph using depth-first search.
+The graph is represented as an adjacency list map<int, list<int>>.
+Starting from each unvisited vertex, DFS explores all reachable vertices,
+marking them as visited and collecting them as one component. Repeating this
+process for every vertex yields all connected components. The algorithm runs
+in O(V + E) time where V is the number of vertices and E the number of edges,
+with O(V) space for the visited list.
+*/
+let test_graph_1: map<int, list<int>> = {0: [1, 2], 1: [0, 3], 2: [0], 3: [1], 4: [5, 6], 5: [4, 6], 6: [4, 5]}
+let test_graph_2: map<int, list<int>> = {0: [1, 2, 3], 1: [0, 3], 2: [0], 3: [0, 1], 4: [], 5: []}
+
+fun dfs(graph: map<int, list<int>>, vert: int, visited: list<bool>): list<int> {
+  visited[vert] = true
+  var connected_verts: list<int> = []
+  for neighbour in graph[vert] {
+    if !visited[neighbour] {
+      connected_verts = concat(connected_verts, dfs(graph, neighbour, visited))
+    }
+  }
+  return concat([vert], connected_verts)
+}
+
+fun connected_components(graph: map<int, list<int>>): list<list<int>> {
+  let graph_size = len(graph)
+  var visited: list<bool> = []
+  for _ in 0..graph_size {
+    visited = append(visited, false)
+  }
+  var components_list: list<list<int>> = []
+  for i in 0..graph_size {
+    if !visited[i] {
+      let component = dfs(graph, i, visited)
+      components_list = append(components_list, component)
+    }
+  }
+  return components_list
+}
+
+print(str(connected_components(test_graph_1)))
+print(str(connected_components(test_graph_2)))
