@@ -1,0 +1,56 @@
+/*
+Happy Number Checker
+--------------------
+A happy number repeatedly replaces itself by the sum of the squares of its digits
+until the value becomes 1. Numbers that enter a cycle other than 1 are unhappy.
+
+This implementation mirrors the algorithm from TheAlgorithms' Python version.
+It validates that the input is a positive integer, then iteratively computes the
+sum of squared digits while tracking previously seen values in a list to detect
+loops. When the sequence reaches 1 the number is happy; encountering a repeated
+value means the number is unhappy.
+
+Time Complexity: O(k * m) where k is number of digits and m is iterations until a
+cycle or 1 is reached. Space Complexity: O(m) for the list of seen values.
+*/
+
+fun is_happy_number(num: int): bool {
+  if num <= 0 {
+    panic("num must be a positive integer")
+  }
+  var seen: list<int> = []
+  var n = num
+  while n != 1 {
+    var i = 0
+    while i < len(seen) {
+      if seen[i] == n {
+        return false
+      }
+      i = i + 1
+    }
+    seen = append(seen, n)
+    var total = 0
+    var temp = n
+    while temp > 0 {
+      let digit = temp % 10
+      total = total + digit * digit
+      temp = temp / 10
+    }
+    n = total
+  }
+  return true
+}
+
+fun test_is_happy_number() {
+  if !is_happy_number(19) { panic("19 should be happy") }
+  if is_happy_number(2) { panic("2 should be unhappy") }
+  if !is_happy_number(23) { panic("23 should be happy") }
+  if !is_happy_number(1) { panic("1 should be happy") }
+}
+
+fun main() {
+  test_is_happy_number()
+  print(is_happy_number(19))
+}
+
+main()
