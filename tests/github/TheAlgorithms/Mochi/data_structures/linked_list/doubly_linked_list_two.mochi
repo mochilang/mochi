@@ -1,0 +1,280 @@
+/*
+Doubly Linked List
+------------------
+
+This implementation provides a basic doubly linked list of integers.
+Each node stores its value and the indices of the previous and next
+nodes in an array of nodes.  The list keeps track of the indices of
+its head and tail nodes.  Using integer indices avoids nullable pointer
+types while still allowing bidirectional traversal.
+
+Supported operations include:
+- inserting values at the end or at a specific position
+- inserting nodes before or after existing nodes
+- retrieving head or tail values
+- deleting the first occurrence of a value
+- checking for membership and emptiness
+- producing a string of the node values in order
+
+All operations run in O(n) time in the number of traversed nodes.
+The demonstration at the bottom mirrors the behaviour of the Python
+version: building a list, mutating it, printing values, and performing
+deletions.
+*/
+
+type Node {
+  data: int
+  prev_index: int
+  next_index: int
+}
+
+type LinkedList {
+  nodes: list<Node>
+  head_idx: int
+  tail_idx: int
+}
+
+fun empty_list(): LinkedList {
+  return LinkedList { nodes: [], head_idx: -1, tail_idx: -1 }
+}
+
+fun get_head_data(ll: LinkedList): int {
+  if ll.head_idx == (-1) { return -1 }
+  let node = ll.nodes[ll.head_idx]
+  return node.data
+}
+
+fun get_tail_data(ll: LinkedList): int {
+  if ll.tail_idx == (-1) { return -1 }
+  let node = ll.nodes[ll.tail_idx]
+  return node.data
+}
+
+fun insert_before_node(ll: LinkedList, idx: int, new_idx: int) {
+  var nodes = ll.nodes
+  var new_node = nodes[new_idx]
+  new_node.next_index = idx
+  var node = nodes[idx]
+  let p = node.prev_index
+  new_node.prev_index = p
+  nodes[new_idx] = new_node
+  if p == (-1) {
+    ll.head_idx = new_idx
+  } else {
+    var prev_node = nodes[p]
+    prev_node.next_index = new_idx
+    nodes[p] = prev_node
+  }
+  node.prev_index = new_idx
+  nodes[idx] = node
+  ll.nodes = nodes
+}
+
+fun insert_after_node(ll: LinkedList, idx: int, new_idx: int) {
+  var nodes = ll.nodes
+  var new_node = nodes[new_idx]
+  new_node.prev_index = idx
+  var node = nodes[idx]
+  let nxt = node.next_index
+  new_node.next_index = nxt
+  nodes[new_idx] = new_node
+  if nxt == (-1) {
+    ll.tail_idx = new_idx
+  } else {
+    var next_node = nodes[nxt]
+    next_node.prev_index = new_idx
+    nodes[nxt] = next_node
+  }
+  node.next_index = new_idx
+  nodes[idx] = node
+  ll.nodes = nodes
+}
+
+fun set_head(ll: LinkedList, idx: int) {
+  if ll.head_idx == (-1) {
+    ll.head_idx = idx
+    ll.tail_idx = idx
+  } else {
+    insert_before_node(ll, ll.head_idx, idx)
+  }
+}
+
+fun set_tail(ll: LinkedList, idx: int) {
+  if ll.tail_idx == (-1) {
+    ll.head_idx = idx
+    ll.tail_idx = idx
+  } else {
+    insert_after_node(ll, ll.tail_idx, idx)
+  }
+}
+
+fun insert(ll: LinkedList, value: int) {
+  var nodes = ll.nodes
+  nodes = append(nodes, Node { data: value, prev_index: -1, next_index: -1 })
+  let idx = len(nodes) - 1
+  ll.nodes = nodes
+  if ll.head_idx == (-1) {
+    ll.head_idx = idx
+    ll.tail_idx = idx
+  } else {
+    insert_after_node(ll, ll.tail_idx, idx)
+  }
+}
+
+fun insert_at_position(ll: LinkedList, position: int, value: int) {
+  var current = ll.head_idx
+  var current_pos = 1
+  while current != (-1) {
+    if current_pos == position {
+      var nodes = ll.nodes
+      nodes = append(nodes, Node { data: value, prev_index: -1, next_index: -1 })
+      let new_idx = len(nodes) - 1
+      ll.nodes = nodes
+      insert_before_node(ll, current, new_idx)
+      return
+    }
+    let node = ll.nodes[current]
+    current = node.next_index
+    current_pos = current_pos + 1
+  }
+  // position beyond end -> insert at tail
+  insert(ll, value)
+}
+
+fun get_node(ll: LinkedList, item: int): int {
+  var current = ll.head_idx
+  while current != (-1) {
+    let node = ll.nodes[current]
+    if node.data == item {
+      return current
+    }
+    current = node.next_index
+  }
+  return -1
+}
+
+fun remove_node_pointers(ll: LinkedList, idx: int) {
+  var nodes = ll.nodes
+  var node = nodes[idx]
+  let nxt = node.next_index
+  let p = node.prev_index
+  if nxt != (-1) {
+    var nxt_node = nodes[nxt]
+    nxt_node.prev_index = p
+    nodes[nxt] = nxt_node
+  }
+  if p != (-1) {
+    var prev_node = nodes[p]
+    prev_node.next_index = nxt
+    nodes[p] = prev_node
+  }
+  node.next_index = -1
+  node.prev_index = -1
+  nodes[idx] = node
+  ll.nodes = nodes
+}
+
+fun delete_value(ll: LinkedList, value: int) {
+  let idx = get_node(ll, value)
+  if idx == (-1) { return }
+  if idx == ll.head_idx {
+    let node = ll.nodes[idx]
+    ll.head_idx = node.next_index
+  }
+  if idx == ll.tail_idx {
+    let node = ll.nodes[idx]
+    ll.tail_idx = node.prev_index
+  }
+  remove_node_pointers(ll, idx)
+}
+
+fun contains(ll: LinkedList, value: int): bool {
+  return get_node(ll, value) != (-1)
+}
+
+fun is_empty(ll: LinkedList): bool {
+  return ll.head_idx == (-1)
+}
+
+fun to_string(ll: LinkedList): string {
+  var res = ""
+  var first = true
+  var current = ll.head_idx
+  while current != (-1) {
+    let node = ll.nodes[current]
+    let val = str(node.data)
+    if first {
+      res = val
+      first = false
+    } else {
+      res = res + " " + val
+    }
+    current = node.next_index
+  }
+  return res
+}
+
+fun print_list(ll: LinkedList) {
+  var current = ll.head_idx
+  while current != (-1) {
+    let node = ll.nodes[current]
+    print(str(node.data))
+    current = node.next_index
+  }
+}
+
+fun main() {
+  var ll = empty_list()
+  print(str(get_head_data(ll)))  // null
+  print(str(get_tail_data(ll)))  // null
+  print(str(is_empty(ll)))
+  insert(ll, 10)
+  print(str(get_head_data(ll)))
+  print(str(get_tail_data(ll)))
+  insert_at_position(ll, 3, 20)
+  print(str(get_head_data(ll)))
+  print(str(get_tail_data(ll)))
+  var nodes = ll.nodes
+  nodes = append(nodes, Node { data: 1000, prev_index: -1, next_index: -1 })
+  let idx_head = len(nodes) - 1
+  ll.nodes = nodes
+  set_head(ll, idx_head)
+  nodes = ll.nodes
+  nodes = append(nodes, Node { data: 2000, prev_index: -1, next_index: -1 })
+  let idx_tail = len(nodes) - 1
+  ll.nodes = nodes
+  set_tail(ll, idx_tail)
+  print_list(ll)
+  print(str(is_empty(ll)))
+  print_list(ll)
+  print(str(contains(ll, 10)))
+  delete_value(ll, 10)
+  print(str(contains(ll, 10)))
+  delete_value(ll, 2000)
+  print(str(get_tail_data(ll)))
+  delete_value(ll, 1000)
+  print(str(get_tail_data(ll)))
+  print(str(get_head_data(ll)))
+  print_list(ll)
+  delete_value(ll, 20)
+  print_list(ll)
+  var i = 1
+  while i < 10 {
+    insert(ll, i)
+    i = i + 1
+  }
+  print_list(ll)
+  var ll2 = empty_list()
+  insert_at_position(ll2, 1, 10)
+  print(to_string(ll2))
+  insert_at_position(ll2, 2, 20)
+  print(to_string(ll2))
+  insert_at_position(ll2, 1, 30)
+  print(to_string(ll2))
+  insert_at_position(ll2, 3, 40)
+  print(to_string(ll2))
+  insert_at_position(ll2, 5, 50)
+  print(to_string(ll2))
+}
+
+main()
