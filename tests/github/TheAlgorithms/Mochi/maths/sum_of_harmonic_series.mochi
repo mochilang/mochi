@@ -1,0 +1,54 @@
+/*
+Sum of Harmonic Progression
+---------------------------
+The harmonic progression is formed by taking reciprocals of an arithmetic progression.
+Given the first term (a1), common difference (d) and number of terms (n),
+we build the underlying arithmetic sequence starting from 1/a1 and repeatedly adding d.
+Each arithmetic term is then inverted again to obtain harmonic terms.
+The total of these harmonic terms yields the sum of the harmonic progression.
+
+Algorithm:
+1. Start with arithmetic_progression = [1/first_term].
+2. Generate remaining arithmetic terms by adding the common difference.
+3. Map each arithmetic term to its reciprocal to form the harmonic series and accumulate the sum.
+4. Return the accumulated total.
+
+This implementation avoids FFI and the `any` type so it can run on runtime/vm.
+*/
+
+fun sum_of_harmonic_progression(first_term: float, common_difference: float, number_of_terms: int): float {
+  var arithmetic_progression: list<float> = [1.0 / first_term]
+  var term = 1.0 / first_term
+  var i = 0
+  while i < number_of_terms - 1 {
+    term = term + common_difference
+    arithmetic_progression = append(arithmetic_progression, term)
+    i = i + 1
+  }
+  var total = 0.0
+  var j = 0
+  while j < len(arithmetic_progression) {
+    total = total + (1.0 / arithmetic_progression[j])
+    j = j + 1
+  }
+  return total
+}
+
+fun abs_val(num: float): float {
+  if num < 0.0 { return -num }
+  return num
+}
+
+fun test_sum_of_harmonic_progression() {
+  let result1 = sum_of_harmonic_progression(0.5, 2.0, 2)
+  if abs_val(result1 - 0.75) > 0.0000001 { panic("test1 failed") }
+  let result2 = sum_of_harmonic_progression(0.2, 5.0, 5)
+  if abs_val(result2 - 0.45666666666666667) > 0.0000001 { panic("test2 failed") }
+}
+
+fun main() {
+  test_sum_of_harmonic_progression()
+  print(sum_of_harmonic_progression(0.5, 2.0, 2))
+}
+
+main()
