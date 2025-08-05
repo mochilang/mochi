@@ -1,0 +1,102 @@
+/*
+Implement a FIFO queue using two stacks.
+
+Two internal stacks maintain the elements:
+- `stack1` stores newly added items.
+- `stack2` provides items for removal.
+
+`put` appends to `stack1`. When retrieving an item with `get`,
+if `stack2` is empty all elements from `stack1` are popped and
+pushed onto `stack2`, reversing their order. The last element of
+`stack2` is then popped. This yields amortized O(1) time per
+operation. `len_queue` returns the total number of items and
+`str_queue` shows the queue contents from front to back.
+*/
+
+type Queue { stack1: list<int>, stack2: list<int> }
+type GetResult { queue: Queue, value: int }
+
+fun new_queue(items: list<int>): Queue {
+  return Queue{ stack1: items, stack2: [] }
+}
+
+fun len_queue(q: Queue): int {
+  return len(q.stack1) + len(q.stack2)
+}
+
+fun str_queue(q: Queue): string {
+  var items: list<int> = []
+  var i = len(q.stack2) - 1
+  while i >= 0 {
+    items = append(items, q.stack2[i])
+    i = i - 1
+  }
+  var j = 0
+  while j < len(q.stack1) {
+    items = append(items, q.stack1[j])
+    j = j + 1
+  }
+  var s = "Queue(("
+  var k = 0
+  while k < len(items) {
+    s = s + str(items[k])
+    if k < len(items) - 1 { s = s + ", " }
+    k = k + 1
+  }
+  s = s + "))"
+  return s
+}
+
+fun put(q: Queue, item: int): Queue {
+  var s1 = q.stack1
+  s1 = append(s1, item)
+  return Queue{ stack1: s1, stack2: q.stack2 }
+}
+
+fun get(q: Queue): GetResult {
+  var s1 = q.stack1
+  var s2 = q.stack2
+  if len(s2) == 0 {
+    while len(s1) > 0 {
+      let idx = len(s1) - 1
+      let v = s1[idx]
+      var new_s1: list<int> = []
+      var i = 0
+      while i < idx {
+        new_s1 = append(new_s1, s1[i])
+        i = i + 1
+      }
+      s1 = new_s1
+      s2 = append(s2, v)
+    }
+  }
+  if len(s2) == 0 {
+    panic("Queue is empty")
+  }
+  let idx2 = len(s2) - 1
+  let value = s2[idx2]
+  var new_s2: list<int> = []
+  var j = 0
+  while j < idx2 {
+    new_s2 = append(new_s2, s2[j])
+    j = j + 1
+  }
+  s2 = new_s2
+  return GetResult{ queue: Queue{ stack1: s1, stack2: s2 }, value: value }
+}
+
+var q = new_queue([10, 20, 30])
+let r1 = get(q)
+q = r1.queue
+print(r1.value)
+q = put(q, 40)
+let r2 = get(q)
+q = r2.queue
+print(r2.value)
+let r3 = get(q)
+q = r3.queue
+print(r3.value)
+print(len_queue(q))
+let r4 = get(q)
+q = r4.queue
+print(r4.value)
