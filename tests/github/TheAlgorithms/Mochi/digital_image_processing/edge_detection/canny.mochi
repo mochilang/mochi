@@ -1,0 +1,252 @@
+/*
+Canny Edge Detection on a tiny 5x5 image.
+
+This Mochi program implements a simplified version of the Canny edge
+detector entirely in the language without external libraries. The steps
+mirror the classic algorithm:
+
+1. **Gaussian smoothing** – a 3x3 Gaussian kernel blurs the image to
+   reduce noise.
+2. **Sobel gradients** – convolution with Sobel kernels yields the
+   horizontal and vertical derivatives.  Gradient magnitude and direction
+   are computed using small math helpers.
+3. **Non‑maximum suppression** – gradient magnitudes are thinned by
+   comparing a pixel to its neighbours along the gradient direction.
+4. **Double threshold and edge tracking** – strong edges are kept,
+   weak edges connected to strong ones are promoted, and the rest are
+   discarded.
+
+The program processes a hard coded 5×5 image containing a bright square
+on a dark background and prints the resulting edge map.
+*/
+
+let PI = 3.141592653589793
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 {
+    let r = atanApprox(y/x)
+    return r
+  }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y/x) + PI }
+    return atanApprox(y/x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun deg(rad: float): float { return rad * 180.0 / PI }
+
+let GAUSSIAN_KERNEL: list<list<float>> = [
+  [0.0625, 0.125, 0.0625],
+  [0.125,  0.25,  0.125],
+  [0.0625, 0.125, 0.0625]
+]
+
+let SOBEL_GX: list<list<float>> = [
+  [-1.0, 0.0, 1.0],
+  [-2.0, 0.0, 2.0],
+  [-1.0, 0.0, 1.0]
+]
+
+let SOBEL_GY: list<list<float>> = [
+  [1.0,  2.0,  1.0],
+  [0.0,  0.0,  0.0],
+  [-1.0, -2.0, -1.0]
+]
+
+fun zero_matrix(h: int, w: int): list<list<float>> {
+  var out: list<list<float>> = []
+  var i = 0
+  while i < h {
+    var row: list<float> = []
+    var j = 0
+    while j < w {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    out = append(out, row)
+    i = i + 1
+  }
+  return out
+}
+
+fun convolve(img: list<list<float>>, kernel: list<list<float>>): list<list<float>> {
+  let h = len(img)
+  let w = len(img[0])
+  let k = len(kernel)
+  let pad = k / 2
+  var out = zero_matrix(h, w)
+  var y = pad
+  while y < h - pad {
+    var x = pad
+    while x < w - pad {
+      var sum = 0.0
+      var ky = 0
+      while ky < k {
+        var kx = 0
+        while kx < k {
+          let pixel = img[y - pad + ky][x - pad + kx]
+          let weight = kernel[ky][kx]
+          sum = sum + pixel * weight
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      out[y][x] = sum
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+fun gaussian_blur(img: list<list<float>>): list<list<float>> {
+  return convolve(img, GAUSSIAN_KERNEL)
+}
+
+fun sobel_filter(img: list<list<float>>): map<string, list<list<float>>> {
+  let gx = convolve(img, SOBEL_GX)
+  let gy = convolve(img, SOBEL_GY)
+  let h = len(img)
+  let w = len(img[0])
+  var grad = zero_matrix(h, w)
+  var dir = zero_matrix(h, w)
+  var i = 0
+  while i < h {
+    var j = 0
+    while j < w {
+      let gxx = gx[i][j]
+      let gyy = gy[i][j]
+      grad[i][j] = sqrtApprox(gxx*gxx + gyy*gyy)
+      dir[i][j] = deg(atan2Approx(gyy, gxx)) + 180.0
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return {"grad": grad, "dir": dir}
+}
+
+fun suppress_non_maximum(h: int, w: int, direction: list<list<float>>, grad: list<list<float>>): list<list<float>> {
+  var dest = zero_matrix(h, w)
+  var r = 1
+  while r < h - 1 {
+    var c = 1
+    while c < w - 1 {
+      let angle = direction[r][c]
+      var q = 0.0
+      var p = 0.0
+      if (angle >= 0.0 && angle < 22.5) || (angle >= 157.5 && angle <= 180.0) || (angle >= 337.5) {
+        q = grad[r][c + 1]
+        p = grad[r][c - 1]
+      } else if (angle >= 22.5 && angle < 67.5) || (angle >= 202.5 && angle < 247.5) {
+        q = grad[r + 1][c - 1]
+        p = grad[r - 1][c + 1]
+      } else if (angle >= 67.5 && angle < 112.5) || (angle >= 247.5 && angle < 292.5) {
+        q = grad[r + 1][c]
+        p = grad[r - 1][c]
+      } else {
+        q = grad[r - 1][c - 1]
+        p = grad[r + 1][c + 1]
+      }
+      if grad[r][c] >= q && grad[r][c] >= p {
+        dest[r][c] = grad[r][c]
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return dest
+}
+
+fun double_threshold(h: int, w: int, img: list<list<float>>, low: float, high: float, weak: float, strong: float) {
+  var r = 0
+  while r < h {
+    var c = 0
+    while c < w {
+      let v = img[r][c]
+      if v >= high {
+        img[r][c] = strong
+      } else if v < low {
+        img[r][c] = 0.0
+      } else {
+        img[r][c] = weak
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+}
+
+fun track_edge(h: int, w: int, img: list<list<float>>, weak: float, strong: float) {
+  var r = 1
+  while r < h - 1 {
+    var c = 1
+    while c < w - 1 {
+      if img[r][c] == weak {
+        if img[r + 1][c] == strong || img[r - 1][c] == strong || img[r][c + 1] == strong || img[r][c - 1] == strong || img[r - 1][c - 1] == strong || img[r - 1][c + 1] == strong || img[r + 1][c - 1] == strong || img[r + 1][c + 1] == strong {
+          img[r][c] = strong
+        } else {
+          img[r][c] = 0.0
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+}
+
+fun canny(image: list<list<float>>, low: float, high: float, weak: float, strong: float): list<list<float>> {
+  let blurred = gaussian_blur(image)
+  let sob = sobel_filter(blurred)
+  let grad = sob["grad"]
+  let direction = sob["dir"]
+  let h = len(image)
+  let w = len(image[0])
+  let suppressed = suppress_non_maximum(h, w, direction, grad)
+  double_threshold(h, w, suppressed, low, high, weak, strong)
+  track_edge(h, w, suppressed, weak, strong)
+  return suppressed
+}
+
+fun print_image(img: list<list<float>>) {
+  var r = 0
+  while r < len(img) {
+    var c = 0
+    var line = ""
+    while c < len(img[r]) {
+      line = line + str(img[r][c] as int) + " "
+      c = c + 1
+    }
+    print(line)
+    r = r + 1
+  }
+}
+
+let image: list<list<float>> = [
+  [0.0, 0.0, 0.0, 0.0, 0.0],
+  [0.0, 255.0, 255.0, 255.0, 0.0],
+  [0.0, 255.0, 255.0, 255.0, 0.0],
+  [0.0, 255.0, 255.0, 255.0, 0.0],
+  [0.0, 0.0, 0.0, 0.0, 0.0]
+]
+
+let edges = canny(image, 20.0, 40.0, 128.0, 255.0)
+print_image(edges)
