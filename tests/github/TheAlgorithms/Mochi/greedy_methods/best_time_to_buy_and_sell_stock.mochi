@@ -1,0 +1,40 @@
+/*
+Best Time to Buy and Sell Stock
+
+Problem:
+Given an array of daily prices for a stock, determine the maximum profit obtainable
+from exactly one buy and one sell transaction. The sell must occur after the buy.
+
+Greedy Algorithm:
+Iterate through prices once while tracking the lowest price seen so far. For each
+price, compute potential profit if sold today. Update the maximum profit whenever
+this profit exceeds the current best. This approach always chooses the locally
+optimal decision—buy at the cheapest price so far and sell when profit is higher—
+which yields the global optimum.
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+*/
+fun max_profit(prices: list<int>): int {
+  if len(prices) == 0 {
+    return 0
+  }
+  var min_price = prices[0]
+  var max_profit = 0
+  var i = 0
+  while i < len(prices) {
+    let price = prices[i]
+    if price < min_price {
+      min_price = price
+    }
+    let profit = price - min_price
+    if profit > max_profit {
+      max_profit = profit
+    }
+    i = i + 1
+  }
+  return max_profit
+}
+
+print(max_profit([7, 1, 5, 3, 6, 4]))
+print(max_profit([7, 6, 4, 3, 1]))
