@@ -1,0 +1,68 @@
+/*
+Coulomb's Law solver.
+
+Given three of the four values – electrostatic force, two point charges, and
+distance – compute the missing one using Coulomb's Law:
+
+    F = k * |q1 * q2| / r^2
+
+Exactly one parameter must be zero to indicate the unknown. Distances cannot be
+negative. The function returns a map containing the name of the solved variable
+and its value.
+
+The algorithm uses simple arithmetic along with custom absolute value and square
+root helpers implemented via Newton's method to keep the code in pure Mochi.
+*/
+
+let COULOMBS_CONSTANT: float = 8988000000.0
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun coulombs_law(force: float, charge1: float, charge2: float, distance: float): map<string, float> {
+  let charge_product = abs(charge1 * charge2)
+  var zero_count = 0
+  if force == 0.0 { zero_count = zero_count + 1 }
+  if charge1 == 0.0 { zero_count = zero_count + 1 }
+  if charge2 == 0.0 { zero_count = zero_count + 1 }
+  if distance == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 { panic("One and only one argument must be 0") }
+  if distance < 0.0 { panic("Distance cannot be negative") }
+  if force == 0.0 {
+    let f = COULOMBS_CONSTANT * charge_product / (distance * distance)
+    return {"force": f}
+  }
+  if charge1 == 0.0 {
+    let c1 = abs(force) * (distance * distance) / (COULOMBS_CONSTANT * charge2)
+    return {"charge1": c1}
+  }
+  if charge2 == 0.0 {
+    let c2 = abs(force) * (distance * distance) / (COULOMBS_CONSTANT * charge1)
+    return {"charge2": c2}
+  }
+  let d = sqrtApprox(COULOMBS_CONSTANT * charge_product / abs(force))
+  return {"distance": d}
+}
+
+fun print_map(m: map<string, float>) {
+  for k in m {
+    print("{\"" + k + "\": " + str(m[k]) + "}")
+  }
+}
+
+print_map(coulombs_law(0.0, 3.0, 5.0, 2000.0))
+print_map(coulombs_law(10.0, 3.0, 5.0, 0.0))
+print_map(coulombs_law(10.0, 0.0, 5.0, 2000.0))
