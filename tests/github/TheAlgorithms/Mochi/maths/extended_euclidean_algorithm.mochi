@@ -1,0 +1,72 @@
+/*
+Extended Euclidean Algorithm
+----------------------------
+Find coefficients x and y such that ax + by = gcd(a, b).
+The algorithm maintains the current and next remainders along with the
+corresponding coefficients for a and b. On each iteration it computes the
+integer quotient, updates the remainders, and adjusts the coefficients.
+When the remainder reaches zero the previous coefficients provide the
+solution to Bezout's identity. Negative inputs are handled by flipping the
+sign of the result coefficients as needed.
+*/
+
+type Coeffs {
+  x: int,
+  y: int,
+}
+
+fun abs_val(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun extended_euclidean_algorithm(a: int, b: int): Coeffs {
+  if abs_val(a) == 1 { return Coeffs { x: a, y: 0 } }
+  if abs_val(b) == 1 { return Coeffs { x: 0, y: b } }
+  var old_remainder: int = a
+  var remainder: int = b
+  var old_coeff_a: int = 1
+  var coeff_a: int = 0
+  var old_coeff_b: int = 0
+  var coeff_b: int = 1
+  while remainder != 0 {
+    let quotient: int = old_remainder / remainder
+    let temp_remainder = old_remainder - quotient * remainder
+    old_remainder = remainder
+    remainder = temp_remainder
+    let temp_a = old_coeff_a - quotient * coeff_a
+    old_coeff_a = coeff_a
+    coeff_a = temp_a
+    let temp_b = old_coeff_b - quotient * coeff_b
+    old_coeff_b = coeff_b
+    coeff_b = temp_b
+  }
+  if a < 0 { old_coeff_a = -old_coeff_a }
+  if b < 0 { old_coeff_b = -old_coeff_b }
+  return Coeffs { x: old_coeff_a, y: old_coeff_b }
+}
+
+fun test_extended_euclidean_algorithm() {
+  let r1 = extended_euclidean_algorithm(1, 24)
+  if (r1.x != 1) || (r1.y != 0) { panic("test1 failed") }
+  let r2 = extended_euclidean_algorithm(8, 14)
+  if (r2.x != 2) || (r2.y != (-1)) { panic("test2 failed") }
+  let r3 = extended_euclidean_algorithm(240, 46)
+  if (r3.x != (-9)) || (r3.y != 47) { panic("test3 failed") }
+  let r4 = extended_euclidean_algorithm(1, -4)
+  if (r4.x != 1) || (r4.y != 0) { panic("test4 failed") }
+  let r5 = extended_euclidean_algorithm(-2, -4)
+  if (r5.x != (-1)) || (r5.y != 0) { panic("test5 failed") }
+  let r6 = extended_euclidean_algorithm(0, -4)
+  if (r6.x != 0) || (r6.y != (-1)) { panic("test6 failed") }
+  let r7 = extended_euclidean_algorithm(2, 0)
+  if (r7.x != 1) || (r7.y != 0) { panic("test7 failed") }
+}
+
+fun main() {
+  test_extended_euclidean_algorithm()
+  let res = extended_euclidean_algorithm(240, 46)
+  print("(" + str(res.x) + ", " + str(res.y) + ")")
+}
+
+main()
