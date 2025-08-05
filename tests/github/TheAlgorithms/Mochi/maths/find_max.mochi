@@ -1,0 +1,83 @@
+/*
+Find the maximum element in a list.
+
+This module implements two approaches that mirror the Python version from
+TheAlgorithms:
+
+1. find_max_iterative(nums): scans the list once, updating the current maximum.
+   It runs in O(n) time and uses constant extra space.
+2. find_max_recursive(nums, left, right): a divide-and-conquer algorithm that
+   recursively splits the index range and compares maxima from the two halves.
+   The function validates bounds and supports negative indices similar to
+   Python's list indexing rules.
+
+Both functions panic if called with an empty list. The recursive variant also
+panics when the provided indices are outside the valid range.
+*/
+
+fun normalize_index(index: int, n: int): int {
+  if index < 0 {
+    return n + index
+  }
+  return index
+}
+
+fun find_max_iterative(nums: list<float>): float {
+  if len(nums) == 0 {
+    panic("find_max_iterative() arg is an empty sequence")
+  }
+  var max_num = nums[0]
+  var i = 0
+  while i < len(nums) {
+    let x = nums[i]
+    if x > max_num {
+      max_num = x
+    }
+    i = i + 1
+  }
+  return max_num
+}
+
+fun find_max_recursive(nums: list<float>, left: int, right: int): float {
+  let n = len(nums)
+  if n == 0 {
+    panic("find_max_recursive() arg is an empty sequence")
+  }
+  if left >= n || left < (0 - n) || right >= n || right < (0 - n) {
+    panic("list index out of range")
+  }
+  var l = normalize_index(left, n)
+  var r = normalize_index(right, n)
+  if l == r {
+    return nums[l]
+  }
+  let mid = (l + r) / 2
+  let left_max = find_max_recursive(nums, l, mid)
+  let right_max = find_max_recursive(nums, mid + 1, r)
+  if left_max >= right_max {
+    return left_max
+  }
+  return right_max
+}
+
+fun test_find_max() {
+  let arr: list<float> = [2.0, 4.0, 9.0, 7.0, 19.0, 94.0, 5.0]
+  if find_max_iterative(arr) != 94.0 {
+    panic("find_max_iterative failed")
+  }
+  if find_max_recursive(arr, 0, len(arr) - 1) != 94.0 {
+    panic("find_max_recursive failed")
+  }
+  if find_max_recursive(arr, -len(arr), -1) != 94.0 {
+    panic("negative index handling failed")
+  }
+}
+
+fun main() {
+  test_find_max()
+  let nums: list<float> = [2.0, 4.0, 9.0, 7.0, 19.0, 94.0, 5.0]
+  print(find_max_iterative(nums))
+  print(find_max_recursive(nums, 0, len(nums) - 1))
+}
+
+main()
