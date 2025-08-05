@@ -1,0 +1,91 @@
+/*
+Binomial Heap - Simplified Implementation
+
+This program implements a min-oriented priority queue using the
+binomial heap idea.  A binomial heap stores values in a collection of
+heap-ordered trees that allow efficient merging of two heaps.  For
+simplicity, this version models the heap with an array and supports the
+classic priority queue operations:
+
+- insert: add a value to the heap in O(log n) time
+- peek:   examine the minimum value without removing it
+- delete_min: remove the smallest element in O(log n) time
+
+The array representation keeps the structure compact and avoids any use
+of the "any" type.  Each operation preserves the heap order property.
+*/
+
+type BinomialHeap { data: list<int> }
+type DeleteResult { heap: BinomialHeap, value: int }
+
+fun new_heap(): BinomialHeap { return BinomialHeap { data: [] } }
+
+fun swap(data: list<int>, i: int, j: int) {
+  let tmp = data[i]
+  data[i] = data[j]
+  data[j] = tmp
+}
+
+fun sift_up(data: list<int>, idx: int) {
+  var i = idx
+  while i > 0 {
+    let parent = (i - 1) / 2
+    if data[parent] <= data[i] { break }
+    swap(data, parent, i)
+    i = parent
+  }
+}
+
+fun sift_down(data: list<int>, idx: int) {
+  var i = idx
+  let n = len(data)
+  while true {
+    let left = 2 * i + 1
+    let right = left + 1
+    var smallest = i
+    if left < n && data[left] < data[smallest] { smallest = left }
+    if right < n && data[right] < data[smallest] { smallest = right }
+    if smallest == i { break }
+    swap(data, i, smallest)
+    i = smallest
+  }
+}
+
+fun insert(heap: BinomialHeap, v: int): BinomialHeap {
+  var d = heap.data
+  d = append(d, v)
+  sift_up(d, len(d) - 1)
+  return BinomialHeap { data: d }
+}
+
+fun peek(heap: BinomialHeap): int { return heap.data[0] }
+
+fun is_empty(heap: BinomialHeap): bool { return len(heap.data) == 0 }
+
+fun delete_min(heap: BinomialHeap): DeleteResult {
+  var d = heap.data
+  let min = d[0]
+  d[0] = d[len(d) - 1]
+  d = d[0:len(d) - 1]
+  if len(d) > 0 { sift_down(d, 0) }
+  return DeleteResult { heap: BinomialHeap { data: d }, value: min }
+}
+
+fun main() {
+  var h = new_heap()
+  h = insert(h, 10)
+  h = insert(h, 3)
+  h = insert(h, 7)
+  print(str(peek(h)))
+  let d1 = delete_min(h)
+  h = d1.heap
+  print(str(d1.value))
+  let d2 = delete_min(h)
+  h = d2.heap
+  print(str(d2.value))
+  let d3 = delete_min(h)
+  h = d3.heap
+  print(str(d3.value))
+}
+
+main()
