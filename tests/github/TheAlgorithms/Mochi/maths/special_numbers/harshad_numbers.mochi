@@ -1,0 +1,127 @@
+/*
+Harshad Numbers Across Numeral Bases
+------------------------------------
+A Harshad (or Niven) number in base *b* is an integer that is divisible by the
+sum of its digits when written in that base.  This module provides helpers to
+convert numbers between bases, compute digit sums, enumerate Harshad numbers,
+and test individual numbers for the property.  All routines are implemented in
+pure Mochi without foreign interfaces.
+
+Algorithms
+~~~~~~~~~~
+- `int_to_base` performs repeated division by the base and prepends the digit
+  corresponding to each remainder.  Valid bases range from 2 to 36 using the
+  characters `0-9` and `A-Z`.
+- `base_to_int` reverses the process by accumulating digit values while
+  iterating left to right.
+- `sum_of_digits` converts the number to the desired base and totals the
+  numeric value of each digit, returning the sum in the same base.
+- `harshad_numbers_in_base` checks every positive integer below a limit and
+  keeps those evenly divisible by their digit sum.
+- `is_harshad_number_in_base` determines whether a single integer satisfies
+  the Harshad property in the given base.
+
+Time complexity:
+- Conversions run in O(log_b n) for a number n.
+- Enumerating Harshad numbers up to *limit* runs in O(limit log_b limit).
+*/
+
+fun panic(msg: string): void {}
+
+fun char_to_value(c: string): int {
+  let digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var i = 0
+  while i < len(digits) {
+    if digits[i] == c {
+      return i
+    }
+    i = i + 1
+  }
+  panic("invalid digit")
+}
+
+fun int_to_base(number: int, base: int): string {
+  if base < 2 || base > 36 { panic("'base' must be between 2 and 36 inclusive") }
+  if number < 0 { panic("number must be a positive integer") }
+  let digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var n = number
+  var result = ""
+  while n > 0 {
+    let remainder = n % base
+    result = digits[remainder] + result
+    n = n / base
+  }
+  if result == "" { result = "0" }
+  return result
+}
+
+fun base_to_int(num_str: string, base: int): int {
+  var value = 0
+  var i = 0
+  while i < len(num_str) {
+    let c = num_str[i]
+    value = value * base + char_to_value(c)
+    i = i + 1
+  }
+  return value
+}
+
+fun sum_of_digits(num: int, base: int): string {
+  if base < 2 || base > 36 { panic("'base' must be between 2 and 36 inclusive") }
+  let num_str = int_to_base(num, base)
+  var total = 0
+  var i = 0
+  while i < len(num_str) {
+    let c = num_str[i]
+    total = total + char_to_value(c)
+    i = i + 1
+  }
+  return int_to_base(total, base)
+}
+
+fun harshad_numbers_in_base(limit: int, base: int): list<string> {
+  if base < 2 || base > 36 { panic("'base' must be between 2 and 36 inclusive") }
+  if limit < 0 { return [] }
+  var numbers: list<string> = []
+  var i = 1
+  while i < limit {
+    let s = sum_of_digits(i, base)
+    let divisor = base_to_int(s, base)
+    if i % divisor == 0 {
+      numbers = append(numbers, int_to_base(i, base))
+    }
+    i = i + 1
+  }
+  return numbers
+}
+
+fun is_harshad_number_in_base(num: int, base: int): bool {
+  if base < 2 || base > 36 { panic("'base' must be between 2 and 36 inclusive") }
+  if num < 0 { return false }
+  let n = int_to_base(num, base)
+  let d = sum_of_digits(num, base)
+  let n_val = base_to_int(n, base)
+  let d_val = base_to_int(d, base)
+  return n_val % d_val == 0
+}
+
+fun main() {
+  print(int_to_base(0, 21))
+  print(int_to_base(23, 2))
+  print(int_to_base(58, 5))
+  print(int_to_base(167, 16))
+
+  print(sum_of_digits(103, 12))
+  print(sum_of_digits(1275, 4))
+  print(sum_of_digits(6645, 2))
+
+  print(harshad_numbers_in_base(15, 2))
+  print(harshad_numbers_in_base(12, 34))
+  print(harshad_numbers_in_base(12, 4))
+
+  print(is_harshad_number_in_base(18, 10))
+  print(is_harshad_number_in_base(21, 10))
+  print(is_harshad_number_in_base(-21, 5))
+}
+
+main()
