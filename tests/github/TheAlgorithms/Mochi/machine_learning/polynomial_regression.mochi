@@ -1,0 +1,173 @@
+/*
+Polynomial regression fits a polynomial y = b0 + b1*x + ... + bm*x^m
+through a set of points using ordinary least squares.
+
+Given predictor values x and responses y, we build the Vandermonde design
+matrix X where each row is [1, x, x^2, ..., x^m].  The optimal coefficient
+vector b satisfies the normal equations (X^T X) b = X^T y.  This program
+constructs X, forms the normal equations and solves them via Gaussian
+elimination.  It then evaluates the resulting polynomial for new points.
+Time complexity is O(n*m^2 + m^3) for n samples and degree m, and space
+complexity is O(n*m).
+*/
+
+fun design_matrix(xs: list<float>, degree: int): list<list<float>> {
+  var i = 0
+  var matrix: list<list<float>> = []
+  while i < len(xs) {
+    var row: list<float> = []
+    var j = 0
+    var pow = 1.0
+    while j <= degree {
+      row = append(row, pow)
+      pow = pow * xs[i]
+      j = j + 1
+    }
+    matrix = append(matrix, row)
+    i = i + 1
+  }
+  return matrix
+}
+
+fun transpose(matrix: list<list<float>>): list<list<float>> {
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var j = 0
+  var result: list<list<float>> = []
+  while j < cols {
+    var row: list<float> = []
+    var i = 0
+    while i < rows {
+      row = append(row, matrix[i][j])
+      i = i + 1
+    }
+    result = append(result, row)
+    j = j + 1
+  }
+  return result
+}
+
+fun matmul(A: list<list<float>>, B: list<list<float>>): list<list<float>> {
+  let n = len(A)
+  let m = len(A[0])
+  let p = len(B[0])
+  var i = 0
+  var result: list<list<float>> = []
+  while i < n {
+    var row: list<float> = []
+    var k = 0
+    while k < p {
+      var sum = 0.0
+      var j = 0
+      while j < m {
+        sum = sum + A[i][j] * B[j][k]
+        j = j + 1
+      }
+      row = append(row, sum)
+      k = k + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun matvec_mul(A: list<list<float>>, v: list<float>): list<float> {
+  let n = len(A)
+  let m = len(A[0])
+  var i = 0
+  var result: list<float> = []
+  while i < n {
+    var sum = 0.0
+    var j = 0
+    while j < m {
+      sum = sum + A[i][j] * v[j]
+      j = j + 1
+    }
+    result = append(result, sum)
+    i = i + 1
+  }
+  return result
+}
+
+fun gaussian_elimination(A: list<list<float>>, b: list<float>): list<float> {
+  let n = len(A)
+  var M: list<list<float>> = []
+  var i = 0
+  while i < n {
+    M = append(M, append(A[i], b[i]))
+    i = i + 1
+  }
+  var k = 0
+  while k < n {
+    var j = k + 1
+    while j < n {
+      let factor = M[j][k] / M[k][k]
+      var rowj = M[j]
+      var rowk = M[k]
+      var l = k
+      while l <= n {
+        rowj[l] = rowj[l] - factor * rowk[l]
+        l = l + 1
+      }
+      M[j] = rowj
+      j = j + 1
+    }
+    k = k + 1
+  }
+  var x: list<float> = []
+  var t = 0
+  while t < n {
+    x = append(x, 0.0)
+    t = t + 1
+  }
+  var i2 = n - 1
+  while i2 >= 0 {
+    var sum = M[i2][n]
+    var j2 = i2 + 1
+    while j2 < n {
+      sum = sum - M[i2][j2] * x[j2]
+      j2 = j2 + 1
+    }
+    x[i2] = sum / M[i2][i2]
+    i2 = i2 - 1
+  }
+  return x
+}
+
+fun predict(xs: list<float>, coeffs: list<float>): list<float> {
+  var i = 0
+  var result: list<float> = []
+  while i < len(xs) {
+    let x = xs[i]
+    var j = 0
+    var pow = 1.0
+    var sum = 0.0
+    while j < len(coeffs) {
+      sum = sum + coeffs[j] * pow
+      pow = pow * x
+      j = j + 1
+    }
+    result = append(result, sum)
+    i = i + 1
+  }
+  return result
+}
+
+let xs: list<float> = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]
+var ys: list<float> = []
+var i = 0
+while i < len(xs) {
+  let x = xs[i]
+  ys = append(ys, x * x * x - 2.0 * x * x + 3.0 * x - 5.0)
+  i = i + 1
+}
+var X = design_matrix(xs, 3)
+var Xt = transpose(X)
+var XtX = matmul(Xt, X)
+var Xty = matvec_mul(Xt, ys)
+let coeffs = gaussian_elimination(XtX, Xty)
+print(str(coeffs))
+print(str(predict([-1.0], coeffs)))
+print(str(predict([-2.0], coeffs)))
+print(str(predict([6.0], coeffs)))
