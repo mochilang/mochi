@@ -1,0 +1,139 @@
+/*
+Base64 Encoding/Decoding (RFC 4648)
+
+This implementation converts a list of byte values into the Base64
+representation using the standard 64-character alphabet. Each byte is
+expanded to 8 binary digits and concatenated. The bit stream is padded
+with zeros so that its length becomes a multiple of 6. Each 6-bit group
+is mapped to a character from the Base64 alphabet. For every two zero
+bits appended, an '=' padding character is added to the output.
+
+Decoding reverses this process: Base64 characters are converted back to
+6-bit numbers, padding bits are removed according to the number of '='
+signs, and the remaining bit stream is split into 8-bit bytes.
+*/
+
+let B64_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+fun to_binary(n: int): string {
+  if n == 0 {
+    return "0"
+  }
+  var num = n
+  var res = ""
+  while num > 0 {
+    let bit = num % 2
+    res = str(bit) + res
+    num = num / 2
+  }
+  return res
+}
+
+fun zfill(s: string, width: int): string {
+  var res = s
+  var pad = width - len(s)
+  while pad > 0 {
+    res = "0" + res
+    pad = pad - 1
+  }
+  return res
+}
+
+fun from_binary(s: string): int {
+  var i = 0
+  var result = 0
+  while i < len(s) {
+    result = result * 2
+    if substring(s, i, i + 1) == "1" {
+      result = result + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun repeat(ch: string, times: int): string {
+  var res = ""
+  var i = 0
+  while i < times {
+    res = res + ch
+    i = i + 1
+  }
+  return res
+}
+
+fun char_index(s: string, c: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == c {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun base64_encode(data: list<int>): string {
+  var bits = ""
+  var i = 0
+  while i < len(data) {
+    bits = bits + zfill(to_binary(data[i]), 8)
+    i = i + 1
+  }
+  var pad_bits = 0
+  if len(bits) % 6 != 0 {
+    pad_bits = 6 - len(bits) % 6
+    bits = bits + repeat("0", pad_bits)
+  }
+  var j = 0
+  var encoded = ""
+  while j < len(bits) {
+    let chunk = substring(bits, j, j + 6)
+    let idx = from_binary(chunk)
+    encoded = encoded + substring(B64_CHARSET, idx, idx + 1)
+    j = j + 6
+  }
+  var pad = pad_bits / 2
+  while pad > 0 {
+    encoded = encoded + "="
+    pad = pad - 1
+  }
+  return encoded
+}
+
+fun base64_decode(s: string): list<int> {
+  var padding = 0
+  var end = len(s)
+  while end > 0 && substring(s, end - 1, end) == "=" {
+    padding = padding + 1
+    end = end - 1
+  }
+  var bits = ""
+  var k = 0
+  while k < end {
+    let c = substring(s, k, k + 1)
+    let idx = char_index(B64_CHARSET, c)
+    bits = bits + zfill(to_binary(idx), 6)
+    k = k + 1
+  }
+  if padding > 0 {
+    bits = substring(bits, 0, len(bits) - padding * 2)
+  }
+  var bytes: list<int> = []
+  var m = 0
+  while m < len(bits) {
+    let byte = from_binary(substring(bits, m, m + 8))
+    bytes = append(bytes, byte)
+    m = m + 8
+  }
+  return bytes
+}
+
+fun main() {
+  let data: list<int> = [77, 111, 99, 104, 105]
+  let encoded = base64_encode(data)
+  print(encoded)
+  json(base64_decode(encoded))
+}
+
+main()
