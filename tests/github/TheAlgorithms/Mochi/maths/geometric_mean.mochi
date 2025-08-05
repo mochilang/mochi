@@ -1,0 +1,90 @@
+/*
+Geometric Mean Calculator
+------------------------
+Given a list of numbers, compute their geometric mean, defined as the n-th
+root of the product of the numbers. The algorithm multiplies all inputs to
+obtain the product and then computes its n-th root using Newton's method.
+If the product is negative while the count of numbers is even, the geometric
+mean is undefined and the function panics. Negative products with odd counts
+produce a negative result. To reduce floating-point rounding issues, the
+result is rounded and verified against the original product.
+*/
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun pow_int(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun nth_root(x: float, n: int): float {
+  if x == 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    var denom = pow_int(guess, n - 1)
+    guess = ((n - 1) as float * guess + x / denom) / (n as float)
+    i = i + 1
+  }
+  return guess
+}
+
+fun round_nearest(x: float): float {
+  if x >= 0.0 {
+    let n = (x + 0.5) as int
+    return n as float
+  }
+  let n = (x - 0.5) as int
+  return n as float
+}
+
+fun compute_geometric_mean(nums: list<float>): float {
+  if len(nums) == 0 { panic("no numbers") }
+  var product = 1.0
+  var i = 0
+  while i < len(nums) {
+    product = product * nums[i]
+    i = i + 1
+  }
+  if product < 0.0 && len(nums) % 2 == 0 {
+    panic("Cannot Compute Geometric Mean for these numbers.")
+  }
+  var mean = nth_root(abs(product), len(nums))
+  if product < 0.0 {
+    mean = -mean
+  }
+  let possible = round_nearest(mean)
+  if pow_int(possible, len(nums)) == product {
+    mean = possible
+  }
+  return mean
+}
+
+fun test_compute_geometric_mean() {
+  let eps = 0.0001
+  let m1 = compute_geometric_mean([2.0, 8.0])
+  if abs(m1 - 4.0) > eps { panic("test1 failed") }
+  let m2 = compute_geometric_mean([5.0, 125.0])
+  if abs(m2 - 25.0) > eps { panic("test2 failed") }
+  let m3 = compute_geometric_mean([1.0, 0.0])
+  if abs(m3 - 0.0) > eps { panic("test3 failed") }
+  let m4 = compute_geometric_mean([1.0, 5.0, 25.0, 5.0])
+  if abs(m4 - 5.0) > eps { panic("test4 failed") }
+  let m5 = compute_geometric_mean([-5.0, 25.0, 1.0])
+  if abs(m5 + 5.0) > eps { panic("test5 failed") }
+}
+
+fun main() {
+  test_compute_geometric_mean()
+  print(compute_geometric_mean([-3.0, -27.0]))
+}
+
+main()
