@@ -1,0 +1,108 @@
+/*
+Similarity Search and Cosine Similarity
+
+This module provides basic vector operations used in machine learning.
+Given a dataset of vectors and a set of query vectors, similarity_search
+finds for each query the nearest vector in the dataset using Euclidean
+distance.  The result for each query includes the closest vector and the
+distance to it.
+
+The Euclidean distance is computed as the square root of the sum of
+squared differences.  Cosine similarity measures the cosine of the angle
+between two vectors and is computed as the dot product divided by the
+product of their magnitudes.
+*/
+
+type Neighbor {
+  vector: list<float>,
+  distance: float,
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun euclidean(a: list<float>, b: list<float>): float {
+  var sum: float = 0.0
+  var i = 0
+  while i < len(a) {
+    let diff = a[i] - b[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  let res = sqrt(sum)
+  return res
+}
+
+fun similarity_search(dataset: list<list<float>>, value_array: list<list<float>>): list<Neighbor> {
+  let dim = len(dataset[0])
+  if dim != len(value_array[0]) {
+    return []
+  }
+  var result: list<Neighbor> = []
+  var i = 0
+  while i < len(value_array) {
+    let value = value_array[i]
+    var dist: float = euclidean(value, dataset[0])
+    var vec: list<float> = dataset[0]
+    var j = 1
+    while j < len(dataset) {
+      let d: float = euclidean(value, dataset[j])
+      if d < dist {
+        dist = d
+        vec = dataset[j]
+      }
+      j = j + 1
+    }
+    let nb = Neighbor{ vector: vec, distance: dist }
+    result = append(result, nb)
+    i = i + 1
+  }
+  return result
+}
+
+fun cosine_similarity(a: list<float>, b: list<float>): float {
+  var dot = 0.0
+  var norm_a = 0.0
+  var norm_b = 0.0
+  var i = 0
+  while i < len(a) {
+    dot = dot + a[i] * b[i]
+    norm_a = norm_a + a[i] * a[i]
+    norm_b = norm_b + b[i] * b[i]
+    i = i + 1
+  }
+  if norm_a == 0.0 || norm_b == 0.0 {
+    return 0.0
+  }
+  return dot / (sqrt(norm_a) * sqrt(norm_b))
+}
+
+let dataset = [
+  [0.0, 0.0, 0.0],
+  [1.0, 1.0, 1.0],
+  [2.0, 2.0, 2.0]
+]
+
+let value_array = [
+  [0.0, 0.0, 0.0],
+  [0.0, 0.0, 1.0]
+]
+
+let neighbors = similarity_search(dataset, value_array)
+var k = 0
+while k < len(neighbors) {
+  let n = neighbors[k]
+  print("[" + str(n.vector) + ", " + str(n.distance) + "]")
+  k = k + 1
+}
+
+print(str(cosine_similarity([1.0, 2.0], [6.0, 32.0])))
+
