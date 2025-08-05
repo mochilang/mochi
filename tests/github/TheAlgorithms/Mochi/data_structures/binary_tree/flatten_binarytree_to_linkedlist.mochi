@@ -1,0 +1,74 @@
+/*
+Flatten a binary tree into a right-skewed linked list.
+
+Each node's left child pointer is set to null and its right child
+pointer points to the next node in preorder. The algorithm works
+by visiting nodes in preorder, collecting their values, and
+reconstructing the traversal as a linear list. A small example tree
+is built and the flattened order is displayed.
+*/
+
+var node_data: list<int> = [0] as list<int>
+var left_child: list<int> = [0] as list<int>
+var right_child: list<int> = [0] as list<int>
+
+fun new_node(value: int): int {
+  node_data = append(node_data, value)
+  left_child = append(left_child, 0)
+  right_child = append(right_child, 0)
+  return len(node_data) - 1
+}
+
+fun build_tree(): int {
+  let root = new_node(1)
+  let n2 = new_node(2)
+  let n5 = new_node(5)
+  let n3 = new_node(3)
+  let n4 = new_node(4)
+  let n6 = new_node(6)
+  left_child[root] = n2
+  right_child[root] = n5
+  left_child[n2] = n3
+  right_child[n2] = n4
+  right_child[n5] = n6
+  return root
+}
+
+fun flatten(root: int): list<int> {
+  if root == 0 {
+    return [] as list<int>
+  }
+  var res: list<int> = [node_data[root]] as list<int>
+  let left_vals = flatten(left_child[root])
+  let right_vals = flatten(right_child[root])
+  var i = 0
+  while i < len(left_vals) {
+    res = append(res, left_vals[i])
+    i = i + 1
+  }
+  i = 0
+  while i < len(right_vals) {
+    res = append(res, right_vals[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun display(values: list<int>): void {
+  var s = ""
+  var i = 0
+  while i < len(values) {
+    if i == 0 {
+      s = str(values[i])
+    } else {
+      s = s + " " + str(values[i])
+    }
+    i = i + 1
+  }
+  print(s)
+}
+
+print("Flattened Linked List:")
+let root = build_tree()
+let vals = flatten(root)
+display(vals)
