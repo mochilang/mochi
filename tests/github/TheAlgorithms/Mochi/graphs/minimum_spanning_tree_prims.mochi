@@ -1,0 +1,114 @@
+/*
+Compute a Minimum Spanning Tree (MST) of a connected, undirected
+weighted graph using Prim's algorithm.
+
+Prim's algorithm grows the spanning tree from an arbitrary start
+vertex by repeatedly selecting the minimum weight edge connecting a
+vertex inside the tree to a vertex outside. The implementation below
+uses arrays to track the cheapest edge to each vertex and a simple
+scan to select the next vertex (no priority queue is required).
+
+Steps:
+1. Start with vertex 0 in the tree. Initialize distances of all
+   vertices to a large value except the start vertex which is 0.
+2. Repeatedly pick the unvisited vertex with the smallest distance,
+   add the edge (parent -> vertex) to the MST, and update its
+   neighbors' distances and parents.
+3. After processing all vertices, the collected edges form an MST.
+
+Time complexity: O(V^2) for V vertices due to the linear scan for the
+minimum.
+*/
+
+type Edge {
+  to: int
+  weight: int
+}
+
+type Pair {
+  u: int
+  v: int
+}
+
+let INF = 1000000000
+
+fun pairs_to_string(edges: list<Pair>): string {
+  var s = "["
+  var i = 0
+  while i < len(edges) {
+    let e = edges[i]
+    s = s + "(" + str(e.u) + ", " + str(e.v) + ")"
+    if i < len(edges) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun prim_mst(graph: list<list<Edge>>): list<Pair> {
+  let n = len(graph)
+  var visited: list<bool> = []
+  var dist: list<int> = []
+  var parent: list<int> = []
+  var i = 0
+  while i < n {
+    visited = append(visited, false)
+    dist = append(dist, INF)
+    parent = append(parent, -1)
+    i = i + 1
+  }
+
+  dist[0] = 0
+  var result: list<Pair> = []
+  var count = 0
+  while count < n {
+    var min_val = INF
+    var u = 0
+    var v = 0
+    while v < n {
+      if visited[v] == false && dist[v] < min_val {
+        min_val = dist[v]
+        u = v
+      }
+      v = v + 1
+    }
+    if min_val == INF {
+      break
+    }
+    visited[u] = true
+    if u != 0 {
+      result = append(result, Pair { u: parent[u], v: u })
+    }
+    for e in graph[u] {
+      if visited[e.to] == false && e.weight < dist[e.to] {
+        dist[e.to] = e.weight
+        parent[e.to] = u
+      }
+    }
+    count = count + 1
+  }
+  return result
+}
+
+let adjacency_list: list<list<Edge>> = [
+  [Edge { to: 1, weight: 1 }, Edge { to: 3, weight: 3 }],
+  [
+    Edge { to: 0, weight: 1 },
+    Edge { to: 2, weight: 6 },
+    Edge { to: 3, weight: 5 },
+    Edge { to: 4, weight: 1 }
+  ],
+  [Edge { to: 1, weight: 6 }, Edge { to: 4, weight: 5 }, Edge { to: 5, weight: 2 }],
+  [Edge { to: 0, weight: 3 }, Edge { to: 1, weight: 5 }, Edge { to: 4, weight: 1 }],
+  [
+    Edge { to: 1, weight: 1 },
+    Edge { to: 2, weight: 5 },
+    Edge { to: 3, weight: 1 },
+    Edge { to: 5, weight: 4 }
+  ],
+  [Edge { to: 2, weight: 2 }, Edge { to: 4, weight: 4 }]
+]
+
+let mst_edges = prim_mst(adjacency_list)
+print(pairs_to_string(mst_edges))
