@@ -1,0 +1,95 @@
+/*
+Determine whether a positive integer is an Armstrong number.
+
+An Armstrong number (also known as a narcissistic or pluperfect number)
+equals the sum of its digits each raised to the power of the total number
+of digits. Three equivalent checks are implemented:
+
+- `armstrong_number` iterates over the digits and accumulates each digit
+  raised to the digit count.
+- `pluperfect_number` counts how often each digit appears and multiplies
+  that count by the digit raised to the digit count.
+- `narcissistic_number` computes the same property using a direct sum.
+
+All functions run in O(d) time where d is the number of digits in `n`.
+*/
+
+fun pow_int(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun armstrong_number(n: int): bool {
+  if n < 1 { return false }
+  var digits = 0
+  var temp = n
+  while temp > 0 {
+    temp = temp / 10
+    digits = digits + 1
+  }
+  var total = 0
+  temp = n
+  while temp > 0 {
+    let rem = temp % 10
+    total = total + pow_int(rem, digits)
+    temp = temp / 10
+  }
+  return total == n
+}
+
+fun pluperfect_number(n: int): bool {
+  if n < 1 { return false }
+  var digit_histogram: list<int> = []
+  var i = 0
+  while i < 10 {
+    digit_histogram = append(digit_histogram, 0)
+    i = i + 1
+  }
+  var digit_total = 0
+  var temp = n
+  while temp > 0 {
+    let rem = temp % 10
+    digit_histogram[rem] = digit_histogram[rem] + 1
+    digit_total = digit_total + 1
+    temp = temp / 10
+  }
+  var total = 0
+  i = 0
+  while i < 10 {
+    if digit_histogram[i] > 0 {
+      total = total + digit_histogram[i] * pow_int(i, digit_total)
+    }
+    i = i + 1
+  }
+  return total == n
+}
+
+fun narcissistic_number(n: int): bool {
+  if n < 1 { return false }
+  var digits = 0
+  var temp = n
+  while temp > 0 {
+    temp = temp / 10
+    digits = digits + 1
+  }
+  temp = n
+  var total = 0
+  while temp > 0 {
+    let rem = temp % 10
+    total = total + pow_int(rem, digits)
+    temp = temp / 10
+  }
+  return total == n
+}
+
+print(armstrong_number(371))
+print(armstrong_number(200))
+print(pluperfect_number(371))
+print(pluperfect_number(200))
+print(narcissistic_number(371))
+print(narcissistic_number(200))
