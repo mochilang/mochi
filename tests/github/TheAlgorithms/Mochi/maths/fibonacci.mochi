@@ -1,0 +1,182 @@
+/*
+Fibonacci Sequence Implementations
+----------------------------------
+This module re-implements several approaches from TheAlgorithms' Python
+`maths/fibonacci.py` in Mochi.  The Fibonacci sequence is defined by
+F(0)=0, F(1)=1 and F(n)=F(n-1)+F(n-2) for n>1.  The file provides:
+
+1. fib_iterative(n) - builds the first n Fibonacci numbers using iteration.
+2. fib_recursive(n) - recursively computes the sequence without caching.
+3. fib_recursive_cached(n) - recursion with a global memoization map.
+4. fib_memoization(n) - explicit dictionary-based memoization.
+5. fib_binet(n) - uses a simplified Binet formula based on floating point
+   arithmetic (limited precision).
+6. fib_matrix(n) - computes F(n) via fast 2x2 matrix exponentiation using
+   binary exponentiation.
+
+All routines avoid foreign function interfaces so they can run on
+runtime/vm.  Basic tests at the end verify that the different methods agree
+on the first few Fibonacci numbers.
+*/
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun powf(x: float, n: int): float {
+  var res = 1.0
+  var i = 0
+  while i < n {
+    res = res * x
+    i = i + 1
+  }
+  return res
+}
+
+fun roundf(x: float): int {
+  if x >= 0.0 {
+    return (x + 0.5) as int
+  }
+  return (x - 0.5) as int
+}
+
+fun fib_iterative(n: int): list<int> {
+  if n < 0 { panic("n is negative") }
+  if n == 0 { return [0] }
+  var fib: list<int> = [0, 1]
+  var i = 2
+  while i <= n {
+    fib = append(fib, fib[i - 1] + fib[i - 2])
+    i = i + 1
+  }
+  return fib
+}
+
+fun fib_recursive_term(i: int): int {
+  if i < 0 { panic("n is negative") }
+  if i < 2 { return i }
+  return fib_recursive_term(i - 1) + fib_recursive_term(i - 2)
+}
+
+fun fib_recursive(n: int): list<int> {
+  if n < 0 { panic("n is negative") }
+  var res: list<int> = []
+  var i = 0
+  while i <= n {
+    res = append(res, fib_recursive_term(i))
+    i = i + 1
+  }
+  return res
+}
+
+var fib_cache_global: map<int, int> = {}
+
+fun fib_recursive_cached_term(i: int): int {
+  if i < 0 { panic("n is negative") }
+  if i < 2 { return i }
+  if i in fib_cache_global { return fib_cache_global[i] }
+  let val = fib_recursive_cached_term(i - 1) + fib_recursive_cached_term(i - 2)
+  fib_cache_global[i] = val
+  return val
+}
+
+fun fib_recursive_cached(n: int): list<int> {
+  if n < 0 { panic("n is negative") }
+  var res: list<int> = []
+  var j = 0
+  while j <= n {
+    res = append(res, fib_recursive_cached_term(j))
+    j = j + 1
+  }
+  return res
+}
+
+var fib_memo_cache: map<int, int> = {0: 0, 1: 1, 2: 1}
+
+fun fib_memoization_term(num: int): int {
+  if num in fib_memo_cache { return fib_memo_cache[num] }
+  let value = fib_memoization_term(num - 1) + fib_memoization_term(num - 2)
+  fib_memo_cache[num] = value
+  return value
+}
+
+fun fib_memoization(n: int): list<int> {
+  if n < 0 { panic("n is negative") }
+  var out: list<int> = []
+  var i = 0
+  while i <= n {
+    out = append(out, fib_memoization_term(i))
+    i = i + 1
+  }
+  return out
+}
+
+fun fib_binet(n: int): list<int> {
+  if n < 0 { panic("n is negative") }
+  if n >= 1475 { panic("n is too large") }
+  let sqrt5 = sqrt(5.0)
+  let phi = (1.0 + sqrt5) / 2.0
+  var res: list<int> = []
+  var i = 0
+  while i <= n {
+    let val = roundf(powf(phi, i) / sqrt5)
+    res = append(res, val)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_mul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  let a00 = a[0][0] * b[0][0] + a[0][1] * b[1][0]
+  let a01 = a[0][0] * b[0][1] + a[0][1] * b[1][1]
+  let a10 = a[1][0] * b[0][0] + a[1][1] * b[1][0]
+  let a11 = a[1][0] * b[0][1] + a[1][1] * b[1][1]
+  return [[a00, a01], [a10, a11]]
+}
+
+fun matrix_pow(m: list<list<int>>, power: int): list<list<int>> {
+  if power < 0 { panic("power is negative") }
+  var result: list<list<int>> = [[1,0],[0,1]]
+  var base = m
+  var p = power
+  while p > 0 {
+    if p % 2 == 1 { result = matrix_mul(result, base) }
+    base = matrix_mul(base, base)
+    p = (p / 2) as int
+  }
+  return result
+}
+
+fun fib_matrix(n: int): int {
+  if n < 0 { panic("n is negative") }
+  if n == 0 { return 0 }
+  let m = [[1,1],[1,0]]
+  let res = matrix_pow(m, n - 1)
+  return res[0][0]
+}
+
+fun run_tests(): int {
+  let expected: list<int> = [0,1,1,2,3,5,8,13,21,34,55]
+  let it = fib_iterative(10)
+  let rec = fib_recursive(10)
+  let cache = fib_recursive_cached(10)
+  let memo = fib_memoization(10)
+  let bin = fib_binet(10)
+  let m = fib_matrix(10)
+  if it != expected { panic("iterative failed") }
+  if rec != expected { panic("recursive failed") }
+  if cache != expected { panic("cached failed") }
+  if memo != expected { panic("memoization failed") }
+  if bin != expected { panic("binet failed") }
+  if m != 55 { panic("matrix failed") }
+  return m
+}
+
+print(str(run_tests()))
