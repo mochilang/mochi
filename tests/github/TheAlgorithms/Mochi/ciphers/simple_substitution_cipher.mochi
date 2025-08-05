@@ -1,0 +1,161 @@
+/*
+  Simple Substitution Cipher
+
+  This cipher replaces each plaintext letter with a corresponding letter
+  from a substitution key.  The key must be a permutation of the alphabet
+  so that every letter is mapped to a unique substitute.  To encrypt a
+  message, each alphabetic character is looked up in the reference alphabet
+  and replaced by the character at the same index in the key.  Decryption
+  performs the reverse mapping.  Non-alphabetic characters are passed
+  through unchanged, and the original case of each letter is preserved.
+
+  The implementation below also includes a basic check that a key is valid
+  (contains every letter exactly once) and a simple pseudo random key
+  generator using a linear congruential generator and the Fisher–Yates
+  shuffle.  All logic is written in pure Mochi.
+*/
+
+let LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LOWERCASE = "abcdefghijklmnopqrstuvwxyz"
+var seed: int = 1
+
+fun rand(n: int): int {
+  seed = (seed * 1664525 + 1013904223) % 2147483647
+  return seed % n
+}
+
+fun get_random_key(): string {
+  var chars: list<string>
+  var i = 0
+  while i < len(LETTERS) {
+    chars = append(chars, LETTERS[i])
+    i = i + 1
+  }
+  var j = len(chars) - 1
+  while j > 0 {
+    let k = rand(j + 1)
+    let tmp = chars[j]
+    chars[j] = chars[k]
+    chars[k] = tmp
+    j = j - 1
+  }
+  var res = ""
+  i = 0
+  while i < len(chars) {
+    res = res + chars[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun check_valid_key(key: string): bool {
+  if len(key) != len(LETTERS) {
+    return false
+  }
+  var used: map<string, bool> = {}
+  var i = 0
+  while i < len(key) {
+    let ch = key[i]
+    if used[ch] {
+      return false
+    }
+    used[ch] = true
+    i = i + 1
+  }
+  i = 0
+  while i < len(LETTERS) {
+    let ch = LETTERS[i]
+    if !used[ch] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun index_in(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun char_to_upper(c: string): string {
+  var i = 0
+  while i < len(LOWERCASE) {
+    if c == LOWERCASE[i] {
+      return LETTERS[i]
+    }
+    i = i + 1
+  }
+  return c
+}
+
+fun char_to_lower(c: string): string {
+  var i = 0
+  while i < len(LETTERS) {
+    if c == LETTERS[i] {
+      return LOWERCASE[i]
+    }
+    i = i + 1
+  }
+  return c
+}
+
+fun is_upper(c: string): bool {
+  var i = 0
+  while i < len(LETTERS) {
+    if c == LETTERS[i] {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun translate_message(key: string, message: string, mode: string): string {
+  var chars_a = LETTERS
+  var chars_b = key
+  if mode == "decrypt" {
+    let tmp = chars_a
+    chars_a = chars_b
+    chars_b = tmp
+  }
+  var translated = ""
+  var i = 0
+  while i < len(message) {
+    let symbol = message[i]
+    let upper_symbol = char_to_upper(symbol)
+    let idx = index_in(chars_a, upper_symbol)
+    if idx >= 0 {
+      let mapped = chars_b[idx]
+      if is_upper(symbol) {
+        translated = translated + mapped
+      } else {
+        translated = translated + char_to_lower(mapped)
+      }
+    } else {
+      translated = translated + symbol
+    }
+    i = i + 1
+  }
+  return translated
+}
+
+fun encrypt_message(key: string, message: string): string {
+  let res = translate_message(key, message, "encrypt")
+  return res
+}
+
+fun decrypt_message(key: string, message: string): string {
+  let res = translate_message(key, message, "decrypt")
+  return res
+}
+
+let key = "LFWOAYUISVKMNXPBDCRJTQEGHZ"
+print(encrypt_message(key, "Harshil Darji"))
+print(decrypt_message(key, "Ilcrism Olcvs"))
