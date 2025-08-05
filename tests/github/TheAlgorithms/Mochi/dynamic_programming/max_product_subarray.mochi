@@ -1,0 +1,45 @@
+/*
+Maximum Product Subarray
+-----------------------
+Given a list of integers, find the largest product of any contiguous
+subarray. The algorithm maintains both the maximum and minimum products
+ending at the current position because a negative number can turn a
+small minimum into a large maximum when multiplied.
+
+For each element:
+1. If it is negative, swap the running maximum and minimum.
+2. Update the running maximum as the greater of the element itself or
+the element times the previous maximum.
+3. Update the running minimum as the lesser of the element itself or
+the element times the previous minimum.
+4. Track the best maximum seen so far.
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+*/
+
+fun max_product_subarray(numbers: list<int>): int {
+  if len(numbers) == 0 { return 0 }
+  var max_till_now = numbers[0]
+  var min_till_now = numbers[0]
+  var max_prod = numbers[0]
+  var i = 1
+  while i < len(numbers) {
+    let number = numbers[i]
+    if number < 0 {
+      let temp = max_till_now
+      max_till_now = min_till_now
+      min_till_now = temp
+    }
+    let prod_max = max_till_now * number
+    if number > prod_max { max_till_now = number } else { max_till_now = prod_max }
+    let prod_min = min_till_now * number
+    if number < prod_min { min_till_now = number } else { min_till_now = prod_min }
+    if max_till_now > max_prod { max_prod = max_till_now }
+    i = i + 1
+  }
+  return max_prod
+}
+
+print(max_product_subarray([2, 3, -2, 4]))
+print(max_product_subarray([-2, 0, -1]))
