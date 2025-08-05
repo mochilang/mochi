@@ -1,0 +1,92 @@
+/*
+Implement the Running Key Cipher, a polyalphabetic substitution where a long
+piece of text acts as the key.  Both plaintext and key are stripped of spaces
+and non-letter characters, then converted to uppercase.  Encryption adds the
+alphabetical index of each plaintext letter to the corresponding key letter
+modulo 26.  Decryption subtracts the key's index.  The operations run in O(n)
+time for a message of length n.
+*/
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOf(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  return "?"
+}
+
+fun clean_text(s: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch >= "A" && ch <= "Z" {
+      out = out + ch
+    } else if ch >= "a" && ch <= "z" {
+      out = out + chr(ord(ch) - 32)
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun running_key_encrypt(key: string, plaintext: string): string {
+  let pt = clean_text(plaintext)
+  let k = clean_text(key)
+  let key_len = len(k)
+  var res = ""
+  let ord_a = ord("A")
+  var i = 0
+  while i < len(pt) {
+    let p = ord(pt[i]) - ord_a
+    let kv = ord(k[i % key_len]) - ord_a
+    let c = (p + kv) % 26
+    res = res + chr(c + ord_a)
+    i = i + 1
+  }
+  return res
+}
+
+fun running_key_decrypt(key: string, ciphertext: string): string {
+  let ct = clean_text(ciphertext)
+  let k = clean_text(key)
+  let key_len = len(k)
+  var res = ""
+  let ord_a = ord("A")
+  var i = 0
+  while i < len(ct) {
+    let c = ord(ct[i]) - ord_a
+    let kv = ord(k[i % key_len]) - ord_a
+    let p = (c - kv + 26) % 26
+    res = res + chr(p + ord_a)
+    i = i + 1
+  }
+  return res
+}
+
+let key = "How does the duck know that? said Victor"
+let plaintext = "DEFEND THIS"
+let ciphertext = running_key_encrypt(key, plaintext)
+print(ciphertext)
+print(running_key_decrypt(key, ciphertext))
