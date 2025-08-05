@@ -1,0 +1,79 @@
+/*
+Binary to Decimal Conversion
+
+Convert a string representing a binary number into its decimal integer value.
+The input may include leading and trailing whitespace and an optional leading
+minus sign. Any other characters cause the function to panic.
+
+Algorithm:
+1. Trim surrounding whitespace from the input string.
+2. If the string is empty, panic as there is no value to convert.
+3. If the first character is '-', remember that the result is negative and
+   remove the sign from the working string.
+4. Verify that every remaining character is either '0' or '1'.
+5. Starting with an accumulator of zero, for each character multiply the
+   accumulator by two and add the digit's numeric value.
+6. Return the accumulator, negated if the original string indicated a
+   negative number.
+
+This procedure runs in O(n) time and O(1) additional space where n is the
+length of the binary string.
+*/
+
+fun trim(s: string): string {
+  var start = 0
+  while start < len(s) {
+    let ch = s[start:start+1]
+    if ch != " " && ch != "\n" && ch != "\t" && ch != "\r" {
+      break
+    }
+    start = start + 1
+  }
+  var end = len(s)
+  while end > start {
+    let ch = s[end-1:end]
+    if ch != " " && ch != "\n" && ch != "\t" && ch != "\r" {
+      break
+    }
+    end = end - 1
+  }
+  return substring(s, start, end)
+}
+
+fun bin_to_decimal(bin_string: string): int {
+  let trimmed = trim(bin_string)
+  if trimmed == "" {
+    panic("Empty string was passed to the function")
+  }
+  var is_negative = false
+  var s = trimmed
+  if s[0:1] == "-" {
+    is_negative = true
+    s = substring(s, 1, len(s))
+  }
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c != "0" && c != "1" {
+      panic("Non-binary value was passed to the function")
+    }
+    i = i + 1
+  }
+  var decimal_number = 0
+  i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    let digit = c as int
+    decimal_number = 2 * decimal_number + digit
+    i = i + 1
+  }
+  if is_negative {
+    return -decimal_number
+  }
+  return decimal_number
+}
+
+print(str(bin_to_decimal("101")))
+print(str(bin_to_decimal(" 1010   ")))
+print(str(bin_to_decimal("-11101")))
+print(str(bin_to_decimal("0")))
