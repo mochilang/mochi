@@ -1,0 +1,248 @@
+/*
+Hamming Code Encoder and Decoder
+
+Implements Hamming code for error detection and correction in binary messages. Parity bits are inserted at positions that are powers of two and each covers bits whose indices contain a 1 in the corresponding binary position. Encoding scans the data bits and computes parity bits using modulo-2 sums. Decoding recomputes these parity bits from the received word to verify integrity. The example encodes a text message and shows detection of a single-bit error.
+
+The algorithm runs in O((m + r) * r) time where m is the number of data bits and r is the number of parity bits, since each parity bit examines the entire codeword. Space usage is O(m + r).
+*/
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = index_of(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = index_of(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  return "?"
+}
+
+fun text_to_bits(text: string): string {
+  var bits = ""
+  var i = 0
+  while i < len(text) {
+    let code = ord(text[i])
+    var j = 7
+    while j >= 0 {
+      let p = pow2(j)
+      if ((code / p) % 2) == 1 {
+        bits = bits + "1"
+      } else {
+        bits = bits + "0"
+      }
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return bits
+}
+
+fun text_from_bits(bits: string): string {
+  var text = ""
+  var i = 0
+  while i < len(bits) {
+    var code = 0
+    var j = 0
+    while j < 8 && i + j < len(bits) {
+      code = code * 2
+      if bits[i + j] == "1" { code = code + 1 }
+      j = j + 1
+    }
+    text = text + chr(code)
+    i = i + 8
+  }
+  return text
+}
+
+fun bool_to_string(b: bool): string {
+  if b { return "True" }
+  return "False"
+}
+
+fun string_to_bitlist(s: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(s) {
+    if s[i] == "1" {
+      res = append(res, 1)
+    } else {
+      res = append(res, 0)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun bitlist_to_string(bits: list<int>): string {
+  var s = ""
+  var i = 0
+  while i < len(bits) {
+    if bits[i] == 1 {
+      s = s + "1"
+    } else {
+      s = s + "0"
+    }
+    i = i + 1
+  }
+  return s
+}
+
+fun is_power_of_two(x: int): bool {
+  if x < 1 { return false }
+  var p = 1
+  while p < x { p = p * 2 }
+  return p == x
+}
+
+fun list_eq(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun pow2(e: int): int {
+  var res = 1
+  var i = 0
+  while i < e {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun has_bit(n: int, b: int): bool {
+  let p = pow2(b)
+  if ((n / p) % 2) == 1 {
+    return true
+  }
+  return false
+}
+
+type DecodeResult { data: list<int>, ack: bool }
+
+fun hamming_encode(r: int, data_bits: list<int>): list<int> {
+  let total = r + len(data_bits)
+  var data_ord: list<int> = []
+  var cont_data = 0
+  var x = 1
+  while x <= total {
+    if is_power_of_two(x) {
+      data_ord = append(data_ord, -1)
+    } else {
+      data_ord = append(data_ord, data_bits[cont_data])
+      cont_data = cont_data + 1
+    }
+    x = x + 1
+  }
+
+  var parity: list<int> = []
+  var bp = 0
+  while bp < r {
+    var cont_bo = 0
+    var j = 0
+    while j < len(data_ord) {
+      let bit = data_ord[j]
+      if bit >= 0 {
+        let pos = j + 1
+        if has_bit(pos, bp) && bit == 1 {
+          cont_bo = cont_bo + 1
+        }
+      }
+      j = j + 1
+    }
+    parity = append(parity, cont_bo % 2)
+    bp = bp + 1
+  }
+
+  var result: list<int> = []
+  var cont_bp = 0
+  var i = 0
+  while i < len(data_ord) {
+    if data_ord[i] < 0 {
+      result = append(result, parity[cont_bp])
+      cont_bp = cont_bp + 1
+    } else {
+      result = append(result, data_ord[i])
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun hamming_decode(r: int, code: list<int>): DecodeResult {
+  var data_output: list<int> = []
+  var parity_received: list<int> = []
+  var i = 1
+  var idx = 0
+  while i <= len(code) {
+    if is_power_of_two(i) {
+      parity_received = append(parity_received, code[idx])
+    } else {
+      data_output = append(data_output, code[idx])
+    }
+    idx = idx + 1
+    i = i + 1
+  }
+
+  let recomputed = hamming_encode(r, data_output)
+  var parity_calc: list<int> = []
+  var j = 0
+  while j < len(recomputed) {
+    if is_power_of_two(j + 1) {
+      parity_calc = append(parity_calc, recomputed[j])
+    }
+    j = j + 1
+  }
+
+  let ack = list_eq(parity_received, parity_calc)
+  return DecodeResult{ data: data_output, ack: ack }
+}
+
+fun main() {
+  let sizePari = 4
+  let be = 2
+  let text = "Message01"
+  let binary = text_to_bits(text)
+  print("Text input in binary is '" + binary + "'")
+  let data_bits = string_to_bitlist(binary)
+  let encoded = hamming_encode(sizePari, data_bits)
+  print("Data converted ----------> " + bitlist_to_string(encoded))
+  let decoded = hamming_decode(sizePari, encoded)
+  print("Data receive ------------> " + bitlist_to_string(decoded.data) + " -- Data integrity: " + bool_to_string(decoded.ack))
+  var corrupted: list<int> = []
+  var i = 0
+  while i < len(encoded) {
+    corrupted = append(corrupted, encoded[i])
+    i = i + 1
+  }
+  let pos = be - 1
+  if corrupted[pos] == 0 {
+    corrupted[pos] = 1
+  } else {
+    corrupted[pos] = 0
+  }
+  let decoded_err = hamming_decode(sizePari, corrupted)
+  print("Data receive (error) ----> " + bitlist_to_string(decoded_err.data) + " -- Data integrity: " + bool_to_string(decoded_err.ack))
+}
+
+main()
