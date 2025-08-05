@@ -1,0 +1,50 @@
+/*
+Convert a base-10 integer to its hexadecimal string representation.
+
+Algorithm:
+1. Determine if the input is negative and work with its absolute value.
+2. Repeatedly divide the number by 16, using the remainder to select
+   the corresponding hexadecimal digit (0-9 or a-f).
+3. Prepend each digit to build the hexadecimal result.
+4. Add the "0x" prefix and a leading minus sign if the original number
+   was negative.
+
+This runs in O(log_{16}(n)) time where n is the magnitude of the input
+and uses O(1) additional space beyond the output string.
+*/
+
+let values: list<string> = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]
+
+fun decimal_to_hexadecimal(decimal: int): string {
+  var num = decimal
+  var negative = false
+  if num < 0 {
+    negative = true
+    num = -num
+  }
+  if num == 0 {
+    if negative {
+      return "-0x0"
+    }
+    return "0x0"
+  }
+  var hex = ""
+  while num > 0 {
+    let remainder = num % 16
+    hex = values[remainder] + hex
+    num = num / 16
+  }
+  if negative {
+    return "-0x" + hex
+  }
+  return "0x" + hex
+}
+
+print(decimal_to_hexadecimal(5))
+print(decimal_to_hexadecimal(15))
+print(decimal_to_hexadecimal(37))
+print(decimal_to_hexadecimal(255))
+print(decimal_to_hexadecimal(4096))
+print(decimal_to_hexadecimal(999098))
+print(decimal_to_hexadecimal(-256))
+print(decimal_to_hexadecimal(0))
