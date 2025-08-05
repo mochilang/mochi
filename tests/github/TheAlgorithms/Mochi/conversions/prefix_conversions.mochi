@@ -1,0 +1,54 @@
+/*
+Convert between metric (SI) and binary unit prefixes.
+
+This module defines two maps for prefix exponents.  `convert_si_prefix`
+converts an amount from one SI prefix to another by subtracting their
+base-10 exponents and multiplying by 10 raised to that difference.
+`convert_binary_prefix` performs an analogous conversion for binary
+prefixes: the difference of base-2 exponents is multiplied by ten and the
+amount is scaled by 2 to that power.  Inputs are case-insensitive strings
+identifying the prefix names.
+*/
+
+let SI_UNITS: map<string, int> = {"yotta": 24, "zetta": 21, "exa": 18, "peta": 15, "tera": 12, "giga": 9, "mega": 6, "kilo": 3, "hecto": 2, "deca": 1, "deci": -1, "centi": -2, "milli": -3, "micro": -6, "nano": -9, "pico": -12, "femto": -15, "atto": -18, "zepto": -21, "yocto": -24}
+
+let BINARY_UNITS: map<string, int> = {"yotta": 8, "zetta": 7, "exa": 6, "peta": 5, "tera": 4, "giga": 3, "mega": 2, "kilo": 1}
+
+fun pow(base: float, exp: int): float {
+  if exp == 0 { return 1.0 }
+  var e = exp
+  if e < 0 { e = -e }
+  var result = 1.0
+  var i = 0
+  while i < e {
+    result = result * base
+    i = i + 1
+  }
+  if exp < 0 { return 1.0 / result }
+  return result
+}
+
+fun convert_si_prefix(known_amount: float, known_prefix: string, unknown_prefix: string): float {
+  let kp = lower(known_prefix)
+  let up = lower(unknown_prefix)
+  if !(kp in SI_UNITS) { panic("unknown prefix: " + known_prefix) }
+  if !(up in SI_UNITS) { panic("unknown prefix: " + unknown_prefix) }
+  let diff = SI_UNITS[kp] - SI_UNITS[up]
+  return known_amount * pow(10.0, diff)
+}
+
+fun convert_binary_prefix(known_amount: float, known_prefix: string, unknown_prefix: string): float {
+  let kp = lower(known_prefix)
+  let up = lower(unknown_prefix)
+  if !(kp in BINARY_UNITS) { panic("unknown prefix: " + known_prefix) }
+  if !(up in BINARY_UNITS) { panic("unknown prefix: " + unknown_prefix) }
+  let diff = (BINARY_UNITS[kp] - BINARY_UNITS[up]) * 10
+  return known_amount * pow(2.0, diff)
+}
+
+print(str(convert_si_prefix(1.0, "giga", "mega")))
+print(str(convert_si_prefix(1.0, "mega", "giga")))
+print(str(convert_si_prefix(1.0, "kilo", "kilo")))
+print(str(convert_binary_prefix(1.0, "giga", "mega")))
+print(str(convert_binary_prefix(1.0, "mega", "giga")))
+print(str(convert_binary_prefix(1.0, "kilo", "kilo")))
