@@ -1,0 +1,73 @@
+/*
+Polynomial Evaluation
+---------------------
+Given the coefficients of a polynomial in ascending order of degree,
+these routines compute the polynomial's value at a specific point `x`.
+Two methods are provided:
+
+1. evaluate_poly(poly, x): Directly computes \sum c_i * x^i.
+   It uses a helper `pow_float` to perform exponentiation via repeated
+   multiplication. This mirrors the straightforward algorithm with
+   O(n) multiplications and explicit powers.
+
+2. horner(poly, x): Implements Horner's method, which avoids explicit
+   exponentiation by iteratively accumulating the result from highest to
+   lowest degree using only multiplication and addition. This method
+   evaluates the polynomial in O(n) time and is numerically stable.
+
+Both functions operate purely within Mochi's capabilities and avoid FFI.
+The main function demonstrates usage and prints the value of the sample
+polynomial using both approaches.
+*/
+
+fun pow_float(base: float, exponent: int): float {
+  var exp = exponent
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun evaluate_poly(poly: list<float>, x: float): float {
+  var total = 0.0
+  var i = 0
+  while i < len(poly) {
+    total = total + poly[i] * pow_float(x, i)
+    i = i + 1
+  }
+  return total
+}
+
+fun horner(poly: list<float>, x: float): float {
+  var result = 0.0
+  var i = len(poly) - 1
+  while i >= 0 {
+    result = result * x + poly[i]
+    i = i - 1
+  }
+  return result
+}
+
+fun test_polynomial_evaluation() {
+  let poly: list<float> = [0.0, 0.0, 5.0, 9.3, 7.0]
+  let x = 10.0
+  if evaluate_poly(poly, x) != 79800.0 {
+    panic("evaluate_poly failed")
+  }
+  if horner(poly, x) != 79800.0 {
+    panic("horner failed")
+  }
+}
+
+fun main() {
+  test_polynomial_evaluation()
+  let poly: list<float> = [0.0, 0.0, 5.0, 9.3, 7.0]
+  let x = 10.0
+  print(evaluate_poly(poly, x))
+  print(horner(poly, x))
+}
+
+main()
