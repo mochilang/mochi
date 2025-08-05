@@ -1,0 +1,224 @@
+/*
+Implement a minimal Long Short-Term Memory (LSTM) network for time
+series prediction.  The program constructs training samples from a
+sequence of numbers, trains an LSTM with a single hidden unit using
+backpropagation through time, and predicts the next value in the
+sequence.  The network uses the standard LSTM equations for the input,
+forget, output, and candidate gates.  Gradients are computed manually
+and the weights are updated with simple gradient descent.  This example
+illustrates the core mechanics of an LSTM without relying on external
+libraries.
+*/
+
+type LSTMWeights {
+  w_i: float,
+  u_i: float,
+  b_i: float,
+  w_f: float,
+  u_f: float,
+  b_f: float,
+  w_o: float,
+  u_o: float,
+  b_o: float,
+  w_c: float,
+  u_c: float,
+  b_c: float,
+  w_y: float,
+  b_y: float,
+}
+
+type LSTMState {
+  i: list<float>,
+  f: list<float>,
+  o: list<float>,
+  g: list<float>,
+  c: list<float>,
+  h: list<float>,
+}
+
+type Samples {
+  x: list<list<float>>,
+  y: list<float>,
+}
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var n: int = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + exp_approx(-x))
+}
+
+fun tanh_approx(x: float): float {
+  let e = exp_approx(2.0 * x)
+  return (e - 1.0) / (e + 1.0)
+}
+
+fun forward(seq: list<float>, w: LSTMWeights): LSTMState {
+  var i_arr: list<float> = []
+  var f_arr: list<float> = []
+  var o_arr: list<float> = []
+  var g_arr: list<float> = []
+  var c_arr: list<float> = [0.0]
+  var h_arr: list<float> = [0.0]
+  var t: int = 0
+  while t < len(seq) {
+    let x = seq[t]
+    let h_prev = h_arr[t]
+    let c_prev = c_arr[t]
+    let i_t = sigmoid(w.w_i * x + w.u_i * h_prev + w.b_i)
+    let f_t = sigmoid(w.w_f * x + w.u_f * h_prev + w.b_f)
+    let o_t = sigmoid(w.w_o * x + w.u_o * h_prev + w.b_o)
+    let g_t = tanh_approx(w.w_c * x + w.u_c * h_prev + w.b_c)
+    let c_t = f_t * c_prev + i_t * g_t
+    let h_t = o_t * tanh_approx(c_t)
+    i_arr = append(i_arr, i_t)
+    f_arr = append(f_arr, f_t)
+    o_arr = append(o_arr, o_t)
+    g_arr = append(g_arr, g_t)
+    c_arr = append(c_arr, c_t)
+    h_arr = append(h_arr, h_t)
+    t = t + 1
+  }
+  return LSTMState { i: i_arr, f: f_arr, o: o_arr, g: g_arr, c: c_arr, h: h_arr }
+}
+
+fun backward(seq: list<float>, target: float, w: LSTMWeights, s: LSTMState, lr: float): LSTMWeights {
+  var dw_i: float = 0.0
+  var du_i: float = 0.0
+  var db_i: float = 0.0
+  var dw_f: float = 0.0
+  var du_f: float = 0.0
+  var db_f: float = 0.0
+  var dw_o: float = 0.0
+  var du_o: float = 0.0
+  var db_o: float = 0.0
+  var dw_c: float = 0.0
+  var du_c: float = 0.0
+  var db_c: float = 0.0
+  var dw_y: float = 0.0
+  var db_y: float = 0.0
+
+  let T = len(seq)
+  let h_last = s.h[T]
+  let y = w.w_y * h_last + w.b_y
+  let dy = y - target
+  dw_y = dy * h_last
+  db_y = dy
+  var dh_next: float = dy * w.w_y
+  var dc_next: float = 0.0
+  var t: int = T - 1
+  while t >= 0 {
+    let i_t = s.i[t]
+    let f_t = s.f[t]
+    let o_t = s.o[t]
+    let g_t = s.g[t]
+    let c_t = s.c[t + 1]
+    let c_prev = s.c[t]
+    let h_prev = s.h[t]
+    let tanh_c = tanh_approx(c_t)
+    let do_t = dh_next * tanh_c
+    let da_o = do_t * o_t * (1.0 - o_t)
+    let dc = dh_next * o_t * (1.0 - tanh_c * tanh_c) + dc_next
+    let di_t = dc * g_t
+    let da_i = di_t * i_t * (1.0 - i_t)
+    let dg_t = dc * i_t
+    let da_g = dg_t * (1.0 - g_t * g_t)
+    let df_t = dc * c_prev
+    let da_f = df_t * f_t * (1.0 - f_t)
+    dw_i = dw_i + da_i * seq[t]
+    du_i = du_i + da_i * h_prev
+    db_i = db_i + da_i
+    dw_f = dw_f + da_f * seq[t]
+    du_f = du_f + da_f * h_prev
+    db_f = db_f + da_f
+    dw_o = dw_o + da_o * seq[t]
+    du_o = du_o + da_o * h_prev
+    db_o = db_o + da_o
+    dw_c = dw_c + da_g * seq[t]
+    du_c = du_c + da_g * h_prev
+    db_c = db_c + da_g
+    dh_next = da_i * w.u_i + da_f * w.u_f + da_o * w.u_o + da_g * w.u_c
+    dc_next = dc * f_t
+    t = t - 1
+  }
+  w.w_y = w.w_y - lr * dw_y
+  w.b_y = w.b_y - lr * db_y
+  w.w_i = w.w_i - lr * dw_i
+  w.u_i = w.u_i - lr * du_i
+  w.b_i = w.b_i - lr * db_i
+  w.w_f = w.w_f - lr * dw_f
+  w.u_f = w.u_f - lr * du_f
+  w.b_f = w.b_f - lr * db_f
+  w.w_o = w.w_o - lr * dw_o
+  w.u_o = w.u_o - lr * du_o
+  w.b_o = w.b_o - lr * db_o
+  w.w_c = w.w_c - lr * dw_c
+  w.u_c = w.u_c - lr * du_c
+  w.b_c = w.b_c - lr * db_c
+  return w
+}
+
+fun make_samples(data: list<float>, look_back: int): Samples {
+  var X: list<list<float>> = []
+  var Y: list<float> = []
+  var i: int = 0
+  while i + look_back < len(data) {
+    let seq = slice(data, i, i + look_back)
+    X = append(X, seq)
+    Y = append(Y, data[i + look_back])
+    i = i + 1
+  }
+  return Samples { x: X, y: Y }
+}
+
+fun init_weights(): LSTMWeights {
+  return LSTMWeights {
+    w_i: 0.1, u_i: 0.2, b_i: 0.0,
+    w_f: 0.1, u_f: 0.2, b_f: 0.0,
+    w_o: 0.1, u_o: 0.2, b_o: 0.0,
+    w_c: 0.1, u_c: 0.2, b_c: 0.0,
+    w_y: 0.1, b_y: 0.0,
+  }
+}
+
+fun train(data: list<float>, look_back: int, epochs: int, lr: float): LSTMWeights {
+  let samples = make_samples(data, look_back)
+  var w = init_weights()
+  var ep: int = 0
+  while ep < epochs {
+    var j: int = 0
+    while j < len(samples.x) {
+      let seq = samples.x[j]
+      let target = samples.y[j]
+      let state = forward(seq, w)
+      w = backward(seq, target, w, state, lr)
+      j = j + 1
+    }
+    ep = ep + 1
+  }
+  return w
+}
+
+fun predict(seq: list<float>, w: LSTMWeights): float {
+  let state = forward(seq, w)
+  let h_last = state.h[len(state.h) - 1]
+  return w.w_y * h_last + w.b_y
+}
+
+let data = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+let look_back = 3
+let epochs = 200
+let lr = 0.1
+let w = train(data, look_back, epochs, lr)
+let test_seq = [0.6, 0.7, 0.8]
+let pred = predict(test_seq, w)
+print("Predicted value: " + str(pred))
