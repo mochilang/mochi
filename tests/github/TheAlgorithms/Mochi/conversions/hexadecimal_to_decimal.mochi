@@ -1,0 +1,79 @@
+/*
+Convert a hexadecimal string into its decimal integer value.
+The algorithm trims surrounding spaces, handles an optional
+leading minus sign, and processes each character from left
+to right.  For each hexadecimal digit the current result is
+multiplied by sixteen and the digit value is added.  Digit
+values 0-9 map directly to integers 0-9 while letters A-F
+(or a-f) map to 10-15.  Any character outside these ranges
+is considered invalid.  The overall complexity is O(n) for
+an input string of length n.
+*/
+
+fun strip(s: string): string {
+  var start = 0
+  var end = len(s)
+  while start < end && substring(s, start, start + 1) == " " {
+    start = start + 1
+  }
+  while end > start && substring(s, end - 1, end) == " " {
+    end = end - 1
+  }
+  return substring(s, start, end)
+}
+
+fun hex_digit_value(c: string): int {
+  if c == "0" { return 0 }
+  if c == "1" { return 1 }
+  if c == "2" { return 2 }
+  if c == "3" { return 3 }
+  if c == "4" { return 4 }
+  if c == "5" { return 5 }
+  if c == "6" { return 6 }
+  if c == "7" { return 7 }
+  if c == "8" { return 8 }
+  if c == "9" { return 9 }
+  if c == "a" || c == "A" { return 10 }
+  if c == "b" || c == "B" { return 11 }
+  if c == "c" || c == "C" { return 12 }
+  if c == "d" || c == "D" { return 13 }
+  if c == "e" || c == "E" { return 14 }
+  if c == "f" || c == "F" { return 15 }
+  print("Non-hexadecimal value was passed to the function")
+  return 0
+}
+
+fun hex_to_decimal(hex_string: string): int {
+  var s = strip(hex_string)
+  if len(s) == 0 {
+    print("Empty string was passed to the function")
+    return 0
+  }
+  var is_negative = false
+  if substring(s, 0, 1) == "-" {
+    is_negative = true
+    s = substring(s, 1, len(s))
+  }
+  var decimal_number = 0
+  var i = 0
+  while i < len(s) {
+    let c = substring(s, i, i + 1)
+    let value = hex_digit_value(c)
+    decimal_number = 16 * decimal_number + value
+    i = i + 1
+  }
+  if is_negative {
+    return -decimal_number
+  }
+  return decimal_number
+}
+
+fun main() {
+  print(str(hex_to_decimal("a")))
+  print(str(hex_to_decimal("12f")))
+  print(str(hex_to_decimal("   12f   ")))
+  print(str(hex_to_decimal("FfFf")))
+  print(str(hex_to_decimal("-Ff")))
+}
+
+main()
