@@ -1,0 +1,167 @@
+/*
+Implement the Mixed Keyword cipher, a monoalphabetic substitution cipher.
+A keyword is used to create a modified alphabet: we take the unique letters
+of the keyword in order and append the remaining letters of the normal
+alphabet.  This list is split into rows whose length equals the number of
+unique keyword letters.  To encrypt, the standard alphabet is mapped to this
+table by reading columns top to bottom.  Plaintext characters are replaced by
+their mapped value.  Setup runs in O(26) time and encryption is linear in the
+length of the plaintext.
+*/
+
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+
+fun to_upper(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    var j = 0
+    var found = false
+    while j < 26 {
+      if ch == LOWER[j] {
+        res = res + UPPER[j]
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if found == false {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun contains_char(s: string, ch: string): bool {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun get_value(keys: list<string>, values: list<string>, key: string): string {
+  var i = 0
+  while i < len(keys) {
+    if keys[i] == key {
+      return values[i]
+    }
+    i = i + 1
+  }
+  return null
+}
+
+fun print_mapping(keys: list<string>, values: list<string>) {
+  var s = "{"
+  var i = 0
+  while i < len(keys) {
+    s = s + "'" + keys[i] + "': '" + values[i] + "'"
+    if i + 1 < len(keys) {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  s = s + "}"
+  print(s)
+}
+
+fun mixed_keyword(keyword: string, plaintext: string, verbose: bool): string {
+  let alphabet = UPPER
+  let keyword_u = to_upper(keyword)
+  let plaintext_u = to_upper(plaintext)
+
+  var unique: list<string> = []
+  var i = 0
+  while i < len(keyword_u) {
+    let ch = keyword_u[i]
+    if contains_char(alphabet, ch) && contains(unique, ch) == false {
+      unique = append(unique, ch)
+    }
+    i = i + 1
+  }
+  let num_unique = len(unique)
+
+  var shifted: list<string> = []
+  i = 0
+  while i < len(unique) {
+    shifted = append(shifted, unique[i])
+    i = i + 1
+  }
+  i = 0
+  while i < len(alphabet) {
+    let ch = alphabet[i]
+    if contains(unique, ch) == false {
+      shifted = append(shifted, ch)
+    }
+    i = i + 1
+  }
+
+  var modified: list<list<string>> = []
+  var k = 0
+  while k < len(shifted) {
+    var row: list<string> = []
+    var r = 0
+    while r < num_unique && k + r < len(shifted) {
+      row = append(row, shifted[k + r])
+      r = r + 1
+    }
+    modified = append(modified, row)
+    k = k + num_unique
+  }
+
+  var keys: list<string> = []
+  var values: list<string> = []
+  var column = 0
+  var letter_index = 0
+  while column < num_unique {
+    var row_idx = 0
+    while row_idx < len(modified) {
+      let row = modified[row_idx]
+      if len(row) <= column {
+        break
+      }
+      keys = append(keys, alphabet[letter_index])
+      values = append(values, row[column])
+      letter_index = letter_index + 1
+      row_idx = row_idx + 1
+    }
+    column = column + 1
+  }
+
+  if verbose {
+    print_mapping(keys, values)
+  }
+
+  var result = ""
+  i = 0
+  while i < len(plaintext_u) {
+    let ch = plaintext_u[i]
+    let mapped = get_value(keys, values, ch)
+    if mapped == null {
+      result = result + ch
+    } else {
+      result = result + mapped
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(mixed_keyword("college", "UNIVERSITY", true))
