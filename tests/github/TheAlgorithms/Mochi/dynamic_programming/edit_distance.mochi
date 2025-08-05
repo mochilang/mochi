@@ -1,0 +1,95 @@
+/*
+Edit Distance (Levenshtein distance)
+-----------------------------------
+Given two strings, compute the minimum number of single-character
+insertions, deletions, and substitutions required to transform one
+string into the other. Two dynamic programming approaches are provided:
+
+1. Top-down recursion with memoization
+   Recursively explore all operations while caching results in a 2D
+   table. Base cases handle empty prefixes. The complexity is O(m*n)
+   with O(m*n) space.
+
+2. Bottom-up iteration
+   Build a DP table from smaller prefixes. Each cell stores the minimum
+   edits to convert the first i characters of word1 to the first j
+   characters of word2. Complexity is also O(m*n).
+*/
+
+fun min3(a: int, b: int, c: int): int {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+fun helper_top_down(word1: string, word2: string, dp: list<list<int>>, i: int, j: int): int {
+  if i < 0 {
+    return j + 1
+  }
+  if j < 0 {
+    return i + 1
+  }
+    if dp[i][j] != (0 - 1) {
+      return dp[i][j]
+    }
+  if substring(word1, i, i + 1) == substring(word2, j, j + 1) {
+    dp[i][j] = helper_top_down(word1, word2, dp, i - 1, j - 1)
+  } else {
+    let insert = helper_top_down(word1, word2, dp, i, j - 1)
+    let delete = helper_top_down(word1, word2, dp, i - 1, j)
+    let replace = helper_top_down(word1, word2, dp, i - 1, j - 1)
+    dp[i][j] = 1 + min3(insert, delete, replace)
+  }
+  return dp[i][j]
+}
+
+fun min_dist_top_down(word1: string, word2: string): int {
+  let m = len(word1)
+  let n = len(word2)
+  var dp: list<list<int>> = []
+  for _ in 0..m {
+    var row: list<int> = []
+    for _2 in 0..n {
+      row = append(row, 0 - 1)
+    }
+    dp = append(dp, row)
+  }
+  return helper_top_down(word1, word2, dp, m - 1, n - 1)
+}
+
+fun min_dist_bottom_up(word1: string, word2: string): int {
+  let m = len(word1)
+  let n = len(word2)
+  var dp: list<list<int>> = []
+  for _ in 0..(m + 1) {
+    var row: list<int> = []
+    for _2 in 0..(n + 1) { row = append(row, 0) }
+    dp = append(dp, row)
+  }
+  for i in 0..(m + 1) {
+    for j in 0..(n + 1) {
+      if i == 0 {
+        dp[i][j] = j
+      } else if j == 0 {
+        dp[i][j] = i
+      } else if substring(word1, i - 1, i) == substring(word2, j - 1, j) {
+        dp[i][j] = dp[i - 1][j - 1]
+      } else {
+        let insert = dp[i][j - 1]
+        let delete = dp[i - 1][j]
+        let replace = dp[i - 1][j - 1]
+        dp[i][j] = 1 + min3(insert, delete, replace)
+      }
+    }
+  }
+  return dp[m][n]
+}
+
+// Example usage verifying distances
+print(str(min_dist_top_down("intention", "execution")))
+print(str(min_dist_top_down("intention", "")))
+print(str(min_dist_top_down("", "")))
+print(str(min_dist_bottom_up("intention", "execution")))
+print(str(min_dist_bottom_up("intention", "")))
+print(str(min_dist_bottom_up("", "")))
