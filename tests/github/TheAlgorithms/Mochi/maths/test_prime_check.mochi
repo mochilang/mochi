@@ -1,0 +1,51 @@
+/*
+Prime Checking Test
+-------------------
+This program defines a primality test using the 6k ± 1 optimization.
+It prints the results of checking several numbers to demonstrate
+its correctness.  Positive integers less than 2 are not prime; numbers
+2 and 3 are prime; other numbers are tested by checking divisibility
+against numbers of the form 6k ± 1 up to the square root of the input.
+*/
+
+fun is_prime(number: int): bool {
+  if number < 0 {
+    panic("is_prime() only accepts positive integers")
+  }
+  if number < 2 {
+    return false
+  }
+  if number < 4 {
+    return true
+  }
+  if number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i: int = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+print(str(is_prime(2)))
+print(str(is_prime(3)))
+print(str(is_prime(5)))
+print(str(is_prime(7)))
+print(str(is_prime(11)))
+print(str(is_prime(13)))
+print(str(is_prime(17)))
+print(str(is_prime(19)))
+print(str(is_prime(23)))
+print(str(is_prime(29)))
+
+print(str(is_prime(0)))
+print(str(is_prime(1)))
+print(str(is_prime(4)))
+print(str(is_prime(6)))
+print(str(is_prime(9)))
+print(str(is_prime(15)))
+print(str(is_prime(105)))
