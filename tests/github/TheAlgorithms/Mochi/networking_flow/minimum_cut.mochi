@@ -1,0 +1,102 @@
+/*
+Find the minimum s-t cut edges of a directed graph using the
+Ford–Fulkerson method.
+
+The graph is represented as an adjacency matrix of capacities.
+Breadth-first search is repeatedly used to find augmenting paths and
+update residual capacities. After no augmenting path remains, every
+edge that is saturated (capacity reduced to zero) in the residual graph
+but had positive capacity in the original graph belongs to the minimum cut.
+
+Example graph has 6 vertices; running the algorithm with source 0 and
+sink 5 prints the edges of the minimum cut as pairs of vertex indices.
+*/
+
+fun bfs(graph: list<list<int>>, s: int, t: int, parent: list<int>): bool {
+  var visited: list<bool> = []
+  var i = 0
+  while i < len(graph) {
+    visited = append(visited, false)
+    i = i + 1
+  }
+  var queue: list<int> = [s]
+  var head = 0
+  visited[s] = true
+  while head < len(queue) {
+    let u = queue[head]
+    head = head + 1
+    var ind = 0
+    while ind < len(graph[u]) {
+      if visited[ind] == false && graph[u][ind] > 0 {
+        queue = append(queue, ind)
+        visited[ind] = true
+        parent[ind] = u
+      }
+      ind = ind + 1
+    }
+  }
+  return visited[t]
+}
+
+fun mincut(graph: list<list<int>>, source: int, sink: int): list<list<int>> {
+  var g = graph
+  var parent: list<int> = []
+  var i = 0
+  while i < len(g) {
+    parent = append(parent, -1)
+    i = i + 1
+  }
+  var temp: list<list<int>> = []
+  i = 0
+  while i < len(g) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(g[i]) {
+      row = append(row, g[i][j])
+      j = j + 1
+    }
+    temp = append(temp, row)
+    i = i + 1
+  }
+  while bfs(g, source, sink, parent) {
+    var path_flow = 1000000000
+    var s = sink
+    while s != source {
+      let p = parent[s]
+      let cap = g[p][s]
+      if cap < path_flow { path_flow = cap }
+      s = p
+    }
+    var v = sink
+    while v != source {
+      let u = parent[v]
+      g[u][v] = g[u][v] - path_flow
+      g[v][u] = g[v][u] + path_flow
+      v = u
+    }
+  }
+  var res: list<list<int>> = []
+  i = 0
+  while i < len(g) {
+    var j = 0
+    while j < len(g[0]) {
+      if g[i][j] == 0 && temp[i][j] > 0 {
+        res = append(res, [i, j])
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return res
+}
+
+let test_graph: list<list<int>> = [
+  [0, 16, 13, 0, 0, 0],
+  [0, 0, 10, 12, 0, 0],
+  [0, 4, 0, 0, 14, 0],
+  [0, 0, 9, 0, 0, 20],
+  [0, 0, 0, 7, 0, 4],
+  [0, 0, 0, 0, 0, 0],
+]
+let result = mincut(test_graph, 0, 5)
+print(str(result))
