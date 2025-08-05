@@ -1,0 +1,75 @@
+/*
+Print the elements of a singly linked list in reverse order.
+
+The list stores integers and provides append and extend operations.
+"in_reverse" walks the list from the tail toward the head and builds a
+string of the form "a <- b <- c".  This runs in O(n) time where n is
+the number of stored elements.
+
+To keep the implementation simple and avoid the `any` type, the list is
+represented internally as a dynamic array of integers instead of
+pointer-based nodes.  The exposed functions mirror the Python version's
+behavior.
+*/
+
+type LinkedList {
+  data: list<int>
+}
+
+fun empty_list(): LinkedList {
+  return LinkedList { data: [] }
+}
+
+fun append_value(list: LinkedList, value: int): LinkedList {
+  var d = list.data
+  d = append(d, value)
+  return LinkedList { data: d }
+}
+
+fun extend_list(list: LinkedList, items: list<int>): LinkedList {
+  var result = list
+  var i = 0
+  while i < len(items) {
+    result = append_value(result, items[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun to_string(list: LinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var s = str(list.data[0])
+  var i = 1
+  while i < len(list.data) {
+    s = s + " -> " + str(list.data[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun make_linked_list(items: list<int>): LinkedList {
+  if len(items) == 0 { panic("The Elements List is empty") }
+  var ll = empty_list()
+  ll = extend_list(ll, items)
+  return ll
+}
+
+fun in_reverse(list: LinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var i = len(list.data) - 1
+  var s = str(list.data[i])
+  i = i - 1
+  while i >= 0 {
+    s = s + " <- " + str(list.data[i])
+    i = i - 1
+  }
+  return s
+}
+
+fun main() {
+  let linked_list = make_linked_list([14, 52, 14, 12, 43])
+  print("Linked List:  " + to_string(linked_list))
+  print("Reverse List: " + in_reverse(linked_list))
+}
+
+main()
