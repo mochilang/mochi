@@ -1,0 +1,240 @@
+/*
+Frequent Pattern Growth (FP-Growth) discovers frequent itemsets without generating
+candidate sets. The algorithm compresses the database into an FP-tree where paths
+share common prefixes ordered by frequency. Mining recursively builds conditional
+FP-trees to enumerate frequent patterns that meet a minimum support.
+
+This Mochi version mirrors the Python implementation from TheAlgorithms.
+It stores FP-tree nodes as records with name, count, parent link, child map and
+node links forming the header table. The program constructs the tree from a
+small sample dataset and prints all frequent itemsets found with support at
+least three. The code uses only Mochi features so it can run on runtime/vm
+without any foreign interfaces.
+*/
+
+fun make_node(name, count, parent) {
+  return { "name": name, "count": count, "parent": parent, "children": {}, "node_link": null }
+}
+
+fun update_header(node_to_test, target_node) {
+  var current = node_to_test
+  while current["node_link"] != null {
+    current = current["node_link"]
+  }
+  current["node_link"] = target_node
+}
+
+fun update_tree(items, in_tree, header_table, count) {
+  let first = items[0]
+  var children = in_tree["children"]
+  if first in children {
+    var child = children[first]
+    child["count"] = child["count"] + count
+    children[first] = child
+    in_tree["children"] = children
+  } else {
+    var new_node = make_node(first, count, in_tree)
+    children[first] = new_node
+    in_tree["children"] = children
+    var entry = header_table[first]
+    if entry["node"] == null {
+      entry["node"] = new_node
+    } else {
+      update_header(entry["node"], new_node)
+    }
+    header_table[first] = entry
+  }
+  if len(items) > 1 {
+    let rest = items[1:len(items)]
+    update_tree(rest, children[first], header_table, count)
+  }
+}
+
+fun sort_items(items, header_table) {
+  var arr = items
+  var i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if header_table[arr[i]]["count"] < header_table[arr[j]]["count"] {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun create_tree(data_set, min_sup) {
+  var counts = {}
+  var i = 0
+  while i < len(data_set) {
+    let trans = data_set[i]
+    var j = 0
+    while j < len(trans) {
+      let item = trans[j]
+      if item in counts {
+        counts[item] = counts[item] + 1
+      } else {
+        counts[item] = 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  var header_table = {}
+  for k in counts {
+    let cnt = counts[k]
+    if cnt >= min_sup {
+      header_table[k] = { "count": cnt, "node": null }
+    }
+  }
+
+  var freq_items = []
+  for k in header_table {
+    freq_items = append(freq_items, k)
+  }
+  if len(freq_items) == 0 {
+    return { "tree": make_node("Null Set", 1, null), "header": {} }
+  }
+
+  var fp_tree = make_node("Null Set", 1, null)
+  i = 0
+  while i < len(data_set) {
+    let tran = data_set[i]
+    var local_items = []
+    var j = 0
+    while j < len(tran) {
+      let item = tran[j]
+      if item in header_table {
+        local_items = append(local_items, item)
+      }
+      j = j + 1
+    }
+    if len(local_items) > 0 {
+      local_items = sort_items(local_items, header_table)
+      update_tree(local_items, fp_tree, header_table, 1)
+    }
+    i = i + 1
+  }
+  return { "tree": fp_tree, "header": header_table }
+}
+
+fun ascend_tree(leaf_node, path) {
+  var prefix = path
+  if leaf_node["parent"] != null {
+    prefix = append(prefix, leaf_node["name"])
+    prefix = ascend_tree(leaf_node["parent"], prefix)
+  } else {
+    prefix = append(prefix, leaf_node["name"])
+  }
+  return prefix
+}
+
+fun find_prefix_path(base_pat, tree_node) {
+  var cond_pats = []
+  var node = tree_node
+  while node != null {
+    let prefix = ascend_tree(node, [])
+    if len(prefix) > 1 {
+      let items = prefix[1:len(prefix)]
+      cond_pats = append(cond_pats, { "items": items, "count": node["count"] })
+    }
+    node = node["node_link"]
+  }
+  return cond_pats
+}
+
+fun mine_tree(in_tree, header_table, min_sup, pre_fix, freq_item_list) {
+  var freq_list = freq_item_list
+  var items = []
+  for k in header_table {
+    items = append(items, k)
+  }
+  var sorted_items = items
+  var i = 0
+  while i < len(sorted_items) {
+    var j = i + 1
+    while j < len(sorted_items) {
+      if header_table[sorted_items[i]]["count"] > header_table[sorted_items[j]]["count"] {
+        let tmp = sorted_items[i]
+        sorted_items[i] = sorted_items[j]
+        sorted_items[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+
+  var idx = 0
+  while idx < len(sorted_items) {
+    let base_pat = sorted_items[idx]
+    var new_freq = pre_fix
+    new_freq = append(new_freq, base_pat)
+    freq_list = append(freq_list, new_freq)
+    let cond_pats = find_prefix_path(base_pat, header_table[base_pat]["node"])
+    var cond_dataset = []
+    var p = 0
+    while p < len(cond_pats) {
+      let pat = cond_pats[p]
+      var r = 0
+      while r < pat["count"] {
+        cond_dataset = append(cond_dataset, pat["items"])
+        r = r + 1
+      }
+      p = p + 1
+    }
+    let res2 = create_tree(cond_dataset, min_sup)
+    let my_tree = res2["tree"]
+    let my_head = res2["header"]
+    if len(my_head) > 0 {
+      freq_list = mine_tree(my_tree, my_head, min_sup, new_freq, freq_list)
+    }
+    idx = idx + 1
+  }
+  return freq_list
+}
+
+fun list_to_string(xs) {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + xs[i]
+    if i < len(xs) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun main() {
+  let data_set = [
+    ["bread", "milk", "cheese"],
+    ["bread", "milk"],
+    ["bread", "diapers"],
+    ["bread", "milk", "diapers"],
+    ["milk", "diapers"],
+    ["milk", "cheese"],
+    ["diapers", "cheese"],
+    ["bread", "milk", "cheese", "diapers"]
+  ]
+  let res = create_tree(data_set, 3)
+  let fp_tree = res["tree"]
+  let header_table = res["header"]
+  var freq_items = []
+  freq_items = mine_tree(fp_tree, header_table, 3, [], freq_items)
+  print(len(data_set))
+  print(len(header_table))
+  var i = 0
+  while i < len(freq_items) {
+    print(list_to_string(freq_items[i]))
+    i = i + 1
+  }
+}
+
+main()
