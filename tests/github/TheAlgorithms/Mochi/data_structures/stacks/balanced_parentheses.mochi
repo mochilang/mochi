@@ -1,0 +1,52 @@
+/*
+Check if all types of brackets in a string are properly balanced.
+
+The algorithm scans the input string and uses a stack to track opening
+brackets. Each time an opening bracket "(", "[", or "{" is seen it is
+pushed onto the stack. When a closing bracket is encountered the top of the
+stack must contain the matching opening bracket; otherwise the string is
+unbalanced. At the end the stack must be empty for the string to be balanced.
+
+Time complexity is O(n) where n is the length of the string, and space
+complexity is O(n) in the worst case when all characters are opening brackets.
+*/
+
+fun pop_last(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun balanced_parentheses(s: string): bool {
+  var stack: list<string> = []
+  let pairs: map<string, string> = {"(": ")", "[": "]", "{": "}"}
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch in pairs {
+      stack = append(stack, ch)
+    } else if ch == ")" || ch == "]" || ch == "}" {
+      if len(stack) == 0 {
+        return false
+      }
+      let top = stack[len(stack) - 1]
+      if pairs[top] != ch {
+        return false
+      }
+      stack = pop_last(stack)
+    }
+    i = i + 1
+  }
+  return len(stack) == 0
+}
+
+var tests: list<string> = ["([]{})", "[()]{}{[()()]()}", "[(])", "1+2*3-4", ""]
+var idx = 0
+while idx < len(tests) {
+  print(balanced_parentheses(tests[idx]))
+  idx = idx + 1
+}
