@@ -1,0 +1,59 @@
+/*
+Compute the two's complement representation of a negative integer.
+Given a negative integer n, choose a bit width equal to the binary
+length of |n|. The two's complement is then computed as 2^width - |n|,
+converted to binary, padded with leading zeros to that width, and
+prefixed with a leading 1. For zero, the representation is simply 0.
+This implementation returns the string prefixed with "0b" similar to
+Python's `bin` function. Runtime complexity is O(log |n|) due to the
+binary conversion process.
+*/
+
+fun repeat_char(ch: string, times: int): string {
+  var res = ""
+  var i = 0
+  while i < times {
+    res = res + ch
+    i = i + 1
+  }
+  return res
+}
+
+fun to_binary(n: int): string {
+  if n == 0 { return "0" }
+  var res = ""
+  var v = n
+  while v > 0 {
+    res = str(v % 2) + res
+    v = v / 2
+  }
+  return res
+}
+
+fun pow2(exp: int): int {
+  var res = 1
+  var i = 0
+  while i < exp {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun twos_complement(number: int): string {
+  if number > 0 { panic("input must be a negative integer") }
+  if number == 0 { return "0b0" }
+  let abs_number = if number < 0 { -number } else number
+  let binary_number_length = len(to_binary(abs_number))
+  let complement_value = pow2(binary_number_length) - abs_number
+  let complement_binary = to_binary(complement_value)
+  let padding = repeat_char("0", binary_number_length - len(complement_binary))
+  let twos_complement_number = "1" + padding + complement_binary
+  return "0b" + twos_complement_number
+}
+
+print(twos_complement(0))
+print(twos_complement(-1))
+print(twos_complement(-5))
+print(twos_complement(-17))
+print(twos_complement(-207))
