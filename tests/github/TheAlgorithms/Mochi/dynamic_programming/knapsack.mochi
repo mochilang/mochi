@@ -1,0 +1,143 @@
+/*
+0/1 Knapsack Dynamic Programming
+
+Given n items with weights wt[i] and values val[i] and a knapsack of
+capacity W, determine the maximum achievable value without exceeding
+the weight limit.  This implementation mirrors the classic dynamic
+programming approach:
+
+1. Iterative DP builds a matrix dp where dp[i][j] is the best value
+   using the first i items and capacity j.
+2. mf_knapsack demonstrates the same recurrence with memoization.
+3. construct_solution rebuilds an example optimal subset by tracing
+   decisions in the filled DP table.
+*/
+
+var f: list<list<int>>
+
+fun max_int(a: int, b: int): int {
+  if a > b { return a } else { return b }
+}
+
+fun init_f(n: int, w: int): list<list<int>> {
+  var table: list<list<int>>
+  var i = 0
+  while i <= n {
+    var row: list<int>
+    var j = 0
+    while j <= w {
+      if i == 0 || j == 0 {
+        row = append(row, 0)
+      } else {
+        row = append(row, -1)
+      }
+      j = j + 1
+    }
+    table = append(table, row)
+    i = i + 1
+  }
+  return table
+}
+
+fun mf_knapsack(i: int, wt: list<int>, val: list<int>, j: int): int {
+  if f[i][j] < 0 {
+    if j < wt[i - 1] {
+      f[i][j] = mf_knapsack(i - 1, wt, val, j)
+    } else {
+      let without_item = mf_knapsack(i - 1, wt, val, j)
+      let with_item = mf_knapsack(i - 1, wt, val, j - wt[i - 1]) + val[i - 1]
+      f[i][j] = max_int(without_item, with_item)
+    }
+  }
+  return f[i][j]
+}
+
+fun create_matrix(rows: int, cols: int): list<list<int>> {
+  var matrix: list<list<int>>
+  var i = 0
+  while i <= rows {
+    var row: list<int>
+    var j = 0
+    while j <= cols {
+      row = append(row, 0)
+      j = j + 1
+    }
+    matrix = append(matrix, row)
+    i = i + 1
+  }
+  return matrix
+}
+
+fun knapsack(w: int, wt: list<int>, val: list<int>, n: int): list<list<int>> {
+  var dp: list<list<int>> = create_matrix(n, w)
+  var i = 1
+  while i <= n {
+    var w_ = 1
+    while w_ <= w {
+      if wt[i - 1] <= w_ {
+        let include = val[i - 1] + dp[i - 1][w_ - wt[i - 1]]
+        let exclude = dp[i - 1][w_]
+        dp[i][w_] = max_int(include, exclude)
+      } else {
+        dp[i][w_] = dp[i - 1][w_]
+      }
+      w_ = w_ + 1
+    }
+    i = i + 1
+  }
+  return dp
+}
+
+fun construct_solution(dp: list<list<int>>, wt: list<int>, i: int, j: int, optimal_set: list<int>): list<int> {
+  if i > 0 && j > 0 {
+    if dp[i - 1][j] == dp[i][j] {
+      return construct_solution(dp, wt, i - 1, j, optimal_set)
+    } else {
+      let with_prev = construct_solution(dp, wt, i - 1, j - wt[i - 1], optimal_set)
+      return append(with_prev, i)
+    }
+  }
+  return optimal_set
+}
+
+type KnapsackResult {
+  value: int,
+  subset: list<int>
+}
+
+fun knapsack_with_example_solution(w: int, wt: list<int>, val: list<int>): KnapsackResult {
+  let num_items = len(wt)
+  let dp_table = knapsack(w, wt, val, num_items)
+  let optimal_val = dp_table[num_items][w]
+  let subset = construct_solution(dp_table, wt, num_items, w, [])
+  return { value: optimal_val, subset: subset }
+}
+
+fun format_set(xs: list<int>): string {
+  var res = "{"
+  var i = 0
+  while i < len(xs) {
+    res = res + str(xs[i])
+    if i + 1 < len(xs) {
+      res = res + ", "
+    }
+    i = i + 1
+  }
+  res = res + "}"
+  return res
+}
+
+let val_list: list<int> = [3, 2, 4, 4]
+let wt_list: list<int> = [4, 3, 2, 3]
+let n: int = 4
+let w_cap: int = 6
+
+f = init_f(n, w_cap)
+let dp_table = knapsack(w_cap, wt_list, val_list, n)
+let optimal_solution = dp_table[n][w_cap]
+print(optimal_solution)
+print(mf_knapsack(n, wt_list, val_list, w_cap))
+
+let example = knapsack_with_example_solution(w_cap, wt_list, val_list)
+print("optimal_value = " + str(example.value))
+print("An optimal subset corresponding to the optimal value " + format_set(example.subset))
