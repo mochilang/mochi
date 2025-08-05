@@ -1,0 +1,123 @@
+/*
+Rotate a 2D grayscale image using an affine transform defined by
+three pairs of corresponding points.
+
+The three source points and their destinations determine a 2×3
+affine matrix.  We solve the linear system by inverting a 3×3 matrix
+constructed from the source points.  Each pixel of the source image
+is mapped through this transform and written to the destination using
+nearest-neighbour assignment.  Pixels that map outside the bounds are
+ignored.
+
+This demonstrates basic image rotation with time complexity O(r*c)
+for an r×c image.
+*/
+
+fun mat_inverse3(m: list<list<float>>): list<list<float>> {
+  let a = m[0][0]
+  let b = m[0][1]
+  let c = m[0][2]
+  let d = m[1][0]
+  let e = m[1][1]
+  let f = m[1][2]
+  let g = m[2][0]
+  let h = m[2][1]
+  let i = m[2][2]
+  let det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+  if det == 0.0 { panic("singular matrix") }
+  let adj00 = e * i - f * h
+  let adj01 = c * h - b * i
+  let adj02 = b * f - c * e
+  let adj10 = f * g - d * i
+  let adj11 = a * i - c * g
+  let adj12 = c * d - a * f
+  let adj20 = d * h - e * g
+  let adj21 = b * g - a * h
+  let adj22 = a * e - b * d
+  var inv: list<list<float>> = []
+  inv = append(inv, [adj00 / det, adj01 / det, adj02 / det])
+  inv = append(inv, [adj10 / det, adj11 / det, adj12 / det])
+  inv = append(inv, [adj20 / det, adj21 / det, adj22 / det])
+  return inv
+}
+
+fun mat_vec_mul(m: list<list<float>>, v: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < 3 {
+    let val = m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2]
+    res = append(res, val)
+    i = i + 1
+  }
+  return res
+}
+
+fun create_matrix(rows: int, cols: int, value: int): list<list<int>> {
+  var result: list<list<int>> = []
+  var r = 0
+  while r < rows {
+    var row: list<int> = []
+    var c = 0
+    while c < cols {
+      row = append(row, value)
+      c = c + 1
+    }
+    result = append(result, row)
+    r = r + 1
+  }
+  return result
+}
+
+fun round_to_int(x: float): int {
+  if x >= 0.0 { return int(x + 0.5) }
+  return int(x - 0.5)
+}
+
+fun get_rotation(
+  img: list<list<int>>,
+  pt1: list<list<float>>,
+  pt2: list<list<float>>,
+  rows: int,
+  cols: int
+): list<list<int>> {
+  let src = [
+    [pt1[0][0], pt1[0][1], 1.0],
+    [pt1[1][0], pt1[1][1], 1.0],
+    [pt1[2][0], pt1[2][1], 1.0]
+  ]
+  let inv = mat_inverse3(src)
+  let vecx = [pt2[0][0], pt2[1][0], pt2[2][0]]
+  let vecy = [pt2[0][1], pt2[1][1], pt2[2][1]]
+  let avec = mat_vec_mul(inv, vecx)
+  let bvec = mat_vec_mul(inv, vecy)
+  let a0 = avec[0]
+  let a1 = avec[1]
+  let a2 = avec[2]
+  let b0 = bvec[0]
+  let b1 = bvec[1]
+  let b2 = bvec[2]
+
+  var out = create_matrix(rows, cols, 0)
+  var y = 0
+  while y < rows {
+    var x = 0
+    while x < cols {
+      let xf = a0 * (1.0 * x) + a1 * (1.0 * y) + a2
+      let yf = b0 * (1.0 * x) + b1 * (1.0 * y) + b2
+      let sx = round_to_int(xf)
+      let sy = round_to_int(yf)
+      if sx >= 0 && sx < cols && sy >= 0 && sy < rows {
+        out[sy][sx] = img[y][x]
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return out
+}
+
+let img: list<list<int>> = [[1,2,3], [4,5,6], [7,8,9]]
+let pts1: list<list<float>> = [[0.0,0.0], [2.0,0.0], [0.0,2.0]]
+let pts2: list<list<float>> = [[0.0,2.0], [0.0,0.0], [2.0,2.0]]
+let rotated = get_rotation(img, pts1, pts2, 3, 3)
+print(str(rotated))
