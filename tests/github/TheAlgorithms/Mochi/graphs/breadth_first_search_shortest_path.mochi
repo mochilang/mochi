@@ -1,0 +1,62 @@
+/*
+Breadth-First Search (BFS) to find shortest paths in an unweighted graph.
+The graph is represented as a map from a vertex to a list of adjacent
+vertices. Starting from a given source, BFS explores vertices in layers,
+recording each vertex's parent when first discovered. The shortest_path
+function reconstructs a path to any target by walking this parent map.
+If a vertex is unreachable, a descriptive message is returned instead.
+*/
+
+type Graph {
+  graph: map<string, list<string>>,
+  parent: map<string, string>,
+  source: string
+}
+
+fun newGraph(g: map<string, list<string>>, s: string): Graph {
+  return Graph{graph: g, parent: {}, source: s}
+}
+
+fun breath_first_search(g: Graph): Graph {
+  var parent = g.parent
+  parent[g.source] = g.source
+  var queue: list<string> = [g.source]
+  var idx = 0
+  while idx < len(queue) {
+    let vertex = queue[idx]
+    for adj in g.graph[vertex] {
+      if !(adj in parent) {
+        parent[adj] = vertex
+        queue = append(queue, adj)
+      }
+    }
+    idx = idx + 1
+  }
+  g.parent = parent
+  return g
+}
+
+fun shortest_path(g: Graph, target: string): string {
+  if target == g.source { return g.source }
+  if !(target in g.parent) {
+    return "No path from vertex: " + g.source + " to vertex: " + target
+  }
+  let p = g.parent[target]
+  return shortest_path(g, p) + "->" + target
+}
+
+let graph: map<string, list<string>> = {
+  "A": ["B", "C", "E"],
+  "B": ["A", "D", "E"],
+  "C": ["A", "F", "G"],
+  "D": ["B"],
+  "E": ["A", "B", "D"],
+  "F": ["C"],
+  "G": ["C"]
+}
+
+var g = newGraph(graph, "G")
+g = breath_first_search(g)
+print(shortest_path(g, "D"))
+print(shortest_path(g, "G"))
+print(shortest_path(g, "Foo"))
