@@ -1,0 +1,127 @@
+/*
+Joint Probability Distribution and Related Statistics
+----------------------------------------------------
+This module computes the joint probability distribution for two discrete
+random variables X and Y given their possible values and probabilities.
+The joint distribution assigns each pair (x, y) the probability Px(x) * Py(y).
+From these probabilities we derive expectation, variance, covariance and
+standard deviation.  Square roots are approximated with Newton's method so the
+code stays within pure Mochi and runs on the runtime/vm without FFI.
+*/
+
+fun key(x: int, y: int): string {
+  return str(x) + "," + str(y)
+}
+
+fun joint_probability_distribution(
+  x_values: list<int>,
+  y_values: list<int>,
+  x_probabilities: list<float>,
+  y_probabilities: list<float>
+): map<string, float> {
+  var result: map<string, float> = {}
+  var i = 0
+  while i < len(x_values) {
+    var j = 0
+    while j < len(y_values) {
+      let k = key(x_values[i], y_values[j])
+      result[k] = x_probabilities[i] * y_probabilities[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun expectation(values: list<int>, probabilities: list<float>): float {
+  var total = 0.0
+  var i = 0
+  while i < len(values) {
+    total = total + (values[i] as float) * probabilities[i]
+    i = i + 1
+  }
+  return total
+}
+
+fun variance(values: list<int>, probabilities: list<float>): float {
+  let mean = expectation(values, probabilities)
+  var total = 0.0
+  var i = 0
+  while i < len(values) {
+    let diff = (values[i] as float) - mean
+    total = total + diff * diff * probabilities[i]
+    i = i + 1
+  }
+  return total
+}
+
+fun covariance(
+  x_values: list<int>,
+  y_values: list<int>,
+  x_probabilities: list<float>,
+  y_probabilities: list<float>
+): float {
+  let mean_x = expectation(x_values, x_probabilities)
+  let mean_y = expectation(y_values, y_probabilities)
+  var total = 0.0
+  var i = 0
+  while i < len(x_values) {
+    var j = 0
+    while j < len(y_values) {
+      let diff_x = (x_values[i] as float) - mean_x
+      let diff_y = (y_values[j] as float) - mean_y
+      total = total + diff_x * diff_y * x_probabilities[i] * y_probabilities[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun standard_deviation(v: float): float {
+  return sqrtApprox(v)
+}
+
+fun main() {
+  let x_values: list<int> = [1, 2]
+  let y_values: list<int> = [-2, 5, 8]
+  let x_probabilities: list<float> = [0.7, 0.3]
+  let y_probabilities: list<float> = [0.3, 0.5, 0.2]
+  let jpd = joint_probability_distribution(x_values, y_values, x_probabilities, y_probabilities)
+  var i = 0
+  while i < len(x_values) {
+    var j = 0
+    while j < len(y_values) {
+      let k = key(x_values[i], y_values[j])
+      let prob = jpd[k]
+      print(k + "=" + str(prob))
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let ex = expectation(x_values, x_probabilities)
+  let ey = expectation(y_values, y_probabilities)
+  let vx = variance(x_values, x_probabilities)
+  let vy = variance(y_values, y_probabilities)
+  let cov = covariance(x_values, y_values, x_probabilities, y_probabilities)
+  print("Ex=" + str(ex))
+  print("Ey=" + str(ey))
+  print("Vx=" + str(vx))
+  print("Vy=" + str(vy))
+  print("Cov=" + str(cov))
+  print("Sx=" + str(standard_deviation(vx)))
+  print("Sy=" + str(standard_deviation(vy)))
+}
+
+main()
