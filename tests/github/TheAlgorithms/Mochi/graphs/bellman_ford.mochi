@@ -1,0 +1,98 @@
+/*
+Bellman-Ford shortest path algorithm on directed graphs that may
+contain negative edge weights.
+
+Given a graph described by edges (src -> dst with weight), it
+computes the minimum distance from a source vertex to all others.
+The algorithm relaxes all edges V-1 times where V is the number of
+vertices, then performs one more pass to detect negative cycles.
+If an edge can still be relaxed, a negative cycle exists and execution
+is aborted.
+
+Steps:
+1. Initialize distance array with large values except the source set to 0.
+2. Repeat V-1 times: for each edge (u, v, w) update distance[v] if
+distance[u] + w is less than current distance[v].
+3. Perform one more iteration to check for negative cycles.
+
+Time complexity: O(V * E) where V is the number of vertices and E is
+the number of edges.
+*/
+
+type Edge {
+  src: int
+  dst: int
+  weight: int
+}
+
+let INF = 1000000000.0
+
+fun list_to_string(arr: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    s = s + str(arr[i])
+    if i < len(arr) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun check_negative_cycle(graph: list<Edge>, distance: list<float>, edge_count: int): bool {
+  var j = 0
+  while j < edge_count {
+    let e = graph[j]
+    let u = e.src
+    let v = e.dst
+    let w = e.weight as float
+    if distance[u] < INF && distance[u] + w < distance[v] {
+      return true
+    }
+    j = j + 1
+  }
+  return false
+}
+
+fun bellman_ford(graph: list<Edge>, vertex_count: int, edge_count: int, src: int): list<float> {
+  var distance: list<float> = []
+  var i = 0
+  while i < vertex_count {
+    distance = append(distance, INF)
+    i = i + 1
+  }
+  distance[src] = 0.0
+
+  var k = 0
+  while k < vertex_count - 1 {
+    var j = 0
+    while j < edge_count {
+      let e = graph[j]
+      let u = e.src
+      let v = e.dst
+      let w = e.weight as float
+      if distance[u] < INF && distance[u] + w < distance[v] {
+        distance[v] = distance[u] + w
+      }
+      j = j + 1
+    }
+    k = k + 1
+  }
+
+  if check_negative_cycle(graph, distance, edge_count) {
+    panic("Negative cycle found")
+  }
+
+  return distance
+}
+
+let edges: list<Edge> = [
+  Edge { src: 2, dst: 1, weight: -10 },
+  Edge { src: 3, dst: 2, weight: 3 },
+  Edge { src: 0, dst: 3, weight: 5 },
+  Edge { src: 0, dst: 1, weight: 4 },
+]
+
+let distances = bellman_ford(edges, 4, len(edges), 0)
+print(list_to_string(distances))
