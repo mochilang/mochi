@@ -1,0 +1,65 @@
+/*
+Given a target string and a list of substrings (word bank),
+list every possible combination of words that can concatenate
+exactly to the target. The algorithm uses dynamic programming
+(tabulation) where each table entry at index i stores all word
+sequences that build the prefix target[0:i]. Starting from the
+empty string at position 0, we iterate through the table. When a
+word from the bank matches the slice of the target beginning at
+i, that word is appended to each combination at table[i] and the
+new combination is stored at table[i + len(word)].
+The entry at table[len(target)] therefore contains all complete
+constructions of the target.
+
+Time complexity is roughly O(n * m * k), where n is the target
+length, m is the size of the word bank, and k is the average
+number of combinations copied. Space complexity grows with the
+total size of stored combinations.
+*/
+
+fun allConstruct(target: string, wordBank: list<string>): list<list<string>> {
+  let tableSize = len(target) + 1
+  var table: list<list<list<string>>> = []
+  var idx = 0
+  while idx < tableSize {
+    var empty: list<list<string>> = []
+    table = append(table, empty)
+    idx = idx + 1
+  }
+  var base: list<string> = []
+  table[0] = [base]
+
+  var i = 0
+  while i < tableSize {
+    if len(table[i]) != 0 {
+      var w = 0
+      while w < len(wordBank) {
+        let word = wordBank[w]
+        let wordLen = len(word)
+        if target[i:i + wordLen] == word {
+          var k = 0
+          while k < len(table[i]) {
+            let way = table[i][k]
+            var combination: list<string> = []
+            var m = 0
+            while m < len(way) {
+              combination = append(combination, way[m])
+              m = m + 1
+            }
+            combination = append(combination, word)
+            let nextIndex = i + wordLen
+            table[nextIndex] = append(table[nextIndex], combination)
+            k = k + 1
+          }
+        }
+        w = w + 1
+      }
+    }
+    i = i + 1
+  }
+  return table[len(target)]
+}
+
+print(str(allConstruct("jwajalapa", ["jwa", "j", "w", "a", "la", "lapa"])))
+print(str(allConstruct("rajamati", ["s", "raj", "amat", "raja", "ma", "i", "t"])))
+print(str(allConstruct("hexagonosaurus", ["h", "ex", "hex", "ag", "ago", "ru", "auru", "rus", "go", "no", "o", "s"])))
