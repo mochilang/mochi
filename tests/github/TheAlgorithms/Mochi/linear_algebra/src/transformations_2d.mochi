@@ -1,0 +1,111 @@
+/*
+2D Linear Transformations
+
+This program recreates functions from TheAlgorithms/Python for
+constructing 2×2 transformation matrices:
+
+- scaling(s) returns a diagonal matrix that uniformly scales both axes.
+- rotation(angle) builds a matrix rotating points by `angle` radians.
+- projection(angle) projects onto a line through the origin with the
+  given angle, yielding [[cos², cos·sin], [cos·sin, sin²]].
+- reflection(angle) reflects points across that line producing
+  [[2cos-1, 2cos·sin], [2cos·sin, 2sin-1]].
+
+Sine and cosine are computed using Taylor series with angle
+normalization so the code runs on the `runtime/vm` without FFI.
+Each transformation executes in O(1) time.
+*/
+
+let PI: float = 3.141592653589793
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun modf(x: float, m: float): float {
+  return x - floor(x / m) * m
+}
+
+fun sin_taylor(angle: float): float {
+  var x = modf(angle, 2.0 * PI)
+  if x > PI { x = x - 2.0 * PI }
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(angle: float): float {
+  var x = modf(angle, 2.0 * PI)
+  if x > PI { x = x - 2.0 * PI }
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun matrix_to_string(m: list<list<float>>): string {
+  var s = "["
+  var i = 0
+  while i < len(m) {
+    var row = m[i]
+    s = s + "["
+    var j = 0
+    while j < len(row) {
+      s = s + str(row[j])
+      if j < len(row) - 1 { s = s + ", " }
+      j = j + 1
+    }
+    s = s + "]"
+    if i < len(m) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun scaling(f: float): list<list<float>> {
+  return [[f, 0.0], [0.0, f]]
+}
+
+fun rotation(angle: float): list<list<float>> {
+  let c = cos_taylor(angle)
+  let s = sin_taylor(angle)
+  return [[c, -s], [s, c]]
+}
+
+fun projection(angle: float): list<list<float>> {
+  let c = cos_taylor(angle)
+  let s = sin_taylor(angle)
+  let cs = c * s
+  return [[c * c, cs], [cs, s * s]]
+}
+
+fun reflection(angle: float): list<list<float>> {
+  let c = cos_taylor(angle)
+  let s = sin_taylor(angle)
+  let cs = c * s
+  return [[2.0 * c - 1.0, 2.0 * cs], [2.0 * cs, 2.0 * s - 1.0]]
+}
+
+print("    scaling(5) = " + matrix_to_string(scaling(5.0)))
+print("  rotation(45) = " + matrix_to_string(rotation(45.0)))
+print("projection(45) = " + matrix_to_string(projection(45.0)))
+print("reflection(45) = " + matrix_to_string(reflection(45.0)))
+
