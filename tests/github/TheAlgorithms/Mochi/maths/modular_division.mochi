@@ -1,0 +1,102 @@
+/*
+Modular Division and Multiplicative Inverses
+-------------------------------------------
+Given integers a, b, and n with gcd(a, n) = 1 and n > 1, the modular
+division problem asks for x such that a*x ≡ b (mod n).  This is
+equivalent to computing x = b * a^(-1) mod n where a^(-1) is the
+multiplicative inverse of a modulo n.  The algorithm uses the extended
+Euclidean algorithm to find coefficients of Bézout's identity
+n*t + a*s = gcd(n, a) = 1.  The coefficient s is the modular inverse of
+a modulo n.  Two approaches are implemented:
+
+1. modular_division: directly uses extended_gcd(n, a) to get s.
+2. modular_division2: first computes the inverse with invert_modulo and
+   then multiplies by b.
+
+Supporting routines include:
+- greatest_common_divisor: classic Euclidean algorithm.
+- extended_gcd: returns [d, x, y] with d = gcd(a, b) and d = a*x + b*y.
+- extended_euclid: returns [x, y] with a*x + b*y = gcd(a, b).
+- invert_modulo: computes a^(-1) mod n using extended_euclid.
+
+Each function avoids foreign interfaces so it can run on the
+runtime/vm.  Basic tests verify correctness against known values.
+*/
+
+fun mod(a: int, n: int): int {
+  let r = a % n
+  if r < 0 { return r + n }
+  return r
+}
+
+fun greatest_common_divisor(a: int, b: int): int {
+  var x = if a < 0 { -a } else { a }
+  var y = if b < 0 { -b } else { b }
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun extended_gcd(a: int, b: int): list<int> {
+  if b == 0 { return [a, 1, 0] }
+  let res = extended_gcd(b, a % b)
+  let d = res[0]
+  let p = res[1]
+  let q = res[2]
+  let x = q
+  let y = p - q * (a / b)
+  return [d, x, y]
+}
+
+fun extended_euclid(a: int, b: int): list<int> {
+  if b == 0 { return [1, 0] }
+  let res = extended_euclid(b, a % b)
+  let x = res[1]
+  let y = res[0] - (a / b) * res[1]
+  return [x, y]
+}
+
+fun invert_modulo(a: int, n: int): int {
+  let res = extended_euclid(a, n)
+  let inv = res[0]
+  return mod(inv, n)
+}
+
+fun modular_division(a: int, b: int, n: int): int {
+  if n <= 1 { panic("n must be > 1") }
+  if a <= 0 { panic("a must be > 0") }
+  if greatest_common_divisor(a, n) != 1 { panic("gcd(a,n) != 1") }
+  let eg = extended_gcd(n, a)
+  let s = eg[2]
+  return mod(b * s, n)
+}
+
+fun modular_division2(a: int, b: int, n: int): int {
+  let s = invert_modulo(a, n)
+  return mod(b * s, n)
+}
+
+fun tests() {
+  if modular_division(4, 8, 5) != 2 { panic("md1") }
+  if modular_division(3, 8, 5) != 1 { panic("md2") }
+  if modular_division(4, 11, 5) != 4 { panic("md3") }
+  if modular_division2(4, 8, 5) != 2 { panic("md21") }
+  if modular_division2(3, 8, 5) != 1 { panic("md22") }
+  if modular_division2(4, 11, 5) != 4 { panic("md23") }
+  if invert_modulo(2, 5) != 3 { panic("inv") }
+  let eg = extended_gcd(10, 6)
+  if eg[0] != 2 || eg[1] != (-1) || eg[2] != 2 { panic("eg") }
+  let eu = extended_euclid(10, 6)
+  if eu[0] != (-1) || eu[1] != 2 { panic("eu") }
+  if greatest_common_divisor(121, 11) != 11 { panic("gcd") }
+}
+
+fun main() {
+  tests()
+  print(str(modular_division(4, 8, 5)))
+}
+
+main()
