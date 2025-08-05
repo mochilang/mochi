@@ -1,0 +1,82 @@
+/*
+Minkowski Distance
+------------------
+This program computes the Minkowski distance between two n-dimensional points.
+Given vectors `point_a` and `point_b` and a positive integer `order`, the
+Minkowski distance is defined as:
+
+    (sum(|a_i - b_i|^order))^(1/order)
+
+Special cases include:
+- order = 1  -> Manhattan distance
+- order = 2  -> Euclidean distance
+
+The implementation validates the order and ensures both input points share the
+same dimension. Exponentiation for integer powers and extraction of the
+n-th root use iterative methods (repeated multiplication and Newton's method)
+so the code remains pure Mochi without any foreign function interfaces.
+*/
+
+fun abs_val(x: float): float {
+  if x < 0.0 {
+    return -x
+  }
+  return x
+}
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun nth_root(value: float, n: int): float {
+  if value == 0.0 {
+    return 0.0
+  }
+  var x = value / (n as float)
+  var i = 0
+  while i < 20 {
+    let num = ((n - 1) as float) * x + value / pow_float(x, n - 1)
+    x = num / (n as float)
+    i = i + 1
+  }
+  return x
+}
+
+fun minkowski_distance(point_a: list<float>, point_b: list<float>, order: int): float {
+  if order < 1 {
+    panic("The order must be greater than or equal to 1.")
+  }
+  if len(point_a) != len(point_b) {
+    panic("Both points must have the same dimension.")
+  }
+  var total = 0.0
+  var idx = 0
+  while idx < len(point_a) {
+    let diff = abs_val(point_a[idx] - point_b[idx])
+    total = total + pow_float(diff, order)
+    idx = idx + 1
+  }
+  return nth_root(total, order)
+}
+
+fun test_minkowski() {
+  if abs_val(minkowski_distance([1.0, 1.0], [2.0, 2.0], 1) - 2.0) > 0.0001 {
+    panic("minkowski_distance test1 failed")
+  }
+  if abs_val(minkowski_distance([1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], 2) - 8.0) > 0.0001 {
+    panic("minkowski_distance test2 failed")
+  }
+}
+
+fun main() {
+  test_minkowski()
+  print(minkowski_distance([5.0], [0.0], 3))
+}
+
+main()
