@@ -1,0 +1,118 @@
+/*
+Closest Pair of Points via Divide and Conquer
+
+Given a set of points on the 2D plane, the goal is to determine the
+smallest Euclidean distance between any two points.  The algorithm first
+sorts the points by x- and y-coordinates.  It recursively splits the
+points around the midpoint and computes the minimum distance in the left
+and right halves.  Points close to the partition are examined in a strip
+to account for pairs that cross the division.  The final answer is the
+square root of the minimum squared distance.
+
+Time complexity: O(n log n) from the sorting and recursive division.
+*/
+
+fun abs(x: float): float {
+  if x < 0.0 {
+    return 0.0 - x
+  }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun euclidean_distance_sqr(p1: list<float>, p2: list<float>): float {
+  let dx = p1[0] - p2[0]
+  let dy = p1[1] - p2[1]
+  return dx * dx + dy * dy
+}
+
+fun column_based_sort(arr: list<list<float>>, column: int): list<list<float>> {
+  var points = arr
+  var i = 0
+  while i < len(points) {
+    var j = 0
+    while j < len(points) - 1 {
+      if points[j][column] > points[j + 1][column] {
+        let tmp = points[j]
+        points[j] = points[j + 1]
+        points[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return points
+}
+
+fun dis_between_closest_pair(points: list<list<float>>, count: int, min_dis: float): float {
+  var i = 0
+  while i < count - 1 {
+    var j = i + 1
+    while j < count {
+      let current = euclidean_distance_sqr(points[i], points[j])
+      if current < min_dis { min_dis = current }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return min_dis
+}
+
+fun dis_between_closest_in_strip(points: list<list<float>>, count: int, min_dis: float): float {
+  var i_start = 0
+  if 6 < count - 1 { i_start = 6 } else { i_start = count - 1 }
+  var i = i_start
+  while i < count {
+    var j_start = 0
+    if i - 6 > 0 { j_start = i - 6 }
+    var j = j_start
+    while j < i {
+      let current = euclidean_distance_sqr(points[i], points[j])
+      if current < min_dis { min_dis = current }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return min_dis
+}
+
+fun closest_pair_of_points_sqr(px: list<list<float>>, py: list<list<float>>, count: int): float {
+  if count <= 3 {
+    return dis_between_closest_pair(px, count, 1e18)
+  }
+  let mid = count / 2
+  let left = closest_pair_of_points_sqr(px, py[0:mid], mid)
+  let right = closest_pair_of_points_sqr(py, py[mid:count], count - mid)
+  var best = left
+  if right < best { best = right }
+  var strip: list<list<float>> = []
+  var i = 0
+  while i < len(px) {
+    if abs(px[i][0] - px[mid][0]) < best {
+      strip = append(strip, px[i])
+    }
+    i = i + 1
+  }
+  let strip_best = dis_between_closest_in_strip(strip, len(strip), best)
+  if strip_best < best { best = strip_best }
+  return best
+}
+
+fun closest_pair_of_points(points: list<list<float>>, count: int): float {
+  let points_sorted_on_x = column_based_sort(points, 0)
+  let points_sorted_on_y = column_based_sort(points, 1)
+  let dist_sqr = closest_pair_of_points_sqr(points_sorted_on_x, points_sorted_on_y, count)
+  return sqrtApprox(dist_sqr)
+}
+
+let points: list<list<float>> = [[2.0, 3.0], [12.0, 30.0], [40.0, 50.0], [5.0, 1.0], [12.0, 10.0], [3.0, 4.0]]
+print("Distance: " + str(closest_pair_of_points(points, len(points))))
