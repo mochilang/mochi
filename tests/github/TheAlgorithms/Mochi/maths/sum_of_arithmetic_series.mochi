@@ -1,0 +1,34 @@
+/*
+Sum of Arithmetic Series
+------------------------
+This module computes the sum of the first n terms of an arithmetic progression.
+Given the first term `a`, common difference `d`, and number of terms `n`, the sum
+is calculated using the closed-form formula:
+
+    S_n = n/2 * (2a + (n - 1)d)
+
+The implementation performs arithmetic using integers to avoid floating-point
+conversion and includes simple tests mirroring the Python version from
+TheAlgorithms.
+*/
+
+fun sum_of_series(first_term: int, common_diff: int, num_of_terms: int): int {
+  let total = num_of_terms * (2 * first_term + (num_of_terms - 1) * common_diff) / 2
+  return total
+}
+
+fun test_sum_of_series() {
+  if sum_of_series(1, 1, 10) != 55 {
+    panic("sum_of_series(1, 1, 10) failed")
+  }
+  if sum_of_series(1, 10, 100) != 49600 {
+    panic("sum_of_series(1, 10, 100) failed")
+  }
+}
+
+fun main() {
+  test_sum_of_series()
+  print(sum_of_series(1, 1, 10))
+}
+
+main()
