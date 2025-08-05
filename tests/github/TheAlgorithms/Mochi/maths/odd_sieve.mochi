@@ -1,0 +1,62 @@
+/*
+Odd Sieve for Prime Generation
+
+This implementation returns all prime numbers less than a given integer `num`
+using an optimized Sieve of Eratosthenes that stores only odd numbers.
+
+1. Handle small inputs: numbers less than 2 have no primes, and 3 returns [2].
+2. Create a boolean list representing odd candidates from 3 to num-1. Index `k`
+   corresponds to the odd number `2*k + 3`.
+3. Iterate through odd base numbers up to sqrt(num). For each prime candidate `i`,
+   mark its odd multiples starting from `i*i` as composite.
+4. Collect all numbers that remain marked as prime and prepend 2.
+
+This approach halves memory usage compared to a full sieve because even numbers
+are ignored. The algorithm runs in O(n log log n) time similar to the standard
+sieve.
+*/
+
+fun odd_sieve(num: int): list<int> {
+  if num <= 2 {
+    return []
+  }
+  if num == 3 {
+    return [2]
+  }
+  let size = num / 2 - 1
+  var sieve: list<bool> = []
+  var idx = 0
+  while idx < size {
+    sieve = append(sieve, true)
+    idx = idx + 1
+  }
+  var i = 3
+  while i * i <= num {
+    let s_idx = i / 2 - 1
+    if sieve[s_idx] {
+      var j = i * i
+      while j < num {
+        let j_idx = j / 2 - 1
+        sieve[j_idx] = false
+        j = j + 2 * i
+      }
+    }
+    i = i + 2
+  }
+  var primes: list<int> = [2]
+  var n = 3
+  var k = 0
+  while n < num {
+    if sieve[k] {
+      primes = append(primes, n)
+    }
+    n = n + 2
+    k = k + 1
+  }
+  return primes
+}
+
+print(odd_sieve(2))
+print(odd_sieve(3))
+print(odd_sieve(10))
+print(odd_sieve(20))
