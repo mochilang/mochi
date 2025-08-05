@@ -1,0 +1,56 @@
+/*
+Convert a decimal integer to its binary representation.
+
+Two approaches are provided:
+
+1. Iterative: repeatedly divide the absolute value by two,
+   collecting remainders to build the binary string. Handles
+   negative numbers by prefixing "-0b".
+2. Recursive: recursively processes the absolute value by
+   dividing by two until the base case of 0 or 1 is reached,
+   concatenating remainders on the unwind. Also prefixes
+   "-0b" for negative inputs.
+
+Both algorithms run in O(log n) time where n is the magnitude
+of the input number.
+*/
+
+fun decimal_to_binary_iterative(num: int): string {
+  if num == 0 { return "0b0" }
+  var negative = false
+  var n = num
+  if n < 0 {
+    negative = true
+    n = -n
+  }
+  var result = ""
+  while n > 0 {
+    result = str(n % 2) + result
+    n = n / 2
+  }
+  if negative { return "-0b" + result }
+  return "0b" + result
+}
+
+fun decimal_to_binary_recursive_helper(n: int): string {
+  if n == 0 { return "0" }
+  if n == 1 { return "1" }
+  let div = n / 2
+  let mod = n % 2
+  return decimal_to_binary_recursive_helper(div) + str(mod)
+}
+
+fun decimal_to_binary_recursive(num: int): string {
+  if num == 0 { return "0b0" }
+  if num < 0 { return "-0b" + decimal_to_binary_recursive_helper(-num) }
+  return "0b" + decimal_to_binary_recursive_helper(num)
+}
+
+print(decimal_to_binary_iterative(0))
+print(decimal_to_binary_iterative(2))
+print(decimal_to_binary_iterative(7))
+print(decimal_to_binary_iterative(35))
+print(decimal_to_binary_iterative(-2))
+print(decimal_to_binary_recursive(0))
+print(decimal_to_binary_recursive(40))
+print(decimal_to_binary_recursive(-40))
