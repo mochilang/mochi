@@ -1,0 +1,80 @@
+/*
+Self-Organizing Map (SOM) demonstration with two clusters.
+
+A self-organizing map is an unsupervised learning algorithm where each node has
+an associated weight vector. For each input sample the node whose weights are
+closest (by Euclidean distance) is chosen as the winner and its weights are
+moved toward the sample.
+
+This translation matches the behavior of the reference Python code. The winner
+is determined using only the first component and the update adjusts only as many
+components as there are weight vectors. Although simplified, it reproduces the
+same training dynamics as the original script.
+
+The program trains on four binary samples for three epochs and then classifies a
+test sample, printing the winning cluster and the trained weights.
+*/
+
+fun get_winner(weights: list<list<float>>, sample: list<int>): int {
+  var d0 = 0.0
+  var d1 = 0.0
+  for i in 0..len(sample) {
+    let diff0 = sample[i] - weights[0][i]
+    let diff1 = sample[i] - weights[1][i]
+    d0 = d0 + diff0 * diff0
+    d1 = d1 + diff1 * diff1
+    return if d0 > d1 { 0 } else { 1 }
+  }
+  return 0
+}
+
+fun update(weights: list<list<float>>, sample: list<int>, j: int, alpha: float): list<list<float>> {
+  for i in 0..len(weights) {
+    weights[j][i] = weights[j][i] + alpha * (sample[i] - weights[j][i])
+  }
+  return weights
+}
+
+fun list_to_string(xs: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i < len(xs) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun matrix_to_string(m: list<list<float>>): string {
+  var s = "["
+  var i = 0
+  while i < len(m) {
+    s = s + list_to_string(m[i])
+    if i < len(m) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  let training_samples: list<list<int>> = [[1, 1, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 1]]
+  var weights: list<list<float>> = [[0.2, 0.6, 0.5, 0.9], [0.8, 0.4, 0.7, 0.3]]
+  let epochs = 3
+  let alpha = 0.5
+  for _ in 0..epochs {
+    for j in 0..len(training_samples) {
+      let sample = training_samples[j]
+      let winner = get_winner(weights, sample)
+      weights = update(weights, sample, winner, alpha)
+    }
+  }
+  let sample: list<int> = [0, 0, 0, 1]
+  let winner = get_winner(weights, sample)
+  print("Clusters that the test sample belongs to : " + str(winner))
+  print("Weights that have been trained : " + matrix_to_string(weights))
+}
+
+main()
