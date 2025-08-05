@@ -1,0 +1,36 @@
+/*
+  Count the number of set bits in a non-negative integer.
+  Brian Kernighan's algorithm repeatedly removes the lowest set bit
+  by subtracting its value from the number. Each subtraction reduces
+  the total count of ones by one. The lowest set bit is determined by
+  finding the largest power of two that divides the current value.
+*/
+
+fun lowest_set_bit(n: int): int {
+  var lb = 1
+  while n % (lb * 2) == 0 {
+    lb = lb * 2
+  }
+  return lb
+}
+
+fun get_1s_count(number: int): int {
+  if number < 0 {
+    print("ValueError: Input must be a non-negative integer")
+    return 0
+  }
+  var n = number
+  var count = 0
+  while n > 0 {
+    n = n - lowest_set_bit(n)
+    count = count + 1
+  }
+  return count
+}
+
+print(str(get_1s_count(25)))
+print(str(get_1s_count(37)))
+print(str(get_1s_count(21)))
+print(str(get_1s_count(58)))
+print(str(get_1s_count(0)))
+print(str(get_1s_count(256)))
