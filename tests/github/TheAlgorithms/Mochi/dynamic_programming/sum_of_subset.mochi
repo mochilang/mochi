@@ -1,0 +1,67 @@
+/*
+Subset Sum via Dynamic Programming
+----------------------------------
+Given a set of integers and a target sum, determine whether there exists
+some subset whose elements add up exactly to the target.  We build a
+boolean table `subset[i][j]` where `i` indexes the first `i` elements of
+the array and `j` is the achievable sum.  Each cell is true if the sum `j`
+can be formed using the first `i` numbers.  The table is filled
+iteratively: for each element we can either exclude it (inherit the value
+from the previous row) or include it (combine with solutions for the
+reduced sum).
+
+Time Complexity: O(n * required_sum)
+Space Complexity: O(n * required_sum)
+*/
+
+fun create_bool_matrix(rows: int, cols: int): list<list<bool>> {
+  var matrix: list<list<bool>> = []
+  var i = 0
+  while i <= rows {
+    var row: list<bool> = []
+    var j = 0
+    while j <= cols {
+      row = append(row, false)
+      j = j + 1
+    }
+    matrix = append(matrix, row)
+    i = i + 1
+  }
+  return matrix
+}
+
+fun is_sum_subset(arr: list<int>, required_sum: int): bool {
+  let arr_len = len(arr)
+  var subset: list<list<bool>> = create_bool_matrix(arr_len, required_sum)
+
+  var i = 0
+  while i <= arr_len {
+    subset[i][0] = true
+    i = i + 1
+  }
+
+  var j = 1
+  while j <= required_sum {
+    subset[0][j] = false
+    j = j + 1
+  }
+
+  i = 1
+  while i <= arr_len {
+    j = 1
+    while j <= required_sum {
+      if arr[i - 1] > j {
+        subset[i][j] = subset[i - 1][j]
+      }
+      if arr[i - 1] <= j {
+        subset[i][j] = subset[i - 1][j] || subset[i - 1][j - arr[i - 1]]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return subset[arr_len][required_sum]
+}
+
+print(is_sum_subset([2, 4, 6, 8], 5))
+print(is_sum_subset([2, 4, 6, 8], 14))
