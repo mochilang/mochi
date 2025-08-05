@@ -1,0 +1,70 @@
+/*
+Jaccard Similarity
+------------------
+The Jaccard similarity coefficient compares two sets by dividing the size of
+ their intersection by the size of their union.  Given two finite sets A and B,
+ the coefficient is |A ∩ B| / |A ∪ B| and ranges from 0 (no overlap) to 1
+ (identical sets).  Some variations approximate the union size by simply adding
+ the lengths of both sets, yielding |A ∩ B| / (|A| + |B|), which reduces the
+ self-similarity of a set to 1/2.
+
+This implementation operates on lists of strings.  For the true union we build a
+list containing each distinct element from both lists.  The intersection counts
+all elements from the first list that also appear in the second.  Both steps run
+in O(n*m) time where n and m are the input lengths.  The result is returned as a
+floating point number to preserve fractional similarities.
+*/
+
+fun contains(xs: list<string>, value: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun jaccard_similarity(set_a: list<string>, set_b: list<string>, alternative_union: bool): float {
+  var intersection_len = 0
+  var i = 0
+  while i < len(set_a) {
+    if contains(set_b, set_a[i]) {
+      intersection_len = intersection_len + 1
+    }
+    i = i + 1
+  }
+
+  var union_len = 0
+  if alternative_union {
+    union_len = len(set_a) + len(set_b)
+  } else {
+    var union_list: list<string> = []
+    i = 0
+    while i < len(set_a) {
+      let val_a = set_a[i]
+      if !contains(union_list, val_a) {
+        union_list = append(union_list, val_a)
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < len(set_b) {
+      let val_b = set_b[i]
+      if !contains(union_list, val_b) {
+        union_list = append(union_list, val_b)
+      }
+      i = i + 1
+    }
+    union_len = len(union_list)
+  }
+
+  return 1.0 * intersection_len / union_len
+}
+
+fun main() {
+  let set_a: list<string> = ["a", "b", "c", "d", "e"]
+  let set_b: list<string> = ["c", "d", "e", "f", "h", "i"]
+  print(jaccard_similarity(set_a, set_b, false))
+}
+
+main()
