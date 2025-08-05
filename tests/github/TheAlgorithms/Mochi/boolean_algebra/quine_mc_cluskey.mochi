@@ -1,0 +1,273 @@
+/*
+Quine-McCluskey Boolean minimization algorithm.
+
+This port of the Python implementation reduces a set of minterms for a
+boolean expression into its prime implicants and selects the essential
+prime implicants.  The algorithm works in three main phases:
+
+1. Convert each decimal minterm to a fixed-width binary string.
+2. Repeatedly compare pairs of terms; terms that differ in only one bit
+   are combined by replacing the differing position with '_' until no
+   further merging is possible.  Terms that cannot be combined become
+   prime implicants.
+3. Construct a prime implicant chart indicating which implicants cover
+   which original minterms.  Using the chart, select essential prime
+   implicants: first those that are the sole cover for a minterm and
+   then additional implicants that cover the largest number of remaining
+   minterms.
+
+The resulting list of essential prime implicants represents a minimized
+form of the boolean function.
+*/
+
+fun compare_string(string1: string, string2: string): string {
+  var result = ""
+  var count = 0
+  var i = 0
+  while i < len(string1) {
+    let c1 = substring(string1, i, i + 1)
+    let c2 = substring(string2, i, i + 1)
+    if c1 != c2 {
+      count = count + 1
+      result = result + "_"
+    } else {
+      result = result + c1
+    }
+    i = i + 1
+  }
+  if count > 1 { return "" }
+  return result
+}
+
+fun contains_string(arr: list<string>, value: string): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == value { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun unique_strings(arr: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(arr) {
+    if !contains_string(res, arr[i]) {
+      res = append(res, arr[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun check(binary: list<string>): list<string> {
+  var pi: list<string> = []
+  var current = binary
+  while true {
+    var check1: list<string> = []
+    var i = 0
+    while i < len(current) {
+      check1 = append(check1, "$")
+      i = i + 1
+    }
+    var temp: list<string> = []
+    i = 0
+    while i < len(current) {
+      var j = i + 1
+      while j < len(current) {
+        let k = compare_string(current[i], current[j])
+        if k == "" {
+          check1[i] = "*"
+          check1[j] = "*"
+          temp = append(temp, "X")
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    i = 0
+    while i < len(current) {
+      if check1[i] == "$" {
+        pi = append(pi, current[i])
+      }
+      i = i + 1
+    }
+    if len(temp) == 0 {
+      return pi
+    }
+    current = unique_strings(temp)
+  }
+}
+
+fun decimal_to_binary(no_of_variable: int, minterms: list<int>): list<string> {
+  var temp: list<string> = []
+  var idx = 0
+  while idx < len(minterms) {
+    var minterm = minterms[idx]
+    var string = ""
+    var i = 0
+    while i < no_of_variable {
+      string = str(minterm % 2) + string
+      minterm = minterm / 2
+      i = i + 1
+    }
+    temp = append(temp, string)
+    idx = idx + 1
+  }
+  return temp
+}
+
+fun is_for_table(string1: string, string2: string, count: int): bool {
+  var count_n = 0
+  var i = 0
+  while i < len(string1) {
+    let c1 = substring(string1, i, i + 1)
+    let c2 = substring(string2, i, i + 1)
+    if c1 != c2 {
+      count_n = count_n + 1
+    }
+    i = i + 1
+  }
+  return count_n == count
+}
+
+fun count_ones(row: list<int>): int {
+  var c = 0
+  var j = 0
+  while j < len(row) {
+    if row[j] == 1 { c = c + 1 }
+    j = j + 1
+  }
+  return c
+}
+
+fun selection(chart: list<list<int>>, prime_implicants: list<string>): list<string> {
+  var temp: list<string> = []
+  var select: list<int> = []
+  var i = 0
+  while i < len(chart) {
+    select = append(select, 0)
+    i = i + 1
+  }
+  var col = 0
+  while col < len(chart[0]) {
+    var count = 0
+    var row = 0
+    while row < len(chart) {
+      if chart[row][col] == 1 { count = count + 1 }
+      row = row + 1
+    }
+    if count == 1 {
+      var rem = 0
+      row = 0
+      while row < len(chart) {
+        if chart[row][col] == 1 { rem = row }
+        row = row + 1
+      }
+      select[rem] = 1
+    }
+    col = col + 1
+  }
+  i = 0
+  while i < len(select) {
+    if select[i] == 1 {
+      var j = 0
+      while j < len(chart[0]) {
+        if chart[i][j] == 1 {
+          var r = 0
+          while r < len(chart) {
+            chart[r][j] = 0
+            r = r + 1
+          }
+        }
+        j = j + 1
+      }
+      temp = append(temp, prime_implicants[i])
+    }
+    i = i + 1
+  }
+  while true {
+    var counts: list<int> = []
+    var r = 0
+    while r < len(chart) {
+      counts = append(counts, count_ones(chart[r]))
+      r = r + 1
+    }
+    var max_n = counts[0]
+    var rem = 0
+    var k = 1
+    while k < len(counts) {
+      if counts[k] > max_n {
+        max_n = counts[k]
+        rem = k
+      }
+      k = k + 1
+    }
+    if max_n == 0 { return temp }
+    temp = append(temp, prime_implicants[rem])
+    var j = 0
+    while j < len(chart[0]) {
+      if chart[rem][j] == 1 {
+        var r2 = 0
+        while r2 < len(chart) {
+          chart[r2][j] = 0
+          r2 = r2 + 1
+        }
+      }
+      j = j + 1
+    }
+  }
+}
+
+fun count_char(s: string, ch: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun prime_implicant_chart(prime_implicants: list<string>, binary: list<string>): list<list<int>> {
+  var chart: list<list<int>> = []
+  var i = 0
+  while i < len(prime_implicants) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(binary) {
+      row = append(row, 0)
+      j = j + 1
+    }
+    chart = append(chart, row)
+    i = i + 1
+  }
+  i = 0
+  while i < len(prime_implicants) {
+    let count = count_char(prime_implicants[i], "_")
+    var j = 0
+    while j < len(binary) {
+      if is_for_table(prime_implicants[i], binary[j], count) {
+        chart[i][j] = 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return chart
+}
+
+fun main() {
+  let no_of_variable = 3
+  let minterms: list<int> = [1, 5, 7]
+  let binary = decimal_to_binary(no_of_variable, minterms)
+  let prime_implicants = check(binary)
+  print("Prime Implicants are:")
+  print(str(prime_implicants))
+  let chart = prime_implicant_chart(prime_implicants, binary)
+  let essential_prime_implicants = selection(chart, prime_implicants)
+  print("Essential Prime Implicants are:")
+  print(str(essential_prime_implicants))
+}
+
+main()
