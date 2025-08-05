@@ -1,0 +1,326 @@
+/*
+Hill Cipher encryption and decryption.
+
+Given an N x N key matrix of integers, the Hill cipher maps the
+characters 'A'-'Z' and '0'-'9' to numbers 0-35. The plaintext is split
+into blocks of length N and converted to numeric vectors. Each block is
+multiplied by the key matrix and reduced modulo 36 to produce the
+ciphertext block. Characters are then mapped back from numbers.
+
+To decrypt, the inverse of the key matrix modulo 36 is required.  The
+inverse is computed as det(A)^(-1) * adj(A) mod 36 where adj(A) is the
+transpose of the cofactor matrix. The determinant must be coprime with
+36 for the inverse to exist.
+
+This implementation works for square matrices of any order and avoids
+foreign function interfaces, using only pure Mochi code.
+*/
+
+let KEY_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+fun mod36(n: int): int {
+  var r = n % 36
+  if r < 0 {
+    r = r + 36
+  }
+  return r
+}
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = y
+    y = x % y
+    x = t
+  }
+  if x < 0 {
+    x = -x
+  }
+  return x
+}
+
+fun replace_letters(letter: string): int {
+  var i = 0
+  while i < len(KEY_STRING) {
+    if KEY_STRING[i] == letter {
+      return i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun replace_digits(num: int): string {
+  let idx = mod36(num)
+  return KEY_STRING[idx]
+}
+
+fun to_upper(c: string): string {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var i = 0
+  while i < len(lower) {
+    if c == lower[i] {
+      return upper[i]
+    }
+    i = i + 1
+  }
+  return c
+}
+
+fun process_text(text: string, break_key: int): string {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(text) {
+    var c = to_upper(text[i])
+    var j = 0
+    var ok = false
+    while j < len(KEY_STRING) {
+      if KEY_STRING[j] == c {
+        ok = true
+        break
+      }
+      j = j + 1
+    }
+    if ok {
+      chars = append(chars, c)
+    }
+    i = i + 1
+  }
+  if len(chars) == 0 {
+    return ""
+  }
+  let last = chars[len(chars) - 1]
+  while len(chars) % break_key != 0 {
+    chars = append(chars, last)
+  }
+  var res = ""
+  var k = 0
+  while k < len(chars) {
+    res = res + chars[k]
+    k = k + 1
+  }
+  return res
+}
+
+fun matrix_minor(m: list<list<int>>, row: int, col: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(m) {
+    if i != row {
+      var r: list<int> = []
+      var j = 0
+      while j < len(m[i]) {
+        if j != col {
+          r = append(r, m[i][j])
+        }
+        j = j + 1
+      }
+      res = append(res, r)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun determinant(m: list<list<int>>): int {
+  let n = len(m)
+  if n == 1 {
+    return m[0][0]
+  }
+  if n == 2 {
+    return m[0][0] * m[1][1] - m[0][1] * m[1][0]
+  }
+  var det = 0
+  var col = 0
+  while col < n {
+    let minor_mat = matrix_minor(m, 0, col)
+    var sign = 1
+    if col % 2 == 1 {
+      sign = -1
+    }
+    det = det + sign * m[0][col] * determinant(minor_mat)
+    col = col + 1
+  }
+  return det
+}
+
+fun cofactor_matrix(m: list<list<int>>): list<list<int>> {
+  let n = len(m)
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      let minor_mat = matrix_minor(m, i, j)
+      let det_minor = determinant(minor_mat)
+      var sign = 1
+      if (i + j) % 2 == 1 {
+        sign = -1
+      }
+      row = append(row, sign * det_minor)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun transpose(m: list<list<int>>): list<list<int>> {
+  let rows = len(m)
+  let cols = len(m[0])
+  var res: list<list<int>> = []
+  var j = 0
+  while j < cols {
+    var row: list<int> = []
+    var i = 0
+    while i < rows {
+      row = append(row, m[i][j])
+      i = i + 1
+    }
+    res = append(res, row)
+    j = j + 1
+  }
+  return res
+}
+
+fun matrix_mod(m: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(m) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(m[i]) {
+      row = append(row, mod36(m[i][j]))
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun scalar_matrix_mult(s: int, m: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < len(m) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(m[i]) {
+      row = append(row, mod36(s * m[i][j]))
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun adjugate(m: list<list<int>>): list<list<int>> {
+  let cof = cofactor_matrix(m)
+  let n = len(cof)
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, cof[j][i])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun multiply_matrix_vector(m: list<list<int>>, v: list<int>): list<int> {
+  let n = len(m)
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    var sum = 0
+    var j = 0
+    while j < n {
+      sum = sum + m[i][j] * v[j]
+      j = j + 1
+    }
+    res = append(res, mod36(sum))
+    i = i + 1
+  }
+  return res
+}
+
+fun inverse_key(key: list<list<int>>): list<list<int>> {
+  let det_val = determinant(key)
+  var det_mod = mod36(det_val)
+  var det_inv = 0
+  var i = 0
+  while i < 36 {
+    if (det_mod * i) % 36 == 1 {
+      det_inv = i
+      break
+    }
+    i = i + 1
+  }
+  let adj = adjugate(key)
+  let tmp = scalar_matrix_mult(det_inv, adj)
+  let res = matrix_mod(tmp)
+  return res
+}
+
+fun hill_encrypt(key: list<list<int>>, text: string): string {
+  let break_key = len(key)
+  let processed = process_text(text, break_key)
+  var encrypted = ""
+  var i = 0
+  while i < len(processed) {
+    var vec: list<int> = []
+    var j = 0
+    while j < break_key {
+      vec = append(vec, replace_letters(processed[i + j]))
+      j = j + 1
+    }
+    let enc_vec = multiply_matrix_vector(key, vec)
+    var k = 0
+    while k < break_key {
+      encrypted = encrypted + replace_digits(enc_vec[k])
+      k = k + 1
+    }
+    i = i + break_key
+  }
+  return encrypted
+}
+
+fun hill_decrypt(key: list<list<int>>, text: string): string {
+  let break_key = len(key)
+  let decrypt_key = inverse_key(key)
+  let processed = process_text(text, break_key)
+  var decrypted = ""
+  var i = 0
+  while i < len(processed) {
+    var vec: list<int> = []
+    var j = 0
+    while j < break_key {
+      vec = append(vec, replace_letters(processed[i + j]))
+      j = j + 1
+    }
+    let dec_vec = multiply_matrix_vector(decrypt_key, vec)
+    var k = 0
+    while k < break_key {
+      decrypted = decrypted + replace_digits(dec_vec[k])
+      k = k + 1
+    }
+    i = i + break_key
+  }
+  return decrypted
+}
+
+let key = [[2,5],[1,6]]
+print(hill_encrypt(key, "testing hill cipher"))
+print(hill_encrypt(key, "hello"))
+print(hill_decrypt(key, "WHXYJOLM9C6XT085LL"))
+print(hill_decrypt(key, "85FF00"))
