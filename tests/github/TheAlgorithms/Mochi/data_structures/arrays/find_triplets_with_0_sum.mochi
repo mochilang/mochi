@@ -1,0 +1,115 @@
+/*
+  Find all unique triplets in an integer array whose sum is zero.
+  
+  Two approaches are implemented:
+  1. A brute-force method that checks every combination of three
+     elements. Each valid triplet is sorted into nondecreasing order
+     and appended to the result list if not already present.
+  2. A hashing-based method that for each first element explores the
+     remaining elements while storing complements in a temporary list
+     acting as a set. When the needed complement is encountered a
+     sorted triplet is recorded if new.
+
+  Both functions return all unique triplets where the sum of the
+  three numbers is zero.
+*/
+
+fun sort_triplet(a: int, b: int, c: int): list<int> {
+  var x = a
+  var y = b
+  var z = c
+  if x > y {
+    let t = x
+    x = y
+    y = t
+  }
+  if y > z {
+    let t = y
+    y = z
+    z = t
+  }
+  if x > y {
+    let t = x
+    x = y
+    y = t
+  }
+  return [x, y, z]
+}
+
+fun contains_triplet(arr: list<list<int>>, target: list<int>): bool {
+  for i in 0..len(arr) {
+    let item = arr[i]
+    var same = true
+    for j in 0..len(target) {
+      if item[j] != target[j] {
+        same = false
+        break
+      }
+    }
+    if same {
+      return true
+    }
+  }
+  return false
+}
+
+fun contains_int(arr: list<int>, value: int): bool {
+  for i in 0..len(arr) {
+    if arr[i] == value {
+      return true
+    }
+  }
+  return false
+}
+
+fun find_triplets_with_0_sum(nums: list<int>): list<list<int>> {
+  let n = len(nums)
+  var result: list<list<int>> = []
+  for i in 0..n {
+    for j in (i + 1)..n {
+      for k in (j + 1)..n {
+        let a = nums[i]
+        let b = nums[j]
+        let c = nums[k]
+        if a + b + c == 0 {
+          let trip = sort_triplet(a, b, c)
+          if !contains_triplet(result, trip) {
+            result = append(result, trip)
+          }
+        }
+      }
+    }
+  }
+  return result
+}
+
+fun find_triplets_with_0_sum_hashing(arr: list<int>): list<list<int>> {
+  let target_sum = 0
+  var output: list<list<int>> = []
+  for i in 0..len(arr) {
+    var seen: list<int> = []
+    let current_sum = target_sum - arr[i]
+    for j in (i + 1)..len(arr) {
+      let other = arr[j]
+      let required = current_sum - other
+      if contains_int(seen, required) {
+        let trip = sort_triplet(arr[i], other, required)
+        if !contains_triplet(output, trip) {
+          output = append(output, trip)
+        }
+      }
+      seen = append(seen, other)
+    }
+  }
+  return output
+}
+
+// Example usage
+print(str(find_triplets_with_0_sum([-1, 0, 1, 2, -1, -4])))
+print(str(find_triplets_with_0_sum([])))
+print(str(find_triplets_with_0_sum([0, 0, 0])))
+print(str(find_triplets_with_0_sum([1, 2, 3, 0, -1, -2, -3])))
+print(str(find_triplets_with_0_sum_hashing([-1, 0, 1, 2, -1, -4])))
+print(str(find_triplets_with_0_sum_hashing([])))
+print(str(find_triplets_with_0_sum_hashing([0, 0, 0])))
+print(str(find_triplets_with_0_sum_hashing([1, 2, 3, 0, -1, -2, -3])))
