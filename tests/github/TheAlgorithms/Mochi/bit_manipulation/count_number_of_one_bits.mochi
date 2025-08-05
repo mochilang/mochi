@@ -1,0 +1,63 @@
+/*
+Count the number of set bits (1-bits) in the binary representation of a
+non-negative integer.
+
+Two approaches are implemented:
+1. Brian Kernighan's algorithm repeatedly clears the lowest set bit using
+   `n & (n - 1)` until the number becomes zero.
+2. A modulo and right-shift method inspects the least significant bit with
+   `n % 2` and shifts right by one each iteration.
+
+Both functions panic when provided a negative input.
+*/
+fun bit_and(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua > 0 || ub > 0 {
+    if ua % 2 == 1 && ub % 2 == 1 { res = res + bit }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun count_bits_kernighan(n: int): int {
+  if n < 0 { panic("the value of input must not be negative") }
+  var num = n
+  var result = 0
+  while num != 0 {
+    num = bit_and(num, num - 1)
+    result = result + 1
+  }
+  return result
+}
+
+fun count_bits_modulo(n: int): int {
+  if n < 0 { panic("the value of input must not be negative") }
+  var num = n
+  var result = 0
+  while num != 0 {
+    if num % 2 == 1 { result = result + 1 }
+    num = (num / 2) as int
+  }
+  return result
+}
+
+fun main() {
+  let numbers = [25, 37, 21, 58, 0, 256]
+  var i = 0
+  while i < len(numbers) {
+    print(str(count_bits_kernighan(numbers[i])))
+    i = i + 1
+  }
+  i = 0
+  while i < len(numbers) {
+    print(str(count_bits_modulo(numbers[i])))
+    i = i + 1
+  }
+}
+
+main()
