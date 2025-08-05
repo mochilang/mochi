@@ -1,0 +1,31 @@
+/*
+Exponentiation by squaring using divide and conquer.
+
+Given integers a and b, compute a^b efficiently. When the exponent is
+non‑negative, the function recursively evaluates a^(b/2), squares the result,
+and multiplies by the base if b is odd. This reduces the number of
+multiplications to O(log b). For negative exponents, we compute the
+reciprocal of a^(-b) and return a floating‑point result.
+*/
+
+fun actual_power(a: int, b: int): int {
+  if b == 0 { return 1 }
+  let half = actual_power(a, b / 2)
+  if b % 2 == 0 {
+    return half * half
+  }
+  return a * half * half
+}
+
+fun power(a: int, b: int): float {
+  if b < 0 {
+    return 1.0 / (1.0 * actual_power(a, -b))
+  }
+  return 1.0 * actual_power(a, b)
+}
+
+print(str(power(4, 6)))
+print(str(power(2, 3)))
+print(str(power(-2, 3)))
+print(str(power(2, -3)))
+print(str(power(-2, -3)))
