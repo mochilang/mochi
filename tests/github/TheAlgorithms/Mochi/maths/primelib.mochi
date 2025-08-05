@@ -1,0 +1,273 @@
+/*
+Prime Number Utility Library
+----------------------------
+This module implements a suite of number theory routines based on the
+Python version primelib.py from TheAlgorithms project.  Functions include:
+
+- is_prime(n): test primality using trial division up to sqrt(n)
+- sieve_er(n): generate primes up to n with the Sieve of Eratosthenes
+- get_prime_numbers(n): list all primes <= n
+- prime_factorization(n): factor a non-negative integer into primes
+- greatest_prime_factor(n) and smallest_prime_factor(n): select extreme
+  prime factors
+- kg_v(a,b): least common multiple computed via gcd
+- is_even(n) / is_odd(n): parity checks
+- goldbach(n): find two primes whose sum equals an even number > 2
+- get_prime(k): obtain the k-th prime (0-indexed)
+- get_primes_between(p1,p2): primes between two given primes
+- get_divisors(n): all positive divisors of n
+- is_perfect_number(n): test if n equals sum of its proper divisors
+- simplify_fraction(num,den): reduce a fraction using gcd
+- factorial(n): compute n!
+- fib(n): nth Fibonacci number (1, 1, 2, 3, ...)
+
+All logic is implemented in pure Mochi without any FFI so it runs on
+runtime/vm.
+*/
+
+fun abs_int(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun gcd_iter(a: int, b: int): int {
+  var x = abs_int(a)
+  var y = abs_int(b)
+  while y != 0 {
+    let t = y
+    y = x % y
+    x = t
+  }
+  return x
+}
+
+fun is_prime(n: int): bool {
+  if n <= 1 { return false }
+  var d = 2
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 1
+  }
+  return true
+}
+
+fun sieve_er(n: int): list<int> {
+  var nums: list<int> = []
+  var i = 2
+  while i <= n {
+    nums = append(nums, i)
+    i = i + 1
+  }
+  var idx = 0
+  while idx < len(nums) {
+    var j = idx + 1
+    while j < len(nums) {
+      if nums[idx] != 0 {
+        if nums[j] % nums[idx] == 0 { nums[j] = 0 }
+      }
+      j = j + 1
+    }
+    idx = idx + 1
+  }
+  var res: list<int> = []
+  var k = 0
+  while k < len(nums) {
+    let v = nums[k]
+    if v != 0 { res = append(res, v) }
+    k = k + 1
+    }
+  return res
+}
+
+fun get_prime_numbers(n: int): list<int> {
+  var ans: list<int> = []
+  var num = 2
+  while num <= n {
+    if is_prime(num) { ans = append(ans, num) }
+    num = num + 1
+  }
+  return ans
+}
+
+fun prime_factorization(number: int): list<int> {
+  if number == 0 { return [0] }
+  if number == 1 { return [1] }
+  var ans: list<int> = []
+  if is_prime(number) {
+    ans = append(ans, number)
+    return ans
+  }
+  var quotient = number
+  var factor = 2
+  while quotient != 1 {
+    if is_prime(factor) && quotient % factor == 0 {
+      ans = append(ans, factor)
+      quotient = quotient / factor
+    } else {
+      factor = factor + 1
+    }
+  }
+  return ans
+}
+
+fun greatest_prime_factor(number: int): int {
+  let factors = prime_factorization(number)
+  var m = factors[0]
+  var i = 1
+  while i < len(factors) {
+    if factors[i] > m { m = factors[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun smallest_prime_factor(number: int): int {
+  let factors = prime_factorization(number)
+  var m = factors[0]
+  var i = 1
+  while i < len(factors) {
+    if factors[i] < m { m = factors[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun kg_v(number1: int, number2: int): int {
+  if number1 < 1 || number2 < 1 { panic("numbers must be positive") }
+  let g = gcd_iter(number1, number2)
+  return (number1 / g) * number2
+}
+
+fun is_even(number: int): bool {
+  return number % 2 == 0
+}
+
+fun is_odd(number: int): bool {
+  return number % 2 != 0
+}
+
+fun goldbach(number: int): list<int> {
+  if !is_even(number) || number <= 2 { panic("number must be even and > 2") }
+  let primes = get_prime_numbers(number)
+  var i = 0
+  while i < len(primes) {
+    var j = i + 1
+    while j < len(primes) {
+      if primes[i] + primes[j] == number {
+        return [primes[i], primes[j]]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return []
+}
+
+fun get_prime(n: int): int {
+  if n < 0 { panic("n must be non-negative") }
+  var index = 0
+  var ans = 2
+  while index < n {
+    index = index + 1
+    ans = ans + 1
+    while !is_prime(ans) {
+      ans = ans + 1
+    }
+  }
+  return ans
+}
+
+fun get_primes_between(p1: int, p2: int): list<int> {
+  let bad1 = !is_prime(p1)
+  let bad2 = !is_prime(p2)
+  if bad1 || bad2 || p1 >= p2 {
+    panic("arguments must be prime and p1 < p2")
+  }
+  var num = p1 + 1
+  while num < p2 {
+    if is_prime(num) { break }
+    num = num + 1
+  }
+  var ans: list<int> = []
+  while num < p2 {
+    ans = append(ans, num)
+    num = num + 1
+    while num < p2 {
+      if is_prime(num) { break }
+      num = num + 1
+    }
+  }
+  return ans
+}
+
+fun get_divisors(n: int): list<int> {
+  if n < 1 { panic("n must be >= 1") }
+  var ans: list<int> = []
+  var d = 1
+  while d <= n {
+    if n % d == 0 { ans = append(ans, d) }
+    d = d + 1
+  }
+  return ans
+}
+
+fun is_perfect_number(number: int): bool {
+  if number <= 1 { panic("number must be > 1") }
+  let divisors = get_divisors(number)
+  var sum = 0
+  var i = 0
+  while i < len(divisors) - 1 {
+    sum = sum + divisors[i]
+    i = i + 1
+  }
+  return sum == number
+}
+
+fun simplify_fraction(numerator: int, denominator: int): list<int> {
+  if denominator == 0 { panic("denominator cannot be zero") }
+  let g = gcd_iter(abs_int(numerator), abs_int(denominator))
+  return [numerator / g, denominator / g]
+}
+
+fun factorial(n: int): int {
+  if n < 0 { panic("n must be >= 0") }
+  var ans = 1
+  var i = 1
+  while i <= n {
+    ans = ans * i
+    i = i + 1
+  }
+  return ans
+}
+
+fun fib(n: int): int {
+  if n < 0 { panic("n must be >= 0") }
+  if n <= 1 { return 1 }
+  var tmp = 0
+  var fib1 = 1
+  var ans = 1
+  var i = 0
+  while i < n - 1 {
+    tmp = ans
+    ans = ans + fib1
+    fib1 = tmp
+    i = i + 1
+  }
+  return ans
+}
+
+print(str(is_prime(97)))
+print(str(sieve_er(20)))
+print(str(get_prime_numbers(20)))
+print(str(prime_factorization(287)))
+print(str(greatest_prime_factor(287)))
+print(str(smallest_prime_factor(287)))
+print(str(kg_v(8, 10)))
+print(str(goldbach(28)))
+print(str(get_prime(8)))
+print(str(get_primes_between(3, 20)))
+print(str(get_divisors(28)))
+print(str(is_perfect_number(28)))
+print(str(simplify_fraction(10, 20)))
+print(str(factorial(5)))
+print(str(fib(10)))
