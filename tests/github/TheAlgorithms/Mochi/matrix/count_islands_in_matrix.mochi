@@ -1,0 +1,78 @@
+/*
+Count the number of islands in a binary matrix including diagonal adjacency.
+
+A matrix of 0s and 1s is given.  Two cells belong to the same island if they
+are both 1 and are connected horizontally, vertically, or diagonally.  The
+algorithm scans every cell and launches a depth‑first search whenever it finds
+an unvisited 1.  The DFS marks all reachable 1s as visited.  The number of
+DFS launches equals the number of islands.
+
+Time complexity: O(rows * cols)
+Space complexity: O(rows * cols) for the visited matrix and recursion stack.
+*/
+
+fun is_safe(grid: list<list<int>>, visited: list<list<bool>>, row: int, col: int): bool {
+  let rows = len(grid)
+  let cols = len(grid[0])
+  let visited_cell = visited[row][col]
+  let within_bounds = row >= 0 && row < rows && col >= 0 && col < cols
+  let not_visited = visited_cell == false
+  return within_bounds && not_visited && grid[row][col] == 1
+}
+
+fun dfs(grid: list<list<int>>, visited: list<list<bool>>, row: int, col: int) {
+  let row_nbr = [-1, -1, -1, 0, 0, 1, 1, 1]
+  let col_nbr = [-1, 0, 1, -1, 1, -1, 0, 1]
+  visited[row][col] = true
+  var k = 0
+  while k < 8 {
+    let new_row = row + row_nbr[k]
+    let new_col = col + col_nbr[k]
+    if is_safe(grid, visited, new_row, new_col) {
+      dfs(grid, visited, new_row, new_col)
+    }
+    k = k + 1
+  }
+}
+
+fun count_islands(grid: list<list<int>>): int {
+  let rows = len(grid)
+  let cols = len(grid[0])
+  var visited: list<list<bool>> = []
+  var i = 0
+  while i < rows {
+    var row_list: list<bool> = []
+    var j = 0
+    while j < cols {
+      row_list = append(row_list, false)
+      j = j + 1
+    }
+    visited = append(visited, row_list)
+    i = i + 1
+  }
+
+  var count = 0
+  i = 0
+  while i < rows {
+    var j = 0
+    while j < cols {
+      if !visited[i][j] && grid[i][j] == 1 {
+        dfs(grid, visited, i, j)
+        count = count + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+let grid: list<list<int>> = [
+  [1,1,0,0,0],
+  [0,1,0,0,1],
+  [1,0,0,1,1],
+  [0,0,0,0,0],
+  [1,0,1,0,1]
+]
+
+print(count_islands(grid))
