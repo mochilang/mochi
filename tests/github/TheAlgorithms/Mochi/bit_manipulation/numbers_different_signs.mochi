@@ -1,0 +1,23 @@
+/*
+Numbers Different Signs - Bit Manipulation
+
+Given two integers, determine whether they have opposite signs.  In a two's
+complement representation, the sign bit is the highest bit.  XORing the two
+numbers sets this bit if and only if the inputs have different signs.  To avoid
+implementing full bitwise arithmetic, we compute the XOR of the sign bits by
+comparing the signs of each number.
+*/
+
+fun different_signs(num1: int, num2: int): bool {
+  let sign1 = num1 < 0
+  let sign2 = num2 < 0
+  return sign1 != sign2
+}
+
+print(str(different_signs(1, -1)))
+print(str(different_signs(1, 1)))
+print(str(different_signs(1000000000000000000, -1000000000000000000)))
+print(str(different_signs(-1000000000000000000, 1000000000000000000)))
+print(str(different_signs(50, 278)))
+print(str(different_signs(0, 2)))
+print(str(different_signs(2, 0)))
