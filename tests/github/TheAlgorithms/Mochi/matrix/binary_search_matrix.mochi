@@ -1,0 +1,60 @@
+/*
+Binary Search in a 2D Matrix
+---------------------------
+This program searches for a target value inside a 2D matrix where each row is
+sorted in ascending order. The algorithm examines each row sequentially and
+runs a recursive binary search on the row when the first element is not greater
+than the target. If the target is found, it returns the row and column indices;
+otherwise it returns [-1, -1].
+
+The binary search helper operates on a 1D sorted list using integer arithmetic
+only. Both routines avoid foreign interfaces so they can execute on the Mochi
+runtime/vm. Searching an m×n matrix takes O(m log n) time in the worst case.
+*/
+
+fun binary_search(arr: list<int>, lower_bound: int, upper_bound: int, value: int): int {
+  let r = (lower_bound + upper_bound) / 2
+  if arr[r] == value {
+    return r
+  }
+  if lower_bound >= upper_bound {
+    return -1
+  }
+  if arr[r] < value {
+    return binary_search(arr, r + 1, upper_bound, value)
+  }
+  return binary_search(arr, lower_bound, r - 1, value)
+}
+
+fun mat_bin_search(value: int, matrix: list<list<int>>): list<int> {
+  var index: int = 0
+  if matrix[index][0] == value {
+    return [index, 0]
+  }
+  while index < len(matrix) && matrix[index][0] < value {
+    let r = binary_search(matrix[index], 0, len(matrix[index]) - 1, value)
+    if r != (-1) {
+      return [index, r]
+    }
+    index = index + 1
+  }
+  return [-1, -1]
+}
+
+fun main() {
+  let row: list<int> = [1, 4, 7, 11, 15]
+  print(str(binary_search(row, 0, len(row) - 1, 1)))
+  print(str(binary_search(row, 0, len(row) - 1, 23)))
+
+  let matrix: list<list<int>> = [
+    [1, 4, 7, 11, 15],
+    [2, 5, 8, 12, 19],
+    [3, 6, 9, 16, 22],
+    [10, 13, 14, 17, 24],
+    [18, 21, 23, 26, 30]
+  ]
+  print(str(mat_bin_search(1, matrix)))
+  print(str(mat_bin_search(34, matrix)))
+}
+
+main()
