@@ -1,0 +1,49 @@
+/*
+Binary Multiplication
+
+This algorithm multiplies two non‑negative integers using the doubling and halving
+method. At each step the first operand `a` is doubled while the second operand `b`
+is halved. Whenever `b` is odd, the current value of `a` is added to the result.
+The process repeats until `b` reaches zero. This approach requires only addition
+and division by two, achieving a time complexity of O(log b).
+
+A variant also computes `(a * b) % m` without overflow by applying the modulo
+operation during accumulation.
+*/
+
+fun binary_multiply(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  while y > 0 {
+    if y % 2 == 1 {
+      res = res + x
+    }
+    x = x + x
+    y = (y / 2) as int
+  }
+  return res
+}
+
+fun binary_mod_multiply(a: int, b: int, modulus: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  while y > 0 {
+    if y % 2 == 1 {
+      res = ((res % modulus) + (x % modulus)) % modulus
+    }
+    x = x + x
+    y = (y / 2) as int
+  }
+  return res % modulus
+}
+
+fun main() {
+  print(str(binary_multiply(2, 3)))
+  print(str(binary_multiply(5, 0)))
+  print(str(binary_mod_multiply(2, 3, 5)))
+  print(str(binary_mod_multiply(10, 5, 13)))
+}
+
+main()
