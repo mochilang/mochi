@@ -1,0 +1,98 @@
+/*
+Implements a disjoint-set (union–find) structure with union by rank and
+path compression.  Each set is represented by an index.  Arrays track
+parents, ranks and the number of items in each set.  The `merge` function
+joins two sets by attaching the root with lower rank under the root with
+higher rank, increasing the destination rank when both are equal.  The
+`get_parent` function performs path compression to keep trees shallow by
+recursively finding a node's root and updating parent pointers on the way
+up.  After every union the size of the largest set is stored in
+`max_set`.
+*/
+
+type DisjointSet {
+  set_counts: list<int>,
+  max_set: int,
+  ranks: list<int>,
+  parents: list<int>,
+}
+
+fun max_list(xs: list<int>): int {
+  var m = xs[0]
+  var i = 1
+  while i < len(xs) {
+    if xs[i] > m { m = xs[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun disjoint_set_new(set_counts: list<int>): DisjointSet {
+  let max_set = max_list(set_counts)
+  let num_sets = len(set_counts)
+  var ranks: list<int> = []
+  var parents: list<int> = []
+  var i = 0
+  while i < num_sets {
+    ranks = append(ranks, 1)
+    parents = append(parents, i)
+    i = i + 1
+  }
+  return DisjointSet{
+    set_counts: set_counts,
+    max_set: max_set,
+    ranks: ranks,
+    parents: parents,
+  }
+}
+
+fun get_parent(ds: DisjointSet, idx: int): int {
+  if ds.parents[idx] == idx { return idx }
+  var parents = ds.parents
+  parents[idx] = get_parent(ds, parents[idx])
+  ds.parents = parents
+  return ds.parents[idx]
+}
+
+fun merge(ds: DisjointSet, src: int, dst: int): bool {
+  let src_parent = get_parent(ds, src)
+  let dst_parent = get_parent(ds, dst)
+  if src_parent == dst_parent { return false }
+
+  if ds.ranks[dst_parent] >= ds.ranks[src_parent] {
+    var counts = ds.set_counts
+    counts[dst_parent] = counts[dst_parent] + counts[src_parent]
+    counts[src_parent] = 0
+    ds.set_counts = counts
+    var parents = ds.parents
+    parents[src_parent] = dst_parent
+    ds.parents = parents
+    if ds.ranks[dst_parent] == ds.ranks[src_parent] {
+      var ranks = ds.ranks
+      ranks[dst_parent] = ranks[dst_parent] + 1
+      ds.ranks = ranks
+    }
+    let joined = ds.set_counts[dst_parent]
+    if joined > ds.max_set { ds.max_set = joined }
+  } else {
+    var counts = ds.set_counts
+    counts[src_parent] = counts[src_parent] + counts[dst_parent]
+    counts[dst_parent] = 0
+    ds.set_counts = counts
+    var parents = ds.parents
+    parents[dst_parent] = src_parent
+    ds.parents = parents
+    let joined = ds.set_counts[src_parent]
+    if joined > ds.max_set { ds.max_set = joined }
+  }
+  return true
+}
+
+// Example usage
+var ds = disjoint_set_new([1, 1, 1])
+print(merge(ds, 1, 2))
+print(merge(ds, 0, 2))
+print(merge(ds, 0, 1))
+print(get_parent(ds, 0))
+print(get_parent(ds, 1))
+print(ds.max_set)
