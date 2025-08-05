@@ -1,0 +1,100 @@
+/*
+Multilayer Perceptron Classifier
+
+This example trains a tiny feedforward neural network to learn the
+logical AND function.  The network uses two input features, a hidden
+layer with two neurons, and a single output neuron.  All neurons apply
+the logistic sigmoid activation.  Training is performed with stochastic
+gradient descent and backpropagation:
+ 1. Forward propagate the inputs to compute activations.
+ 2. Compute the output error and propagate it backward to obtain
+gradients for the hidden layer.
+ 3. Update weights and biases using the chosen learning rate.
+After sufficient epochs the network predicts labels for new samples.
+Time complexity: O(epochs * samples * hidden).
+*/
+
+fun exp_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1.0
+  while i < 20.0 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1.0
+  }
+  return sum
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + exp_taylor(-x))
+}
+
+let X: list<list<float>> = [[0.0, 0.0], [1.0, 1.0], [1.0, 0.0], [0.0, 1.0]]
+let Y: list<float> = [0.0, 1.0, 0.0, 0.0]
+let test_data: list<list<float>> = [[0.0, 0.0], [0.0, 1.0], [1.0, 1.0]]
+
+var w1: list<list<float>> = [[0.5, -0.5], [0.5, 0.5]]
+var b1: list<float> = [0.0, 0.0]
+var w2: list<float> = [0.5, -0.5]
+var b2: float = 0.0
+
+fun train(epochs: int, lr: float) {
+  var e = 0
+  while e < epochs {
+    var i = 0
+    while i < len(X) {
+      let x0 = X[i][0]
+      let x1 = X[i][1]
+      let target = Y[i]
+      let z1 = w1[0][0] * x0 + w1[1][0] * x1 + b1[0]
+      let z2 = w1[0][1] * x0 + w1[1][1] * x1 + b1[1]
+      let h1 = sigmoid(z1)
+      let h2 = sigmoid(z2)
+      let z3 = w2[0] * h1 + w2[1] * h2 + b2
+      let out = sigmoid(z3)
+      let error = out - target
+      let d1 = h1 * (1.0 - h1) * w2[0] * error
+      let d2 = h2 * (1.0 - h2) * w2[1] * error
+      w2[0] = w2[0] - lr * error * h1
+      w2[1] = w2[1] - lr * error * h2
+      b2 = b2 - lr * error
+      w1[0][0] = w1[0][0] - lr * d1 * x0
+      w1[1][0] = w1[1][0] - lr * d1 * x1
+      b1[0] = b1[0] - lr * d1
+      w1[0][1] = w1[0][1] - lr * d2 * x0
+      w1[1][1] = w1[1][1] - lr * d2 * x1
+      b1[1] = b1[1] - lr * d2
+      i = i + 1
+    }
+    e = e + 1
+  }
+}
+
+fun predict(samples: list<list<float>>): list<int> {
+  var preds: list<int> = []
+  var i = 0
+  while i < len(samples) {
+    let x0 = samples[i][0]
+    let x1 = samples[i][1]
+    let z1 = w1[0][0] * x0 + w1[1][0] * x1 + b1[0]
+    let z2 = w1[0][1] * x0 + w1[1][1] * x1 + b1[1]
+    let h1 = sigmoid(z1)
+    let h2 = sigmoid(z2)
+    let z3 = w2[0] * h1 + w2[1] * h2 + b2
+    let out = sigmoid(z3)
+    var label = 0
+    if out >= 0.5 { label = 1 }
+    preds = append(preds, label)
+    i = i + 1
+  }
+  return preds
+}
+
+fun wrapper(y: list<int>): list<int> {
+  return y
+}
+
+train(4000, 0.5)
+let preds = wrapper(predict(test_data))
+print(str(preds))
