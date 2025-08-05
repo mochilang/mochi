@@ -1,0 +1,68 @@
+/*
+Sophie Germain and Safe Primes
+-----------------------------
+A prime number \(p\) is a “Sophie Germain prime” when \(2p + 1\) is also
+prime.  The second prime is known as a safe prime.  For example, 23 is a
+Germain prime because both 23 and 47 (= 2*23 + 1) are prime.  Safe primes are
+defined conversely: a prime \(q\) is safe if \((q - 1) / 2\) is prime.
+
+This module implements checks for Germain and safe primes using a simple trial
+division primality test that runs in \(O(\sqrt{n})\) time.  All code is written
+purely in Mochi without any foreign function interface so it can execute on the
+`runtime/vm`.
+*/
+
+fun is_prime(n: int): bool {
+  if n <= 1 { return false }
+  if n <= 3 { return true }
+  if n % 2 == 0 { return false }
+  var i = 3
+  while i * i <= n {
+    if n % i == 0 {
+      return false
+    }
+    i = i + 2
+  }
+  return true
+}
+
+fun is_germain_prime(number: int): bool {
+  if number < 1 { panic("Input value must be a positive integer") }
+  return is_prime(number) && is_prime(2 * number + 1)
+}
+
+fun is_safe_prime(number: int): bool {
+  if number < 1 { panic("Input value must be a positive integer") }
+  if (number - 1) % 2 != 0 {
+    return false
+  }
+  return is_prime(number) && is_prime((number - 1) / 2)
+}
+
+fun test_is_germain_prime() {
+  if !is_germain_prime(3) { panic("is_germain_prime(3) failed") }
+  if !is_germain_prime(11) { panic("is_germain_prime(11) failed") }
+  if is_germain_prime(4) { panic("is_germain_prime(4) failed") }
+  if !is_germain_prime(23) { panic("is_germain_prime(23) failed") }
+  if is_germain_prime(13) { panic("is_germain_prime(13) failed") }
+  if is_germain_prime(20) { panic("is_germain_prime(20) failed") }
+}
+
+fun test_is_safe_prime() {
+  if !is_safe_prime(5) { panic("is_safe_prime(5) failed") }
+  if !is_safe_prime(11) { panic("is_safe_prime(11) failed") }
+  if is_safe_prime(1) { panic("is_safe_prime(1) failed") }
+  if is_safe_prime(2) { panic("is_safe_prime(2) failed") }
+  if is_safe_prime(3) { panic("is_safe_prime(3) failed") }
+  if !is_safe_prime(47) { panic("is_safe_prime(47) failed") }
+}
+
+fun main() {
+  test_is_germain_prime()
+  test_is_safe_prime()
+  print(is_germain_prime(23))
+  print(is_safe_prime(47))
+}
+
+main()
+
