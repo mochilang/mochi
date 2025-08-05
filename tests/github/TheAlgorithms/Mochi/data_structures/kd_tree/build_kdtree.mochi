@@ -1,0 +1,62 @@
+/*
+Constructs a k-dimensional tree (KD-Tree) from a set of points.
+At each recursion depth the axis cycles through the point's
+coordinates.  Points are sorted along the current axis and the median
+is chosen as the node's pivot.  Subtrees are built recursively from the
+points on either side of the median.  The resulting binary tree enables
+efficient range and nearest-neighbour queries in multidimensional
+spaces.
+*/
+
+type KDNode {
+  point: list<float>
+  left: int
+  right: int
+}
+
+var tree: list<KDNode> = []
+
+fun sort_points(points: list<list<float>>, axis: int): list<list<float>> {
+  var arr = points
+  var i = 0
+  while i < len(arr) {
+    var j = 0
+    while j < len(arr) - 1 {
+      if arr[j][axis] > arr[j + 1][axis] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun build_kdtree(points: list<list<float>>, depth: int): int {
+  if len(points) == 0 {
+    return 0 - 1
+  }
+  let k = len(points[0])
+  let axis = depth % k
+  let sorted = sort_points(points, axis)
+  let median_idx = len(sorted) / 2
+  let left_points = sorted[0:median_idx]
+  let right_points = sorted[median_idx + 1:len(sorted)]
+  var idx = len(tree)
+  tree = append(tree, KDNode { point: sorted[median_idx], left: 0 - 1, right: 0 - 1 })
+  let left_idx = build_kdtree(left_points, depth + 1)
+  let right_idx = build_kdtree(right_points, depth + 1)
+  var node = tree[idx]
+  node.left = left_idx
+  node.right = right_idx
+  tree[idx] = node
+  return idx
+}
+
+let pts: list<list<float>> = [[2.0, 3.0], [5.0, 4.0], [9.0, 6.0], [4.0, 7.0], [8.0, 1.0], [7.0, 2.0]]
+let root = build_kdtree(pts, 0)
+print(str(tree))
+
+print(root)
