@@ -1,0 +1,61 @@
+/*
+Minimum Cost for Tickets
+------------------------
+Given a list of days on which travel occurs (each between 1 and 365) and
+three ticket costs for durations of 1, 7, and 30 days, compute the least
+amount of money needed to cover all travel days.  The algorithm iterates
+through each day up to the last travel day and uses dynamic programming
+where `dp[i]` is the minimum cost to cover travel up to day `i`.  For
+travel days we consider buying a 1, 7 or 30 day ticket and choose the
+cheapest option.  Non-travel days inherit the previous cost.
+
+Time Complexity: O(D) where D is the last travel day.
+Space Complexity: O(D)
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun max_int(a: int, b: int): int {
+  if a > b { return a } else { return b }
+}
+
+fun min_int(a: int, b: int): int {
+  if a < b { return a } else { return b }
+}
+
+fun min3(a: int, b: int, c: int): int {
+  return min_int(min_int(a, b), c)
+}
+
+fun minimum_tickets_cost(days: list<int>, costs: list<int>): int {
+  if len(days) == 0 { return 0 }
+  var last_day = days[len(days) - 1]
+  var dp = make_list(last_day + 1, 0)
+  var day_index = 0
+  var d = 1
+  while d <= last_day {
+    if day_index < len(days) && d == days[day_index] {
+      let cost1 = dp[d - 1] + costs[0]
+      let cost7 = dp[max_int(0, d - 7)] + costs[1]
+      let cost30 = dp[max_int(0, d - 30)] + costs[2]
+      dp[d] = min3(cost1, cost7, cost30)
+      day_index = day_index + 1
+    } else {
+      dp[d] = dp[d - 1]
+    }
+    d = d + 1
+  }
+  return dp[last_day]
+}
+
+print(str(minimum_tickets_cost([1, 4, 6, 7, 8, 20], [2, 7, 15])))
+print(str(minimum_tickets_cost([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], [2, 7, 15])))
+print(str(minimum_tickets_cost([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 30, 31], [2, 90, 150])))
