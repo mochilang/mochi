@@ -1,0 +1,209 @@
+/*
+Recursive Binary Search Tree with Parent Pointers
+
+This implementation mirrors a classic binary search tree (BST) where each
+node stores its parent along with left and right children. All operations
+are implemented recursively:
+
+* `put` inserts a value, recursively descending left or right until an
+  empty position is found. Parent pointers are updated for new nodes.
+* `search` finds the node containing a label or panics if it does not
+  exist.
+* `remove` deletes a node and maintains BST properties. When removing a
+  node with two children, the smallest value in the right subtree
+  replaces the removed node.
+* `exists`, `get_min_label`, and `get_max_label` provide typical BST
+  queries.
+* `inorder` and `preorder` traversals return the labels in the respective
+  orders.
+
+All nodes are stored in an array and referenced by integer indexes.
+`-1` represents a null pointer. This avoids the use of the `any` type and
+keeps the structure fully typed.
+*/
+
+type Node {
+  label: int,
+  parent: int,
+  left: int,
+  right: int
+}
+
+let NIL = 0 - 1
+var nodes: list<Node> = []
+var root: int = NIL
+
+fun new_node(label: int, parent: int): int {
+  let n = Node { label: label, parent: parent, left: NIL, right: NIL }
+  nodes = append(nodes, n)
+  return len(nodes) - 1
+}
+
+fun empty() {
+  root = NIL
+}
+
+fun is_empty(): bool {
+  return root == NIL
+}
+
+fun _put(i: int, label: int, parent: int): int {
+  if i == NIL {
+    return new_node(label, parent)
+  }
+  if label < nodes[i].label {
+    nodes[i].left = _put(nodes[i].left, label, i)
+  } else if label > nodes[i].label {
+    nodes[i].right = _put(nodes[i].right, label, i)
+  } else {
+    panic("Node with label " + str(label) + " already exists")
+  }
+  return i
+}
+
+fun put(label: int) {
+  root = _put(root, label, NIL)
+}
+
+fun _search(i: int, label: int): int {
+  if i == NIL {
+    panic("Node with label " + str(label) + " does not exist")
+  }
+  if label < nodes[i].label {
+    return _search(nodes[i].left, label)
+  }
+  if label > nodes[i].label {
+    return _search(nodes[i].right, label)
+  }
+  return i
+}
+
+fun search(label: int): int {
+  return _search(root, label)
+}
+
+fun _reassign_nodes(i: int, new_child: int) {
+  if new_child != NIL {
+    nodes[new_child].parent = nodes[i].parent
+  }
+  let parent = nodes[i].parent
+  if parent != NIL {
+    if nodes[parent].right == i {
+      nodes[parent].right = new_child
+    } else {
+      nodes[parent].left = new_child
+    }
+  } else {
+    root = new_child
+  }
+}
+
+fun _get_lowest_node(i: int): int {
+  if nodes[i].left != NIL {
+    return _get_lowest_node(nodes[i].left)
+  }
+  let lowest = i
+  _reassign_nodes(i, nodes[i].right)
+  return lowest
+}
+
+fun remove(label: int) {
+  let i = search(label)
+  if nodes[i].right != NIL && nodes[i].left != NIL {
+    let lowest = _get_lowest_node(nodes[i].right)
+    nodes[lowest].left = nodes[i].left
+    nodes[lowest].right = nodes[i].right
+    nodes[nodes[i].left].parent = lowest
+    if nodes[i].right != NIL {
+      nodes[nodes[i].right].parent = lowest
+    }
+    _reassign_nodes(i, lowest)
+  } else if nodes[i].left != NIL {
+    _reassign_nodes(i, nodes[i].left)
+  } else if nodes[i].right != NIL {
+    _reassign_nodes(i, nodes[i].right)
+  } else {
+    _reassign_nodes(i, NIL)
+  }
+}
+
+fun exists(label: int): bool {
+  var i = root
+  while i != NIL {
+    if label == nodes[i].label {
+      return true
+    }
+    if label < nodes[i].label {
+      i = nodes[i].left
+    } else {
+      i = nodes[i].right
+    }
+  }
+  return false
+}
+
+fun get_max_label(): int {
+  if root == NIL {
+    panic("Binary search tree is empty")
+  }
+  var i = root
+  while nodes[i].right != NIL {
+    i = nodes[i].right
+  }
+  return nodes[i].label
+}
+
+fun get_min_label(): int {
+  if root == NIL {
+    panic("Binary search tree is empty")
+  }
+  var i = root
+  while nodes[i].left != NIL {
+    i = nodes[i].left
+  }
+  return nodes[i].label
+}
+
+fun _inorder(i: int, acc: list<int>): list<int> {
+  if i == NIL {
+    return acc
+  }
+  var res = _inorder(nodes[i].left, acc)
+  res = append(res, nodes[i].label)
+  return _inorder(nodes[i].right, res)
+}
+
+fun inorder(): list<int> {
+  return _inorder(root, [])
+}
+
+fun _preorder(i: int, acc: list<int>): list<int> {
+  if i == NIL {
+    return acc
+  }
+  var res = append(acc, nodes[i].label)
+  res = _preorder(nodes[i].left, res)
+  return _preorder(nodes[i].right, res)
+}
+
+fun preorder(): list<int> {
+  return _preorder(root, [])
+}
+
+fun main() {
+  nodes = []
+  root = NIL
+  let nums: list<int> = [8, 3, 6, 1, 10, 14, 13, 4, 7]
+  for v in nums {
+    put(v)
+  }
+  print(str(inorder()))
+  print(exists(6))
+  print(exists(20))
+  print(get_min_label())
+  print(get_max_label())
+  remove(6)
+  print(str(inorder()))
+}
+
+main()
