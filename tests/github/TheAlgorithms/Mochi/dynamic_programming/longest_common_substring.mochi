@@ -1,0 +1,54 @@
+/*
+Given two strings, find the longest substring present in both.
+The algorithm uses dynamic programming where dp[i][j] stores
+length of the longest common suffix of the prefixes text1[0:i]
+and text2[0:j]. When characters match, the value extends the
+previous diagonal cell; otherwise it resets to 0. Tracking the
+maximum length and its ending position allows extraction of the
+longest common substring in O(m*n) time.
+*/
+
+fun longest_common_substring(text1: string, text2: string): string {
+  if len(text1) == 0 || len(text2) == 0 {
+    return ""
+  }
+  let m = len(text1)
+  let n = len(text2)
+
+  var dp: list<list<int>> = []
+  var i = 0
+  while i < m + 1 {
+    var row: list<int> = []
+    var j = 0
+    while j < n + 1 {
+      row = append(row, 0)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+
+  var end_pos = 0
+  var max_len = 0
+  var ii = 1
+  while ii <= m {
+    var jj = 1
+    while jj <= n {
+      if substring(text1, ii - 1, ii) == substring(text2, jj - 1, jj) {
+        dp[ii][jj] = 1 + dp[ii - 1][jj - 1]
+        if dp[ii][jj] > max_len {
+          max_len = dp[ii][jj]
+          end_pos = ii
+        }
+      }
+      jj = jj + 1
+    }
+    ii = ii + 1
+  }
+
+  return substring(text1, end_pos - max_len, end_pos)
+}
+
+print(longest_common_substring("abcdef", "xabded"))
+print("\n")
+print(longest_common_substring("zxabcdezy", "yzabcdezx"))
