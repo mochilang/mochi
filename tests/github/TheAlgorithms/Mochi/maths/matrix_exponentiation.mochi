@@ -1,0 +1,108 @@
+/*
+Matrix Exponentiation for Fibonacci Numbers
+-------------------------------------------
+This module demonstrates how matrix exponentiation can compute terms of a
+linear recurrence such as the Fibonacci sequence in logarithmic time.
+
+The transformation matrix [[1, 1], [1, 0]] maps [F(n), F(n-1)]^T to
+[F(n+1), F(n)]^T.  Raising this matrix to the (n-2) power and multiplying
+by the vector [f2, f1]^T yields the nth term when the sequence starts with
+values f1 and f2.
+
+Binary exponentiation multiplies matrices in O(log n) time by repeatedly
+squaring the base matrix and conditionally multiplying into an accumulator
+whenever the current bit of the exponent is set.  This approach is much
+faster than the simple iterative method which runs in O(n) time.
+*/
+
+fun identity(n: int): list<list<int>> {
+  var i = 0
+  var mat: list<list<int>> = []
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      if i == j {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun matrix_mul(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  let n = len(a)
+  var result: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      var cell = 0
+      var k = 0
+      while k < n {
+        cell = cell + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      row = append(row, cell)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun matrix_pow(base: list<list<int>>, exp: int): list<list<int>> {
+  var result = identity(len(base))
+  var b = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 {
+      result = matrix_mul(result, b)
+    }
+    b = matrix_mul(b, b)
+    e = e / 2
+  }
+  return result
+}
+
+fun fibonacci_with_matrix_exponentiation(n: int, f1: int, f2: int): int {
+  if n == 1 { return f1 }
+  if n == 2 { return f2 }
+  let base: list<list<int>> = [[1, 1], [1, 0]]
+  let m = matrix_pow(base, n - 2)
+  return f2 * m[0][0] + f1 * m[0][1]
+}
+
+fun simple_fibonacci(n: int, f1: int, f2: int): int {
+  if n == 1 { return f1 }
+  if n == 2 { return f2 }
+  var a = f1
+  var b = f2
+  var count = n - 2
+  while count > 0 {
+    let tmp = a + b
+    a = b
+    b = tmp
+    count = count - 1
+  }
+  return b
+}
+
+print(str(fibonacci_with_matrix_exponentiation(1, 5, 6)))
+print(str(fibonacci_with_matrix_exponentiation(2, 10, 11)))
+print(str(fibonacci_with_matrix_exponentiation(13, 0, 1)))
+print(str(fibonacci_with_matrix_exponentiation(10, 5, 9)))
+print(str(fibonacci_with_matrix_exponentiation(9, 2, 3)))
+print(str(simple_fibonacci(1, 5, 6)))
+print(str(simple_fibonacci(2, 10, 11)))
+print(str(simple_fibonacci(13, 0, 1)))
+print(str(simple_fibonacci(10, 5, 9)))
+print(str(simple_fibonacci(9, 2, 3)))
+
