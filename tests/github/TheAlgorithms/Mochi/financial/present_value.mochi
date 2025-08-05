@@ -1,0 +1,50 @@
+/*
+Calculate the present value of a series of yearly cash flows.
+Each cash flow is discounted back to present using the provided
+rate: PV = sum(cf / (1 + r)^i) for i starting at 0.
+
+The algorithm performs these steps:
+1. Reject negative discount rates and empty cash flow lists.
+2. For each cash flow, compute (1 + r)^i by repeated multiplication.
+3. Accumulate cf divided by this factor into the present value sum.
+4. Round the final result to two decimal places using integer rounding.
+
+This runs in O(n) time and O(1) extra space for n cash flows.
+*/
+
+fun powf(base: float, exponent: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exponent {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun round2(value: float): float {
+  if value >= 0.0 {
+    let scaled = (value * 100.0 + 0.5) as int
+    return (scaled as float) / 100.0
+  }
+  let scaled = (value * 100.0 - 0.5) as int
+  return (scaled as float) / 100.0
+}
+
+fun present_value(discount_rate: float, cash_flows: list<float>): float {
+  if discount_rate < 0.0 { panic("Discount rate cannot be negative") }
+  if len(cash_flows) == 0 { panic("Cash flows list cannot be empty") }
+  var pv = 0.0
+  var i = 0
+  let factor = 1.0 + discount_rate
+  while i < len(cash_flows) {
+    let cf = cash_flows[i]
+    pv = pv + cf / powf(factor, i)
+    i = i + 1
+  }
+  return round2(pv)
+}
+
+print(str(present_value(0.13, [10.0, 20.70, -293.0, 297.0])))
+print(str(present_value(0.07, [-109129.39, 30923.23, 15098.93, 29734.0, 39.0])))
+print(str(present_value(0.07, [109129.39, 30923.23, 15098.93, 29734.0, 39.0])))
