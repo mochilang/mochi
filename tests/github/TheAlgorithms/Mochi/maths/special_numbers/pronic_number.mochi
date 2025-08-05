@@ -1,0 +1,55 @@
+/*
+Pronic Number Checker
+---------------------
+A pronic number is the product of two consecutive integers:
+  n = m * (m + 1)
+This module provides an integer square root helper and a function
+`is_pronic` that verifies whether a given non-negative even integer
+fits this definition.
+
+Algorithm:
+1. Reject negative or odd inputs immediately.
+2. Compute the integer square root `r` of the number.
+3. The number is pronic if and only if `r * (r + 1)` equals it.
+
+The integer square root uses incremental search to avoid relying on
+foreign function interfaces so the program can run on runtime/vm.
+*/
+
+fun int_sqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun is_pronic(n: int): bool {
+  if n < 0 {
+    return false
+  }
+  if n % 2 != 0 {
+    return false
+  }
+  let root = int_sqrt(n)
+  return n == root * (root + 1)
+}
+
+fun test_is_pronic() {
+  if is_pronic(-1) { panic("-1 should not be pronic") }
+  if !is_pronic(0) { panic("0 should be pronic") }
+  if !is_pronic(2) { panic("2 should be pronic") }
+  if is_pronic(5) { panic("5 should not be pronic") }
+  if !is_pronic(6) { panic("6 should be pronic") }
+  if is_pronic(8) { panic("8 should not be pronic") }
+  if !is_pronic(30) { panic("30 should be pronic") }
+  if is_pronic(32) { panic("32 should not be pronic") }
+  if !is_pronic(2147441940) { panic("2147441940 should be pronic") }
+}
+
+fun main() {
+  test_is_pronic()
+  print(is_pronic(56))
+}
+
+main()
