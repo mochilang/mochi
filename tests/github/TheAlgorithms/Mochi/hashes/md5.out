@@ -1,0 +1,4 @@
+[94;1mtests/github/TheAlgorithms/Mochi/hashes/md5.mochi[0;22m
+   [33mtest[0m md5 empty                      ... [32mok[0m (39.0ms)
+   [33mtest[0m md5 fox                        ... [32mok[0m (35.0ms)
+   [33mtest[0m md5 fox dot                    ... [32mok[0m (30.0ms)

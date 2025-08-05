@@ -1,0 +1,284 @@
+/*
+MD5 Hash Function Implementation
+--------------------------------
+This program implements the MD5 hashing algorithm purely in Mochi without
+relying on built in bitwise operations or foreign function interfaces.  MD5
+processes an input message in 512‑bit blocks and produces a 128‑bit digest.
+The main steps are:
+1. Preprocess the input by converting it to a binary string, appending a
+   single "1" bit, padding with zeros so that the length is 448 modulo 512,
+   and finally appending the original length as a 64‑bit little‑endian
+   integer.
+2. Break the stream into 512‑bit blocks and each block into sixteen 32‑bit
+   little‑endian words.
+3. Iterate over each block updating the four 32‑bit state variables using the
+   nonlinear functions described in RFC 1321.  All arithmetic is performed
+   modulo 2^32.  Since the VM lacks native bitwise operators, helper
+   functions emulate AND, OR, XOR, NOT and bit rotation using integer
+   arithmetic.
+4. After processing all blocks, the final state values are converted to
+   little‑endian hexadecimal and concatenated to produce the 32 character
+   digest.
+The implementation includes test cases verifying standard MD5 test vectors.
+*/
+
+let MOD = 4294967296
+let ASCII = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ASCII) {
+    if ASCII[i:i+1] == ch { return 32 + i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun to_little_endian(s: string): string {
+  if len(s) != 32 { panic("Input must be of length 32") }
+  return s[24:32] + s[16:24] + s[8:16] + s[0:8]
+}
+
+fun int_to_bits(n: int, width: int): string {
+  var bits = ""
+  var num = n
+  while num > 0 {
+    bits = str(num % 2) + bits
+    num = num / 2
+  }
+  while len(bits) < width { bits = "0" + bits }
+  if len(bits) > width { bits = bits[len(bits)-width:len(bits)] }
+  return bits
+}
+
+fun bits_to_int(bits: string): int {
+  var num = 0
+  var i = 0
+  while i < len(bits) {
+    if bits[i:i+1] == "1" {
+      num = num * 2 + 1
+    } else {
+      num = num * 2
+    }
+    i = i + 1
+  }
+  return num
+}
+
+fun to_hex(n: int): string {
+  let digits = "0123456789abcdef"
+  if n == 0 { return "0" }
+  var num = n
+  var s = ""
+  while num > 0 {
+    let d = num % 16
+    s = digits[d:d+1] + s
+    num = num / 16
+  }
+  return s
+}
+
+fun reformat_hex(i: int): string {
+  if i < 0 { panic("Input must be non-negative") }
+  var hex = to_hex(i)
+  while len(hex) < 8 { hex = "0" + hex }
+  if len(hex) > 8 { hex = hex[len(hex)-8:len(hex)] }
+  var le = ""
+  var j = len(hex) - 2
+  while j >= 0 {
+    le = le + hex[j:j+2]
+    j = j - 2
+  }
+  return le
+}
+
+fun preprocess(message: string): string {
+  var bit_string = ""
+  var i = 0
+  while i < len(message) {
+    let ch = message[i:i+1]
+    bit_string = bit_string + int_to_bits(ord(ch), 8)
+    i = i + 1
+  }
+  let start_len = int_to_bits(len(bit_string), 64)
+  bit_string = bit_string + "1"
+  while len(bit_string) % 512 != 448 { bit_string = bit_string + "0" }
+  bit_string = bit_string + to_little_endian(start_len[32:64]) + to_little_endian(start_len[0:32])
+  return bit_string
+}
+
+fun get_block_words(bit_string: string): list<list<int>> {
+  if len(bit_string) % 512 != 0 { panic("Input must have length that's a multiple of 512") }
+  var blocks: list<list<int>> = []
+  var pos = 0
+  while pos < len(bit_string) {
+    var block: list<int> = []
+    var i = 0
+    while i < 512 {
+      let part = bit_string[pos + i: pos + i + 32]
+      let word = bits_to_int(to_little_endian(part))
+      block = append(block, word)
+      i = i + 32
+    }
+    blocks = append(blocks, block)
+    pos = pos + 512
+  }
+  return blocks
+}
+
+fun bit_and(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    if (x % 2 == 1) && (y % 2 == 1) { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_or(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit == 1 || bbit == 1 { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_xor(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    let abit = x % 2
+    let bbit = y % 2
+    if (abit + bbit) % 2 == 1 { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun not_32(i: int): int {
+  if i < 0 { panic("Input must be non-negative") }
+  return 4294967295 - i
+}
+
+fun sum_32(a: int, b: int): int {
+  return (a + b) % MOD
+}
+
+fun lshift(num: int, k: int): int {
+  var result = num % MOD
+  var i = 0
+  while i < k {
+    result = (result * 2) % MOD
+    i = i + 1
+  }
+  return result
+}
+
+fun rshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = result / 2
+    i = i + 1
+  }
+  return result
+}
+
+fun left_rotate_32(i: int, shift: int): int {
+  if i < 0 { panic("Input must be non-negative") }
+  if shift < 0 { panic("Shift must be non-negative") }
+  let left = lshift(i, shift)
+  let right = rshift(i, 32 - shift)
+  return (left + right) % MOD
+}
+
+fun md5_me(message: string): string {
+  let bit_string = preprocess(message)
+  let added_consts: list<int> = [3614090360,3905402710,606105819,3250441966,4118548399,1200080426,2821735955,4249261313,1770035416,2336552879,4294925233,2304563134,1804603682,4254626195,2792965006,1236535329,4129170786,3225465664,643717713,3921069994,3593408605,38016083,3634488961,3889429448,568446438,3275163606,4107603335,1163531501,2850285829,4243563512,1735328473,2368359562,4294588738,2272392833,1839030562,4259657740,2763975236,1272893353,4139469664,3200236656,681279174,3936430074,3572445317,76029189,3654602809,3873151461,530742520,3299628645,4096336452,1126891415,2878612391,4237533241,1700485571,2399980690,4293915773,2240044497,1873313359,4264355552,2734768916,1309151649,4149444226,3174756917,718787259,3951481745]
+  let shift_amounts: list<int> = [7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21]
+
+  var a0 = 0x67452301
+  var b0 = 0xEFCDAB89
+  var c0 = 0x98BADCFE
+  var d0 = 0x10325476
+
+  let blocks = get_block_words(bit_string)
+  var bi = 0
+  while bi < len(blocks) {
+    let block = blocks[bi]
+    var a = a0
+    var b = b0
+    var c = c0
+    var d = d0
+    var i = 0
+    while i < 64 {
+      var f = 0
+      var g = 0
+      if i <= 15 {
+        f = bit_xor(d, bit_and(b, bit_xor(c, d)))
+        g = i
+      } else if i <= 31 {
+        f = bit_xor(c, bit_and(d, bit_xor(b, c)))
+        g = (5 * i + 1) % 16
+      } else if i <= 47 {
+        f = bit_xor(bit_xor(b, c), d)
+        g = (3 * i + 5) % 16
+      } else {
+        f = bit_xor(c, bit_or(b, not_32(d)))
+        g = (7 * i) % 16
+      }
+      f = sum_32(f, a)
+      f = sum_32(f, added_consts[i])
+      f = sum_32(f, block[g])
+      let rotated = left_rotate_32(f, shift_amounts[i])
+      let new_b = sum_32(b, rotated)
+      a = d
+      d = c
+      c = b
+      b = new_b
+      i = i + 1
+    }
+    a0 = sum_32(a0, a)
+    b0 = sum_32(b0, b)
+    c0 = sum_32(c0, c)
+    d0 = sum_32(d0, d)
+    bi = bi + 1
+  }
+  let digest = reformat_hex(a0) + reformat_hex(b0) + reformat_hex(c0) + reformat_hex(d0)
+  return digest
+}
+
+test "md5 empty" {
+  expect md5_me("") == "d41d8cd98f00b204e9800998ecf8427e"
+}
+
+test "md5 fox" {
+  expect md5_me("The quick brown fox jumps over the lazy dog") == "9e107d9d372bb6826bd81d3542a419d6"
+}
+
+test "md5 fox dot" {
+  expect md5_me("The quick brown fox jumps over the lazy dog.") == "e4d909c290d0fb1ca068ffaddf22cbd0"
+}
