@@ -1,0 +1,45 @@
+/*
+Bisection Method
+
+This algorithm finds a root of a continuous function f(x) within an interval [a, b]
+where f(a) and f(b) have opposite signs (Bolzano's theorem). The method repeatedly
+halves the interval and selects the subinterval where the sign change occurs,
+converging to the root. This implementation uses equation f(x) = 10 - x^2 and
+terminates when the interval width is less than 0.01.
+
+Steps:
+1. Ensure f(a) and f(b) have opposite signs; otherwise no root is guaranteed.
+2. Compute midpoint c = (a + b) / 2.
+3. If f(c) == 0 or interval width < tolerance, return c.
+4. Replace either a or b with c depending on sign of f(c).
+*/
+
+fun equation(x: float): float {
+  return 10.0 - x * x
+}
+
+fun bisection(a: float, b: float): float {
+  if equation(a) * equation(b) >= 0.0 {
+    panic("Wrong space!")
+  }
+
+  var left: float = a
+  var right: float = b
+  var c: float = left
+
+  while (right - left) >= 0.01 {
+    c = (left + right) / 2.0
+    if equation(c) == 0.0 {
+      break
+    }
+    if equation(c) * equation(left) < 0.0 {
+      right = c
+    } else {
+      left = c
+    }
+  }
+  return c
+}
+
+print(bisection(-2.0, 5.0))
+print(bisection(0.0, 6.0))
