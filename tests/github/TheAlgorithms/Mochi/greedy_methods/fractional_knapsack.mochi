@@ -1,0 +1,100 @@
+/*
+Fractional Knapsack maximizes total value that fits into a knapsack with limited
+capacity when fractions of items are allowed. Each item has a value and weight.
+The optimal strategy is greedy: take items in order of decreasing value-to-weight
+ratio until the capacity is filled, taking a fraction of the next item if needed.
+
+Algorithm steps:
+1. Pair each value with its weight.
+2. Sort items in descending order of value/weight ratio.
+3. Compute prefix sums of weights to know how many items fit entirely.
+4. If capacity allows partial of next item, add proportional value.
+
+Time Complexity: dominated by sorting; we use insertion sort giving O(n^2)
+which is fine for small inputs.
+*/
+
+type Item {
+  value: float
+  weight: float
+}
+
+fun sort_by_ratio_desc(arr: list<Item>): list<Item> {
+  var i = 1
+  while i < len(arr) {
+    let key = arr[i]
+    var j = i - 1
+    while j >= 0 {
+      let current = arr[j]
+      if current.value / current.weight < key.value / key.weight {
+        arr[j + 1] = current
+        j = j - 1
+      } else {
+        break
+      }
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun sum_first(arr: list<float>, k: int): float {
+  var s = 0.0
+  var i = 0
+  while i < k && i < len(arr) {
+    s = s + arr[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun frac_knapsack(vl: list<float>, wt: list<float>, w: float, n: int): float {
+  var items: list<Item> = []
+  var i = 0
+  while i < len(vl) && i < len(wt) {
+    items = append(items, Item { value: vl[i], weight: wt[i] })
+    i = i + 1
+  }
+  items = sort_by_ratio_desc(items)
+
+  var values: list<float> = []
+  var weights: list<float> = []
+  i = 0
+  while i < len(items) {
+    let itm = items[i]
+    values = append(values, itm.value)
+    weights = append(weights, itm.weight)
+    i = i + 1
+  }
+
+  var acc: list<float> = []
+  var total = 0.0
+  i = 0
+  while i < len(weights) {
+    total = total + weights[i]
+    acc = append(acc, total)
+    i = i + 1
+  }
+
+  var k = 0
+  while k < len(acc) && w >= acc[k] {
+    k = k + 1
+  }
+
+  if k == 0 {
+    return 0.0
+  }
+  if k >= len(values) {
+    return sum_first(values, len(values))
+  }
+  if k != n {
+    return sum_first(values, k) + (w - acc[k - 1]) * values[k] / weights[k]
+  }
+  return sum_first(values, k)
+}
+
+let vl: list<float> = [60.0, 100.0, 120.0]
+let wt: list<float> = [10.0, 20.0, 30.0]
+let result = frac_knapsack(vl, wt, 50.0, 3)
+print(str(result))
