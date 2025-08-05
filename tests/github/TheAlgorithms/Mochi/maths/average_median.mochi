@@ -1,0 +1,43 @@
+/*
+Compute the median of a list of integers. The median is the value separating
+higher half from the lower half of a dataset. For odd-length lists, it is the
+middle element after sorting. For even-length lists, it is the average of the
+two central elements. This implementation copies the input and sorts it using
+a simple bubble sort (O(n^2) time) then computes the median. Space complexity
+is O(1) beyond the copy of the input list.
+*/
+
+fun bubble_sort(nums: list<int>): list<int> {
+  var arr = nums
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      let a = arr[j]
+      let b = arr[j + 1]
+      if a > b {
+        arr[j] = b
+        arr[j + 1] = a
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun median(nums: list<int>): float {
+  let sorted_list = bubble_sort(nums)
+  let length = len(sorted_list)
+  let mid_index = length / 2
+  if length % 2 == 0 {
+    return ((sorted_list[mid_index] + sorted_list[mid_index - 1]) as float) / 2.0
+  } else {
+    return sorted_list[mid_index] as float
+  }
+}
+
+print(str(median([0])))
+print(str(median([4, 1, 3, 2])))
+print(str(median([2, 70, 6, 50, 20, 8, 4])))
