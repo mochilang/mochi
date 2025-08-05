@@ -1,0 +1,191 @@
+/*
+QR Decomposition using Householder Reflections
+
+This program implements QR decomposition of a matrix A into an orthogonal
+matrix Q and an upper triangular matrix R such that A = Q * R.
+
+The algorithm uses successive Householder reflections to zero the
+sub‑diagonal elements of each column:
+1. For each column k, take the vector x from the k-th column below the
+   diagonal.
+2. Form a reflection vector v = x + sign(x0)*||x||*e1 and normalize it.
+3. Build the Householder matrix H = I - 2 * v * v^T.
+4. Apply H to accumulate Q and transform R.
+
+All matrix and vector operations are implemented directly in Mochi to
+run on the `runtime/vm` without any foreign function interface.  The
+implementation avoids the `any` type and works with lists of floats.
+*/
+
+type QR = { q: list<list<float>>, r: list<list<float>> }
+
+fun sqrt_approx(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i: int = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun sign(x: float): float { if x >= 0.0 { return 1.0 } else { return -1.0 } }
+
+fun vector_norm(v: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(v) {
+    sum = sum + v[i] * v[i]
+    i = i + 1
+  }
+  let n = sqrt_approx(sum)
+  return n
+}
+
+fun identity_matrix(n: int): list<list<float>> {
+  var mat: list<list<float>> = []
+  var i: int = 0
+  while i < n {
+    var row: list<float> = []
+    var j: int = 0
+    while j < n {
+      if i == j { row = append(row, 1.0) } else { row = append(row, 0.0) }
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun copy_matrix(a: list<list<float>>): list<list<float>> {
+  var mat: list<list<float>> = []
+  var i: int = 0
+  while i < len(a) {
+    var row: list<float> = []
+    var j: int = 0
+    while j < len(a[i]) {
+      row = append(row, a[i][j])
+      j = j + 1
+    }
+    mat = append(mat, row)
+    i = i + 1
+  }
+  return mat
+}
+
+fun matmul(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  let m = len(a)
+  let n = len(a[0])
+  let p = len(b[0])
+  var res: list<list<float>> = []
+  var i: int = 0
+  while i < m {
+    var row: list<float> = []
+    var j: int = 0
+    while j < p {
+      var sum: float = 0.0
+      var k: int = 0
+      while k < n {
+        sum = sum + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun qr_decomposition(a: list<list<float>>): QR {
+  let m = len(a)
+  let n = len(a[0])
+  let t = if m < n { m } else { n }
+  var q = identity_matrix(m)
+  var r = copy_matrix(a)
+  var k: int = 0
+  while k < t - 1 {
+    var x: list<float> = []
+    var i: int = k
+    while i < m {
+      x = append(x, r[i][k])
+      i = i + 1
+    }
+    var e1: list<float> = []
+    i = 0
+    while i < len(x) {
+      if i == 0 { e1 = append(e1, 1.0) } else { e1 = append(e1, 0.0) }
+      i = i + 1
+    }
+    let alpha = vector_norm(x)
+    let s = sign(x[0]) * alpha
+    var v: list<float> = []
+    i = 0
+    while i < len(x) {
+      v = append(v, x[i] + s * e1[i])
+      i = i + 1
+    }
+    let vnorm = vector_norm(v)
+    i = 0
+    while i < len(v) {
+      v[i] = v[i] / vnorm
+      i = i + 1
+    }
+    let size = len(v)
+    var qk_small: list<list<float>> = []
+    i = 0
+    while i < size {
+      var row: list<float> = []
+      var j: int = 0
+      while j < size {
+        let delta = if i == j { 1.0 } else { 0.0 }
+        row = append(row, delta - 2.0 * v[i] * v[j])
+        j = j + 1
+      }
+      qk_small = append(qk_small, row)
+      i = i + 1
+    }
+    var qk = identity_matrix(m)
+    i = 0
+    while i < size {
+      var j: int = 0
+      while j < size {
+        qk[k + i][k + j] = qk_small[i][j]
+        j = j + 1
+      }
+      i = i + 1
+    }
+    q = matmul(q, qk)
+    r = matmul(qk, r)
+    k = k + 1
+  }
+  return QR { q: q, r: r }
+}
+
+fun print_matrix(mat: list<list<float>>) {
+  var i: int = 0
+  while i < len(mat) {
+    var line: string = ""
+    var j: int = 0
+    while j < len(mat[i]) {
+      line = line + str(mat[i][j])
+      if j + 1 < len(mat[i]) { line = line + " " }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+let A: list<list<float>> = [
+  [12.0, -51.0, 4.0],
+  [6.0, 167.0, -68.0],
+  [-4.0, 24.0, -41.0]
+]
+
+let result = qr_decomposition(A)
+print_matrix(result.q)
+print_matrix(result.r)
