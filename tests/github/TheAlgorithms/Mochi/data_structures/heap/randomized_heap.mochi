@@ -1,0 +1,112 @@
+/*
+Randomized meldable heap storing integers.
+
+Each heap node contains a value and indices of its left and right children.
+The merge operation randomly swaps children of the smaller root before
+recursively merging, guaranteeing expected logarithmic depth. Insertion
+merges a new singleton node with the existing heap. Removing the smallest
+value pops the root and merges its two subtrees.
+
+The example below demonstrates building heaps from lists, producing sorted
+output, and popping successive minimum values.
+*/
+
+let NIL = 0 - 1
+
+var seed: int = 1
+
+fun set_seed(s: int) {
+  seed = s
+}
+
+fun randint(a: int, b: int): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return (seed % (b - a + 1)) + a
+}
+
+fun rand_bool(): bool {
+  return randint(0, 1) == 1
+}
+
+var nodes: list<map<string, int>> = []
+var root: int = NIL
+
+fun new_heap() {
+  nodes = []
+  root = NIL
+}
+
+fun merge(r1: int, r2: int): int {
+  if r1 == NIL { return r2 }
+  if r2 == NIL { return r1 }
+  if nodes[r1]["value"] > nodes[r2]["value"] {
+    let tmp = r1
+    r1 = r2
+    r2 = tmp
+  }
+  if rand_bool() {
+    let tmp = nodes[r1]["left"]
+    nodes[r1]["left"] = nodes[r1]["right"]
+    nodes[r1]["right"] = tmp
+  }
+  nodes[r1]["left"] = merge(nodes[r1]["left"], r2)
+  return r1
+}
+
+fun insert(value: int) {
+  let node: map<string, int> = {"value": value, "left": NIL, "right": NIL}
+  nodes = append(nodes, node)
+  let idx = len(nodes) - 1
+  root = merge(root, idx)
+}
+
+fun top(): int {
+  if root == NIL { return 0 }
+  return nodes[root]["value"]
+}
+
+fun pop(): int {
+  let result = top()
+  let l = nodes[root]["left"]
+  let r = nodes[root]["right"]
+  root = merge(l, r)
+  return result
+}
+
+fun is_empty(): bool {
+  return root == NIL
+}
+
+fun to_sorted_list(): list<int> {
+  var res: list<int> = []
+  while !is_empty() {
+    res = append(res, pop())
+  }
+  return res
+}
+
+set_seed(1)
+new_heap()
+insert(2)
+insert(3)
+insert(1)
+insert(5)
+insert(1)
+insert(7)
+print(to_sorted_list())
+
+new_heap()
+insert(1)
+insert(-1)
+insert(0)
+print(to_sorted_list())
+
+new_heap()
+insert(3)
+insert(1)
+insert(3)
+insert(7)
+print(pop())
+print(pop())
+print(pop())
+print(pop())
