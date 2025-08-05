@@ -1,0 +1,116 @@
+/*
+Zeller's Congruence
+-------------------
+Given a date in the Gregorian calendar, Zeller's congruence computes the
+corresponding day of the week. The method treats January and February as the
+13th and 14th months of the previous year and evaluates a modular arithmetic
+formula:
+
+h = (d + int(2.6*m - 5.39) + k + int(k/4) + int(c/4) - 2*c) mod 7
+
+where d is the day, m the month (3=March..14=February), y = 100*c + k.
+This implementation validates dates in the mm-dd-yyyy or mm/dd/yyyy format
+and maps the result 0..6 to Sunday..Saturday. It relies solely on Mochi
+features so it can run on runtime/vm without any foreign interfaces.
+*/
+
+fun parse_decimal(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c < "0" || c > "9" {
+      panic("invalid literal")
+    }
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun zeller_day(date_input: string): string {
+  let days: map<int, string> = {
+    0: "Sunday",
+    1: "Monday",
+    2: "Tuesday",
+    3: "Wednesday",
+    4: "Thursday",
+    5: "Friday",
+    6: "Saturday",
+  }
+
+  if len(date_input) != 10 {
+    panic("Must be 10 characters long")
+  }
+
+  let m = parse_decimal(date_input[0:2])
+  if m <= 0 || m >= 13 {
+    panic("Month must be between 1 - 12")
+  }
+
+  let sep1 = date_input[2]
+  if sep1 != "-" && sep1 != "/" {
+    panic("Date separator must be '-' or '/'")
+  }
+
+  let d = parse_decimal(date_input[3:5])
+  if d <= 0 || d >= 32 {
+    panic("Date must be between 1 - 31")
+  }
+
+  let sep2 = date_input[5]
+  if sep2 != "-" && sep2 != "/" {
+    panic("Date separator must be '-' or '/'")
+  }
+
+  let y = parse_decimal(date_input[6:10])
+  if y <= 45 || y >= 8500 {
+    panic("Year out of range. There has to be some sort of limit...right?")
+  }
+
+  var year = y
+  var month = m
+  if month <= 2 {
+    year = year - 1
+    month = month + 12
+  }
+
+  let c = year / 100
+  let k = year % 100
+  let t = int(2.6 * (month as float) - 5.39)
+  let u = c / 4
+  let v = k / 4
+  let x = d + k
+  let z = t + u + v + x
+  let w = z - (2 * c)
+  var f = w % 7
+  if f < 0 {
+    f = f + 7
+  }
+  return days[f]
+}
+
+fun zeller(date_input: string): string {
+  let day = zeller_day(date_input)
+  return "Your date " + date_input + ", is a " + day + "!"
+}
+
+fun test_zeller() {
+  let inputs: list<string> = ["01-31-2010", "02-01-2010", "11-26-2024", "07-04-1776"]
+  let expected: list<string> = ["Sunday", "Monday", "Tuesday", "Thursday"]
+  var i = 0
+  while i < len(inputs) {
+    let res = zeller_day(inputs[i])
+    if res != expected[i] {
+      panic("zeller test failed")
+    }
+    i = i + 1
+  }
+}
+
+fun main() {
+  test_zeller()
+  print(zeller("01-31-2010"))
+}
+
+main()
