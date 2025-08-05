@@ -1,0 +1,129 @@
+/*
+Breadth-First Search Shortest Path
+----------------------------------
+This module implements two related graph algorithms using breadth-first
+search (BFS):
+
+1. `bfs_shortest_path` returns the actual shortest path between a start
+   node and a goal node in an unweighted graph.  The algorithm explores
+   the graph level by level using a queue of paths.  When the goal is
+   discovered the corresponding path is returned.  If no path exists an
+   empty list is produced.  Time complexity is O(V + E) where V is the
+   number of vertices and E the number of edges.
+
+2. `bfs_shortest_path_distance` computes only the distance (number of
+   edges) between two nodes.  It performs a standard BFS keeping track of
+   visited nodes and their distance from the start node.  If the target
+   node is unreachable the function returns -1.
+
+Both algorithms operate on graphs represented as maps from a node label
+(string) to a list of neighbouring node labels.  They avoid use of any
+foreign functions and provide explicit types for all values.
+*/
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun contains_key(m: map<string, list<string>>, key: string): bool {
+  for k in m {
+    if k == key { return true }
+  }
+  return false
+}
+
+fun bfs_shortest_path(graph: map<string, list<string>>, start: string, goal: string): list<string> {
+  var explored: list<string> = []
+  var queue: list<list<string>> = [[start]]
+  if start == goal { return [start] }
+  while len(queue) > 0 {
+    let path = queue[0]
+    queue = slice(queue, 1, len(queue))
+    let node = path[len(path) - 1]
+    if !contains(explored, node) {
+      let neighbours = graph[node]
+      var i = 0
+      while i < len(neighbours) {
+        let neighbour = neighbours[i]
+        var new_path = path
+        new_path = append(new_path, neighbour)
+        queue = append(queue, new_path)
+        if neighbour == goal { return new_path }
+        i = i + 1
+      }
+      explored = append(explored, node)
+    }
+  }
+  return []
+}
+
+fun bfs_shortest_path_distance(graph: map<string, list<string>>, start: string, target: string): int {
+  if (contains_key(graph, start) == false) || (contains_key(graph, target) == false) { return -1 }
+  if start == target { return 0 }
+  var queue: list<string> = [start]
+  var visited: list<string> = [start]
+  var dist: map<string, int> = {}
+  dist[start] = 0
+  dist[target] = (-1)
+  while len(queue) > 0 {
+    let node = queue[0]
+    queue = slice(queue, 1, len(queue))
+    if node == target {
+      if dist[target] == (-1) || dist[node] < dist[target] {
+        dist[target] = dist[node]
+      }
+    }
+    let adj = graph[node]
+    var i = 0
+    while i < len(adj) {
+      let next = adj[i]
+      if !contains(visited, next) {
+        visited = append(visited, next)
+        queue = append(queue, next)
+        dist[next] = dist[node] + 1
+      }
+      i = i + 1
+    }
+  }
+  return dist[target]
+}
+
+let demo_graph: map<string, list<string>> = {
+  "A": ["B", "C", "E"],
+  "B": ["A", "D", "E"],
+  "C": ["A", "F", "G"],
+  "D": ["B"],
+  "E": ["A", "B", "D"],
+  "F": ["C"],
+  "G": ["C"]
+}
+
+
+test "path found" {
+  expect bfs_shortest_path(demo_graph, "G", "D") == ["G", "C", "A", "B", "D"]
+}
+
+test "path to self" {
+  expect bfs_shortest_path(demo_graph, "G", "G") == ["G"]
+}
+
+test "path not found" {
+  expect len(bfs_shortest_path(demo_graph, "G", "Unknown")) == 0
+}
+
+test "distance found" {
+  expect bfs_shortest_path_distance(demo_graph, "G", "D") == 4
+}
+
+test "distance to self" {
+  expect bfs_shortest_path_distance(demo_graph, "A", "A") == 0
+}
+
+test "distance not found" {
+  expect bfs_shortest_path_distance(demo_graph, "A", "Unknown") == (-1)
+}
