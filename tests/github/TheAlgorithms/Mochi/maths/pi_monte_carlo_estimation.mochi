@@ -1,0 +1,69 @@
+/*
+Monte Carlo Estimation of Pi
+---------------------------
+This program approximates the mathematical constant pi using the
+Monte Carlo method.
+
+The idea is to randomly generate points in the unit square [0,1) x
+[0,1). The fraction of points that fall inside the unit quarter circle
+(x^2 + y^2 <= 1) approaches pi/4 as the number of points grows. Thus we
+estimate pi as:
+
+    pi ≈ 4 * (number of points inside the circle) / (total points)
+
+A simple linear congruential generator produces deterministic pseudo-
+random numbers so the code runs purely in Mochi on the runtime/vm.
+*/
+
+let PI = 3.141592653589793
+
+var seed: int = 1
+fun next_seed(x: int): int {
+  return (x * 1103515245 + 12345) % 2147483648
+}
+
+fun rand_unit(): float {
+  seed = next_seed(seed)
+  return (seed as float) / 2147483648.0
+}
+
+type Point {
+  x: float,
+  y: float,
+}
+
+fun is_in_unit_circle(p: Point): bool {
+  return p.x * p.x + p.y * p.y <= 1.0
+}
+
+fun random_unit_square(): Point {
+  return Point { x: rand_unit(), y: rand_unit() }
+}
+
+fun estimate_pi(simulations: int): float {
+  if simulations < 1 { panic("At least one simulation is necessary to estimate PI.") }
+  var inside: int = 0
+  var i: int = 0
+  while i < simulations {
+    let p = random_unit_square()
+    if is_in_unit_circle(p) {
+      inside = inside + 1
+    }
+    i = i + 1
+  }
+  return 4.0 * (inside as float) / (simulations as float)
+}
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun main() {
+  let n = 10000
+  let my_pi = estimate_pi(n)
+  let error = abs_float(my_pi - PI)
+  print("An estimate of PI is " + str(my_pi) + " with an error of " + str(error))
+}
+
+main()
