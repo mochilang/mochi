@@ -1,0 +1,62 @@
+/*
+Greatest Common Divisor (Euclidean Algorithm)
+--------------------------------------------
+This module implements two versions of the greatest common divisor (GCD)
+calculation for integers.
+
+1. greatest_common_divisor(a, b): Recursively applies the Euclidean algorithm.
+   The smaller number is used as the modulus until one argument becomes zero.
+   Negative values are converted to their absolute values because
+   gcd(a, b) = gcd(|a|, |b|).
+2. gcd_by_iterative(x, y): Uses an iterative loop to perform the same
+   computation without recursion, which is more memory efficient for large
+   inputs.
+
+Both implementations avoid foreign function interfaces and run on the
+runtime/vm.
+*/
+
+fun abs_int(n: int): int {
+  if n < 0 {
+    return -n
+  }
+  return n
+}
+
+fun greatest_common_divisor(a: int, b: int): int {
+  let x = abs_int(a)
+  let y = abs_int(b)
+  if x == 0 {
+    return y
+  }
+  return greatest_common_divisor(y % x, x)
+}
+
+fun gcd_by_iterative(x: int, y: int): int {
+  var a = abs_int(x)
+  var b = abs_int(y)
+  while b != 0 {
+    let temp = b
+    b = a % b
+    a = temp
+  }
+  return a
+}
+
+print(str(greatest_common_divisor(24, 40)))
+print(str(greatest_common_divisor(1, 1)))
+print(str(greatest_common_divisor(1, 800)))
+print(str(greatest_common_divisor(11, 37)))
+print(str(greatest_common_divisor(3, 5)))
+print(str(greatest_common_divisor(16, 4)))
+print(str(greatest_common_divisor(-3, 9)))
+print(str(greatest_common_divisor(9, -3)))
+print(str(greatest_common_divisor(3, -9)))
+print(str(greatest_common_divisor(-3, -9)))
+
+print(str(gcd_by_iterative(24, 40)))
+print(str(greatest_common_divisor(24, 40) == gcd_by_iterative(24, 40)))
+print(str(gcd_by_iterative(-3, -9)))
+print(str(gcd_by_iterative(3, -9)))
+print(str(gcd_by_iterative(1, -800)))
+print(str(gcd_by_iterative(11, 37)))
