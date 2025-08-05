@@ -1,0 +1,100 @@
+/*
+Sudoku Solver Using Backtracking and Array Constraints
+
+This program solves a standard 9x9 Sudoku puzzle. Empty cells are
+represented by 0.  The solver searches for an empty position and tries
+digits 1 through 9. Before placing a digit it verifies that the digit
+does not already appear in the current row, column or 3x3 sub-grid.
+If a digit fits, the algorithm recurses to fill the next cell. When a
+conflict is found, the solver backtracks by clearing the cell and
+trying the next digit. The process continues until the puzzle is
+solved or determined unsolvable.
+
+Time complexity is exponential in the number of empty cells but this
+approach is sufficient for typical Sudoku puzzles.
+*/
+
+fun string_to_grid(s: string): list<list<int>> {
+  var grid: list<list<int>> = []
+  var i = 0
+  while i < 9 {
+    var row: list<int> = []
+    var j = 0
+    while j < 9 {
+      let ch = substring(s, i * 9 + j, i * 9 + j + 1)
+      var val = 0
+      if ch != "0" && ch != "." {
+        val = int(ch)
+      }
+      row = append(row, val)
+      j = j + 1
+    }
+    grid = append(grid, row)
+    i = i + 1
+  }
+  return grid
+}
+
+fun print_grid(grid: list<list<int>>): void {
+  for r in 0..9 {
+    var line = ""
+    for c in 0..9 {
+      line = line + str(grid[r][c])
+      if c < 8 { line = line + " " }
+    }
+    print(line)
+  }
+}
+
+fun is_safe(grid: list<list<int>>, row: int, column: int, n: int): bool {
+  for i in 0..9 {
+    if grid[row][i] == n || grid[i][column] == n {
+      return false
+    }
+  }
+  for i in 0..3 {
+    for j in 0..3 {
+      if grid[(row - row % 3) + i][(column - column % 3) + j] == n {
+        return false
+      }
+    }
+  }
+  return true
+}
+
+fun find_empty(grid: list<list<int>>): list<int> {
+  for i in 0..9 {
+    for j in 0..9 {
+      if grid[i][j] == 0 {
+        return [i, j]
+      }
+    }
+  }
+  return []
+}
+
+fun solve(grid: list<list<int>>): bool {
+  let loc = find_empty(grid)
+  if len(loc) == 0 { return true }
+  let row = loc[0]
+  let column = loc[1]
+  for digit in 1..10 {
+    if is_safe(grid, row, column, digit) {
+      grid[row][column] = digit
+      if solve(grid) { return true }
+      grid[row][column] = 0
+    }
+  }
+  return false
+}
+
+let puzzle = "003020600900305001001806400008102900700000008006708200002609500800203009005010300"
+let grid = string_to_grid(puzzle)
+print("Original grid:")
+print_grid(grid)
+if solve(grid) {
+  print("\nSolved grid:")
+  print_grid(grid)
+} else {
+  print("\nNo solution found")
+}
