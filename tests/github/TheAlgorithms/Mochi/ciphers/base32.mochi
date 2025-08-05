@@ -1,0 +1,150 @@
+/*
+Encode and decode data using Base32 representation.
+
+Base32 converts binary data into a text format using 32 characters:
+"A-Z" and "2-7". Five bits map to one character. To encode, every
+character of the input string is translated to its 8-bit binary form
+and concatenated. This bit string is padded with zeros so its length is
+a multiple of five, split into 5-bit chunks, and each chunk is used as
+an index into the Base32 charset. The result is padded with '=' so that
+its length is a multiple of eight.
+
+Decoding reverses the process: remove '=', translate each Base32
+character back to a 5-bit value, join all bits, split into 8-bit
+chunks, and convert each to the corresponding character.
+The algorithm runs in O(n) time where n is the length of the input.
+*/
+
+let B32_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+
+fun indexOfChar(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let digits = "0123456789"
+  var idx = indexOfChar(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOfChar(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  idx = indexOfChar(digits, ch)
+  if idx >= 0 { return 48 + idx }
+  if ch == " " { return 32 }
+  if ch == "!" { return 33 }
+  return 0
+}
+
+fun chr(code: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let digits = "0123456789"
+  if code == 32 { return " " }
+  if code == 33 { return "!" }
+  var idx = code - 65
+  if idx >= 0 && idx < len(upper) { return upper[idx] }
+  idx = code - 97
+  if idx >= 0 && idx < len(lower) { return lower[idx] }
+  idx = code - 48
+  if idx >= 0 && idx < len(digits) { return digits[idx] }
+  return ""
+}
+
+fun repeat(s: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + s
+    i = i + 1
+  }
+  return out
+}
+
+fun to_binary(n: int, bits: int): string {
+  var v = n
+  var out = ""
+  var i = 0
+  while i < bits {
+    out = str(v % 2) + out
+    v = v / 2
+    i = i + 1
+  }
+  return out
+}
+
+fun binary_to_int(bits: string): int {
+  var n = 0
+  var i = 0
+  while i < len(bits) {
+    n = n * 2
+    if bits[i] == "1" { n = n + 1 }
+    i = i + 1
+  }
+  return n
+}
+
+fun base32_encode(data: string): string {
+  var binary_data = ""
+  var i = 0
+  while i < len(data) {
+    binary_data = binary_data + to_binary(ord(data[i]), 8)
+    i = i + 1
+  }
+  let remainder = len(binary_data) % 5
+  if remainder != 0 {
+    binary_data = binary_data + repeat("0", 5 - remainder)
+  }
+  var b32_result = ""
+  var j = 0
+  while j < len(binary_data) {
+    let chunk = binary_data[j:j+5]
+    let index = binary_to_int(chunk)
+    b32_result = b32_result + B32_CHARSET[index]
+    j = j + 5
+  }
+  let rem = len(b32_result) % 8
+  if rem != 0 {
+    b32_result = b32_result + repeat("=", 8 - rem)
+  }
+  return b32_result
+}
+
+fun base32_decode(data: string): string {
+  var clean = ""
+  var i = 0
+  while i < len(data) {
+    let ch = data[i]
+    if ch != "=" { clean = clean + ch }
+    i = i + 1
+  }
+  var binary_chunks = ""
+  i = 0
+  while i < len(clean) {
+    let idx = indexOfChar(B32_CHARSET, clean[i])
+    binary_chunks = binary_chunks + to_binary(idx, 5)
+    i = i + 1
+  }
+  var result = ""
+  var j = 0
+  while j + 8 <= len(binary_chunks) {
+    let byte_bits = binary_chunks[j:j+8]
+    let code = binary_to_int(byte_bits)
+    result = result + chr(code)
+    j = j + 8
+  }
+  return result
+}
+
+print(base32_encode("Hello World!"))
+print(base32_encode("123456"))
+print(base32_encode("some long complex string"))
+print(base32_decode("JBSWY3DPEBLW64TMMQQQ===="))
+print(base32_decode("GEZDGNBVGY======"))
+print(base32_decode("ONXW2ZJANRXW4ZZAMNXW24DMMV4CA43UOJUW4ZY="))
+
