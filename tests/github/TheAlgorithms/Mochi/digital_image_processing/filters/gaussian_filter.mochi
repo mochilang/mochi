@@ -1,0 +1,99 @@
+/*
+Apply a Gaussian blur to a grayscale image represented as a 2D list of pixel
+values (0-255). A square kernel of size k_size×k_size is generated using the
+Gaussian function:
+
+  g(x, y) = 1/(2πσ) * exp(-(x^2 + y^2)/(2σ^2))
+
+The kernel is convolved over the image. Each output pixel is the weighted sum
+of the overlapping input pixels and kernel values. The resulting blurred image
+has dimensions (H - k_size + 1) × (W - k_size + 1). Time complexity is
+O(H * W * k_size^2).
+*/
+
+let PI = 3.141592653589793
+
+fun expApprox(x: float): float {
+  var sum = 1.0
+  var term = 1.0
+  var n = 1
+  while n < 10 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun gen_gaussian_kernel(k_size: int, sigma: float): list<list<float>> {
+  let center = k_size / 2
+  var kernel: list<list<float>> = []
+  var i = 0
+  while i < k_size {
+    var row: list<float> = []
+    var j = 0
+    while j < k_size {
+      let x = (i - center) as float
+      let y = (j - center) as float
+      let exponent = -((x * x + y * y) / (2.0 * sigma * sigma))
+      let value = (1.0 / (2.0 * PI * sigma)) * expApprox(exponent)
+      row = append(row, value)
+      j = j + 1
+    }
+    kernel = append(kernel, row)
+    i = i + 1
+  }
+  return kernel
+}
+
+fun gaussian_filter(image: list<list<int>>, k_size: int, sigma: float): list<list<int>> {
+  let height = len(image)
+  let width = len(image[0])
+  let dst_height = height - k_size + 1
+  let dst_width = width - k_size + 1
+  let kernel = gen_gaussian_kernel(k_size, sigma)
+  var dst: list<list<int>> = []
+  var i = 0
+  while i < dst_height {
+    var row: list<int> = []
+    var j = 0
+    while j < dst_width {
+      var sum = 0.0
+      var ki = 0
+      while ki < k_size {
+        var kj = 0
+        while kj < k_size {
+          sum = sum + (image[i + ki][j + kj] as float) * kernel[ki][kj]
+          kj = kj + 1
+        }
+        ki = ki + 1
+      }
+      row = append(row, sum as int)
+      j = j + 1
+    }
+    dst = append(dst, row)
+    i = i + 1
+  }
+  return dst
+}
+
+fun print_image(image: list<list<int>>) {
+  var i = 0
+  while i < len(image) {
+    print(image[i])
+    i = i + 1
+  }
+}
+
+let img: list<list<int>> = [
+  [52, 55, 61, 59, 79],
+  [62, 59, 55, 104, 94],
+  [63, 65, 66, 113, 144],
+  [68, 70, 70, 126, 154],
+  [70, 72, 69, 128, 155],
+]
+
+let gaussian3 = gaussian_filter(img, 3, 1.0)
+let gaussian5 = gaussian_filter(img, 5, 0.8)
+print_image(gaussian3)
+print_image(gaussian5)
