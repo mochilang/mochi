@@ -1,0 +1,33 @@
+/*
+Divide a total number of bytes into contiguous ranges for worker threads.
+
+Given a number of bytes and a positive number of partitions not exceeding
+that byte count, the algorithm computes non-overlapping byte ranges that
+cover the entire interval 1..number_of_bytes. Each of the first partitions
+receives `number_of_bytes / partitions` bytes, while the final partition
+absorbs any remainder. The ranges are returned as strings in the form
+"start-end".
+
+This mimics generating HTTP range headers for multi-threaded downloads.
+Time complexity is O(partitions) and space complexity is O(partitions) for
+the result list.
+*/
+
+fun allocation_num(number_of_bytes: int, partitions: int): list<string> {
+  if partitions <= 0 { panic("partitions must be a positive number!") }
+  if partitions > number_of_bytes { panic("partitions can not > number_of_bytes!") }
+
+  let bytes_per_partition = number_of_bytes / partitions
+  var allocation_list: list<string> = []
+  var i = 0
+  while i < partitions {
+    let start_bytes = i * bytes_per_partition + 1
+    let end_bytes = if i == partitions - 1 { number_of_bytes } else { (i + 1) * bytes_per_partition }
+    allocation_list = append(allocation_list, str(start_bytes) + "-" + str(end_bytes))
+    i = i + 1
+  }
+  return allocation_list
+}
+
+print(str(allocation_num(16647, 4)))
+print(str(allocation_num(50000, 5)))
