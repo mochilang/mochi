@@ -1,0 +1,60 @@
+/*
+Prime Factorization of an Integer
+--------------------------------
+Given a nonnegative integer n, compute its prime factors.
+
+Algorithm:
+1. Start with divisor i = 2 and an empty list of factors.
+2. While i * i <= n, check divisibility:
+   - If n is divisible by i, append i to the result and divide n by i.
+   - Otherwise increment i by 1.
+3. After the loop, if n > 1, append the remaining n to the factors.
+
+The factors are returned in nondecreasing order. This trial division
+runs in O(sqrt(n)) time and uses O(1) extra space beyond the output list.
+*/
+
+fun prime_factors(n: int): list<int> {
+  if n < 2 { return [] }
+  var num = n
+  var i = 2
+  var factors: list<int> = []
+  while i * i <= num {
+    if num % i == 0 {
+      factors = append(factors, i)
+      num = num / i
+    } else {
+      i = i + 1
+    }
+  }
+  if num > 1 {
+    factors = append(factors, num)
+  }
+  return factors
+}
+
+fun list_eq(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun test_prime_factors() {
+  if !list_eq(prime_factors(0), []) { panic("prime_factors(0) failed") }
+  if !list_eq(prime_factors(100), [2,2,5,5]) { panic("prime_factors(100) failed") }
+  if !list_eq(prime_factors(2560), [2,2,2,2,2,2,2,2,2,5]) { panic("prime_factors(2560) failed") }
+  if !list_eq(prime_factors(97), [97]) { panic("prime_factors(97) failed") }
+}
+
+fun main() {
+  test_prime_factors()
+  print(str(prime_factors(100)))
+  print(str(prime_factors(2560)))
+  print(str(prime_factors(97)))
+}
+
+main()
