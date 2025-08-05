@@ -1,0 +1,48 @@
+/*
+Generate random points uniformly distributed inside an n-dimensional hypercube.
+
+Each coordinate is produced by a simple linear congruential generator
+scaled to the range [0, hypercube_size). This avoids external libraries
+and keeps the program in pure Mochi. The function returns a list of
+`num_points` points, where each point is a list of `num_dimensions`
+floats.
+
+Algorithm:
+1. Use an LCG to obtain pseudorandom floats in [0,1).
+2. For each of `num_points` points, generate `num_dimensions` coordinates
+   and multiply each by `hypercube_size`.
+3. Collect and return all generated points.
+
+The runtime is O(num_points * num_dimensions).
+*/
+
+var seed = 1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (rand() as float) / 2147483648.0
+}
+
+fun hypercube_points(num_points: int, hypercube_size: float, num_dimensions: int): list<list<float>> {
+  var points: list<list<float>> = []
+  var i = 0
+  while i < num_points {
+    var point: list<float> = []
+    var j = 0
+    while j < num_dimensions {
+      let value = hypercube_size * random()
+      point = append(point, value)
+      j = j + 1
+    }
+    points = append(points, point)
+    i = i + 1
+  }
+  return points
+}
+
+let pts = hypercube_points(3, 1.0, 2)
+print(pts)
