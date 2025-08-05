@@ -1,0 +1,91 @@
+/*
+Array-Based Stack
+-----------------
+
+This implementation models a classic stack data structure using a
+simple dynamic array (list) with a fixed maximum capacity.  The stack
+supports the core LIFO operations:
+
+  • push(x) – append an element to the top of the stack
+  • pop()   – remove and return the top element
+  • peek()  – return the top element without removing it
+
+Additional helpers report whether the stack is empty or full, the
+current size, and membership checks.  Attempting to pop or peek from an
+empty stack, or pushing onto a full stack, raises a panic.  All
+operations except contains run in O(1) time; contains is O(n) in the
+number of stored items.
+*/
+
+type Stack {
+  items: list<int>,
+  limit: int
+}
+
+fun make_stack(limit: int): Stack {
+  return Stack { items: [], limit: limit }
+}
+
+fun is_empty(s: Stack): bool {
+  return len(s.items) == 0
+}
+
+fun size(s: Stack): int {
+  return len(s.items)
+}
+
+fun is_full(s: Stack): bool {
+  return len(s.items) >= s.limit
+}
+
+fun push(s: Stack, item: int) {
+  if is_full(s) { panic("stack overflow") }
+  s.items = append(s.items, item)
+}
+
+fun pop(s: Stack): int {
+  if is_empty(s) { panic("stack underflow") }
+  let n = len(s.items)
+  let val = s.items[n - 1]
+  s.items = s.items[0:n - 1]
+  return val
+}
+
+fun peek(s: Stack): int {
+  if is_empty(s) { panic("peek from empty stack") }
+  return s.items[len(s.items) - 1]
+}
+
+fun contains(s: Stack, item: int): bool {
+  var i: int = 0
+  while i < len(s.items) {
+    if s.items[i] == item { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun stack_repr(s: Stack): string {
+  return str(s.items)
+}
+
+fun main() {
+  var s = make_stack(5)
+  print(str(is_empty(s)))
+  push(s, 0)
+  push(s, 1)
+  push(s, 2)
+  print(str(peek(s)))
+  print(str(size(s)))
+  print(str(is_full(s)))
+  push(s, 3)
+  push(s, 4)
+  print(str(is_full(s)))
+  print(stack_repr(s))
+  print(str(pop(s)))
+  print(str(peek(s)))
+  print(str(contains(s, 1)))
+  print(str(contains(s, 9)))
+}
+
+main()
