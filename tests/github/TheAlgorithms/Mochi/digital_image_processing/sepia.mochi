@@ -1,0 +1,53 @@
+/*
+Apply a sepia tone to an image represented as a matrix of BGR pixels.
+
+For each pixel, compute its grayscale intensity using a weighted sum of
+red, green, and blue components (0.2126 * R + 0.587 * G + 0.114 * B).
+The grayscale value is used to form a sepia pixel where the green and
+red channels are increased by a factor and twice that factor,
+respectively.  Each channel is clamped to the range [0, 255].
+
+This implementation demonstrates the algorithm on a small 2x2 image.
+The algorithm runs in O(h * w) time for an h by w image.
+*/
+
+fun normalize(value: int): int {
+  if value > 255 {
+    return 255
+  }
+  return value
+}
+
+fun to_grayscale(blue: int, green: int, red: int): int {
+  let gs: float = 0.2126 * (red as float) + 0.587 * (green as float) + 0.114 * (blue as float)
+  return int(gs)
+}
+
+fun make_sepia(img: list<list<list<int>>>, factor: int): list<list<list<int>>> {
+  let pixel_h: int = len(img)
+  let pixel_v: int = len(img[0])
+  var i: int = 0
+  while i < pixel_h {
+    var j: int = 0
+    while j < pixel_v {
+      let pixel: list<int> = img[i][j]
+      let grey: int = to_grayscale(pixel[0], pixel[1], pixel[2])
+      img[i][j] = [
+        normalize(grey),
+        normalize(grey + factor),
+        normalize(grey + 2 * factor)
+      ]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return img
+}
+
+var image: list<list<list<int>>> = [
+  [[10, 20, 30], [40, 50, 60]],
+  [[70, 80, 90], [200, 150, 100]]
+]
+
+let sepia = make_sepia(image, 20)
+print(str(sepia))
