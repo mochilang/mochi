@@ -1,0 +1,74 @@
+/*
+Digit Persistence
+----------------
+The persistence of a number is the number of times its digits must be
+combined using a given operation until a single-digit result is reached.
+This file implements two variants:
+
+1. multiplicative_persistence(num): multiply all digits of the number until
+   only one digit remains.
+2. additive_persistence(num): sum all digits of the number until only one
+   digit remains.
+
+Both algorithms operate directly on integers without converting to strings.
+They iterate over the digits with modulo and division and run in O(k * t)
+where k is the number of iterations and t is the number of digits processed
+in each iteration. Negative inputs cause the functions to panic.
+*/
+
+fun multiplicative_persistence(num: int): int {
+  if num < 0 {
+    panic("multiplicative_persistence() does not accept negative values")
+  }
+  var steps = 0
+  var n = num
+  while n >= 10 {
+    var product = 1
+    var temp = n
+    while temp > 0 {
+      let digit = temp % 10
+      product = product * digit
+      temp = temp / 10
+    }
+    n = product
+    steps = steps + 1
+  }
+  return steps
+}
+
+fun additive_persistence(num: int): int {
+  if num < 0 {
+    panic("additive_persistence() does not accept negative values")
+  }
+  var steps = 0
+  var n = num
+  while n >= 10 {
+    var total = 0
+    var temp = n
+    while temp > 0 {
+      let digit = temp % 10
+      total = total + digit
+      temp = temp / 10
+    }
+    n = total
+    steps = steps + 1
+  }
+  return steps
+}
+
+fun test_persistence() {
+  if multiplicative_persistence(217) != 2 {
+    panic("multiplicative_persistence failed")
+  }
+  if additive_persistence(199) != 3 {
+    panic("additive_persistence failed")
+  }
+}
+
+fun main() {
+  test_persistence()
+  print(str(multiplicative_persistence(217)))
+  print(str(additive_persistence(199)))
+}
+
+main()
