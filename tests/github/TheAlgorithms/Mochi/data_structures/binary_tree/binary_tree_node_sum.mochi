@@ -1,0 +1,48 @@
+/*
+Compute the sum of all nodes in a binary tree.
+
+The tree is stored as a list of Node records. Each Node contains its
+integer value and indexes of its left and right children in the list.
+An index of -1 denotes the absence of a child. The `node_sum` function
+performs a depth-first traversal starting from a given node index. It
+recursively adds the current node's value to the sums of its left and
+right subtrees. Reaching index -1 yields 0 which naturally terminates
+branches. This mirrors the recursive Python implementation without
+using dynamic types.
+
+The algorithm runs in O(n) time where n is the number of nodes, and the
+call stack uses O(h) space for a tree of height h.
+
+Example tree built below:
+        10
+       /  \
+      5   -3
+     /    / \
+    12   8   0
+The total sum of this tree is 32.
+*/
+
+type Node {
+  value: int
+  left: int
+  right: int
+}
+
+fun node_sum(tree: list<Node>, index: int): int {
+  if index == (-1) {
+    return 0
+  }
+  let node = tree[index]
+  return node.value + node_sum(tree, node.left) + node_sum(tree, node.right)
+}
+
+let example: list<Node> = [
+  Node { value: 10, left: 1, right: 2 },
+  Node { value: 5, left: 3, right: -1 },
+  Node { value: -3, left: 4, right: 5 },
+  Node { value: 12, left: -1, right: -1 },
+  Node { value: 8, left: -1, right: -1 },
+  Node { value: 0, left: -1, right: -1 }
+]
+
+print(node_sum(example, 0))
