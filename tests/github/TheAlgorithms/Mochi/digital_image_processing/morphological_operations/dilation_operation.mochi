@@ -1,0 +1,183 @@
+/*
+Perform morphological dilation on a binary image.
+
+The process works on an image represented as a matrix of 0s and 1s and a
+structuring element (kernel) of the same kind.  The algorithm pads the
+image with zeros so that the kernel can slide across the borders.  For
+each pixel position the kernel is overlaid on the padded image; if any
+corresponding pair of kernel and image pixels are both 1, the output pixel
+is set to 1, otherwise it is set to 0.  This operation expands bright
+regions in the image.
+
+Additional helper routines mirror the accompanying Python implementation:
+  * rgb_to_gray  - convert an RGB image to grayscale using the luminance
+                   formula 0.2989 R + 0.5870 G + 0.1140 B.
+  * gray_to_binary - threshold a grayscale image to a binary matrix using
+                     a value of 127.
+
+The implementation avoids foreign function interfaces and relies solely on
+Mochi's built‑in types.  All arrays are strongly typed to either integers
+or floats.
+*/
+
+fun rgb_to_gray(rgb: list<list<list<int>>>): list<list<float>> {
+  var result: list<list<float>> = []
+  var i = 0
+  while i < len(rgb) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(rgb[i]) {
+      let r = rgb[i][j][0]
+      let g = rgb[i][j][1]
+      let b = rgb[i][j][2]
+      let gray = 0.2989 * (1.0 * r) + 0.5870 * (1.0 * g) + 0.1140 * (1.0 * b)
+      row = append(row, gray)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun gray_to_binary(gray: list<list<float>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(gray) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(gray[i]) {
+      let v = gray[i][j]
+      if v > 127.0 && v <= 255.0 {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun dilation(image: list<list<int>>, kernel: list<list<int>>): list<list<int>> {
+  let img_h = len(image)
+  let img_w = len(image[0])
+  let k_h = len(kernel)
+  let k_w = len(kernel[0])
+  let pad_h = k_h / 2
+  let pad_w = k_w / 2
+  let p_h = img_h + 2 * pad_h
+  let p_w = img_w + 2 * pad_w
+  var padded: list<list<int>> = []
+  var i = 0
+  while i < p_h {
+    var row: list<int> = []
+    var j = 0
+    while j < p_w {
+      row = append(row, 0)
+      j = j + 1
+    }
+    padded = append(padded, row)
+    i = i + 1
+  }
+  i = 0
+  while i < img_h {
+    var j = 0
+    while j < img_w {
+      padded[pad_h + i][pad_w + j] = image[i][j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var output: list<list<int>> = []
+  i = 0
+  while i < img_h {
+    var row: list<int> = []
+    var j = 0
+    while j < img_w {
+      var sum = 0
+      var ky = 0
+      while ky < k_h {
+        var kx = 0
+        while kx < k_w {
+          if kernel[ky][kx] == 1 {
+            sum = sum + padded[i + ky][j + kx]
+          }
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      if sum > 0 {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      j = j + 1
+    }
+    output = append(output, row)
+    i = i + 1
+  }
+  return output
+}
+
+fun print_float_matrix(mat: list<list<float>>): void {
+  var i = 0
+  while i < len(mat) {
+    var line: string = ""
+    var j = 0
+    while j < len(mat[i]) {
+      line = line + str(mat[i][j])
+      if j < len(mat[i]) - 1 {
+        line = line + " "
+      }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun print_int_matrix(mat: list<list<int>>): void {
+  var i = 0
+  while i < len(mat) {
+    var line: string = ""
+    var j = 0
+    while j < len(mat[i]) {
+      line = line + str(mat[i][j])
+      if j < len(mat[i]) - 1 {
+        line = line + " "
+      }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun main() {
+  let rgb_example = [ [ [127, 255, 0] ] ]
+  print_float_matrix(rgb_to_gray(rgb_example))
+
+  let gray_example = [
+    [26.0, 255.0, 14.0],
+    [5.0, 147.0, 20.0],
+    [1.0, 200.0, 0.0]
+  ]
+  print_int_matrix(gray_to_binary(gray_example))
+
+  let binary_image = [
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 1, 0]
+  ]
+  let kernel = [
+    [0, 1, 0],
+    [1, 1, 1],
+    [0, 1, 0]
+  ]
+  print_int_matrix(dilation(binary_image, kernel))
+}
+
+main()
