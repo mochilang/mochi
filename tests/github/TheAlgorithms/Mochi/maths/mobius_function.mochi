@@ -1,0 +1,48 @@
+/*
+Möbius function μ(n) evaluates to:
+- 0 if n is divisible by the square of a prime (not square-free)
+- 1 if n is square-free with an even number of prime factors
+- -1 if n is square-free with an odd number of prime factors
+This implementation performs trial division to obtain the prime factors of n,
+checks that no factor appears more than once (square-free test), and returns the
+value of μ(n) accordingly.
+*/
+
+fun primeFactors(n: int): list<int> {
+  var i = 2
+  var factors: list<int> = []
+  while ((i * i) <= n) {
+    if ((n % i) == 0) {
+      factors = append(factors, i)
+      n = (n / i)
+    } else {
+      i = (i + 1)
+    }
+  }
+  if (n > 1) {
+    factors = append(factors, n)
+  }
+  return factors
+}
+
+fun isSquareFree(factors: list<int>): bool {
+  var seen: map<int, bool> = {}
+  for f in factors {
+    if (f in seen) {
+      return false
+    }
+    seen[f] = true
+  }
+  return true
+}
+
+fun mobius(n: int): int {
+  let factors = primeFactors(n)
+  if (isSquareFree(factors)) {
+    return if ((len(factors) % 2) == 0) then 1 else (-1)
+  }
+  return 0
+}
+
+print(mobius(24))
+print(mobius(-1))
