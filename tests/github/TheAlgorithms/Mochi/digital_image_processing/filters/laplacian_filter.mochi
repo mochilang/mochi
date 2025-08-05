@@ -1,0 +1,120 @@
+/*
+Laplacian Filter for Edge Detection
+
+This program implements a discrete Laplacian filter, a common technique in
+digital image processing used to highlight regions of rapid intensity change.
+The filter convolves an image with a Laplacian kernel. Different kernel sizes
+(1, 3, 5, and 7) provide varying degrees of smoothing. For each supported size
+this implementation applies the corresponding kernel via 2‑D convolution with
+zero padding at the borders.
+
+The algorithm works as follows:
+1. Select the appropriate Laplacian kernel for the requested size.
+2. Slide the kernel over the image and compute the weighted sum of the
+   overlapping pixels.
+3. Store the result in a new image of the same dimensions.
+
+The time complexity is O(n * m * k^2) for an n × m image and a k × k kernel.
+*/
+
+fun make_matrix(rows: int, cols: int, value: int): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    var row: list<int> = []
+    var j = 0
+    while j < cols {
+      row = append(row, value)
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun my_laplacian(src: list<list<int>>, ksize: int): list<list<int>> {
+  var kernel: list<list<int>> = []
+  if ksize == 1 {
+    kernel = [[0, -1, 0], [-1, 4, -1], [0, -1, 0]]
+  } else if ksize == 3 {
+    kernel = [[0, 1, 0], [1, -4, 1], [0, 1, 0]]
+  } else if ksize == 5 {
+    kernel = [
+      [0, 0, -1, 0, 0],
+      [0, -1, -2, -1, 0],
+      [-1, -2, 16, -2, -1],
+      [0, -1, -2, -1, 0],
+      [0, 0, -1, 0, 0]
+    ]
+  } else if ksize == 7 {
+    kernel = [
+      [0, 0, 0, -1, 0, 0, 0],
+      [0, 0, -2, -3, -2, 0, 0],
+      [0, -2, -7, -10, -7, -2, 0],
+      [-1, -3, -10, 68, -10, -3, -1],
+      [0, -2, -7, -10, -7, -2, 0],
+      [0, 0, -2, -3, -2, 0, 0],
+      [0, 0, 0, -1, 0, 0, 0]
+    ]
+  } else {
+    panic("ksize must be in (1, 3, 5, 7)")
+  }
+
+  let rows = len(src)
+  let cols = len(src[0])
+  let k = len(kernel)
+  let pad = k / 2
+  var output = make_matrix(rows, cols, 0)
+  var i = 0
+  while i < rows {
+    var j = 0
+    while j < cols {
+      var sum = 0
+      var ki = 0
+      while ki < k {
+        var kj = 0
+        while kj < k {
+          let ii = i + ki - pad
+          let jj = j + kj - pad
+          var val = 0
+          if ii >= 0 && ii < rows && jj >= 0 && jj < cols {
+            val = src[ii][jj]
+          }
+          sum = sum + val * kernel[ki][kj]
+          kj = kj + 1
+        }
+        ki = ki + 1
+      }
+      output[i][j] = sum
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return output
+}
+
+let image: list<list<int>> = [
+  [0, 0, 0, 0, 0],
+  [0, 10, 10, 10, 0],
+  [0, 10, 10, 10, 0],
+  [0, 10, 10, 10, 0],
+  [0, 0, 0, 0, 0]
+]
+
+let result: list<list<int>> = my_laplacian(image, 3)
+var r = 0
+while r < len(result) {
+  var row_str = "["
+  var c = 0
+  while c < len(result[r]) {
+    row_str = row_str + str(result[r][c])
+    if c + 1 < len(result[r]) {
+      row_str = row_str + ", "
+    }
+    c = c + 1
+  }
+  row_str = row_str + "]"
+  print(row_str)
+  r = r + 1
+}
