@@ -1,0 +1,95 @@
+/*
+Convert a hexadecimal string to its binary representation expressed as an
+integer composed of digits 0 and 1.
+
+Algorithm details:
+1. Trim leading and trailing spaces from the input.
+2. Detect a leading '-' sign to support negative values.
+3. Validate that remaining characters are hexadecimal digits (0-9, A-F, a-f).
+4. Accumulate the integer value by iterating through the digits and
+   multiplying by 16 each step.
+5. Build the binary representation by repeatedly dividing by two and
+   collecting remainders, using right shifts to halve the value.
+6. Return the resulting binary digits as an integer and apply the sign
+   if necessary.
+
+The procedure runs in O(n) time for n input digits and uses O(1) extra space.
+*/
+fun panic(msg: string) {
+  print(msg)
+}
+
+fun trim_spaces(s: string): string {
+  var start = 0
+  var end = len(s)
+  while start < end && substring(s, start, start + 1) == " " {
+    start = start + 1
+  }
+  while end > start && substring(s, end - 1, end) == " " {
+    end = end - 1
+  }
+  return substring(s, start, end)
+}
+
+fun hex_digit_value(ch: string): int {
+  if ch == "0" { return 0 }
+  if ch == "1" { return 1 }
+  if ch == "2" { return 2 }
+  if ch == "3" { return 3 }
+  if ch == "4" { return 4 }
+  if ch == "5" { return 5 }
+  if ch == "6" { return 6 }
+  if ch == "7" { return 7 }
+  if ch == "8" { return 8 }
+  if ch == "9" { return 9 }
+  if ch == "a" || ch == "A" { return 10 }
+  if ch == "b" || ch == "B" { return 11 }
+  if ch == "c" || ch == "C" { return 12 }
+  if ch == "d" || ch == "D" { return 13 }
+  if ch == "e" || ch == "E" { return 14 }
+  if ch == "f" || ch == "F" { return 15 }
+  panic("Invalid value was passed to the function")
+}
+
+fun hex_to_bin(hex_num: string): int {
+  let trimmed = trim_spaces(hex_num)
+  if len(trimmed) == 0 { panic("No value was passed to the function") }
+
+  var s = trimmed
+  var is_negative = false
+  if substring(s, 0, 1) == "-" {
+    is_negative = true
+    s = substring(s, 1, len(s))
+  }
+
+  var int_num = 0
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    let val = hex_digit_value(ch)
+    int_num = int_num * 16 + val
+    i = i + 1
+  }
+
+  var bin_str = ""
+  var n = int_num
+  if n == 0 {
+    bin_str = "0"
+  }
+  while n > 0 {
+    bin_str = str(n % 2) + bin_str
+    n = n / 2
+  }
+
+  var result = bin_str as int
+  if is_negative {
+    result = -result
+  }
+  return result
+}
+
+print(str(hex_to_bin("AC")))
+print(str(hex_to_bin("9A4")))
+print(str(hex_to_bin("   12f   ")))
+print(str(hex_to_bin("FfFf")))
+print(str(hex_to_bin("-fFfF")))
