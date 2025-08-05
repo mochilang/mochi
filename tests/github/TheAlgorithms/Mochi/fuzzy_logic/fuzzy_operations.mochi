@@ -1,0 +1,96 @@
+/*
+Triangular Fuzzy Set Operations
+
+This program models basic operations on triangular fuzzy sets used in
+fuzzy logic.  A fuzzy set is represented by three points
+(left_boundary, peak, right_boundary) forming a triangle-shaped
+membership function over the range [0,1].  The operations implemented
+are:
+
+- membership(x): piecewise linear degree of membership for value x.
+- complement: mirror the set around 1 to obtain its negation.
+- intersection: combine two sets by taking the maximum of left
+  boundaries, the minimum of right boundaries and the average of peaks.
+- union: combine two sets using the minimum of left boundaries, the
+  maximum of right boundaries and the average of peaks.
+
+The example at the bottom constructs two fuzzy sets and demonstrates
+these operations.
+*/
+
+type FuzzySet {
+  name: string,
+  left_boundary: float,
+  peak: float,
+  right_boundary: float
+}
+
+fun stringify(fs: FuzzySet): string {
+  return fs.name + ": [" + str(fs.left_boundary) + ", " + str(fs.peak) + ", " + str(fs.right_boundary) + "]"
+}
+
+fun max2(a: float, b: float): float {
+  if a > b { return a }
+  return b
+}
+
+fun min2(a: float, b: float): float {
+  if a < b { return a }
+  return b
+}
+
+fun complement(fs: FuzzySet): FuzzySet {
+  return FuzzySet {
+    name: "¬" + fs.name,
+    left_boundary: 1.0 - fs.right_boundary,
+    peak: 1.0 - fs.left_boundary,
+    right_boundary: 1.0 - fs.peak
+  }
+}
+
+fun intersection(a: FuzzySet, b: FuzzySet): FuzzySet {
+  return FuzzySet {
+    name: a.name + " ∩ " + b.name,
+    left_boundary: max2(a.left_boundary, b.left_boundary),
+    peak: min2(a.right_boundary, b.right_boundary),
+    right_boundary: (a.peak + b.peak) / 2.0
+  }
+}
+
+fun union(a: FuzzySet, b: FuzzySet): FuzzySet {
+  return FuzzySet {
+    name: a.name + " U " + b.name,
+    left_boundary: min2(a.left_boundary, b.left_boundary),
+    peak: max2(a.right_boundary, b.right_boundary),
+    right_boundary: (a.peak + b.peak) / 2.0
+  }
+}
+
+fun membership(fs: FuzzySet, x: float): float {
+  if x <= fs.left_boundary || x >= fs.right_boundary { return 0.0 }
+  if fs.left_boundary < x && x <= fs.peak {
+    return (x - fs.left_boundary) / (fs.peak - fs.left_boundary)
+  }
+  if fs.peak < x && x < fs.right_boundary {
+    return (fs.right_boundary - x) / (fs.right_boundary - fs.peak)
+  }
+  return 0.0
+}
+
+let sheru = FuzzySet { name: "Sheru", left_boundary: 0.4, peak: 1.0, right_boundary: 0.6 }
+let siya = FuzzySet { name: "Siya", left_boundary: 0.5, peak: 1.0, right_boundary: 0.7 }
+
+print(stringify(sheru))
+print(stringify(siya))
+
+let sheru_comp = complement(sheru)
+print(stringify(sheru_comp))
+
+let inter = intersection(siya, sheru)
+print(stringify(inter))
+
+print("Sheru membership 0.5: " + str(membership(sheru, 0.5)))
+print("Sheru membership 0.6: " + str(membership(sheru, 0.6)))
+
+let uni = union(siya, sheru)
+print(stringify(uni))
