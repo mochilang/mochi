@@ -1,0 +1,82 @@
+/*
+  Count the number of ordered combinations of distinct positive integers that sum to a target.
+
+  Given a list of distinct integers, we want to know in how many different ways we can select
+  numbers (allowing repeated selection and considering different orders as distinct) such that
+  their sum equals a target value. For example, with numbers [1, 2, 5] and target 5 there are
+  9 combinations.
+
+  The module implements three approaches:
+
+  1. Pure recursive search that explores every possibility; time complexity is exponential.
+  2. Recursive search with memoization using an array where dp[t] stores the number of ways to reach t;
+     complexity O(n * target).
+  3. Bottom-up dynamic programming that iteratively builds dp values from 0 up to target;
+     complexity O(n * target).
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun count_recursive(array: list<int>, target: int): int {
+  if target < 0 { return 0 }
+  if target == 0 { return 1 }
+  var total = 0
+  var i = 0
+  while i < len(array) {
+    total = total + count_recursive(array, target - array[i])
+    i = i + 1
+  }
+  return total
+}
+
+fun combination_sum_iv(array: list<int>, target: int): int {
+  return count_recursive(array, target)
+}
+
+fun count_dp(array: list<int>, target: int, dp: list<int>): int {
+  if target < 0 { return 0 }
+  if target == 0 { return 1 }
+  if dp[target] > (0 - 1) { return dp[target] }
+  var total = 0
+  var i = 0
+  while i < len(array) {
+    total = total + count_dp(array, target - array[i], dp)
+    i = i + 1
+  }
+  dp[target] = total
+  return total
+}
+
+fun combination_sum_iv_dp_array(array: list<int>, target: int): int {
+  var dp = make_list(target + 1, -1)
+  return count_dp(array, target, dp)
+}
+
+fun combination_sum_iv_bottom_up(n: int, array: list<int>, target: int): int {
+  var dp = make_list(target + 1, 0)
+  dp[0] = 1
+  var i = 1
+  while i <= target {
+    var j = 0
+    while j < n {
+      if i - array[j] >= 0 {
+        dp[i] = dp[i] + dp[i - array[j]]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[target]
+}
+
+print(str(combination_sum_iv([1, 2, 5], 5)))
+print(str(combination_sum_iv_dp_array([1, 2, 5], 5)))
+print(str(combination_sum_iv_bottom_up(3, [1, 2, 5], 5)))
