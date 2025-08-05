@@ -1,0 +1,111 @@
+/*
+Construct a naive suffix tree for a given string by inserting all suffixes.
+
+Each node in the tree stores:
+  - a map from single characters to child node indexes
+  - a flag marking the end of a suffix
+  - the start and end positions of the suffix in the original text
+
+To avoid recursive types, nodes are stored in a list and children maps hold
+indexes into this list. Building the tree inserts all n suffixes one by one,
+taking O(n^2) time in the worst case. Searching walks the tree following the
+pattern's characters and succeeds if all are found.
+*/
+
+type Node {
+  children: map<string, int>
+  is_end_of_string: bool
+  start: int
+  end: int
+}
+
+type SuffixTree {
+  text: string
+  nodes: list<Node>
+}
+
+fun new_node(): Node {
+  return Node { children: {}, is_end_of_string: false, start: -1, end: -1 }
+}
+
+fun has_key(m: map<string, int>, k: string): bool {
+  for key in m {
+    if key == k {
+      return true
+    }
+  }
+  return false
+}
+
+fun add_suffix(tree: SuffixTree, suffix: string, index: int): SuffixTree {
+  var nodes = tree.nodes
+  var node_idx = 0
+  var j = 0
+  while j < len(suffix) {
+    let ch = suffix[j]
+    var node = nodes[node_idx]
+    var children = node.children
+    if !has_key(children, ch) {
+      nodes = append(nodes, new_node())
+      let new_idx = len(nodes) - 1
+      children[ch] = new_idx
+    }
+    node.children = children
+    nodes[node_idx] = node
+    node_idx = children[ch]
+    j = j + 1
+  }
+  var node = nodes[node_idx]
+  node.is_end_of_string = true
+  node.start = index
+  node.end = index + len(suffix) - 1
+  nodes[node_idx] = node
+  tree.nodes = nodes
+  return tree
+}
+
+fun build_suffix_tree(tree: SuffixTree): SuffixTree {
+  let text = tree.text
+  let n = len(text)
+  var i = 0
+  var t = tree
+  while i < n {
+    var suffix = ""
+    var k = i
+    while k < n {
+      suffix = suffix + text[k]
+      k = k + 1
+    }
+    t = add_suffix(t, suffix, i)
+    i = i + 1
+  }
+  return t
+}
+
+fun new_suffix_tree(text: string): SuffixTree {
+  var tree = SuffixTree { text: text, nodes: [] }
+  tree.nodes = append(tree.nodes, new_node())
+  tree = build_suffix_tree(tree)
+  return tree
+}
+
+fun search(tree: SuffixTree, pattern: string): bool {
+  var node_idx = 0
+  var i = 0
+  let nodes = tree.nodes
+  while i < len(pattern) {
+    let ch = pattern[i]
+    let node = nodes[node_idx]
+    let children = node.children
+    if !has_key(children, ch) {
+      return false
+    }
+    node_idx = children[ch]
+    i = i + 1
+  }
+  return true
+}
+
+let st = new_suffix_tree("bananas")
+print(str(search(st, "ana")))
+print(str(search(st, "apple")))
