@@ -1,0 +1,161 @@
+/*
+Playfair Cipher - Classical Encryption
+
+The Playfair cipher encodes text by substituting pairs of letters using a 5x5
+matrix built from a keyword. The matrix merges I and J to fit the alphabet.
+Plaintext is cleaned by removing non letters, converting to uppercase and
+inserting 'X' between repeated letters. If the final length is odd an extra
+'X' is appended.
+
+For each letter pair:
+- Same row: replace each with the letter to its right (wrapping around).
+- Same column: replace each with the letter below it (wrapping around).
+- Rectangle: swap the columns of the letters.
+
+Decoding applies the inverse operations. This implementation demonstrates
+both encoding and decoding using the runtime/vm.
+*/
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun index_of(xs: list<string>, x: string): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun prepare_input(dirty: string): string {
+  let letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let upper_dirty = upper(dirty)
+  var filtered = ""
+  var i = 0
+  while i < len(upper_dirty) {
+    let c = substring(upper_dirty, i, i + 1)
+    if c in letters {
+      filtered = filtered + c
+    }
+    i = i + 1
+  }
+  if len(filtered) < 2 {
+    return filtered
+  }
+  var clean = ""
+  i = 0
+  while i < len(filtered) - 1 {
+    let c1 = substring(filtered, i, i + 1)
+    let c2 = substring(filtered, i + 1, i + 2)
+    clean = clean + c1
+    if c1 == c2 {
+      clean = clean + "X"
+    }
+    i = i + 1
+  }
+  clean = clean + substring(filtered, len(filtered) - 1, len(filtered))
+  if len(clean) % 2 == 1 {
+    clean = clean + "X"
+  }
+  return clean
+}
+
+fun generate_table(key: string): list<string> {
+  let alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+  var table: list<string> = []
+  let upper_key = upper(key)
+  var i = 0
+  while i < len(upper_key) {
+    let c = substring(upper_key, i, i + 1)
+    if c in alphabet {
+      if !(contains(table, c)) {
+        table = append(table, c)
+      }
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < len(alphabet) {
+    let c = substring(alphabet, i, i + 1)
+    if !(contains(table, c)) {
+      table = append(table, c)
+    }
+    i = i + 1
+  }
+  return table
+}
+
+fun encode(plaintext: string, key: string): string {
+  let table = generate_table(key)
+  let text = prepare_input(plaintext)
+  var cipher = ""
+  var i = 0
+  while i < len(text) {
+    let c1 = substring(text, i, i + 1)
+    let c2 = substring(text, i + 1, i + 2)
+    let idx1 = index_of(table, c1)
+    let idx2 = index_of(table, c2)
+    let row1 = idx1 / 5
+    let col1 = idx1 % 5
+    let row2 = idx2 / 5
+    let col2 = idx2 % 5
+    if row1 == row2 {
+      cipher = cipher + table[row1 * 5 + (col1 + 1) % 5]
+      cipher = cipher + table[row2 * 5 + (col2 + 1) % 5]
+    } else if col1 == col2 {
+      cipher = cipher + table[((row1 + 1) % 5) * 5 + col1]
+      cipher = cipher + table[((row2 + 1) % 5) * 5 + col2]
+    } else {
+      cipher = cipher + table[row1 * 5 + col2]
+      cipher = cipher + table[row2 * 5 + col1]
+    }
+    i = i + 2
+  }
+  return cipher
+}
+
+fun decode(cipher: string, key: string): string {
+  let table = generate_table(key)
+  var plain = ""
+  var i = 0
+  while i < len(cipher) {
+    let c1 = substring(cipher, i, i + 1)
+    let c2 = substring(cipher, i + 1, i + 2)
+    let idx1 = index_of(table, c1)
+    let idx2 = index_of(table, c2)
+    let row1 = idx1 / 5
+    let col1 = idx1 % 5
+    let row2 = idx2 / 5
+    let col2 = idx2 % 5
+    if row1 == row2 {
+      plain = plain + table[row1 * 5 + (col1 + 4) % 5]
+      plain = plain + table[row2 * 5 + (col2 + 4) % 5]
+    } else if col1 == col2 {
+      plain = plain + table[((row1 + 4) % 5) * 5 + col1]
+      plain = plain + table[((row2 + 4) % 5) * 5 + col2]
+    } else {
+      plain = plain + table[row1 * 5 + col2]
+      plain = plain + table[row2 * 5 + col1]
+    }
+    i = i + 2
+  }
+  return plain
+}
+
+fun main() {
+  print("Encoded:", encode("BYE AND THANKS", "GREETING"))
+  print("Decoded:", decode("CXRBANRLBALQ", "GREETING"))
+}
+
+main()
