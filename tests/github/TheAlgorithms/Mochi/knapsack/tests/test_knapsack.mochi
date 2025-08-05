@@ -1,0 +1,63 @@
+/*
+0/1 Knapsack Test Suite
+
+This program mirrors the Python test "knapsack/tests/test_knapsack.py" from
+TheAlgorithms project.  A simple recursive 0/1 knapsack function is provided
+for verifying correctness.  The algorithm explores every subset of items:
+  * If the remaining capacity or number of items is zero, the value is zero.
+  * When the current item's weight exceeds the remaining capacity, it is
+    skipped.
+  * Otherwise the function compares the value of including the item with the
+    value of excluding it and returns the greater of the two.
+
+The suite checks three scenarios:
+  1. Base cases with zero capacity.
+  2. A small example where the optimal value is 5.
+  3. A larger example yielding the optimal value 220.
+Each test returns true when the computed result matches the expected value.
+*/
+
+fun knapsack(capacity: int, weights: list<int>, values: list<int>, counter: int): int {
+  if counter == 0 || capacity == 0 { return 0 }
+  if weights[counter - 1] > capacity {
+    return knapsack(capacity, weights, values, counter - 1)
+  }
+  let left_capacity = capacity - weights[counter - 1]
+  let include_val = values[counter - 1] + knapsack(left_capacity, weights, values, counter - 1)
+  let exclude_val = knapsack(capacity, weights, values, counter - 1)
+  if include_val > exclude_val { return include_val }
+  return exclude_val
+}
+
+fun test_base_case(): bool {
+  let cap: int = 0
+  let val: list<int> = [0]
+  let w: list<int> = [0]
+  let c: int = len(val)
+  if knapsack(cap, w, val, c) != 0 { return false }
+  let val2: list<int> = [60]
+  let w2: list<int> = [10]
+  let c2: int = len(val2)
+  return knapsack(cap, w2, val2, c2) == 0
+}
+
+fun test_easy_case(): bool {
+  let cap: int = 3
+  let val: list<int> = [1, 2, 3]
+  let w: list<int> = [3, 2, 1]
+  let c: int = len(val)
+  return knapsack(cap, w, val, c) == 5
+}
+
+fun test_knapsack(): bool {
+  let cap: int = 50
+  let val: list<int> = [60, 100, 120]
+  let w: list<int> = [10, 20, 30]
+  let c: int = len(val)
+  return knapsack(cap, w, val, c) == 220
+}
+
+print(test_base_case())
+print(test_easy_case())
+print(test_knapsack())
+print(true)
