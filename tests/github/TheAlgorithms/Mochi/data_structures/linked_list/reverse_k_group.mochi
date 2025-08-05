@@ -1,0 +1,63 @@
+/*
+Reverses nodes of a singly linked list in groups of size k.
+The linked list is represented as a record holding a list of integers.
+For each consecutive block of k nodes, their order is reversed while
+leaving any remaining nodes (fewer than k) at the end untouched.
+This approach walks through the list once, building a new list by
+collecting values in temporary groups and appending them in reverse
+order when the group size reaches k. The overall complexity is O(n).
+*/
+
+type LinkedList {
+  data: list<int>
+}
+
+fun to_string(list: LinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var s = str(list.data[0])
+  var i = 1
+  while i < len(list.data) {
+    s = s + " -> " + str(list.data[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun reverse_k_nodes(list: LinkedList, k: int): LinkedList {
+  if k <= 1 { return list }
+  var res: list<int> = []
+  var i = 0
+  while i < len(list.data) {
+    var j = 0
+    var group: list<int> = []
+    while j < k && i + j < len(list.data) {
+      group = append(group, list.data[i + j])
+      j = j + 1
+    }
+    if len(group) == k {
+      var g = k - 1
+      while g >= 0 {
+        res = append(res, group[g])
+        g = g - 1
+      }
+    } else {
+      var g = 0
+      while g < len(group) {
+        res = append(res, group[g])
+        g = g + 1
+      }
+    }
+    i = i + k
+  }
+  return LinkedList { data: res }
+}
+
+fun main() {
+  var ll = LinkedList { data: [1, 2, 3, 4, 5] }
+  print("Original Linked List: " + to_string(ll))
+  var k = 2
+  ll = reverse_k_nodes(ll, k)
+  print("After reversing groups of size " + str(k) + ": " + to_string(ll))
+}
+
+main()
