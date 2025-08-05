@@ -1,0 +1,47 @@
+/*
+Determine if an integer is a perfect square.
+
+A perfect square is an integer that is the square of another integer.
+The first function checks this by incrementally testing integers from 0
+up to the square root of the input.  If the square of any tested integer
+matches the original number, the function returns true.  The running time
+is O(sqrt(n)) and space usage is O(1).
+
+The second function performs the same check using binary search over the
+range 0..n.  It repeatedly halves the search interval until it finds a
+square or determines none exists.  This approach runs in O(log n) time
+with constant extra space.
+*/
+
+fun perfect_square(num: int): bool {
+  if num < 0 { return false }
+  var i = 0
+  while i * i <= num {
+    if i * i == num { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun perfect_square_binary_search(n: int): bool {
+  if n < 0 { return false }
+  var left = 0
+  var right = n
+  while left <= right {
+    let mid = (left + right) / 2
+    let sq = mid * mid
+    if sq == n { return true }
+    if sq > n {
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+  return false
+}
+
+print(str(perfect_square(9)))
+print(str(perfect_square(10)))
+print(str(perfect_square_binary_search(16)))
+print(str(perfect_square_binary_search(10)))
+print(str(perfect_square_binary_search(-1)))
