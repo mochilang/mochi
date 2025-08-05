@@ -1,0 +1,52 @@
+/*
+Find the nth ugly number using dynamic programming.
+
+An ugly number is a positive integer whose prime factors are limited to 2, 3, and 5.
+The sequence begins 1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, ...
+This algorithm maintains three indices tracking the next multiple of 2, 3, and 5.
+At each step the smallest candidate is appended to the list and the
+corresponding index is advanced. This generates numbers in increasing order
+without checking every integer individually.
+*/
+
+fun ugly_numbers(n: int): int {
+  if n <= 0 { return 1 }
+  var ugly_nums: list<int> = []
+  ugly_nums = append(ugly_nums, 1)
+  var i2 = 0
+  var i3 = 0
+  var i5 = 0
+  var next_2 = 2
+  var next_3 = 3
+  var next_5 = 5
+  var count = 1
+  while count < n {
+    let next_num =
+      if next_2 < next_3 {
+        if next_2 < next_5 { next_2 } else { next_5 }
+      } else {
+        if next_3 < next_5 { next_3 } else { next_5 }
+      }
+    ugly_nums = append(ugly_nums, next_num)
+    if next_num == next_2 {
+      i2 = i2 + 1
+      next_2 = ugly_nums[i2] * 2
+    }
+    if next_num == next_3 {
+      i3 = i3 + 1
+      next_3 = ugly_nums[i3] * 3
+    }
+    if next_num == next_5 {
+      i5 = i5 + 1
+      next_5 = ugly_nums[i5] * 5
+    }
+    count = count + 1
+  }
+  return ugly_nums[len(ugly_nums) - 1]
+}
+
+print(str(ugly_numbers(100)))
+print(str(ugly_numbers(0)))
+print(str(ugly_numbers(20)))
+print(str(ugly_numbers(-5)))
+print(str(ugly_numbers(200)))
