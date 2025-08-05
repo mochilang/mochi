@@ -1,0 +1,44 @@
+/*
+Fletcher-16 Checksum
+
+This program computes the 16-bit Fletcher checksum of a given ASCII string.
+The algorithm maintains two running sums. For each character, its ASCII code
+is added to the first sum modulo 255, and the updated first sum is added to the
+second sum modulo 255. The final checksum is formed by concatenating the two
+8-bit sums (sum2 as the high byte and sum1 as the low byte). This implementation
+performs the combination using arithmetic multiplication instead of bitwise
+operations, which are not currently available in the Mochi VM. The time
+complexity is O(n) for n characters.
+*/
+
+let ascii_chars: string = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ascii_chars) {
+    if ascii_chars[i] == ch {
+      return 32 + i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun fletcher16(text: string): int {
+  var sum1 = 0
+  var sum2 = 0
+  var i = 0
+  while i < len(text) {
+    let code = ord(text[i])
+    sum1 = (sum1 + code) % 255
+    sum2 = (sum1 + sum2) % 255
+    i = i + 1
+  }
+  return sum2 * 256 + sum1
+}
+
+test "fletcher16 checksum" {
+  expect fletcher16("hello world") == 6752
+  expect fletcher16("onethousandfourhundredthirtyfour") == 28347
+  expect fletcher16("The quick brown fox jumps over the lazy dog.") == 5655
+}
