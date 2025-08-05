@@ -1,0 +1,188 @@
+/*
+Bidirectional Breadth First Search on a 2D grid with obstacles.
+
+The grid contains 0 for open cells and 1 for blocked cells.  A standard
+breadth first search (BFS) explores from the start position expanding
+neighbours level by level until the goal is found.  Bidirectional BFS
+runs two simultaneous BFS frontiers starting from the start and goal
+positions.  Each step expands one layer from both sides and checks for a
+meeting cell.  When the frontiers meet the final path is obtained by
+concatenating the partial paths.  This reduces the explored search space
+compared to a single BFS.
+
+The implementation is written purely in Mochi using lists, maps and
+strings.  No FFI is used and the "any" type is avoided.
+*/
+
+let grid: list<list<int>> = [
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0],
+  [1, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0]
+]
+
+let delta: list<list<int>> = [[-1,0], [0,-1], [1,0], [0,1]]
+
+fun key(y: int, x: int): string { return str(y) + "," + str(x) }
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun parse_key(k: string): list<int> {
+  var idx = 0
+  while idx < len(k) && substring(k, idx, idx + 1) != "," {
+    idx = idx + 1
+  }
+  let y = parse_int(substring(k, 0, idx))
+  let x = parse_int(substring(k, idx + 1, len(k)))
+  return [y, x]
+}
+
+type Node { pos: string, path: list<string> }
+
+fun neighbors(pos: string): list<string> {
+  let coords = parse_key(pos)
+  let y = coords[0]
+  let x = coords[1]
+  var res: list<string> = []
+  var i = 0
+  while i < len(delta) {
+    let ny = y + delta[i][0]
+    let nx = x + delta[i][1]
+    if ny >= 0 && ny < len(grid) && nx >= 0 && nx < len(grid[0]) {
+      if grid[ny][nx] == 0 {
+        res = append(res, key(ny, nx))
+      }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun reverse_list(lst: list<string>): list<string> {
+  var res: list<string> = []
+  var i = len(lst) - 1
+  while i >= 0 {
+    res = append(res, lst[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun bfs(start: string, goal: string): list<string> {
+  var queue: list<Node> = []
+  queue = append(queue, Node { pos: start, path: [start] })
+  var head = 0
+  var visited: map<string, bool> = { start: true }
+  while head < len(queue) {
+    let node = queue[head]
+    head = head + 1
+    if node.pos == goal {
+      return node.path
+    }
+    let neigh = neighbors(node.pos)
+    var i = 0
+    while i < len(neigh) {
+      let npos = neigh[i]
+      if !(npos in visited) {
+        visited[npos] = true
+        let new_path = append(node.path, npos)
+        queue = append(queue, Node { pos: npos, path: new_path })
+      }
+      i = i + 1
+    }
+  }
+  return []
+}
+
+fun bidirectional_bfs(start: string, goal: string): list<string> {
+  var queue_f: list<Node> = []
+  var queue_b: list<Node> = []
+  queue_f = append(queue_f, Node { pos: start, path: [start] })
+  queue_b = append(queue_b, Node { pos: goal, path: [goal] })
+  var head_f = 0
+  var head_b = 0
+  var visited_f: map<string, list<string>> = { start: [start] }
+  var visited_b: map<string, list<string>> = { goal: [goal] }
+  while head_f < len(queue_f) && head_b < len(queue_b) {
+    let node_f = queue_f[head_f]
+    head_f = head_f + 1
+    let neigh_f = neighbors(node_f.pos)
+    var i = 0
+    while i < len(neigh_f) {
+      let npos = neigh_f[i]
+      if !(npos in visited_f) {
+        let new_path = append(node_f.path, npos)
+        visited_f[npos] = new_path
+        if npos in visited_b {
+          var rev = reverse_list(visited_b[npos])
+          var j = 1
+          while j < len(rev) {
+            new_path = append(new_path, rev[j])
+            j = j + 1
+          }
+          return new_path
+        }
+        queue_f = append(queue_f, Node { pos: npos, path: new_path })
+      }
+      i = i + 1
+    }
+
+    let node_b = queue_b[head_b]
+    head_b = head_b + 1
+    let neigh_b = neighbors(node_b.pos)
+    var j = 0
+    while j < len(neigh_b) {
+      let nposb = neigh_b[j]
+      if !(nposb in visited_b) {
+        let new_path_b = append(node_b.path, nposb)
+        visited_b[nposb] = new_path_b
+        if nposb in visited_f {
+          var path_f = visited_f[nposb]
+          new_path_b = reverse_list(new_path_b)
+          var t = 1
+          while t < len(new_path_b) {
+            path_f = append(path_f, new_path_b[t])
+            t = t + 1
+          }
+          return path_f
+        }
+        queue_b = append(queue_b, Node { pos: nposb, path: new_path_b })
+      }
+      j = j + 1
+    }
+  }
+  return [start]
+}
+
+fun path_to_string(path: list<string>): string {
+  if len(path) == 0 { return "[]" }
+  var first = parse_key(path[0])
+  var s = "[(" + str(first[0]) + ", " + str(first[1]) + ")"
+  var i = 1
+  while i < len(path) {
+    let c = parse_key(path[i])
+    s = s + ", (" + str(c[0]) + ", " + str(c[1]) + ")"
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let start = key(0, 0)
+let goal = key(len(grid) - 1, len(grid[0]) - 1)
+let path1 = bfs(start, goal)
+print(path_to_string(path1))
+let path2 = bidirectional_bfs(start, goal)
+print(path_to_string(path2))
