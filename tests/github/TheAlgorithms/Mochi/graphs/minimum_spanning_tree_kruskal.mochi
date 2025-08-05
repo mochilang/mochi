@@ -1,0 +1,105 @@
+/*
+Kruskal's Minimum Spanning Tree Algorithm
+----------------------------------------
+Given an undirected, weighted graph with a set of nodes and weighted edges,
+Kruskal's algorithm constructs a minimum spanning tree by repeatedly selecting
+the lowest weight edge that connects two distinct components.
+
+Algorithm steps:
+1. Sort all edges in non-decreasing order of their weights.
+2. Start with each node in its own disjoint set.
+3. For each edge in order, add it to the tree if its endpoints belong to
+different sets, then union those sets.
+4. Continue until all nodes are connected or all edges are processed.
+
+This implementation returns the list of edges in the minimum spanning tree.
+Time complexity: O(E log E) due to sorting.
+Space complexity: O(V) for the disjoint set structure.
+*/
+
+fun sort_edges(edges: list<list<int>>): list<list<int>> {
+  var es = edges
+  var i = 0
+  while i < len(es) {
+    var j = 0
+    while j < len(es) - i - 1 {
+      if es[j][2] > es[j + 1][2] {
+        let temp = es[j]
+        es[j] = es[j + 1]
+        es[j + 1] = temp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return es
+}
+
+fun find_parent(parent: list<int>, i: int): int {
+  if parent[i] != i {
+    parent[i] = find_parent(parent, parent[i])
+  }
+  return parent[i]
+}
+
+fun kruskal(num_nodes: int, edges: list<list<int>>): list<list<int>> {
+  var es = sort_edges(edges)
+  var parent: list<int> = []
+  var i = 0
+  while i < num_nodes {
+    parent = append(parent, i)
+    i = i + 1
+  }
+  var mst: list<list<int>> = []
+  var idx = 0
+  while idx < len(es) {
+    let e = es[idx]
+    let pa = find_parent(parent, e[0])
+    let pb = find_parent(parent, e[1])
+    if pa != pb {
+      mst = append(mst, e)
+      parent[pa] = pb
+    }
+    idx = idx + 1
+  }
+  return mst
+}
+
+fun edges_to_string(es: list<list<int>>): string {
+  var s = "["
+  var i = 0
+  while i < len(es) {
+    let e = es[i]
+    s = s + "(" + str(e[0]) + ", " + str(e[1]) + ", " + str(e[2]) + ")"
+    if i < len(es) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let edges1: list<list<int>> = [
+  [0, 1, 3],
+  [1, 2, 5],
+  [2, 3, 1],
+]
+print(edges_to_string(kruskal(4, edges1)))
+
+let edges2: list<list<int>> = [
+  [0, 1, 3],
+  [1, 2, 5],
+  [2, 3, 1],
+  [0, 2, 1],
+  [0, 3, 2],
+]
+print(edges_to_string(kruskal(4, edges2)))
+
+let edges3: list<list<int>> = [
+  [0, 1, 3],
+  [1, 2, 5],
+  [2, 3, 1],
+  [0, 2, 1],
+  [0, 3, 2],
+  [2, 1, 1],
+]
+print(edges_to_string(kruskal(4, edges3)))
