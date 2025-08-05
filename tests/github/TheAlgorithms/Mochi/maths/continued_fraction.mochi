@@ -1,0 +1,50 @@
+/*
+Compute the continued fraction expansion of a rational number.
+
+Given an initial numerator and denominator, the algorithm repeatedly takes the
+floor of their ratio to obtain successive integer terms. After each step the
+numerator is reduced by the integer part times the denominator and the roles of
+numerator and denominator are swapped. This is effectively the Euclidean
+algorithm and terminates when the remainder becomes zero.
+
+The resulting list of integers represents the continued fraction coefficients.
+Time complexity is O(k) where k is the length of this list.
+*/
+
+fun floor_div(a: int, b: int): int {
+  var q = a / b
+  let r = a % b
+  if r != 0 && ((a < 0 && b > 0) || (a > 0 && b < 0)) {
+    q = q - 1
+  }
+  return q
+}
+
+fun continued_fraction(numerator: int, denominator: int): list<int> {
+  var num = numerator
+  var den = denominator
+  var result: list<int> = []
+  while true {
+    let integer_part = floor_div(num, den)
+    result = append(result, integer_part)
+    num = num - integer_part * den
+    if num == 0 { break }
+    let tmp = num
+    num = den
+    den = tmp
+  }
+  return result
+}
+
+fun list_to_string(lst: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(lst) {
+    s = s + str(lst[i])
+    if i < len(lst) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+print("Continued Fraction of 0.84375 is: " + list_to_string(continued_fraction(27, 32)))
