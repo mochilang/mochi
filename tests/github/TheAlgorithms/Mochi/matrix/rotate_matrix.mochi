@@ -1,0 +1,143 @@
+/*
+Rotate a matrix by 90, 180 and 270 degrees counterclockwise.
+
+The core transformations are:
+- transpose: swap rows and columns
+- reverse_row: reverse order of rows
+- reverse_column: reverse elements in each row
+
+Using these helpers we can build rotations:
+- rotate_90  = reverse_row(transpose(mat))
+- rotate_180 = reverse_row(reverse_column(mat))
+- rotate_270 = reverse_column(transpose(mat))
+
+A helper make_matrix constructs an N x N matrix filled from 1 to N^2.
+The program prints the original matrix and each rotation.
+*/
+
+fun abs_int(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun make_matrix(row_size: int): list<list<int>> {
+  var size = abs_int(row_size)
+  if size == 0 { size = 4 }
+  var mat: list<list<int>> = []
+  var y = 0
+  while y < size {
+    var row: list<int> = []
+    var x = 0
+    while x < size {
+      row = append(row, 1 + x + y * size)
+      x = x + 1
+    }
+    mat = append(mat, row)
+    y = y + 1
+  }
+  return mat
+}
+
+fun transpose(mat: list<list<int>>): list<list<int>> {
+  let n = len(mat)
+  var result: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, mat[j][i])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun reverse_row(mat: list<list<int>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = len(mat) - 1
+  while i >= 0 {
+    result = append(result, mat[i])
+    i = i - 1
+  }
+  return result
+}
+
+fun reverse_column(mat: list<list<int>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(mat) {
+    var row: list<int> = []
+    var j = len(mat[i]) - 1
+    while j >= 0 {
+      row = append(row, mat[i][j])
+      j = j - 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun rotate_90(mat: list<list<int>>): list<list<int>> {
+  let t: list<list<int>> = transpose(mat)
+  let rr: list<list<int>> = reverse_row(t)
+  return rr
+}
+
+fun rotate_180(mat: list<list<int>>): list<list<int>> {
+  let rc: list<list<int>> = reverse_column(mat)
+  let rr: list<list<int>> = reverse_row(rc)
+  return rr
+}
+
+fun rotate_270(mat: list<list<int>>): list<list<int>> {
+  let t: list<list<int>> = transpose(mat)
+  let rc: list<list<int>> = reverse_column(t)
+  return rc
+}
+
+fun row_to_string(row: list<int>): string {
+  var line = ""
+  var i = 0
+  while i < len(row) {
+    if i == 0 {
+      line = str(row[i])
+    } else {
+      line = line + " " + str(row[i])
+    }
+    i = i + 1
+  }
+  return line
+}
+
+fun print_matrix(mat: list<list<int>>) {
+  var i = 0
+  while i < len(mat) {
+    print(row_to_string(mat[i]))
+    i = i + 1
+  }
+}
+
+var mat = make_matrix(4)
+print("\norigin:\n")
+print_matrix(mat)
+print("\nrotate 90 counterclockwise:\n")
+let r90 = rotate_90(mat)
+print_matrix(r90)
+
+mat = make_matrix(4)
+print("\norigin:\n")
+print_matrix(mat)
+print("\nrotate 180:\n")
+let r180 = rotate_180(mat)
+print_matrix(r180)
+
+mat = make_matrix(4)
+print("\norigin:\n")
+print_matrix(mat)
+print("\nrotate 270 counterclockwise:\n")
+let r270 = rotate_270(mat)
+print_matrix(r270)
