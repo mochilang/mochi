@@ -1,0 +1,120 @@
+/*
+Burrows–Wheeler Transform (BWT)
+
+The BWT rearranges characters of a string into runs of similar characters to
+aid compression. For a given string, all rotations of the string are generated
+and sorted lexicographically. The transform is the string formed by taking the
+last character of each sorted rotation, along with the index of the original
+string within the sorted rotations.
+
+The transform is reversible. To invert, start with an array of empty strings.
+Repeatedly prepend the characters of the BWT string to each array element and
+sort the array each time. After as many iterations as the string length, the
+original string is the rotation at the saved index.
+
+This implementation provides both the forward transform and its inverse using
+only Mochi's standard library.
+*/
+
+type BWTResult { bwt_string: string, idx_original_string: int }
+
+fun all_rotations(s: string): list<string> {
+  let n = len(s)
+  var rotations: list<string> = []
+  var i = 0
+  while i < n {
+    let rotation = substring(s, i, n) + substring(s, 0, i)
+    rotations = append(rotations, rotation)
+    i = i + 1
+  }
+  return rotations
+}
+
+fun sort_strings(arr: list<string>): list<string> {
+  let n = len(arr)
+  var i = 1
+  while i < n {
+    var key = arr[i]
+    var j = i - 1
+    while j >= 0 && arr[j] > key {
+      arr[j + 1] = arr[j]
+      j = j - 1
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun join_strings(arr: list<string>): string {
+  var res = ""
+  var i = 0
+  while i < len(arr) {
+    res = res + arr[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun bwt_transform(s: string): BWTResult {
+  if s == "" {
+    panic("input string must not be empty")
+  }
+  var rotations = all_rotations(s)
+  rotations = sort_strings(rotations)
+  var last_col: list<string> = []
+  var i = 0
+  while i < len(rotations) {
+    let word = rotations[i]
+    last_col = append(last_col, substring(word, len(word) - 1, len(word)))
+    i = i + 1
+  }
+  let bwt_string = join_strings(last_col)
+  let idx = index_of(rotations, s)
+  return BWTResult { bwt_string: bwt_string, idx_original_string: idx }
+}
+
+fun index_of(arr: list<string>, target: string): int {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == target {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun reverse_bwt(bwt_string: string, idx_original_string: int): string {
+  if bwt_string == "" {
+    panic("bwt string must not be empty")
+  }
+  let n = len(bwt_string)
+  if idx_original_string < 0 || idx_original_string >= n {
+    panic("index out of range")
+  }
+  var ordered_rotations: list<string> = []
+  var i = 0
+  while i < n {
+    ordered_rotations = append(ordered_rotations, "")
+    i = i + 1
+  }
+  var iter = 0
+  while iter < n {
+    var j = 0
+    while j < n {
+      let ch = substring(bwt_string, j, j + 1)
+      ordered_rotations[j] = ch + ordered_rotations[j]
+      j = j + 1
+    }
+    ordered_rotations = sort_strings(ordered_rotations)
+    iter = iter + 1
+  }
+  return ordered_rotations[idx_original_string]
+}
+
+let s = "^BANANA"
+let result = bwt_transform(s)
+print(result.bwt_string)
+print(result.idx_original_string)
+print(reverse_bwt(result.bwt_string, result.idx_original_string))
