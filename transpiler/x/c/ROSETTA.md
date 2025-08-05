@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (194/491) - Last updated 2025-08-05 02:43 +0700:
+Checklist of programs that currently transpile and run (204/491) - Last updated 2025-08-05 07:51 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -240,16 +240,16 @@ Checklist of programs that currently transpile and run (194/491) - Last updated 
 | 233 | convert-seconds-to-compound-duration |  |  |  |
 | 234 | convex-hull |  |  |  |
 | 235 | conways-game-of-life |  |  |  |
-| 236 | copy-a-string-1 |  |  |  |
-| 237 | copy-a-string-2 |  |  |  |
-| 238 | copy-stdin-to-stdout-1 |  |  |  |
-| 239 | copy-stdin-to-stdout-2 |  |  |  |
-| 240 | count-in-factors |  |  |  |
-| 241 | count-in-octal-1 |  |  |  |
-| 242 | count-in-octal-2 |  |  |  |
-| 243 | count-in-octal-3 |  |  |  |
-| 244 | count-in-octal-4 |  |  |  |
-| 245 | count-occurrences-of-a-substring |  |  |  |
+| 236 | copy-a-string-1 | ✓ | 0us | 1.4 MB |
+| 237 | copy-a-string-2 | ✓ | 162us | 1.4 MB |
+| 238 | copy-stdin-to-stdout-1 | ✓ | 163us | 1.5 MB |
+| 239 | copy-stdin-to-stdout-2 | ✓ | 181us | 1.4 MB |
+| 240 | count-in-factors | ✓ | 328us | 1.5 MB |
+| 241 | count-in-octal-1 | ✓ | 214us | 1.6 MB |
+| 242 | count-in-octal-2 | ✓ | 75.06ms | 23.2 MB |
+| 243 | count-in-octal-3 | ✓ | 357us | 1.4 MB |
+| 244 | count-in-octal-4 | ✓ | 148us | 1.5 MB |
+| 245 | count-occurrences-of-a-substring | ✓ | 230us | 1.4 MB |
 | 246 | count-the-coins-1 |  |  |  |
 | 247 | count-the-coins-2 |  |  |  |
 | 248 | cramers-rule |  |  |  |
