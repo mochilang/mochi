@@ -1,0 +1,188 @@
+/*
+Mosaic Augmentation for Object Detection
+
+Given four images and their bounding boxes (normalized coordinates),
+this algorithm stitches them into a single image divided by a random
+split point. The bounding boxes are scaled and translated to their new
+positions in the mosaic. Boxes smaller than a filter threshold are
+removed.
+
+This implementation focuses on the geometric transformation of
+bounding boxes using simple numeric lists instead of real images.
+*/
+
+type MosaicResult {
+  img: list<list<int>>
+  annos: list<list<float>>
+  path: string
+}
+
+fun update_image_and_anno(
+  all_img_list: list<string>,
+  all_annos: list<list<list<float>>>,
+  idxs: list<int>,
+  output_size: list<int>,
+  scale_range: list<float>,
+  filter_scale: float
+): MosaicResult {
+  let height: int = output_size[0]
+  let width: int = output_size[1]
+
+  var output_img: list<list<int>>
+  var r: int = 0
+  while r < height {
+    var row: list<int>
+    var c: int = 0
+    while c < width {
+      row = append(row, 0)
+      c = c + 1
+    }
+    output_img = append(output_img, row)
+    r = r + 1
+  }
+
+  let scale_x: float = (scale_range[0] + scale_range[1]) / 2.0
+  let scale_y: float = (scale_range[0] + scale_range[1]) / 2.0
+  let divid_point_x: int = ((scale_x * (width as float)) as int)
+  let divid_point_y: int = ((scale_y * (height as float)) as int)
+
+  var new_anno: list<list<float>>
+  var path_list: list<string>
+
+  var i: int = 0
+  while i < len(idxs) {
+    let index: int = idxs[i]
+    let path: string = all_img_list[index]
+    path_list = append(path_list, path)
+    let img_annos: list<list<float>> = all_annos[index]
+
+    if i == 0 {
+      var y0: int = 0
+      while y0 < divid_point_y {
+        var x0: int = 0
+        while x0 < divid_point_x {
+          output_img[y0][x0] = i + 1
+          x0 = x0 + 1
+        }
+        y0 = y0 + 1
+      }
+      var j0: int = 0
+      while j0 < len(img_annos) {
+        let bbox: list<float> = img_annos[j0]
+        let xmin: float = bbox[1] * scale_x
+        let ymin: float = bbox[2] * scale_y
+        let xmax: float = bbox[3] * scale_x
+        let ymax: float = bbox[4] * scale_y
+        new_anno = append(new_anno, [bbox[0], xmin, ymin, xmax, ymax])
+        j0 = j0 + 1
+      }
+    } else if i == 1 {
+      var y1: int = 0
+      while y1 < divid_point_y {
+        var x1: int = divid_point_x
+        while x1 < width {
+          output_img[y1][x1] = i + 1
+          x1 = x1 + 1
+        }
+        y1 = y1 + 1
+      }
+      var j1: int = 0
+      while j1 < len(img_annos) {
+        let bbox1: list<float> = img_annos[j1]
+        let xmin1: float = scale_x + bbox1[1] * (1.0 - scale_x)
+        let ymin1: float = bbox1[2] * scale_y
+        let xmax1: float = scale_x + bbox1[3] * (1.0 - scale_x)
+        let ymax1: float = bbox1[4] * scale_y
+        new_anno = append(new_anno, [bbox1[0], xmin1, ymin1, xmax1, ymax1])
+        j1 = j1 + 1
+      }
+    } else if i == 2 {
+      var y2: int = divid_point_y
+      while y2 < height {
+        var x2: int = 0
+        while x2 < divid_point_x {
+          output_img[y2][x2] = i + 1
+          x2 = x2 + 1
+        }
+        y2 = y2 + 1
+      }
+      var j2: int = 0
+      while j2 < len(img_annos) {
+        let bbox2: list<float> = img_annos[j2]
+        let xmin2: float = bbox2[1] * scale_x
+        let ymin2: float = scale_y + bbox2[2] * (1.0 - scale_y)
+        let xmax2: float = bbox2[3] * scale_x
+        let ymax2: float = scale_y + bbox2[4] * (1.0 - scale_y)
+        new_anno = append(new_anno, [bbox2[0], xmin2, ymin2, xmax2, ymax2])
+        j2 = j2 + 1
+      }
+    } else {
+      var y3: int = divid_point_y
+      while y3 < height {
+        var x3: int = divid_point_x
+        while x3 < width {
+          output_img[y3][x3] = i + 1
+          x3 = x3 + 1
+        }
+        y3 = y3 + 1
+      }
+      var j3: int = 0
+      while j3 < len(img_annos) {
+        let bbox3: list<float> = img_annos[j3]
+        let xmin3: float = scale_x + bbox3[1] * (1.0 - scale_x)
+        let ymin3: float = scale_y + bbox3[2] * (1.0 - scale_y)
+        let xmax3: float = scale_x + bbox3[3] * (1.0 - scale_x)
+        let ymax3: float = scale_y + bbox3[4] * (1.0 - scale_y)
+        new_anno = append(new_anno, [bbox3[0], xmin3, ymin3, xmax3, ymax3])
+        j3 = j3 + 1
+      }
+    }
+    i = i + 1
+  }
+
+  if filter_scale > 0.0 {
+    var filtered: list<list<float>>
+    var k: int = 0
+    while k < len(new_anno) {
+      let anno: list<float> = new_anno[k]
+      let w: float = anno[3] - anno[1]
+      let h: float = anno[4] - anno[2]
+      if filter_scale < w && filter_scale < h {
+        filtered = append(filtered, anno)
+      }
+      k = k + 1
+    }
+    new_anno = filtered
+  }
+
+  return MosaicResult {img: output_img, annos: new_anno, path: path_list[0]}
+}
+
+fun main(): void {
+  let all_img_list: list<string> = ["img0.jpg", "img1.jpg", "img2.jpg", "img3.jpg"]
+  let all_annos: list<list<list<float>>> = [
+    [[0.0, 0.1, 0.1, 0.4, 0.4]],
+    [[1.0, 0.2, 0.3, 0.5, 0.7]],
+    [[2.0, 0.6, 0.2, 0.9, 0.5]],
+    [[3.0, 0.5, 0.5, 0.8, 0.8]]
+  ]
+  let idxs: list<int> = [0, 1, 2, 3]
+  let output_size: list<int> = [100, 100]
+  let scale_range: list<float> = [0.4, 0.6]
+  let filter_scale: float = 0.05
+
+  let res: MosaicResult = update_image_and_anno(all_img_list, all_annos, idxs, output_size, scale_range, filter_scale)
+  let new_annos: list<list<float>> = res.annos
+  let path: string = res.path
+
+  print("Base image: " + path)
+  print("Mosaic annotation count: " + str(len(new_annos)))
+  var i: int = 0
+  while i < len(new_annos) {
+    let a: list<float> = new_annos[i]
+    print(str(a[0]) + " " + str(a[1]) + " " + str(a[2]) + " " + str(a[3]) + " " + str(a[4]))
+    i = i + 1
+  }
+}
+
+main()
