@@ -1,0 +1,376 @@
+/*
+Implementation of various machine learning loss functions in pure Mochi.
+
+The module provides functions:
+
+- binary_cross_entropy and binary_focal_cross_entropy for binary classification.
+- categorical_cross_entropy and categorical_focal_cross_entropy for multi-class tasks.
+- hinge_loss, huber_loss, mean_squared_error, mean_absolute_error,
+  mean_squared_logarithmic_error, mean_absolute_percentage_error,
+  perplexity_loss for language models, smooth_l1_loss and
+  kullback_leibler_divergence.
+
+Each function operates on lists and uses simple loops.
+Natural logarithm and exponential are implemented using
+series expansions to avoid foreign function interfaces.
+*/
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun maxf(a: float, b: float): float {
+  if a > b { return a }
+  return b
+}
+
+fun minf(a: float, b: float): float {
+  if a < b { return a }
+  return b
+}
+
+fun clip(x: float, lo: float, hi: float): float {
+  return maxf(lo, minf(x, hi))
+}
+
+fun to_float(x: int): float {
+  return x * 1.0
+}
+
+fun powf(base: float, exp: float): float {
+  var result = 1.0
+  var i = 0
+  let n = int(exp)
+  while i < n {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun ln(x: float): float {
+  if x <= 0.0 { panic("ln domain error") }
+  let y = (x - 1.0) / (x + 1.0)
+  let y2 = y * y
+  var term = y
+  var sum = 0.0
+  var k = 0
+  while k < 10 {
+    let denom = to_float(2 * k + 1)
+    sum = sum + term / denom
+    term = term * y2
+    k = k + 1
+  }
+  return 2.0 * sum
+}
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / to_float(n)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun mean(v: list<float>): float {
+  var total = 0.0
+  var i = 0
+  while i < len(v) {
+    total = total + v[i]
+    i = i + 1
+  }
+  return total / to_float(len(v))
+}
+
+fun binary_cross_entropy(y_true: list<float>, y_pred: list<float>, epsilon: float): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var losses: list<float> = []
+  var i = 0
+  while i < len(y_true) {
+    let yt = y_true[i]
+    let yp = clip(y_pred[i], epsilon, 1.0 - epsilon)
+    let loss = -(yt * ln(yp) + (1.0 - yt) * ln(1.0 - yp))
+    losses = append(losses, loss)
+    i = i + 1
+  }
+  return mean(losses)
+}
+
+fun binary_focal_cross_entropy(y_true: list<float>, y_pred: list<float>, gamma: float, alpha: float, epsilon: float): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var losses: list<float> = []
+  var i = 0
+  while i < len(y_true) {
+    let yt = y_true[i]
+    let yp = clip(y_pred[i], epsilon, 1.0 - epsilon)
+    let term1 = alpha * powf(1.0 - yp, gamma) * yt * ln(yp)
+    let term2 = (1.0 - alpha) * powf(yp, gamma) * (1.0 - yt) * ln(1.0 - yp)
+    losses = append(losses, -(term1 + term2))
+    i = i + 1
+  }
+  return mean(losses)
+}
+
+fun categorical_cross_entropy(y_true: list<list<float>>, y_pred: list<list<float>>, epsilon: float): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same shape.") }
+  let rows = len(y_true)
+  var total = 0.0
+  var i = 0
+  while i < rows {
+    if len(y_true[i]) != len(y_pred[i]) { panic("Input arrays must have the same shape.") }
+    var sum_true = 0.0
+    var sum_pred = 0.0
+    var j = 0
+    while j < len(y_true[i]) {
+      let yt = y_true[i][j]
+      let yp = y_pred[i][j]
+      if (yt != 0.0 && yt != 1.0) { panic("y_true must be one-hot encoded.") }
+      sum_true = sum_true + yt
+      sum_pred = sum_pred + yp
+      j = j + 1
+    }
+    if sum_true != 1.0 { panic("y_true must be one-hot encoded.") }
+    if absf(sum_pred - 1.0) > epsilon { panic("Predicted probabilities must sum to approximately 1.") }
+    j = 0
+    while j < len(y_true[i]) {
+      let yp = clip(y_pred[i][j], epsilon, 1.0)
+      total = total - (y_true[i][j] * ln(yp))
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun categorical_focal_cross_entropy(y_true: list<list<float>>, y_pred: list<list<float>>, alpha: list<float>, gamma: float, epsilon: float): float {
+  if len(y_true) != len(y_pred) { panic("Shape of y_true and y_pred must be the same.") }
+  let rows = len(y_true)
+  let cols = len(y_true[0])
+  var a = alpha
+  if len(a) == 0 {
+    var tmp: list<float> = []
+    var j = 0
+    while j < cols {
+      tmp = append(tmp, 1.0)
+      j = j + 1
+    }
+    a = tmp
+  }
+  if len(a) != cols { panic("Length of alpha must match the number of classes.") }
+  var total = 0.0
+  var i = 0
+  while i < rows {
+    if len(y_true[i]) != cols || len(y_pred[i]) != cols { panic("Shape of y_true and y_pred must be the same.") }
+    var sum_true = 0.0
+    var sum_pred = 0.0
+    var j = 0
+    while j < cols {
+      let yt = y_true[i][j]
+      let yp = y_pred[i][j]
+      if (yt != 0.0 && yt != 1.0) { panic("y_true must be one-hot encoded.") }
+      sum_true = sum_true + yt
+      sum_pred = sum_pred + yp
+      j = j + 1
+    }
+    if sum_true != 1.0 { panic("y_true must be one-hot encoded.") }
+    if absf(sum_pred - 1.0) > epsilon { panic("Predicted probabilities must sum to approximately 1.") }
+    var row_loss = 0.0
+    j = 0
+    while j < cols {
+      let yp = clip(y_pred[i][j], epsilon, 1.0)
+      row_loss = row_loss + a[j] * powf(1.0 - yp, gamma) * y_true[i][j] * ln(yp)
+      j = j + 1
+    }
+    total = total - row_loss
+    i = i + 1
+  }
+  return total / to_float(rows)
+}
+
+fun hinge_loss(y_true: list<float>, y_pred: list<float>): float {
+  if len(y_true) != len(y_pred) { panic("Length of predicted and actual array must be same.") }
+  var losses: list<float> = []
+  var i = 0
+  while i < len(y_true) {
+    let yt = y_true[i]
+    if (yt != (-1.0) && yt != 1.0) { panic("y_true can have values -1 or 1 only.") }
+    let pred = y_pred[i]
+    let l = maxf(0.0, 1.0 - yt * pred)
+    losses = append(losses, l)
+    i = i + 1
+  }
+  return mean(losses)
+}
+
+fun huber_loss(y_true: list<float>, y_pred: list<float>, delta: float): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    let diff = y_true[i] - y_pred[i]
+    let adiff = absf(diff)
+    if adiff <= delta {
+      total = total + 0.5 * diff * diff
+    } else {
+      total = total + delta * (adiff - 0.5 * delta)
+    }
+    i = i + 1
+  }
+  return total / to_float(len(y_true))
+}
+
+fun mean_squared_error(y_true: list<float>, y_pred: list<float>): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var losses: list<float> = []
+  var i = 0
+  while i < len(y_true) {
+    let diff = y_true[i] - y_pred[i]
+    losses = append(losses, diff * diff)
+    i = i + 1
+  }
+  return mean(losses)
+}
+
+fun mean_absolute_error(y_true: list<float>, y_pred: list<float>): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    total = total + absf(y_true[i] - y_pred[i])
+    i = i + 1
+  }
+  return total / to_float(len(y_true))
+}
+
+fun mean_squared_logarithmic_error(y_true: list<float>, y_pred: list<float>): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    let a = ln(1.0 + y_true[i])
+    let b = ln(1.0 + y_pred[i])
+    let diff = a - b
+    total = total + diff * diff
+    i = i + 1
+  }
+  return total / to_float(len(y_true))
+}
+
+fun mean_absolute_percentage_error(y_true: list<float>, y_pred: list<float>, epsilon: float): float {
+  if len(y_true) != len(y_pred) { panic("The length of the two arrays should be the same.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    var yt = y_true[i]
+    if yt == 0.0 { yt = epsilon }
+    total = total + absf((yt - y_pred[i]) / yt)
+    i = i + 1
+  }
+  return total / to_float(len(y_true))
+}
+
+fun perplexity_loss(y_true: list<list<int>>, y_pred: list<list<list<float>>>, epsilon: float): float {
+  let batch = len(y_true)
+  if batch != len(y_pred) { panic("Batch size of y_true and y_pred must be equal.") }
+  let sentence_len = len(y_true[0])
+  if sentence_len != len(y_pred[0]) { panic("Sentence length of y_true and y_pred must be equal.") }
+  let vocab_size = len(y_pred[0][0])
+  var b = 0
+  var total_perp = 0.0
+  while b < batch {
+    if len(y_true[b]) != sentence_len || len(y_pred[b]) != sentence_len { panic("Sentence length of y_true and y_pred must be equal.") }
+    var sum_log = 0.0
+    var j = 0
+    while j < sentence_len {
+      let label = y_true[b][j]
+      if label >= vocab_size { panic("Label value must not be greater than vocabulary size.") }
+      let prob = clip(y_pred[b][j][label], epsilon, 1.0)
+      sum_log = sum_log + ln(prob)
+      j = j + 1
+    }
+    let mean_log = sum_log / to_float(sentence_len)
+    let perp = exp(-mean_log)
+    total_perp = total_perp + perp
+    b = b + 1
+  }
+  return total_perp / to_float(batch)
+}
+
+fun smooth_l1_loss(y_true: list<float>, y_pred: list<float>, beta: float): float {
+  if len(y_true) != len(y_pred) { panic("The length of the two arrays should be the same.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    let diff = absf(y_true[i] - y_pred[i])
+    if diff < beta {
+      total = total + 0.5 * diff * diff / beta
+    } else {
+      total = total + diff - 0.5 * beta
+    }
+    i = i + 1
+  }
+  return total / to_float(len(y_true))
+}
+
+fun kullback_leibler_divergence(y_true: list<float>, y_pred: list<float>): float {
+  if len(y_true) != len(y_pred) { panic("Input arrays must have the same length.") }
+  var total = 0.0
+  var i = 0
+  while i < len(y_true) {
+    total = total + y_true[i] * ln(y_true[i] / y_pred[i])
+    i = i + 1
+  }
+  return total
+}
+
+fun main(): void {
+  let y_true_bc = [0.0, 1.0, 1.0, 0.0, 1.0]
+  let y_pred_bc = [0.2, 0.7, 0.9, 0.3, 0.8]
+  print(binary_cross_entropy(y_true_bc, y_pred_bc, 0.000000000000001))
+
+  print(binary_focal_cross_entropy(y_true_bc, y_pred_bc, 2.0, 0.25, 0.000000000000001))
+
+  let y_true_cce = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+  let y_pred_cce = [[0.9, 0.1, 0.0], [0.2, 0.7, 0.1], [0.0, 0.1, 0.9]]
+  print(categorical_cross_entropy(y_true_cce, y_pred_cce, 0.000000000000001))
+
+  let alpha = [0.6, 0.2, 0.7]
+  print(categorical_focal_cross_entropy(y_true_cce, y_pred_cce, alpha, 2.0, 0.000000000000001))
+
+  let y_true_hinge = [-1.0, 1.0, 1.0, -1.0, 1.0]
+  let y_pred_hinge = [-4.0, -0.3, 0.7, 5.0, 10.0]
+  print(hinge_loss(y_true_hinge, y_pred_hinge))
+
+  let y_true_huber = [0.9, 10.0, 2.0, 1.0, 5.2]
+  let y_pred_huber = [0.8, 2.1, 2.9, 4.2, 5.2]
+  print(huber_loss(y_true_huber, y_pred_huber, 1.0))
+
+  print(mean_squared_error(y_true_huber, y_pred_huber))
+  print(mean_absolute_error(y_true_huber, y_pred_huber))
+  print(mean_squared_logarithmic_error(y_true_huber, y_pred_huber))
+
+  let y_true_mape = [10.0, 20.0, 30.0, 40.0]
+  let y_pred_mape = [12.0, 18.0, 33.0, 45.0]
+  print(mean_absolute_percentage_error(y_true_mape, y_pred_mape, 0.000000000000001))
+
+  let y_true_perp = [[1, 4], [2, 3]]
+  let y_pred_perp = [
+    [[0.28, 0.19, 0.21, 0.15, 0.17], [0.24, 0.19, 0.09, 0.18, 0.30]],
+    [[0.03, 0.26, 0.21, 0.18, 0.32], [0.28, 0.10, 0.33, 0.15, 0.14]]
+  ]
+  print(perplexity_loss(y_true_perp, y_pred_perp, 0.0000001))
+
+  let y_true_smooth = [3.0, 5.0, 2.0, 7.0]
+  let y_pred_smooth = [2.9, 4.8, 2.1, 7.2]
+  print(smooth_l1_loss(y_true_smooth, y_pred_smooth, 1.0))
+
+  let y_true_kl = [0.2, 0.3, 0.5]
+  let y_pred_kl = [0.3, 0.3, 0.4]
+  print(kullback_leibler_divergence(y_true_kl, y_pred_kl))
+}
+main()
