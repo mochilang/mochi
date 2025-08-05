@@ -1,0 +1,53 @@
+/*
+Twin Prime Checker
+------------------
+A number n+2 is called a twin prime of n if both n and n+2 are prime numbers.
+This program implements a primality test and a twin_prime function:
+
+1. is_prime(n): returns true if n is a prime number using trial division by
+   odd numbers up to the square root of n.
+2. twin_prime(number): returns number + 2 when both number and number + 2 are
+   prime; otherwise returns -1.
+
+The main function runs simple tests to verify correctness and prints
+twin_prime(3) as a demonstration.
+*/
+
+fun is_prime(n: int): bool {
+  if n < 2 {
+    return false
+  }
+  if n % 2 == 0 {
+    return n == 2
+  }
+  var i = 3
+  while i * i <= n {
+    if n % i == 0 {
+      return false
+    }
+    i = i + 2
+  }
+  return true
+}
+
+fun twin_prime(number: int): int {
+  if is_prime(number) && is_prime(number + 2) {
+    return number + 2
+  }
+  return -1
+}
+
+fun test_twin_prime() {
+  if twin_prime(3) != 5 { panic("twin_prime(3) failed") }
+  if twin_prime(4) != (-1) { panic("twin_prime(4) failed") }
+  if twin_prime(5) != 7 { panic("twin_prime(5) failed") }
+  if twin_prime(17) != 19 { panic("twin_prime(17) failed") }
+  if twin_prime(0) != (-1) { panic("twin_prime(0) failed") }
+}
+
+fun main() {
+  test_twin_prime()
+  print(twin_prime(3))
+}
+
+main()
