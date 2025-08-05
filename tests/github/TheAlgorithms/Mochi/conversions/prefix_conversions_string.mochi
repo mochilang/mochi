@@ -1,0 +1,113 @@
+/*
+Convert numeric values to strings with SI or binary prefixes.
+
+Given a numeric magnitude, we express it using standard prefix names.
+For SI units we consider powers of ten from yotta (10^24) down to deca (10^1)
+for large numbers, and from deci (10^-1) to yocto (10^-24) for small values.
+For binary units we use powers of two from yotta (2^80) down to kilo (2^10).
+
+The algorithm iterates through a list of prefixes, dividing the input by the
+corresponding power of the base. The first prefix yielding a result greater
+than one is selected and returned as "<value> <prefix>". If no prefix applies,
+the original number is returned unchanged. This mirrors the Python reference
+implementation in TheAlgorithms repository.
+*/
+
+type Prefix {
+  name: string
+  exp: int
+}
+
+let si_positive: list<Prefix> = [
+  Prefix { name: "yotta", exp: 24 },
+  Prefix { name: "zetta", exp: 21 },
+  Prefix { name: "exa", exp: 18 },
+  Prefix { name: "peta", exp: 15 },
+  Prefix { name: "tera", exp: 12 },
+  Prefix { name: "giga", exp: 9 },
+  Prefix { name: "mega", exp: 6 },
+  Prefix { name: "kilo", exp: 3 },
+  Prefix { name: "hecto", exp: 2 },
+  Prefix { name: "deca", exp: 1 },
+]
+
+let si_negative: list<Prefix> = [
+  Prefix { name: "deci", exp: -1 },
+  Prefix { name: "centi", exp: -2 },
+  Prefix { name: "milli", exp: -3 },
+  Prefix { name: "micro", exp: -6 },
+  Prefix { name: "nano", exp: -9 },
+  Prefix { name: "pico", exp: -12 },
+  Prefix { name: "femto", exp: -15 },
+  Prefix { name: "atto", exp: -18 },
+  Prefix { name: "zepto", exp: -21 },
+  Prefix { name: "yocto", exp: -24 },
+]
+
+let binary_prefixes: list<Prefix> = [
+  Prefix { name: "yotta", exp: 80 },
+  Prefix { name: "zetta", exp: 70 },
+  Prefix { name: "exa", exp: 60 },
+  Prefix { name: "peta", exp: 50 },
+  Prefix { name: "tera", exp: 40 },
+  Prefix { name: "giga", exp: 30 },
+  Prefix { name: "mega", exp: 20 },
+  Prefix { name: "kilo", exp: 10 },
+]
+
+fun pow(base: float, exp: int): float {
+  var result = 1.0
+  var e = exp
+  if e < 0 {
+    e = -e
+    var i = 0
+    while i < e {
+      result = result * base
+      i = i + 1
+    }
+    return 1.0 / result
+  }
+  var i = 0
+  while i < e {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun add_si_prefix(value: float): string {
+  var prefixes: list<Prefix>
+  if value > 0.0 {
+    prefixes = si_positive
+  } else {
+    prefixes = si_negative
+  }
+  var i = 0
+  while i < len(prefixes) {
+    let p = prefixes[i]
+    let num = value / pow(10.0, p.exp)
+    if num > 1.0 {
+      return str(num) + " " + p.name
+    }
+    i = i + 1
+  }
+  return str(value)
+}
+
+fun add_binary_prefix(value: float): string {
+  var i = 0
+  while i < len(binary_prefixes) {
+    let p = binary_prefixes[i]
+    let num = value / pow(2.0, p.exp)
+    if num > 1.0 {
+      return str(num) + " " + p.name
+    }
+    i = i + 1
+  }
+  return str(value)
+}
+
+print(add_si_prefix(10000.0))
+print(add_si_prefix(0.005))
+print(add_binary_prefix(65536.0))
+print(add_binary_prefix(512.0))
