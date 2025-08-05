@@ -1,0 +1,114 @@
+/*
+Regular Expression Matching with '.' and '*'
+-------------------------------------------
+Determines if a text string fully matches a pattern where:
+  1. '.' matches any single character.
+  2. '*' matches zero or more of the preceding element.
+
+Two algorithms are provided:
+
+1. Recursive backtracking
+   Checks matches from the end of the strings. If characters are equal
+   or pattern has '.', it recurses on the preceding substrings. When '*'
+   appears, it explores two cases: consume one character or skip the
+   preceding element. Worst-case complexity is exponential in the length
+   of text and pattern due to the branching.
+
+2. Dynamic programming
+   Builds a (m+1) x (n+1) boolean table where m and n are the lengths of
+   text and pattern. dp[i][j] is true if the first i characters of text
+   match the first j characters of pattern. Transitions handle direct
+   character matches, '.' and '*'. Time and space complexity are O(m*n).
+*/
+
+fun recursive_match(text: string, pattern: string): bool {
+  if len(pattern) == 0 {
+    return len(text) == 0
+  }
+  if len(text) == 0 {
+    if len(pattern) >= 2 && substring(pattern, len(pattern) - 1, len(pattern)) == "*" {
+      return recursive_match(text, substring(pattern, 0, len(pattern) - 2))
+    }
+    return false
+  }
+  let last_text = substring(text, len(text) - 1, len(text))
+  let last_pattern = substring(pattern, len(pattern) - 1, len(pattern))
+  if last_text == last_pattern || last_pattern == "." {
+    return recursive_match(substring(text, 0, len(text) - 1), substring(pattern, 0, len(pattern) - 1))
+  }
+  if last_pattern == "*" {
+    if recursive_match(substring(text, 0, len(text) - 1), pattern) {
+      return true
+    }
+    return recursive_match(text, substring(pattern, 0, len(pattern) - 2))
+  }
+  return false
+}
+
+fun dp_match(text: string, pattern: string): bool {
+  let m = len(text)
+  let n = len(pattern)
+  var dp: list<list<bool>> = []
+  var i = 0
+  while i <= m {
+    var row: list<bool> = []
+    var j = 0
+    while j <= n {
+      row = append(row, false)
+      j = j + 1
+    }
+    dp = append(dp, row)
+    i = i + 1
+  }
+  dp[0][0] = true
+  var j = 1
+  while j <= n {
+    if substring(pattern, j - 1, j) == "*" && j >= 2 {
+      if dp[0][j - 2] { dp[0][j] = true }
+    }
+    j = j + 1
+  }
+  i = 1
+  while i <= m {
+    j = 1
+    while j <= n {
+      let p_char = substring(pattern, j - 1, j)
+      let t_char = substring(text, i - 1, i)
+      if p_char == "." || p_char == t_char {
+        if dp[i - 1][j - 1] { dp[i][j] = true }
+      } else if p_char == "*" {
+        if j >= 2 {
+          if dp[i][j - 2] { dp[i][j] = true }
+          let prev_p = substring(pattern, j - 2, j - 1)
+          if prev_p == "." || prev_p == t_char {
+            if dp[i - 1][j] { dp[i][j] = true }
+          }
+        }
+      } else {
+        dp[i][j] = false
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return dp[m][n]
+}
+
+fun print_bool(b: bool) {
+  if b {
+    print("true")
+  } else {
+    print("false")
+  }
+}
+
+print_bool(recursive_match("abc", "a.c"))
+print_bool(recursive_match("abc", "af*.c"))
+print_bool(recursive_match("abc", "a.c*"))
+print_bool(recursive_match("abc", "a.c*d"))
+print_bool(recursive_match("aa", ".*"))
+print_bool(dp_match("abc", "a.c"))
+print_bool(dp_match("abc", "af*.c"))
+print_bool(dp_match("abc", "a.c*"))
+print_bool(dp_match("abc", "a.c*d"))
+print_bool(dp_match("aa", ".*"))
