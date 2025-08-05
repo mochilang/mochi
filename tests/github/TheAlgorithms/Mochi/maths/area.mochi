@@ -1,0 +1,236 @@
+/*
+Compute areas and surface areas of common geometric shapes.
+
+This module is a pure Mochi translation of TheAlgorithms/Python `maths/area.py`.
+It provides functions for rectangles, circles, polygons and various three-
+dimensional solids. Each routine validates non-negative inputs. Invalid
+parameters print a `ValueError` message and yield 0.0. Square roots are computed
+using Newton's method and trigonometric functions rely on low‑order Taylor
+series so no foreign function interface is required.
+*/
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun sin_approx(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y3 = y2 * y
+  let y5 = y3 * y2
+  let y7 = y5 * y2
+  return y - y3 / 6.0 + y5 / 120.0 - y7 / 5040.0
+}
+
+fun cos_approx(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y4 = y2 * y2
+  let y6 = y4 * y2
+  return 1.0 - y2 / 2.0 + y4 / 24.0 - y6 / 720.0
+}
+
+fun tan_approx(x: float): float {
+  return sin_approx(x) / cos_approx(x)
+}
+
+fun sqrt_approx(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun surface_area_cube(side_length: float): float {
+  if side_length < 0.0 {
+    print("ValueError: surface_area_cube() only accepts non-negative values")
+    return 0.0
+  }
+  return 6.0 * side_length * side_length
+}
+
+fun surface_area_cuboid(length: float, breadth: float, height: float): float {
+  if length < 0.0 || breadth < 0.0 || height < 0.0 {
+    print("ValueError: surface_area_cuboid() only accepts non-negative values")
+    return 0.0
+  }
+  return 2.0 * ((length * breadth) + (breadth * height) + (length * height))
+}
+
+fun surface_area_sphere(radius: float): float {
+  if radius < 0.0 {
+    print("ValueError: surface_area_sphere() only accepts non-negative values")
+    return 0.0
+  }
+  return 4.0 * PI * radius * radius
+}
+
+fun surface_area_hemisphere(radius: float): float {
+  if radius < 0.0 {
+    print("ValueError: surface_area_hemisphere() only accepts non-negative values")
+    return 0.0
+  }
+  return 3.0 * PI * radius * radius
+}
+
+fun surface_area_cone(radius: float, height: float): float {
+  if radius < 0.0 || height < 0.0 {
+    print("ValueError: surface_area_cone() only accepts non-negative values")
+    return 0.0
+  }
+  let slant = sqrt_approx(height * height + radius * radius)
+  return PI * radius * (radius + slant)
+}
+
+fun surface_area_conical_frustum(radius1: float, radius2: float, height: float): float {
+  if radius1 < 0.0 || radius2 < 0.0 || height < 0.0 {
+    print("ValueError: surface_area_conical_frustum() only accepts non-negative values")
+    return 0.0
+  }
+  let slant = sqrt_approx(height * height + (radius1 - radius2) * (radius1 - radius2))
+  return PI * (slant * (radius1 + radius2) + radius1 * radius1 + radius2 * radius2)
+}
+
+fun surface_area_cylinder(radius: float, height: float): float {
+  if radius < 0.0 || height < 0.0 {
+    print("ValueError: surface_area_cylinder() only accepts non-negative values")
+    return 0.0
+  }
+  return 2.0 * PI * radius * (height + radius)
+}
+
+fun surface_area_torus(torus_radius: float, tube_radius: float): float {
+  if torus_radius < 0.0 || tube_radius < 0.0 {
+    print("ValueError: surface_area_torus() only accepts non-negative values")
+    return 0.0
+  }
+  if torus_radius < tube_radius {
+    print("ValueError: surface_area_torus() does not support spindle or self intersecting tori")
+    return 0.0
+  }
+  return 4.0 * PI * PI * torus_radius * tube_radius
+}
+
+fun area_rectangle(length: float, width: float): float {
+  if length < 0.0 || width < 0.0 {
+    print("ValueError: area_rectangle() only accepts non-negative values")
+    return 0.0
+  }
+  return length * width
+}
+
+fun area_square(side_length: float): float {
+  if side_length < 0.0 {
+    print("ValueError: area_square() only accepts non-negative values")
+    return 0.0
+  }
+  return side_length * side_length
+}
+
+fun area_triangle(base: float, height: float): float {
+  if base < 0.0 || height < 0.0 {
+    print("ValueError: area_triangle() only accepts non-negative values")
+    return 0.0
+  }
+  return (base * height) / 2.0
+}
+
+fun area_triangle_three_sides(side1: float, side2: float, side3: float): float {
+  if side1 < 0.0 || side2 < 0.0 || side3 < 0.0 {
+    print("ValueError: area_triangle_three_sides() only accepts non-negative values")
+    return 0.0
+  }
+  if side1 + side2 < side3 || side1 + side3 < side2 || side2 + side3 < side1 {
+    print("ValueError: Given three sides do not form a triangle")
+    return 0.0
+  }
+  let s = (side1 + side2 + side3) / 2.0
+  let prod = s * (s - side1) * (s - side2) * (s - side3)
+  let res = sqrt_approx(prod)
+  return res
+}
+
+fun area_parallelogram(base: float, height: float): float {
+  if base < 0.0 || height < 0.0 {
+    print("ValueError: area_parallelogram() only accepts non-negative values")
+    return 0.0
+  }
+  return base * height
+}
+
+fun area_trapezium(base1: float, base2: float, height: float): float {
+  if base1 < 0.0 || base2 < 0.0 || height < 0.0 {
+    print("ValueError: area_trapezium() only accepts non-negative values")
+    return 0.0
+  }
+  return 0.5 * (base1 + base2) * height
+}
+
+fun area_circle(radius: float): float {
+  if radius < 0.0 {
+    print("ValueError: area_circle() only accepts non-negative values")
+    return 0.0
+  }
+  return PI * radius * radius
+}
+
+fun area_ellipse(radius_x: float, radius_y: float): float {
+  if radius_x < 0.0 || radius_y < 0.0 {
+    print("ValueError: area_ellipse() only accepts non-negative values")
+    return 0.0
+  }
+  return PI * radius_x * radius_y
+}
+
+fun area_rhombus(diagonal1: float, diagonal2: float): float {
+  if diagonal1 < 0.0 || diagonal2 < 0.0 {
+    print("ValueError: area_rhombus() only accepts non-negative values")
+    return 0.0
+  }
+  return 0.5 * diagonal1 * diagonal2
+}
+
+fun area_reg_polygon(sides: int, length: float): float {
+  if sides < 3 {
+    print("ValueError: area_reg_polygon() only accepts integers greater than or equal to three as number of sides")
+    return 0.0
+  }
+  if length < 0.0 {
+    print("ValueError: area_reg_polygon() only accepts non-negative values as length of a side")
+    return 0.0
+  }
+  let n = sides as float
+  return (n * length * length) / (4.0 * tan_approx(PI / n))
+}
+
+print("[DEMO] Areas of various geometric shapes:")
+print("Rectangle: " + str(area_rectangle(10.0, 20.0)))
+print("Square: " + str(area_square(10.0)))
+print("Triangle: " + str(area_triangle(10.0, 10.0)))
+let TRI_THREE_SIDES = area_triangle_three_sides(5.0, 12.0, 13.0)
+print("Triangle Three Sides: " + str(TRI_THREE_SIDES))
+print("Parallelogram: " + str(area_parallelogram(10.0, 20.0)))
+print("Rhombus: " + str(area_rhombus(10.0, 20.0)))
+print("Trapezium: " + str(area_trapezium(10.0, 20.0, 30.0)))
+print("Circle: " + str(area_circle(20.0)))
+print("Ellipse: " + str(area_ellipse(10.0, 20.0)))
+print("")
+print("Surface Areas of various geometric shapes:")
+print("Cube: " + str(surface_area_cube(20.0)))
+print("Cuboid: " + str(surface_area_cuboid(10.0, 20.0, 30.0)))
+print("Sphere: " + str(surface_area_sphere(20.0)))
+print("Hemisphere: " + str(surface_area_hemisphere(20.0)))
+print("Cone: " + str(surface_area_cone(10.0, 20.0)))
+print("Conical Frustum: " + str(surface_area_conical_frustum(10.0, 20.0, 30.0)))
+print("Cylinder: " + str(surface_area_cylinder(10.0, 20.0)))
+print("Torus: " + str(surface_area_torus(20.0, 10.0)))
+print("Equilateral Triangle: " + str(area_reg_polygon(3, 10.0)))
+print("Square: " + str(area_reg_polygon(4, 10.0)))
+print("Regular Pentagon: " + str(area_reg_polygon(5, 10.0)))
