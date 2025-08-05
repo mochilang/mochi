@@ -1,0 +1,46 @@
+/*
+Secant Method for Root Finding
+------------------------------
+This module approximates a root of a function using the secant method.
+Given two starting estimates x0 and x1, it repeatedly forms the secant
+line through (x_n, f(x_n)) and (x_n1, f(x_n1)) and uses the x-intercept of
+this line as the next approximation. Iteration stops when the change
+between successive approximations is below 1e-5. If the two x values or
+function values become equal the computation aborts to avoid division by
+zero. The example solves f(x) = x^3 - 2x - 5.
+*/
+
+fun abs_float(x: float): float {
+  if x < 0.0 {
+    return -x
+  }
+  return x
+}
+
+fun intersection(function: fun(float): float, x0: float, x1: float): float {
+  var x_n = x0
+  var x_n1 = x1
+  while true {
+    if x_n == x_n1 || function(x_n1) == function(x_n) {
+      panic("float division by zero, could not find root")
+    }
+    let numerator = function(x_n1)
+    let denominator = (function(x_n1) - function(x_n)) / (x_n1 - x_n)
+    let x_n2 = x_n1 - numerator / denominator
+    if abs_float(x_n2 - x_n1) < 0.00001 {
+      return x_n2
+    }
+    x_n = x_n1
+    x_n1 = x_n2
+  }
+}
+
+fun f(x: float): float {
+  return x * x * x - 2.0 * x - 5.0
+}
+
+fun main() {
+  print(str(intersection(f, 3.0, 3.5)))
+}
+
+main()
