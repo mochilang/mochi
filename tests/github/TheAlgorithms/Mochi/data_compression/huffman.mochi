@@ -1,0 +1,139 @@
+/*
+Huffman Coding compresses text by assigning shorter binary codes to frequent characters and longer codes to rare ones. The algorithm counts character frequencies, builds a binary tree by repeatedly merging the two least frequent nodes, then traverses the tree to assign prefix-free bitstrings. This implementation encodes a string and prints the bitstring for each character.
+
+Steps:
+1. Count character frequencies and create leaf nodes.
+2. Repeatedly combine the two smallest nodes into a new parent node until one tree remains.
+3. Traverse the tree to build a map from characters to binary codes.
+4. Encode the input string using the generated codes.
+
+Time complexity is O(n log n) due to sorting at each merge, where n is the number of distinct characters.
+*/
+
+type Huffman =
+  Leaf(symbol: string, freq: int)
+  | Node(freq: int, left: Huffman, right: Huffman)
+
+fun get_freq(n: Huffman): int {
+  return match n {
+    Leaf(_, f) => f
+    Node(f, _, _) => f
+  }
+}
+
+fun sort_nodes(nodes: list<Huffman>): list<Huffman> {
+  var arr = nodes
+  var i = 1
+  while i < len(arr) {
+    let key = arr[i]
+    var j = i - 1
+    while j >= 0 && get_freq(arr[j]) > get_freq(key) {
+      arr[j + 1] = arr[j]
+      j = j - 1
+    }
+    arr[j + 1] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun rest(nodes: list<Huffman>): list<Huffman> {
+  var res: list<Huffman> = []
+  var i = 1
+  while i < len(nodes) {
+    res = append(res, nodes[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun count_freq(text: string): list<Huffman> {
+  var chars: list<string> = []
+  var freqs: list<int> = []
+  var i = 0
+  while i < len(text) {
+    let c = substring(text, i, i + 1)
+    var j = 0
+    var found = false
+    while j < len(chars) {
+      if chars[j] == c {
+        freqs[j] = freqs[j] + 1
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if !found {
+      chars = append(chars, c)
+      freqs = append(freqs, 1)
+    }
+    i = i + 1
+  }
+  var leaves: list<Huffman> = []
+  var k = 0
+  while k < len(chars) {
+    leaves = append(leaves, Leaf { symbol: chars[k], freq: freqs[k] })
+    k = k + 1
+  }
+  return sort_nodes(leaves)
+}
+
+fun build_tree(nodes: list<Huffman>): Huffman {
+  var arr = nodes
+  while len(arr) > 1 {
+    let left = arr[0]
+    arr = rest(arr)
+    let right = arr[0]
+    arr = rest(arr)
+    let node = Node { freq: get_freq(left) + get_freq(right), left: left, right: right }
+    arr = append(arr, node)
+    arr = sort_nodes(arr)
+  }
+  return arr[0]
+}
+
+fun concat_pairs(a: list<list<string>>, b: list<list<string>>): list<list<string>> {
+  var res = a
+  var i = 0
+  while i < len(b) {
+    res = append(res, b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun collect_codes(tree: Huffman, prefix: string): list<list<string>> {
+  return match tree {
+    Leaf(s, _) => [[s, prefix]]
+    Node(_, l, r) => concat_pairs(collect_codes(l, prefix + "0"), collect_codes(r, prefix + "1"))
+  }
+}
+
+fun find_code(pairs: list<list<string>>, ch: string): string {
+  var i = 0
+  while i < len(pairs) {
+    if pairs[i][0] == ch {
+      return pairs[i][1]
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun huffman_encode(text: string): string {
+  if text == "" { return "" }
+  let leaves = count_freq(text)
+  let tree = build_tree(leaves)
+  let codes = collect_codes(tree, "")
+  var encoded = ""
+  var i = 0
+  while i < len(text) {
+    let c = substring(text, i, i + 1)
+    encoded = encoded + find_code(codes, c) + " "
+    i = i + 1
+  }
+  return encoded
+}
+
+print(huffman_encode("beep boop beer!"))
+
