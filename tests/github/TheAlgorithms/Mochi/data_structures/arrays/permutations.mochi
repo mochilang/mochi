@@ -1,0 +1,99 @@
+/*
+Generate all permutations of a list of integers using two approaches:
+
+1. permute_recursive: Recursively removes the first element, permutes the
+   remainder, appends the removed element to each permutation, and rotates the
+   list to consider each element in the leading position. This mimics the
+   rotation-based recursive algorithm from the Python version. Time complexity
+   is O(n! * n) as each of the n! permutations requires copying lists of length
+   n.
+
+2. permute_backtrack: Generates permutations by swapping each element into the
+   current position and exploring the resulting state space depth-first. The
+   helper function returns a new list with elements swapped to avoid mutating
+   inputs. This also runs in O(n! * n).
+*/
+
+fun tail(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 1
+  while i < len(xs) {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun rotate_left(xs: list<int>): list<int> {
+  if len(xs) == 0 { return xs }
+  var res: list<int> = []
+  var i = 1
+  while i < len(xs) {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  res = append(res, xs[0])
+  return res
+}
+
+fun permute_recursive(nums: list<int>): list<list<int>> {
+  if len(nums) == 0 {
+    let base: list<list<int>> = []
+    return append(base, [] as list<int>)
+  }
+  var result: list<list<int>> = []
+  var current = nums
+  var count = 0
+  while count < len(nums) {
+    let n = current[0]
+    let rest = tail(current)
+    let perms = permute_recursive(rest)
+    var j = 0
+    while j < len(perms) {
+      let perm = append(perms[j], n)
+      result = append(result, perm)
+      j = j + 1
+    }
+    current = rotate_left(current)
+    count = count + 1
+  }
+  return result
+}
+
+fun swap(xs: list<int>, i: int, j: int): list<int> {
+  var res: list<int> = []
+  var k = 0
+  while k < len(xs) {
+    if k == i {
+      res = append(res, xs[j])
+    } else if k == j {
+      res = append(res, xs[i])
+    } else {
+      res = append(res, xs[k])
+    }
+    k = k + 1
+  }
+  return res
+}
+
+fun permute_backtrack_helper(nums: list<int>, start: int, output: list<list<int>>): list<list<int>> {
+  if start == len(nums) - 1 {
+    return append(output, nums)
+  }
+  var i = start
+  var res = output
+  while i < len(nums) {
+    let swapped = swap(nums, start, i)
+    res = permute_backtrack_helper(swapped, start + 1, res)
+    i = i + 1
+  }
+  return res
+}
+
+fun permute_backtrack(nums: list<int>): list<list<int>> {
+  let output: list<list<int>> = []
+  return permute_backtrack_helper(nums, 0, output)
+}
+
+print(str(permute_recursive([1, 2, 3])))
+print(str(permute_backtrack([1, 2, 3])))
