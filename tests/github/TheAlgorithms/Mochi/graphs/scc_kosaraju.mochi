@@ -1,0 +1,104 @@
+/*
+Kosaraju's algorithm for finding strongly connected components (SCCs)
+in a directed graph. It runs two depth-first searches:
+
+1. Perform DFS on the original graph to record vertices in a stack
+   ordered by finishing times.
+2. Reverse all edges to form the transposed graph.
+3. Pop vertices from the stack and run DFS on the transposed graph.
+   Each DFS tree yields one strongly connected component.
+
+The implementation is written in pure Mochi so it can execute with the
+runtime/vm. For the sample graph below the algorithm prints each
+component on its own line.
+*/
+
+fun dfs(u: int, graph: list<list<int>>, visit: list<bool>, stack: list<int>): list<int> {
+  if visit[u] { return stack }
+  visit[u] = true
+  for v in graph[u] {
+    stack = dfs(v, graph, visit, stack)
+  }
+  stack = append(stack, u)
+  return stack
+}
+
+fun dfs2(u: int, reversed_graph: list<list<int>>, visit: list<bool>, component: list<int>): list<int> {
+  if visit[u] { return component }
+  visit[u] = true
+  component = append(component, u)
+  for v in reversed_graph[u] {
+    component = dfs2(v, reversed_graph, visit, component)
+  }
+  return component
+}
+
+fun kosaraju(graph: list<list<int>>): list<list<int>> {
+  let n = len(graph)
+  var reversed_graph: list<list<int>> = []
+  var i = 0
+  while i < n {
+    reversed_graph = append(reversed_graph, [])
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    for v in graph[i] {
+      reversed_graph[v] = append(reversed_graph[v], i)
+    }
+    i = i + 1
+  }
+
+  var visit: list<bool> = []
+  i = 0
+  while i < n {
+    visit = append(visit, false)
+    i = i + 1
+  }
+
+  var stack: list<int> = []
+  i = 0
+  while i < n {
+    if visit[i] == false {
+      stack = dfs(i, graph, visit, stack)
+    }
+    i = i + 1
+  }
+
+  i = 0
+  while i < n {
+    visit[i] = false
+    i = i + 1
+  }
+
+  var scc: list<list<int>> = []
+  var idx = len(stack) - 1
+  while idx >= 0 {
+    let node = stack[idx]
+    if visit[node] == false {
+      var component: list<int> = []
+      component = dfs2(node, reversed_graph, visit, component)
+      scc = append(scc, component)
+    }
+    idx = idx - 1
+  }
+  return scc
+}
+
+fun main() {
+  let graph: list<list<int>> = [
+    [1],
+    [2],
+    [0, 3],
+    [4],
+    []
+  ]
+  let comps = kosaraju(graph)
+  var i = 0
+  while i < len(comps) {
+    print(comps[i])
+    i = i + 1
+  }
+}
+
+main()
