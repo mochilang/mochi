@@ -1,0 +1,38 @@
+/*
+Compute the missing quantity among inductance (L), frequency (f), and
+inductive reactance (X_L) using X_L = 2 * PI * f * L.
+
+Exactly two of the three parameters must be provided and positive; the third
+should be passed as 0. This function validates that exactly one argument is 0
+and that none are negative. It then computes the missing quantity:
+  - if inductance is 0, solve for L = reactance / (2 * PI * frequency)
+  - if frequency is 0, solve for f = reactance / (2 * PI * inductance)
+  - if reactance is 0, solve for X_L = 2 * PI * frequency * inductance
+The result is returned as a map containing the name and computed value of the
+missing parameter.
+*/
+let PI: float = 3.141592653589793
+
+fun ind_reactance(inductance: float, frequency: float, reactance: float): map<string, float> {
+  var zero_count = 0
+  if inductance == 0.0 { zero_count = zero_count + 1 }
+  if frequency == 0.0 { zero_count = zero_count + 1 }
+  if reactance == 0.0 { zero_count = zero_count + 1 }
+  if zero_count != 1 {
+    panic("One and only one argument must be 0")
+  }
+  if inductance < 0.0 { panic("Inductance cannot be negative") }
+  if frequency < 0.0 { panic("Frequency cannot be negative") }
+  if reactance < 0.0 { panic("Inductive reactance cannot be negative") }
+  if inductance == 0.0 {
+    return {"inductance": reactance / (2.0 * PI * frequency)}
+  }
+  if frequency == 0.0 {
+    return {"frequency": reactance / (2.0 * PI * inductance)}
+  }
+  return {"reactance": 2.0 * PI * frequency * inductance}
+}
+
+print(ind_reactance(0.0, 10000.0, 50.0))
+print(ind_reactance(0.035, 0.0, 50.0))
+print(ind_reactance(0.000035, 1000.0, 0.0))
