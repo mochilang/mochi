@@ -1,0 +1,145 @@
+/*
+Simple Keyword Cypher implementation using a substitution alphabet
+constructed from a keyword.
+
+1. Remove duplicate alphabetic characters from the keyword while
+   preserving spaces.  Only letters are considered; symbols are ignored.
+2. Create the cipher alphabet by writing the cleaned keyword followed by
+   the remaining letters of the alphabet in order, skipping letters
+   already used in the keyword.
+3. Encipher a message by mapping each uppercase letter to the
+   corresponding letter in the cipher alphabet.  Characters outside A-Z
+   are left unchanged.
+4. Decipher by reversing the mapping.
+
+Both enciphering and deciphering run in O(n * m) time where n is the
+length of the message and m is the alphabet size (26) due to linear
+search for indices.
+*/
+
+fun index_in_string(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun contains_char(s: string, ch: string): bool {
+  return index_in_string(s, ch) >= 0
+}
+
+fun is_alpha(ch: string): bool {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  return contains_char(lower, ch) || contains_char(upper, ch)
+}
+
+fun to_upper(s: string): string {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    let idx = index_in_string(lower, ch)
+    if idx >= 0 {
+      res = res + upper[idx]
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun remove_duplicates(key: string): string {
+  var res = ""
+  var i = 0
+  while i < len(key) {
+    let ch = key[i]
+    if ch == " " || (is_alpha(ch) && contains_char(res, ch) == false) {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun create_cipher_map(key: string): list<string> {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let cleaned = remove_duplicates(to_upper(key))
+  var cipher: list<string> = []
+  var i = 0
+  while i < len(cleaned) {
+    cipher = append(cipher, cleaned[i])
+    i = i + 1
+  }
+  var offset = len(cleaned)
+  var j = len(cipher)
+  while j < 26 {
+    var char = alphabet[j - offset]
+    while contains_char(cleaned, char) {
+      offset = offset - 1
+      char = alphabet[j - offset]
+    }
+    cipher = append(cipher, char)
+    j = j + 1
+  }
+  return cipher
+}
+
+fun index_in_list(lst: list<string>, ch: string): int {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun encipher(message: string, cipher: list<string>): string {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let msg = to_upper(message)
+  var res = ""
+  var i = 0
+  while i < len(msg) {
+    let ch = msg[i]
+    let idx = index_in_string(alphabet, ch)
+    if idx >= 0 {
+      res = res + cipher[idx]
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun decipher(message: string, cipher: list<string>): string {
+  let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let msg = to_upper(message)
+  var res = ""
+  var i = 0
+  while i < len(msg) {
+    let ch = msg[i]
+    let idx = index_in_list(cipher, ch)
+    if idx >= 0 {
+      res = res + alphabet[idx]
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+let cipher_map = create_cipher_map("Goodbye!!")
+let encoded = encipher("Hello World!!", cipher_map)
+print(encoded)
+print(decipher(encoded, cipher_map))
