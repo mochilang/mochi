@@ -1,0 +1,80 @@
+/*
+One-Dimensional Cellular Automaton
+
+This program reproduces a simple elementary cellular automaton on a
+one-dimensional grid of 31 cells.  The initial generation has a single
+active cell in the center.  A rule number (0-255) determines the next
+state of each cell based on its left, center, and right neighbors.
+The rule is expanded into eight binary digits where each digit
+corresponds to one of the possible neighborhood patterns from 111 to
+000.
+
+For every generation the algorithm inspects the three-cell neighborhood
+of each position, converts that pattern to an index, and looks up the
+result in the rule table.  After producing 16 new generations the grid
+is printed using '#' for active cells and '.' for inactive cells.
+This mirrors the reference Python implementation but is written in
+pure Mochi without external libraries.
+*/
+
+fun format_ruleset(ruleset: int): list<int> {
+  var rs = ruleset
+  var bits_rev: list<int> = []
+  var i = 0
+  while i < 8 {
+    bits_rev = append(bits_rev, rs % 2)
+    rs = rs / 2
+    i = i + 1
+  }
+  var bits: list<int> = []
+  var j = len(bits_rev) - 1
+  while j >= 0 {
+    bits = append(bits, bits_rev[j])
+    j = j - 1
+  }
+  return bits
+}
+
+fun new_generation(cells: list<list<int>>, rules: list<int>, time: int): list<int> {
+  let population = len(cells[0])
+  var next_generation: list<int> = []
+  var i = 0
+  while i < population {
+    let left_neighbor = if i == 0 { 0 } else { cells[time][i - 1] }
+    let right_neighbor = if i == population - 1 { 0 } else { cells[time][i + 1] }
+    let center = cells[time][i]
+    let idx = 7 - (left_neighbor * 4 + center * 2 + right_neighbor)
+    next_generation = append(next_generation, rules[idx])
+    i = i + 1
+  }
+  return next_generation
+}
+
+fun cells_to_string(row: list<int>): string {
+  var result = ""
+  var i = 0
+  while i < len(row) {
+    if row[i] == 1 {
+      result = result + "#"
+    } else {
+      result = result + "."
+    }
+    i = i + 1
+  }
+  return result
+}
+
+let initial: list<int> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+var cells: list<list<int>> = [initial]
+let rules = format_ruleset(30)
+var time = 0
+while time < 16 {
+  let next = new_generation(cells, rules, time)
+  cells = append(cells, next)
+  time = time + 1
+}
+var t = 0
+while t < len(cells) {
+  print(cells_to_string(cells[t]))
+  t = t + 1
+}
