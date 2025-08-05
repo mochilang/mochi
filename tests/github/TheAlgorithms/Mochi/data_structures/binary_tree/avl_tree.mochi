@@ -1,0 +1,156 @@
+/*
+Implement an AVL (Adelson-Velsky and Landis) self-balancing binary search tree.
+The tree stores integer keys and keeps the height difference between left and
+right subtrees within one, guaranteeing O(log n) time for insertions and
+removals.  Each node is stored in a list of maps with integer fields for the
+value, child indices and height.  Rotations (left, right, left-right, right-left)
+maintain balance after updates.
+
+For demonstration the program inserts 4, 2 and 3, prints the in-order traversal
+and height, deletes the value 3 and prints the traversal again.
+*/
+
+let NIL = 0 - 1
+var nodes: list<map<string, int>> = []
+
+fun new_node(value: int): int {
+  let node: map<string, int> = {"data": value, "left": NIL, "right": NIL, "height": 1}
+  nodes = append(nodes, node)
+  return len(nodes) - 1
+}
+
+fun get_height(i: int): int {
+  if i == NIL { return 0 }
+  return nodes[i]["height"]
+}
+
+fun my_max(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+
+fun update_height(i: int) {
+  nodes[i]["height"] = my_max(get_height(nodes[i]["left"]), get_height(nodes[i]["right"])) + 1
+}
+
+fun right_rotation(i: int): int {
+  let left = nodes[i]["left"]
+  nodes[i]["left"] = nodes[left]["right"]
+  nodes[left]["right"] = i
+  update_height(i)
+  update_height(left)
+  return left
+}
+
+fun left_rotation(i: int): int {
+  let right = nodes[i]["right"]
+  nodes[i]["right"] = nodes[right]["left"]
+  nodes[right]["left"] = i
+  update_height(i)
+  update_height(right)
+  return right
+}
+
+fun lr_rotation(i: int): int {
+  nodes[i]["left"] = left_rotation(nodes[i]["left"])
+  return right_rotation(i)
+}
+
+fun rl_rotation(i: int): int {
+  nodes[i]["right"] = right_rotation(nodes[i]["right"])
+  return left_rotation(i)
+}
+
+fun insert_node(i: int, value: int): int {
+  if i == NIL { return new_node(value) }
+  if value < nodes[i]["data"] {
+    nodes[i]["left"] = insert_node(nodes[i]["left"], value)
+    if get_height(nodes[i]["left"]) - get_height(nodes[i]["right"]) == 2 {
+      if value < nodes[nodes[i]["left"]]["data"] {
+        i = right_rotation(i)
+      } else {
+        i = lr_rotation(i)
+      }
+    }
+  } else {
+    nodes[i]["right"] = insert_node(nodes[i]["right"], value)
+    if get_height(nodes[i]["right"]) - get_height(nodes[i]["left"]) == 2 {
+      if value < nodes[nodes[i]["right"]]["data"] {
+        i = rl_rotation(i)
+      } else {
+        i = left_rotation(i)
+      }
+    }
+  }
+  update_height(i)
+  return i
+}
+
+fun get_left_most(i: int): int {
+  var cur = i
+  while nodes[cur]["left"] != NIL {
+    cur = nodes[cur]["left"]
+  }
+  return nodes[cur]["data"]
+}
+
+fun del_node(i: int, value: int): int {
+  if i == NIL { return NIL }
+  if value < nodes[i]["data"] {
+    nodes[i]["left"] = del_node(nodes[i]["left"], value)
+  } else if value > nodes[i]["data"] {
+    nodes[i]["right"] = del_node(nodes[i]["right"], value)
+  } else {
+    if nodes[i]["left"] != NIL && nodes[i]["right"] != NIL {
+      let temp = get_left_most(nodes[i]["right"])
+      nodes[i]["data"] = temp
+      nodes[i]["right"] = del_node(nodes[i]["right"], temp)
+    } else if nodes[i]["left"] != NIL {
+      i = nodes[i]["left"]
+    } else {
+      i = nodes[i]["right"]
+    }
+  }
+  if i == NIL { return NIL }
+  let lh = get_height(nodes[i]["left"])
+  let rh = get_height(nodes[i]["right"])
+  if rh - lh == 2 {
+    if get_height(nodes[nodes[i]["right"]]["right"]) > get_height(nodes[nodes[i]["right"]]["left"]) {
+      i = left_rotation(i)
+    } else {
+      i = rl_rotation(i)
+    }
+  } else if lh - rh == 2 {
+    if get_height(nodes[nodes[i]["left"]]["left"]) > get_height(nodes[nodes[i]["left"]]["right"]) {
+      i = right_rotation(i)
+    } else {
+      i = lr_rotation(i)
+    }
+  }
+  update_height(i)
+  return i
+}
+
+fun inorder(i: int): string {
+  if i == NIL { return "" }
+  let left = inorder(nodes[i]["left"])
+  let right = inorder(nodes[i]["right"])
+  var res = str(nodes[i]["data"])
+  if left != "" { res = left + " " + res }
+  if right != "" { res = res + " " + right }
+  return res
+}
+
+fun main() {
+  nodes = []
+  var root = NIL
+  root = insert_node(root, 4)
+  root = insert_node(root, 2)
+  root = insert_node(root, 3)
+  print(inorder(root))
+  print(str(get_height(root)))
+  root = del_node(root, 3)
+  print(inorder(root))
+}
+
+main()

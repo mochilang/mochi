@@ -1,0 +1,342 @@
+runtime: goroutine stack exceeds 1000000000-byte limit
+runtime: sp=0xc020577188 stack=[0xc020576000, 0xc040576000]
+fatal error: stack overflow
+
+runtime stack:
+runtime.throw({0xb59f74?, 0x42c13a?})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/panic.go:1101 +0x48 fp=0xc000073e90 sp=0xc000073e60 pc=0x470588
+runtime.newstack()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/stack.go:1107 +0x5bb fp=0xc000073fc8 sp=0xc000073e90 pc=0x456a1b
+runtime.morestack()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:621 +0x7a fp=0xc000073fd0 sp=0xc000073fc8 pc=0x47625a
+
+goroutine 1 gp=0xc000002380 m=3 mp=0xc00005f008 [running]:
+mochi/runtime/vm.(*VM).call(0xc04056fbf0?, 0x9?, {0xc018f85500?, 0x2?, 0x2?}, {0xc017080000, 0xc12c, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:703 +0x16028 fp=0xc020577198 sp=0xc020577190 pc=0x9473a8
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f85420, 0x0?, 0x0?}, {0xc017080000, 0xc12b, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020579c00 sp=0xc020577198 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f85340, 0x0?, 0x0?}, {0xc017080000, 0xc12a, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02057c668 sp=0xc020579c00 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f85260, 0x0?, 0x0?}, {0xc017080000, 0xc129, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02057f0d0 sp=0xc02057c668 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f85180, 0x0?, 0x0?}, {0xc017080000, 0xc128, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020581b38 sp=0xc02057f0d0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f850a0, 0x0?, 0x0?}, {0xc017080000, 0xc127, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205845a0 sp=0xc020581b38 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84fc0, 0x0?, 0x0?}, {0xc017080000, 0xc126, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020587008 sp=0xc0205845a0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84ee0, 0x0?, 0x0?}, {0xc017080000, 0xc125, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020589a70 sp=0xc020587008 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84e00, 0x0?, 0x0?}, {0xc017080000, 0xc124, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02058c4d8 sp=0xc020589a70 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84d20, 0x0?, 0x0?}, {0xc017080000, 0xc123, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02058ef40 sp=0xc02058c4d8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84c40, 0x0?, 0x0?}, {0xc017080000, 0xc122, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205919a8 sp=0xc02058ef40 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84b60, 0x0?, 0x0?}, {0xc017080000, 0xc121, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020594410 sp=0xc0205919a8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84a80, 0x0?, 0x0?}, {0xc017080000, 0xc120, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc020596e78 sp=0xc020594410 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f849a0, 0x0?, 0x0?}, {0xc017080000, 0xc11f, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205998e0 sp=0xc020596e78 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f848c0, 0x0?, 0x0?}, {0xc017080000, 0xc11e, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02059c348 sp=0xc0205998e0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f847e0, 0x0?, 0x0?}, {0xc017080000, 0xc11d, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc02059edb0 sp=0xc02059c348 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84700, 0x0?, 0x0?}, {0xc017080000, 0xc11c, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205a1818 sp=0xc02059edb0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84620, 0x0?, 0x0?}, {0xc017080000, 0xc11b, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205a4280 sp=0xc0205a1818 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84540, 0x0?, 0x0?}, {0xc017080000, 0xc11a, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205a6ce8 sp=0xc0205a4280 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84460, 0x0?, 0x0?}, {0xc017080000, 0xc119, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205a9750 sp=0xc0205a6ce8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84380, 0x0?, 0x0?}, {0xc017080000, 0xc118, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205ac1b8 sp=0xc0205a9750 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f842a0, 0x0?, 0x0?}, {0xc017080000, 0xc117, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205aec20 sp=0xc0205ac1b8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f841c0, 0x0?, 0x0?}, {0xc017080000, 0xc116, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205b1688 sp=0xc0205aec20 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f840e0, 0x0?, 0x0?}, {0xc017080000, 0xc115, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205b40f0 sp=0xc0205b1688 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f84000, 0x0?, 0x0?}, {0xc017080000, 0xc114, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205b6b58 sp=0xc0205b40f0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3bea0, 0x0?, 0x0?}, {0xc017080000, 0xc113, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205b95c0 sp=0xc0205b6b58 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3bdc0, 0x0?, 0x0?}, {0xc017080000, 0xc112, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205bc028 sp=0xc0205b95c0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3bce0, 0x0?, 0x0?}, {0xc017080000, 0xc111, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205bea90 sp=0xc0205bc028 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3bc00, 0x0?, 0x0?}, {0xc017080000, 0xc110, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205c14f8 sp=0xc0205bea90 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3bb20, 0x0?, 0x0?}, {0xc017080000, 0xc10f, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205c3f60 sp=0xc0205c14f8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3ba40, 0x0?, 0x0?}, {0xc017080000, 0xc10e, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205c69c8 sp=0xc0205c3f60 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b960, 0x0?, 0x0?}, {0xc017080000, 0xc10d, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205c9430 sp=0xc0205c69c8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b880, 0x0?, 0x0?}, {0xc017080000, 0xc10c, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205cbe98 sp=0xc0205c9430 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b7a0, 0x0?, 0x0?}, {0xc017080000, 0xc10b, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205ce900 sp=0xc0205cbe98 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b6c0, 0x0?, 0x0?}, {0xc017080000, 0xc10a, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205d1368 sp=0xc0205ce900 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b5e0, 0x0?, 0x0?}, {0xc017080000, 0xc109, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205d3dd0 sp=0xc0205d1368 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b500, 0x0?, 0x0?}, {0xc017080000, 0xc108, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205d6838 sp=0xc0205d3dd0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b420, 0x0?, 0x0?}, {0xc017080000, 0xc107, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205d92a0 sp=0xc0205d6838 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b340, 0x0?, 0x0?}, {0xc017080000, 0xc106, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205dbd08 sp=0xc0205d92a0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b260, 0x0?, 0x0?}, {0xc017080000, 0xc105, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205de770 sp=0xc0205dbd08 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b180, 0x0?, 0x0?}, {0xc017080000, 0xc104, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205e11d8 sp=0xc0205de770 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3b0a0, 0x0?, 0x0?}, {0xc017080000, 0xc103, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205e3c40 sp=0xc0205e11d8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3afc0, 0x0?, 0x0?}, {0xc017080000, 0xc102, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205e66a8 sp=0xc0205e3c40 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3aee0, 0x0?, 0x0?}, {0xc017080000, 0xc101, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205e9110 sp=0xc0205e66a8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3ae00, 0x0?, 0x0?}, {0xc017080000, 0xc100, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205ebb78 sp=0xc0205e9110 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3ad20, 0x0?, 0x0?}, {0xc017080000, 0xc0ff, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205ee5e0 sp=0xc0205ebb78 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3ac40, 0x0?, 0x0?}, {0xc017080000, 0xc0fe, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205f1048 sp=0xc0205ee5e0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3ab60, 0x0?, 0x0?}, {0xc017080000, 0xc0fd, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205f3ab0 sp=0xc0205f1048 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3aa80, 0x0?, 0x0?}, {0xc017080000, 0xc0fc, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205f6518 sp=0xc0205f3ab0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc018f3a9a0, 0x0?, 0x0?}, {0xc017080000, 0xc0fb, 0xe155})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0205f8f80 sp=0xc0205f6518 pc=0x936d0b
+...49363 frames elided...
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000449260, 0x0?, 0x0?}, {0xc0000b9c08, 0x27, 0x4a})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04050ada0 sp=0xc040508338 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000449180, 0x0?, 0x0?}, {0xc0000b9c08, 0x26, 0x4a})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04050d808 sp=0xc04050ada0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004490a0, 0x0?, 0x0?}, {0xc0003a0e08, 0x25, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040510270 sp=0xc04050d808 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448fc0, 0x0?, 0x0?}, {0xc0003a0e08, 0x24, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040512cd8 sp=0xc040510270 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448ee0, 0x0?, 0x0?}, {0xc0003a0e08, 0x23, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040515740 sp=0xc040512cd8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448e00, 0x0?, 0x0?}, {0xc0003a0e08, 0x22, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0405181a8 sp=0xc040515740 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448d20, 0x0?, 0x0?}, {0xc0003a0e08, 0x21, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04051ac10 sp=0xc0405181a8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448c40, 0x0?, 0x0?}, {0xc0003a0e08, 0x20, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04051d678 sp=0xc04051ac10 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448b60, 0x0?, 0x0?}, {0xc0003a0e08, 0x1f, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0405200e0 sp=0xc04051d678 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448a80, 0x0?, 0x0?}, {0xc0003a0e08, 0x1e, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040522b48 sp=0xc0405200e0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004489a0, 0x0?, 0x0?}, {0xc0003a0e08, 0x1d, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0405255b0 sp=0xc040522b48 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004488c0, 0x0?, 0x0?}, {0xc0003a0e08, 0x1c, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040528018 sp=0xc0405255b0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004487e0, 0x0?, 0x0?}, {0xc0003a0e08, 0x1b, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04052aa80 sp=0xc040528018 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448700, 0x0?, 0x0?}, {0xc0003a0e08, 0x1a, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04052d4e8 sp=0xc04052aa80 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448620, 0x0?, 0x0?}, {0xc0003a0e08, 0x19, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04052ff50 sp=0xc04052d4e8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448540, 0x0?, 0x0?}, {0xc0003a0e08, 0x18, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0405329b8 sp=0xc04052ff50 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448460, 0x0?, 0x0?}, {0xc0003a0e08, 0x17, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040535420 sp=0xc0405329b8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x9?, {0xc000448380, 0x2?, 0x2?}, {0xc0003a0e08, 0x16, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040537e88 sp=0xc040535420 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004482a0, 0x0?, 0x0?}, {0xc0003a0e08, 0x15, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04053a8f0 sp=0xc040537e88 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004481c0, 0x0?, 0x0?}, {0xc0003a0e08, 0x14, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04053d358 sp=0xc04053a8f0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc0004480e0, 0x0?, 0x0?}, {0xc0003a0e08, 0x13, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04053fdc0 sp=0xc04053d358 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc000448000, 0x0?, 0x0?}, {0xc0003a0e08, 0x12, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040542828 sp=0xc04053fdc0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044dea0, 0x0?, 0x0?}, {0xc0003a0e08, 0x11, 0x25})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040545290 sp=0xc040542828 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044ddc0, 0x0?, 0x0?}, {0xc000135380, 0x10, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040547cf8 sp=0xc040545290 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044dce0, 0x0?, 0x0?}, {0xc000135380, 0xf, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04054a760 sp=0xc040547cf8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044dc00, 0x0?, 0x0?}, {0xc000135380, 0xe, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04054d1c8 sp=0xc04054a760 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044db20, 0x0?, 0x0?}, {0xc000135380, 0xd, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04054fc30 sp=0xc04054d1c8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044da40, 0x0?, 0x0?}, {0xc000135380, 0xc, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040552698 sp=0xc04054fc30 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d960, 0x0?, 0x0?}, {0xc000135380, 0xb, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040555100 sp=0xc040552698 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x9?, {0xc00044d880, 0x2?, 0x2?}, {0xc000135380, 0xa, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040557b68 sp=0xc040555100 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d7a0, 0x0?, 0x0?}, {0xc000135380, 0x9, 0x10})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04055a5d0 sp=0xc040557b68 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d6c0, 0x0?, 0x0?}, {0xc000132480, 0x8, 0x8})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04055d038 sp=0xc04055a5d0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d5e0, 0x0?, 0x0?}, {0xc000132480, 0x7, 0x8})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04055faa0 sp=0xc04055d038 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d500, 0x0?, 0x0?}, {0xc000132480, 0x6, 0x8})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040562508 sp=0xc04055faa0 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d420, 0x0?, 0x0?}, {0xc000132480, 0x5, 0x8})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc040564f70 sp=0xc040562508 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x9?, {0xc00044d340, 0x2?, 0x2?}, {0xc0003c64e0, 0x4, 0x4})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc0405679d8 sp=0xc040564f70 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0xc00044d260, 0x0?, 0x0?}, {0xc0003c64e0, 0x3, 0x4})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04056a440 sp=0xc0405679d8 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0x0?, {0x10ced00, 0x0?, 0x0?}, {0xc000487890, 0x2, 0x2})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2112 +0x598b fp=0xc04056cea8 sp=0xc04056a440 pc=0x936d0b
+mochi/runtime/vm.(*VM).call(0xc04056fbf0, 0xc0005179c8?, {0x10ced00, 0x10d03a0?, 0x20059?}, {0xc000484270, 0x1, 0x1})
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:2143 +0x15285 fp=0xc04056f910 sp=0xc04056cea8 pc=0x946605
+mochi/runtime/vm.(*VM).Run(0xc04056fbf0)
+	/Users/apple/github/mochilang/mochi/runtime/vm/vm.go:681 +0x12d fp=0xc04056faa0 sp=0xc04056f910 pc=0x930fad
+main.runFile(0xc00036d3f8)
+	/Users/apple/github/mochilang/mochi/cmd/mochi/main.go:206 +0x53a fp=0xc04056fd18 sp=0xc04056faa0 pc=0x9b675a
+main.newRunCmd.func1(0xc0003e2d00?, {0xc0003798a0?, 0x4?, 0xb504ba?})
+	/Users/apple/github/mochilang/mochi/cmd/mochi/main.go:619 +0x47 fp=0xc04056fd38 sp=0xc04056fd18 pc=0x9bac87
+github.com/spf13/cobra.(*Command).execute(0xc000438308, {0xc000379870, 0x1, 0x1})
+	/Users/apple/go/pkg/mod/github.com/spf13/cobra@v1.9.1/command.go:1015 +0xaaa fp=0xc04056feb8 sp=0xc04056fd38 pc=0x5ed4aa
+github.com/spf13/cobra.(*Command).ExecuteC(0xc000438008)
+	/Users/apple/go/pkg/mod/github.com/spf13/cobra@v1.9.1/command.go:1148 +0x46f fp=0xc04056ffa8 sp=0xc04056feb8 pc=0x5edcaf
+github.com/spf13/cobra.(*Command).Execute(...)
+	/Users/apple/go/pkg/mod/github.com/spf13/cobra@v1.9.1/command.go:1071
+github.com/spf13/cobra.(*Command).ExecuteContext(...)
+	/Users/apple/go/pkg/mod/github.com/spf13/cobra@v1.9.1/command.go:1064
+github.com/charmbracelet/fang.Execute({0xc68740, 0x10ced00}, 0xc000438008, {0xc000253f00, 0x2, 0x0?})
+	/Users/apple/go/pkg/mod/github.com/charmbracelet/fang@v0.3.0/fang.go:169 +0x372 fp=0xc040575ed0 sp=0xc04056ffa8 pc=0x610212
+main.main()
+	/Users/apple/github/mochilang/mochi/cmd/mochi/main.go:117 +0x9d fp=0xc040575f50 sp=0xc040575ed0 pc=0x9b5bbd
+runtime.main()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:283 +0x28b fp=0xc040575fe0 sp=0xc040575f50 pc=0x43dccb
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc040575fe8 sp=0xc040575fe0 pc=0x477f81
+
+goroutine 2 gp=0xc0000028c0 m=nil [force gc (idle)]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000058fa8 sp=0xc000058f88 pc=0x4706ae
+runtime.goparkunlock(...)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:441
+runtime.forcegchelper()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:348 +0xb3 fp=0xc000058fe0 sp=0xc000058fa8 pc=0x43e013
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000058fe8 sp=0xc000058fe0 pc=0x477f81
+created by runtime.init.7 in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:336 +0x1a
+
+goroutine 17 gp=0xc00008a380 m=nil [GC sweep wait]:
+runtime.gopark(0x1?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000054780 sp=0xc000054760 pc=0x4706ae
+runtime.goparkunlock(...)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:441
+runtime.bgsweep(0xc000078000)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgcsweep.go:316 +0xdf fp=0xc0000547c8 sp=0xc000054780 pc=0x427f7f
+runtime.gcenable.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:204 +0x25 fp=0xc0000547e0 sp=0xc0000547c8 pc=0x41c405
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000547e8 sp=0xc0000547e0 pc=0x477f81
+created by runtime.gcenable in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:204 +0x66
+
+goroutine 18 gp=0xc00008a540 m=nil [GC scavenge wait]:
+runtime.gopark(0x10000?, 0xc5b938?, 0x0?, 0x0?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000054f78 sp=0xc000054f58 pc=0x4706ae
+runtime.goparkunlock(...)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:441
+runtime.(*scavengerState).park(0x10acfe0)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgcscavenge.go:425 +0x49 fp=0xc000054fa8 sp=0xc000054f78 pc=0x4259e9
+runtime.bgscavenge(0xc000078000)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgcscavenge.go:658 +0x59 fp=0xc000054fc8 sp=0xc000054fa8 pc=0x425f79
+runtime.gcenable.gowrap2()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:205 +0x25 fp=0xc000054fe0 sp=0xc000054fc8 pc=0x41c3a5
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000054fe8 sp=0xc000054fe0 pc=0x477f81
+created by runtime.gcenable in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:205 +0xa5
+
+goroutine 3 gp=0xc000003500 m=nil [finalizer wait]:
+runtime.gopark(0x41457e?, 0x7f45f7d29b88?, 0xf0?, 0x50?, 0x15?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000058630 sp=0xc000058610 pc=0x4706ae
+runtime.runfinq()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mfinal.go:196 +0x107 fp=0xc0000587e0 sp=0xc000058630 pc=0x41b3c7
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000587e8 sp=0xc0000587e0 pc=0x477f81
+created by runtime.createfing in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mfinal.go:166 +0x3d
+
+goroutine 4 gp=0xc000003a40 m=nil [chan receive]:
+runtime.gopark(0xc00011dae0?, 0xc0003ce048?, 0x60?, 0x97?, 0x5337a8?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000059718 sp=0xc0000596f8 pc=0x4706ae
+runtime.chanrecv(0xc0000383f0, 0x0, 0x1)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/chan.go:664 +0x445 fp=0xc000059790 sp=0xc000059718 pc=0x40db25
+runtime.chanrecv1(0x0?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/chan.go:506 +0x12 fp=0xc0000597b8 sp=0xc000059790 pc=0x40d6b2
+runtime.unique_runtime_registerUniqueMapCleanup.func2(...)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1797
+runtime.unique_runtime_registerUniqueMapCleanup.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1800 +0x2f fp=0xc0000597e0 sp=0xc0000597b8 pc=0x41f54f
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000597e8 sp=0xc0000597e0 pc=0x477f81
+created by unique.runtime_registerUniqueMapCleanup in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1795 +0x79
+
+goroutine 5 gp=0xc000003c00 m=nil [GC worker (idle)]:
+runtime.gopark(0x0?, 0x0?, 0x0?, 0x0?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc000059f38 sp=0xc000059f18 pc=0x4706ae
+runtime.gcBgMarkWorker(0xc000038460)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1423 +0xe9 fp=0xc000059fc8 sp=0xc000059f38 pc=0x41e869
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x25 fp=0xc000059fe0 sp=0xc000059fc8 pc=0x41e745
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000059fe8 sp=0xc000059fe0 pc=0x477f81
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x105
+
+goroutine 6 gp=0xc000003dc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xa3a9f407c7?, 0x3?, 0x39?, 0xb5?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc00005a738 sp=0xc00005a718 pc=0x4706ae
+runtime.gcBgMarkWorker(0xc000038460)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1423 +0xe9 fp=0xc00005a7c8 sp=0xc00005a738 pc=0x41e869
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x25 fp=0xc00005a7e0 sp=0xc00005a7c8 pc=0x41e745
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00005a7e8 sp=0xc00005a7e0 pc=0x477f81
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x105
+
+goroutine 7 gp=0xc00047e000 m=nil [GC worker (idle)]:
+runtime.gopark(0xa3a9d23768?, 0x3?, 0x5c?, 0x64?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc00005af38 sp=0xc00005af18 pc=0x4706ae
+runtime.gcBgMarkWorker(0xc000038460)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1423 +0xe9 fp=0xc00005afc8 sp=0xc00005af38 pc=0x41e869
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x25 fp=0xc00005afe0 sp=0xc00005afc8 pc=0x41e745
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00005afe8 sp=0xc00005afe0 pc=0x477f81
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x105
+
+goroutine 8 gp=0xc00047e1c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xa3aa00dc43?, 0x3?, 0x44?, 0xc3?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc00005b738 sp=0xc00005b718 pc=0x4706ae
+runtime.gcBgMarkWorker(0xc000038460)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1423 +0xe9 fp=0xc00005b7c8 sp=0xc00005b738 pc=0x41e869
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x25 fp=0xc00005b7e0 sp=0xc00005b7c8 pc=0x41e745
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00005b7e8 sp=0xc00005b7e0 pc=0x477f81
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x105
+
+goroutine 9 gp=0xc00047e380 m=nil [GC worker (idle)]:
+runtime.gopark(0x10d03a0?, 0x1?, 0xd?, 0xc1?, 0x0?)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/proc.go:435 +0xce fp=0xc00005bf38 sp=0xc00005bf18 pc=0x4706ae
+runtime.gcBgMarkWorker(0xc000038460)
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1423 +0xe9 fp=0xc00005bfc8 sp=0xc00005bf38 pc=0x41e869
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x25 fp=0xc00005bfe0 sp=0xc00005bfc8 pc=0x41e745
+runtime.goexit({})
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00005bfe8 sp=0xc00005bfe0 pc=0x477f81
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.5/libexec/src/runtime/mgc.go:1339 +0x105
