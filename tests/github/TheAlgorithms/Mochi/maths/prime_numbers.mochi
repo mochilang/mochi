@@ -1,0 +1,88 @@
+/*
+Prime Number Generation
+-----------------------
+This module provides three routines to compute all prime numbers up to a
+specified maximum n.
+
+1. `slow_primes` checks divisibility of each candidate i by every integer
+   from 2 to i-1.  This straightforward approach runs in O(n^2) time.
+2. `primes` improves on the above by only testing divisors up to the square
+   root of i (implemented by verifying j * j <= i).  This reduces the work to
+   approximately O(n log n).
+3. `fast_primes` further skips even numbers.  After yielding 2, it examines
+   only odd candidates and odd divisors, cutting the number of iterations in
+   half compared to `primes`.
+
+Each function returns a list of primes and assumes n >= 0.  Negative inputs
+produce an empty list.
+*/
+
+fun slow_primes(max_n: int): list<int> {
+  var result: list<int> = []
+  var i: int = 2
+  while i <= max_n {
+    var j: int = 2
+    var is_prime: bool = true
+    while j < i {
+      if i % j == 0 {
+        is_prime = false
+        break
+      }
+      j = j + 1
+    }
+    if is_prime {
+      result = append(result, i)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun primes(max_n: int): list<int> {
+  var result: list<int> = []
+  var i: int = 2
+  while i <= max_n {
+    var j: int = 2
+    var is_prime: bool = true
+    while j * j <= i {
+      if i % j == 0 {
+        is_prime = false
+        break
+      }
+      j = j + 1
+    }
+    if is_prime {
+      result = append(result, i)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun fast_primes(max_n: int): list<int> {
+  var result: list<int> = []
+  if max_n >= 2 {
+    result = append(result, 2)
+  }
+  var i: int = 3
+  while i <= max_n {
+    var j: int = 3
+    var is_prime: bool = true
+    while j * j <= i {
+      if i % j == 0 {
+        is_prime = false
+        break
+      }
+      j = j + 2
+    }
+    if is_prime {
+      result = append(result, i)
+    }
+    i = i + 2
+  }
+  return result
+}
+
+print(str(slow_primes(25)))
+print(str(primes(25)))
+print(str(fast_primes(25)))
