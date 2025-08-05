@@ -1,0 +1,105 @@
+/*
+Segment Tree with user-defined aggregation operation.
+
+Given an array of integers and an operation (sum, maximum, or minimum),
+this structure provides O(log n) range queries and point updates.
+Nodes are represented by start/end ranges and stored in a list with
+child indices to allow breadth-first traversal.
+*/
+
+type Node = {
+  start: int,
+  end: int,
+  val: int,
+  mid: int,
+  left: int,
+  right: int,
+}
+
+type BuildResult = { nodes: list<Node>, idx: int }
+
+type SegmentTree = { arr: list<int>, op: int }
+
+fun combine(a: int, b: int, op: int): int {
+  if op == 0 { return a + b }
+  if op == 1 {
+    if a > b { return a }
+    return b
+  }
+  if a < b { return a }
+  return b
+}
+
+fun build_tree(nodes: list<Node>, arr: list<int>, start: int, end: int, op: int): BuildResult {
+  if start == end {
+    let node = Node{ start: start, end: end, val: arr[start], mid: start, left: -1, right: -1 }
+    let new_nodes = append(nodes, node)
+    return BuildResult{ nodes: new_nodes, idx: len(new_nodes) - 1 }
+  }
+  let mid: int = (start + end) / 2
+  let left_res = build_tree(nodes, arr, start, mid, op)
+  let right_res = build_tree(left_res.nodes, arr, mid + 1, end, op)
+  let left_node = right_res.nodes[left_res.idx]
+  let right_node = right_res.nodes[right_res.idx]
+  let val = combine(left_node.val, right_node.val, op)
+  let parent = Node{ start: start, end: end, val: val, mid: mid, left: left_res.idx, right: right_res.idx }
+  let new_nodes = append(right_res.nodes, parent)
+  return BuildResult{ nodes: new_nodes, idx: len(new_nodes) - 1 }
+}
+
+fun new_segment_tree(collection: list<int>, op: int): SegmentTree {
+  return SegmentTree{ arr: collection, op: op }
+}
+
+fun update(tree: SegmentTree, i: int, val: int): SegmentTree {
+  var new_arr: list<int> = []
+  var idx = 0
+  while idx < len(tree.arr) {
+    if idx == i { new_arr = append(new_arr, val) } else { new_arr = append(new_arr, tree.arr[idx]) }
+    idx = idx + 1
+  }
+  return SegmentTree{ arr: new_arr, op: tree.op }
+}
+
+fun query_range(tree: SegmentTree, i: int, j: int): int {
+  var result = tree.arr[i]
+  var idx = i + 1
+  while idx <= j {
+    result = combine(result, tree.arr[idx], tree.op)
+    idx = idx + 1
+  }
+  return result
+}
+
+fun traverse(tree: SegmentTree): list<Node> {
+  if len(tree.arr) == 0 { return [] }
+  let res = build_tree([], tree.arr, 0, len(tree.arr) - 1, tree.op)
+  return res.nodes
+}
+
+fun node_to_string(node: Node): string {
+  return "SegmentTreeNode(start=" + str(node.start) + ", end=" + str(node.end) + ", val=" + str(node.val) + ")"
+}
+
+fun print_traverse(tree: SegmentTree) {
+  let nodes = traverse(tree)
+  var i = 0
+  while i < len(nodes) {
+    print(node_to_string(nodes[i]))
+    i = i + 1
+  }
+  print("")
+}
+
+let arr = [2, 1, 5, 3, 4]
+for op in [0, 1, 2] {
+  print("**************************************************")
+  var tree = new_segment_tree(arr, op)
+  print_traverse(tree)
+  tree = update(tree, 1, 5)
+  print_traverse(tree)
+  print(query_range(tree, 3, 4))
+  print(query_range(tree, 2, 2))
+  print(query_range(tree, 1, 3))
+  print("")
+}
