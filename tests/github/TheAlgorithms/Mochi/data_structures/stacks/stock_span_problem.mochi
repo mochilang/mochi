@@ -1,0 +1,48 @@
+/*
+Stock Span Problem:
+Given a list of daily stock prices, compute for each day the maximum number of
+consecutive prior days for which the stock price was less than or equal to the
+price on the current day. The span of the first day is always 1.
+
+Algorithm:
+- Iterate over the list of prices.
+- Maintain a stack storing indices of days with strictly decreasing prices.
+- For each day i, pop indices from the stack while the price at the top index is
+  less than or equal to price[i].
+- If the stack becomes empty, all previous prices are <= price[i], so the span is
+  i + 1. Otherwise, the span is the difference between i and the index at the top
+  of the stack.
+- Push the current index onto the stack and continue.
+
+This algorithm runs in O(n) time where n is the number of days because each index
+is pushed and popped at most once.
+*/
+
+fun calculation_span(price: list<int>): list<int> {
+  let n = len(price)
+  var st = [] as list<int>
+  var span = [] as list<int>
+
+  st = append(st, 0)
+  span = append(span, 1)
+
+  for i in 1..n {
+    while len(st) > 0 && price[st[len(st) - 1]] <= price[i] {
+      st = slice(st, 0, len(st) - 1)
+    }
+    let s = if len(st) <= 0 { i + 1 } else { i - st[len(st) - 1] }
+    span = append(span, s)
+    st = append(st, i)
+  }
+  return span
+}
+
+fun print_array(arr: list<int>): void {
+  for i in 0..len(arr) {
+    print(arr[i])
+  }
+}
+
+let price = [10, 4, 5, 90, 120, 80]
+let spans = calculation_span(price)
+print_array(spans)
