@@ -1,0 +1,120 @@
+/*
+Depth-First Search (DFS) traversal on a directed graph using an adjacency
+list representation.
+
+The graph stores each vertex's outgoing edges in a map from vertex indices to
+lists of adjacent vertices. DFS explores as far as possible along each branch
+before backtracking. We keep a `visited` array to mark which vertices have
+been explored and append each vertex to the traversal order when first
+visited. Recursion processes neighbors depth-first.
+
+Time complexity is O(V + E) where V is the number of vertices and E is the
+number of edges. Space complexity is O(V) for the recursion stack and visited
+array.
+*/
+
+type Graph {
+  vertex: map<int, list<int>>,
+  size: int
+}
+
+fun add_edge(g: Graph, from_vertex: int, to_vertex: int): Graph {
+  var v = g.vertex
+  if from_vertex in v {
+    var lst: list<int> = v[from_vertex]
+    lst = append(lst, to_vertex)
+    v[from_vertex] = lst
+  } else {
+    v[from_vertex] = [to_vertex]
+  }
+  g.vertex = v
+  if from_vertex + 1 > g.size { g.size = from_vertex + 1 }
+  if to_vertex + 1 > g.size { g.size = to_vertex + 1 }
+  return g
+}
+
+fun list_to_string(lst: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(lst) {
+    res = res + str(lst[i])
+    if i < len(lst) - 1 {
+      res = res + " "
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun list_to_arrow(lst: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(lst) {
+    res = res + str(lst[i])
+    if i < len(lst) - 1 {
+      res = res + " -> "
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun print_graph(g: Graph): void {
+  print(str(g.vertex))
+  var i = 0
+  while i < g.size {
+    var edges: list<int> = []
+    if i in g.vertex { edges = g.vertex[i] }
+    let line = str(i) + "  ->  " + list_to_arrow(edges)
+    print(line)
+    i = i + 1
+  }
+}
+
+fun dfs_recursive(g: Graph, start_vertex: int, visited: list<bool>, order: list<int>): list<int> {
+  visited[start_vertex] = true
+  order = append(order, start_vertex)
+  if start_vertex in g.vertex {
+    var neighbors: list<int> = g.vertex[start_vertex]
+    var i = 0
+    while i < len(neighbors) {
+      let nb = neighbors[i]
+      if !visited[nb] {
+        order = dfs_recursive(g, nb, visited, order)
+      }
+      i = i + 1
+    }
+  }
+  return order
+}
+
+fun dfs(g: Graph): list<int> {
+  let n = g.size
+  var visited: list<bool> = []
+  var i = 0
+  while i < n {
+    visited = append(visited, false)
+    i = i + 1
+  }
+  var order: list<int> = []
+  i = 0
+  while i < n {
+    if !visited[i] {
+      order = dfs_recursive(g, i, visited, order)
+    }
+    i = i + 1
+  }
+  return order
+}
+
+var g = Graph { vertex: {}, size: 0 }
+g = add_edge(g, 0, 1)
+g = add_edge(g, 0, 2)
+g = add_edge(g, 1, 2)
+g = add_edge(g, 2, 0)
+g = add_edge(g, 2, 3)
+g = add_edge(g, 3, 3)
+
+print_graph(g)
+print("DFS:")
+print(list_to_string(dfs(g)))
