@@ -1,0 +1,175 @@
+/*
+Geometry primitives and shape calculations.
+
+This module implements basic geometric structures and operations similar
+in spirit to the Python version from TheAlgorithms.  It defines:
+
+- Angle: stores degrees and validates the range [0, 360].
+- Side: represents a polygon side with length and angle.
+- Ellipse: area and perimeter using pi * a * b and pi * (a + b).
+- Circle: a special ellipse with equal radii plus diameter and the
+  maximum number of regions produced by straight cuts.
+- Polygon: a collection of sides with add/get/set helpers.
+- Rectangle and Square: built from sides and polygons with area and
+  perimeter calculations.
+
+The main routine demonstrates these features.
+*/
+
+let PI = 3.141592653589793
+
+type Angle {
+  degrees: float
+}
+
+fun make_angle(deg: float): Angle {
+  if deg < 0.0 || deg > 360.0 {
+    panic("degrees must be between 0 and 360")
+  }
+  return Angle { degrees: deg }
+}
+
+type Side {
+  length: float,
+  angle: Angle,
+  next: int
+}
+
+fun make_side(length: float, angle: Angle): Side {
+  if length <= 0.0 {
+    panic("length must be positive")
+  }
+  return Side { length: length, angle: angle, next: -1 }
+}
+
+type Ellipse {
+  major: float,
+  minor: float
+}
+
+fun ellipse_area(e: Ellipse): float {
+  return PI * e.major * e.minor
+}
+
+fun ellipse_perimeter(e: Ellipse): float {
+  return PI * (e.major + e.minor)
+}
+
+type Circle {
+  radius: float
+}
+
+fun circle_area(c: Circle): float {
+  let e: Ellipse = Ellipse { major: c.radius, minor: c.radius }
+  let area = ellipse_area(e)
+  return area
+}
+
+fun circle_perimeter(c: Circle): float {
+  let e: Ellipse = Ellipse { major: c.radius, minor: c.radius }
+  let per = ellipse_perimeter(e)
+  return per
+}
+
+fun circle_diameter(c: Circle): float {
+  return c.radius * 2.0
+}
+
+fun circle_max_parts(num_cuts: float): float {
+  if num_cuts < 0.0 {
+    panic("num_cuts must be positive")
+  }
+  return (num_cuts + 2.0 + num_cuts * num_cuts) * 0.5
+}
+
+type Polygon {
+  sides: list<Side>
+}
+
+fun make_polygon(): Polygon {
+  var s: list<Side> = []
+  return Polygon { sides: s }
+}
+
+fun polygon_add_side(p: Polygon, s: Side) {
+  p.sides = append(p.sides, s)
+}
+
+fun polygon_get_side(p: Polygon, index: int): Side {
+  return p.sides[index]
+}
+
+fun polygon_set_side(p: Polygon, index: int, s: Side) {
+  var tmp = p.sides
+  tmp[index] = s
+  p.sides = tmp
+}
+
+type Rectangle {
+  short_side: Side,
+  long_side: Side,
+  poly: Polygon
+}
+
+fun make_rectangle(short_len: float, long_len: float): Rectangle {
+  if short_len <= 0.0 || long_len <= 0.0 {
+    panic("length must be positive")
+  }
+  let short = make_side(short_len, make_angle(90.0))
+  let long = make_side(long_len, make_angle(90.0))
+  var p = make_polygon()
+  polygon_add_side(p, short)
+  polygon_add_side(p, long)
+  return Rectangle { short_side: short, long_side: long, poly: p }
+}
+
+fun rectangle_perimeter(r: Rectangle): float {
+  return (r.short_side.length + r.long_side.length) * 2.0
+}
+
+fun rectangle_area(r: Rectangle): float {
+  return r.short_side.length * r.long_side.length
+}
+
+type Square {
+  side: Side,
+  rect: Rectangle
+}
+
+fun make_square(side_len: float): Square {
+  let rect: Rectangle = make_rectangle(side_len, side_len)
+  return Square { side: rect.short_side, rect: rect }
+}
+
+fun square_perimeter(s: Square): float {
+  let p = rectangle_perimeter(s.rect)
+  return p
+}
+
+fun square_area(s: Square): float {
+  let a = rectangle_area(s.rect)
+  return a
+}
+
+fun main() {
+  let a = make_angle(90.0)
+  print(a.degrees)
+  let s = make_side(5.0, a)
+  print(s.length)
+  let e = Ellipse { major: 5.0, minor: 10.0 }
+  print(ellipse_area(e))
+  print(ellipse_perimeter(e))
+  let c = Circle { radius: 5.0 }
+  print(circle_area(c))
+  print(circle_perimeter(c))
+  print(circle_diameter(c))
+  print(circle_max_parts(7.0))
+  let r = make_rectangle(5.0, 10.0)
+  print(rectangle_perimeter(r))
+  print(rectangle_area(r))
+  let q = make_square(5.0)
+  print(square_perimeter(q))
+  print(square_area(q))
+}
+
+main()
