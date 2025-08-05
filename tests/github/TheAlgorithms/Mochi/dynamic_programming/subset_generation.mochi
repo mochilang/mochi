@@ -1,0 +1,55 @@
+/*
+Subset Generation via Dynamic Programming
+-----------------------------------------
+Given a list of integers `elements` and a target size `n`, generate all
+possible subsets (combinations) of size `n`.  We build a table `dp` where
+`dp[j]` stores every combination of size `j` produced from the processed
+prefix of the input.  Starting from an empty combination in `dp[0]`, each
+new element extends previous combinations to create larger ones.  The table
+is filled iteratively and the list `dp[n]` contains the desired subsets.
+
+Time Complexity: O(r * n * C(r, n)) where r = len(elements)
+Space Complexity: O(r * C(r, n))
+*/
+
+fun copy_list(src: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len(src) {
+    result = append(result, src[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun subset_combinations(elements: list<int>, n: int): list<list<int>> {
+  let r = len(elements)
+  if n > r { return [] }
+  var dp: list<list<list<int>>> = []
+  var i = 0
+  while i <= r {
+    dp = append(dp, [])
+    i = i + 1
+  }
+  dp[0] = append(dp[0], [])
+  i = 1
+  while i <= r {
+    var j = i
+    while j > 0 {
+      var prevs = dp[j-1]
+      var k = 0
+      while k < len(prevs) {
+        var prev = prevs[k]
+        var comb = copy_list(prev)
+        comb = append(comb, elements[i-1])
+        dp[j] = append(dp[j], comb)
+        k = k + 1
+      }
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return dp[n]
+}
+
+print(str(subset_combinations([10, 20, 30, 40], 2)))
