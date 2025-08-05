@@ -1,0 +1,44 @@
+/*
+Approximates the area under a curve using the trapezoidal rule.
+Given a function f(x), starting point x_start, ending point x_end,
+and the number of segments (steps), it partitions the interval
+[x_start, x_end] into equal widths. For each adjacent pair of points,
+the algorithm treats the curve segment as a trapezoid with area
+(f(x_i) + f(x_{i+1})) * h / 2 where h is the segment width.
+Summing these trapezoids approximates the definite integral of f(x).
+This implementation mirrors the Python version from TheAlgorithms.
+*/
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun trapezoidal_area(f: fun(float): float, x_start: float, x_end: float, steps: int): float {
+  let step: float = (x_end - x_start) / (steps as float)
+  var x1: float = x_start
+  var fx1: float = f(x_start)
+  var area: float = 0.0
+  var i: int = 0
+  while i < steps {
+    let x2: float = x1 + step
+    let fx2: float = f(x2)
+    area = area + abs_float(fx2 + fx1) * step / 2.0
+    x1 = x2
+    fx1 = fx2
+    i = i + 1
+  }
+  return area
+}
+
+fun f(x: float): float {
+  return x * x * x + x * x
+}
+
+print("f(x) = x^3 + x^2")
+print("The area between the curve, x = -5, x = 5 and the x axis is:")
+var i: int = 10
+while i <= 100000 {
+  let result: float = trapezoidal_area(f, -5.0, 5.0, i)
+  print("with " + str(i) + " steps: " + str(result))
+  i = i * 10
+}
