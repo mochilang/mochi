@@ -1,0 +1,170 @@
+/*
+Apply a bilateral filter to a grayscale image represented as a 2‑D list of
+floating‑point pixels in the range 0–1. The bilateral filter smooths noise
+while preserving edges by combining two Gaussian kernels:
+
+1. A spatial kernel that weights pixels based on distance from the center.
+2. An intensity kernel that weights pixels based on similarity of intensity
+   to the center pixel.
+
+For each pixel, weights are the product of spatial and intensity kernels.
+The new pixel value is the weighted average of its neighborhood. This
+implementation avoids external libraries by providing simple approximations
+for square root and exponential functions. Complexity is O(n * k^2) for an
+n‑pixel image and kernel of size k.
+*/
+
+let PI = 3.141592653589793
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun expApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 10 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun vec_gaussian(mat: list<list<float>>, variance: float): list<list<float>> {
+  var i = 0
+  var out: list<list<float>> = []
+  while i < len(mat) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(mat[i]) {
+      let v = mat[i][j]
+      let e = -(v * v) / (2.0 * variance)
+      row = row + [expApprox(e)]
+      j = j + 1
+    }
+    out = out + [row]
+    i = i + 1
+  }
+  return out
+}
+
+fun get_slice(img: list<list<float>>, x: int, y: int, kernel_size: int): list<list<float>> {
+  let half = kernel_size / 2
+  var i = x - half
+  var slice: list<list<float>> = []
+  while i <= x + half {
+    var row: list<float> = []
+    var j = y - half
+    while j <= y + half {
+      row = row + [img[i][j]]
+      j = j + 1
+    }
+    slice = slice + [row]
+    i = i + 1
+  }
+  return slice
+}
+
+fun get_gauss_kernel(kernel_size: int, spatial_variance: float): list<list<float>> {
+  var arr: list<list<float>> = []
+  var i = 0
+  while i < kernel_size {
+    var row: list<float> = []
+    var j = 0
+    while j < kernel_size {
+      let di = (i - kernel_size / 2) as float
+      let dj = (j - kernel_size / 2) as float
+      let dist = sqrtApprox(di * di + dj * dj)
+      row = row + [dist]
+      j = j + 1
+    }
+    arr = arr + [row]
+    i = i + 1
+  }
+  return vec_gaussian(arr, spatial_variance)
+}
+
+fun elementwise_sub(mat: list<list<float>>, value: float): list<list<float>> {
+  var res: list<list<float>> = []
+  var i = 0
+  while i < len(mat) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(mat[i]) {
+      row = row + [mat[i][j] - value]
+      j = j + 1
+    }
+    res = res + [row]
+    i = i + 1
+  }
+  return res
+}
+
+fun elementwise_mul(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  var res: list<list<float>> = []
+  var i = 0
+  while i < len(a) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(a[i]) {
+      row = row + [a[i][j] * b[i][j]]
+      j = j + 1
+    }
+    res = res + [row]
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_sum(mat: list<list<float>>): float {
+  var total = 0.0
+  var i = 0
+  while i < len(mat) {
+    var j = 0
+    while j < len(mat[i]) {
+      total = total + mat[i][j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun bilateral_filter(
+  img: list<list<float>>,
+  spatial_variance: float,
+  intensity_variance: float,
+  kernel_size: int
+): float {
+  let gauss_ker = get_gauss_kernel(kernel_size, spatial_variance)
+  let img_s = img
+  let center = img_s[kernel_size / 2][kernel_size / 2]
+  let img_i = elementwise_sub(img_s, center)
+  let img_ig = vec_gaussian(img_i, intensity_variance)
+  let weights = elementwise_mul(gauss_ker, img_ig)
+  let vals = elementwise_mul(img_s, weights)
+  let sum_weights = matrix_sum(weights)
+  var val = 0.0
+  if sum_weights != 0.0 {
+    val = matrix_sum(vals) / sum_weights
+  }
+  return val
+}
+
+let img: list<list<float>> = [[0.2, 0.3, 0.4], [0.3, 0.4, 0.5], [0.4, 0.5, 0.6]]
+let result = bilateral_filter(img, 1.0, 1.0, 3)
+print(result)
