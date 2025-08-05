@@ -1,0 +1,59 @@
+/*
+Non recursive Depth-First Search (DFS) on a directed graph.
+
+The algorithm explores all vertices reachable from a starting node
+without using recursion. A stack holds the frontier of unexplored
+vertices. We mark the start vertex as explored and push it onto the
+stack. While the stack is not empty we pop the last vertex, then
+iterate over its adjacency list in reverse order and push any
+unvisited neighbour. Using reverse order preserves the original
+adjacency ordering when using a stack. Visited vertices are stored in a
+list and membership is checked by scanning the list. The algorithm runs
+in O(V + E) time where V is the number of vertices and E the number of
+edges and uses O(V) additional space.
+*/
+
+fun contains(lst: list<string>, v: string): bool {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == v { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun depth_first_search(graph: map<string, list<string>>, start: string): list<string> {
+  var explored: list<string> = []
+  var stack: list<string> = []
+  stack = append(stack, start)
+  explored = append(explored, start)
+  while len(stack) > 0 {
+    let idx = len(stack) - 1
+    let v = stack[idx]
+    stack = slice(stack, 0, idx)
+    let neighbors = graph[v]
+    var i = len(neighbors) - 1
+    while i >= 0 {
+      let adj = neighbors[i]
+      if !contains(explored, adj) {
+        explored = append(explored, adj)
+        stack = append(stack, adj)
+      }
+      i = i - 1
+    }
+  }
+  return explored
+}
+
+let G: map<string, list<string>> = {
+  "A": ["B", "C", "D"],
+  "B": ["A", "D", "E"],
+  "C": ["A", "F"],
+  "D": ["B", "D"],
+  "E": ["B", "F"],
+  "F": ["C", "E", "G"],
+  "G": ["F"],
+}
+
+let result = depth_first_search(G, "A")
+print(result)
