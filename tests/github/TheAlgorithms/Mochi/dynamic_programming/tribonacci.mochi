@@ -1,0 +1,30 @@
+/*
+Tribonacci sequence using dynamic programming
+--------------------------------------------
+The tribonacci sequence generalizes Fibonacci where each term is the sum
+of the previous three terms. Starting from 0, 0, 1, the recurrence is
+T(n) = T(n-1) + T(n-2) + T(n-3). This implementation builds the sequence
+iteratively storing previously computed values in a list.
+
+Given n, the function `tribonacci` returns a list containing the first n
+Tribonacci numbers.
+*/
+
+fun tribonacci(num: int): list<int> {
+  var dp: list<int> = []
+  var i = 0
+  while i < num {
+    if i == 0 || i == 1 {
+      dp = append(dp, 0)
+    } else if i == 2 {
+      dp = append(dp, 1)
+    } else {
+      let t = dp[i - 1] + dp[i - 2] + dp[i - 3]
+      dp = append(dp, t)
+    }
+    i = i + 1
+  }
+  return dp
+}
+
+print(tribonacci(8))
