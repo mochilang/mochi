@@ -1,0 +1,28 @@
+/*
+A XOR (exclusive OR) gate is a fundamental boolean operator that outputs 1
+when an odd number of its two binary inputs are 1 and outputs 0 otherwise.
+The behavior is summarized by the truth table:
+  input_1 input_2 | output
+       0       0  |   0
+       0       1  |   1
+       1       0  |   1
+       1       1  |   0
+This implementation mirrors the Python version by counting how many inputs
+are zero and returning the parity of that count (even -> 0, odd -> 1).
+*/
+
+fun xor_gate(input_1: int, input_2: int): int {
+  var zeros = 0
+  if input_1 == 0 {
+    zeros = zeros + 1
+  }
+  if input_2 == 0 {
+    zeros = zeros + 1
+  }
+  return zeros % 2
+}
+
+print(xor_gate(0, 0))
+print(xor_gate(0, 1))
+print(xor_gate(1, 0))
+print(xor_gate(1, 1))
