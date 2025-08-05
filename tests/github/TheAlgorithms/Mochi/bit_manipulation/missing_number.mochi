@@ -1,0 +1,26 @@
+/*
+Missing Number - Bit Manipulation
+
+Given a list of consecutive integers with exactly one value missing,
+return the absent integer. The algorithm computes the expected sum of
+the complete range using the arithmetic series formula and subtracts
+the actual sum of the provided list. The difference yields the missing
+number without requiring bitwise operations.
+*/
+
+fun find_missing_number(nums: list<int>): int {
+  let low = min(nums) as int
+  let high = max(nums) as int
+  let count = high - low + 1
+  let expected_sum = (low + high) * count / 2
+  var actual_sum = 0
+  var i = 0
+  let n = len(nums)
+  while i < n {
+    actual_sum = actual_sum + nums[i]
+    i = i + 1
+  }
+  return expected_sum - actual_sum
+}
+
+print(find_missing_number([0, 1, 3, 4]))
