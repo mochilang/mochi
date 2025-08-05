@@ -1,0 +1,27 @@
+/*
+Select one of two binary inputs according to a select signal.
+
+A 2-to-1 multiplexer is a basic digital circuit that forwards one of two
+inputs to the output.  The select signal chooses between input0 and input1.
+This implementation first verifies that all three signals are binary (0 or 1)
+and then returns input1 when the select signal is 1; otherwise it returns
+input0.  This mirrors the boolean expression:
+  output = (!select AND input0) OR (select AND input1).
+The algorithm runs in constant time because it performs a fixed number of
+arithmetic operations regardless of input values.
+*/
+
+fun mux(input0: int, input1: int, select: int): int {
+  if (input0 != 0 && input0 != 1) || (input1 != 0 && input1 != 1) || (select != 0 && select != 1) {
+    panic("Inputs and select signal must be 0 or 1")
+  }
+  if select == 1 {
+    return input1
+  }
+  return input0
+}
+
+print(mux(0, 1, 0))
+print(mux(0, 1, 1))
+print(mux(1, 0, 0))
+print(mux(1, 0, 1))
