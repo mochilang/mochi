@@ -1,0 +1,159 @@
+/*
+Construct a polynomial passing through given points using Gaussian elimination.
+
+Given a list of coordinate pairs [x, y], the goal is to find a polynomial
+f(x) whose degree is one less than the number of points and that passes through
+all the provided points. The algorithm builds a Vandermonde matrix where each
+row contains powers of the corresponding x value, solves the linear system with
+Gaussian elimination, and assembles the polynomial string from the resulting
+coefficients. Special cases handle duplicate points, repeated x values that
+would make the system unsolvable, and vertical lines where all x coordinates are
+the same.
+*/
+
+fun contains_int(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun pow_int_float(base: int, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * (base as float)
+    i = i + 1
+  }
+  return result
+}
+
+fun points_to_polynomial(coordinates: list<list<int>>): string {
+  if len(coordinates) == 0 {
+    panic("The program cannot work out a fitting polynomial.")
+  }
+  var i = 0
+  while i < len(coordinates) {
+    if len(coordinates[i]) != 2 {
+      panic("The program cannot work out a fitting polynomial.")
+    }
+    i = i + 1
+  }
+  var j = 0
+  while j < len(coordinates) {
+    var k = j + 1
+    while k < len(coordinates) {
+      if coordinates[j][0] == coordinates[k][0] && coordinates[j][1] == coordinates[k][1] {
+        panic("The program cannot work out a fitting polynomial.")
+      }
+      k = k + 1
+    }
+    j = j + 1
+  }
+  var set_x: list<int> = []
+  i = 0
+  while i < len(coordinates) {
+    let x_val = coordinates[i][0]
+    if !contains_int(set_x, x_val) {
+      set_x = append(set_x, x_val)
+    }
+    i = i + 1
+  }
+  if len(set_x) == 1 {
+    return "x=" + str(coordinates[0][0])
+  }
+  if len(set_x) != len(coordinates) {
+    panic("The program cannot work out a fitting polynomial.")
+  }
+  let n = len(coordinates)
+  var matrix: list<list<float>> = []
+  var row = 0
+  while row < n {
+    var line: list<float> = []
+    var col = 0
+    while col < n {
+      let power = pow_int_float(coordinates[row][0], n - (col + 1))
+      line = append(line, power)
+      col = col + 1
+    }
+    matrix = append(matrix, line)
+    row = row + 1
+  }
+  var vector: list<float> = []
+  row = 0
+  while row < n {
+    vector = append(vector, coordinates[row][1] as float)
+    row = row + 1
+  }
+  var count = 0
+  while count < n {
+    var number = 0
+    while number < n {
+      if count != number {
+        let fraction = matrix[number][count] / matrix[count][count]
+        var cc = 0
+        while cc < n {
+          matrix[number][cc] = matrix[number][cc] - matrix[count][cc] * fraction
+          cc = cc + 1
+        }
+        vector[number] = vector[number] - vector[count] * fraction
+      }
+      number = number + 1
+    }
+    count = count + 1
+  }
+  var solution: list<string> = []
+  count = 0
+  while count < n {
+    let value = vector[count] / matrix[count][count]
+    solution = append(solution, str(value))
+    count = count + 1
+  }
+  var solved = "f(x)="
+  count = 0
+  while count < n {
+    var parts = split(solution[count], "e")
+    var coeff = solution[count]
+    if len(parts) > 1 {
+      coeff = parts[0] + "*10^" + parts[1]
+    }
+    solved = solved + "x^" + str(n - (count + 1)) + "*" + coeff
+    if count + 1 != n {
+      solved = solved + "+"
+    }
+    count = count + 1
+  }
+  return solved
+}
+
+fun main() {
+  print(points_to_polynomial([[1, 0], [2, 0], [3, 0]]))
+  print(points_to_polynomial([[1, 1], [2, 1], [3, 1]]))
+  print(points_to_polynomial([[1, 1], [2, 4], [3, 9]]))
+  print(points_to_polynomial([[1, 3], [2, 6], [3, 11]]))
+  print(points_to_polynomial([[1, -3], [2, -6], [3, -11]]))
+  print(points_to_polynomial([[1, 1], [1, 2], [1, 3]]))
+  print(points_to_polynomial([[1, 5], [2, 2], [3, 9]]))
+}
+
+main()
