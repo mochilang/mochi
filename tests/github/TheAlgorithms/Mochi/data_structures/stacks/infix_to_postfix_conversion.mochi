@@ -1,0 +1,137 @@
+/*
+Convert an infix expression to postfix (Reverse Polish) notation using
+Dijkstra's shunting-yard algorithm.
+
+The algorithm processes each token of the input expression once, using a
+stack to temporarily hold operators. When an operator with lower
+precedence or different associativity is encountered, operators are
+popped from the stack to the output list until the stack condition
+allows the incoming operator to be pushed. Parentheses cause operators
+inside them to be evaluated before those outside.
+
+Time complexity: O(n) where n is the length of the expression.
+Space complexity: O(n) for the operator stack and output list.
+*/
+let PRECEDENCES: map<string, int> = {
+  "+": 1,
+  "-": 1,
+  "*": 2,
+  "/": 2,
+  "^": 3
+}
+let ASSOCIATIVITIES: map<string, string> = {
+  "+": "LR",
+  "-": "LR",
+  "*": "LR",
+  "/": "LR",
+  "^": "RL"
+}
+
+fun precedence(ch: string): int {
+  if ch in PRECEDENCES { return PRECEDENCES[ch] }
+  return -1
+}
+
+fun associativity(ch: string): string {
+  if ch in ASSOCIATIVITIES { return ASSOCIATIVITIES[ch] }
+  return ""
+}
+
+fun balanced_parentheses(expr: string): bool {
+  var count = 0
+  var i = 0
+  while i < len(expr) {
+    let ch = substring(expr, i, i + 1)
+    if ch == "(" { count = count + 1 }
+    if ch == ")" {
+      count = count - 1
+      if count < 0 { return false }
+    }
+    i = i + 1
+  }
+  return count == 0
+}
+
+fun is_letter(ch: string): bool {
+  return ("a" <= ch && ch <= "z") || ("A" <= ch && ch <= "Z")
+}
+
+fun is_digit(ch: string): bool {
+  return "0" <= ch && ch <= "9"
+}
+
+fun is_alnum(ch: string): bool {
+  return is_letter(ch) || is_digit(ch)
+}
+
+fun infix_to_postfix(expression: string): string {
+  if balanced_parentheses(expression) == false {
+    panic("Mismatched parentheses")
+  }
+  var stack: list<string> = []
+  var postfix: list<string> = []
+  var i = 0
+  while i < len(expression) {
+    let ch = substring(expression, i, i + 1)
+    if is_alnum(ch) {
+      postfix = append(postfix, ch)
+    } else if ch == "(" {
+      stack = append(stack, ch)
+    } else if ch == ")" {
+      while len(stack) > 0 && stack[len(stack) - 1] != "(" {
+        postfix = append(postfix, stack[len(stack) - 1])
+        stack = slice(stack, 0, len(stack) - 1)
+      }
+      if len(stack) > 0 {
+        stack = slice(stack, 0, len(stack) - 1)
+      }
+    } else if ch == " " {
+      // ignore spaces
+    } else {
+      while true {
+        if len(stack) == 0 {
+          stack = append(stack, ch)
+          break
+        }
+        let cp = precedence(ch)
+        let tp = precedence(stack[len(stack) - 1])
+        if cp > tp {
+          stack = append(stack, ch)
+          break
+        }
+        if cp < tp {
+          postfix = append(postfix, stack[len(stack) - 1])
+          stack = slice(stack, 0, len(stack) - 1)
+          continue
+        }
+        if associativity(ch) == "RL" {
+          stack = append(stack, ch)
+          break
+        }
+        postfix = append(postfix, stack[len(stack) - 1])
+        stack = slice(stack, 0, len(stack) - 1)
+      }
+    }
+    i = i + 1
+  }
+  while len(stack) > 0 {
+    postfix = append(postfix, stack[len(stack) - 1])
+    stack = slice(stack, 0, len(stack) - 1)
+  }
+  var res = ""
+  var j = 0
+  while j < len(postfix) {
+    if j > 0 { res = res + " " }
+    res = res + postfix[j]
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let expression = "a+b*(c^d-e)^(f+g*h)-i"
+  print(expression)
+  print(infix_to_postfix(expression))
+}
+
+main()
