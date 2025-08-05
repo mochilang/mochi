@@ -1,0 +1,29 @@
+/*
+Compute the product sum of a "special" array of integers and nested arrays.
+Each element contributes its value multiplied by its depth in the structure.
+Nested lists increase the depth by one and are processed recursively.
+Time complexity is O(n) where n is the total number of integers.
+*/
+
+fun product_sum(arr: list<any>, depth: int): int {
+  var total = 0
+  var i = 0
+  while i < len(arr) {
+    let el: any = arr[i]
+    if exists(el) {
+      total = total + product_sum(el as list<any>, depth + 1)
+    } else {
+      total = total + el as int
+    }
+    i = i + 1
+  }
+  return total * depth
+}
+
+fun product_sum_array(array: list<any>): int {
+  let res = product_sum(array, 1)
+  return res
+}
+
+let example: list<any> = [5, 2, [-7, 1], 3, [6, [-13, 8], 4]]
+print(product_sum_array(example))
