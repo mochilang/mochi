@@ -1,0 +1,46 @@
+/*
+Hexagonal Number Sequence
+-------------------------
+A hexagonal number h_n counts dots forming a hexagon with side length n.
+The nth value has closed form h_n = n * (2 * n - 1).
+This program generates the first `length` hexagonal numbers.
+
+Algorithm:
+1. Ensure `length` is a positive integer; otherwise panic.
+2. Iterate n from 0 to length - 1 and append n*(2*n-1) to a list.
+3. Return the list. The procedure runs in O(length) time.
+
+Example:
+hexagonal_numbers(5)  -> [0, 1, 6, 15, 28]
+hexagonal_numbers(10) -> [0, 1, 6, 15, 28, 45, 66, 91, 120, 153]
+*/
+
+fun hexagonal_numbers(length: int): list<int> {
+  if length <= 0 {
+    panic("Length must be a positive integer.")
+  }
+  var res: list<int> = []
+  var n: int = 0
+  while n < length {
+    res = append(res, n * (2 * n - 1))
+    n = n + 1
+  }
+  return res
+}
+
+fun test_hexagonal_numbers() {
+  let expected5: list<int> = [0, 1, 6, 15, 28]
+  let result5 = hexagonal_numbers(5)
+  if result5 != expected5 {
+    panic("hexagonal_numbers(5) failed")
+  }
+  let expected10: list<int> = [0, 1, 6, 15, 28, 45, 66, 91, 120, 153]
+  let result10 = hexagonal_numbers(10)
+  if result10 != expected10 {
+    panic("hexagonal_numbers(10) failed")
+  }
+}
+
+test_hexagonal_numbers()
+print(str(hexagonal_numbers(5)))
+print(str(hexagonal_numbers(10)))
