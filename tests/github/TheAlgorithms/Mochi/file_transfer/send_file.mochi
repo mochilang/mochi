@@ -1,0 +1,27 @@
+/*
+File Transfer: Send File over Network
+
+The original Python implementation starts a simple TCP server that sends the
+contents of a file to a client in 1024 byte chunks.  It waits for a connection,
+reads the file in fixed-size blocks, sends each block, and closes the
+connection when finished.
+
+This Mochi version simulates the same chunked transmission without using
+network sockets.  Given a string containing file data, it emits each
+chunk to standard output to illustrate the incremental sending algorithm.
+*/
+fun send_file(content: string, chunk_size: int) {
+  var start: int = 0
+  let n: int = len(content)
+  while start < n {
+    var end: int = start + chunk_size
+    if end > n {
+      end = n
+    }
+    let chunk: string = substring(content, start, end)
+    print(chunk)
+    start = end
+  }
+}
+
+send_file("The quick brown fox jumps over the lazy dog.", 10)
