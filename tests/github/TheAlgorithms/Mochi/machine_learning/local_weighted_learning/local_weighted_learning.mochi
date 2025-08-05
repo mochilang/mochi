@@ -1,0 +1,203 @@
+/*
+Locally weighted linear regression fits a linear model by weighting training points
+according to their distance from a query point.  For a point x, weights are
+assigned to each training sample using a Gaussian kernel:
+  w_i = exp(-||x_i - x||^2 / (2 * tau^2))
+where tau is a bandwidth parameter.  The regression coefficients are computed
+with weighted least squares:
+  theta = (X^T W X)^{-1} X^T W y
+This implementation constructs the diagonal weight matrix W and performs the
+necessary matrix operations using pure Mochi code.
+*/
+
+fun expApprox(x: float): float {
+  if x < 0.0 { return 1.0 / expApprox(-x) }
+  if x > 1.0 {
+    let half = expApprox(x / 2.0)
+    return half * half
+  }
+  var sum = 1.0
+  var term = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun transpose(mat: list<list<float>>): list<list<float>> {
+  let rows = len(mat)
+  let cols = len(mat[0])
+  var res: list<list<float>> = []
+  var i = 0
+  while i < cols {
+    var row: list<float> = []
+    var j = 0
+    while j < rows {
+      row = append(row, mat[j][i])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matMul(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  let a_rows = len(a)
+  let a_cols = len(a[0])
+  let b_cols = len(b[0])
+  var res: list<list<float>> = []
+  var i = 0
+  while i < a_rows {
+    var row: list<float> = []
+    var j = 0
+    while j < b_cols {
+      var sum = 0.0
+      var k = 0
+      while k < a_cols {
+        sum = sum + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matInv(mat: list<list<float>>): list<list<float>> {
+  let n = len(mat)
+  var aug: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, mat[i][j])
+      j = j + 1
+    }
+    j = 0
+    while j < n {
+      if i == j { row = append(row, 1.0) } else { row = append(row, 0.0) }
+      j = j + 1
+    }
+    aug = append(aug, row)
+    i = i + 1
+  }
+  var col = 0
+  while col < n {
+    let pivot = aug[col][col]
+    if pivot == 0.0 { panic("Matrix is singular") }
+    var j = 0
+    while j < 2 * n {
+      aug[col][j] = aug[col][j] / pivot
+      j = j + 1
+    }
+    var r = 0
+    while r < n {
+      if r != col {
+        let factor = aug[r][col]
+        j = 0
+        while j < 2 * n {
+          aug[r][j] = aug[r][j] - factor * aug[col][j]
+          j = j + 1
+        }
+      }
+      r = r + 1
+    }
+    col = col + 1
+  }
+  var inv: list<list<float>> = []
+  i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, aug[i][j + n])
+      j = j + 1
+    }
+    inv = append(inv, row)
+    i = i + 1
+  }
+  return inv
+}
+
+fun weight_matrix(point: list<float>, x_train: list<list<float>>, tau: float): list<list<float>> {
+  let m = len(x_train)
+  var weights: list<list<float>> = []
+  var i = 0
+  while i < m {
+    var row: list<float> = []
+    var j = 0
+    while j < m {
+      if i == j { row = append(row, 1.0) } else { row = append(row, 0.0) }
+      j = j + 1
+    }
+    weights = append(weights, row)
+    i = i + 1
+  }
+  var j = 0
+  while j < m {
+    var diff_sq = 0.0
+    var k = 0
+    while k < len(point) {
+      let diff = point[k] - x_train[j][k]
+      diff_sq = diff_sq + diff * diff
+      k = k + 1
+    }
+    weights[j][j] = expApprox(-diff_sq / (2.0 * tau * tau))
+    j = j + 1
+  }
+  return weights
+}
+
+fun local_weight(point: list<float>, x_train: list<list<float>>, y_train: list<float>, tau: float): list<list<float>> {
+  let w = weight_matrix(point, x_train, tau)
+  let x_t = transpose(x_train)
+  let x_t_w = matMul(x_t, w)
+  let x_t_w_x = matMul(x_t_w, x_train)
+  let inv_part = matInv(x_t_w_x)
+  var y_col: list<list<float>> = []
+  var i = 0
+  while i < len(y_train) {
+    y_col = append(y_col, [y_train[i]])
+    i = i + 1
+  }
+  let x_t_w_y = matMul(x_t_w, y_col)
+  return matMul(inv_part, x_t_w_y)
+}
+
+fun local_weight_regression(x_train: list<list<float>>, y_train: list<float>, tau: float): list<float> {
+  let m = len(x_train)
+  var preds: list<float> = []
+  var i = 0
+  while i < m {
+    let theta = local_weight(x_train[i], x_train, y_train, tau)
+    var weights_vec: list<float> = []
+    var k = 0
+    while k < len(theta) {
+      weights_vec = append(weights_vec, theta[k][0])
+      k = k + 1
+    }
+    var pred = 0.0
+    var j = 0
+    while j < len(x_train[i]) {
+      pred = pred + x_train[i][j] * weights_vec[j]
+      j = j + 1
+    }
+    preds = append(preds, pred)
+    i = i + 1
+  }
+  return preds
+}
+
+// Example usage
+let x_train: list<list<float>> = [[16.99, 10.34], [21.01, 23.68], [24.59, 25.69]]
+let y_train: list<float> = [1.01, 1.66, 3.5]
+let preds = local_weight_regression(x_train, y_train, 0.6)
+json(preds)
