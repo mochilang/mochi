@@ -1,0 +1,11 @@
+[94;1mtests/github/TheAlgorithms/Mochi/linear_algebra/src/rank_of_matrix.mochi[0;22m
+   [33mtest[0m matrix1                        ... [32mok[0m (1.0ms)
+   [33mtest[0m matrix2                        ... [32mok[0m (2.0ms)
+   [33mtest[0m matrix3                        ... [32mok[0m (1.0ms)
+   [33mtest[0m matrix4                        ... [32mok[0m (1.0ms)
+   [33mtest[0m matrix5                        ... [32mok[0m (2.0ms)
+   [33mtest[0m matrix6                        ... [32mok[0m (1.0ms)
+   [33mtest[0m matrix7                        ... [32mok[0m (2.0ms)
+   [33mtest[0m matrix_empty_cols              ... [32mok[0m (1.0ms)
+   [33mtest[0m matrix_single                  ... [32mok[0m (2.0ms)
+   [33mtest[0m matrix_empty                   ... [32mok[0m (1.0ms)
