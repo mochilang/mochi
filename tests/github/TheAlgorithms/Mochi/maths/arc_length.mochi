@@ -1,0 +1,18 @@
+/*
+Arc Length of a Circle
+----------------------
+Given a circle with radius r and a central angle measured in degrees,
+this algorithm computes the length of the arc subtended by the angle.
+The circumference of a full circle is 2 * pi * r.  The arc length is the
+fraction of the circumference proportional to angle / 360.
+*/
+
+let PI = 3.141592653589793
+
+fun arc_length(angle: float, radius: float): float {
+  return 2.0 * PI * radius * (angle / 360.0)
+}
+
+print(str(arc_length(45.0, 5.0)))
+print(str(arc_length(120.0, 15.0)))
+print(str(arc_length(90.0, 10.0)))
