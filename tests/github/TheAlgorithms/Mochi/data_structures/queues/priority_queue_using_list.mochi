@@ -1,0 +1,210 @@
+/*
+Implement two priority queue variants using only built-in Mochi data structures.
+
+1. FixedPriorityQueue maintains three internal FIFO queues for priorities 0
+   (highest) through 2 (lowest).  Enqueue validates priority and capacity and
+   appends the value to the appropriate internal queue.  Dequeue searches the
+   queues in priority order, removes the first element of the first nonempty
+   queue, and returns it.  Attempting to dequeue when all queues are empty
+   raises an error.
+2. ElementPriorityQueue treats the value of each element as its priority.  The
+   queue is stored as a single list.  Enqueue appends the new value while
+   enforcing a capacity limit.  Dequeue scans for the minimum value, removes it
+   from the list, and returns it.  Underflow occurs if the queue is empty.
+
+The demonstration mirrors the Python implementation from TheAlgorithms project:
+values are enqueued, the queue contents are printed, several dequeues are
+performed, and an additional dequeue shows the underflow error.
+*/
+
+fun panic(msg: string) {
+  print(msg)
+}
+
+type FixedPriorityQueue {
+  queues: list<list<int>>
+}
+
+fun fpq_new(): FixedPriorityQueue {
+  return FixedPriorityQueue { queues: [[], [], []] }
+}
+
+fun fpq_enqueue(fpq: FixedPriorityQueue, priority: int, data: int): FixedPriorityQueue {
+  if priority < 0 || priority >= len(fpq.queues) {
+    panic("Valid priorities are 0, 1, and 2")
+    return fpq
+  }
+  if len(fpq.queues[priority]) >= 100 {
+    panic("Maximum queue size is 100")
+    return fpq
+  }
+  var qs = fpq.queues
+  qs[priority] = append(qs[priority], data)
+  fpq.queues = qs
+  return fpq
+}
+
+type FPQDequeueResult {
+  queue: FixedPriorityQueue
+  value: int
+}
+
+fun fpq_dequeue(fpq: FixedPriorityQueue): FPQDequeueResult {
+  var qs = fpq.queues
+  var i = 0
+  while i < len(qs) {
+    let q = qs[i]
+    if len(q) > 0 {
+      let val = q[0]
+      var new_q: list<int> = []
+      var j = 1
+      while j < len(q) {
+        new_q = append(new_q, q[j])
+        j = j + 1
+      }
+      qs[i] = new_q
+      fpq.queues = qs
+      return FPQDequeueResult { queue: fpq, value: val }
+    }
+    i = i + 1
+  }
+  panic("All queues are empty")
+  return FPQDequeueResult { queue: fpq, value: 0 }
+}
+
+fun fpq_to_string(fpq: FixedPriorityQueue): string {
+  var lines: list<string> = []
+  var i = 0
+  while i < len(fpq.queues) {
+    var q_str: string = "["
+    var q = fpq.queues[i]
+    var j = 0
+    while j < len(q) {
+      if j > 0 { q_str = q_str + ", " }
+      q_str = q_str + str(q[j])
+      j = j + 1
+    }
+    q_str = q_str + "]"
+    lines = append(lines, "Priority " + str(i) + ": " + q_str)
+    i = i + 1
+  }
+  var res: string = ""
+  i = 0
+  while i < len(lines) {
+    if i > 0 { res = res + "\n" }
+    res = res + lines[i]
+    i = i + 1
+  }
+  return res
+}
+
+type ElementPriorityQueue {
+  queue: list<int>
+}
+
+fun epq_new(): ElementPriorityQueue {
+  return ElementPriorityQueue { queue: [] }
+}
+
+fun epq_enqueue(epq: ElementPriorityQueue, data: int): ElementPriorityQueue {
+  if len(epq.queue) >= 100 {
+    panic("Maximum queue size is 100")
+    return epq
+  }
+  epq.queue = append(epq.queue, data)
+  return epq
+}
+
+type EPQDequeueResult {
+  queue: ElementPriorityQueue
+  value: int
+}
+
+fun epq_dequeue(epq: ElementPriorityQueue): EPQDequeueResult {
+  if len(epq.queue) == 0 {
+    panic("The queue is empty")
+    return EPQDequeueResult { queue: epq, value: 0 }
+  }
+  var min_val = epq.queue[0]
+  var idx = 0
+  var i = 1
+  while i < len(epq.queue) {
+    let v = epq.queue[i]
+    if v < min_val {
+      min_val = v
+      idx = i
+    }
+    i = i + 1
+  }
+  var new_q: list<int> = []
+  i = 0
+  while i < len(epq.queue) {
+    if i != idx {
+      new_q = append(new_q, epq.queue[i])
+    }
+    i = i + 1
+  }
+  epq.queue = new_q
+  return EPQDequeueResult { queue: epq, value: min_val }
+}
+
+fun epq_to_string(epq: ElementPriorityQueue): string {
+  return str(epq.queue)
+}
+
+fun fixed_priority_queue() {
+  var fpq = fpq_new()
+  fpq = fpq_enqueue(fpq, 0, 10)
+  fpq = fpq_enqueue(fpq, 1, 70)
+  fpq = fpq_enqueue(fpq, 0, 100)
+  fpq = fpq_enqueue(fpq, 2, 1)
+  fpq = fpq_enqueue(fpq, 2, 5)
+  fpq = fpq_enqueue(fpq, 1, 7)
+  fpq = fpq_enqueue(fpq, 2, 4)
+  fpq = fpq_enqueue(fpq, 1, 64)
+  fpq = fpq_enqueue(fpq, 0, 128)
+  print(fpq_to_string(fpq))
+  var res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  print(fpq_to_string(fpq))
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+  res = fpq_dequeue(fpq); fpq = res.queue; print(res.value)
+}
+
+fun element_priority_queue() {
+  var epq = epq_new()
+  epq = epq_enqueue(epq, 10)
+  epq = epq_enqueue(epq, 70)
+  epq = epq_enqueue(epq, 100)
+  epq = epq_enqueue(epq, 1)
+  epq = epq_enqueue(epq, 5)
+  epq = epq_enqueue(epq, 7)
+  epq = epq_enqueue(epq, 4)
+  epq = epq_enqueue(epq, 64)
+  epq = epq_enqueue(epq, 128)
+  print(epq_to_string(epq))
+  var res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  print(epq_to_string(epq))
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+  res = epq_dequeue(epq); epq = res.queue; print(res.value)
+}
+
+fun main() {
+  fixed_priority_queue()
+  element_priority_queue()
+}
+
+main()
