@@ -1,0 +1,42 @@
+/*
+Solve the 0-1 knapsack problem via naive recursion.
+Given lists of item weights and values and a maximum capacity,
+the function explores including or excluding each item recursively
+to find the maximum achievable value without exceeding capacity.
+
+Time complexity: O(2^n) due to exploring all subsets.
+Space complexity: O(n) for recursion depth.
+
+The main function demonstrates the algorithm with
+capacity 50, weights [10,20,30] and values [60,100,120],
+which yields 220.
+*/
+
+fun knapsack(capacity: int, weights: list<int>, values: list<int>, counter: int): int {
+  if counter == 0 || capacity == 0 {
+    return 0
+  }
+  if weights[counter - 1] > capacity {
+    return knapsack(capacity, weights, values, counter - 1)
+  } else {
+    var left_capacity = capacity - weights[counter - 1]
+    var new_value_included = values[counter - 1] + knapsack(left_capacity, weights, values, counter - 1)
+    var without_new_value = knapsack(capacity, weights, values, counter - 1)
+    if new_value_included > without_new_value {
+      return new_value_included
+    } else {
+      return without_new_value
+    }
+  }
+}
+
+fun main() {
+  var weights: list<int> = [10, 20, 30]
+  var values: list<int> = [60, 100, 120]
+  var cap = 50
+  var count = len(values)
+  var result = knapsack(cap, weights, values, count)
+  print(str(result))
+}
+
+main()
