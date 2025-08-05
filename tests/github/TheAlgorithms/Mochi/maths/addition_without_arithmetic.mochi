@@ -1,0 +1,83 @@
+/*
+Add two integers without using the built-in arithmetic operators.
+
+This algorithm relies purely on bitwise operations to perform addition:
+1. Compute the carry bits with bitwise AND.
+2. Compute the partial sum without carries using bitwise XOR.
+3. Shift the carry bits left by one to align with the next higher bit.
+4. Repeat until no carry remains.
+
+Because the Mochi VM lacks native bitwise operators, helper functions emulate
+AND, XOR, and left-shift on 32-bit two's-complement integers using integer
+arithmetic. The procedure mirrors the classic binary adder and runs in O(k)
+where k is the number of bits needed to represent the inputs.
+*/
+
+let MAX = 4294967296
+let HALF = 2147483648
+
+fun to_unsigned(n: int): int {
+  if n < 0 { return MAX + n }
+  return n
+}
+
+fun from_unsigned(n: int): int {
+  if n >= HALF { return n - MAX }
+  return n
+}
+
+fun bit_and(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    if (x % 2 == 1) && (y % 2 == 1) { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_xor(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    let abit = x % 2
+    let bbit = y % 2
+    if (abit + bbit) % 2 == 1 { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun lshift1(num: int): int {
+  return (num * 2) % MAX
+}
+
+fun add(a: int, b: int): int {
+  var first = to_unsigned(a)
+  var second = to_unsigned(b)
+  while second != 0 {
+    let carry = bit_and(first, second)
+    first = bit_xor(first, second)
+    second = lshift1(carry)
+  }
+  let result = from_unsigned(first)
+  return result
+}
+
+print(str(add(3, 5)))
+print(str(add(13, 5)))
+print(str(add(-7, 2)))
+print(str(add(0, -7)))
+print(str(add(-321, 0)))
