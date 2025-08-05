@@ -1,0 +1,133 @@
+/*
+Simulate the classic Enigma machine cipher using three rotating gears
+(rotors) and a reflector over printable ASCII characters (codes 32-125).
+Each gear is represented as a permutation of indices 0..n-1 where n is the
+alphabet size. For every encoded character the first gear rotates by one
+position. The second and third gears rotate when the previous gear completes
+a full revolution, mimicking the odometer behavior of the original Enigma.
+
+To encode a character:
+1. Map the character to its index in the alphabet.
+2. Pass the index through gear_one, gear_two and gear_three.
+3. Reflect the value through the reflector.
+4. Reverse the path using inverse mappings of gear_three, gear_two and gear_one.
+5. Convert the final index back to a character.
+
+A numeric token is used to advance the gears before processing the message,
+allowing the same message to be encoded differently depending on the token.
+The algorithm runs in O(n) time for a message of length n and is implemented
+purely in Mochi without external libraries.
+*/
+
+let ASCII = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}"
+
+fun build_alphabet(): list<string> {
+  var result: list<string> = []
+  var i = 0
+  while i < len(ASCII) {
+    result = append(result, ASCII[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun range_list(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, i)
+    i = i + 1
+  }
+  return lst
+}
+
+fun reversed_range_list(n: int): list<int> {
+  var lst: list<int> = []
+  var i = n - 1
+  while i >= 0 {
+    lst = append(lst, i)
+    i = i - 1
+  }
+  return lst
+}
+
+fun index_of_char(lst: list<string>, ch: string): int {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun index_of_int(lst: list<int>, value: int): int {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == value { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun enigma_encrypt(message: string, token: int): string {
+  let alphabets = build_alphabet()
+  let n = len(alphabets)
+  var gear_one = range_list(n)
+  var gear_two = range_list(n)
+  var gear_three = range_list(n)
+  let reflector = reversed_range_list(n)
+  var gear_one_pos = 0
+  var gear_two_pos = 0
+  var gear_three_pos = 0
+
+  fun rotator() {
+    var i = gear_one[0]
+    gear_one = gear_one[1:len(gear_one)]
+    gear_one = append(gear_one, i)
+    gear_one_pos = gear_one_pos + 1
+    if gear_one_pos % n == 0 {
+      i = gear_two[0]
+      gear_two = gear_two[1:len(gear_two)]
+      gear_two = append(gear_two, i)
+      gear_two_pos = gear_two_pos + 1
+      if gear_two_pos % n == 0 {
+        i = gear_three[0]
+        gear_three = gear_three[1:len(gear_three)]
+        gear_three = append(gear_three, i)
+        gear_three_pos = gear_three_pos + 1
+      }
+    }
+  }
+
+  fun engine(ch: string): string {
+    var target = index_of_char(alphabets, ch)
+    target = gear_one[target]
+    target = gear_two[target]
+    target = gear_three[target]
+    target = reflector[target]
+    target = index_of_int(gear_three, target)
+    target = index_of_int(gear_two, target)
+    target = index_of_int(gear_one, target)
+    rotator()
+    return alphabets[target]
+  }
+
+  var t = 0
+  while t < token {
+    rotator()
+    t = t + 1
+  }
+
+  var result = ""
+  var idx = 0
+  while idx < len(message) {
+    result = result + engine(message[idx])
+    idx = idx + 1
+  }
+  return result
+}
+
+let message = "HELLO WORLD"
+let token = 123
+let encoded = enigma_encrypt(message, token)
+print(encoded)
