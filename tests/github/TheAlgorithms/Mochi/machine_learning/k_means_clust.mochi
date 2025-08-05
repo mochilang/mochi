@@ -1,0 +1,141 @@
+/*
+K-Means Clustering
+
+This program partitions numerical data into k clusters using the classical
+k-means algorithm.  Each iteration assigns every point to the closest
+centroid (using Euclidean distance) and then recomputes each centroid as the
+mean of the points assigned to it.  The process repeats until assignments do
+not change or the maximum number of iterations is reached.
+
+The implementation keeps track of the heterogeneity (sum of squared distances
+between points and their assigned centroid) after each iteration, which is a
+common metric for convergence analysis.
+
+The data is represented as lists of floats without relying on any external
+libraries.  It mirrors the structure and behaviour of the original Python
+version from TheAlgorithms repository.
+*/
+
+type KMeansResult {
+  centroids: list<list<float>>,
+  assignments: list<int>,
+  heterogeneity: list<float>,
+}
+
+fun distance_sq(a: list<float>, b: list<float>): float {
+  var sum = 0.0
+  for i in 0..len(a) {
+    let diff = a[i] - b[i]
+    sum = sum + diff * diff
+  }
+  return sum
+}
+
+fun assign_clusters(data: list<list<float>>, centroids: list<list<float>>): list<int> {
+  var assignments: list<int> = []
+  for i in 0..len(data) {
+    var best_idx = 0
+    var best = distance_sq(data[i], centroids[0])
+    for j in 1..len(centroids) {
+      let dist = distance_sq(data[i], centroids[j])
+      if dist < best {
+        best = dist
+        best_idx = j
+      }
+    }
+    assignments = append(assignments, best_idx)
+  }
+  return assignments
+}
+
+fun revise_centroids(data: list<list<float>>, k: int, assignment: list<int>): list<list<float>> {
+  let dim = len(data[0])
+  var sums: list<list<float>> = []
+  var counts: list<int> = []
+  for i in 0..k {
+    var row: list<float> = []
+    for j in 0..dim {
+      row = append(row, 0.0)
+    }
+    sums = append(sums, row)
+    counts = append(counts, 0)
+  }
+  for i in 0..len(data) {
+    let c = assignment[i]
+    counts[c] = counts[c] + 1
+    for j in 0..dim {
+      sums[c][j] = sums[c][j] + data[i][j]
+    }
+  }
+  var centroids: list<list<float>> = []
+  for i in 0..k {
+    var row: list<float> = []
+    if counts[i] > 0 {
+      for j in 0..dim {
+        row = append(row, sums[i][j] / (counts[i] as float))
+      }
+    } else {
+      for j in 0..dim {
+        row = append(row, 0.0)
+      }
+    }
+    centroids = append(centroids, row)
+  }
+  return centroids
+}
+
+fun compute_heterogeneity(data: list<list<float>>, centroids: list<list<float>>, assignment: list<int>): float {
+  var total = 0.0
+  for i in 0..len(data) {
+    let c = assignment[i]
+    total = total + distance_sq(data[i], centroids[c])
+  }
+  return total
+}
+
+fun lists_equal(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) {
+    return false
+  }
+  for i in 0..len(a) {
+    if a[i] != b[i] {
+      return false
+    }
+  }
+  return true
+}
+
+fun kmeans(data: list<list<float>>, k: int, initial_centroids: list<list<float>>, max_iter: int): KMeansResult {
+  var centroids = initial_centroids
+  var assignment: list<int> = []
+  var prev: list<int> = []
+  var heterogeneity: list<float> = []
+  var iter = 0
+  while iter < max_iter {
+    assignment = assign_clusters(data, centroids)
+    centroids = revise_centroids(data, k, assignment)
+    let h = compute_heterogeneity(data, centroids, assignment)
+    heterogeneity = append(heterogeneity, h)
+    if iter > 0 && lists_equal(prev, assignment) {
+      break
+    }
+    prev = assignment
+    iter = iter + 1
+  }
+  return KMeansResult { centroids: centroids, assignments: assignment, heterogeneity: heterogeneity }
+}
+
+let data: list<list<float>> = [
+  [1.0, 2.0],
+  [1.5, 1.8],
+  [5.0, 8.0],
+  [8.0, 8.0],
+  [1.0, 0.6],
+  [9.0, 11.0],
+]
+let k = 3
+let initial_centroids: list<list<float>> = [data[0], data[2], data[5]]
+let result = kmeans(data, k, initial_centroids, 10)
+print(str(result.centroids))
+print(str(result.assignments))
+print(str(result.heterogeneity))
