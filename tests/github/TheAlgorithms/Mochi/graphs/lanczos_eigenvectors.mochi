@@ -1,0 +1,387 @@
+/*
+Lanczos method to approximate largest eigenvalues and eigenvectors of a graph.
+
+Given an undirected graph represented as an adjacency list, the algorithm
+builds an orthonormal basis of Krylov subspaces using the Lanczos iteration.
+The process converts the adjacency matrix to a much smaller symmetric
+tridiagonal matrix.  The eigenvalues and eigenvectors of this tridiagonal
+matrix approximate those of the original graph.
+
+Steps:
+1. Validate the adjacency list structure.
+2. Generate a random normalized starting vector.
+3. Repeatedly multiply the adjacency matrix with the current basis vector,
+   orthogonalize the result and record the scalars forming the tridiagonal
+   matrix.
+4. Compute the eigenvalues and eigenvectors of the tridiagonal matrix via
+   the Jacobi method for symmetric matrices.
+5. Project the small eigenvectors back to the original space to obtain
+   approximate eigenvectors of the graph.
+
+Time complexity: O(k * n) for k Lanczos steps on an n node graph.
+*/
+
+var seed = 123456789
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (1.0 * rand()) / 2147483648.0
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun absf(x: float): float {
+  return if x < 0.0 { -x } else { x }
+}
+
+fun dot(a: list<float>, b: list<float>): float {
+  var s = 0.0
+  var i = 0
+  while i < len(a) {
+    s = s + a[i] * b[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun vector_scale(v: list<float>, s: float): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(v) {
+    res = append(res, v[i] * s)
+    i = i + 1
+  }
+  return res
+}
+
+fun vector_sub(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] - b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vector_add(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] + b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun zeros_matrix(r: int, c: int): list<list<float>> {
+  var m: list<list<float>> = []
+  var i = 0
+  while i < r {
+    var row: list<float> = []
+    var j = 0
+    while j < c {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    m = append(m, row)
+    i = i + 1
+  }
+  return m
+}
+
+type LanczosResult {
+  t: list<list<float>>
+  q: list<list<float>>
+}
+
+type EigenResult {
+  values: list<float>
+  vectors: list<list<float>>
+}
+
+fun column(m: list<list<float>>, idx: int): list<float> {
+  var col: list<float> = []
+  var i = 0
+  while i < len(m) {
+    col = append(col, m[i][idx])
+    i = i + 1
+  }
+  return col
+}
+
+fun validate_adjacency_list(graph: list<list<int>>): void {
+  var i = 0
+  while i < len(graph) {
+    var j = 0
+    while j < len(graph[i]) {
+      let v = graph[i][j]
+      if v < 0 || v >= len(graph) {
+        panic("Invalid neighbor")
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+fun multiply_matrix_vector(graph: list<list<int>>, vector: list<float>): list<float> {
+  let n = len(graph)
+  if len(vector) != n {
+    panic("Vector length must match number of nodes")
+  }
+  var result: list<float> = []
+  var i = 0
+  while i < n {
+    var sum = 0.0
+    var j = 0
+    while j < len(graph[i]) {
+      let nb = graph[i][j]
+      sum = sum + vector[nb]
+      j = j + 1
+    }
+    result = append(result, sum)
+    i = i + 1
+  }
+  return result
+}
+
+fun lanczos_iteration(graph: list<list<int>>, k: int): LanczosResult {
+  let n = len(graph)
+  if k < 1 || k > n {
+    panic("invalid number of eigenvectors")
+  }
+  var q = zeros_matrix(n, k)
+  var t = zeros_matrix(k, k)
+  // initial random vector
+  var v: list<float> = []
+  var i = 0
+  while i < n {
+    v = append(v, random())
+    i = i + 1
+  }
+  var ss = 0.0
+  i = 0
+  while i < n {
+    ss = ss + v[i] * v[i]
+    i = i + 1
+  }
+  let vnorm = sqrtApprox(ss)
+  i = 0
+  while i < n {
+    q[i][0] = v[i] / vnorm
+    i = i + 1
+  }
+  var beta = 0.0
+  var j = 0
+  while j < k {
+    var w = multiply_matrix_vector(graph, column(q, j))
+    if j > 0 {
+      w = vector_sub(w, vector_scale(column(q, j - 1), beta))
+    }
+    let alpha = dot(column(q, j), w)
+    w = vector_sub(w, vector_scale(column(q, j), alpha))
+    var ss2 = 0.0
+    var p = 0
+    while p < n {
+      ss2 = ss2 + w[p] * w[p]
+      p = p + 1
+    }
+    beta = sqrtApprox(ss2)
+    t[j][j] = alpha
+    if j < k - 1 {
+      t[j][j + 1] = beta
+      t[j + 1][j] = beta
+      if beta > 0.0000000001 {
+        var wnorm = vector_scale(w, 1.0 / beta)
+        var r = 0
+        while r < n {
+          q[r][j + 1] = wnorm[r]
+          r = r + 1
+        }
+      }
+    }
+    j = j + 1
+  }
+  return LanczosResult { t: t, q: q }
+}
+
+fun jacobi_eigen(a_in: list<list<float>>, max_iter: int): EigenResult {
+  let n = len(a_in)
+  var a = a_in
+  var v = zeros_matrix(n, n)
+  var i = 0
+  while i < n {
+    v[i][i] = 1.0
+    i = i + 1
+  }
+  var iter = 0
+  while iter < max_iter {
+    var p = 0
+    var q = 1
+    var max = absf(a[p][q])
+    i = 0
+    while i < n {
+      var j = i + 1
+      while j < n {
+        let val = absf(a[i][j])
+        if val > max {
+          max = val
+          p = i
+          q = j
+        }
+        j = j + 1
+      }
+      i = i + 1
+    }
+    if max < 0.00000001 {
+      break
+    }
+    let app = a[p][p]
+    let aqq = a[q][q]
+    let apq = a[p][q]
+    let theta = (aqq - app) / (2.0 * apq)
+    var t = 1.0 / (absf(theta) + sqrtApprox(theta * theta + 1.0))
+    if theta < 0.0 {
+      t = -t
+    }
+    let c = 1.0 / sqrtApprox(1.0 + t * t)
+    let s = t * c
+    let tau = s / (1.0 + c)
+    a[p][p] = app - t * apq
+    a[q][q] = aqq + t * apq
+    a[p][q] = 0.0
+    a[q][p] = 0.0
+    var k = 0
+    while k < n {
+      if k != p && k != q {
+        let akp = a[k][p]
+        let akq = a[k][q]
+        a[k][p] = akp - s * (akq + tau * akp)
+        a[p][k] = a[k][p]
+        a[k][q] = akq + s * (akp - tau * akq)
+        a[q][k] = a[k][q]
+      }
+      k = k + 1
+    }
+    k = 0
+    while k < n {
+      let vkp = v[k][p]
+      let vkq = v[k][q]
+      v[k][p] = vkp - s * (vkq + tau * vkp)
+      v[k][q] = vkq + s * (vkp - tau * vkq)
+      k = k + 1
+    }
+    iter = iter + 1
+  }
+  var eigenvalues: list<float> = []
+  i = 0
+  while i < n {
+    eigenvalues = append(eigenvalues, a[i][i])
+    i = i + 1
+  }
+  return EigenResult { values: eigenvalues, vectors: v }
+}
+
+fun matmul(a: list<list<float>>, b: list<list<float>>): list<list<float>> {
+  let rows = len(a)
+  let cols = len(b[0])
+  let inner = len(b)
+  var m = zeros_matrix(rows, cols)
+  var i = 0
+  while i < rows {
+    var j = 0
+    while j < cols {
+      var s = 0.0
+      var k = 0
+      while k < inner {
+        s = s + a[i][k] * b[k][j]
+        k = k + 1
+      }
+      m[i][j] = s
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return m
+}
+
+fun sort_eigenpairs(vals: list<float>, vecs: list<list<float>>): EigenResult {
+  let n = len(vals)
+  var values = vals
+  var vectors = vecs
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      if values[j] < values[j + 1] {
+        let tmp = values[j]
+        values[j] = values[j + 1]
+        values[j + 1] = tmp
+        var r = 0
+        while r < len(vectors) {
+          let tv = vectors[r][j]
+          vectors[r][j] = vectors[r][j + 1]
+          vectors[r][j + 1] = tv
+          r = r + 1
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return EigenResult { values: values, vectors: vectors }
+}
+
+fun find_lanczos_eigenvectors(graph: list<list<int>>, k: int): EigenResult {
+  validate_adjacency_list(graph)
+  let res = lanczos_iteration(graph, k)
+  let eig = jacobi_eigen(res.t, 50)
+  let sorted = sort_eigenpairs(eig.values, eig.vectors)
+  let final_vectors = matmul(res.q, sorted.vectors)
+  return EigenResult { values: sorted.values, vectors: final_vectors }
+}
+
+fun list_to_string(arr: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    s = s + str(arr[i])
+    if i < len(arr) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun matrix_to_string(m: list<list<float>>): string {
+  var s = "["
+  var i = 0
+  while i < len(m) {
+    s = s + list_to_string(m[i])
+    if i < len(m) - 1 {
+      s = s + "; "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+let graph: list<list<int>> = [[1, 2], [0, 2], [0, 1]]
+let result = find_lanczos_eigenvectors(graph, 2)
+print(list_to_string(result.values))
+print(matrix_to_string(result.vectors))
