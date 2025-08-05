@@ -1,0 +1,21 @@
+/*
+Implement the NIMPLY logic gate, also known as NOT-IMPLIES.
+
+The gate returns 1 only when the first input is 1 and the second input is 0.
+For all other combinations the result is 0.  This is equivalent to
+A AND NOT B or the negation of (A -> B).  The function expects integer
+inputs of 0 or 1 and produces an integer 0 or 1.  The computation is
+performed in constant time.
+*/
+
+fun nimply_gate(a: int, b: int): int {
+  if a == 1 && b == 0 {
+    return 1
+  }
+  return 0
+}
+
+print(nimply_gate(0, 0))
+print(nimply_gate(0, 1))
+print(nimply_gate(1, 0))
+print(nimply_gate(1, 1))
