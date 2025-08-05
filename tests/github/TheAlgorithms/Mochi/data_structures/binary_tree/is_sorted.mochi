@@ -1,0 +1,67 @@
+/*
+  Validate whether a binary tree satisfies the binary search tree (BST) property.
+
+  The tree is represented using parallel arrays:
+    - data: value stored at each node
+    - left: index of the left child or NONE (-1) if absent
+    - right: index of the right child or NONE (-1) if absent
+
+  A tree is a valid BST when for every node:
+    * the left child contains a smaller value and its subtree is also a BST
+    * the right child contains a larger value and its subtree is also a BST
+
+  The algorithm performs an inorder traversal to display node ordering and
+  recursively verifies the BST property on each subtree.
+  Runtime: O(n) for n nodes; space: O(h) for recursion depth h.
+*/
+
+let NONE = 0 - 1
+
+type Tree { data: list<float>, left: list<int>, right: list<int> }
+
+fun inorder(tree: Tree, index: int): list<float> {
+  var res: list<float> = []
+  if index == NONE { return res }
+  let left_idx = tree.left[index]
+  if left_idx != NONE { res = concat(res, inorder(tree, left_idx)) }
+  res = append(res, tree.data[index])
+  let right_idx = tree.right[index]
+  if right_idx != NONE { res = concat(res, inorder(tree, right_idx)) }
+  return res
+}
+
+fun is_sorted(tree: Tree, index: int): bool {
+  if index == NONE { return true }
+  let left_idx = tree.left[index]
+  if left_idx != NONE {
+    if tree.data[index] < tree.data[left_idx] { return false }
+    if !is_sorted(tree, left_idx) { return false }
+  }
+  let right_idx = tree.right[index]
+  if right_idx != NONE {
+    if tree.data[index] > tree.data[right_idx] { return false }
+    if !is_sorted(tree, right_idx) { return false }
+  }
+  return true
+}
+
+let tree1 = Tree {
+  data: [2.1, 2.0, 2.2],
+  left: [1, NONE, NONE],
+  right: [2, NONE, NONE]
+}
+print("Tree " + str(inorder(tree1, 0)) + " is sorted: " + str(is_sorted(tree1, 0)))
+
+let tree2 = Tree {
+  data: [2.1, 2.0, 2.0],
+  left: [1, NONE, NONE],
+  right: [2, NONE, NONE]
+}
+print("Tree " + str(inorder(tree2, 0)) + " is sorted: " + str(is_sorted(tree2, 0)))
+
+let tree3 = Tree {
+  data: [2.1, 2.0, 2.1],
+  left: [1, NONE, NONE],
+  right: [2, NONE, NONE]
+}
+print("Tree " + str(inorder(tree3, 0)) + " is sorted: " + str(is_sorted(tree3, 0)))
