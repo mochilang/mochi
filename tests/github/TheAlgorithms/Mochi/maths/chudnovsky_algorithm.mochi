@@ -1,0 +1,71 @@
+/*
+Chudnovsky algorithm to compute digits of Pi.
+
+This method expresses Pi via a rapidly converging series based on
+Ramanujan's formulas:
+
+  Pi = 426880 * sqrt(10005) / S
+  S  = sum_{k=0}^{n-1} ( (6k)! * (13591409 + 545140134k) ) /
+       ( (3k)! * (k!)^3 * (-262537412640768000)^k )
+
+Each iteration adds roughly 14 correct digits of Pi.  Factorials and
+large powers grow quickly so this implementation uses floating point
+arithmetic which suffices for moderate precision.
+
+Steps per iteration k:
+1. multinomial = (6k)! / ((3k)! * (k!)^3)
+2. linear     += 545140134
+3. exponential *= -262537412640768000
+4. partial_sum += multinomial * linear / exponential
+
+The function pi(n) computes Pi using ceil(n / 14) iterations.  It
+panics for non-positive n.  A simple Newton method provides square root
+without relying on external libraries.
+*/
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun factorial_float(n: int): float {
+  var result = 1.0
+  var i = 2
+  while i <= n {
+    result = result * (i as float)
+    i = i + 1
+  }
+  return result
+}
+
+fun pi(n: int): float {
+  if n < 1 { panic("Undefined for non-natural numbers") }
+  let iterations = (n + 13) / 14
+  let constant_term = 426880.0 * sqrtApprox(10005.0)
+  var exponential_term = 1.0
+  var linear_term = 13591409.0
+  var partial_sum = linear_term
+  var k = 1
+  while k < iterations {
+    let k6 = 6 * k
+    let k3 = 3 * k
+    let fact6k = factorial_float(k6)
+    let fact3k = factorial_float(k3)
+    let factk = factorial_float(k)
+    let multinomial = fact6k / (fact3k * factk * factk * factk)
+    linear_term = linear_term + 545140134.0
+    exponential_term = exponential_term * (-262537412640768000.0)
+    partial_sum = partial_sum + multinomial * linear_term / exponential_term
+    k = k + 1
+  }
+  return constant_term / partial_sum
+}
+
+let n = 50
+print("The first " + str(n) + " digits of pi is: " + str(pi(n)))
