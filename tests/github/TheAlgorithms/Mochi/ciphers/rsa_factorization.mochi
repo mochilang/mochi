@@ -1,0 +1,70 @@
+/*
+Recover the prime factors of an RSA modulus N when both the public
+exponent e and private exponent d are known.
+
+The algorithm is based on the property that k = d*e - 1 is even.
+For a candidate base g we repeatedly halve k until it becomes odd,
+computing x = g^t mod N each time. If gcd(x - 1, N) yields a nontrivial
+factor, we have found p and q such that p * q = N.
+
+This is a simplified deterministic search over g instead of the random
+choice used in some descriptions. For small RSA examples the first
+suitable g is found quickly.
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 {
+    return -x
+  }
+  return x
+}
+
+fun pow_mod(base: int, exp: int, mod: int): int {
+  var result = 1
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % mod
+    }
+    e = e / 2
+    b = (b * b) % mod
+  }
+  return result
+}
+
+fun rsa_factor(d: int, e: int, n: int): list<int> {
+  let k = d * e - 1
+  var p = 0
+  var q = 0
+  var g = 2
+  while p == 0 && g < n {
+    var t = k
+    while t % 2 == 0 {
+      t = t / 2
+      let x = pow_mod(g, t, n)
+      let y = gcd(x - 1, n)
+      if x > 1 && y > 1 {
+        p = y
+        q = n / y
+        break
+      }
+    }
+    g = g + 1
+  }
+  if p > q {
+    return [q, p]
+  }
+  return [p, q]
+}
+
+print(rsa_factor(3, 16971, 25777))
+print(rsa_factor(7331, 11, 27233))
+print(rsa_factor(4021, 13, 17711))
