@@ -1,0 +1,40 @@
+/*
+Compute the least common multiple (LCM) of two positive integers.
+
+Two strategies are demonstrated:
+1. A naive search that repeatedly adds the larger input until it finds a
+   number divisible by both inputs. This runs in O(lcm/max(a,b)) time.
+2. A fast approach that relies on the mathematical relationship
+   lcm(a,b) = (a / gcd(a,b)) * b.  The greatest common divisor (GCD) is
+   computed using the Euclidean algorithm, which finishes in
+   O(log min(a,b)).
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = if a >= 0 { a } else { -a }
+  var y = if b >= 0 { b } else { -b }
+  while y != 0 {
+    let temp = x % y
+    x = y
+    y = temp
+  }
+  return x
+}
+
+fun lcm_slow(a: int, b: int): int {
+  let max = if a >= b { a } else { b }
+  var multiple = max
+  while (multiple % a != 0) || (multiple % b != 0) {
+    multiple = multiple + max
+  }
+  return multiple
+}
+
+fun lcm_fast(a: int, b: int): int {
+  return (a / gcd(a, b)) * b
+}
+
+print(str(lcm_slow(5, 2)))
+print(str(lcm_slow(12, 76)))
+print(str(lcm_fast(5, 2)))
+print(str(lcm_fast(12, 76)))
