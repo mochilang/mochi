@@ -1,0 +1,51 @@
+/*
+Atbash cipher is a monoalphabetic substitution cipher that maps each letter
+to its reverse position in the alphabet. For the English alphabet this means
+'A' ↔ 'Z', 'B' ↔ 'Y', and so on. This implementation processes an input string,
+replacing each alphabetic character with its counterpart in the reversed
+alphabet while leaving non-alphabetic characters unchanged.
+
+The algorithm scans the string once, so its time complexity is O(n) where n
+is the length of the input. It uses a fixed amount of additional space.
+*/
+
+fun index_of(s: string, c: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == c {
+      return i
+    }
+    i = i + 1
+  }
+  return (-1)
+}
+
+fun atbash(sequence: string): string {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower_rev = "zyxwvutsrqponmlkjihgfedcba"
+  let upper_rev = "ZYXWVUTSRQPONMLKJIHGFEDCBA"
+  var result = ""
+  var i = 0
+  while i < len(sequence) {
+    let ch = sequence[i]
+    let idx = index_of(lower, ch)
+    if idx != (-1) {
+      result = result + lower_rev[idx]
+    } else {
+      let idx2 = index_of(upper, ch)
+        if idx2 != (-1) {
+        result = result + upper_rev[idx2]
+      } else {
+        result = result + ch
+      }
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(atbash("ABCDEFGH"))
+print(atbash("123GGjj"))
+print(atbash("testStringtest"))
+print(atbash("with space"))
