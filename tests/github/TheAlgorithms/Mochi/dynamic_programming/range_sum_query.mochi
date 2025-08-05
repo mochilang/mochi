@@ -1,0 +1,58 @@
+/*
+Range Sum Query with Prefix Sums
+
+Given an array of integers and a list of queries [l, r], compute the sum of
+elements from index l to r inclusive for each query. We precompute a prefix
+sum array where each position stores the sum of all elements up to that index.
+Each query result is obtained in O(1) time as dp[r] - dp[l - 1] (or dp[r] if
+l is 0).
+
+Time Complexity: O(n + q)
+Space Complexity: O(n)
+*/
+
+type Query {
+  left: int
+  right: int
+}
+
+fun prefix_sum(arr: list<int>, queries: list<Query>): list<int> {
+  var dp: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    if i == 0 {
+      dp = append(dp, arr[0])
+    } else {
+      dp = append(dp, dp[i - 1] + arr[i])
+    }
+    i = i + 1
+  }
+  var result: list<int> = []
+  var j = 0
+  while j < len(queries) {
+    let q = queries[j]
+    var sum = dp[q.right]
+    if q.left > 0 {
+      sum = sum - dp[q.left - 1]
+    }
+    result = append(result, sum)
+    j = j + 1
+  }
+  return result
+}
+
+let arr1 = [1, 4, 6, 2, 61, 12]
+let queries1 = [
+  Query { left: 2, right: 5 },
+  Query { left: 1, right: 5 },
+  Query { left: 3, right: 4 }
+]
+print(str(prefix_sum(arr1, queries1)))
+
+let arr2 = [4, 2, 1, 6, 3]
+let queries2 = [
+  Query { left: 3, right: 4 },
+  Query { left: 1, right: 3 },
+  Query { left: 0, right: 2 }
+]
+print(str(prefix_sum(arr2, queries2)))
