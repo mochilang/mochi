@@ -1,0 +1,37 @@
+/*
+Liouville lambda function implementation.
+Given a positive integer n, the Liouville function λ(n) equals 1 if n has an even number of prime factors (with multiplicity) and -1 if the count is odd.
+This program uses trial division in `prime_factors` to list the prime factors of n. The `liouville_lambda` function counts the factors to determine parity.
+*/
+
+fun prime_factors(n: int): list<int> {
+  var i = 2
+  var x = n
+  var factors: list<int> = []
+  while i * i <= x {
+    if x % i == 0 {
+      factors = append(factors, i)
+      x = (x / i) as int
+    } else {
+      i = i + 1
+    }
+  }
+  if x > 1 {
+    factors = append(factors, x)
+  }
+  return factors
+}
+
+fun liouville_lambda(n: int): int {
+  if n < 1 {
+    panic("Input must be a positive integer")
+  }
+  let cnt = len(prime_factors(n))
+  if cnt % 2 == 0 {
+    return 1
+  }
+  return 0 - 1
+}
+
+print(liouville_lambda(10))
+print(liouville_lambda(11))
