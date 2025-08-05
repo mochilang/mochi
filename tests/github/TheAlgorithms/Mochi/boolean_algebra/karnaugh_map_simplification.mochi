@@ -1,0 +1,70 @@
+/*
+Simplify a 2x2 Karnaugh map by generating a sum-of-products expression.
+
+Each cell corresponds to a conjunction of literals A or A' for the row
+and B or B' for the column.  For every cell containing a truthy value
+(non-zero), we append its term.  Finally, terms are joined using " + ".
+
+This routine merely enumerates minterms without performing any further
+algebraic simplification.  The runtime is O(n*m) for an n by m map.
+*/
+
+fun row_string(row: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(row) {
+    s = s + str(row[i])
+    if i < len(row) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun print_kmap(kmap: list<list<int>>) {
+  var i = 0
+  while i < len(kmap) {
+    print(row_string(kmap[i]))
+    i = i + 1
+  }
+}
+
+fun join_terms(terms: list<string>): string {
+  if len(terms) == 0 {
+    return ""
+  }
+  var res = terms[0]
+  var i = 1
+  while i < len(terms) {
+    res = res + " + " + terms[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun simplify_kmap(board: list<list<int>>): string {
+  var terms: list<string> = []
+  var a = 0
+  while a < len(board) {
+    let row = board[a]
+    var b = 0
+    while b < len(row) {
+      let item = row[b]
+      if item != 0 {
+        let term = (if a != 0 { "A" } else { "A'" }) + (if b != 0 { "B" } else { "B'" })
+        terms = append(terms, term)
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  let expr = join_terms(terms)
+  return expr
+}
+
+var kmap = [[0, 1], [1, 1]]
+print_kmap(kmap)
+print("Simplified Expression:")
+print(simplify_kmap(kmap))
