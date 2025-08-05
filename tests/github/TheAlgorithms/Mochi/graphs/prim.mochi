@@ -1,0 +1,169 @@
+/*
+Prim's Algorithm for Minimum Spanning Tree (MST).
+
+The code builds an undirected weighted graph and computes an MST in two ways:
+
+- `prim` uses a simple linear search to select the next vertex with smallest
+  key value.  Its running time is O(mn) for m edges and n vertices.
+- `prim_heap` keeps the frontier in a min-heap (emulated by sorting after each
+  relaxation) yielding O((m + n) log n).
+
+Both return the list of edges (1-based vertex labels) composing the MST.  A
+small sample graph in `test_vector` demonstrates both routines.  The
+implementation is pure Mochi without any FFI and avoids the `any` type.
+*/
+
+let INF = 1000000000
+
+fun connect(graph: map<int, list<list<int>>>, a: int, b: int, w: int): map<int, list<list<int>>> {
+  let u = a - 1
+  let v = b - 1
+  var g: map<int, list<list<int>>> = graph
+  g[u] = append(g[u], [v, w])
+  g[v] = append(g[v], [u, w])
+  return g
+}
+
+fun in_list(arr: list<int>, x: int): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun prim(graph: map<int, list<list<int>>>, s: int, n: int): list<list<int>> {
+  var dist: map<int, int> = {}
+  var parent: map<int, int> = {}
+  dist[s] = 0
+  parent[s] = -1
+  var known: list<int> = []
+  var keys: list<int> = [s]
+  while len(known) < n {
+    var mini = INF
+    var u = -1
+    var i = 0
+    while i < len(keys) {
+      let k = keys[i]
+      let d = dist[k]
+      if !(in_list(known, k)) && d < mini {
+        mini = d
+        u = k
+      }
+      i = i + 1
+    }
+    known = append(known, u)
+    for e in graph[u] {
+      let v = e[0]
+      let w = e[1]
+      if !(in_list(keys, v)) { keys = append(keys, v) }
+      let cur = if v in dist { dist[v] } else { INF }
+      if !(in_list(known, v)) && w < cur {
+        dist[v] = w
+        parent[v] = u
+      }
+    }
+  }
+  var edges: list<list<int>> = []
+  var j = 0
+  while j < len(keys) {
+    let v = keys[j]
+    if v != s {
+      edges = append(edges, [v + 1, parent[v] + 1])
+    }
+    j = j + 1
+  }
+  return edges
+}
+
+fun sort_heap(h: list<int>, dist: map<int, int>): list<int> {
+  var a = h
+  var i = 0
+  while i < len(a) {
+    var j = 0
+    while j < len(a) - i - 1 {
+      let dj = if a[j] in dist { dist[a[j]] } else { INF }
+      let dj1 = if a[j + 1] in dist { dist[a[j + 1]] } else { INF }
+      if dj > dj1 {
+        let t = a[j]
+        a[j] = a[j + 1]
+        a[j + 1] = t
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return a
+}
+
+fun prim_heap(graph: map<int, list<list<int>>>, s: int, n: int): list<list<int>> {
+  var dist: map<int, int> = {}
+  var parent: map<int, int> = {}
+  dist[s] = 0
+  parent[s] = -1
+  var h: list<int> = []
+  var i = 0
+  while i < n {
+    h = append(h, i)
+    i = i + 1
+  }
+  h = sort_heap(h, dist)
+  var known: list<int> = []
+  while len(h) > 0 {
+    let u = h[0]
+    h = slice(h, 1, len(h))
+    known = append(known, u)
+    for e in graph[u] {
+      let v = e[0]
+      let w = e[1]
+      let cur = if v in dist { dist[v] } else { INF }
+      if !(in_list(known, v)) && w < cur {
+        dist[v] = w
+        parent[v] = u
+      }
+    }
+    h = sort_heap(h, dist)
+  }
+  var edges: list<list<int>> = []
+  var j = 0
+  while j < n {
+    if j != s {
+      edges = append(edges, [j + 1, parent[j] + 1])
+    }
+    j = j + 1
+  }
+  return edges
+}
+
+fun print_edges(edges: list<list<int>>) {
+  var i = 0
+  while i < len(edges) {
+    let e = edges[i]
+    print("(" + str(e[0]) + ", " + str(e[1]) + ")")
+    i = i + 1
+  }
+}
+
+fun test_vector() {
+  let x = 5
+  var G: map<int, list<list<int>>> = {}
+  var i = 0
+  while i < x {
+    G[i] = []
+    i = i + 1
+  }
+  G = connect(G, 1, 2, 15)
+  G = connect(G, 1, 3, 12)
+  G = connect(G, 2, 4, 13)
+  G = connect(G, 2, 5, 5)
+  G = connect(G, 3, 2, 6)
+  G = connect(G, 3, 4, 6)
+
+  let mst = prim(G, 0, x)
+  print_edges(mst)
+  let mst_heap = prim_heap(G, 0, x)
+  print_edges(mst_heap)
+}
+
+test_vector()
