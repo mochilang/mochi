@@ -1,0 +1,156 @@
+/*
+Gradient Boosting (XGBoost-like) Classifier
+-------------------------------------------
+This Mochi program implements a minimal gradient boosting classifier using
+decision stumps to emulate the Python example that employs the XGBoost
+library. The model is trained on a small dataset to separate two classes.
+
+Algorithm:
+1. Initialize all predictions to zero.
+2. For each boosting round:
+   a. Compute residuals between true targets and current predictions.
+   b. Find the best decision stump (feature, threshold) that minimizes the
+      squared error of residuals.
+   c. Add the stump's output to the model predictions.
+3. After boosting, classify a sample by summing stump outputs and checking if
+   the result is above 0.5.
+
+This implementation is written in pure Mochi with explicit types so it can
+run on `runtime/vm` without any foreign function interface.
+*/
+
+type Stump {
+  feature: int
+  threshold: float
+  left: float
+  right: float
+}
+
+fun mean(xs: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(xs) {
+    sum = sum + xs[i]
+    i = i + 1
+  }
+  return sum / (len(xs) * 1.0)
+}
+
+fun stump_predict(s: Stump, x: list<float>): float {
+  if x[s.feature] < s.threshold { return s.left }
+  return s.right
+}
+
+fun train_stump(features: list<list<float>>, residuals: list<float>): Stump {
+  var best_feature: int = 0
+  var best_threshold: float = 0.0
+  var best_error: float = 1000000000.0
+  var best_left: float = 0.0
+  var best_right: float = 0.0
+  let num_features: int = len(features[0])
+  var f: int = 0
+  while f < num_features {
+    var i: int = 0
+    while i < len(features) {
+      let threshold: float = features[i][f]
+      var left: list<float> = []
+      var right: list<float> = []
+      var j: int = 0
+      while j < len(features) {
+        if features[j][f] < threshold {
+          left = concat(left, [residuals[j]])
+        } else {
+          right = concat(right, [residuals[j]])
+        }
+        j = j + 1
+      }
+      if len(left) != 0 && len(right) != 0 {
+        let left_mean: float = mean(left)
+        let right_mean: float = mean(right)
+        var err: float = 0.0
+        j = 0
+        while j < len(features) {
+          let pred: float = if features[j][f] < threshold { left_mean } else { right_mean }
+          let diff: float = residuals[j] - pred
+          err = err + diff * diff
+          j = j + 1
+        }
+        if err < best_error {
+          best_error = err
+          best_feature = f
+          best_threshold = threshold
+          best_left = left_mean
+          best_right = right_mean
+        }
+      }
+      i = i + 1
+    }
+    f = f + 1
+  }
+  return Stump { feature: best_feature, threshold: best_threshold, left: best_left, right: best_right }
+}
+
+fun boost(features: list<list<float>>, targets: list<int>, rounds: int): list<Stump> {
+  var model: list<Stump> = []
+  var preds: list<float> = []
+  var i: int = 0
+  while i < len(targets) {
+    preds = concat(preds, [0.0])
+    i = i + 1
+  }
+  var r: int = 0
+  while r < rounds {
+    var residuals: list<float> = []
+    var j: int = 0
+    while j < len(targets) {
+      residuals = concat(residuals, [targets[j] - preds[j]])
+      j = j + 1
+    }
+    let stump: Stump = train_stump(features, residuals)
+    model = concat(model, [stump])
+    j = 0
+    while j < len(preds) {
+      preds[j] = preds[j] + stump_predict(stump, features[j])
+      j = j + 1
+    }
+    r = r + 1
+  }
+  return model
+}
+
+fun predict(model: list<Stump>, x: list<float>): float {
+  var score: float = 0.0
+  var i: int = 0
+  while i < len(model) {
+    let s: Stump = model[i]
+    if x[s.feature] < s.threshold {
+      score = score + s.left
+    } else {
+      score = score + s.right
+    }
+    i = i + 1
+  }
+  return score
+}
+
+fun main() {
+  let features: list<list<float>> = [
+    [5.1, 3.5],
+    [4.9, 3.0],
+    [6.2, 3.4],
+    [5.9, 3.0]
+  ]
+  let targets: list<int> = [0, 0, 1, 1]
+  let model: list<Stump> = boost(features, targets, 3)
+  var out: string = ""
+  var i: int = 0
+  while i < len(features) {
+    let s: float = predict(model, features[i])
+    let label: int = if s >= 0.5 { 1 } else { 0 }
+    if i == 0 { out = str(label) } else { out = out + " " + str(label) }
+    i = i + 1
+  }
+  print(out)
+}
+
+main()
