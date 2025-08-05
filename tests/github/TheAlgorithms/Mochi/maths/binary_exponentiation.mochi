@@ -1,0 +1,89 @@
+/*
+Binary Exponentiation
+
+This algorithm computes a^b in O(log b) time by repeatedly squaring the base
+and halving the exponent. It is commonly used for fast power computation and
+is essential for modular exponentiation in cryptography.
+
+Steps:
+1. For exponent e, if e is odd multiply the result by the current base.
+2. Square the base and divide the exponent by two at each iteration.
+3. Repeat until the exponent reaches zero.
+
+The same idea works recursively and with a modulus, allowing computation of
+(a^b) % m efficiently. Both recursive and iterative forms are implemented
+below using only Mochi's standard features.
+*/
+
+fun binary_exp_recursive(base: float, exponent: int): float {
+  if exponent < 0 {
+    panic("exponent must be non-negative")
+  }
+  if exponent == 0 {
+    return 1.0
+  }
+  if exponent % 2 == 1 {
+    return binary_exp_recursive(base, exponent - 1) * base
+  }
+  let half = binary_exp_recursive(base, exponent / 2)
+  return half * half
+}
+
+fun binary_exp_iterative(base: float, exponent: int): float {
+  if exponent < 0 {
+    panic("exponent must be non-negative")
+  }
+  var result: float = 1.0
+  var b = base
+  var e = exponent
+  while e > 0 {
+    if e % 2 == 1 {
+      result = result * b
+    }
+    b = b * b
+    e = e / 2
+  }
+  return result
+}
+
+fun binary_exp_mod_recursive(base: int, exponent: int, modulus: int): int {
+  if exponent < 0 {
+    panic("exponent must be non-negative")
+  }
+  if modulus <= 0 {
+    panic("modulus must be positive")
+  }
+  if exponent == 0 {
+    return 1 % modulus
+  }
+  if exponent % 2 == 1 {
+    return (binary_exp_mod_recursive(base, exponent - 1, modulus) * (base % modulus)) % modulus
+  }
+  let r = binary_exp_mod_recursive(base, exponent / 2, modulus)
+  return (r * r) % modulus
+}
+
+fun binary_exp_mod_iterative(base: int, exponent: int, modulus: int): int {
+  if exponent < 0 {
+    panic("exponent must be non-negative")
+  }
+  if modulus <= 0 {
+    panic("modulus must be positive")
+  }
+  var result: int = 1 % modulus
+  var b = base % modulus
+  var e = exponent
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % modulus
+    }
+    b = (b * b) % modulus
+    e = e / 2
+  }
+  return result
+}
+
+print(binary_exp_recursive(3.0, 5))
+print(binary_exp_iterative(1.5, 4))
+print(binary_exp_mod_recursive(3, 4, 5))
+print(binary_exp_mod_iterative(11, 13, 7))
