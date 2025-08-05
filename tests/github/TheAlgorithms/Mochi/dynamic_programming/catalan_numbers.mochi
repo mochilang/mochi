@@ -1,0 +1,40 @@
+/*
+Compute the sequence of Catalan numbers using dynamic programming.
+
+Catalan numbers count many combinatorial structures, such as binary trees, Dyck words,
+and ways to correctly match parentheses. They satisfy the recurrence:
+
+    C(0) = 1, C(1) = 1
+    C(n) = sum_{i=0}^{n-1} C(i) * C(n-i-1)
+
+This implementation iteratively builds a list of values from 0 through `upper_limit`.
+Each new Catalan number is computed from previously computed values according to
+the recurrence. The algorithm runs in O(n^2) time and uses O(n) space.
+*/
+
+fun panic(msg: string) {
+  print(msg)
+}
+
+fun catalan_numbers(upper_limit: int): list<int> {
+  if upper_limit < 0 {
+    panic("Limit for the Catalan sequence must be >= 0")
+    return []
+  }
+  var catalans: list<int> = [1]
+  var n = 1
+  while n <= upper_limit {
+    var next_val = 0
+    var j = 0
+    while j < n {
+      next_val = next_val + catalans[j] * catalans[n - j - 1]
+      j = j + 1
+    }
+    catalans = append(catalans, next_val)
+    n = n + 1
+  }
+  return catalans
+}
+
+print(str(catalan_numbers(5)))
+print(str(catalan_numbers(2)))
