@@ -1,0 +1,87 @@
+/*
+Convert a point from rectangular (Cartesian) coordinates to polar form.
+Given the real (x) and imaginary (y) components, the modulus r is
+sqrt(x^2 + y^2) and the angle θ is atan2(y, x) expressed in degrees.
+Both values are rounded to two decimal places.
+
+To avoid external libraries, the implementation uses:
+- Newton's method for square root approximation.
+- A rational approximation for atan and atan2.
+- Manual rounding and degree conversion helpers.
+This matches the Python reference implementation while keeping the code
+pure Mochi.
+*/
+
+let PI = 3.141592653589793
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 {
+    let r = atanApprox(y/x)
+    return r
+  }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y/x) + PI }
+    return atanApprox(y/x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun deg(rad: float): float { return rad * 180.0 / PI }
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun rectangular_to_polar(real: float, img: float): list<float> {
+  let mod = round(sqrtApprox(real*real + img*img), 2)
+  let ang = round(deg(atan2Approx(img, real)), 2)
+  return [mod, ang]
+}
+
+fun show(real: float, img: float) {
+  let r = rectangular_to_polar(real, img)
+  print(str(r))
+}
+
+show(5.0, -5.0)
+show(-1.0, 1.0)
+show(-1.0, -1.0)
+show(0.0000000001, 0.0000000001)
+show(-0.0000000001, 0.0000000001)
+show(9.75, 5.93)
+show(10000.0, 99999.0)
