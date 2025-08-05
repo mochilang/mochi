@@ -1,0 +1,31 @@
+/*
+Compute factorial of a non-negative integer using memoization.
+The recursive relation is n! = n * (n-1)! with base cases 0! = 1 and 1! = 1.
+A global list caches previously computed results so each value is computed at most once.
+This dynamic programming approach runs in O(n) time for new values and uses O(n) space.
+*/
+
+var memo: list<int> = [1, 1]
+
+fun factorial(num: int): int {
+  if num < 0 {
+    print("Number should not be negative.")
+    return 0
+  }
+  var m = memo
+  var i = len(m)
+  while i <= num {
+    m = append(m, i * m[i - 1])
+    i = i + 1
+  }
+  memo = m
+  return m[num]
+}
+
+print(str(factorial(7)))
+factorial(-1)
+var results: list<int> = []
+for i in 0..10 {
+  results = append(results, factorial(i))
+}
+print(str(results))
