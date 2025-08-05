@@ -1,0 +1,65 @@
+/*
+Rotate a singly linked list to the right by a given number of positions.
+
+The list is represented as an array of node values.  Rotating to the right
+by `k` places moves the last `k` nodes to the front while preserving order.
+
+Algorithm:
+1. Compute the list length `n` and reduce `k` modulo `n` so that `0 <= k < n`.
+2. Split the list at index `n - k`.  The suffix starting at this index becomes
+   the new prefix, followed by the original prefix.
+3. Build a new list by concatenating the two segments.
+
+The helper functions allow appending new values and converting the list to a
+"a->b->c" string for display.
+*/
+
+fun list_to_string(xs: list<int>): string {
+  if len(xs) == 0 { return "" }
+  var s = str(xs[0])
+  var i = 1
+  while i < len(xs) {
+    s = s + "->" + str(xs[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun insert_node(xs: list<int>, data: int): list<int> {
+  return append(xs, data)
+}
+
+fun rotate_to_the_right(xs: list<int>, places: int): list<int> {
+  if len(xs) == 0 { panic("The linked list is empty.") }
+  let n = len(xs)
+  var k = places % n
+  if k == 0 { return xs }
+  let split = n - k
+  var res: list<int> = []
+  var i = split
+  while i < n {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  var j = 0
+  while j < split {
+    res = append(res, xs[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  var head: list<int> = []
+  head = insert_node(head, 5)
+  head = insert_node(head, 1)
+  head = insert_node(head, 2)
+  head = insert_node(head, 4)
+  head = insert_node(head, 3)
+  print("Original list: " + list_to_string(head))
+  let places = 3
+  let new_head = rotate_to_the_right(head, places)
+  print("After " + str(places) + " iterations: " + list_to_string(new_head))
+}
+
+main()
