@@ -1,0 +1,87 @@
+/*
+Maximum Area of Island in a Binary Matrix
+
+Given a grid of 0s (water) and 1s (land), an island is a group of
+adjacent land cells connected horizontally or vertically.  The goal is to
+compute the size of the largest island.  We perform a depth‑first search
+from every unvisited land cell, marking cells as seen to avoid revisiting
+and summing the area of each connected component.  The maximum over all
+components is returned.
+
+Algorithm:
+1. Iterate over every cell in the matrix.
+2. When an unvisited land cell is found, launch DFS to explore all
+   reachable land cells.
+3. DFS recursively explores 4‑neighbourhood (up, down, left, right)
+   accumulating the area and marking cells as visited in a map.
+4. Track the maximum area encountered.
+
+Time complexity is O(rows * cols) because each cell is processed at most
+once.  Space complexity is O(rows * cols) for the visited map and call
+stack in the worst case.
+*/
+
+fun encode(row: int, col: int): string {
+  return str(row) + "," + str(col)
+}
+
+fun is_safe(row: int, col: int, rows: int, cols: int): bool {
+  return row >= 0 && row < rows && col >= 0 && col < cols
+}
+
+fun has(seen: map<string, bool>, key: string): bool { return key in seen }
+
+fun depth_first_search(row: int, col: int, seen: map<string, bool>, mat: list<list<int>>): int {
+  let rows = len(mat)
+  let cols = len(mat[0])
+  let key = encode(row, col)
+  if is_safe(row, col, rows, cols) && (!has(seen, key)) && mat[row][col] == 1 {
+    seen[key] = true
+    return 1 +
+      depth_first_search(row + 1, col, seen, mat) +
+      depth_first_search(row - 1, col, seen, mat) +
+      depth_first_search(row, col + 1, seen, mat) +
+      depth_first_search(row, col - 1, seen, mat)
+  } else {
+    return 0
+  }
+}
+
+fun find_max_area(mat: list<list<int>>): int {
+  var seen: map<string, bool> = {}
+  let rows = len(mat)
+  var max_area = 0
+  var r = 0
+  while r < rows {
+    let line = mat[r]
+    let cols = len(line)
+    var c = 0
+    while c < cols {
+      if line[c] == 1 {
+        let key = encode(r, c)
+        if !(key in seen) {
+          let area = depth_first_search(r, c, seen, mat)
+          if area > max_area {
+            max_area = area
+          }
+        }
+      }
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return max_area
+}
+
+let matrix: list<list<int>> = [
+  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0],
+  [0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+]
+
+print(find_max_area(matrix))
