@@ -1,0 +1,108 @@
+/*
+Perform data normalization and standardization.
+
+Normalization scales numeric data to the range [0, 1] using
+    (x - min) / (max - min).
+This removes units and keeps relative differences between values.
+
+Standardization converts data to zero mean and unit variance using
+    (x - mean) / stdev.
+This z-score transformation is useful for algorithms that assume
+normally distributed inputs or equal feature variance.
+
+Both functions accept a list of floats and return the transformed
+values rounded to a specified number of decimal places.
+*/
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  let y = floor(x * m + 0.5) as float
+  return y / m
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun mean(data: list<float>): float {
+  var total = 0.0
+  var i = 0
+  let n = len(data)
+  while i < n {
+    total = total + data[i]
+    i = i + 1
+  }
+  return total / (n as float)
+}
+
+fun stdev(data: list<float>): float {
+  let n = len(data)
+  if n <= 1 {
+    panic("data length must be > 1")
+  }
+  let m = mean(data)
+  var sum_sq = 0.0
+  var i = 0
+  while i < n {
+    let diff = data[i] - m
+    sum_sq = sum_sq + diff * diff
+    i = i + 1
+  }
+  return sqrtApprox(sum_sq / ((n - 1) as float))
+}
+
+fun normalization(data: list<float>, ndigits: int): list<float> {
+  let x_min = min(data) as float
+  let x_max = max(data) as float
+  let denom = x_max - x_min
+  var result: list<float> = []
+  var i = 0
+  let n = len(data)
+  while i < n {
+    let norm = (data[i] - x_min) / denom
+    result = append(result, round(norm, ndigits))
+    i = i + 1
+  }
+  return result
+}
+
+fun standardization(data: list<float>, ndigits: int): list<float> {
+  let mu = mean(data)
+  let sigma = stdev(data)
+  var result: list<float> = []
+  var i = 0
+  let n = len(data)
+  while i < n {
+    let z = (data[i] - mu) / sigma
+    result = append(result, round(z, ndigits))
+    i = i + 1
+  }
+  return result
+}
+
+print(str(normalization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)))
+print(str(normalization([5.0, 10.0, 15.0, 20.0, 25.0], 3)))
+print(str(standardization([2.0, 7.0, 10.0, 20.0, 30.0, 50.0], 3)))
+print(str(standardization([5.0, 10.0, 15.0, 20.0, 25.0], 3)))
