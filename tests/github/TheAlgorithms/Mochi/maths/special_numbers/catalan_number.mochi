@@ -1,0 +1,44 @@
+/*
+Catalan Numbers
+---------------
+The Catalan numbers form a sequence of natural numbers that appear in many
+combinatorial counting problems such as the number of valid expressions of
+n pairs of parentheses or the number of full binary trees with n+1 leaves.
+They can be defined recursively by
+
+  C_1 = 1
+  C_{n+1} = C_n * (4*n + 2) / (n + 2)
+
+This file computes the n-th Catalan number using an iterative formula that
+avoids large factorials:
+
+  current = 1
+  for i from 1 to n-1:
+      current = current * (4*i - 2)
+      current = current / (i + 1)
+
+The algorithm expects a positive integer n and panics if n < 1.  It uses only
+Mochi's core features and runs on runtime/vm without any foreign interfaces.
+*/
+
+fun catalan(n: int): int {
+  if n < 1 {
+    panic("Input value of [number=" + str(n) + "] must be > 0")
+  }
+  var current = 1
+  var i = 1
+  while i < n {
+    current = current * (4 * i - 2)
+    current = (current / (i + 1)) as int
+    i = i + 1
+  }
+  return current
+}
+
+fun main() {
+  if catalan(1) != 1 { panic("catalan(1) should be 1") }
+  if catalan(5) != 14 { panic("catalan(5) should be 14") }
+  print(str(catalan(5)))
+}
+
+main()
