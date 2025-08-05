@@ -1,0 +1,70 @@
+/*
+Euler's Method for Ordinary Differential Equations
+--------------------------------------------------
+This module implements the explicit Euler method for numerically solving
+first-order ordinary differential equations of the form y' = f(x, y).
+Given an initial value y(x0) = y0 and step size h, it iteratively updates:
+
+  y_{k+1} = y_k + h * f(x_k, y_k)
+  x_{k+1} = x_k + h
+
+It returns the list of approximated y values from x0 up to x_end.
+The implementation avoids external libraries and relies on simple loops
+to stay compatible with the Mochi runtime/vm.
+*/
+
+fun ceil_int(x: float): int {
+  var n = x as int
+  if float(n) < x {
+    n = n + 1
+  }
+  return n
+}
+
+fun explicit_euler(
+  ode_func: fun(float, float): float,
+  y0: float,
+  x0: float,
+  step_size: float,
+  x_end: float
+): list<float> {
+  let n = ceil_int((x_end - x0) / step_size)
+  var y: list<float> = []
+  var i = 0
+  while i <= n {
+    y = append(y, 0.0)
+    i = i + 1
+  }
+  y[0] = y0
+  var x = x0
+  var k = 0
+  while k < n {
+    y[k + 1] = y[k] + step_size * ode_func(x, y[k])
+    x = x + step_size
+    k = k + 1
+  }
+  return y
+}
+
+fun abs_float(a: float): float {
+  if a < 0.0 { return -a }
+  return a
+}
+
+fun test_explicit_euler() {
+  let f = fun(x: float, y: float): float => y
+  let ys = explicit_euler(f, 1.0, 0.0, 0.01, 5.0)
+  let last = ys[len(ys) - 1]
+  if abs_float(last - 144.77277243257308) > 0.001 {
+    panic("explicit_euler failed")
+  }
+}
+
+fun main() {
+  test_explicit_euler()
+  let f = fun(x: float, y: float): float => y
+  let ys = explicit_euler(f, 1.0, 0.0, 0.01, 5.0)
+  print(ys[len(ys) - 1])
+}
+
+main()
