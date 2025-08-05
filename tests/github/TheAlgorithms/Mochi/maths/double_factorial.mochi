@@ -1,0 +1,66 @@
+/*
+Double Factorial
+----------------
+The double factorial of a non-negative integer n, written n!!, is the product
+of integers from n down to 1 that have the same parity as n.  Examples:
+  7!! = 7 * 5 * 3 * 1
+  6!! = 6 * 4 * 2
+
+This file provides two implementations:
+1. double_factorial_recursive(n): uses the relation n!! = n * (n-2)!! with
+   base cases 0!! = 1 and 1!! = 1.  It panics if n is negative.
+2. double_factorial_iterative(n): computes the same value using a loop that
+   multiplies every second integer, also panicking for negative inputs.
+
+Both functions avoid foreign interfaces so they can run on runtime/vm.  A simple
+test suite compares the two implementations and checks known values.
+*/
+
+fun double_factorial_recursive(n: int): int {
+  if n < 0 {
+    panic("double_factorial_recursive() not defined for negative values")
+  }
+  if n <= 1 {
+    return 1
+  }
+  return n * double_factorial_recursive(n - 2)
+}
+
+fun double_factorial_iterative(n: int): int {
+  if n < 0 {
+    panic("double_factorial_iterative() not defined for negative values")
+  }
+  var result = 1
+  var i = n
+  while i > 0 {
+    result = result * i
+    i = i - 2
+  }
+  return result
+}
+
+fun test_double_factorial() {
+  if double_factorial_recursive(0) != 1 { panic("0!! recursive failed") }
+  if double_factorial_iterative(0) != 1 { panic("0!! iterative failed") }
+  if double_factorial_recursive(1) != 1 { panic("1!! recursive failed") }
+  if double_factorial_iterative(1) != 1 { panic("1!! iterative failed") }
+  if double_factorial_recursive(5) != 15 { panic("5!! recursive failed") }
+  if double_factorial_iterative(5) != 15 { panic("5!! iterative failed") }
+  if double_factorial_recursive(6) != 48 { panic("6!! recursive failed") }
+  if double_factorial_iterative(6) != 48 { panic("6!! iterative failed") }
+
+  var n = 0
+  while n <= 10 {
+    if double_factorial_recursive(n) != double_factorial_iterative(n) {
+      panic("double factorial mismatch")
+    }
+    n = n + 1
+  }
+}
+
+fun main() {
+  test_double_factorial()
+  print(double_factorial_iterative(10))
+}
+
+main()
