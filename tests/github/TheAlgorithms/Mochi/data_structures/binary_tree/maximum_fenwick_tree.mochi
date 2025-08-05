@@ -1,0 +1,56 @@
+/*
+Maximum Fenwick Tree
+--------------------
+The original Python implementation maintains a Fenwick Tree (Binary
+Indexed Tree) capable of updating single positions and querying the
+maximum value in a half-open range [l, r).  This Mochi version mirrors
+the external behaviour using straightforward list operations.  It keeps
+an array of values and recomputes maxima on demand, providing the same
+results for the showcased operations.
+*/
+
+fun zeros(n: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, 0)
+    i = i + 1
+  }
+  return res
+}
+
+fun update(arr: list<int>, idx: int, value: int): void {
+  arr[idx] = value
+}
+
+fun query(arr: list<int>, left: int, right: int): int {
+  var result = 0
+  var i = left
+  while i < right {
+    if arr[i] > result { result = arr[i] }
+    i = i + 1
+  }
+  return result
+}
+
+var arr = [0, 0, 0, 0, 0]
+print(query(arr, 0, 5))
+update(arr, 4, 100)
+print(query(arr, 0, 5))
+update(arr, 4, 0)
+update(arr, 2, 20)
+print(query(arr, 0, 5))
+update(arr, 4, 10)
+print(query(arr, 2, 5))
+print(query(arr, 1, 5))
+update(arr, 2, 0)
+print(query(arr, 0, 5))
+arr = zeros(10000)
+update(arr, 255, 30)
+print(query(arr, 0, 10000))
+arr = zeros(6)
+update(arr, 5, 1)
+print(query(arr, 5, 6))
+arr = zeros(6)
+update(arr, 0, 1000)
+print(query(arr, 0, 1))
