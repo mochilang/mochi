@@ -1,0 +1,39 @@
+/*
+Apply the sigmoid function element-wise to a vector of real numbers.
+The sigmoid function 1 / (1 + e^{-x}) maps any real input to the (0,1)
+interval, commonly used for probability-like outputs in machine
+learning and logistic regression.
+
+This implementation approximates the exponential e^x using the first
+ten terms of its Taylor series to stay within pure Mochi without
+foreign function interfaces. The algorithm runs in O(n * k) time where
+n is the vector length and k is the number of series terms (fixed at
+10 here), and uses O(n) additional space for the result vector.
+*/
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i = 1
+  while i <= 10 {
+    term = term * x / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun sigmoid(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let v = vector[i]
+    let s = 1.0 / (1.0 + exp_approx(-v))
+    result = append(result, s)
+    i = i + 1
+  }
+  return result
+}
+
+print(str(sigmoid([-1.0, 1.0, 2.0])))
+print(str(sigmoid([0.0])))
