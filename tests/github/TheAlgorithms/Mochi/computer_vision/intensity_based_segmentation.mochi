@@ -1,0 +1,52 @@
+/*
+Intensity-based segmentation divides a grayscale image into discrete
+regions using a set of thresholds.  For each pixel we count how many
+thresholds its intensity exceeds and assign that count as the label.
+This mimics the Python implementation from TheAlgorithms and produces a
+labeled image where higher intensities receive larger labels.
+
+The procedure iterates over every pixel and compares it with each
+threshold.  If the pixel value is greater than a threshold, the label is
+updated to the index of that threshold + 1.  The algorithm therefore has
+O(h * w * t) time complexity where h×w is the image size and t is the
+number of thresholds.  Space complexity is O(h * w) for the output
+segmented image.
+*/
+
+fun segment_image(image: list<list<int>>, thresholds: list<int>): list<list<int>> {
+  var segmented: list<list<int>> = []
+  var i = 0
+  while i < len(image) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(image[i]) {
+      let pixel = image[i][j]
+      var label = 0
+      var k = 0
+      while k < len(thresholds) {
+        if pixel > thresholds[k] {
+          label = k + 1
+        }
+        k = k + 1
+      }
+      row = append(row, label)
+      j = j + 1
+    }
+    segmented = append(segmented, row)
+    i = i + 1
+  }
+  return segmented
+}
+
+fun main() {
+  let image = [
+    [80, 120, 180],
+    [40, 90, 150],
+    [20, 60, 100],
+  ]
+  let thresholds = [50, 100, 150]
+  let segmented = segment_image(image, thresholds)
+  print(segmented)
+}
+
+main()
