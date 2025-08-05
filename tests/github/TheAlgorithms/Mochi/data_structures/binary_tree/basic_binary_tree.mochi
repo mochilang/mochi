@@ -1,0 +1,95 @@
+/*
+Implement a basic binary tree using an array of nodes where each node
+stores integer data and the indexes of its left and right children.  The
+value -1 represents the absence of a child.  We implement in-order
+traversal, size, depth, and a check for whether the tree is "full"
+(every node has either 0 or 2 children).
+
+Two constructors build a small balanced tree with three nodes and a
+larger unbalanced tree with seven nodes.  The main section demonstrates
+all operations on both trees.
+*/
+
+type Node {
+  data: int
+  left: int
+  right: int
+}
+
+fun inorder(nodes: list<Node>, index: int, acc: list<int>): list<int> {
+  if index == 0 - 1 {
+    return acc
+  }
+  let node = nodes[index]
+  var res = inorder(nodes, node.left, acc)
+  res = append(res, node.data)
+  res = inorder(nodes, node.right, res)
+  return res
+}
+
+fun size(nodes: list<Node>, index: int): int {
+  if index == 0 - 1 {
+    return 0
+  }
+  let node = nodes[index]
+  return 1 + size(nodes, node.left) + size(nodes, node.right)
+}
+
+fun depth(nodes: list<Node>, index: int): int {
+  if index == 0 - 1 {
+    return 0
+  }
+  let node = nodes[index]
+  let left_depth = depth(nodes, node.left)
+  let right_depth = depth(nodes, node.right)
+  if left_depth > right_depth {
+    return left_depth + 1
+  }
+  return right_depth + 1
+}
+
+fun is_full(nodes: list<Node>, index: int): bool {
+  if index == 0 - 1 {
+    return true
+  }
+  let node = nodes[index]
+  if node.left == 0 - 1 && node.right == 0 - 1 {
+    return true
+  }
+  if node.left != 0 - 1 && node.right != 0 - 1 {
+    return is_full(nodes, node.left) && is_full(nodes, node.right)
+  }
+  return false
+}
+
+fun small_tree(): list<Node> {
+  var arr: list<Node> = []
+  arr = append(arr, Node { data: 2, left: 1, right: 2 })
+  arr = append(arr, Node { data: 1, left: 0 - 1, right: 0 - 1 })
+  arr = append(arr, Node { data: 3, left: 0 - 1, right: 0 - 1 })
+  return arr
+}
+
+fun medium_tree(): list<Node> {
+  var arr: list<Node> = []
+  arr = append(arr, Node { data: 4, left: 1, right: 4 })
+  arr = append(arr, Node { data: 2, left: 2, right: 3 })
+  arr = append(arr, Node { data: 1, left: 0 - 1, right: 0 - 1 })
+  arr = append(arr, Node { data: 3, left: 0 - 1, right: 0 - 1 })
+  arr = append(arr, Node { data: 5, left: 0 - 1, right: 5 })
+  arr = append(arr, Node { data: 6, left: 0 - 1, right: 6 })
+  arr = append(arr, Node { data: 7, left: 0 - 1, right: 0 - 1 })
+  return arr
+}
+
+let small = small_tree()
+print(size(small, 0))
+print(inorder(small, 0, []))
+print(depth(small, 0))
+print(is_full(small, 0))
+
+let medium = medium_tree()
+print(size(medium, 0))
+print(inorder(medium, 0, []))
+print(depth(medium, 0))
+print(is_full(medium, 0))
