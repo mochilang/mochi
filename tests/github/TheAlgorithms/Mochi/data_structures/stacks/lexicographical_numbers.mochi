@@ -1,0 +1,50 @@
+/*
+Generate numbers in lexicographical order up to a given maximum.
+
+This implementation mirrors TheAlgorithms/Python approach. It performs a
+depth-first traversal using an explicit stack. Starting with 1 on the stack,
+it repeatedly pops numbers, skipping any greater than the limit. After outputting
+an accepted number it pushes its next sibling (num + 1) when the last digit is
+not 9, and pushes its first child (num * 10). This explores numbers in
+pre-order, yielding the sequence 1, 10, 11, ... in lexicographical order.
+
+Time complexity: O(n) for max_number = n. Space complexity: O(log n).
+*/
+
+fun lexical_order(max_number: int): list<int> {
+  var result = [] as list<int>
+  var stack = [1] as list<int>
+  while len(stack) > 0 {
+    let idx = len(stack) - 1
+    let num = stack[idx]
+    stack = stack[0:idx]
+    if num > max_number {
+      continue
+    }
+    result = append(result, num)
+    if num % 10 != 9 {
+      stack = append(stack, num + 1)
+    }
+    stack = append(stack, num * 10)
+  }
+  return result
+}
+
+fun join_ints(xs: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 {
+      res = res + " "
+    }
+    res = res + str(xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+print(join_ints(lexical_order(13)))
+print(str(lexical_order(1)))
+print(join_ints(lexical_order(20)))
+print(join_ints(lexical_order(25)))
+print(str(lexical_order(12)))
