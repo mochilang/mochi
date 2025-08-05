@@ -1,0 +1,97 @@
+/*
+Gale-Shapley Stable Matching on a bipartite graph.
+Given preference lists for two groups (donors and recipients),
+find a pairing where no donor and recipient would prefer each other
+over their current match. Each donor proposes to recipients in order of
+preference.  A recipient accepts the new proposal if they are currently
+unmatched or prefer the new donor over their existing match.
+The algorithm runs in O(n^2) time for n donors/recipients.
+*/
+
+fun index_of(xs: list<int>, x: int): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun remove_item(xs: list<int>, x: int): list<int> {
+  var res: list<int> = []
+  var removed = false
+  var i = 0
+  while i < len(xs) {
+    if !removed && xs[i] == x {
+      removed = true
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun stable_matching(donor_pref: list<list<int>>, recipient_pref: list<list<int>>): list<int> {
+  if len(donor_pref) != len(recipient_pref) { panic("unequal groups") }
+  let n = len(donor_pref)
+
+  var unmatched: list<int> = []
+  var i = 0
+  while i < n {
+    unmatched = append(unmatched, i)
+    i = i + 1
+  }
+
+  var donor_record: list<int> = []
+  i = 0
+  while i < n {
+    donor_record = append(donor_record, -1)
+    i = i + 1
+  }
+
+  var rec_record: list<int> = []
+  i = 0
+  while i < n {
+    rec_record = append(rec_record, -1)
+    i = i + 1
+  }
+
+  var num_donations: list<int> = []
+  i = 0
+  while i < n {
+    num_donations = append(num_donations, 0)
+    i = i + 1
+  }
+
+  while len(unmatched) > 0 {
+    let donor = unmatched[0]
+    let donor_preference = donor_pref[donor]
+    let recipient = donor_preference[num_donations[donor]]
+    num_donations[donor] = num_donations[donor] + 1
+    let rec_preference = recipient_pref[recipient]
+    let prev_donor = rec_record[recipient]
+
+    if prev_donor != 0 - 1 {
+      let prev_index = index_of(rec_preference, prev_donor)
+      let new_index = index_of(rec_preference, donor)
+      if prev_index > new_index {
+        rec_record[recipient] = donor
+        donor_record[donor] = recipient
+        unmatched = append(unmatched, prev_donor)
+        unmatched = remove_item(unmatched, donor)
+      }
+    } else {
+      rec_record[recipient] = donor
+      donor_record[donor] = recipient
+      unmatched = remove_item(unmatched, donor)
+    }
+  }
+  return donor_record
+}
+
+let donor_pref: list<list<int>> = [[0, 1, 3, 2], [0, 2, 3, 1], [1, 0, 2, 3], [0, 3, 1, 2]]
+let recipient_pref: list<list<int>> = [[3, 1, 2, 0], [3, 1, 0, 2], [0, 3, 1, 2], [1, 0, 3, 2]]
+print(str(stable_matching(donor_pref, recipient_pref)))
