@@ -1,0 +1,99 @@
+/*
+Implement a queue using a simple list.
+
+The queue stores elements in a list where the head represents the
+front of the queue. Adding an element (`put`) appends it to the tail.
+Removing an element (`get`) takes the first item and shifts the
+remaining elements one position to the left. `rotate` moves the front
+element to the back a specified number of times, effectively
+rotating the queue. `get_front` returns the element at the front
+without removing it. These operations together emulate the behavior
+of a classical FIFO queue.
+*/
+
+type Queue { entries: list<int> }
+
+type GetResult { queue: Queue, value: int }
+
+fun new_queue(items: list<int>): Queue {
+  return Queue{ entries: items }
+}
+
+fun len_queue(q: Queue): int {
+  return len(q.entries)
+}
+
+fun str_queue(q: Queue): string {
+  var s = "Queue(("
+  var i = 0
+  while i < len(q.entries) {
+    s = s + str(q.entries[i])
+    if i < len(q.entries) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  s = s + "))"
+  return s
+}
+
+fun put(q: Queue, item: int): Queue {
+  var e = q.entries
+  e = append(e, item)
+  return Queue{ entries: e }
+}
+
+fun get(q: Queue): GetResult {
+  if len(q.entries) == 0 {
+    panic("Queue is empty")
+  }
+  let value = q.entries[0]
+  var new_entries: list<int> = []
+  var i = 1
+  while i < len(q.entries) {
+    new_entries = append(new_entries, q.entries[i])
+    i = i + 1
+  }
+  return GetResult{ queue: Queue{ entries: new_entries }, value: value }
+}
+
+fun rotate(q: Queue, rotation: int): Queue {
+  var e = q.entries
+  var r = 0
+  while r < rotation {
+    if len(e) > 0 {
+      let first = e[0]
+      var rest: list<int> = []
+      var i = 1
+      while i < len(e) {
+        rest = append(rest, e[i])
+        i = i + 1
+      }
+      rest = append(rest, first)
+      e = rest
+    }
+    r = r + 1
+  }
+  return Queue{ entries: e }
+}
+
+fun get_front(q: Queue): int {
+  return q.entries[0]
+}
+
+var q = new_queue([])
+print(len_queue(q))
+q = put(q, 10)
+q = put(q, 20)
+q = put(q, 30)
+q = put(q, 40)
+print(str_queue(q))
+let res = get(q)
+q = res.queue
+print(res.value)
+print(str_queue(q))
+q = rotate(q, 2)
+print(str_queue(q))
+let front = get_front(q)
+print(front)
+print(str_queue(q))
