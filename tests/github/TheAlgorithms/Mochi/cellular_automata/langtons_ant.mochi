@@ -1,0 +1,80 @@
+/*
+Langton's Ant Simulation
+------------------------
+Langton's Ant is a two-dimensional universal Turing machine.  The ant
+moves on a grid of white and black cells following two simple rules:
+
+1. If the ant is on a white cell it turns 90 degrees to the right,
+   flips the cell to black, then moves forward one step.
+2. If the ant is on a black cell it turns 90 degrees to the left,
+   flips the cell to white, then moves forward one step.
+
+The board starts entirely white.  Despite the simplicity of the rules
+this system exhibits complex emergent behaviour.  The algorithm below
+simulates the ant for a given number of steps and returns the final
+state of the board.  The simulation runs in O(steps) time with
+O(width*height) space for the board.
+*/
+
+fun create_board(width: int, height: int): list<list<bool>> {
+  var board: list<list<bool>> = []
+  var i = 0
+  while i < height {
+    var row: list<bool> = []
+    var j = 0
+    while j < width {
+      row = append(row, true)
+      j = j + 1
+    }
+    board = append(board, row)
+    i = i + 1
+  }
+  return board
+}
+
+fun move_ant(board: list<list<bool>>, x: int, y: int, direction: int): list<int> {
+  if board[x][y] {
+    direction = (direction + 1) % 4
+  } else {
+    direction = (direction + 3) % 4
+  }
+  let old_x = x
+  let old_y = y
+  if direction == 0 {
+    x = x - 1
+  } else if direction == 1 {
+    y = y + 1
+  } else if direction == 2 {
+    x = x + 1
+  } else {
+    y = y - 1
+  }
+  board[old_x][old_y] = !board[old_x][old_y]
+  return [x, y, direction]
+}
+
+fun langtons_ant(width: int, height: int, steps: int): list<list<bool>> {
+  var board = create_board(width, height)
+  var x = width / 2
+  var y = height / 2
+  var dir = 3
+  var s = 0
+  while s < steps {
+    let state = move_ant(board, x, y, dir)
+    x = state[0]
+    y = state[1]
+    dir = state[2]
+    s = s + 1
+  }
+  return board
+}
+
+test "first move" {
+  let board = langtons_ant(2, 2, 1)
+  expect board == [[true,true], [true,false]]
+}
+
+test "second move" {
+  let board = langtons_ant(2, 2, 2)
+  expect board == [[true,false], [true,false]]
+}
