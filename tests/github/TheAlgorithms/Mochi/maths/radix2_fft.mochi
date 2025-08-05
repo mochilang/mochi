@@ -1,0 +1,203 @@
+/*
+Radix-2 FFT Polynomial Multiplication
+-------------------------------------
+Multiplies two polynomials using a radix-2 Cooley-Tukey fast Fourier
+transform. Coefficients are given in increasing order of powers.
+
+Algorithm steps:
+1. Pad both input coefficient lists to the next power of two greater than
+   their combined length.
+2. Compute the discrete Fourier transform (DFT) of each list using a
+   recursive radix-2 FFT with complex roots of unity.
+3. Multiply the corresponding values of the two DFTs pointwise.
+4. Apply the inverse FFT to obtain coefficient values of the product.
+5. Round real parts to eight decimal places and trim any trailing zeros.
+
+Time complexity is O(n log n) where n is the chosen power-of-two length.
+The implementation is written entirely in Mochi without FFI or the "any"
+type and provides simple complex-number and trigonometric utilities.
+*/
+
+type Complex = { re: float, im: float }
+
+fun c_add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun c_sub(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re - b.re, im: a.im - b.im }
+}
+
+fun c_mul(a: Complex, b: Complex): Complex {
+  return Complex {
+    re: a.re * b.re - a.im * b.im,
+    im: a.re * b.im + a.im * b.re
+  }
+}
+
+fun c_mul_scalar(a: Complex, s: float): Complex {
+  return Complex { re: a.re * s, im: a.im * s }
+}
+
+fun c_div_scalar(a: Complex, s: float): Complex {
+  return Complex { re: a.re / s, im: a.im / s }
+}
+
+let PI: float = 3.141592653589793
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun exp_i(theta: float): Complex {
+  return Complex { re: cos_taylor(theta), im: sin_taylor(theta) }
+}
+
+fun make_complex_list(n: int, value: Complex): list<Complex> {
+  var arr: list<Complex> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun fft(a: list<Complex>, invert: bool): list<Complex> {
+  let n = len(a)
+  if n == 1 {
+    return [a[0]]
+  }
+  var a0: list<Complex> = []
+  var a1: list<Complex> = []
+  var i = 0
+  while i < n / 2 {
+    a0 = append(a0, a[2 * i])
+    a1 = append(a1, a[2 * i + 1])
+    i = i + 1
+  }
+  let y0 = fft(a0, invert)
+  let y1 = fft(a1, invert)
+  let angle = 2.0 * PI / (n as float) * (if invert { -1.0 } else { 1.0 })
+  var w = Complex { re: 1.0, im: 0.0 }
+  let wn = exp_i(angle)
+  var y: list<Complex> = make_complex_list(n, Complex { re: 0.0, im: 0.0 })
+  i = 0
+  while i < n / 2 {
+    let t = c_mul(w, y1[i])
+    let u = y0[i]
+    var even = c_add(u, t)
+    var odd = c_sub(u, t)
+    if invert {
+      even = c_div_scalar(even, 2.0)
+      odd = c_div_scalar(odd, 2.0)
+    }
+    y[i] = even
+    y[i + n / 2] = odd
+    w = c_mul(w, wn)
+    i = i + 1
+  }
+  return y
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round_to(x: float, ndigits: int): float {
+  let m = pow10(ndigits)
+  return floor(x * m + 0.5) / m
+}
+
+fun list_to_string(l: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(l) {
+    s = s + str(l[i])
+    if i + 1 < len(l) {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun multiply_poly(a: list<float>, b: list<float>): list<float> {
+  var n = 1
+  while n < len(a) + len(b) - 1 {
+    n = n * 2
+  }
+  var fa = make_complex_list(n, Complex { re: 0.0, im: 0.0 })
+  var fb = make_complex_list(n, Complex { re: 0.0, im: 0.0 })
+  var i = 0
+  while i < len(a) {
+    fa[i] = Complex { re: a[i], im: 0.0 }
+    i = i + 1
+  }
+  i = 0
+  while i < len(b) {
+    fb[i] = Complex { re: b[i], im: 0.0 }
+    i = i + 1
+  }
+  fa = fft(fa, false)
+  fb = fft(fb, false)
+  i = 0
+  while i < n {
+    fa[i] = c_mul(fa[i], fb[i])
+    i = i + 1
+  }
+  fa = fft(fa, true)
+  var res: list<float> = []
+  i = 0
+  while i < len(a) + len(b) - 1 {
+    let val = fa[i]
+    res = append(res, round_to(val.re, 8))
+    i = i + 1
+  }
+  while len(res) > 0 && res[len(res) - 1] == 0.0 {
+    res = res[0:len(res) - 1]
+  }
+  return res
+}
+
+let A: list<float> = [0.0, 1.0, 0.0, 2.0]
+let B: list<float> = [2.0, 3.0, 4.0, 0.0]
+let product = multiply_poly(A, B)
+print(list_to_string(product))
