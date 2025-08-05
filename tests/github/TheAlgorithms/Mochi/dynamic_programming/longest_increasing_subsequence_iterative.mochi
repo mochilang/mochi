@@ -1,0 +1,70 @@
+/*
+Find the longest non-decreasing subsequence of a list of integers using
+an iterative dynamic programming approach.
+
+For each position i in the input array, we maintain the longest
+non-decreasing subsequence ending at i. Initially, each position holds a
+subsequence containing just its element. For every i, we examine all
+previous positions j < i. If array[j] <= array[i] and extending the
+subsequence at j yields a longer subsequence than the current one at i,
+we copy the subsequence from j and append array[i].
+
+After processing all elements, the longest subsequence overall is the
+answer. This algorithm runs in O(n^2) time and requires O(n^2) space for
+storing intermediate subsequences.
+*/
+
+fun copy_list(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun longest_subsequence(arr: list<int>): list<int> {
+  let n = len(arr)
+  var lis: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var single: list<int> = []
+    single = append(single, arr[i])
+    lis = append(lis, single)
+    i = i + 1
+  }
+  i = 1
+  while i < n {
+    var prev = 0
+    while prev < i {
+      if arr[prev] <= arr[i] && len(lis[prev]) + 1 > len(lis[i]) {
+        let temp = copy_list(lis[prev])
+        let temp2 = append(temp, arr[i])
+        lis[i] = temp2
+      }
+      prev = prev + 1
+    }
+    i = i + 1
+  }
+  var result: list<int> = []
+  i = 0
+  while i < n {
+    if len(lis[i]) > len(result) {
+      result = lis[i]
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  print(str(longest_subsequence([10, 22, 9, 33, 21, 50, 41, 60, 80])))
+  print(str(longest_subsequence([4, 8, 7, 5, 1, 12, 2, 3, 9])))
+  print(str(longest_subsequence([9, 8, 7, 6, 5, 7])))
+  print(str(longest_subsequence([28, 26, 12, 23, 35, 39])))
+  print(str(longest_subsequence([1, 1, 1])))
+  print(str(longest_subsequence([] as list<int>)))
+}
+
+main()
