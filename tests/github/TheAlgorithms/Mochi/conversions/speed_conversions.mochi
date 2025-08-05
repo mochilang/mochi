@@ -1,0 +1,74 @@
+/*
+Convert between common speed units without external libraries.
+
+The algorithm stores two conversion tables indexed by the unit names:
+- `speed_chart` converts a value from a given unit to kilometers per hour.
+- `speed_chart_inverse` converts a value from kilometers per hour to the
+  desired target unit.
+
+To convert from `unit_from` to `unit_to`, the input speed is multiplied by
+`speed_chart[unit_from]` to obtain km/h and then by `speed_chart_inverse[unit_to]`
+for the final unit.  A helper performs a simple rounding to three decimals by
+multiplying, adding 0.5, truncating, and dividing.  This mirrors the Python
+implementation and runs in constant time.
+*/
+
+let units: list<string> = ["km/h", "m/s", "mph", "knot"]
+let speed_chart: list<float> = [1.0, 3.6, 1.609344, 1.852]
+let speed_chart_inverse: list<float> = [1.0, 0.277777778, 0.621371192, 0.539956803]
+
+fun index_of(arr: list<string>, value: string): int {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == value {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun units_string(arr: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(arr) {
+    if i > 0 {
+      s = s + ", "
+    }
+    s = s + arr[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun round3(x: float): float {
+  let y = x * 1000.0 + 0.5
+  let z = y as int
+  let zf = z as float
+  return zf / 1000.0
+}
+
+fun convert_speed(speed: float, unit_from: string, unit_to: string): float {
+  let from_index = index_of(units, unit_from)
+  let to_index = index_of(units, unit_to)
+  if from_index < 0 || to_index < 0 {
+    let msg = "Incorrect 'from_type' or 'to_type' value: " + unit_from + ", " + unit_to + "\nValid values are: " + units_string(units)
+    panic(msg)
+  }
+  let result = speed * speed_chart[from_index] * speed_chart_inverse[to_index]
+  let r = round3(result)
+  return r
+}
+
+print(str(convert_speed(100.0, "km/h", "m/s")))
+print(str(convert_speed(100.0, "km/h", "mph")))
+print(str(convert_speed(100.0, "km/h", "knot")))
+print(str(convert_speed(100.0, "m/s", "km/h")))
+print(str(convert_speed(100.0, "m/s", "mph")))
+print(str(convert_speed(100.0, "m/s", "knot")))
+print(str(convert_speed(100.0, "mph", "km/h")))
+print(str(convert_speed(100.0, "mph", "m/s")))
+print(str(convert_speed(100.0, "mph", "knot")))
+print(str(convert_speed(100.0, "knot", "km/h")))
+print(str(convert_speed(100.0, "knot", "m/s")))
+print(str(convert_speed(100.0, "knot", "mph")))
