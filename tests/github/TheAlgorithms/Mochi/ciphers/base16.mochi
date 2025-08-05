@@ -1,0 +1,66 @@
+/*
+Base16 (hexadecimal) encoding and decoding.
+
+Base16 encoding converts each byte into two hexadecimal digits using an
+uppercase alphabet. Decoding performs the inverse transformation by
+processing the string two characters at a time and turning each pair of
+hex digits back into the original byte.
+
+The decode function validates that the input length is even and that all
+characters are valid uppercase hexadecimal digits; otherwise it panics
+with an explanatory message. Both routines run in O(n) time over their
+respective inputs.
+*/
+
+fun base16_encode(data: list<int>): string {
+  let digits = "0123456789ABCDEF"
+  var res = ""
+  var i = 0
+  while i < len(data) {
+    let b = data[i]
+    if b < 0 || b > 255 { panic("byte out of range") }
+    let hi = b / 16
+    let lo = b % 16
+    res = res + digits[hi:hi+1] + digits[lo:lo+1]
+    i = i + 1
+  }
+  return res
+}
+
+fun base16_decode(data: string): list<int> {
+  let digits = "0123456789ABCDEF"
+  if len(data) % 2 != 0 {
+    panic("Base16 encoded data is invalid: Data does not have an even number of hex digits.")
+  }
+  fun hex_value(ch: string): int {
+    var j = 0
+    while j < 16 {
+      if digits[j:j+1] == ch { return j }
+      j = j + 1
+    }
+    return -1
+  }
+  var out: list<int> = []
+  var i = 0
+  while i < len(data) {
+    let hi_char = data[i:i+1]
+    let lo_char = data[i+1:i+2]
+    let hi = hex_value(hi_char)
+    let lo = hex_value(lo_char)
+    if hi < 0 || lo < 0 {
+      panic("Base16 encoded data is invalid: Data is not uppercase hex or it contains invalid characters.")
+    }
+    out = append(out, hi * 16 + lo)
+    i = i + 2
+  }
+  return out
+}
+
+let example1 = [72,101,108,108,111,32,87,111,114,108,100,33]
+let example2 = [72,69,76,76,79,32,87,79,82,76,68,33]
+print(base16_encode(example1))
+print(base16_encode(example2))
+print(base16_encode([]))
+print(str(base16_decode("48656C6C6F20576F726C6421")))
+print(str(base16_decode("48454C4C4F20574F524C4421")))
+print(str(base16_decode("")))
