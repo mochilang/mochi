@@ -1,0 +1,143 @@
+/*
+Count Negative Numbers in a Sorted Matrix
+
+Given a matrix where each row and column are sorted in decreasing order,
+find the total number of negative numbers.  The Python version from
+TheAlgorithms repo shows three approaches:
+
+1. Binary search per row with a moving column boundary.  For each row we
+   binary search the first negative index and keep the smallest boundary
+   for subsequent rows.  This runs in O(m log n) time for an m x n matrix.
+2. Brute force scanning of all elements which is O(m*n).
+3. Brute force with an inner break when the first negative element is
+   found in a row, reducing iterations but still O(m*n) in worst case.
+
+This Mochi implementation mirrors those algorithms and demonstrates the
+results on several test grids including a large synthetic matrix.
+*/
+
+fun generate_large_matrix(): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < 1000 {
+    var row: list<int> = []
+    var j = 1000 - i
+    while j > (-1000 - i) {
+      row = append(row, j)
+      j = j - 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun find_negative_index(arr: list<int>): int {
+  var left = 0
+  var right = len(arr) - 1
+  if len(arr) == 0 {
+    return 0
+  }
+  if arr[0] < 0 {
+    return 0
+  }
+  while left <= right {
+    let mid = (left + right) / 2
+    let num = arr[mid]
+    if num < 0 {
+      if mid == 0 {
+        return 0
+      }
+      if arr[mid - 1] >= 0 {
+        return mid
+      }
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+  return len(arr)
+}
+
+fun count_negatives_binary_search(grid: list<list<int>>): int {
+  var total = 0
+  var bound = len(grid[0])
+  var i = 0
+  while i < len(grid) {
+    let row = grid[i]
+    let idx = find_negative_index(slice(row, 0, bound))
+    bound = idx
+    total = total + idx
+    i = i + 1
+  }
+  return (len(grid) * len(grid[0])) - total
+}
+
+fun count_negatives_brute_force(grid: list<list<int>>): int {
+  var count = 0
+  var i = 0
+  while i < len(grid) {
+    let row = grid[i]
+    var j = 0
+    while j < len(row) {
+      if row[j] < 0 {
+        count = count + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+fun count_negatives_brute_force_with_break(grid: list<list<int>>): int {
+  var total = 0
+  var i = 0
+  while i < len(grid) {
+    let row = grid[i]
+    var j = 0
+    while j < len(row) {
+      let number = row[j]
+      if number < 0 {
+        total = total + (len(row) - j)
+        break
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return total
+}
+
+let grid = generate_large_matrix()
+let test_grids: list<list<list<int>>> = [
+  [[4,3,2,-1],[3,2,1,-1],[1,1,-1,-2],[-1,-1,-2,-3]],
+  [[3,2],[1,0]],
+  [[7,7,6]],
+  [[7,7,6],[-1,-2,-3]],
+  grid
+]
+
+var results_bin: list<int> = []
+var i = 0
+while i < len(test_grids) {
+  results_bin = append(results_bin, count_negatives_binary_search(test_grids[i]))
+  i = i + 1
+}
+print(str(results_bin))
+
+var results_brute: list<int> = []
+i = 0
+while i < len(test_grids) {
+  results_brute = append(results_brute, count_negatives_brute_force(test_grids[i]))
+  i = i + 1
+}
+print(str(results_brute))
+
+var results_break: list<int> = []
+i = 0
+while i < len(test_grids) {
+  results_break = append(results_break, count_negatives_brute_force_with_break(test_grids[i]))
+  i = i + 1
+}
+print(str(results_break))
