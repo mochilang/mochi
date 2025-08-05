@@ -1,0 +1,112 @@
+/*
+Determine the rank of a matrix using Gaussian elimination.
+
+The rank of a matrix is the number of linearly independent rows or columns.
+To compute it, this algorithm performs row-reduction to a row echelon form:
+
+1. Set the working rank to min(rows, columns).
+2. For each row up to the current rank:
+   - If the diagonal element is non-zero, eliminate all values below it.
+   - Otherwise try to swap with a lower row having a non-zero entry.
+   - If no such row exists, reduce the rank by one by replacing the current
+     column with the last column and repeat the step for the same row.
+3. The remaining rank after elimination is the rank of the matrix.
+
+This runs in O(rows * columns^2) time and mutates the matrix in-place.
+*/
+
+fun rank_of_matrix(matrix: list<list<float>>): int {
+  let rows = len(matrix)
+  if rows == 0 { return 0 }
+  let columns = if len(matrix[0]) > 0 { len(matrix[0]) } else { 0 }
+  var rank = if rows < columns { rows } else { columns }
+  var row = 0
+  while row < rank {
+    if matrix[row][row] != 0.0 {
+      var col = row + 1
+      while col < rows {
+        let mult = matrix[col][row] / matrix[row][row]
+        var i = row
+        while i < columns {
+          matrix[col][i] = matrix[col][i] - mult * matrix[row][i]
+          i = i + 1
+        }
+        col = col + 1
+      }
+    } else {
+      var reduce = true
+      var i = row + 1
+      while i < rows {
+        if matrix[i][row] != 0.0 {
+          let temp = matrix[row]
+          matrix[row] = matrix[i]
+          matrix[i] = temp
+          reduce = false
+          break
+        }
+        i = i + 1
+      }
+      if reduce {
+        rank = rank - 1
+        var j = 0
+        while j < rows {
+          matrix[j][row] = matrix[j][rank]
+          j = j + 1
+        }
+      }
+      row = row - 1
+    }
+    row = row + 1
+  }
+  return rank
+}
+
+test "matrix1" {
+  let matrix1: list<list<float>> = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+  expect rank_of_matrix(matrix1) == 2
+}
+
+test "matrix2" {
+  let matrix2: list<list<float>> = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]]
+  expect rank_of_matrix(matrix2) == 2
+}
+
+test "matrix3" {
+  let matrix3: list<list<float>> = [[1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0], [9.0, 10.0, 11.0, 12.0]]
+  expect rank_of_matrix(matrix3) == 2
+}
+
+test "matrix4" {
+  let matrix4: list<list<float>> = [[2.0, 3.0, -1.0, -1.0], [1.0, -1.0, -2.0, 4.0], [3.0, 1.0, 3.0, -2.0], [6.0, 3.0, 0.0, -7.0]]
+  expect rank_of_matrix(matrix4) == 4
+}
+
+test "matrix5" {
+  let matrix5: list<list<float>> = [[2.0, 1.0, -3.0, -6.0], [3.0, -3.0, 1.0, 2.0], [1.0, 1.0, 1.0, 2.0]]
+  expect rank_of_matrix(matrix5) == 3
+}
+
+test "matrix6" {
+  let matrix6: list<list<float>> = [[2.0, -1.0, 0.0], [1.0, 3.0, 4.0], [4.0, 1.0, -3.0]]
+  expect rank_of_matrix(matrix6) == 3
+}
+
+test "matrix7" {
+  let matrix7: list<list<float>> = [[3.0, 2.0, 1.0], [-6.0, -4.0, -2.0]]
+  expect rank_of_matrix(matrix7) == 1
+}
+
+test "matrix_empty_cols" {
+  let matrix8: list<list<float>> = [[], []]
+  expect rank_of_matrix(matrix8) == 0
+}
+
+test "matrix_single" {
+  let matrix9: list<list<float>> = [[1.0]]
+  expect rank_of_matrix(matrix9) == 1
+}
+
+test "matrix_empty" {
+  let matrix10: list<list<float>> = [[]]
+  expect rank_of_matrix(matrix10) == 0
+}
