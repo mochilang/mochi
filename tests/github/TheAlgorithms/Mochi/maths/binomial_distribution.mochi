@@ -1,0 +1,68 @@
+/*
+Binomial Distribution Probability
+---------------------------------
+This module computes the probability of observing a given number of
+successes in a fixed number of independent Bernoulli trials.  For `trials`
+(n) trials each with success probability `prob` (p), the probability of
+exactly `successes` (k) successes is:
+
+    P(X = k) = C(n, k) * p^k * (1 - p)^(n - k)
+
+where C(n, k) = n! / (k!(n-k)!) is the binomial coefficient.  This
+implementation validates its inputs, computes factorials iteratively and
+performs exponentiation by repeated multiplication.  The overall time
+complexity is O(n) for the factorial and exponent computations.
+*/
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun factorial(n: int): int {
+  if n < 0 { panic("factorial is undefined for negative numbers") }
+  var result = 1
+  var i = 2
+  while i <= n {
+    result = result * i
+    i = i + 1
+  }
+  return result
+}
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun binomial_distribution(successes: int, trials: int, prob: float): float {
+  if successes > trials {
+    panic("successes must be lower or equal to trials")
+  }
+  if trials < 0 || successes < 0 {
+    panic("the function is defined for non-negative integers")
+  }
+  if !(0.0 < prob && prob < 1.0) {
+    panic("prob has to be in range of 1 - 0")
+  }
+  let probability = pow_float(prob, successes) * pow_float(1.0 - prob, trials - successes)
+  let numerator = factorial(trials) as float
+  let denominator = (factorial(successes) * factorial(trials - successes)) as float
+  let coefficient = numerator / denominator
+  return probability * coefficient
+}
+
+test "example1" {
+  let result = binomial_distribution(3, 5, 0.7)
+  expect abs(result - 0.3087) < 0.0000001
+}
+
+test "example2" {
+  let result = binomial_distribution(2, 4, 0.5)
+  expect abs(result - 0.375) < 0.0000001
+}
