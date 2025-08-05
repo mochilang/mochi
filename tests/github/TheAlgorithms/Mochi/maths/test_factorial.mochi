@@ -1,0 +1,67 @@
+/*
+Factorial Test Suite
+--------------------
+This program mirrors the Python test `maths/test_factorial.py` from TheAlgorithms
+project. It defines two factorial implementations:
+
+1. `factorial(n)` – iteratively multiplies numbers from 1 to n.
+2. `factorial_recursive(n)` – recursively computes n * factorial_recursive(n-1).
+
+Both functions accept non-negative integers and panic if given a negative value.
+The test routines exercise these implementations over several cases:
+- `test_zero` verifies the base case n = 0.
+- `test_positive_integers` checks small positive inputs.
+- `test_large_number` covers a larger input.
+
+If any expectation fails, the corresponding test panics. After all tests pass,
+`main` prints `factorial(6)` as a sample result.
+*/
+
+fun factorial(n: int): int {
+  if n < 0 { panic("factorial() not defined for negative values") }
+  var value = 1
+  var i = 1
+  while i <= n {
+    value = value * i
+    i = i + 1
+  }
+  return value
+}
+
+fun factorial_recursive(n: int): int {
+  if n < 0 { panic("factorial() not defined for negative values") }
+  if n <= 1 { return 1 }
+  return n * factorial_recursive(n - 1)
+}
+
+fun test_zero() {
+  if factorial(0) != 1 { panic("factorial(0) failed") }
+  if factorial_recursive(0) != 1 { panic("factorial_recursive(0) failed") }
+}
+
+fun test_positive_integers() {
+  if factorial(1) != 1 { panic("factorial(1) failed") }
+  if factorial_recursive(1) != 1 { panic("factorial_recursive(1) failed") }
+  if factorial(5) != 120 { panic("factorial(5) failed") }
+  if factorial_recursive(5) != 120 { panic("factorial_recursive(5) failed") }
+  if factorial(7) != 5040 { panic("factorial(7) failed") }
+  if factorial_recursive(7) != 5040 { panic("factorial_recursive(7) failed") }
+}
+
+fun test_large_number() {
+  if factorial(10) != 3628800 { panic("factorial(10) failed") }
+  if factorial_recursive(10) != 3628800 { panic("factorial_recursive(10) failed") }
+}
+
+fun run_tests() {
+  test_zero()
+  test_positive_integers()
+  test_large_number()
+}
+
+fun main() {
+  run_tests()
+  print(factorial(6))
+}
+
+main()
