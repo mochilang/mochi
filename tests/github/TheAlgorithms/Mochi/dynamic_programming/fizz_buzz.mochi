@@ -1,0 +1,37 @@
+/*
+Fizz Buzz is a simple programming exercise used to teach control flow.
+Starting from a given number, each subsequent number is examined up to a
+specified limit. For multiples of three the algorithm outputs "Fizz",
+for multiples of five it outputs "Buzz", and for numbers divisible by
+both three and five it outputs "FizzBuzz". All other numbers are
+represented as themselves. The concatenated results form the final
+string. The algorithm runs in O(n) time where n is the range length.
+*/
+
+fun fizz_buzz(number: int, iterations: int): string {
+  if number < 1 {
+    panic("starting number must be an integer and be more than 0")
+  }
+  if iterations < 1 {
+    panic("Iterations must be done more than 0 times to play FizzBuzz")
+  }
+  var out = ""
+  var n = number
+  while n <= iterations {
+    if n % 3 == 0 {
+      out = out + "Fizz"
+    }
+    if n % 5 == 0 {
+      out = out + "Buzz"
+    }
+    if n % 3 != 0 && n % 5 != 0 {
+      out = out + str(n)
+    }
+    out = out + " "
+    n = n + 1
+  }
+  return out
+}
+
+print(fizz_buzz(1, 7))
+print(fizz_buzz(1, 15))
