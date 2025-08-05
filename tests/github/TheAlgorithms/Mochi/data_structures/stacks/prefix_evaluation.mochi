@@ -1,0 +1,128 @@
+/*
+Evaluate expressions written in prefix (Polish) notation.
+
+Given an expression such as "+ 9 * 2 6", operators precede their
+operands.  This program supports the four basic arithmetic operators
+(+,-,*,/) and computes the value either iteratively with an explicit
+stack or recursively by consuming the token stream.  Both approaches
+run in O(n) time where n is the number of tokens.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun tokenize(s: string): list<string> {
+  let parts = split(s, " ")
+  var res: list<string> = []
+  var i = 0
+  while i < len(parts) {
+    let p = parts[i]
+    if p != "" {
+      res = append(res, p)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun is_digit(ch: string): bool {
+  return ch >= "0" && ch <= "9"
+}
+
+fun is_operand(token: string): bool {
+  if token == "" { return false }
+  var i = 0
+  while i < len(token) {
+    let ch = substring(token, i, i + 1)
+    if !is_digit(ch) {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun to_int(token: string): int {
+  var res = 0
+  var i = 0
+  while i < len(token) {
+    res = res * 10 + (substring(token, i, i + 1) as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun apply_op(op: string, a: float, b: float): float {
+  if op == "+" { return a + b }
+  if op == "-" { return a - b }
+  if op == "*" { return a * b }
+  if op == "/" { return a / b }
+  return 0.0
+}
+
+fun evaluate(expression: string): float {
+  let tokens = tokenize(expression)
+  var stack: list<float> = []
+  var i = len(tokens) - 1
+  while i >= 0 {
+    let token = tokens[i]
+    if token != "" {
+      if is_operand(token) {
+        stack = append(stack, (to_int(token) as float))
+      } else {
+        let o1 = stack[len(stack) - 1]
+        let o2 = stack[len(stack) - 2]
+        stack = stack[0:len(stack) - 2]
+        let res = apply_op(token, o1, o2)
+        stack = append(stack, res)
+      }
+    }
+    i = i - 1
+  }
+  return stack[0]
+}
+
+fun eval_rec(tokens: list<string>, pos: int): list<float> {
+  let token = tokens[pos]
+  let next = pos + 1
+  if is_operand(token) {
+    return [(to_int(token) as float), (next as float)]
+  }
+  let left = eval_rec(tokens, next)
+  let a = left[0]
+  let p1 = left[1] as int
+  let right = eval_rec(tokens, p1)
+  let b = right[0]
+  let p2 = right[1]
+  return [apply_op(token, a, b), p2]
+}
+
+fun evaluate_recursive(expression: string): float {
+  let tokens = tokenize(expression)
+  let res = eval_rec(tokens, 0)
+  return res[0]
+}
+
+let test_expression = "+ 9 * 2 6"
+print(str(evaluate(test_expression)))
+
+let test_expression2 = "/ * 10 2 + 4 1 "
+print(str(evaluate(test_expression2)))
+
+let test_expression3 = "+ * 2 3 / 8 4"
+print(str(evaluate_recursive(test_expression3)))
