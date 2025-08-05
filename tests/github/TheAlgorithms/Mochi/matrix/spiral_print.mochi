@@ -1,0 +1,80 @@
+/*
+Print the elements of an integer matrix in clockwise spiral order.
+The algorithm maintains four bounds (top, bottom, left, right) that
+shrink after each pass.  It traverses the top row from left to right,
+the right column top to bottom, the bottom row right to left, and the
+left column bottom to top until all elements are visited.
+This runs in O(rows * cols) time and uses O(1) additional space aside
+from the output list.
+*/
+
+fun is_valid_matrix(matrix: list<list<int>>): bool {
+  if len(matrix) == 0 {
+    return false
+  }
+  let cols = len(matrix[0])
+  for row in matrix {
+    if len(row) != cols {
+      return false
+    }
+  }
+  return true
+}
+
+fun spiral_traversal(matrix: list<list<int>>): list<int> {
+  if !is_valid_matrix(matrix) {
+    return []
+  }
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var top = 0
+  var bottom = rows - 1
+  var left = 0
+  var right = cols - 1
+  var result: list<int> = []
+  while left <= right && top <= bottom {
+    var i = left
+    while i <= right {
+      result = append(result, matrix[top][i])
+      i = i + 1
+    }
+    top = top + 1
+    i = top
+    while i <= bottom {
+      result = append(result, matrix[i][right])
+      i = i + 1
+    }
+    right = right - 1
+    if top <= bottom {
+      i = right
+      while i >= left {
+        result = append(result, matrix[bottom][i])
+        i = i - 1
+      }
+      bottom = bottom - 1
+    }
+    if left <= right {
+      i = bottom
+      while i >= top {
+        result = append(result, matrix[i][left])
+        i = i - 1
+      }
+      left = left + 1
+    }
+  }
+  return result
+}
+
+fun spiral_print_clockwise(matrix: list<list<int>>) {
+  for value in spiral_traversal(matrix) {
+    print(str(value))
+  }
+}
+
+fun main() {
+  let a = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]
+  spiral_print_clockwise(a)
+  print(str(spiral_traversal(a)))
+}
+
+main()
