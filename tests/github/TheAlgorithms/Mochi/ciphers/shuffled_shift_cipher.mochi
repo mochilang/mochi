@@ -1,0 +1,230 @@
+/*
+Shuffled Shift Cipher
+
+This algorithm enhances the classic Caesar cipher by shuffling the
+alphabet used for lookup, removing simple brute force attacks.
+
+1. A passcode consisting of random letters and digits is generated. The
+   passcode determines two things:
+   - Breakpoints that partition the allowed character list.
+   - A shift key derived from alternating sums of ASCII codes.
+2. The allowed characters include uppercase and lowercase letters,
+   digits, punctuation and whitespace.  The list is split at each
+   breakpoint character and each section is reversed to create a new
+   shuffled key list.  This yields many possible permutations.
+3. The shift key is the sum of ASCII codes of the passcode characters
+   where every second code is negated.  If the result is non–positive,
+   the length of the passcode is used instead.
+4. Encryption and decryption shift characters through the shuffled key
+   list much like a Caesar cipher but using the calculated shift key.
+
+The complexity of both encryption and decryption is O(n) for a message
+of length n since each character requires a lookup in the key list.
+*/
+
+// convert a single character to its ASCII code
+fun ord(ch: string): int {
+  let digits = "0123456789"
+  var i = 0
+  while i < len(digits) {
+    if substring(digits, i, i + 1) == ch {
+      return 48 + i
+    }
+    i = i + 1
+  }
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  i = 0
+  while i < len(upper) {
+    if substring(upper, i, i + 1) == ch {
+      return 65 + i
+    }
+    i = i + 1
+  }
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  i = 0
+  while i < len(lower) {
+    if substring(lower, i, i + 1) == ch {
+      return 97 + i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+// multiply every second element by -1
+fun neg_pos(iterlist: list<int>): list<int> {
+  var i = 1
+  while i < len(iterlist) {
+    iterlist[i] = -iterlist[i]
+    i = i + 2
+  }
+  return iterlist
+}
+
+// simple time based pseudo random passcode generator
+fun passcode_creator(): list<string> {
+  let choices = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  var seed = now()
+  let length = 10 + (seed % 11)
+  var password: list<string> = []
+  var i = 0
+  while i < length {
+    seed = (seed * 1103515245 + 12345) % 2147483647
+    let idx = seed % len(choices)
+    password = append(password, substring(choices, idx, idx + 1))
+    i = i + 1
+  }
+  return password
+}
+
+// sort unique characters from passcode
+fun unique_sorted(chars: list<string>): list<string> {
+  var uniq: list<string> = []
+  var i = 0
+  while i < len(chars) {
+    let ch = chars[i]
+    if !(ch in uniq) {
+      uniq = append(uniq, ch)
+    }
+    i = i + 1
+  }
+  // selection sort
+  var j = 0
+  while j < len(uniq) {
+    var k = j + 1
+    var min_idx = j
+    while k < len(uniq) {
+      if uniq[k] < uniq[min_idx] {
+        min_idx = k
+      }
+      k = k + 1
+    }
+    if min_idx != j {
+      let tmp = uniq[j]
+      uniq[j] = uniq[min_idx]
+      uniq[min_idx] = tmp
+    }
+    j = j + 1
+  }
+  return uniq
+}
+
+// create shuffled key list using breakpoint characters
+fun make_key_list(passcode: list<string>): list<string> {
+  let key_list_options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ \t\n"
+  let breakpoints = unique_sorted(passcode)
+  var keys_l: list<string> = []
+  var temp_list: list<string> = []
+  var i = 0
+  while i < len(key_list_options) {
+    let ch = substring(key_list_options, i, i + 1)
+    temp_list = append(temp_list, ch)
+    if ch in breakpoints || i == len(key_list_options) - 1 {
+      var k = len(temp_list) - 1
+      while k >= 0 {
+        keys_l = append(keys_l, temp_list[k])
+        k = k - 1
+      }
+      temp_list = []
+    }
+    i = i + 1
+  }
+  return keys_l
+}
+
+// compute shift key from passcode characters
+fun make_shift_key(passcode: list<string>): int {
+  var codes: list<int> = []
+  var i = 0
+  while i < len(passcode) {
+    codes = append(codes, ord(passcode[i]))
+    i = i + 1
+  }
+  codes = neg_pos(codes)
+  var total = 0
+  i = 0
+  while i < len(codes) {
+    total = total + codes[i]
+    i = i + 1
+  }
+  if total > 0 {
+    return total
+  }
+  return len(passcode)
+}
+
+type Cipher {
+  passcode: list<string>,
+  key_list: list<string>,
+  shift_key: int,
+}
+
+fun new_cipher(passcode_str: string): Cipher {
+  var passcode: list<string> = []
+  if len(passcode_str) == 0 {
+    passcode = passcode_creator()
+  } else {
+    var i = 0
+    while i < len(passcode_str) {
+      passcode = append(passcode, substring(passcode_str, i, i + 1))
+      i = i + 1
+    }
+  }
+  let key_list = make_key_list(passcode)
+  let shift_key = make_shift_key(passcode)
+  return Cipher { passcode: passcode, key_list: key_list, shift_key: shift_key }
+}
+
+fun index_of(lst: list<string>, ch: string): int {
+  var i = 0
+  while i < len(lst) {
+    if lst[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun encrypt(c: Cipher, plaintext: string): string {
+  var encoded = ""
+  var i = 0
+  let n = len(c.key_list)
+  while i < len(plaintext) {
+    let ch = substring(plaintext, i, i + 1)
+    let position = index_of(c.key_list, ch)
+    let new_pos = (position + c.shift_key) % n
+    encoded = encoded + c.key_list[new_pos]
+    i = i + 1
+  }
+  return encoded
+}
+
+fun decrypt(c: Cipher, encoded_message: string): string {
+  var decoded = ""
+  var i = 0
+  let n = len(c.key_list)
+  while i < len(encoded_message) {
+    let ch = substring(encoded_message, i, i + 1)
+    let position = index_of(c.key_list, ch)
+    var new_pos = (position - c.shift_key) % n
+    if new_pos < 0 {
+      new_pos = new_pos + n
+    }
+    decoded = decoded + c.key_list[new_pos]
+    i = i + 1
+  }
+  return decoded
+}
+
+fun test_end_to_end(): string {
+  let msg = "Hello, this is a modified Caesar cipher"
+  let cip = new_cipher("")
+  return decrypt(cip, encrypt(cip, msg))
+}
+
+// Example usage matching the Python docstring
+let ssc = new_cipher("4PYIXyqeQZr44")
+let encoded = encrypt(ssc, "Hello, this is a modified Caesar cipher")
+print(encoded)
+print(decrypt(ssc, encoded))
