@@ -1,0 +1,84 @@
+/*
+Implement Caesar cipher encryption, decryption, and brute-force attack.
+The cipher shifts letters within a given alphabet by a fixed key.
+Encryption scans the input string, shifting characters by the key and
+wrapping around the alphabet. Non-alphabet characters remain unchanged.
+Decryption uses the same routine with a negative key. The brute-force
+function tries all possible keys and collects the decoded strings.
+Encryption and decryption run in O(n) time for n characters; brute-force
+is O(n * m) where m is the alphabet size.
+*/
+let default_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun encrypt(input_string: string, key: int, alphabet: string): string {
+  var result = ""
+  var i = 0
+  let n = len(alphabet)
+  while i < len(input_string) {
+    let ch = substring(input_string, i, i + 1)
+    let idx = index_of(alphabet, ch)
+    if idx < 0 {
+      result = result + ch
+    } else {
+      var new_key = (idx + key) % n
+      if new_key < 0 { new_key = new_key + n }
+      result = result + substring(alphabet, new_key, new_key + 1)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun decrypt(input_string: string, key: int, alphabet: string): string {
+  var result = ""
+  var i = 0
+  let n = len(alphabet)
+  while i < len(input_string) {
+    let ch = substring(input_string, i, i + 1)
+    let idx = index_of(alphabet, ch)
+    if idx < 0 {
+      result = result + ch
+    } else {
+      var new_key = (idx - key) % n
+      if new_key < 0 { new_key = new_key + n }
+      result = result + substring(alphabet, new_key, new_key + 1)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun brute_force(input_string: string, alphabet: string): list<string> {
+  var results: list<string> = []
+  var key = 1
+  let n = len(alphabet)
+  while key <= n {
+    let message = decrypt(input_string, key, alphabet)
+    results = append(results, message)
+    key = key + 1
+  }
+  return results
+}
+
+fun main() {
+  let alpha = default_alphabet
+  let enc = encrypt("The quick brown fox jumps over the lazy dog", 8, alpha)
+  print(enc)
+  let dec = decrypt(enc, 8, alpha)
+  print(dec)
+  let brute = brute_force("jFyuMy xIH'N vLONy zILwy Gy!", alpha)
+  // key 20 corresponds to index 19
+  print(brute[19])
+}
+main()
