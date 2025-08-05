@@ -1,0 +1,132 @@
+/*
+Linear Regression Using Gradient Descent
+---------------------------------------
+
+Given a set of training examples with one or more features and a target value,
+linear regression fits a weight vector `theta` that minimises the mean squared
+error between predicted and actual outputs.
+
+Starting from an initial weight vector of zeros, gradient descent repeatedly:
+
+1. Computes the prediction for each example using the current weights.
+2. Evaluates the gradient of the mean squared error with respect to each weight.
+3. Updates the weights in the opposite direction of the gradient scaled by the
+   learning rate `alpha`.
+
+This implementation demonstrates the algorithm on a tiny dataset with an
+intercept term.  At each iteration the current error is printed.  After
+training, the resulting weights and a sample mean absolute error calculation
+are displayed.
+
+Time complexity per iteration: O(m * n) for m samples and n features.
+*/
+
+fun dot(x: list<float>, y: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(x) {
+    sum = sum + x[i] * y[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun run_steep_gradient_descent(
+  data_x: list<list<float>>,
+  data_y: list<float>,
+  len_data: int,
+  alpha: float,
+  theta: list<float>
+): list<float> {
+  var gradients: list<float> = []
+  var j: int = 0
+  while j < len(theta) {
+    gradients = append(gradients, 0.0)
+    j = j + 1
+  }
+  var i: int = 0
+  while i < len_data {
+    let prediction = dot(theta, data_x[i])
+    let error = prediction - data_y[i]
+    var k: int = 0
+    while k < len(theta) {
+      gradients[k] = gradients[k] + error * data_x[i][k]
+      k = k + 1
+    }
+    i = i + 1
+  }
+  var t: list<float> = []
+  var g: int = 0
+  while g < len(theta) {
+    t = append(t, theta[g] - (alpha / len_data) * gradients[g])
+    g = g + 1
+  }
+  return t
+}
+
+fun sum_of_square_error(
+  data_x: list<list<float>>,
+  data_y: list<float>,
+  len_data: int,
+  theta: list<float>
+): float {
+  var total: float = 0.0
+  var i: int = 0
+  while i < len_data {
+    let prediction = dot(theta, data_x[i])
+    let diff = prediction - data_y[i]
+    total = total + diff * diff
+    i = i + 1
+  }
+  return total / (2.0 * len_data)
+}
+
+fun run_linear_regression(data_x: list<list<float>>, data_y: list<float>): list<float> {
+  let iterations: int = 10
+  let alpha: float = 0.01
+  let no_features: int = len(data_x[0])
+  let len_data: int = len(data_x)
+  var theta: list<float> = []
+  var i: int = 0
+  while i < no_features {
+    theta = append(theta, 0.0)
+    i = i + 1
+  }
+  var iter: int = 0
+  while iter < iterations {
+    theta = run_steep_gradient_descent(data_x, data_y, len_data, alpha, theta)
+    let error = sum_of_square_error(data_x, data_y, len_data, theta)
+    print("At Iteration " + str(iter + 1) + " - Error is " + str(error))
+    iter = iter + 1
+  }
+  return theta
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun mean_absolute_error(predicted_y: list<float>, original_y: list<float>): float {
+  var total: float = 0.0
+  var i: int = 0
+  while i < len(predicted_y) {
+    let diff = absf(predicted_y[i] - original_y[i])
+    total = total + diff
+    i = i + 1
+  }
+  return total / len(predicted_y)
+}
+
+let data_x: list<list<float>> = [[1.0, 1.0], [1.0, 2.0], [1.0, 3.0]]
+let data_y: list<float> = [1.0, 2.0, 3.0]
+let theta = run_linear_regression(data_x, data_y)
+print("Resultant Feature vector :")
+var i: int = 0
+while i < len(theta) {
+  print(str(theta[i]))
+  i = i + 1
+}
+let predicted_y: list<float> = [3.0, -0.5, 2.0, 7.0]
+let original_y: list<float> = [2.5, 0.0, 2.0, 8.0]
+let mae = mean_absolute_error(predicted_y, original_y)
+print("Mean Absolute Error : " + str(mae))
