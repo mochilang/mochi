@@ -1,0 +1,153 @@
+/*
+Convert IPv4 addresses between dotted-decimal strings and integers.
+
+Two functions turn an IPv4 string like "192.168.0.1" into a 32-bit
+integer. The primary version splits the string into four octets, checks
+that each is within [0,255], and accumulates the result using base-256
+multiplication. The alternate version pads each octet to two hexadecimal
+characters, concatenates the hex string and parses it as a base-16
+integer.
+
+The reverse operation takes a 32-bit integer and repeatedly divides by
+256 to recover each octet, producing the dotted-decimal form.
+All algorithms run in O(1) time because IPv4 addresses always have four
+octets.
+*/
+
+let hex_digits = "0123456789abcdef"
+
+fun split_by_dot(s: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == "." {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun parse_decimal(s: string): int {
+  if len(s) == 0 {
+    panic("Invalid IPv4 address format")
+  }
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c < "0" || c > "9" {
+      panic("Invalid IPv4 address format")
+    }
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun to_hex2(n: int): string {
+  var x = n
+  var res = ""
+  while x > 0 {
+    let d = x % 16
+    res = hex_digits[d] + res
+    x = x / 16
+  }
+  while len(res) < 2 {
+    res = "0" + res
+  }
+  return res
+}
+
+fun ipv4_to_decimal(ipv4_address: string): int {
+  let parts = split_by_dot(ipv4_address)
+  if len(parts) != 4 {
+    panic("Invalid IPv4 address format")
+  }
+  var result = 0
+  var i = 0
+  while i < 4 {
+    let oct = parse_decimal(parts[i])
+    if oct < 0 || oct > 255 {
+      panic("Invalid IPv4 octet " + str(oct))
+    }
+    result = result * 256 + oct
+    i = i + 1
+  }
+  return result
+}
+
+fun alt_ipv4_to_decimal(ipv4_address: string): int {
+  let parts = split_by_dot(ipv4_address)
+  if len(parts) != 4 {
+    panic("Invalid IPv4 address format")
+  }
+  var hex_str = ""
+  var i = 0
+  while i < 4 {
+    let oct = parse_decimal(parts[i])
+    if oct < 0 || oct > 255 {
+      panic("Invalid IPv4 octet " + str(oct))
+    }
+    hex_str = hex_str + to_hex2(oct)
+    i = i + 1
+  }
+  var value = 0
+  var k = 0
+  while k < len(hex_str) {
+    let c = hex_str[k]
+    var digit = 0 - 1
+    var j = 0
+    while j < len(hex_digits) {
+      if hex_digits[j] == c {
+        digit = j
+      }
+      j = j + 1
+    }
+    if digit < 0 {
+      panic("Invalid hex digit")
+    }
+    value = value * 16 + digit
+    k = k + 1
+  }
+  return value
+}
+
+fun decimal_to_ipv4(decimal_ipv4: int): string {
+  if decimal_ipv4 < 0 || decimal_ipv4 > 4294967295 {
+    panic("Invalid decimal IPv4 address")
+  }
+  var n = decimal_ipv4
+  var parts: list<string> = []
+  var i = 0
+  while i < 4 {
+    let octet = n % 256
+    parts = append(parts, str(octet))
+    n = n / 256
+    i = i + 1
+  }
+  var res = ""
+  var j = len(parts) - 1
+  while j >= 0 {
+    res = res + parts[j]
+    if j > 0 {
+      res = res + "."
+    }
+    j = j - 1
+  }
+  return res
+}
+
+print(ipv4_to_decimal("192.168.0.1"))
+print(ipv4_to_decimal("10.0.0.255"))
+print(alt_ipv4_to_decimal("192.168.0.1"))
+print(alt_ipv4_to_decimal("10.0.0.255"))
+print(decimal_to_ipv4(3232235521))
+print(decimal_to_ipv4(167772415))
+
