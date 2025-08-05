@@ -1,0 +1,40 @@
+/*
+Compute the nth Fibonacci number using the fast doubling method.
+
+This approach recursively calculates F(n) and F(n-1) in O(log n) time by
+splitting n into halves. For n = 2k, it uses the identities:
+  F(2k)   = F(k) * [2*F(k+1) - F(k)]
+  F(2k+1) = F(k+1)^2 + F(k)^2
+Returning a pair (F(n), F(n-1)) avoids redundant calculations and keeps the
+algorithm purely functional without mutable state. The method allows very large
+Fibonacci numbers to be computed efficiently.
+*/
+
+type FibPair = { fn: int, fn1: int }
+
+fun _fib(n: int): FibPair {
+  if n == 0 {
+    return FibPair{ fn: 0, fn1: 1 }
+  }
+  let half = _fib(n / 2)
+  let a = half.fn
+  let b = half.fn1
+  let c = a * (b * 2 - a)
+  let d = a * a + b * b
+  if n % 2 == 0 {
+    return FibPair{ fn: c, fn1: d }
+  }
+  return FibPair{ fn: d, fn1: c + d }
+}
+
+fun fibonacci(n: int): int {
+  if n < 0 { panic("Negative arguments are not supported") }
+  let res = _fib(n)
+  return res.fn
+}
+
+var i = 0
+while i < 13 {
+  print(str(fibonacci(i)))
+  i = i + 1
+}
