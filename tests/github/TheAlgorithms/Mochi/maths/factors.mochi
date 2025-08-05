@@ -1,0 +1,57 @@
+/*
+Factor Enumeration
+------------------
+Given a positive integer n, this function returns all of its positive factors
+in ascending order.  The algorithm iterates i from 1 up to sqrt(n) and collects
+factor pairs (i, n // i).  Smaller factors are stored in one list and their
+complements in another.  Reversing the list of larger factors and concatenating
+the two lists yields the complete set of factors in sorted order.  The
+procedure runs in O(sqrt(n)) time and handles edge cases such as n < 1 by
+returning an empty list.
+*/
+
+fun reverse(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(xs) - 1
+  while i >= 0 {
+    res = append(res, xs[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun factors_of_a_number(num: int): list<int> {
+  var facs: list<int> = []
+  if num < 1 {
+    return facs
+  }
+  var small: list<int> = []
+  var large: list<int> = []
+  var i = 1
+  while i * i <= num {
+    if num % i == 0 {
+      small = append(small, i)
+      let d = num / i
+      if d != i {
+        large = append(large, d)
+      }
+    }
+    i = i + 1
+  }
+  facs = concat(small, reverse(large))
+  return facs
+}
+
+fun run_tests() {
+  if factors_of_a_number(1) != [1] { panic("case1 failed") }
+  if factors_of_a_number(5) != [1, 5] { panic("case2 failed") }
+  if factors_of_a_number(24) != [1, 2, 3, 4, 6, 8, 12, 24] { panic("case3 failed") }
+  if factors_of_a_number(-24) != [] { panic("case4 failed") }
+}
+
+fun main() {
+  run_tests()
+  print(str(factors_of_a_number(24)))
+}
+
+main()
