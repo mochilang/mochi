@@ -1,0 +1,80 @@
+/*
+ Vernam Cipher: classical symmetric stream cipher.
+ 
+ Each plaintext character (A-Z) is combined with a repeating key by converting
+ both to numeric positions 0-25. For encryption we add the key value; for
+ decryption we subtract it. Results wrap around modulo 26 and are then
+ converted back to uppercase letters.
+ 
+ Steps:
+ 1. Encryption:
+    - For each index i, map plaintext[i] and key[i mod len(key)] to 0..25.
+    - Add them; if result >= 26 subtract 26 until it fits.
+    - Convert the value back to a character in 'A'-'Z'.
+ 2. Decryption:
+    - For each index i, subtract key[i mod len(key)] from ciphertext[i].
+    - If the result is negative, add 26 until it is non-negative.
+    - Convert back to an uppercase character.
+ 
+ This implementation mirrors the Python version from TheAlgorithms repository.
+*/
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  if n >= 65 && n < 91 { return substring(upper, n - 65, n - 64) }
+  return "?"
+}
+
+fun vernam_encrypt(plaintext: string, key: string): string {
+  var ciphertext = ""
+  var i = 0
+  while i < len(plaintext) {
+    let p = ord(substring(plaintext, i, i + 1)) - 65
+    let k = ord(substring(key, i % len(key), i % len(key) + 1)) - 65
+    var ct = p + k
+    while ct > 25 { ct = ct - 26 }
+    ciphertext = ciphertext + chr(ct + 65)
+    i = i + 1
+  }
+  return ciphertext
+}
+
+fun vernam_decrypt(ciphertext: string, key: string): string {
+  var decrypted = ""
+  var i = 0
+  while i < len(ciphertext) {
+    let c = ord(substring(ciphertext, i, i + 1))
+    let k = ord(substring(key, i % len(key), i % len(key) + 1))
+    var val = c - k
+    while val < 0 { val = val + 26 }
+    decrypted = decrypted + chr(val + 65)
+    i = i + 1
+  }
+  return decrypted
+}
+
+let plaintext = "HELLO"
+let key = "KEY"
+let encrypted = vernam_encrypt(plaintext, key)
+let decrypted = vernam_decrypt(encrypted, key)
+print("Plaintext: " + plaintext)
+print("Encrypted: " + encrypted)
+print("Decrypted: " + decrypted)
