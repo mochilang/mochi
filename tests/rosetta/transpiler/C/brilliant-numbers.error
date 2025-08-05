@@ -1,74 +1,101 @@
-compile failed: exit status 1: /tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘_mem’:
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:65:12: warning: ‘mallinfo’ is deprecated [-Wdeprecated-declarations]
-   65 |     struct mallinfo mi = mallinfo();
-      |            ^~~~~~~~
-In file included from /tmp/ctranspile1828836365/brilliant-numbers.mochi.c:5:
-/usr/include/malloc.h:114:24: note: declared here
-  114 | extern struct mallinfo mallinfo (void) __THROW __MALLOC_DEPRECATED;
-      |                        ^~~~~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘getBrilliant’:
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:187:16: warning: overflow in conversion from ‘long long int’ to ‘int’ changes value from ‘999999999999999’ to ‘-1530494977’ [-Woverflow]
-  187 |     int next = 999999999999999LL;
-      |                ^~~~~~~~~~~~~~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:192:36: error: ‘primes_len’ undeclared (first use in this function)
-  192 |         for (size_t __i = 0; __i < primes_len; __i++) {
-      |                                    ^~~~~~~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:192:36: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:193:21: error: ‘primes’ undeclared (first use in this function)
-  193 |             int p = primes[__i];
-      |                     ^~~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:30: warning: initialization of ‘int *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
-  226 |         return (Anon1){.bc = count, .bc_len = count_len, .next = next};
-      |                              ^~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:30: note: (near initialization for ‘(anonymous).bc’)
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:226:47: error: ‘count_len’ undeclared (first use in this function)
-  226 |         return (Anon1){.bc = count, .bc_len = count_len, .next = next};
-      |                                               ^~~~~~~~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c: In function ‘user_main’:
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:239:21: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
-  239 |         printf("%s %d\n", str_concat(str_int(br[(int)(i)]), " "), 0LL);
+compile failed: exit status 1: /tmp/ctranspile3991400624/brilliant-numbers.mochi.c: In function ‘primesUpTo’:
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:136:39: warning: passing argument 1 of ‘list_append_long_long’ from incompatible pointer type [-Wincompatible-pointer-types]
+  136 |         sieve = list_append_long_long(sieve, &sieve_len, 1LL);
+      |                                       ^~~~~
+      |                                       |
+      |                                       int *
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:114:52: note: expected ‘long long int *’ but argument is of type ‘int *’
+  114 | static long long* list_append_long_long(long long *arr, size_t *len, long long val) {
+      |                                         ~~~~~~~~~~~^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:136:15: warning: assignment to ‘int *’ from incompatible pointer type ‘long long int *’ [-Wincompatible-pointer-types]
+  136 |         sieve = list_append_long_long(sieve, &sieve_len, 1LL);
+      |               ^
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:155:35: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  155 |             res = list_append_int(res, &res_len, x);
+      |                                   ^~~
+      |                                   |
+      |                                   long long int *
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:37:34: note: expected ‘int *’ but argument is of type ‘long long int *’
+   37 | static int* list_append_int(int *arr, size_t *len, int val) {
+      |                             ~~~~~^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:155:17: warning: assignment to ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  155 |             res = list_append_int(res, &res_len, x);
+      |                 ^
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c: In function ‘getBrilliant’:
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:219:37: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  219 |                 s = list_append_int(s, &s_len, p);
+      |                                     ^
+      |                                     |
+      |                                     long long int *
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:37:34: note: expected ‘int *’ but argument is of type ‘long long int *’
+   37 | static int* list_append_int(int *arr, size_t *len, int val) {
+      |                             ~~~~~^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:219:19: warning: assignment to ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  219 |                 s = list_append_int(s, &s_len, p);
+      |                   ^
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:231:53: warning: passing argument 1 of ‘list_append_int’ from incompatible pointer type [-Wincompatible-pointer-types]
+  231 |                         brilliant = list_append_int(brilliant, &brilliant_len, prod);
+      |                                                     ^~~~~~~~~
+      |                                                     |
+      |                                                     long long int *
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:37:34: note: expected ‘int *’ but argument is of type ‘long long int *’
+   37 | static int* list_append_int(int *arr, size_t *len, int val) {
+      |                             ~~~~~^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:231:35: warning: assignment to ‘long long int *’ from incompatible pointer type ‘int *’ [-Wincompatible-pointer-types]
+  231 |                         brilliant = list_append_int(brilliant, &brilliant_len, prod);
+      |                                   ^
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:249:26: warning: initialization of ‘int’ from ‘long long int *’ makes integer from pointer without a cast [-Wint-conversion]
+  249 |     return (Anon2){.bc = brilliant, .next = next};
+      |                          ^~~~~~~~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:249:26: note: (near initialization for ‘(anonymous).bc’)
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c: In function ‘user_main’:
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:255:37: error: ‘Anon2’ has no member named ‘bc_len’
+  255 |     long long *br = sortInts(r.bc, r.bc_len);
+      |                                     ^
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:255:31: warning: passing argument 1 of ‘sortInts’ makes pointer from integer without a cast [-Wint-conversion]
+  255 |     long long *br = sortInts(r.bc, r.bc_len);
+      |                              ~^~~
+      |                               |
+      |                               int
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:162:34: note: expected ‘long long int *’ but argument is of type ‘int’
+  162 | long long * sortInts(long long * xs, size_t xs_len) {
+      |                      ~~~~~~~~~~~~^~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:261:21: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  261 |         printf("%s %d\n", str_concat(str_int(br[(int)(i)]), " "), 0LL);
       |                    ~^                                             ~~~
       |                     |                                             |
       |                     int                                           long long int
       |                    %lld
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:241:25: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
-  241 |             printf("%s %d\n", "", 1LL);
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:263:25: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  263 |             printf("%s %d\n", "", 1LL);
       |                        ~^         ~~~
       |                         |         |
       |                         int       long long int
       |                        %lld
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:245:17: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
-  245 |     printf("%s %d\n", "", 1LL);
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:267:17: warning: format ‘%d’ expects argument of type ‘int’, but argument 3 has type ‘long long int’ [-Wformat=]
+  267 |     printf("%s %d\n", "", 1LL);
       |                ~^         ~~~
       |                 |         |
       |                 int       long long int
       |                %lld
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
-  248 |         int limit = pow(10LL, k);
-      |                     ^~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:44:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
-   43 | #include <time.h>
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:270:27: warning: implicit declaration of function ‘pow’ [-Wimplicit-function-declaration]
+  270 |         long long limit = pow(10LL, k);
+      |                           ^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:45:1: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+   44 | #include <time.h>
   +++ |+#include <math.h>
-   44 | #include <stdlib.h>
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
-  248 |         int limit = pow(10LL, k);
-      |                     ^~~
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:248:21: note: include ‘<math.h>’ or provide a declaration of ‘pow’
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:254:46: warning: passing argument 1 of ‘commatize’ makes integer from pointer without a cast [-Wint-conversion]
-  254 |         const char* ctotal = commatize(total + 1LL);
-      |                                        ~~~~~~^~~~~
-      |                                              |
-      |                                              int *
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:172:27: note: expected ‘int’ but argument is of type ‘int *’
-  172 | const char* commatize(int n) {
-      |                       ~~~~^
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:88: error: request for member ‘padStart’ in something not a structure or union
-  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+   45 | #include <stdlib.h>
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:270:27: warning: incompatible implicit declaration of built-in function ‘pow’ [-Wbuiltin-declaration-mismatch]
+  270 |         long long limit = pow(10LL, k);
+      |                           ^~~
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:270:27: note: include ‘<math.h>’ or provide a declaration of ‘pow’
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:277:88: error: request for member ‘padStart’ in something not a structure or union
+  277 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
       |                                                                                        ^
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:115: error: request for member ‘padStart’ in something not a structure or union
-  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:277:115: error: request for member ‘padStart’ in something not a structure or union
+  277 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
       |                                                                                                                   ^
-/tmp/ctranspile1828836365/brilliant-numbers.mochi.c:256:153: error: request for member ‘padStart’ in something not a structure or union
-  256 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
+/tmp/ctranspile3991400624/brilliant-numbers.mochi.c:277:153: error: request for member ‘padStart’ in something not a structure or union
+  277 |         puts(str_concat(str_concat(str_concat(str_concat(str_concat("First >= ", climit.padStart), " is "), ctotal.padStart), " in the series: "), cnext.padStart));
       |                                                                                                                                                         ^
 

@@ -1,5 +1,5 @@
-## Progress (2025-08-04 17:03 +0700)
-- Commit 1da6020887: fs: fix map inference and bool casts
+## Progress (2025-08-05 02:43 +0700)
+- Commit 3871336cf8: Add Sudoku solver example in Python and Mochi
 - Regenerated golden files - 82/105 vm valid programs passing
 
 ## Progress (2025-07-22 14:12 +0700)

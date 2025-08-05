@@ -4023,11 +4023,21 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 		if s.Var.Type != nil {
 			env.SetVar(s.Var.Name, types.ResolveTypeRef(s.Var.Type, env), true)
 		} else {
-			switch declType {
-			case "const char*":
+			switch {
+			case declType == "const char*":
 				env.SetVar(s.Var.Name, types.StringType{}, true)
-			case "double":
+			case declType == "double":
 				env.SetVar(s.Var.Name, types.FloatType{}, true)
+			case strings.HasSuffix(declType, "[]"):
+				base := strings.TrimSuffix(declType, "[]")
+				var elem types.Type = types.IntType{}
+				switch base {
+				case "const char*":
+					elem = types.StringType{}
+				case "double":
+					elem = types.FloatType{}
+				}
+				env.SetVar(s.Var.Name, types.ListType{Elem: elem}, true)
 			default:
 				env.SetVar(s.Var.Name, types.IntType{}, true)
 			}
@@ -6763,18 +6773,22 @@ func inferExprType(env *types.Env, e Expr) string {
 			if t, ok := funcReturnTypes[v.Func]; ok {
 				return t
 			}
-			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil && fn.Return.Simple != nil {
-				switch *fn.Return.Simple {
-				case "string":
-					return "const char*"
-				case "float":
-					return "double"
-				default:
-					if _, ok := env.GetStruct(*fn.Return.Simple); ok {
-						return *fn.Return.Simple
+			if fn, ok := env.GetFunc(v.Func); ok && fn.Return != nil {
+				if fn.Return.Simple != nil {
+					switch *fn.Return.Simple {
+					case "string":
+						return "const char*"
+					case "float":
+						return "double"
+					default:
+						if _, ok := env.GetStruct(*fn.Return.Simple); ok {
+							return *fn.Return.Simple
+						}
+						return "long long"
 					}
-					return "long long"
 				}
+				t := types.ResolveTypeRef(fn.Return, env)
+				return cTypeFromMochiType(t)
 			}
 		}
 	case *BinaryExpr:
