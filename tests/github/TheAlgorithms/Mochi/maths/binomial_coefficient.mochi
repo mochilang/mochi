@@ -1,0 +1,37 @@
+/*
+Binomial Coefficient via Pascal's Triangle
+
+Compute the binomial coefficient C(n, r), the number of ways to choose r
+items from n distinct items without regard to order.  Using Pascal's
+triangle, we maintain a one‑dimensional array representing a row of the
+triangle.  Starting with c[0] = 1, each subsequent row is built from right
+to left: c[j] += c[j-1].  After processing n rows the value at index r is
+C(n, r).  This dynamic programming approach runs in O(n*r) time while
+using only O(r) additional space and yields 0 when r > n.
+*/
+
+fun binomial_coefficient(n: int, r: int): int {
+  if n < 0 || r < 0 {
+    panic("n and r must be non-negative integers")
+  }
+  if n == 0 || r == 0 {
+    return 1
+  }
+  var c: list<int> = []
+  for _ in 0..(r + 1) {
+    c = append(c, 0)
+  }
+  c[0] = 1
+  var i = 1
+  while i <= n {
+    var j = if i < r { i } else { r }
+    while j > 0 {
+      c[j] = c[j] + c[j - 1]
+      j = j - 1
+    }
+    i = i + 1
+  }
+  return c[r]
+}
+
+print(str(binomial_coefficient(10, 5)))
