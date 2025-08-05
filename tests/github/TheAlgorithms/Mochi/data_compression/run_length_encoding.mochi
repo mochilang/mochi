@@ -1,0 +1,67 @@
+/*
+Run-Length Encoding (RLE)
+------------------------
+Run-length encoding compresses a string by replacing sequences of the same
+character with a single instance of that character followed by the run length.
+For example, "AAAABBBCCDAA" becomes "A4B3C2D1A2". Decoding reverses this
+process by expanding each character according to its count.
+
+This implementation scans the input string once. For encoding we maintain a
+current run count and append "<char><count>" whenever the character changes.
+Decoding iterates through the encoded string, parses each decimal count, and
+reconstructs the original text by repeating the character. Both operations run
+in O(n) time where n is the length of the respective input.
+*/
+
+fun run_length_encode(text: string): string {
+  if len(text) == 0 { return "" }
+  var encoded = ""
+  var count = 1
+  var i = 0
+  while i < len(text) {
+    if i + 1 < len(text) && text[i] == text[i + 1] {
+      count = count + 1
+    } else {
+      encoded = encoded + text[i] + str(count)
+      count = 1
+    }
+    i = i + 1
+  }
+  return encoded
+}
+
+fun run_length_decode(encoded: string): string {
+  var res = ""
+  var i = 0
+  while i < len(encoded) {
+    let ch = encoded[i]
+    i = i + 1
+    var num_str = ""
+    while i < len(encoded) && encoded[i] >= "0" && encoded[i] <= "9" {
+      num_str = num_str + encoded[i]
+      i = i + 1
+    }
+    let count = int(num_str)
+    var j = 0
+    while j < count {
+      res = res + ch
+      j = j + 1
+    }
+  }
+  return res
+}
+
+let example1 = "AAAABBBCCDAA"
+let encoded1 = run_length_encode(example1)
+print(encoded1)
+print(run_length_decode(encoded1))
+
+let example2 = "A"
+let encoded2 = run_length_encode(example2)
+print(encoded2)
+print(run_length_decode(encoded2))
+
+let example3 = "AAADDDDDDFFFCCCAAVVVV"
+let encoded3 = run_length_encode(example3)
+print(encoded3)
+print(run_length_decode(encoded3))
