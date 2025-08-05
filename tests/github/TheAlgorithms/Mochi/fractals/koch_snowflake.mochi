@@ -1,0 +1,104 @@
+/*
+Generate points of the Koch snowflake fractal.
+
+The Koch snowflake starts from an equilateral triangle. On every
+iteration each line segment is split into three equal parts and the
+middle segment is replaced by two segments forming an outward equilateral
+triangle. Repeating this for all segments produces a self-similar curve
+with infinitely increasing perimeter.
+
+This implementation works with 2D vectors and uses polynomial
+approximations for sine and cosine to avoid any foreign function
+interface. The `iterate` function repeatedly applies `iteration_step`,
+which inserts the new points for each segment. `rotate` performs a
+standard rotation of a vector in degrees.
+*/
+
+type Vec { x: float, y: float }
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun sin(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y3 = y2 * y
+  let y5 = y3 * y2
+  let y7 = y5 * y2
+  return y - y3/6.0 + y5/120.0 - y7/5040.0
+}
+
+fun cos(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y4 = y2 * y2
+  let y6 = y4 * y2
+  return 1.0 - y2/2.0 + y4/24.0 - y6/720.0
+}
+
+fun rotate(v: Vec, angle_deg: float): Vec {
+  let theta = angle_deg * PI / 180.0
+  let c = cos(theta)
+  let s = sin(theta)
+  return Vec { x: v.x * c - v.y * s, y: v.x * s + v.y * c }
+}
+
+fun iteration_step(vectors: list<Vec>): list<Vec> {
+  var new_vectors: list<Vec> = []
+  var i = 0
+  while i < len(vectors) - 1 {
+    let start = vectors[i]
+    let end = vectors[i + 1]
+    new_vectors = append(new_vectors, start)
+    let dx = end.x - start.x
+    let dy = end.y - start.y
+    let one_third = Vec { x: start.x + dx / 3.0, y: start.y + dy / 3.0 }
+    let mid = rotate(Vec { x: dx / 3.0, y: dy / 3.0 }, 60.0)
+    let peak = Vec { x: one_third.x + mid.x, y: one_third.y + mid.y }
+    let two_third = Vec { x: start.x + dx * 2.0 / 3.0, y: start.y + dy * 2.0 / 3.0 }
+    new_vectors = append(new_vectors, one_third)
+    new_vectors = append(new_vectors, peak)
+    new_vectors = append(new_vectors, two_third)
+    i = i + 1
+  }
+  new_vectors = append(new_vectors, vectors[len(vectors) - 1])
+  return new_vectors
+}
+
+fun iterate(initial: list<Vec>, steps: int): list<Vec> {
+  var vectors = initial
+  var i = 0
+  while i < steps {
+    vectors = iteration_step(vectors)
+    i = i + 1
+  }
+  return vectors
+}
+
+fun vec_to_string(v: Vec): string {
+  return "(" + str(v.x) + ", " + str(v.y) + ")"
+}
+
+fun vec_list_to_string(lst: list<Vec>): string {
+  var res = "["
+  var i = 0
+  while i < len(lst) {
+    res = res + vec_to_string(lst[i])
+    if i < len(lst) - 1 { res = res + ", " }
+    i = i + 1
+  }
+  res = res + "]"
+  return res
+}
+
+let VECTOR_1 = Vec { x: 0.0, y: 0.0 }
+let VECTOR_2 = Vec { x: 0.5, y: 0.8660254 }
+let VECTOR_3 = Vec { x: 1.0, y: 0.0 }
+let INITIAL_VECTORS = [VECTOR_1, VECTOR_2, VECTOR_3, VECTOR_1]
+
+let example = iterate([VECTOR_1, VECTOR_3], 1)
+print(vec_list_to_string(example))
