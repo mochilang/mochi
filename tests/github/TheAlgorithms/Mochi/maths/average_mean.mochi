@@ -1,0 +1,25 @@
+/*
+Compute the arithmetic mean of a list of numbers.
+The arithmetic mean is obtained by summing all elements and dividing by
+how many elements there are. If the list is empty the function panics
+with "List is empty". This mirrors the behaviour of the Python
+implementation which raises a ValueError.
+
+The algorithm traverses the list once so it runs in O(n) time and
+uses O(1) extra space beyond the input list.
+*/
+
+fun mean(nums: list<float>): float {
+  if len(nums) == 0 { panic("List is empty") }
+  var total: float = 0.0
+  var i: int = 0
+  while i < len(nums) {
+    total = total + nums[i]
+    i = i + 1
+  }
+  return total / (len(nums) as float)
+}
+
+print(str(mean([3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0])))
+print(str(mean([5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0])))
+print(str(mean([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0])))
