@@ -1,0 +1,47 @@
+/*
+Generate the Gray code sequence for a given number of bits.
+A Gray code lists all 2^n binary numbers so that consecutive values differ by
+exactly one bit. The algorithm builds the n-bit sequence recursively:
+start with the (n-1)-bit sequence, prefix 0 to the first half and prefix 1 to
+the reversed second half. This reflection method yields a cyclic ordering
+where the first and last numbers also differ by one bit. The overall
+complexity is O(2^n) time and space because every new level doubles the
+sequence length.
+*/
+
+fun pow2(exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun gray_code(bit_count: int): list<int> {
+  if bit_count == 0 {
+    return [0]
+  }
+  let prev = gray_code(bit_count - 1)
+  let add_val = pow2(bit_count - 1)
+  var res: list<int> = []
+  var i = 0
+  while i < len(prev) {
+    res = append(res, prev[i])
+    i = i + 1
+  }
+  var j = len(prev) - 1
+  while j >= 0 {
+    res = append(res, prev[j] + add_val)
+    j = j - 1
+  }
+  return res
+}
+
+let seq2 = gray_code(2)
+print(str(seq2))
+let seq1 = gray_code(1)
+print(str(seq1))
+let seq3 = gray_code(3)
+print(str(seq3))
