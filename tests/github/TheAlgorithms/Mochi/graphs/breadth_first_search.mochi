@@ -1,0 +1,77 @@
+/*
+Breadth First Search (BFS) traversal of a directed graph represented
+as an adjacency list.
+
+Each vertex stores the list of its outgoing edges in a map from the
+vertex id to a list of adjacent vertices.  BFS explores the graph
+layer by layer starting from a chosen source vertex.  It uses a queue
+for the frontier and a map to track visited vertices so each vertex is
+processed at most once.
+
+Time complexity: O(V + E) where V is number of vertices and E is number
+of edges.  Space complexity: O(V) for the queue and visited map.
+*/
+
+fun add_edge(graph: map<int, list<int>>, from: int, to: int) {
+  if from in graph {
+    graph[from] = append(graph[from], to)
+  } else {
+    graph[from] = [to]
+  }
+}
+
+fun print_graph(graph: map<int, list<int>>) {
+  for v in keys(graph) {
+    let adj = graph[v]
+    var line = str(v) + "  :  "
+    var i = 0
+    while i < len(adj) {
+      line = line + str(adj[i])
+      if i < len(adj) - 1 {
+        line = line + " -> "
+      }
+      i = i + 1
+    }
+    print(line)
+  }
+}
+
+fun bfs(graph: map<int, list<int>>, start: int): list<int> {
+  var visited: map<int, bool> = {}
+  var queue: list<int> = []
+  var order: list<int> = []
+
+  queue = append(queue, start)
+  visited[start] = true
+  var head = 0
+
+  while head < len(queue) {
+    let vertex = queue[head]
+    head = head + 1
+    order = append(order, vertex)
+
+    let neighbors = graph[vertex]
+    var i = 0
+    while i < len(neighbors) {
+      let neighbor = neighbors[i]
+      if !(neighbor in visited) {
+        visited[neighbor] = true
+        queue = append(queue, neighbor)
+      }
+      i = i + 1
+    }
+  }
+
+  return order
+}
+
+var g: map<int, list<int>> = {}
+add_edge(g, 0, 1)
+add_edge(g, 0, 2)
+add_edge(g, 1, 2)
+add_edge(g, 2, 0)
+add_edge(g, 2, 3)
+add_edge(g, 3, 3)
+
+print_graph(g)
+print(bfs(g, 2))
