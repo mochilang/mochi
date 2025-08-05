@@ -1,0 +1,95 @@
+/*
+Given a binary tree, find the maximum possible sum of values of any subtree
+that is also a Binary Search Tree (BST). A subtree qualifies as a BST when
+all nodes in the left subtree have smaller values and all nodes in the right
+subtree have larger values than the current node. The algorithm performs a
+post-order traversal, computing for each node whether its subtree forms a BST,
+its minimum and maximum values, and the sum of all nodes. Whenever a valid BST
+subtree is found, its sum is compared with a running maximum.
+
+Time complexity is O(n) because each node is processed exactly once. Space
+complexity is O(h) for the recursion stack where h is the tree height.
+*/
+
+type Node {
+  val: int,
+  left: int,
+  right: int
+}
+
+type Info {
+  is_bst: bool,
+  min_val: int,
+  max_val: int,
+  total: int,
+  best: int
+}
+
+fun min_int(a: int, b: int): int {
+  if a < b { return a }
+  return b
+}
+
+fun max_int(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+
+fun solver(nodes: list<Node>, idx: int): Info {
+  if idx == 0 - 1 {
+    return Info{ is_bst: true, min_val: 2147483647, max_val: -2147483648, total: 0, best: 0 }
+  }
+  let node = nodes[idx]
+  let left_info = solver(nodes, node.left)
+  let right_info = solver(nodes, node.right)
+  var current_best = max_int(left_info.best, right_info.best)
+  if left_info.is_bst && right_info.is_bst && left_info.max_val < node.val && node.val < right_info.min_val {
+    let sum_val = left_info.total + right_info.total + node.val
+    current_best = max_int(current_best, sum_val)
+    return Info{
+      is_bst: true,
+      min_val: min_int(left_info.min_val, node.val),
+      max_val: max_int(right_info.max_val, node.val),
+      total: sum_val,
+      best: current_best
+    }
+  }
+  return Info{ is_bst: false, min_val: 0, max_val: 0, total: 0, best: current_best }
+}
+
+fun max_sum_bst(nodes: list<Node>, root: int): int {
+  let info = solver(nodes, root)
+  return info.best
+}
+
+fun main() {
+  let t1_nodes = [
+    Node{ val: 4, left: 1, right: 0 - 1 },
+    Node{ val: 3, left: 2, right: 3 },
+    Node{ val: 1, left: 0 - 1, right: 0 - 1 },
+    Node{ val: 2, left: 0 - 1, right: 0 - 1 }
+  ]
+  print(max_sum_bst(t1_nodes, 0))
+
+  let t2_nodes = [
+    Node{ val: -4, left: 1, right: 2 },
+    Node{ val: -2, left: 0 - 1, right: 0 - 1 },
+    Node{ val: -5, left: 0 - 1, right: 0 - 1 }
+  ]
+  print(max_sum_bst(t2_nodes, 0))
+
+  let t3_nodes = [
+    Node{ val: 1, left: 1, right: 2 },
+    Node{ val: 4, left: 3, right: 4 },
+    Node{ val: 3, left: 5, right: 6 },
+    Node{ val: 2, left: 0 - 1, right: 0 - 1 },
+    Node{ val: 4, left: 0 - 1, right: 0 - 1 },
+    Node{ val: 2, left: 0 - 1, right: 0 - 1 },
+    Node{ val: 5, left: 7, right: 8 },
+    Node{ val: 4, left: 0 - 1, right: 0 - 1 },
+    Node{ val: 6, left: 0 - 1, right: 0 - 1 }
+  ]
+  print(max_sum_bst(t3_nodes, 0))
+}
+
+main()
