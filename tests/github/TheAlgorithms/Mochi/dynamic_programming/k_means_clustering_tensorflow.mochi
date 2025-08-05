@@ -1,0 +1,129 @@
+/*
+K-Means Clustering (TensorFlow Inspired)
+---------------------------------------
+
+This program reimplements the classic K-Means clustering algorithm
+without relying on external libraries.  Given a set of d-dimensional
+vectors and a desired number of clusters k, it repeatedly assigns each
+vector to the closest centroid and updates the centroid locations to the
+mean of their assigned vectors.
+
+Algorithm:
+1. Initialise centroids to the first k vectors.
+2. For a fixed number of iterations:
+   a. Assign every vector to the nearest centroid using squared
+      Euclidean distance.
+   b. Recompute each centroid as the mean of the vectors assigned to it.
+3. Return the final centroid positions and the cluster assignment of each
+   vector.
+
+The original Python version used TensorFlow for these computations; this
+pure Mochi implementation keeps the logic but runs entirely inside the
+Mochi VM.
+*/
+
+type KMeansResult {
+  centroids: list<list<float>>,
+  assignments: list<int>
+}
+
+fun distance_sq(a: list<float>, b: list<float>): float {
+  var sum: float = 0.0
+  var i: int = 0
+  while i < len(a) {
+    var diff: float = a[i] - b[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sum
+}
+
+fun mean(vectors: list<list<float>>): list<float> {
+  var dim: int = len(vectors[0])
+  var res: list<float> = []
+  var i: int = 0
+  while i < dim {
+    var total: float = 0.0
+    var j: int = 0
+    while j < len(vectors) {
+      total = total + vectors[j][i]
+      j = j + 1
+    }
+    res = append(res, total / len(vectors))
+    i = i + 1
+  }
+  return res
+}
+
+fun k_means(vectors: list<list<float>>, k: int, iterations: int): KMeansResult {
+  var centroids: list<list<float>> = []
+  var i: int = 0
+  while i < k {
+    centroids = append(centroids, vectors[i])
+    i = i + 1
+  }
+
+  var assignments: list<int> = []
+  var n: int = len(vectors)
+  i = 0
+  while i < n {
+    assignments = append(assignments, 0)
+    i = i + 1
+  }
+
+  var it: int = 0
+  while it < iterations {
+    var v: int = 0
+    while v < n {
+      var best: int = 0
+      var bestDist: float = distance_sq(vectors[v], centroids[0])
+      var c: int = 1
+      while c < k {
+        var d: float = distance_sq(vectors[v], centroids[c])
+        if d < bestDist {
+          bestDist = d
+          best = c
+        }
+        c = c + 1
+      }
+      assignments[v] = best
+      v = v + 1
+    }
+
+    var cIdx: int = 0
+    while cIdx < k {
+      var cluster: list<list<float>> = []
+      var v2: int = 0
+      while v2 < n {
+        if assignments[v2] == cIdx {
+          cluster = append(cluster, vectors[v2])
+        }
+        v2 = v2 + 1
+      }
+      if len(cluster) > 0 {
+        centroids[cIdx] = mean(cluster)
+      }
+      cIdx = cIdx + 1
+    }
+
+    it = it + 1
+  }
+
+  return KMeansResult { centroids: centroids, assignments: assignments }
+}
+
+fun main() {
+  let vectors = [
+    [1.0, 2.0],
+    [1.5, 1.8],
+    [5.0, 8.0],
+    [8.0, 8.0],
+    [1.0, 0.6],
+    [9.0, 11.0]
+  ]
+  let result = k_means(vectors, 2, 5)
+  print(str(result.centroids))
+  print(str(result.assignments))
+}
+
+main()
