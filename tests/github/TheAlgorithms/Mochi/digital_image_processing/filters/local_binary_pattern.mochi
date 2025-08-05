@@ -1,0 +1,63 @@
+/*
+Local Binary Pattern (LBP) is a texture descriptor for grayscale images.
+For each pixel, it compares the eight surrounding neighbors with the center
+pixel. A neighbor contributes a binary 1 if its value is greater than or equal
+to the center; otherwise it contributes 0. Starting from the top-right neighbor
+and moving clockwise, these bits form an 8-bit number that represents local
+texture around the pixel. Out-of-bound neighbors are treated as zero. The
+algorithm runs in O(n*m) time for an n by m image since each pixel is visited
+once.
+*/
+
+fun get_neighbors_pixel(image: list<list<int>>, x: int, y: int, center: int): int {
+  if x < 0 || y < 0 { return 0 }
+  if x >= len(image) || y >= len(image[0]) { return 0 }
+  if image[x][y] >= center { return 1 }
+  return 0
+}
+
+fun local_binary_value(image: list<list<int>>, x: int, y: int): int {
+  let center = image[x][y]
+  let powers: list<int> = [1, 2, 4, 8, 16, 32, 64, 128]
+  let neighbors: list<int> = [
+    get_neighbors_pixel(image, x - 1, y + 1, center),
+    get_neighbors_pixel(image, x, y + 1, center),
+    get_neighbors_pixel(image, x - 1, y, center),
+    get_neighbors_pixel(image, x + 1, y + 1, center),
+    get_neighbors_pixel(image, x + 1, y, center),
+    get_neighbors_pixel(image, x + 1, y - 1, center),
+    get_neighbors_pixel(image, x, y - 1, center),
+    get_neighbors_pixel(image, x - 1, y - 1, center),
+  ]
+  var sum = 0
+  var i = 0
+  while i < len(neighbors) {
+    sum = sum + neighbors[i] * powers[i]
+    i = i + 1
+  }
+  return sum
+}
+
+let image: list<list<int>> = [
+  [10, 10, 10, 10, 10],
+  [10, 20, 30, 20, 10],
+  [10, 30, 40, 30, 10],
+  [10, 20, 30, 20, 10],
+  [10, 10, 10, 10, 10]
+]
+
+var i = 0
+while i < len(image) {
+  var j = 0
+  var line = ""
+  while j < len(image[0]) {
+    let value = local_binary_value(image, i, j)
+    line = line + str(value)
+    if j < len(image[0]) - 1 {
+      line = line + " "
+    }
+    j = j + 1
+  }
+  print(line)
+  i = i + 1
+}
