@@ -1,0 +1,48 @@
+/*
+Naive Recursive 0/1 Knapsack
+
+Given lists of item weights and corresponding values, this algorithm
+computes the maximum total value achievable without exceeding a given
+maximum weight. At each step the algorithm decides whether to include
+the current item by exploring both possibilities recursively:
+
+ 1. Skip the item and evaluate the remaining items.
+ 2. Include the item (if it fits) and reduce the remaining weight.
+
+The recursion terminates when all items have been considered. The
+search explores all 2^n subsets, resulting in exponential time
+complexity. This implementation mirrors the naive recursive approach in
+Python's knapsack example.
+*/
+
+fun knapsack(
+  weights: list<int>,
+  values: list<int>,
+  number_of_items: int,
+  max_weight: int,
+  index: int
+): int {
+  if index == number_of_items {
+    return 0
+  }
+  let ans1 = knapsack(weights, values, number_of_items, max_weight, index + 1)
+  var ans2: int = 0
+  if weights[index] <= max_weight {
+    ans2 = values[index] + knapsack(weights, values, number_of_items, max_weight - weights[index], index + 1)
+  }
+  if ans1 > ans2 { return ans1 }
+  return ans2
+}
+
+fun main() {
+  let w1 = [1, 2, 4, 5]
+  let v1 = [5, 4, 8, 6]
+  let r1 = knapsack(w1, v1, 4, 5, 0)
+  print(str(r1))
+  let w2 = [3, 4, 5]
+  let v2 = [10, 9, 8]
+  let r2 = knapsack(w2, v2, 3, 25, 0)
+  print(str(r2))
+}
+
+main()
