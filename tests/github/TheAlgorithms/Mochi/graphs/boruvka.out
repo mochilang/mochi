@@ -1,0 +1,22 @@
+Added edge [0 - 3]
+Added weight: 5
+
+Added edge [0 - 1]
+Added weight: 10
+
+Added edge [2 - 3]
+Added weight: 4
+
+Added edge [4 - 7]
+Added weight: 5
+
+Added edge [4 - 5]
+Added weight: 10
+
+Added edge [6 - 7]
+Added weight: 4
+
+Added edge [3 - 4]
+Added weight: 8
+
+The total weight of the minimal spanning tree is: 46
