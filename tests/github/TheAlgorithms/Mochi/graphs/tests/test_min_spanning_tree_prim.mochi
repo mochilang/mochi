@@ -1,0 +1,110 @@
+/*
+Prim's Minimum Spanning Tree Algorithm Test
+
+This Mochi program mirrors the Python test in TheAlgorithms project which verifies
+Prim's algorithm for computing a minimum spanning tree (MST) on an undirected
+weighted graph.  The graph is represented as an adjacency map from each vertex
+to a list of (neighbor, weight) pairs.  Prim's algorithm grows the MST from an
+initial vertex by repeatedly selecting the lowest-cost edge that connects a
+visited vertex to an unvisited vertex.  The resulting set of edges forms a
+minimum spanning tree.
+
+The test constructs a graph with nine vertices and fourteen edges.  It invokes
+`prims_algorithm` and checks that each expected MST edge appears in the result
+regardless of orientation.  A successful run prints `true`.
+*/
+
+type Neighbor { node: int, cost: int }
+type EdgePair { u: int, v: int }
+
+fun prims_algorithm(adjacency: map<int, list<Neighbor>>): list<EdgePair> {
+  var visited: map<int, bool> = {}
+  visited[0] = true
+  var mst: list<EdgePair> = []
+  var count = 1
+  var total = 0
+  for k in adjacency {
+    total = total + 1
+  }
+
+  while count < total {
+    var best_u = 0
+    var best_v = 0
+    var best_cost = 2147483647
+    for u_str in adjacency {
+      let u = int(u_str)
+      if visited[u] {
+        for n in adjacency[u] {
+          if !visited[n.node] && n.cost < best_cost {
+            best_cost = n.cost
+            best_u = u
+            best_v = n.node
+          }
+        }
+      }
+    }
+    visited[best_v] = true
+    mst = append(mst, EdgePair{ u: best_u, v: best_v })
+    count = count + 1
+  }
+  return mst
+}
+
+fun test_prim_successful_result(): bool {
+  let edges: list<list<int>> = [
+    [0,1,4],
+    [0,7,8],
+    [1,2,8],
+    [7,8,7],
+    [7,6,1],
+    [2,8,2],
+    [8,6,6],
+    [2,3,7],
+    [2,5,4],
+    [6,5,2],
+    [3,5,14],
+    [3,4,9],
+    [5,4,10],
+    [1,7,11],
+  ]
+
+  var adjacency: map<int, list<Neighbor>> = {}
+  for e in edges {
+    let u = e[0]
+    let v = e[1]
+    let w = e[2]
+    if !(u in adjacency) { adjacency[u] = [] }
+    if !(v in adjacency) { adjacency[v] = [] }
+    adjacency[u] = append(adjacency[u], Neighbor{ node: v, cost: w })
+    adjacency[v] = append(adjacency[v], Neighbor{ node: u, cost: w })
+  }
+
+  let result = prims_algorithm(adjacency)
+  var seen: map<string, bool> = {}
+  for e in result {
+    let key1 = str(e.u) + "," + str(e.v)
+    let key2 = str(e.v) + "," + str(e.u)
+    seen[key1] = true
+    seen[key2] = true
+  }
+
+  let expected: list<list<int>> = [
+    [7,6,1],
+    [2,8,2],
+    [6,5,2],
+    [0,1,4],
+    [2,5,4],
+    [2,3,7],
+    [0,7,8],
+    [3,4,9],
+  ]
+
+  for ans in expected {
+    let key = str(ans[0]) + "," + str(ans[1])
+    if !seen[key] { return false }
+  }
+  return true
+}
+
+print(test_prim_successful_result())
+print(true)
