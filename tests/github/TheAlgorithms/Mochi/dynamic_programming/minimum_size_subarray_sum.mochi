@@ -1,0 +1,45 @@
+/*
+Find the length of the shortest contiguous subarray with sum at least a target.
+
+The algorithm uses a sliding window. Two pointers define the current window
+[left, right]. We expand the right pointer, accumulating the sum of the window.
+Whenever the sum becomes greater than or equal to the target, we attempt to
+shrink the window from the left to find the minimal length that still satisfies
+the condition. If no such subarray exists, the function returns 0. The approach
+runs in O(n) time and uses O(1) extra space.
+*/
+
+fun minimum_subarray_sum(target: int, numbers: list<int>): int {
+  let n = len(numbers)
+  if n == 0 { return 0 }
+  if target == 0 {
+    var i = 0
+    while i < n {
+      if numbers[i] == 0 { return 0 }
+      i = i + 1
+    }
+  }
+  var left = 0
+  var right = 0
+  var curr_sum = 0
+  var min_len = n + 1
+  while right < n {
+    curr_sum = curr_sum + numbers[right]
+    while curr_sum >= target && left <= right {
+      let current_len = right - left + 1
+      if current_len < min_len {
+        min_len = current_len
+      }
+      curr_sum = curr_sum - numbers[left]
+      left = left + 1
+    }
+    right = right + 1
+  }
+  if min_len == n + 1 { return 0 }
+  return min_len
+}
+
+print(str(minimum_subarray_sum(7, [2, 3, 1, 2, 4, 3])))
+print(str(minimum_subarray_sum(7, [2, 3, -1, 2, 4, -3])))
+print(str(minimum_subarray_sum(11, [1, 1, 1, 1, 1, 1, 1, 1])))
+print(str(minimum_subarray_sum(0, [1, 2, 3])))
