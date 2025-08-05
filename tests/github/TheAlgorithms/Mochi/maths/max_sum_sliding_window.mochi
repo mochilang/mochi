@@ -1,0 +1,52 @@
+/*
+Maximum Sum of K Consecutive Elements Using Sliding Window
+----------------------------------------------------------
+Given a list of integers and an integer `k`, compute the maximum
+possible sum of any `k` consecutive elements in the list.  A naive
+approach would evaluate every window separately in O(n*k) time.  The
+sliding window technique avoids redundant work by maintaining the sum of
+the current window and updating it as the window moves forward: subtract
+the element leaving the window and add the new element entering.  This
+reduces the time complexity to O(n) with O(1) additional space.
+
+The function below validates that `k` is non‑negative and does not exceed
+the list length.  It then calculates the sum of the first window and
+iteratively updates the sum while tracking the maximum encountered.
+*/
+
+fun max_sum_sliding_window(arr: list<int>, k: int): int {
+  if k < 0 || len(arr) < k { panic("Invalid Input") }
+
+  var idx = 0
+  var current_sum = 0
+  while idx < k {
+    current_sum = current_sum + arr[idx]
+    idx = idx + 1
+  }
+  var max_sum = current_sum
+
+  var i = 0
+  while i < len(arr) - k {
+    current_sum = current_sum - arr[i] + arr[i + k]
+    if current_sum > max_sum {
+      max_sum = current_sum
+    }
+    i = i + 1
+  }
+  return max_sum
+}
+
+fun test_max_sum_sliding_window() {
+  let arr1: list<int> = [1, 4, 2, 10, 2, 3, 1, 0, 20]
+  if max_sum_sliding_window(arr1, 4) != 24 { panic("test1 failed") }
+  let arr2: list<int> = [1, 4, 2, 10, 2, 13, 1, 0, 2]
+  if max_sum_sliding_window(arr2, 4) != 27 { panic("test2 failed") }
+}
+
+fun main() {
+  test_max_sum_sliding_window()
+  let sample: list<int> = [1, 4, 2, 10, 2, 3, 1, 0, 20]
+  print(str(max_sum_sliding_window(sample, 4)))
+}
+
+main()
