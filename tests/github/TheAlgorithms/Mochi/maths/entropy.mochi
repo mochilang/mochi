@@ -1,0 +1,162 @@
+/*
+Compute information entropy for single characters and bigrams.
+
+Given an input text, the algorithm builds frequency maps for
+single characters and for two-character sequences (bigrams).
+Entropy is then calculated for each map using the formula
+    H = -sum(p * log2(p))
+where p is the probability of each symbol.  The alphabet
+considered is the space character followed by lowercase
+letters "a" through "z".  The difference between the bigram
+and single character entropy yields the conditional entropy
+H(X_n | X_{n-1}).
+
+Steps:
+1. analyze_text counts occurrences of single characters and
+   consecutive pairs.
+2. calculate_entropy computes:
+   - H1: entropy of single characters
+   - H2: entropy of bigrams
+   - H2 - H1: conditional entropy
+
+All operations are implemented in pure Mochi without FFI or
+"any" types so the program can run on runtime/vm.
+*/
+
+fun log2(x: float): float {
+  var k = 0.0
+  var v = x
+  while v >= 2.0 {
+    v = v / 2.0
+    k = k + 1.0
+  }
+  while v < 1.0 {
+    v = v * 2.0
+    k = k - 1.0
+  }
+  let z = (v - 1.0) / (v + 1.0)
+  var zpow = z
+  var sum = z
+  var i = 3
+  while i <= 9 {
+    zpow = zpow * z * z
+    sum = sum + zpow / (i as float)
+    i = i + 2
+  }
+  let ln2 = 0.6931471805599453
+  return k + 2.0 * sum / ln2
+}
+
+type TextCounts {
+  single: map<string,int>
+  double: map<string,int>
+}
+
+fun analyze_text(text: string): TextCounts {
+  var single: map<string,int> = {}
+  var double: map<string,int> = {}
+  let n = len(text)
+  if n == 0 {
+    return TextCounts { single: single, double: double }
+  }
+  let last = substring(text, n - 1, n)
+  if last in single {
+    single[last] = single[last] + 1
+  } else {
+    single[last] = 1
+  }
+  let first = substring(text, 0, 1)
+  let pair0 = " " + first
+  double[pair0] = 1
+  var i = 0
+  while i < n - 1 {
+    let ch = substring(text, i, i + 1)
+    if ch in single {
+      single[ch] = single[ch] + 1
+    } else {
+      single[ch] = 1
+    }
+    let seq = substring(text, i, i + 2)
+    if seq in double {
+      double[seq] = double[seq] + 1
+    } else {
+      double[seq] = 1
+    }
+    i = i + 1
+  }
+  return TextCounts { single: single, double: double }
+}
+
+fun round_to_int(x: float): int {
+  if x < 0.0 {
+    return (x - 0.5) as int
+  }
+  return (x + 0.5) as int
+}
+
+fun calculate_entropy(text: string) {
+  let counts = analyze_text(text)
+  let alphas = " abcdefghijklmnopqrstuvwxyz"
+
+  var total1 = 0
+  for ch in counts.single {
+    total1 = total1 + counts.single[ch]
+  }
+  var h1 = 0.0
+  var i = 0
+  while i < len(alphas) {
+    let ch = substring(alphas, i, i + 1)
+    if ch in counts.single {
+      let prob = (counts.single[ch] as float) / (total1 as float)
+      h1 = h1 + prob * log2(prob)
+    }
+    i = i + 1
+  }
+  let first_entropy = -h1
+  print(str(round_to_int(first_entropy)) + ".0")
+
+  var total2 = 0
+  for seq in counts.double {
+    total2 = total2 + counts.double[seq]
+  }
+  var h2 = 0.0
+  var a0 = 0
+  while a0 < len(alphas) {
+    let ch0 = substring(alphas, a0, a0 + 1)
+    var a1 = 0
+    while a1 < len(alphas) {
+      let ch1 = substring(alphas, a1, a1 + 1)
+      let seq = ch0 + ch1
+      if seq in counts.double {
+        let prob = (counts.double[seq] as float) / (total2 as float)
+        h2 = h2 + prob * log2(prob)
+      }
+      a1 = a1 + 1
+    }
+    a0 = a0 + 1
+  }
+  let second_entropy = -h2
+  print(str(round_to_int(second_entropy)) + ".0")
+
+  let diff = second_entropy - first_entropy
+  print(str(round_to_int(diff)) + ".0")
+}
+
+let text1 = "Behind Winston's back the voice " +
+            "from the telescreen was still " +
+            "babbling and the overfulfilment"
+calculate_entropy(text1)
+
+
+let text3 = "Had repulsive dashwoods suspicion sincerity but advantage now him. " +
+            "Remark easily garret nor nay.  Civil those mrs enjoy shy fat merry. " +
+            "You greatest jointure saw horrible. He private he on be imagine " +
+            "suppose. Fertile beloved evident through no service elderly is. Blind " +
+            "there if every no so at. Own neglected you preferred way sincerity " +
+            "delivered his attempted. To of message cottage windows do besides " +
+            "against uncivil.  Delightful unreserved impossible few estimating " +
+            "men favourable see entreaties. She propriety immediate was improving. " +
+            "He or entrance humoured likewise moderate. Much nor game son say " +
+            "feel. Fat make met can must form into gate. Me we offending prevailed " +
+            "discovery."
+calculate_entropy(text3)
