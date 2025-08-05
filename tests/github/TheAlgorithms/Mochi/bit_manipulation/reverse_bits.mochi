@@ -1,0 +1,47 @@
+/*
+Reverse the bits of a 32-bit non-negative integer.
+
+The function `reverse_bit` iterates over the 32 bit positions of the input.
+At each step it shifts the current result left by one, copies the least
+significant bit of the remaining number, and appends that bit to the result.
+After processing all bits, the helper `get_reverse_bit_string` converts the
+resulting integer into a string by repeatedly taking the least significant
+bit and shifting right.  Both procedures run in O(32) time and use constant
+space because the loop count is fixed at 32.
+*/
+
+fun get_reverse_bit_string(number: int): string {
+  var bit_string = ""
+  var n = number
+  var i = 0
+  while i < 32 {
+    bit_string = bit_string + str(n % 2)
+    n = n / 2
+    i = i + 1
+  }
+  return bit_string
+}
+
+fun reverse_bit(number: int): string {
+  if number < 0 {
+    panic("the value of input must be positive")
+  }
+  var n = number
+  var result: int = 0
+  var i = 1
+  while i <= 32 {
+    result = result * 2
+    let end_bit = n % 2
+    n = n / 2
+    result = result + end_bit
+    i = i + 1
+  }
+  return get_reverse_bit_string(result)
+}
+
+print(reverse_bit(25))
+print(reverse_bit(37))
+print(reverse_bit(21))
+print(reverse_bit(58))
+print(reverse_bit(0))
+print(reverse_bit(256))
