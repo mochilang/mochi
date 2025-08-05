@@ -1,0 +1,55 @@
+/*
+Hyperbolic Tangent Activation Function
+-------------------------------------
+Implements the element-wise hyperbolic tangent function for a list of
+real numbers.  For each input x the function computes
+
+  tanh(x) = (e^x - e^{-x}) / (e^x + e^{-x})
+          = (2 / (1 + e^{-2x})) - 1
+
+The hyperbolic tangent maps any real value into (-1, 1) and is a common
+activation function in neural networks.  To remain compatible with the
+`runtime/vm`, this implementation provides a simple Taylor series
+approximation of the exponential function instead of relying on foreign
+libraries.
+*/
+
+fun expApprox(x: float): float {
+  var neg = false
+  var y = x
+  if x < 0.0 {
+    neg = true
+    y = -x
+  }
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if neg { return 1.0 / sum }
+  return sum
+}
+
+fun tangent_hyperbolic(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let t = (2.0 / (1.0 + expApprox(-2.0 * x))) - 1.0
+    result = append(result, t)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let v1: list<float> = [1.0, 5.0, 6.0, -0.67]
+  let v2: list<float> = [8.0, 10.0, 2.0, -0.98, 13.0]
+  print(str(tangent_hyperbolic(v1)))
+  print(str(tangent_hyperbolic(v2)))
+}
+
+main()
