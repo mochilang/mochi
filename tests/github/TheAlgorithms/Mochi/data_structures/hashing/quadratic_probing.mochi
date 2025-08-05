@@ -1,0 +1,113 @@
+/*
+Quadratic probing resolves collisions in open-addressed hash tables by probing
+new slots using successive squares of an offset added to the original hash.
+If a collision occurs at index h, the algorithm tries h+1^2, h+2^2, h+3^2, ...
+until an empty slot is found or a load factor limit is reached.
+
+This program builds a simple integer hash table that uses quadratic probing for
+insertion and demonstrates the resulting key positions after several inserts.
+*/
+
+type HashTable {
+  size_table: int
+  values: list<int>
+  lim_charge: float
+}
+
+fun create_hash_table(size: int): HashTable {
+  var vals: list<int> = []
+  var i = 0
+  while i < size {
+    vals = append(vals, null)
+    i = i + 1
+  }
+  return HashTable{ size_table: size, values: vals, lim_charge: 0.75 }
+}
+
+fun hash_function(table: HashTable, key: int): int {
+  return key % table.size_table
+}
+
+fun balanced_factor(table: HashTable): float {
+  var count = 0
+  var i = 0
+  while i < len(table.values) {
+    if table.values[i] != null {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return (count as float) / (table.size_table as float)
+}
+
+fun collision_resolution(table: HashTable, key: int): int {
+  var i = 1
+  var new_key = hash_function(table, key + i * i)
+  while table.values[new_key] != null && table.values[new_key] != key {
+    i = i + 1
+    if balanced_factor(table) >= table.lim_charge {
+      return table.size_table
+    }
+    new_key = hash_function(table, key + i * i)
+  }
+  return new_key
+}
+
+fun insert_data(table: HashTable, data: int): void {
+  var key = hash_function(table, data)
+  var vals = table.values
+  if vals[key] == null {
+    vals[key] = data
+  } else if vals[key] == data {
+    table.values = vals
+    return
+  } else {
+    let new_key = collision_resolution(table, key)
+    if new_key < len(vals) && vals[new_key] == null {
+      vals[new_key] = data
+    }
+  }
+  table.values = vals
+}
+
+fun int_to_string(n: int): string {
+  if n == 0 { return "0" }
+  var num = n
+  var neg = false
+  if num < 0 {
+    neg = true
+    num = -num
+  }
+  var res = ""
+  while num > 0 {
+    let digit = num % 10
+    let ch = substring("0123456789", digit, digit + 1)
+    res = ch + res
+    num = num / 10
+  }
+  if neg { res = "-" + res }
+  return res
+}
+
+fun keys_to_string(table: HashTable): string {
+  var result = "{"
+  var first = true
+  var i = 0
+  while i < len(table.values) {
+    let v = table.values[i]
+    if v != null {
+      if !first { result = result + ", " }
+      result = result + int_to_string(i) + ": " + int_to_string(v)
+      first = false
+    }
+    i = i + 1
+  }
+  result = result + "}"
+  return result
+}
+
+let qp = create_hash_table(8)
+insert_data(qp, 0)
+insert_data(qp, 999)
+insert_data(qp, 111)
+print(keys_to_string(qp))
