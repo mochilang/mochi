@@ -1,0 +1,82 @@
+/*
+Identify strongly connected components (SCCs) in a directed graph using
+Kosaraju's algorithm. The graph is represented as an adjacency list where
+vertices are indexed from 0 to n-1. The algorithm consists of three steps:
+
+1. Perform a depth-first search to record vertices in finishing order.
+2. Reverse all edges in the graph.
+3. Process vertices in reverse finishing order on the reversed graph,
+   collecting each depth-first tree as one strongly connected component.
+
+This runs in O(V + E) time for V vertices and E edges.
+*/
+
+fun topology_sort(graph: list<list<int>>, vert: int, visited: list<bool>): list<int> {
+  visited[vert] = true
+  var order: list<int> = []
+  for neighbour in graph[vert] {
+    if !visited[neighbour] {
+      order = concat(order, topology_sort(graph, neighbour, visited))
+    }
+  }
+  order = append(order, vert)
+  return order
+}
+
+fun find_component(graph: list<list<int>>, vert: int, visited: list<bool>): list<int> {
+  visited[vert] = true
+  var comp: list<int> = [vert]
+  for neighbour in graph[vert] {
+    if !visited[neighbour] {
+      comp = concat(comp, find_component(graph, neighbour, visited))
+    }
+  }
+  return comp
+}
+
+fun strongly_connected_components(graph: list<list<int>>): list<list<int>> {
+  let n = len(graph)
+  var visited: list<bool> = []
+  for _ in 0..n {
+    visited = append(visited, false)
+  }
+  var reversed: list<list<int>> = []
+  for _ in 0..n {
+    reversed = append(reversed, [])
+  }
+  for i in 0..n {
+    for neighbour in graph[i] {
+      reversed[neighbour] = append(reversed[neighbour], i)
+    }
+  }
+  var order: list<int> = []
+  for i in 0..n {
+    if !visited[i] {
+      order = concat(order, topology_sort(graph, i, visited))
+    }
+  }
+  visited = []
+  for _ in 0..n {
+    visited = append(visited, false)
+  }
+  var components: list<list<int>> = []
+  var i = 0
+  while i < n {
+    let v = order[n - i - 1]
+    if !visited[v] {
+      let comp = find_component(reversed, v, visited)
+      components = append(components, comp)
+    }
+    i = i + 1
+  }
+  return components
+}
+
+fun main() {
+  let test_graph_1: list<list<int>> = [[2, 3], [0], [1], [4], []]
+  let test_graph_2: list<list<int>> = [[1, 2, 3], [2], [0], [4], [5], [3]]
+  print(str(strongly_connected_components(test_graph_1)))
+  print(str(strongly_connected_components(test_graph_2)))
+}
+
+main()
