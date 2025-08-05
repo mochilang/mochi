@@ -1,0 +1,49 @@
+/*
+Check whether a singly linked list is a palindrome.
+
+The original Python implementation works with a ListNode structure and
+uses several techniques.  This Mochi version models the linked list as a
+simple array of integers and applies the fast/slow pointer technique.
+Values from the first half of the list are pushed on a stack while the
+fast pointer moves two nodes at a time.  Once the midpoint is reached we
+skip the middle element when the length is odd and compare the remaining
+second half with the stack contents in reverse order.  If all
+corresponding elements match, the list is a palindrome.
+
+Time complexity: O(n)
+Space complexity: O(n) for the stack used during comparison.
+*/
+
+fun is_palindrome(values: list<int>): bool {
+  var stack: list<int> = []
+  var fast = 0
+  var slow = 0
+  let n = len(values)
+  while fast < n && fast + 1 < n {
+    stack = append(stack, values[slow])
+    slow = slow + 1
+    fast = fast + 2
+  }
+  if fast == n - 1 {
+    slow = slow + 1
+  }
+  var i = len(stack) - 1
+  while slow < n {
+    if stack[i] != values[slow] {
+      return false
+    }
+    i = i - 1
+    slow = slow + 1
+  }
+  return true
+}
+
+fun main() {
+  print(is_palindrome([]))
+  print(is_palindrome([1]))
+  print(is_palindrome([1,2]))
+  print(is_palindrome([1,2,1]))
+  print(is_palindrome([1,2,2,1]))
+}
+
+main()
