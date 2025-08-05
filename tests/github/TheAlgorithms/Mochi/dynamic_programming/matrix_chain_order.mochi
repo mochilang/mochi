@@ -1,0 +1,79 @@
+/*
+Matrix Chain Order via Dynamic Programming.
+
+Given a sequence of matrices where the ith matrix has dimension p[i-1] x p[i],
+we seek the most efficient way to multiply these matrices together.  The
+matrix_chain_order function uses dynamic programming to compute the minimum
+number of scalar multiplications needed and records the optimal split points.
+The algorithm runs in O(n^3) time and O(n^2) space.
+*/
+
+type MatrixChainResult {
+  matrix: list<list<int>>,
+  solution: list<list<int>>
+}
+
+fun make_2d(n: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun matrix_chain_order(arr: list<int>): MatrixChainResult {
+  let n = len(arr)
+  var m: list<list<int>> = make_2d(n)
+  var s: list<list<int>> = make_2d(n)
+  var chain_length = 2
+  while chain_length < n {
+    var a = 1
+    while a < n - chain_length + 1 {
+      let b = a + chain_length - 1
+      m[a][b] = 1000000000
+      var c = a
+      while c < b {
+        let cost = m[a][c] + m[c + 1][b] + arr[a - 1] * arr[c] * arr[b]
+        if cost < m[a][b] {
+          m[a][b] = cost
+          s[a][b] = c
+        }
+        c = c + 1
+      }
+      a = a + 1
+    }
+    chain_length = chain_length + 1
+  }
+  return MatrixChainResult { matrix: m, solution: s }
+}
+
+fun optimal_parenthesization(s: list<list<int>>, i: int, j: int): string {
+  if i == j {
+    return "A" + str(i)
+  } else {
+    let left = optimal_parenthesization(s, i, s[i][j])
+    let right = optimal_parenthesization(s, s[i][j] + 1, j)
+    return "( " + left + " " + right + " )"
+  }
+}
+
+fun main() {
+  let arr = [30, 35, 15, 5, 10, 20, 25]
+  let n = len(arr)
+  let res = matrix_chain_order(arr)
+  let m = res.matrix
+  let s = res.solution
+  print("No. of Operation required: " + str(m[1][n - 1]))
+  let seq = optimal_parenthesization(s, 1, n - 1)
+  print(seq)
+}
+
+main()
