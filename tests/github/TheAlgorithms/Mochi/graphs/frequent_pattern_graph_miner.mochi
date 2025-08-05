@@ -1,0 +1,328 @@
+/*
+Frequent Pattern Graph Miner
+
+This Mochi program implements a simplified version of the FP-GraphMiner
+algorithm.  A number of graphs are supplied as edge lists.  For each distinct
+edge we compute a bitcode that records in which graphs the edge appears.  Edges
+with the same bitcode are grouped together into nodes.  Nodes are clustered by
+the number of graphs that contain them (their support).  A directed graph is
+constructed in which an edge exists from node A to node B when the bitcode of A
+is a subset of B.  Depth first search on this graph from nodes that satisfy a
+minimum support threshold yields the frequent subgraphs.
+*/
+
+let EDGE_ARRAY: list<list<list<string>>> = [
+  [["ab","e1"],["ac","e3"],["ad","e5"],["bc","e4"],["bd","e2"],["be","e6"],["bh","e12"],["cd","e2"],["ce","e4"],["de","e1"],["df","e8"],["dg","e5"],["dh","e10"],["ef","e3"],["eg","e2"],["fg","e6"],["gh","e6"],["hi","e3"]],
+  [["ab","e1"],["ac","e3"],["ad","e5"],["bc","e4"],["bd","e2"],["be","e6"],["cd","e2"],["de","e1"],["df","e8"],["ef","e3"],["eg","e2"],["fg","e6"]],
+  [["ab","e1"],["ac","e3"],["bc","e4"],["bd","e2"],["de","e1"],["df","e8"],["dg","e5"],["ef","e3"],["eg","e2"],["eh","e12"],["fg","e6"],["fh","e10"],["gh","e6"]],
+  [["ab","e1"],["ac","e3"],["bc","e4"],["bd","e2"],["bh","e12"],["cd","e2"],["df","e8"],["dh","e10"]],
+  [["ab","e1"],["ac","e3"],["ad","e5"],["bc","e4"],["bd","e2"],["cd","e2"],["ce","e4"],["de","e1"],["df","e8"],["dg","e5"],["ef","e3"],["eg","e2"],["fg","e6"]]
+]
+
+type NodesData {
+  map: map<string, list<string>>,
+  keys: list<string>
+}
+
+type ClusterData {
+  clusters: map<int, list<string>>,
+  weights: list<int>
+}
+
+type GraphData {
+  edges: map<string, list<string>>,
+  keys: list<string>
+}
+
+fun contains(lst: list<string>, item: string): bool {
+  for v in lst { if v == item { return true } }
+  return false
+}
+
+fun get_distinct_edge(edge_array: list<list<list<string>>>): list<string> {
+  var distinct: list<string> = []
+  for row in edge_array {
+    for item in row {
+      let e = item[0]
+      if !contains(distinct, e) { distinct = append(distinct, e) }
+    }
+  }
+  return distinct
+}
+
+fun get_bitcode(edge_array: list<list<list<string>>>, de: string): string {
+  var bitcode = ""
+  var i = 0
+  while i < len(edge_array) {
+    var found = false
+    for item in edge_array[i] {
+      if item[0] == de { found = true; break }
+    }
+    if found { bitcode = bitcode + "1" } else { bitcode = bitcode + "0" }
+    i = i + 1
+  }
+  return bitcode
+}
+
+fun count_ones(s: string): int {
+  var c = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == "1" { c = c + 1 }
+    i = i + 1
+  }
+  return c
+}
+
+fun get_frequency_table(edge_array: list<list<list<string>>>): list<map<string,string>> {
+  let distinct = get_distinct_edge(edge_array)
+  var table: list<map<string,string>> = []
+  for e in distinct {
+    let bit = get_bitcode(edge_array, e)
+    let cnt = count_ones(bit)
+    var entry: map<string,string> = {"edge": e, "count": str(cnt), "bit": bit}
+    table = append(table, entry)
+  }
+  var i = 0
+  while i < len(table) {
+    var max_i = i
+    var j = i + 1
+    while j < len(table) {
+      if toi(table[j]["count"]) > toi(table[max_i]["count"]) { max_i = j }
+      j = j + 1
+    }
+    let tmp = table[i]
+    table[i] = table[max_i]
+    table[max_i] = tmp
+    i = i + 1
+  }
+  return table
+}
+
+fun get_nodes(freq_table: list<map<string,string>>): NodesData {
+  var nodes: map<string, list<string>> = {}
+  var keys: list<string> = []
+  for f in freq_table {
+    let code = f["bit"]
+    let edge = f["edge"]
+    if code in nodes {
+      nodes[code] = append(nodes[code], edge)
+    } else {
+      nodes[code] = [edge]
+      keys = append(keys, code)
+    }
+  }
+  return NodesData{map: nodes, keys: keys}
+}
+
+fun get_cluster(nodes: NodesData): ClusterData {
+  var clusters: map<int, list<string>> = {}
+  var weights: list<int> = []
+  var i = 0
+  while i < len(nodes.keys) {
+    let code = nodes.keys[i]
+    let wt = count_ones(code)
+    if wt in clusters {
+      clusters[wt] = append(clusters[wt], code)
+    } else {
+      clusters[wt] = [code]
+      weights = append(weights, wt)
+    }
+    i = i + 1
+  }
+  return ClusterData{clusters: clusters, weights: weights}
+}
+
+fun get_support(clusters: ClusterData): list<int> {
+  var sup: list<int> = []
+  var i = 0
+  while i < len(clusters.weights) {
+    let w = clusters.weights[i]
+    sup = append(sup, w * 100 / len(clusters.weights))
+    i = i + 1
+  }
+  return sup
+}
+
+fun contains_bits(a: string, b: string): bool {
+  var i = 0
+  while i < len(a) {
+    let c1 = substring(a, i, i + 1)
+    let c2 = substring(b, i, i + 1)
+    if c1 == "1" && c2 != "1" { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun max_cluster_key(clusters: ClusterData): int {
+  var m = 0
+  var i = 0
+  while i < len(clusters.weights) {
+    let w = clusters.weights[i]
+    if w > m { m = w }
+    i = i + 1
+  }
+  return m
+}
+
+fun get_cluster_codes(clusters: ClusterData, wt: int): list<string> {
+  if wt in clusters.clusters { return clusters.clusters[wt] }
+  return []
+}
+
+fun create_edge(nodes: NodesData, graph: map<string, list<string>>, gkeys: list<string>, clusters: ClusterData, c1: int, maxk: int): list<string> {
+  var keys = gkeys
+  let codes1 = get_cluster_codes(clusters, c1)
+  var idx1 = 0
+  while idx1 < len(codes1) {
+    let i_code = codes1[idx1]
+    var count = 0
+    var c2 = c1 + 1
+    while c2 <= maxk {
+      let codes2 = get_cluster_codes(clusters, c2)
+      var j = 0
+      while j < len(codes2) {
+        let j_code = codes2[j]
+        if contains_bits(i_code, j_code) {
+          if i_code in graph {
+            graph[i_code] = append(graph[i_code], j_code)
+          } else {
+            graph[i_code] = [j_code]
+            if !contains(keys, i_code) { keys = append(keys, i_code) }
+          }
+          if !contains(keys, j_code) { keys = append(keys, j_code) }
+          count = count + 1
+        }
+        j = j + 1
+      }
+      if count == 0 { c2 = c2 + 1 } else { break }
+    }
+    idx1 = idx1 + 1
+  }
+  return keys
+}
+
+fun construct_graph(clusters: ClusterData, nodes: NodesData): GraphData {
+  let maxk = max_cluster_key(clusters)
+  let top_codes = get_cluster_codes(clusters, maxk)
+  var graph: map<string, list<string>> = {}
+  var keys: list<string> = ["Header"]
+  graph["Header"] = []
+  var i = 0
+  while i < len(top_codes) {
+    let code = top_codes[i]
+    graph["Header"] = append(graph["Header"], code)
+    graph[code] = ["Header"]
+    keys = append(keys, code)
+    i = i + 1
+  }
+  var c = 1
+  while c < maxk {
+    keys = create_edge(nodes, graph, keys, clusters, c, maxk)
+    c = c + 1
+  }
+  return GraphData{edges: graph, keys: keys}
+}
+
+var paths: list<list<string>> = []
+
+fun copy_list(lst: list<string>): list<string> {
+  var n: list<string> = []
+  for v in lst { n = append(n, v) }
+  return n
+}
+
+fun my_dfs(graph: map<string, list<string>>, start: string, end: string, path: list<string>): void {
+  var new_path = copy_list(path)
+  new_path = append(new_path, start)
+  if start == end {
+    paths = append(paths, new_path)
+    return
+  }
+  for node in graph[start] {
+    var seen = false
+    for p in new_path { if p == node { seen = true } }
+    if !seen { my_dfs(graph, node, end, new_path) }
+  }
+}
+
+fun find_freq_subgraph_given_support(s: int, clusters: ClusterData, graph: GraphData): void {
+  let k = s * len(clusters.weights) / 100
+  let codes = get_cluster_codes(clusters, k)
+  var i = 0
+  while i < len(codes) {
+    my_dfs(graph.edges, codes[i], "Header", [])
+    i = i + 1
+  }
+}
+
+fun node_edges(nodes: NodesData, code: string): list<string> {
+  return nodes.map[code]
+}
+
+fun freq_subgraphs_edge_list(paths: list<list<string>>, nodes: NodesData): list<list<list<string>>> {
+  var freq_sub_el: list<list<list<string>>> = []
+  for path in paths {
+    var el: list<list<string>> = []
+    var j = 0
+    while j < len(path) - 1 {
+      let code = path[j]
+      let edge_list = node_edges(nodes, code)
+      var e = 0
+      while e < len(edge_list) {
+        let edge = edge_list[e]
+        let a = substring(edge, 0, 1)
+        let b = substring(edge, 1, 2)
+        el = append(el, [a, b])
+        e = e + 1
+      }
+      j = j + 1
+    }
+    freq_sub_el = append(freq_sub_el, el)
+  }
+  return freq_sub_el
+}
+
+fun print_all(nodes: NodesData, support: list<int>, clusters: ClusterData, graph: GraphData, freq_subgraph_edge_list: list<list<list<string>>>): void {
+  print("\nNodes\n")
+  var i = 0
+  while i < len(nodes.keys) {
+    let code = nodes.keys[i]
+    print(code)
+    print(nodes.map[code])
+    i = i + 1
+  }
+  print("\nSupport\n")
+  print(support)
+  print("\nCluster\n")
+  var j = 0
+  while j < len(clusters.weights) {
+    let w = clusters.weights[j]
+    print(str(w) + ":" + str(clusters.clusters[w]))
+    j = j + 1
+  }
+  print("\nGraph\n")
+  var k = 0
+  while k < len(graph.keys) {
+    let key = graph.keys[k]
+    print(key)
+    print(graph.edges[key])
+    k = k + 1
+  }
+  print("\nEdge List of Frequent subgraphs\n")
+  for el in freq_subgraph_edge_list { print(el) }
+}
+
+fun main() {
+  let frequency_table = get_frequency_table(EDGE_ARRAY)
+  let nodes = get_nodes(frequency_table)
+  let clusters = get_cluster(nodes)
+  let support = get_support(clusters)
+  let graph = construct_graph(clusters, nodes)
+  find_freq_subgraph_given_support(60, clusters, graph)
+  let freq_subgraph_edge_list = freq_subgraphs_edge_list(paths, nodes)
+  print_all(nodes, support, clusters, graph, freq_subgraph_edge_list)
+}
+
+main()
