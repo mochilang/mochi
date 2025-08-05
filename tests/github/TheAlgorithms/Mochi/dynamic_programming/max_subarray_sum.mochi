@@ -1,0 +1,69 @@
+/*
+Maximum Subarray Sum (Kadane's Algorithm)
+
+Given a list of numbers, find the contiguous subarray with the largest sum.
+This classic problem can be solved efficiently using Kadane's algorithm,
+which scans the list once while keeping track of the current best subarray
+ending at each position.
+
+Algorithm:
+1. If the list is empty, return 0.
+2. If empty subarrays are allowed:
+   - Start with both the current sum and best sum as 0.
+   - For each number, add it to the current sum and reset to 0 if it
+     becomes negative.
+3. If empty subarrays are not allowed:
+   - Initialize the current and best sums with the first element.
+   - For each subsequent number, decide whether to extend the current
+     subarray or start a new one at the current element.
+4. The maximum of these running sums is the answer.
+
+This runs in O(n) time and O(1) additional space.
+*/
+
+fun max_subarray_sum(nums: list<float>, allow_empty: bool): float {
+  if len(nums) == 0 {
+    return 0.0
+  }
+  var max_sum = 0.0
+  var curr_sum = 0.0
+  if allow_empty {
+    max_sum = 0.0
+    curr_sum = 0.0
+    var i = 0
+    while i < len(nums) {
+      let num = nums[i]
+      let temp = curr_sum + num
+      curr_sum = if temp > 0.0 { temp } else { 0.0 }
+      if curr_sum > max_sum {
+        max_sum = curr_sum
+      }
+      i = i + 1
+    }
+  } else {
+    max_sum = nums[0]
+    curr_sum = nums[0]
+    var i = 1
+    while i < len(nums) {
+      let num = nums[i]
+      let temp = curr_sum + num
+      curr_sum = if temp > num { temp } else { num }
+      if curr_sum > max_sum {
+        max_sum = curr_sum
+      }
+      i = i + 1
+    }
+  }
+  return max_sum
+}
+
+print(str(max_subarray_sum([2.0, 8.0, 9.0], false)))
+print(str(max_subarray_sum([0.0, 0.0], false)))
+print(str(max_subarray_sum([-1.0, 0.0, 1.0], false)))
+print(str(max_subarray_sum([1.0, 2.0, 3.0, 4.0, -2.0], false)))
+print(str(max_subarray_sum([-2.0, 1.0, -3.0, 4.0, -1.0, 2.0, 1.0, -5.0, 4.0], false)))
+print(str(max_subarray_sum([2.0, 3.0, -9.0, 8.0, -2.0], false)))
+print(str(max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], false)))
+print(str(max_subarray_sum([-2.0, -3.0, -1.0, -4.0, -6.0], true)))
+var empty: list<float> = []
+print(str(max_subarray_sum(empty, false)))
