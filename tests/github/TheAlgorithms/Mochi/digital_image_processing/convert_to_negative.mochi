@@ -1,0 +1,45 @@
+/*
+Convert a color image to its negative.
+
+Given an image represented as a matrix of pixels where each pixel is a
+list `[r, g, b]` with components in the range 0–255, the negative image
+is produced by subtracting each component from 255.  For every pixel we
+compute `[255 - r, 255 - g, 255 - b]` and collect the results into a new
+matrix of the same dimensions.
+
+If the original image has height `h` and width `w`, the algorithm visits
+each pixel once and performs a constant amount of work, yielding
+`O(h * w)` time complexity.  A new image of the same size is allocated,
+so the space complexity is also `O(h * w)`.
+*/
+
+fun convert_to_negative(img: list<list<list<int>>>): list<list<list<int>>> {
+  var result: list<list<list<int>>> = []
+  var i = 0
+  while i < len(img) {
+    var row: list<list<int>> = []
+    var j = 0
+    while j < len(img[i]) {
+      let pixel = img[i][j]
+      let r = 255 - pixel[0]
+      let g = 255 - pixel[1]
+      let b = 255 - pixel[2]
+      row = append(row, [r, g, b])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let image = [
+    [[10, 20, 30], [0, 0, 0]],
+    [[255, 255, 255], [100, 150, 200]],
+  ]
+  let neg = convert_to_negative(image)
+  print(neg)
+}
+
+main()
