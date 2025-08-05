@@ -1,0 +1,161 @@
+/*
+Base85 (Ascii85) encoding and decoding.
+
+The encoder converts each input character to its 8-bit binary form and
+concatenates the bits.  The bit stream is padded with zero bits to the next
+32-bit boundary.  Every 32-bit chunk is interpreted as an integer and
+converted to base 85 by repeatedly dividing by 85.  Digits are mapped to the
+ASCII range '!' (33) to 'u' (117).  The helper converts the integer using a
+recursive function and the result is reversed.  Padding characters are
+removed based on the number of null bytes added.
+
+Decoding reverses this process.  The encoded text is padded with 'u' (the
+highest base85 digit) until its length is a multiple of five.  Each group of
+five characters is mapped back to an integer by accumulating base-85 digits.
+That integer is expanded to at least 32 binary bits and split into four
+8-bit bytes.  Finally, extra padding bytes are removed to yield the original
+text.
+*/
+
+let ascii85_chars = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu"
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let idx = indexOf(ascii85_chars, ch)
+  if idx >= 0 { return 33 + idx }
+  return 0
+}
+
+fun chr(n: int): string {
+  if n >= 33 && n <= 117 {
+    return ascii85_chars[n-33:n-32]
+  }
+  return "?"
+}
+
+fun to_binary(n: int, bits: int): string {
+  var b = ""
+  var val = n
+  while val > 0 {
+    b = str(val % 2) + b
+    val = val / 2
+  }
+  while len(b) < bits {
+    b = "0" + b
+  }
+  if len(b) == 0 { b = "0" }
+  return b
+}
+
+fun bin_to_int(bits: string): int {
+  var n = 0
+  var i = 0
+  while i < len(bits) {
+    if bits[i] == "1" {
+      n = n * 2 + 1
+    } else {
+      n = n * 2
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun reverse(s: string): string {
+  var res = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    res = res + s[i]
+    i = i - 1
+  }
+  return res
+}
+
+fun base10_to_85(d: int): string {
+  if d > 0 {
+    return chr(d % 85 + 33) + base10_to_85(d / 85)
+  }
+  return ""
+}
+
+fun base85_to_10(digits: string): int {
+  var value = 0
+  var i = 0
+  while i < len(digits) {
+    value = value * 85 + (ord(digits[i]) - 33)
+    i = i + 1
+  }
+  return value
+}
+
+fun ascii85_encode(data: string): string {
+  var binary_data = ""
+  for ch in data {
+    binary_data = binary_data + to_binary(ord(ch), 8)
+  }
+  var null_values = (32 * ((len(binary_data) / 32) + 1) - len(binary_data)) / 8
+  var total_bits = 32 * ((len(binary_data) / 32) + 1)
+  while len(binary_data) < total_bits {
+    binary_data = binary_data + "0"
+  }
+  var result = ""
+  var i = 0
+  while i < len(binary_data) {
+    let chunk_bits = binary_data[i:i+32]
+    let chunk_val = bin_to_int(chunk_bits)
+    let encoded = reverse(base10_to_85(chunk_val))
+    result = result + encoded
+    i = i + 32
+  }
+  if null_values % 4 != 0 {
+    result = result[0:len(result) - null_values]
+  }
+  return result
+}
+
+fun ascii85_decode(data: string): string {
+  var null_values = 5 * ((len(data) / 5) + 1) - len(data)
+  var binary_data = data
+  var i = 0
+  while i < null_values {
+    binary_data = binary_data + "u"
+    i = i + 1
+  }
+  var result = ""
+  i = 0
+  while i < len(binary_data) {
+    let chunk = binary_data[i:i+5]
+    let value = base85_to_10(chunk)
+    let bits = to_binary(value, 32)
+    var j = 0
+    while j < 32 {
+      let byte_bits = bits[j:j+8]
+      let c = chr(bin_to_int(byte_bits))
+      result = result + c
+      j = j + 8
+    }
+    i = i + 5
+  }
+  var trim = null_values
+  if null_values % 5 == 0 {
+    trim = null_values - 1
+  }
+  return result[0:len(result) - trim]
+}
+
+print(ascii85_encode(""))
+print(ascii85_encode("12345"))
+print(ascii85_encode("base 85"))
+print(ascii85_decode(""))
+print(ascii85_decode("0etOA2#"))
+print(ascii85_decode("@UX=h+?24"))
