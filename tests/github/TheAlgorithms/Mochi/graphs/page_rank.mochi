@@ -1,0 +1,93 @@
+/*
+PageRank algorithm for a small directed graph.
+
+The PageRank algorithm measures the importance of nodes within a graph
+based on the structure of incoming links.  Each node distributes its
+current rank equally across its outbound links, and the rank of a node
+is the sum of the contributions from nodes linking to it multiplied by
+a damping factor `d`.  A small constant `(1 - d)` allows random jumps to
+any node.
+
+This implementation mirrors the reference Python version from
+TheAlgorithms repository.  The sample graph has three nodes A, B and C
+with edges defined by the adjacency matrix:
+  A -> B, C
+  B -> C
+  C -> A
+
+Starting with rank 1 for each node, the algorithm performs three
+iterations and prints the rank map after each step.
+*/
+
+type Node {
+  name: string,
+  inbound: list<string>,
+  outbound: list<string>
+}
+
+fun node_to_string(n: Node): string {
+  return "<node=" + n.name + " inbound=" + n.inbound + " outbound=" + n.outbound + ">"
+}
+
+fun page_rank(nodes: list<Node>, limit: int, d: float): map<string, float> {
+  var ranks: map<string, float> = {}
+  for n in nodes {
+    ranks[n.name] = 1.0
+  }
+  var outbounds: map<string, float> = {}
+  for n in nodes {
+    outbounds[n.name] = 1.0 * len(n.outbound)
+  }
+  var i = 0
+  while i < limit {
+    print("======= Iteration " + str(i + 1) + " =======")
+    for n in nodes {
+      var sum_val = 0.0
+      for ib in n.inbound {
+        sum_val = sum_val + ranks[ib] / outbounds[ib]
+      }
+      ranks[n.name] = (1.0 - d) + d * sum_val
+    }
+    print(ranks)
+    i = i + 1
+  }
+  return ranks
+}
+
+let names: list<string> = ["A", "B", "C"]
+let graph: list<list<int>> = [
+  [0, 1, 1],
+  [0, 0, 1],
+  [1, 0, 0]
+]
+
+var nodes: list<Node> = []
+for name in names {
+  nodes = append(nodes, Node { name: name, inbound: [], outbound: [] })
+}
+
+var ri = 0
+while ri < len(graph) {
+  var row = graph[ri]
+  var ci = 0
+  while ci < len(row) {
+    if row[ci] == 1 {
+      var n_in = nodes[ci]
+      n_in.inbound = append(n_in.inbound, names[ri])
+      nodes[ci] = n_in
+      var n_out = nodes[ri]
+      n_out.outbound = append(n_out.outbound, names[ci])
+      nodes[ri] = n_out
+    }
+    ci = ci + 1
+  }
+  ri = ri + 1
+}
+
+print("======= Nodes =======")
+for n in nodes {
+  print(n)
+}
+
+page_rank(nodes, 3, 0.85)
+
