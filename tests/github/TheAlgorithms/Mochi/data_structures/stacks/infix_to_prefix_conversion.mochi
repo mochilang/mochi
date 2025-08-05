@@ -1,0 +1,125 @@
+/*
+Convert an infix expression to prefix notation using a stack.
+
+The algorithm first converts the given infix expression to postfix form.  
+Operands are output immediately, while operators are pushed onto a stack. 
+When an operator of lower or equal precedence is encountered, operators are popped
+from the stack until this condition is false. Parentheses cause operators to be
+pushed or popped until the matching pair is reached.  After processing the
+entire expression, remaining operators on the stack are appended to the output.
+This produces the postfix representation.
+
+To obtain prefix notation, the infix string is reversed with parenthesis
+orientation swapped, converted to postfix using the above procedure, and the
+result is reversed again.  The algorithms run in O(n) time for expressions of
+length n and use O(n) additional space for the stacks and intermediate strings.
+*/
+
+let PRIORITY: map<string, int> = {
+  "^": 3,
+  "*": 2,
+  "/": 2,
+  "%": 2,
+  "+": 1,
+  "-": 1,
+}
+
+let LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let DIGITS = "0123456789"
+
+fun is_alpha(ch: string): bool {
+  var i = 0
+  while i < len(LETTERS) {
+    if LETTERS[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun is_digit(ch: string): bool {
+  var i = 0
+  while i < len(DIGITS) {
+    if DIGITS[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun reverse_string(s: string): string {
+  var out = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    out = out + s[i]
+    i = i - 1
+  }
+  return out
+}
+
+fun infix_to_postfix(infix: string): string {
+  var stack: list<string> = []
+  var post: list<string> = []
+  var i = 0
+  while i < len(infix) {
+    let x = infix[i]
+    if is_alpha(x) || is_digit(x) {
+      post = append(post, x)
+    } else if x == "(" {
+      stack = append(stack, x)
+    } else if x == ")" {
+      if len(stack) == 0 { panic("list index out of range") }
+      while stack[len(stack) - 1] != "(" {
+        post = append(post, stack[len(stack) - 1])
+        stack = stack[0:len(stack) - 1]
+      }
+      stack = stack[0:len(stack) - 1]
+    } else if len(stack) == 0 {
+      stack = append(stack, x)
+    } else {
+      while len(stack) > 0 && stack[len(stack) - 1] != "(" && PRIORITY[x] <= PRIORITY[stack[len(stack) - 1]] {
+        post = append(post, stack[len(stack) - 1])
+        stack = stack[0:len(stack) - 1]
+      }
+      stack = append(stack, x)
+    }
+    i = i + 1
+  }
+  while len(stack) > 0 {
+    if stack[len(stack) - 1] == "(" { panic("invalid expression") }
+    post = append(post, stack[len(stack) - 1])
+    stack = stack[0:len(stack) - 1]
+  }
+  var res = ""
+  var j = 0
+  while j < len(post) {
+    res = res + post[j]
+    j = j + 1
+  }
+  return res
+}
+
+fun infix_to_prefix(infix: string): string {
+  var reversed = ""
+  var i = len(infix) - 1
+  while i >= 0 {
+    let ch = infix[i]
+    if ch == "(" {
+      reversed = reversed + ")"
+    } else if ch == ")" {
+      reversed = reversed + "("
+    } else {
+      reversed = reversed + ch
+    }
+    i = i - 1
+  }
+  let postfix = infix_to_postfix(reversed)
+  let prefix = reverse_string(postfix)
+  return prefix
+}
+
+test "simple expression" {
+  expect infix_to_prefix("a+b^c") == "+a^bc"
+}
+
+test "complex expression" {
+  expect infix_to_prefix("1*((-a)*2+b)") == "*1+*-a2b"
+}
