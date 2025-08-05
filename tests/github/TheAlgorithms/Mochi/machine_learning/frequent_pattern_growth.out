@@ -1,0 +1,83 @@
+[31;1mtype error:[0;22m
+   1. [31;1merror[T005][0;22m: parameter `name` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
+
+[90m 15[0m | fun make_node(name, count, parent) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   2. [31;1merror[T005][0;22m: parameter `node_to_test` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:19:1
+
+[90m 19[0m | fun update_header(node_to_test, target_node) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   3. [31;1merror[T005][0;22m: parameter `items` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:27:1
+
+[90m 27[0m | fun update_tree(items, in_tree, header_table, count) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   4. [31;1merror[T005][0;22m: parameter `items` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:53:1
+
+[90m 53[0m | fun sort_items(items, header_table) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   5. [31;1merror[T005][0;22m: parameter `data_set` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:71:1
+
+[90m 71[0m | fun create_tree(data_set, min_sup) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   6. [31;1merror[T005][0;22m: parameter `leaf_node` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:127:1
+
+[90m127[0m | fun ascend_tree(leaf_node, path) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   7. [31;1merror[T005][0;22m: parameter `base_pat` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:138:1
+
+[90m138[0m | fun find_prefix_path(base_pat, tree_node) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   8. [31;1merror[T005][0;22m: parameter `in_tree` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:152:1
+
+[90m152[0m | fun mine_tree(in_tree, header_table, min_sup, pre_fix, freq_item_list) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+   9. [31;1merror[T005][0;22m: parameter `xs` is missing a type
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:202:1
+
+[90m202[0m | fun list_to_string(xs) {
+    | [31;1m^[0;22m
+
+[33mhelp:[0m
+  Add a type like `x: int` to this parameter.
+  10. [31;1merror[T018][0;22m: type void does not support indexing
+  --> tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:227:17
+
+[90m227[0m |   let fp_tree = res["tree"]
+    | [31;1m                ^[0;22m
+
+[33mhelp:[0m
+  Only `list<T>` and `map<K,V>` can be indexed.
+aborted due to type errors
+exit status 1
