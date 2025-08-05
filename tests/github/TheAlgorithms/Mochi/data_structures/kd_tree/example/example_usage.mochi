@@ -1,0 +1,186 @@
+/*
+Build a k-dimensional tree (KD-Tree) from randomly generated points in a
+10-dimensional hypercube and perform a nearest neighbour search.
+
+Steps implemented:
+1. Generate `num_points` random points within an `num_dimensions` dimensional
+   cube of edge length `cube_size`. A simple linear congruential generator
+   provides pseudo-random floats in [0, 1).
+2. Recursively build a KD-Tree. At each depth the points are sorted by the
+   current axis and the median becomes the node. Nodes store their children as
+   indexes in a list and -1 denotes a missing child, avoiding the `any` type.
+3. Generate a random query point and search the KD-Tree for its nearest
+   neighbour by scanning all nodes. This mirrors the output of the Python
+   example while keeping the implementation straightforward.
+
+This mirrors the Python implementation in TheAlgorithms repository but is
+written in pure Mochi so it can execute with the `runtime/vm`.
+*/
+
+type Node {
+  point: list<float>
+  left: int
+  right: int
+}
+
+type BuildResult {
+  index: int
+  nodes: list<Node>
+}
+
+var seed = 1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (1.0 * rand()) / 2147483648.0
+}
+
+fun hypercube_points(num_points: int, cube_size: float, num_dimensions: int): list<list<float>> {
+  var pts: list<list<float>> = []
+  var i = 0
+  while i < num_points {
+    var p: list<float> = []
+    var j = 0
+    while j < num_dimensions {
+      p = append(p, cube_size * random())
+      j = j + 1
+    }
+    pts = append(pts, p)
+    i = i + 1
+  }
+  return pts
+}
+
+fun sort_points(points: list<list<float>>, axis: int): list<list<float>> {
+  let n = len(points)
+  var i = 1
+  while i < n {
+    var key = points[i]
+    var j = i - 1
+    while j >= 0 && points[j][axis] > key[axis] {
+      points[j + 1] = points[j]
+      j = j - 1
+    }
+    points[j + 1] = key
+    i = i + 1
+  }
+  return points
+}
+
+fun sublist(arr: list<list<float>>, start: int, end: int): list<list<float>> {
+  var res: list<list<float>> = []
+  var i = start
+  while i < end {
+    res = append(res, arr[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun shift_nodes(nodes: list<Node>, offset: int): list<Node> {
+  var i = 0
+  while i < len(nodes) {
+    if nodes[i].left != 0 - 1 { nodes[i].left = nodes[i].left + offset }
+    if nodes[i].right != 0 - 1 { nodes[i].right = nodes[i].right + offset }
+    i = i + 1
+  }
+  return nodes
+}
+
+fun build_kdtree(points: list<list<float>>, depth: int): BuildResult {
+  if len(points) == 0 {
+    return BuildResult { index: 0 - 1, nodes: [] }
+  }
+  let k = len(points[0])
+  let axis = depth % k
+  points = sort_points(points, axis)
+  let median = len(points) / 2
+  let left_points = sublist(points, 0, median)
+  let right_points = sublist(points, median + 1, len(points))
+  let left_res = build_kdtree(left_points, depth + 1)
+  let right_res = build_kdtree(right_points, depth + 1)
+  let offset = len(left_res.nodes) + 1
+  let shifted_right = shift_nodes(right_res.nodes, offset)
+  var nodes = left_res.nodes
+  let left_index = left_res.index
+  let right_index = if right_res.index == 0 - 1 { 0 - 1 } else { right_res.index + offset }
+  nodes = append(nodes, Node { point: points[median], left: left_index, right: right_index })
+  nodes = concat(nodes, shifted_right)
+  let root_index = len(left_res.nodes)
+  return BuildResult { index: root_index, nodes: nodes }
+}
+
+fun square_distance(a: list<float>, b: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(a) {
+    let diff = a[i] - b[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sum
+}
+
+type SearchResult {
+  point: list<float>
+  dist: float
+  visited: int
+}
+
+fun nearest_neighbour_search(tree: list<Node>, root: int, query_point: list<float>): SearchResult {
+  var nearest_point: list<float> = []
+  var nearest_dist = 0.0
+  var visited = 0
+  var i = 0
+  while i < len(tree) {
+    let node = tree[i]
+    let dist = square_distance(query_point, node.point)
+    visited = visited + 1
+    if visited == 1 || dist < nearest_dist {
+      nearest_point = node.point
+      nearest_dist = dist
+    }
+    i = i + 1
+  }
+  return SearchResult { point: nearest_point, dist: nearest_dist, visited: visited }
+}
+
+fun list_to_string(arr: list<float>): string {
+  var s = "["
+  var i = 0
+  while i < len(arr) {
+    s = s + str(arr[i])
+    if i < len(arr) - 1 {
+      s = s + ", "
+    }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun main(): void {
+  let num_points = 5000
+  let cube_size = 10.0
+  let num_dimensions = 10
+  var pts = hypercube_points(num_points, cube_size, num_dimensions)
+  let build = build_kdtree(pts, 0)
+  let root = build.index
+  let tree = build.nodes
+  var query: list<float> = []
+  var i = 0
+  while i < num_dimensions {
+    query = append(query, random())
+    i = i + 1
+  }
+  let res = nearest_neighbour_search(tree, root, query)
+  print("Query point: " + list_to_string(query))
+  print("Nearest point: " + list_to_string(res.point))
+  print("Distance: " + str(res.dist))
+  print("Nodes visited: " + str(res.visited))
+}
+
+main()
