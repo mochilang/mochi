@@ -1,0 +1,28 @@
+/*
+Count the number of unordered pairs in a list of integers whose sum
+equals a target value. The algorithm iterates over all unique index
+pairs (i < j) and increments a counter whenever a pair sums to the
+required value. This brute-force approach examines n*(n-1)/2 pairs,
+leading to O(n^2) time complexity while using only O(1) extra space.
+*/
+
+fun pairs_with_sum(arr: list<int>, req_sum: int): int {
+  let n = len(arr)
+  var count = 0
+  var i = 0
+  while i < n {
+    var j = i + 1
+    while j < n {
+      if arr[i] + arr[j] == req_sum {
+        count = count + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+print(pairs_with_sum([1, 5, 7, 1], 6))
+print(pairs_with_sum([1, 1, 1, 1, 1, 1, 1, 1], 2))
+print(pairs_with_sum([1, 7, 6, 2, 5, 4, 3, 1, 9, 8], 7))
