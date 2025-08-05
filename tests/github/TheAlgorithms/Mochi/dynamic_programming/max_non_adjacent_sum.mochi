@@ -1,0 +1,49 @@
+/*
+Maximum Non-Adjacent Sum
+
+Given a list of integers, compute the maximum possible sum of elements
+such that no two chosen numbers are adjacent in the original list. This
+is a classic dynamic programming problem which can be solved in linear
+time and constant space.
+
+Algorithm:
+1. If the list is empty, the result is 0.
+2. Maintain two accumulators:
+   - max_including: maximum sum including the current element.
+   - max_excluding: maximum sum excluding the current element.
+3. For each element after the first:
+   a. new_including = max_excluding + current element
+   b. new_excluding = max(max_including, max_excluding)
+   c. Update the accumulators.
+4. The answer is the maximum of max_including and max_excluding after
+   processing all elements.
+
+This runs in O(n) time and O(1) extra space where n is the length of the
+input list.
+*/
+
+fun maximum_non_adjacent_sum(nums: list<int>): int {
+  if len(nums) == 0 {
+    return 0
+  }
+  var max_including = nums[0]
+  var max_excluding = 0
+  var i = 1
+  while i < len(nums) {
+    let num = nums[i]
+    let new_including = max_excluding + num
+    let new_excluding = if max_including > max_excluding { max_including } else { max_excluding }
+    max_including = new_including
+    max_excluding = new_excluding
+    i = i + 1
+  }
+  if max_including > max_excluding {
+    return max_including
+  }
+  return max_excluding
+}
+
+print(str(maximum_non_adjacent_sum([1, 2, 3])))
+print(str(maximum_non_adjacent_sum([1, 5, 3, 7, 2, 2, 6])))
+print(str(maximum_non_adjacent_sum([-1, -5, -3, -7, -2, -2, -6])))
+print(str(maximum_non_adjacent_sum([499, 500, -3, -7, -2, -2, -6])))
