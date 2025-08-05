@@ -1,0 +1,66 @@
+/*
+Greedy approximation algorithm for the minimum vertex cover problem.
+
+Given an undirected graph represented as an adjacency list, the algorithm
+repeatedly selects the vertex with the highest degree and adds it to the
+cover set. All edges incident to the selected vertex are removed from the
+graph. The process repeats until no edges remain. This greedy strategy
+produces a vertex cover that is within a factor of two of the minimum.
+
+Time complexity: O(V^2 + E) where V is number of vertices and E is number of
+edges. Each iteration scans all vertices to find the maximum degree and
+updates adjacency lists after removing edges.
+*/
+
+fun remove_value(lst: list<int>, val: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(lst) {
+    if lst[i] != val {
+      res = append(res, lst[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun greedy_min_vertex_cover(graph: map<int, list<int>>): list<int> {
+  var g = graph
+  var cover: list<int> = []
+
+  while true {
+    var max_v = 0
+    var max_deg = 0
+    for v in g {
+      let key = v as int
+      let deg = len(g[key])
+      if deg > max_deg {
+        max_deg = deg
+        max_v = key
+      }
+    }
+    if max_deg == 0 {
+      break
+    }
+    cover = append(cover, max_v)
+    let neighbors = g[max_v]
+    var i = 0
+    while i < len(neighbors) {
+      let n = neighbors[i]
+      g[n] = remove_value(g[n], max_v)
+      i = i + 1
+    }
+    g[max_v] = []
+  }
+  return cover
+}
+
+var graph: map<int, list<int>> = {
+  0: [1, 3],
+  1: [0, 3],
+  2: [0, 3, 4],
+  3: [0, 1, 2],
+  4: [2, 3]
+}
+
+print(greedy_min_vertex_cover(graph))
