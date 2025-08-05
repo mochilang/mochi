@@ -1,0 +1,44 @@
+/*
+Compute the Exponential Linear Unit (ELU) activation function over a list of real numbers.
+For each input value x, ELU returns x when x > 0, otherwise alpha * (e^x - 1).
+The exponential is approximated using the first twenty terms of its Taylor series
+and uses 1/exp(-x) for negative inputs so the implementation remains in pure Mochi
+without foreign dependencies. The algorithm runs in O(n * k) time where n is the
+vector length and k is the number of series terms (fixed at 20), using O(n)
+additional space for the result.
+*/
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i = 1
+  let absx = if x < 0.0 { -x } else { x }
+  while i <= 20 {
+    term = term * absx / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  if x < 0.0 {
+    return 1.0 / sum
+  }
+  return sum
+}
+
+fun exponential_linear_unit(vector: list<float>, alpha: float): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let v = vector[i]
+    if v > 0.0 {
+      result = append(result, v)
+    } else {
+      let neg = alpha * (exp_approx(v) - 1.0)
+      result = append(result, neg)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(str(exponential_linear_unit([2.3, 0.6, -2.0, -3.8], 0.3)))
+print(str(exponential_linear_unit([-9.2, -0.3, 0.45, -4.56], 0.067)))
