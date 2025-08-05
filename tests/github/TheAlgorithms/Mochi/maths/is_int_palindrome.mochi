@@ -1,0 +1,41 @@
+/*
+Determine whether an integer is a palindrome.
+
+The algorithm reverses the digits of the given non-negative integer and
+compares the reversed number with the original. Negative numbers are
+immediately rejected because of the leading minus sign.
+
+Steps:
+1. Copy the original value.
+2. Repeatedly extract the last digit using modulo 10 and build a reversed
+   number by multiplying the accumulator by 10 and adding the digit.
+3. Truncate the original by dividing by 10 each iteration.
+4. After processing all digits, compare the reversed number with the copy.
+
+Time complexity: O(k) where k is the number of digits in the input.
+Space complexity: O(1).
+*/
+
+fun is_int_palindrome(num: int): bool {
+  if num < 0 {
+    return false
+  }
+  var n = num
+  var rev = 0
+  while n > 0 {
+    rev = rev * 10 + (n % 10)
+    n = n / 10
+  }
+  return rev == num
+}
+
+fun main() {
+  print(is_int_palindrome(-121))
+  print(is_int_palindrome(0))
+  print(is_int_palindrome(10))
+  print(is_int_palindrome(11))
+  print(is_int_palindrome(101))
+  print(is_int_palindrome(120))
+}
+
+main()
