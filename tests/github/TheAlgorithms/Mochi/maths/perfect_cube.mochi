@@ -1,0 +1,50 @@
+/*
+Perfect Cube Detection
+----------------------
+This module provides two routines to determine whether a given integer is a
+perfect cube.
+
+1. perfect_cube(n) incrementally increases an integer guess until its cube is
+   greater than or equal to |n|. It returns true when the cube matches exactly.
+   This method runs in O(cuberoot(n)) time and uses constant space.
+
+2. perfect_cube_binary_search(n) performs a binary search for the cube root in
+the range [0, |n|]. Each iteration halves the search space, yielding
+O(log n) time with constant space.
+
+Both functions operate purely in Mochi without FFI and avoid the `any` type.
+*/
+
+fun perfect_cube(n: int): bool {
+  var m = n
+  if m < 0 { m = -m }
+  var i = 0
+  while i * i * i < m {
+    i = i + 1
+  }
+  return i * i * i == m
+}
+
+fun perfect_cube_binary_search(n: int): bool {
+  var m = n
+  if m < 0 { m = -m }
+  var left = 0
+  var right = m
+  while left <= right {
+    let mid = left + (right - left) / 2
+    let cube = mid * mid * mid
+    if cube == m { return true }
+    if cube < m {
+      left = mid + 1
+    } else {
+      right = mid - 1
+    }
+  }
+  return false
+}
+
+print(str(perfect_cube(27)))
+print(str(perfect_cube(4)))
+print(str(perfect_cube_binary_search(27)))
+print(str(perfect_cube_binary_search(64)))
+print(str(perfect_cube_binary_search(4)))
