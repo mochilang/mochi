@@ -1,0 +1,153 @@
+/*
+A* Pathfinding on a 2D Grid.
+
+This program finds the shortest path between a start and goal cell in a
+grid world using the A* search algorithm. Each node keeps track of its
+position, the cost from the start (g), the heuristic estimate to the goal
+(h) based on squared Euclidean distance, and the total f = g + h. The open
+list stores frontier nodes to explore while the closed list stores already
+evaluated nodes. At each iteration the node with the smallest f is expanded
+and its neighbours are generated. Nodes that have already been visited with
+a lower cost are skipped. When the goal is popped from the open list the
+path is reconstructed by following parent pointers back to the start.
+
+The algorithm runs in O(b^d) time in the worst case where b is the branching
+factor and d is the depth of the solution.
+*/
+
+type Point {
+  x: int,
+  y: int,
+}
+
+type Node {
+  pos: Point,
+  parent: Point,
+  g: int,
+  h: int,
+  f: int,
+}
+
+fun get_neighbours(p: Point, x_limit: int, y_limit: int): list<Point> {
+  let deltas: list<Point> = [
+    Point {x: (0 - 1), y: (0 - 1)}, Point {x: (0 - 1), y: 0}, Point {x: (0 - 1), y: 1},
+    Point {x: 0, y: (0 - 1)},                Point {x: 0, y: 1},
+    Point {x: 1, y: (0 - 1)},  Point {x: 1, y: 0},  Point {x: 1, y: 1},
+  ]
+  var neighbours: list<Point> = []
+  for d in deltas {
+    let nx = p.x + d.x
+    let ny = p.y + d.y
+    if 0 <= nx && nx < x_limit && 0 <= ny && ny < y_limit {
+      neighbours = append(neighbours, Point {x: nx, y: ny})
+    }
+  }
+  return neighbours
+}
+
+fun contains(nodes: list<Node>, p: Point): bool {
+  for n in nodes {
+    if n.pos.x == p.x && n.pos.y == p.y { return true }
+  }
+  return false
+}
+
+fun get_node(nodes: list<Node>, p: Point): Node {
+  for n in nodes {
+    if n.pos.x == p.x && n.pos.y == p.y { return n }
+  }
+  return Node { pos: p, parent: Point {x: (0 - 1), y: (0 - 1)}, g: 0, h: 0, f: 0 }
+}
+
+fun astar(x_limit: int, y_limit: int, start: Point, goal: Point): list<Point> {
+  var open: list<Node> = []
+  var closed: list<Node> = []
+  open = append(open, Node { pos: start, parent: Point {x: (0 - 1), y: (0 - 1)}, g: 0, h: 0, f: 0 })
+  var current = open[0]
+  while len(open) > 0 {
+    var min_index = 0
+    var i = 1
+    while i < len(open) {
+      if open[i].f < open[min_index].f { min_index = i }
+      i = i + 1
+    }
+    current = open[min_index]
+    var new_open: list<Node> = []
+    var j = 0
+    while j < len(open) {
+      if j != min_index { new_open = append(new_open, open[j]) }
+      j = j + 1
+    }
+    open = new_open
+    closed = append(closed, current)
+    if current.pos.x == goal.x && current.pos.y == goal.y { break }
+    let neighbours = get_neighbours(current.pos, x_limit, y_limit)
+    for np in neighbours {
+      if contains(closed, np) { continue }
+      let g = current.g + 1
+      let dx = goal.x - np.x
+      let dy = goal.y - np.y
+      let h = dx * dx + dy * dy
+      let f = g + h
+      var skip = false
+      for node in open {
+        if node.pos.x == np.x && node.pos.y == np.y && node.f < f {
+          skip = true
+        }
+      }
+      if skip { continue }
+      open = append(open, Node { pos: np, parent: current.pos, g: g, h: h, f: f })
+    }
+  }
+  var path: list<Point> = []
+  path = append(path, current.pos)
+  while !(current.parent.x == (0 - 1) && current.parent.y == (0 - 1)) {
+    current = get_node(closed, current.parent)
+    path = append(path, current.pos)
+  }
+  var rev: list<Point> = []
+  var k = len(path) - 1
+  while k >= 0 {
+    rev = append(rev, path[k])
+    k = k - 1
+  }
+  return rev
+}
+
+fun create_world(x_limit: int, y_limit: int): list<list<int>> {
+  var world: list<list<int>> = []
+  var i = 0
+  while i < x_limit {
+    var row: list<int> = []
+    var j = 0
+    while j < y_limit {
+      row = append(row, 0)
+      j = j + 1
+    }
+    world = append(world, row)
+    i = i + 1
+  }
+  return world
+}
+
+fun mark_path(world: list<list<int>>, path: list<Point>) {
+  for p in path {
+    world[p.x][p.y] = 1
+  }
+}
+
+fun print_world(world: list<list<int>>) {
+  for row in world {
+    print(str(row))
+  }
+}
+
+let world_x = 5
+let world_y = 5
+let start = Point { x: 0, y: 0 }
+let goal = Point { x: 4, y: 4 }
+let path = astar(world_x, world_y, start, goal)
+print("path from (" + str(start.x) + ", " + str(start.y) + ") to (" + str(goal.x) + ", " + str(goal.y) + ")")
+let world = create_world(world_x, world_y)
+mark_path(world, path)
+print_world(world)
