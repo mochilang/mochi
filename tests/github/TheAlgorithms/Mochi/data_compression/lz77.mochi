@@ -1,0 +1,113 @@
+/*
+LZ77 compression is a lossless algorithm that parses input text using a sliding window.
+The window is split into a search buffer holding recently encoded characters and a
+look‑ahead buffer holding upcoming characters.  At each step the algorithm emits a
+Token (offset, length, indicator) describing the longest prefix of the look‑ahead
+buffer that matches text in the search buffer followed by the next literal character.
+The compressor updates the search buffer and repeats until the entire text is encoded.
+Decompression reads each token, copies `length` characters starting `offset` positions
+back from the current output, then appends the indicator character.  This implementation
+uses a fixed window size and is O(n^2) in the worst case as each step may scan the search
+buffer for matches.
+*/
+
+type Token {
+  offset: int
+  length: int
+  indicator: string
+}
+
+fun token_to_string(t: Token): string {
+  return "(" + str(t.offset) + ", " + str(t.length) + ", " + t.indicator + ")"
+}
+
+fun tokens_to_string(ts: list<Token>): string {
+  var res = "["
+  var i = 0
+  while i < len(ts) {
+    res = res + token_to_string(ts[i])
+    if i < len(ts) - 1 { res = res + ", " }
+    i = i + 1
+  }
+  return res + "]"
+}
+
+fun match_length_from_index(text: string, window: string, text_index: int, window_index: int): int {
+  if text_index >= len(text) || window_index >= len(window) {
+    return 0
+  }
+  let tc = substring(text, text_index, text_index + 1)
+  let wc = substring(window, window_index, window_index + 1)
+  if tc != wc { return 0 }
+  return 1 + match_length_from_index(text, window + tc, text_index + 1, window_index + 1)
+}
+
+fun find_encoding_token(text: string, search_buffer: string): Token {
+  if len(text) == 0 { panic("We need some text to work with.") }
+  var length = 0
+  var offset = 0
+  if len(search_buffer) == 0 {
+    return Token{offset: offset, length: length, indicator: substring(text, 0, 1)}
+  }
+  var i = 0
+  while i < len(search_buffer) {
+    let ch = substring(search_buffer, i, i + 1)
+    let found_offset = len(search_buffer) - i
+    if ch == substring(text, 0, 1) {
+      let found_length = match_length_from_index(text, search_buffer, 0, i)
+      if found_length >= length {
+        offset = found_offset
+        length = found_length
+      }
+    }
+    i = i + 1
+  }
+  return Token{offset: offset, length: length, indicator: substring(text, length, length + 1)}
+}
+
+fun lz77_compress(text: string, window_size: int, lookahead: int): list<Token> {
+  let search_buffer_size = window_size - lookahead
+  var output: list<Token> = []
+  var search_buffer = ""
+  var remaining = text
+  while len(remaining) > 0 {
+    let token = find_encoding_token(remaining, search_buffer)
+    let add_len = token.length + 1
+    search_buffer = search_buffer + substring(remaining, 0, add_len)
+    if len(search_buffer) > search_buffer_size {
+      search_buffer = substring(search_buffer, len(search_buffer) - search_buffer_size, len(search_buffer))
+    }
+    remaining = substring(remaining, add_len, len(remaining))
+    output = append(output, token)
+  }
+  return output
+}
+
+fun lz77_decompress(tokens: list<Token>): string {
+  var output = ""
+  for t in tokens {
+    var i = 0
+    while i < t.length {
+      output = output + substring(output, len(output) - t.offset, len(output) - t.offset + 1)
+      i = i + 1
+    }
+    output = output + t.indicator
+  }
+  return output
+}
+
+let c1 = lz77_compress("ababcbababaa", 13, 6)
+print(tokens_to_string(c1))
+let c2 = lz77_compress("aacaacabcabaaac", 13, 6)
+print(tokens_to_string(c2))
+let tokens_example: list<Token> = [
+  Token{offset:0, length:0, indicator:"c"},
+  Token{offset:0, length:0, indicator:"a"},
+  Token{offset:0, length:0, indicator:"b"},
+  Token{offset:0, length:0, indicator:"r"},
+  Token{offset:3, length:1, indicator:"c"},
+  Token{offset:2, length:1, indicator:"d"},
+  Token{offset:7, length:4, indicator:"r"},
+  Token{offset:3, length:5, indicator:"d"}
+]
+print(lz77_decompress(tokens_example))
