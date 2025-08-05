@@ -1,0 +1,58 @@
+/*
+Compute the voltage across a capacitor during charging in an RC circuit.
+
+When a capacitor of capacitance C is connected in series with a resistor R and
+a voltage source V_s, the capacitor voltage as a function of time t is
+
+  V(t) = V_s * (1 - e^(-t/(R*C)))
+
+The product R*C is the circuit's time constant τ. After one time constant, the
+capacitor charges to about 63% of the source voltage.  This program evaluates
+V(t) using a Taylor series approximation for e^x and rounds the result to three
+decimal places. All inputs must be positive; otherwise the function panics.
+*/
+
+fun expApprox(x: float): float {
+  var y: float = x
+  var is_neg: bool = false
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term: float = 1.0
+  var sum: float = 1.0
+  var n: int = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun round3(x: float): float {
+  var scaled: float = x * 1000.0
+  if scaled >= 0.0 {
+    scaled = scaled + 0.5
+  } else {
+    scaled = scaled - 0.5
+  }
+  let scaled_int: int = scaled as int
+  return (scaled_int as float) / 1000.0
+}
+
+fun charging_capacitor(source_voltage: float, resistance: float, capacitance: float, time_sec: float): float {
+  if source_voltage <= 0.0 { panic("Source voltage must be positive.") }
+  if resistance <= 0.0 { panic("Resistance must be positive.") }
+  if capacitance <= 0.0 { panic("Capacitance must be positive.") }
+  let exponent: float = -time_sec / (resistance * capacitance)
+  let voltage: float = source_voltage * (1.0 - expApprox(exponent))
+  return round3(voltage)
+}
+
+print(charging_capacitor(0.2, 0.9, 8.4, 0.5))
+print(charging_capacitor(2.2, 3.5, 2.4, 9.0))
+print(charging_capacitor(15.0, 200.0, 20.0, 2.0))
+print(charging_capacitor(20.0, 2000.0, 0.0003, 4.0))
+
