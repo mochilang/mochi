@@ -1,0 +1,83 @@
+/*
+Graph Representation Using Adjacency Lists
+
+This implementation models a graph where each vertex maps to a list of its
+adjacent vertices.  The structure supports both directed and undirected
+edges.  When adding an edge, the algorithm checks whether the endpoints are
+already present in the adjacency map and updates the lists accordingly:
+
+- **Directed graphs** store a single directed edge from the source to the
+  destination, creating missing vertices as needed.
+- **Undirected graphs** update the adjacency lists of both vertices so the
+  relationship is symmetric.
+
+The adjacency list is stored as `map<int, list<int>>` and updated using
+pure Mochi code without foreign interfaces.  Adding an edge runs in
+O(1) time (amortized) since it performs a constant amount of map and list
+operations.
+*/
+
+type GraphAdjacencyList {
+  adj_list: map<string, list<string>>,
+  directed: bool
+}
+
+fun make_graph(directed: bool): GraphAdjacencyList {
+  var m: map<string, list<string>> = {}
+  return GraphAdjacencyList { adj_list: m, directed: directed }
+}
+
+fun contains_vertex(m: map<string, list<string>>, v: string): bool {
+  return v in m
+}
+
+fun add_edge(g: GraphAdjacencyList, s: string, d: string): GraphAdjacencyList {
+  var adj = g.adj_list
+  if !g.directed {
+    if contains_vertex(adj, s) && contains_vertex(adj, d) {
+      adj[s] = append(adj[s], d)
+      adj[d] = append(adj[d], s)
+    } else if contains_vertex(adj, s) {
+      adj[s] = append(adj[s], d)
+      adj[d] = [s]
+    } else if contains_vertex(adj, d) {
+      adj[d] = append(adj[d], s)
+      adj[s] = [d]
+    } else {
+      adj[s] = [d]
+      adj[d] = [s]
+    }
+  } else {
+    if contains_vertex(adj, s) && contains_vertex(adj, d) {
+      adj[s] = append(adj[s], d)
+    } else if contains_vertex(adj, s) {
+      adj[s] = append(adj[s], d)
+      adj[d] = []
+    } else if contains_vertex(adj, d) {
+      adj[s] = [d]
+    } else {
+      adj[s] = [d]
+      adj[d] = []
+    }
+  }
+  g.adj_list = adj
+  return g
+}
+
+fun graph_to_string(g: GraphAdjacencyList): string {
+  return str(g.adj_list)
+}
+
+// Demonstration of directed graph usage
+var d_graph = make_graph(true)
+d_graph = add_edge(d_graph, str(0), str(1))
+print(graph_to_string(d_graph))
+d_graph = add_edge(d_graph, str(1), str(2))
+d_graph = add_edge(d_graph, str(1), str(4))
+d_graph = add_edge(d_graph, str(1), str(5))
+print(graph_to_string(d_graph))
+d_graph = add_edge(d_graph, str(2), str(0))
+d_graph = add_edge(d_graph, str(2), str(6))
+d_graph = add_edge(d_graph, str(2), str(7))
+print(graph_to_string(d_graph))
+
