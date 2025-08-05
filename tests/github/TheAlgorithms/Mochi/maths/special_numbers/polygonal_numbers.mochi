@@ -1,0 +1,32 @@
+/*
+Compute the nth s-gonal (polygonal) number.
+
+Polygonal numbers generalize triangular, square, pentagonal, and other figurate numbers.
+The nth s-gonal number counts dots arranged in a regular polygon with `s` sides.
+It can be calculated directly using the formula:
+
+  P(n, s) = ((s - 2) * n^2 - (s - 4) * n) / 2
+
+The function validates that n >= 0 and s >= 3, since polygonal numbers are defined
+only for non-negative indices and polygons with at least three sides.
+
+Time complexity: O(1) using the closed-form formula.
+Space complexity: O(1).
+*/
+fun polygonal_num(n: int, sides: int): int {
+  if n < 0 || sides < 3 {
+    panic("Invalid input: num must be >= 0 and sides must be >= 3.")
+  }
+  let term1 = (sides - 2) * n * n
+  let term2 = (sides - 4) * n
+  return (term1 - term2) / 2
+}
+
+fun main() {
+  let n = 5
+  let sides = 4
+  let result = polygonal_num(n, sides)
+  print(str(result))
+}
+
+main()
