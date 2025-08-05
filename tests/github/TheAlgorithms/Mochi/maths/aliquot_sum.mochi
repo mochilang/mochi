@@ -1,0 +1,28 @@
+/*
+  Compute the aliquot sum of a positive integer.
+  The aliquot sum is the sum of all proper divisors of n: numbers less than n that divide n evenly.
+  This naive algorithm iterates from 1 up to n/2 and accumulates divisors,
+  because a number cannot have a proper divisor greater than n/2.
+  The algorithm runs in O(n) time and uses O(1) additional space.
+*/
+
+fun aliquot_sum(n: int): int {
+  if n <= 0 {
+    panic("Input must be positive")
+  }
+  var total = 0
+  var divisor = 1
+  while divisor <= n / 2 {
+    if n % divisor == 0 {
+      total = total + divisor
+    }
+    divisor = divisor + 1
+  }
+  return total
+}
+
+print(str(aliquot_sum(15)))
+print(str(aliquot_sum(6)))
+print(str(aliquot_sum(12)))
+print(str(aliquot_sum(1)))
+print(str(aliquot_sum(19)))
