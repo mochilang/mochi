@@ -1,0 +1,35 @@
+/*
+Construct a single node for a k-dimensional tree (KD-Tree).
+Each node stores a point in k-dimensional space and indexes of its
+left and right child nodes. Indexes are integers referring to positions
+in an array of nodes. A value of -1 denotes the absence of a child.
+This representation mirrors pointer-based nodes but avoids null values
+and dynamic typing. We build a tiny two-dimensional tree and print the
+coordinates and child links of the root node to demonstrate usage.
+*/
+
+type KDNode {
+  point: list<float>
+  left: int
+  right: int
+}
+
+fun make_kd_node(point: list<float>, left: int, right: int): KDNode {
+  return KDNode { point: point, left: left, right: right }
+}
+
+// root node with two children stored in an array of nodes
+var nodes: list<KDNode> = []
+nodes = append(nodes, make_kd_node([2.0, 3.0], 1, 2))
+nodes = append(nodes, make_kd_node([1.0, 5.0], -1, -1))
+nodes = append(nodes, make_kd_node([4.0, 2.0], -1, -1))
+
+let root = nodes[0]
+let left_child = nodes[1]
+let right_child = nodes[2]
+
+print(str(root.point))
+print(str(root.left))
+print(str(root.right))
+print(str(left_child.point))
+print(str(right_child.point))
