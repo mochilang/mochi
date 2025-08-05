@@ -1,0 +1,28 @@
+/*
+Compute minimal coin change using a greedy approach. Given a list of coin
+values sorted in ascending order and a target amount, the algorithm selects
+coins from largest to smallest while the remaining total is at least the coin
+value. Each selected denomination is appended to the result list. This greedy
+method yields an optimal solution when the coin system is canonical, such as
+standard currency denominations. Time complexity is O(n + m) where n is the
+number of denominations and m is the number of coins used.
+*/
+
+fun find_minimum_change(denominations: list<int>, value: int): list<int> {
+  if value <= 0 { return [] }
+  var total = value
+  var answer: list<int> = []
+  var i = len(denominations) - 1
+  while i >= 0 {
+    let denom = denominations[i]
+    while total >= denom {
+      total = total - denom
+      answer = append(answer, denom)
+    }
+    i = i - 1
+  }
+  return answer
+}
+
+print(str(find_minimum_change([1, 2, 5, 10, 20, 50, 100, 500, 2000], 987)))
+print(str(find_minimum_change([1, 5, 100, 500, 1000], 456)))
