@@ -1,0 +1,84 @@
+/*
+Sine via Taylor Series Expansion
+--------------------------------
+This program computes the sine of an angle given in degrees using
+only basic arithmetic through the Maclaurin series expansion:
+
+  sin(x) = x - x^3/3! + x^5/5! - x^7/7! + ...
+
+The input angle is first normalized to the range [-360, 360] degrees
+and converted to radians. A finite number of terms (controlled by
+`accuracy`) are summed, alternating signs for each term. The result is
+returned as a floating-point value. No foreign functions are used so
+this code can run on the runtime/vm.
+*/
+
+let PI: float = 3.141592653589793
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow(x: float, n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * x
+    i = i + 1
+  }
+  return result
+}
+
+fun factorial(n: int): float {
+  var result = 1.0
+  var i = 2
+  while i <= n {
+    result = result * (i as float)
+    i = i + 1
+  }
+  return result
+}
+
+fun radians(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun taylor_sin(angle_in_degrees: float, accuracy: int, rounded_values_count: int): float {
+  let k = floor(angle_in_degrees / 360.0)
+  var angle = angle_in_degrees - (k * 360.0)
+  let angle_in_radians = radians(angle)
+  var result = angle_in_radians
+  var a = 3
+  var sign = -1.0
+  var i = 0
+  while i < accuracy {
+    result = result + (sign * pow(angle_in_radians, a)) / factorial(a)
+    sign = -sign
+    a = a + 2
+    i = i + 1
+  }
+  return result
+}
+
+fun test_sin() {
+  let eps = 0.0000001
+  if abs(taylor_sin(0.0, 18, 10) - 0.0) > eps { panic("sin(0) failed") }
+  if abs(taylor_sin(90.0, 18, 10) - 1.0) > eps { panic("sin(90) failed") }
+  if abs(taylor_sin(180.0, 18, 10) - 0.0) > eps { panic("sin(180) failed") }
+  if abs(taylor_sin(270.0, 18, 10) - (-1.0)) > eps { panic("sin(270) failed") }
+}
+
+fun main() {
+  test_sin()
+  let res = taylor_sin(64.0, 18, 10)
+  print(res)
+}
+
+main()
