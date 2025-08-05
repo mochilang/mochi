@@ -1,0 +1,76 @@
+/*
+Convert between common weight units using kilogram as the base unit.
+
+The algorithm maintains two lookup maps:
+1. `KILOGRAM_CHART` – factors to convert a kilogram to each unit.
+2. `WEIGHT_TYPE_CHART` – factors to convert a unit to kilograms.
+
+To convert `value` from `from_type` to `to_type`, we first validate that
+both units exist in the charts.  The result is then computed as:
+
+    value * KILOGRAM_CHART[to_type] * WEIGHT_TYPE_CHART[from_type]
+
+This mirrors the approach in the Python reference implementation and
+runs in constant time.
+*/
+
+fun pow10(exp: int): float {
+  var result = 1.0
+  if exp >= 0 {
+    var i = 0
+    while i < exp {
+      result = result * 10.0
+      i = i + 1
+    }
+  } else {
+    var i = 0
+    while i < (0 - exp) {
+      result = result / 10.0
+      i = i + 1
+    }
+  }
+  return result
+}
+
+let KILOGRAM_CHART: map<string, float> = {
+  "kilogram": 1.0,
+  "gram": 1000.0,
+  "milligram": 1000000.0,
+  "metric-ton": 0.001,
+  "long-ton": 0.0009842073,
+  "short-ton": 0.0011023122,
+  "pound": 2.2046244202,
+  "stone": 0.1574731728,
+  "ounce": 35.273990723,
+  "carrat": 5000.0,
+  "atomic-mass-unit": 6.022136652 * pow10(26),
+}
+
+let WEIGHT_TYPE_CHART: map<string, float> = {
+  "kilogram": 1.0,
+  "gram": 0.001,
+  "milligram": 0.000001,
+  "metric-ton": 1000.0,
+  "long-ton": 1016.04608,
+  "short-ton": 907.184,
+  "pound": 0.453592,
+  "stone": 6.35029,
+  "ounce": 0.0283495,
+  "carrat": 0.0002,
+  "atomic-mass-unit": 1.660540199 * pow10(-27),
+}
+
+fun weight_conversion(from_type: string, to_type: string, value: float): float {
+  let has_to = to_type in KILOGRAM_CHART
+  let has_from = from_type in WEIGHT_TYPE_CHART
+  if has_to && has_from {
+    return value * KILOGRAM_CHART[to_type] * WEIGHT_TYPE_CHART[from_type]
+  }
+  print("Invalid 'from_type' or 'to_type'")
+  return 0.0
+}
+
+// example usages
+print(weight_conversion("kilogram", "gram", 1.0))
+print(weight_conversion("gram", "pound", 3.0))
+print(weight_conversion("ounce", "kilogram", 3.0))
