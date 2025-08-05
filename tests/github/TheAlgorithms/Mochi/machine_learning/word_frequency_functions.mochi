@@ -1,0 +1,200 @@
+/*
+Compute word importance within documents using frequency-based metrics.
+
+This module implements four related algorithms commonly used in
+information retrieval:
+
+1. Term Frequency (TF): counts how often a word appears in a single
+   document after stripping punctuation and normalizing case.
+2. Document Frequency (DF): given a corpus of newline‑separated
+documents, counts in how many documents a term occurs.
+3. Inverse Document Frequency (IDF): measures term rarity across a
+   corpus using log10(N / df).  An optional smoothing variant
+   computes 1 + log10(N / (1 + df)) to avoid division by zero.
+4. TF‑IDF: multiplies TF and IDF to estimate how important a word is to
+a particular document relative to the corpus.
+
+To remain pure Mochi, helper routines provide lowercase conversion,
+string splitting, punctuation filtering, rounding and a logarithm base
+10 implemented via a natural‑log series expansion.
+*/
+
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let PUNCT = "!\"#$%&'()*+,-./:;<=>?@[\\]^_{|}~"
+
+fun to_lowercase(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    var j = 0
+    var found = false
+    while j < len(UPPER) {
+      if c == UPPER[j] {
+        res = res + LOWER[j]
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if !found {
+      res = res + c
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun is_punct(c: string): bool {
+  var i = 0
+  while i < len(PUNCT) {
+    if c == PUNCT[i] { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun clean_text(text: string, keep_newlines: bool): string {
+  let lower = to_lowercase(text)
+  var res = ""
+  var i = 0
+  while i < len(lower) {
+    let ch = lower[i]
+    if is_punct(ch) {
+      // skip punctuation
+    } else if ch == "\n" {
+      if keep_newlines { res = res + "\n" }
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun contains(s: string, sub: string): bool {
+  let n = len(s)
+  let m = len(sub)
+  if m == 0 { return true }
+  var i = 0
+  while i <= n - m {
+    var j = 0
+    var is_match = true
+    while j < m {
+      if s[i + j] != sub[j] {
+        is_match = false
+        break
+      }
+      j = j + 1
+    }
+    if is_match { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+fun round3(x: float): float {
+  return floor(x * 1000.0 + 0.5) / 1000.0
+}
+
+fun ln(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var k = 1
+  while k <= 99 {
+    sum = sum + term / (k as float)
+    term = term * t * t
+    k = k + 2
+  }
+  return 2.0 * sum
+}
+
+fun log10(x: float): float {
+  return ln(x) / ln(10.0)
+}
+
+fun term_frequency(term: string, document: string): int {
+  let clean = clean_text(document, false)
+  let tokens = split(clean, " ")
+  let t = to_lowercase(term)
+  var count = 0
+  var i = 0
+  while i < len(tokens) {
+    if tokens[i] != "" && tokens[i] == t {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+fun document_frequency(term: string, corpus: string): list<int> {
+  let clean = clean_text(corpus, true)
+  let docs = split(clean, "\n")
+  let t = to_lowercase(term)
+  var matches = 0
+  var i = 0
+  while i < len(docs) {
+    if contains(docs[i], t) { matches = matches + 1 }
+    i = i + 1
+  }
+  return [matches, len(docs)]
+}
+
+fun inverse_document_frequency(df: int, n: int, smoothing: bool): float {
+  if smoothing {
+    if n == 0 { panic("log10(0) is undefined.") }
+    let ratio: float = (n as float) / (1.0 + (df as float))
+    let l: float = log10(ratio)
+    let result = round3(1.0 + l)
+    print(result)
+    return result
+  }
+  if df == 0 { panic("df must be > 0") }
+  if n == 0 { panic("log10(0) is undefined.") }
+  let ratio: float = (n as float) / (df as float)
+  let l: float = log10(ratio)
+  let result = round3(l)
+  print(result)
+  return result
+}
+
+fun tf_idf(tf: int, idf: float): float {
+  let prod: float = (tf as float) * idf
+  let result = round3(prod)
+  print(result)
+  return result
+}
+
+// Example usage
+print(term_frequency("to", "To be, or not to be"))
+let corpus = "This is the first document in the corpus.\nThIs is the second document in the corpus.\nTHIS is the third document in the corpus."
+print(str(document_frequency("first", corpus)))
+let idf_val = inverse_document_frequency(1, 3, false)
+tf_idf(2, idf_val)
+
