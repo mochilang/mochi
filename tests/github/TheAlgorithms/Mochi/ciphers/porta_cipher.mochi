@@ -1,0 +1,139 @@
+/*
+Implement the Porta cipher, a polyalphabetic substitution cipher.
+
+The algorithm uses paired substitution tables. Each table consists of the
+first half of the alphabet "A"–"M" as the top row and a rotated version of
+"N"–"Z" as the bottom row. The rotation amount depends on the key letter:
+for every pair of key letters, the bottom row rotates two positions to the
+right. To encipher a message, each character is located in the current
+table and replaced with the character in the opposite row and same column.
+The cipher is reciprocal so the same procedure decrypts the text.
+
+Time complexity: O(n) for a message of length n.
+*/
+
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let BASE_TOP = "ABCDEFGHIJKLM"
+let BASE_BOTTOM = "NOPQRSTUVWXYZ"
+
+fun to_upper(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    var j = 0
+    var replaced = false
+    while j < len(LOWER) {
+      if substring(LOWER, j, j + 1) == ch {
+        res = res + substring(UPPER, j, j + 1)
+        replaced = true
+        break
+      }
+      j = j + 1
+    }
+    if !replaced {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun char_index(c: string): int {
+  var i = 0
+  while i < len(UPPER) {
+    if substring(UPPER, i, i + 1) == c {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun rotate_right(s: string, k: int): string {
+  let n = len(s)
+  let shift = k % n
+  return substring(s, n - shift, n) + substring(s, 0, n - shift)
+}
+
+fun table_for(c: string): list<string> {
+  let idx = char_index(c)
+  let shift = idx / 2
+  let row1 = rotate_right(BASE_BOTTOM, shift)
+  let pair: list<string> = [BASE_TOP, row1]
+  return pair
+}
+
+fun generate_table(key: string): list<list<string>> {
+  let up = to_upper(key)
+  var i = 0
+  var result: list<list<string>> = []
+  while i < len(up) {
+    let ch = substring(up, i, i + 1)
+    let pair = table_for(ch)
+    result = append(result, pair)
+    i = i + 1
+  }
+  return result
+}
+
+fun str_index(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun get_position(table: list<string>, ch: string): list<int> {
+  var row = 0
+  if str_index(table[0], ch) == 0 - 1 {
+    row = 1
+  }
+  let col = str_index(table[row], ch)
+  return [row, col]
+}
+
+fun get_opponent(table: list<string>, ch: string): string {
+  let pos = get_position(table, ch)
+  let row = pos[0]
+  let col = pos[1]
+  if col == 0 - 1 {
+    return ch
+  }
+  if row == 1 {
+    return substring(table[0], col, col + 1)
+  }
+  return substring(table[1], col, col + 1)
+}
+
+fun encrypt(key: string, words: string): string {
+  let table = generate_table(key)
+  let up_words = to_upper(words)
+  var cipher = ""
+  var count = 0
+  var i = 0
+  while i < len(up_words) {
+    let ch = substring(up_words, i, i + 1)
+    cipher = cipher + get_opponent(table[count], ch)
+    count = (count + 1) % len(table)
+    i = i + 1
+  }
+  return cipher
+}
+
+fun decrypt(key: string, words: string): string {
+  let res = encrypt(key, words)
+  return res
+}
+
+fun main() {
+  print(encrypt("marvin", "jessica"))
+  print(decrypt("marvin", "QRACRWU"))
+}
+
+main()
