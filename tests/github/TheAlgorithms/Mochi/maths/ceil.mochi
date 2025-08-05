@@ -1,0 +1,22 @@
+/*
+Compute the ceiling of a real number.
+
+For any real number x, the ceiling function returns the smallest integer
+greater than or equal to x. To avoid relying on any floating-point library
+routines, this implementation casts the value to an integer which truncates
+toward zero. If x already equals this truncated integer, the truncated value
+is the ceiling. Otherwise one is added to handle positive fractions, yielding
+an integer that is still >= x even for negative inputs.
+*/
+
+fun ceil(x: float): int {
+  let truncated: int = x as int
+  let frac: float = x - (truncated as float)
+  if frac <= 0.0 { return truncated }
+  return truncated + 1
+}
+
+let values: list<float> = [1.0, -1.0, 0.0, -0.0, 1.1, -1.1, 1.0, -1.0, 1000000000.0]
+for v in values {
+  print(ceil(v))
+}
