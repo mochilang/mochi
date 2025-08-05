@@ -1,0 +1,29 @@
+/*
+Multiplication Table Generator
+------------------------------
+Given an integer and the number of terms, this program constructs the
+multiplication table as a single newline separated string. The algorithm is:
+1. Start a counter at 1 and an empty result string.
+2. Repeatedly multiply the base number by the counter.
+3. Append a formatted line "number * counter = product" to the result.
+4. Insert a newline after each line except the last one.
+5. Continue until the counter exceeds the desired number of terms.
+
+This mirrors the Python implementation from TheAlgorithms and runs using the
+pure Mochi runtime/vm without any foreign interfaces.
+*/
+
+fun multiplication_table(number: int, number_of_terms: int): string {
+  var i = 1
+  var result = ""
+  while i <= number_of_terms {
+    result = result + str(number) + " * " + str(i) + " = " + str(number * i)
+    if i < number_of_terms {
+      result = result + "\n"
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(multiplication_table(5, 10))
