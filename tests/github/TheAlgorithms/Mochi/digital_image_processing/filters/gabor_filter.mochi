@@ -1,0 +1,97 @@
+/*
+Gabor Filter Kernel
+
+Generates a 2D Gabor filter kernel, commonly used in image processing
+for texture analysis and edge detection. The kernel is defined by a
+Gaussian envelope modulated by a sinusoidal plane wave. Parameters:
+
+ksize - size of the kernel (ksize x ksize), adjusted to be odd.
+sigma - standard deviation of the Gaussian factor.
+theta - orientation of the normal to the parallel stripes in degrees.
+lambd - wavelength of the sinusoidal component.
+gamma - spatial aspect ratio controlling ellipticity of support.
+psi   - phase offset of the sinusoidal component.
+
+For each coordinate relative to the kernel's center, the algorithm
+rotates the point by theta and evaluates:
+  exp(-(x'^2 + gamma^2 * y'^2) / (2 * sigma^2)) * cos(2 * PI * x' / lambd + psi)
+Time complexity: O(ksize^2).
+*/
+
+let PI: float = 3.141592653589793
+
+fun to_radians(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun sin_taylor(x: float): float {
+  var term = x
+  var sum = x
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float)
+    let k2 = k1 + 1.0
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun cos_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    let k1 = 2.0 * (i as float) - 1.0
+    let k2 = 2.0 * (i as float)
+    term = -term * x * x / (k1 * k2)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun exp_taylor(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1.0
+  while i < 20.0 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1.0
+  }
+  return sum
+}
+
+fun gabor_filter_kernel(ksize: int, sigma: float, theta: float, lambd: float, gamma: float, psi: float): list<list<float>> {
+  var size = ksize
+  if size % 2 == 0 {
+    size = size + 1
+  }
+  var gabor: list<list<float>> = []
+  var y = 0
+  while y < size {
+    var row: list<float> = []
+    var x = 0
+    while x < size {
+      let px = (x - size / 2) as float
+      let py = (y - size / 2) as float
+      let rad = to_radians(theta)
+      let cos_theta = cos_taylor(rad)
+      let sin_theta = sin_taylor(rad)
+      let x_rot = cos_theta * px + sin_theta * py
+      let y_rot = -sin_theta * px + cos_theta * py
+      let exponent = -(x_rot * x_rot + gamma * gamma * y_rot * y_rot) / (2.0 * sigma * sigma)
+      let value = exp_taylor(exponent) * cos_taylor(2.0 * PI * x_rot / lambd + psi)
+      row = append(row, value)
+      x = x + 1
+    }
+    gabor = append(gabor, row)
+    y = y + 1
+  }
+  return gabor
+}
+
+let kernel = gabor_filter_kernel(3, 8.0, 0.0, 10.0, 0.0, 0.0)
+print(kernel)
