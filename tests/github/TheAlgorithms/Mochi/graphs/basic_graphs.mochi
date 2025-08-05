@@ -1,0 +1,326 @@
+/*
+Basic graph algorithms implemented in Mochi.
+
+This module showcases multiple fundamental graph routines:
+
+- Depth‑first search (DFS) explores as deep as possible along each branch
+  before backtracking using an explicit stack.  Nodes are marked visited as
+  they are first encountered to avoid revisiting them.
+- Breadth‑first search (BFS) visits all neighbors of a node before moving to
+  the next layer.  A queue maintains the frontier of vertices to process.
+- Dijkstra’s algorithm computes shortest paths from a source in a weighted
+  graph without negative edges.  It repeatedly selects the closest unseen
+  vertex and relaxes its outgoing edges.
+- Topological sorting of a directed acyclic graph (DAG) using Kahn’s
+  algorithm based on node indegrees and a queue of ready vertices.
+- Floyd‑Warshall finds all‑pairs shortest paths over an adjacency matrix by
+  considering every vertex as an intermediate point.
+- Prim’s algorithm grows a minimum spanning tree (MST) by always attaching
+  the nearest vertex to the existing tree.
+- Kruskal’s MST algorithm sorts edges by weight and joins components using a
+  union‑find data structure.
+- Detection of isolated nodes simply checks which adjacency lists are empty.
+
+The code is pure Mochi with explicit types and does not rely on any foreign
+functions.  Each algorithm is demonstrated with a small sample graph and run
+with the `runtime/vm`.
+*/
+
+fun dfs(g: map<int, list<int>>, s: int): void {
+  var visited: map<int, bool> = {}
+  var stack: list<int> = []
+  visited[s] = true
+  stack = append(stack, s)
+  print(s)
+  while len(stack) > 0 {
+    let u = stack[len(stack) - 1]
+    var found = false
+    for v in g[u] {
+      if !(v in visited) {
+        visited[v] = true
+        stack = append(stack, v)
+        print(v)
+        found = true
+        break
+      }
+    }
+    if !found {
+      stack = slice(stack, 0, len(stack) - 1)
+    }
+  }
+}
+
+fun bfs(g: map<int, list<int>>, s: int): void {
+  var visited: map<int, bool> = {}
+  var q: list<int> = []
+  visited[s] = true
+  q = append(q, s)
+  print(s)
+  while len(q) > 0 {
+    let u = q[0]
+    q = slice(q, 1, len(q))
+    for v in g[u] {
+      if !(v in visited) {
+        visited[v] = true
+        q = append(q, v)
+        print(v)
+      }
+    }
+  }
+}
+
+fun sort_ints(a: list<int>): list<int> {
+  var arr = a
+  var i = 0
+  while i < len(arr) {
+    var j = 0
+    while j < len(arr) - i - 1 {
+      if arr[j] > arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun dijkstra(g: map<int, list<list<int>>>, s: int): void {
+  var dist: map<int, int> = {}
+  dist[s] = 0
+  var path: map<int, int> = {}
+  path[s] = 0
+  var known: list<int> = []
+  var keys: list<int> = [s]
+  while len(known) < len(keys) {
+    var mini = 100000
+    var u = -1
+    var i = 0
+    while i < len(keys) {
+      let k = keys[i]
+      let d = dist[k]
+      if !(k in known) && d < mini {
+        mini = d
+        u = k
+      }
+      i = i + 1
+    }
+    known = append(known, u)
+    for e in g[u] {
+      let v = e[0]
+      let w = e[1]
+      if !(v in keys) { keys = append(keys, v) }
+      let alt = dist[u] + w
+      let cur = if v in dist { dist[v] } else { 100000 }
+      if !(v in known) && alt < cur {
+        dist[v] = alt
+        path[v] = u
+      }
+    }
+  }
+  let ordered = sort_ints(keys)
+  var idx = 0
+  while idx < len(ordered) {
+    let k = ordered[idx]
+    if k != s {
+      print(dist[k])
+    }
+    idx = idx + 1
+  }
+}
+
+fun topo(g: map<int, list<int>>, n: int): void {
+  var ind: list<int> = []
+  var i = 0
+  while i <= n {
+    ind = append(ind, 0)
+    i = i + 1
+  }
+  var node = 1
+  while node <= n {
+    for v in g[node] { ind[v] = ind[v] + 1 }
+    node = node + 1
+  }
+  var q: list<int> = []
+  var j = 1
+  while j <= n {
+    if ind[j] == 0 { q = append(q, j) }
+    j = j + 1
+  }
+  while len(q) > 0 {
+    let v = q[0]
+    q = slice(q, 1, len(q))
+    print(v)
+    for w in g[v] {
+      ind[w] = ind[w] - 1
+      if ind[w] == 0 { q = append(q, w) }
+    }
+  }
+}
+
+fun floyd(a: list<list<int>>): void {
+  let n = len(a)
+  var dist: list<list<int>> = []
+  var i = 0
+  while i < n {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, a[i][j])
+      j = j + 1
+    }
+    dist = append(dist, row)
+    i = i + 1
+  }
+  var k = 0
+  while k < n {
+    var ii = 0
+    while ii < n {
+      var jj = 0
+      while jj < n {
+        if dist[ii][jj] > dist[ii][k] + dist[k][jj] {
+          dist[ii][jj] = dist[ii][k] + dist[k][jj]
+        }
+        jj = jj + 1
+      }
+      ii = ii + 1
+    }
+    k = k + 1
+  }
+  print(dist)
+}
+
+fun prim(g: map<int, list<list<int>>>, s: int, n: int): int {
+  var dist: map<int, int> = {}
+  dist[s] = 0
+  var known: list<int> = []
+  var keys: list<int> = [s]
+  var total = 0
+  while len(known) < n {
+    var mini = 100000
+    var u = -1
+    var i = 0
+    while i < len(keys) {
+      let k = keys[i]
+      let d = dist[k]
+      if !(k in known) && d < mini {
+        mini = d
+        u = k
+      }
+      i = i + 1
+    }
+    known = append(known, u)
+    total = total + mini
+    for e in g[u] {
+      let v = e[0]
+      let w = e[1]
+      if !(v in keys) { keys = append(keys, v) }
+      let cur = if v in dist { dist[v] } else { 100000 }
+      if !(v in known) && w < cur {
+        dist[v] = w
+      }
+    }
+  }
+  return total
+}
+
+fun sort_edges(edges: list<list<int>>): list<list<int>> {
+  var es = edges
+  var i = 0
+  while i < len(es) {
+    var j = 0
+    while j < len(es) - i - 1 {
+      if es[j][2] > es[j + 1][2] {
+        let tmp = es[j]
+        es[j] = es[j + 1]
+        es[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return es
+}
+
+fun find_parent(parent: list<int>, x: int): int {
+  var r = x
+  while parent[r] != r {
+    r = parent[r]
+  }
+  return r
+}
+
+fun union_parent(parent: list<int>, a: int, b: int) {
+  parent[a] = b
+}
+
+fun kruskal(edges: list<list<int>>, n: int): int {
+  var es = sort_edges(edges)
+  var parent: list<int> = []
+  var i = 0
+  while i <= n {
+    parent = append(parent, i)
+    i = i + 1
+  }
+  var total = 0
+  var count = 0
+  var idx = 0
+  while count < n - 1 && idx < len(es) {
+    let e = es[idx]
+    idx = idx + 1
+    let u = e[0]
+    let v = e[1]
+    let w = e[2]
+    let ru = find_parent(parent, u)
+    let rv = find_parent(parent, v)
+    if ru != rv {
+      union_parent(parent, ru, rv)
+      total = total + w
+      count = count + 1
+    }
+  }
+  return total
+}
+
+fun find_isolated_nodes(g: map<int, list<int>>, nodes: list<int>): list<int> {
+  var isolated: list<int> = []
+  for node in nodes {
+    if len(g[node]) == 0 {
+      isolated = append(isolated, node)
+    }
+  }
+  return isolated
+}
+
+let g_dfs: map<int, list<int>> = {1: [2, 3], 2: [4, 5], 3: [], 4: [], 5: []}
+let g_bfs: map<int, list<int>> = {1: [2, 3], 2: [4, 5], 3: [6, 7], 4: [], 5: [8], 6: [], 7: [], 8: []}
+let g_weighted: map<int, list<list<int>>> = {
+  1: [[2, 7], [3, 9], [6, 14]],
+  2: [[1, 7], [3, 10], [4, 15]],
+  3: [[1, 9], [2, 10], [4, 11], [6, 2]],
+  4: [[2, 15], [3, 11], [5, 6]],
+  5: [[4, 6], [6, 9]],
+  6: [[1, 14], [3, 2], [5, 9]]
+}
+let g_topo: map<int, list<int>> = {1: [2, 3], 2: [4], 3: [4], 4: []}
+let matrix: list<list<int>> = [[0, 5, 9, 100000], [100000, 0, 2, 8], [100000, 100000, 0, 7], [4, 100000, 100000, 0]]
+let g_prim: map<int, list<list<int>>> = {
+  1: [[2, 1], [3, 3]],
+  2: [[1, 1], [3, 1], [4, 6]],
+  3: [[1, 3], [2, 1], [4, 2]],
+  4: [[2, 6], [3, 2]]
+}
+let edges_kruskal: list<list<int>> = [[1, 2, 1], [2, 3, 2], [1, 3, 2], [3, 4, 1]]
+let g_iso: map<int, list<int>> = {1: [2, 3], 2: [1, 3], 3: [1, 2], 4: []}
+
+dfs(g_dfs, 1)
+bfs(g_bfs, 1)
+dijkstra(g_weighted, 1)
+topo(g_topo, 4)
+floyd(matrix)
+print(prim(g_prim, 1, 4))
+print(kruskal(edges_kruskal, 4))
+let iso = find_isolated_nodes(g_iso, [1, 2, 3, 4])
+print(iso)
