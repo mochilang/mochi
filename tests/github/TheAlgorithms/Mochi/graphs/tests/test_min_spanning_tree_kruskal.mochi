@@ -1,0 +1,102 @@
+/*
+Find the Minimum Spanning Tree (MST) of a connected, weighted, undirected graph
+using Kruskal's algorithm.  The graph is given by the number of nodes and a list
+of edges [u, v, w] where w is the weight.  Kruskal's algorithm sorts all edges by
+increasing weight and iteratively adds the next lightest edge that does not form
+a cycle.  A disjoint set union (union-find) structure tracks connected
+components.  The resulting set of edges forms an MST containing n-1 edges with
+minimal total weight.
+This program tests the algorithm on a sample graph and prints the sorted MST
+edges followed by whether the result matches the expected tree.
+*/
+
+fun sort_edges(edges: list<list<int>>): list<list<int>> {
+  var es = edges
+  var i = 0
+  while i < len(es) {
+    var j = 0
+    while j < len(es) - i - 1 {
+      if es[j][2] > es[j + 1][2] {
+        let tmp = es[j]
+        es[j] = es[j + 1]
+        es[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return es
+}
+
+fun find(parent: list<int>, x: int): int {
+  var r = x
+  while parent[r] != r {
+    r = parent[r]
+  }
+  return r
+}
+
+fun kruskal(n: int, edges: list<list<int>>): list<list<int>> {
+  var parent: list<int> = []
+  var i = 0
+  while i < n {
+    parent = append(parent, i)
+    i = i + 1
+  }
+  var sorted = sort_edges(edges)
+  var mst: list<list<int>> = []
+  var e = 0
+  while e < len(sorted) {
+    if len(mst) == n - 1 { break }
+    let edge = sorted[e]
+    e = e + 1
+    let u = edge[0]
+    let v = edge[1]
+    let w = edge[2]
+    let ru = find(parent, u)
+    let rv = find(parent, v)
+    if ru != rv {
+      parent[ru] = rv
+      mst = append(mst, [u, v, w])
+    }
+  }
+  return mst
+}
+
+fun edges_equal(a: list<list<int>>, b: list<list<int>>): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    let e1 = a[i]
+    let e2 = b[i]
+    if e1[0] != e2[0] || e1[1] != e2[1] || e1[2] != e2[2] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  let num_nodes = 9
+  let edges = [
+    [0, 1, 4], [0, 7, 8], [1, 2, 8], [7, 8, 7], [7, 6, 1], [2, 8, 2],
+    [8, 6, 6], [2, 3, 7], [2, 5, 4], [6, 5, 2], [3, 5, 14],
+    [3, 4, 9], [5, 4, 10], [1, 7, 11]
+  ]
+  let expected = [
+    [7, 6, 1], [2, 8, 2], [6, 5, 2], [0, 1, 4], [2, 5, 4],
+    [2, 3, 7], [0, 7, 8], [3, 4, 9]
+  ]
+  let result = kruskal(num_nodes, edges)
+  let sorted_result = sort_edges(result)
+  let sorted_expected = sort_edges(expected)
+  print(str(sorted_result))
+  if edges_equal(sorted_expected, sorted_result) {
+    print("true")
+  } else {
+    print("false")
+  }
+}
+
+main()
