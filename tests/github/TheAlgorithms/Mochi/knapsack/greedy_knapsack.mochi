@@ -1,0 +1,77 @@
+/*
+Fractional Knapsack using Greedy Strategy
+
+Given lists of profits and weights for items and a maximum weight capacity,
+the goal is to maximize profit by taking whole items or fractions of them.
+The algorithm repeatedly selects the unused item with the highest
+profit-to-weight ratio. If the item fits entirely, it is added to the
+knapsack; otherwise only the remaining capacity is taken. This continues
+until the weight limit is reached or no items remain.
+
+Constraints:
+- profit and weight lists must have the same length
+- max_weight must be positive
+- all profits and weights must be non-negative
+
+Time complexity: O(n^2) due to scanning for the best ratio each iteration.
+Space complexity: O(n) for tracking which items are used.
+*/
+
+fun calc_profit(profit: list<int>, weight: list<int>, max_weight: int): float {
+  if len(profit) != len(weight) { panic("The length of profit and weight must be same.") }
+  if max_weight <= 0 { panic("max_weight must greater than zero.") }
+  var i = 0
+  while i < len(profit) {
+    if profit[i] < 0 { panic("Profit can not be negative.") }
+    if weight[i] < 0 { panic("Weight can not be negative.") }
+    i = i + 1
+  }
+
+  let n = len(profit)
+  var used: list<bool> = []
+  var j = 0
+  while j < n {
+    used = append(used, false)
+    j = j + 1
+  }
+
+  var limit = 0
+  var gain: float = 0.0
+  var count = 0
+  while limit < max_weight && count < n {
+    var maxRatio: float = -1.0
+    var maxIndex = -1
+    var k = 0
+    while k < n {
+      if !used[k] {
+        let ratio = (profit[k] as float) / (weight[k] as float)
+        if ratio > maxRatio {
+          maxRatio = ratio
+          maxIndex = k
+        }
+      }
+      k = k + 1
+    }
+    if maxIndex < 0 {
+    break
+  }
+    used[maxIndex] = true
+    if max_weight - limit >= weight[maxIndex] {
+      limit = limit + weight[maxIndex]
+      gain = gain + (profit[maxIndex] as float)
+    } else {
+      gain = gain + ((max_weight - limit) as float / (weight[maxIndex] as float)) * (profit[maxIndex] as float)
+      break
+    }
+    count = count + 1
+  }
+  return gain
+}
+
+fun main(): void {
+  print(calc_profit([1, 2, 3], [3, 4, 5], 15))
+  print(calc_profit([10, 9, 8], [3, 4, 5], 25))
+  print(calc_profit([10, 9, 8], [3, 4, 5], 5))
+}
+
+main()
