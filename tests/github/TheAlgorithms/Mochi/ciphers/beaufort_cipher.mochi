@@ -1,0 +1,72 @@
+/*
+Beaufort Cipher Implementation
+
+The Beaufort cipher is a substitution cipher similar to the Vigenère cipher
+but uses a slightly different encryption algorithm. A key is repeated to the
+length of the message. For each alphabetic character, the cipher subtracts
+its key character position from the plaintext character position (mod 26)
+producing the ciphertext. Decryption adds the key character position to the
+ciphertext character position (mod 26) to recover the original message.
+
+This implementation handles only uppercase English letters and preserves
+spaces in the input message.
+*/
+
+let ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(ch: string): int {
+  for i in 0..len(ALPHABET) {
+    if ALPHABET[i] == ch { return i }
+  }
+  return -1
+}
+
+fun generate_key(message: string, key: string): string {
+  var key_new = key
+  var i = 0
+  while len(key_new) < len(message) {
+    key_new = key_new + key[i]
+    i = i + 1
+    if i == len(key) { i = 0 }
+  }
+  return key_new
+}
+
+fun cipher_text(message: string, key_new: string): string {
+  var res = ""
+  var i = 0
+  for idx in 0..len(message) {
+    let ch = message[idx]
+    if ch == " " {
+      res = res + " "
+    } else {
+      let x = (index_of(ch) - index_of(key_new[i]) + 26) % 26
+      i = i + 1
+      res = res + ALPHABET[x]
+    }
+  }
+  return res
+}
+
+fun original_text(cipher: string, key_new: string): string {
+  var res = ""
+  var i = 0
+  for idx in 0..len(cipher) {
+    let ch = cipher[idx]
+    if ch == " " {
+      res = res + " "
+    } else {
+      let x = (index_of(ch) + index_of(key_new[i]) + 26) % 26
+      i = i + 1
+      res = res + ALPHABET[x]
+    }
+  }
+  return res
+}
+
+let message = "THE GERMAN ATTACK"
+let key = "SECRET"
+let key_new = generate_key(message, key)
+let encrypted = cipher_text(message, key_new)
+print("Encrypted Text = " + encrypted)
+print("Original Text = " + original_text(encrypted, key_new))
