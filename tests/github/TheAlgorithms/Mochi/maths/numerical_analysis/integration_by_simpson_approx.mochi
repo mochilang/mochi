@@ -1,0 +1,62 @@
+/*
+Simpson's Rule Numerical Integration
+-----------------------------------
+This program approximates the definite integral of a function f(x) over an
+interval [a, b] using Simpson's rule. The interval is divided into a fixed
+number of even segments (N_STEPS) and the function is evaluated at these
+equally spaced points. Endpoints are weighted by 1, interior odd points by 4
+and even points by 2. The weighted sum is multiplied by the step width h/3 to
+produce the integral estimate. The algorithm runs in O(n) time and provides a
+high level of accuracy for smooth functions.
+*/
+
+let N_STEPS = 1000
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun simpson_integration(f: fun(float): float, a: float, b: float, precision: int): float {
+  if precision <= 0 {
+    panic("precision should be positive")
+  }
+  let h = (b - a) / (N_STEPS as float)
+  var result = f(a) + f(b)
+  var i = 1
+  while i < N_STEPS {
+    let x = a + h * (i as float)
+    if i % 2 == 1 {
+      result = result + 4.0 * f(x)
+    } else {
+      result = result + 2.0 * f(x)
+    }
+    i = i + 1
+  }
+  result = result * (h / 3.0)
+  let r = round(result, precision)
+  return r
+}
+
+fun square(x: float): float {
+  return x * x
+}
+
+print(str(simpson_integration(square, 1.0, 2.0, 3)))
+print(str(simpson_integration(square, 3.45, 3.2, 1)))
