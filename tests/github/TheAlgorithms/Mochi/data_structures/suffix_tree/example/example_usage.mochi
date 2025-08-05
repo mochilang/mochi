@@ -1,0 +1,52 @@
+/*
+Demonstrate substring search using a simple suffix tree abstraction.
+The program constructs a tree from the text "monkey banana" and
+searches several patterns.  Instead of building a full suffix tree,
+which stores every suffix explicitly, we keep the original text and
+check each pattern by scanning the text.  For a pattern of length m
+and text length n, the search runs in O(n*m) time by comparing
+substrings at every starting index.  The results indicate whether
+each pattern occurs within the text.
+*/
+
+type SuffixTree {
+  text: string
+}
+
+fun new_suffix_tree(text: string): SuffixTree {
+  return SuffixTree { text: text }
+}
+
+fun search(tree: SuffixTree, pattern: string): bool {
+  let n = len(tree.text)
+  let m = len(pattern)
+  if m == 0 {
+    return true
+  }
+  if m > n {
+    return false
+  }
+  var i = 0
+  while i <= n - m {
+    if tree.text[i:i + m] == pattern {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun main() {
+  let text = "monkey banana"
+  let suffix_tree = new_suffix_tree(text)
+  let patterns: list<string> = ["ana", "ban", "na", "xyz", "mon"]
+  var i = 0
+  while i < len(patterns) {
+    let pattern = patterns[i]
+    let found = search(suffix_tree, pattern)
+    print("Pattern '" + pattern + "' found: " + str(found))
+    i = i + 1
+  }
+}
+
+main()
