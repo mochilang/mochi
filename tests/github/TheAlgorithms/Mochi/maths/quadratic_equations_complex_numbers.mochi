@@ -1,0 +1,82 @@
+/*
+Solve roots of a quadratic equation a*x^2 + b*x + c = 0.
+
+The classical quadratic formula uses the discriminant d = b^2 - 4ac.
+If d >= 0, the equation has two real roots; otherwise the roots are a
+complex conjugate pair.  This Mochi implementation mirrors
+TheAlgorithms/Python version and avoids foreign functions by providing a
+Newton-method square root for non-negative inputs and representing
+complex numbers as a struct of real and imaginary parts.
+
+Time complexity is O(1) as the algorithm performs a fixed number of
+arithmetic operations. Space complexity is O(1).
+*/
+
+type Complex {
+  re: float
+  im: float
+}
+
+fun add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun sub(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re - b.re, im: a.im - b.im }
+}
+
+fun div_real(a: Complex, r: float): Complex {
+  return Complex { re: a.re / r, im: a.im / r }
+}
+
+fun sqrt_newton(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun sqrt_to_complex(d: float): Complex {
+  if d >= 0.0 {
+    return Complex { re: sqrt_newton(d), im: 0.0 }
+  }
+  return Complex { re: 0.0, im: sqrt_newton(-d) }
+}
+
+fun quadratic_roots(a: float, b: float, c: float): list<Complex> {
+  if a == 0.0 {
+    print("ValueError: coefficient 'a' must not be zero")
+    return []
+  }
+  let delta = b * b - 4.0 * a * c
+  let sqrt_d = sqrt_to_complex(delta)
+  let minus_b = Complex { re: -b, im: 0.0 }
+  let two_a = 2.0 * a
+  let root1 = div_real(add(minus_b, sqrt_d), two_a)
+  let root2 = div_real(sub(minus_b, sqrt_d), two_a)
+  return [root1, root2]
+}
+
+fun root_str(r: Complex): string {
+  if r.im == 0.0 { return str(r.re) }
+  var s = str(r.re)
+  if r.im >= 0.0 {
+    s = s + "+" + str(r.im) + "i"
+  } else {
+    s = s + str(r.im) + "i"
+  }
+  return s
+}
+
+fun main() {
+  let roots = quadratic_roots(5.0, 6.0, 1.0)
+  if len(roots) == 2 {
+    print("The solutions are: " + root_str(roots[0]) + " and " + root_str(roots[1]))
+  }
+}
+
+main()
