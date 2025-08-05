@@ -1,0 +1,131 @@
+/*
+Solve a symmetric positive definite linear system using
+Conjugate Gradient (CG).
+
+Given a matrix A and vector b, we seek x such that A * x = b.
+CG iteratively refines the solution by moving along
+conjugate search directions. Each iteration updates the
+solution x and residual r until the residual norm is below
+a tolerance or a maximum number of iterations is reached.
+For an n x n SPD matrix, CG converges in at most n steps and
+each iteration costs O(n^2) due to the matrix-vector product.
+*/
+
+fun zeros(n: int): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < n {
+    res = append(res, 0.0)
+    i = i + 1
+  }
+  return res
+}
+
+fun dot(a: list<float>, b: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(a) {
+    sum = sum + a[i] * b[i]
+    i = i + 1
+  }
+  return sum
+}
+
+fun mat_vec_mul(m: list<list<float>>, v: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(m) {
+    var s = 0.0
+    var j = 0
+    while j < len(m[i]) {
+      s = s + m[i][j] * v[j]
+      j = j + 1
+    }
+    res = append(res, s)
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_add(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] + b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_sub(a: list<float>, b: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i] - b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun scalar_mul(s: float, v: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(v) {
+    res = append(res, s * v[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun norm(v: list<float>): float {
+  return sqrtApprox(dot(v, v))
+}
+
+fun conjugate_gradient(
+  A: list<list<float>>,
+  b: list<float>,
+  max_iterations: int,
+  tol: float
+): list<float> {
+  let n = len(b)
+  var x = zeros(n)
+  var r = vec_sub(b, mat_vec_mul(A, x))
+  var p = r
+  var rs_old = dot(r, r)
+  var i = 0
+  while i < max_iterations {
+    let Ap = mat_vec_mul(A, p)
+    let alpha = rs_old / dot(p, Ap)
+    x = vec_add(x, scalar_mul(alpha, p))
+    r = vec_sub(r, scalar_mul(alpha, Ap))
+    let rs_new = dot(r, r)
+    if sqrtApprox(rs_new) < tol { break }
+    let beta = rs_new / rs_old
+    p = vec_add(r, scalar_mul(beta, p))
+    rs_old = rs_new
+    i = i + 1
+  }
+  return x
+}
+
+let A: list<list<float>> = [
+  [8.73256573, -5.02034289, -2.68709226],
+  [-5.02034289, 3.78188322, 0.91980451],
+  [-2.68709226, 0.91980451, 1.94746467]
+]
+let b: list<float> = [-5.80872761, 3.23807431, 1.95381422]
+let x = conjugate_gradient(A, b, 1000, 0.00000001)
+print(str(x[0]))
+print(str(x[1]))
+print(str(x[2]))
