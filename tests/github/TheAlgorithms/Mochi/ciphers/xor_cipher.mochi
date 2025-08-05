@@ -1,0 +1,94 @@
+/*
+XOR Cipher
+----------
+The XOR cipher encrypts data by applying the bitwise exclusive OR
+operation to each character's ASCII code using a key. Applying the same
+operation again with the identical key decrypts the text, making this a
+symmetric stream cipher. The key is normalized to the range 0..255 and
+used for every character.
+
+Functions implemented:
+- xor: compute the bitwise XOR of two integers without using built-ins.
+- ord/chr: convert between characters and their ASCII codes for printable
+  characters (codes 32..126).
+- encrypt: return a list of encrypted characters.
+- encrypt_string: process whole strings; applying it twice recovers the
+  original text.
+
+The algorithm iterates through each character, XORs its code with the
+normalized key, and converts the result back to a character. Because XOR
+is its own inverse, running the operation again with the same key
+restores the plaintext.
+*/
+
+fun xor(a: int, b: int): int {
+  var res = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit != bbit { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return res
+}
+
+let ascii = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ascii) {
+    if ascii[i:i+1] == ch { return 32 + i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun chr(n: int): string {
+  if n >= 32 && n < 127 {
+    return ascii[n-32:n-31]
+  }
+  return ""
+}
+
+fun normalize_key(key: int): int {
+  var k = key
+  if k == 0 { k = 1 }
+  k = k % 256
+  if k < 0 { k = k + 256 }
+  return k
+}
+
+fun encrypt(content: string, key: int): list<string> {
+  let k = normalize_key(key)
+  var result: list<string> = []
+  var i = 0
+  while i < len(content) {
+    let c = ord(content[i:i+1])
+    let e = xor(c, k)
+    result = append(result, chr(e))
+    i = i + 1
+  }
+  return result
+}
+
+fun encrypt_string(content: string, key: int): string {
+  let chars = encrypt(content, key)
+  var out = ""
+  for ch in chars {
+    out = out + ch
+  }
+  return out
+}
+
+let sample = "hallo welt"
+let enc = encrypt_string(sample, 1)
+let dec = encrypt_string(enc, 1)
+print(str(encrypt(sample, 1)))
+print(enc)
+print(dec)
+
