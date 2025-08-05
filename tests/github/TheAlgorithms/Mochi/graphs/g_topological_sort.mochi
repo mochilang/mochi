@@ -1,0 +1,100 @@
+/*
+  Topological sort for ordering clothing items based on dependency graph.
+  Each directed edge u -> v means item u must precede item v when getting dressed.
+  We perform depth-first search, pushing vertices onto a stack after visiting all
+  descendants.  Popping from the stack yields a valid ordering that respects all
+  prerequisites.  The algorithm runs in O(V + E) time with O(V) additional space
+  for the visited array and recursion stack.
+*/
+
+fun depth_first_search(
+  u: int,
+  visited: list<bool>,
+  graph: list<list<int>>,
+  stack: list<int>
+): list<int> {
+  visited[u] = true
+  var i = 0
+  while i < len(graph[u]) {
+    let v = graph[u][i]
+    if !visited[v] {
+      stack = depth_first_search(v, visited, graph, stack)
+    }
+    i = i + 1
+  }
+  stack = append(stack, u)
+  return stack
+}
+
+fun topological_sort(graph: list<list<int>>): list<int> {
+  var visited: list<bool> = []
+  var i = 0
+  while i < len(graph) {
+    visited = append(visited, false)
+    i = i + 1
+  }
+  var stack: list<int> = []
+  i = 0
+  while i < len(graph) {
+    if !visited[i] {
+      stack = depth_first_search(i, visited, graph, stack)
+    }
+    i = i + 1
+  }
+  return stack
+}
+
+fun print_stack(stack: list<int>, clothes: map<int, string>) {
+  var order = 1
+  var s = stack
+  while len(s) > 0 {
+    let idx = s[len(s) - 1]
+    s = s[0:len(s) - 1]
+    print(str(order) + " " + clothes[idx])
+    order = order + 1
+  }
+}
+
+fun format_list(xs: list<int>): string {
+  var res = "["
+  var i = 0
+  while i < len(xs) {
+    res = res + str(xs[i])
+    if i < len(xs) - 1 {
+      res = res + ", "
+    }
+    i = i + 1
+  }
+  res = res + "]"
+  return res
+}
+
+fun main() {
+  let clothes: map<int, string> = {
+    0: "underwear",
+    1: "pants",
+    2: "belt",
+    3: "suit",
+    4: "shoe",
+    5: "socks",
+    6: "shirt",
+    7: "tie",
+    8: "watch",
+  }
+  let graph: list<list<int>> = [
+    [1, 4],
+    [2, 4],
+    [3],
+    [],
+    [],
+    [4],
+    [2, 7],
+    [3],
+    [],
+  ]
+  let stack = topological_sort(graph)
+  print(format_list(stack))
+  print_stack(stack, clothes)
+}
+
+main()
