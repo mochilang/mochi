@@ -1,0 +1,195 @@
+/*
+Sherman-Morrison formula updates the inverse of a matrix after a
+rank-one modification.
+
+Given the inverse of a nonsingular square matrix A (denoted A_inv) and
+column vectors u and v, the formula computes the inverse of the updated
+matrix A + u v^T as:
+
+(A + u v^T)^{-1} = A_inv - (A_inv * u * v^T * A_inv) / (1 + v^T * A_inv * u)
+
+This program implements a minimal Matrix type with basic operations:
+  - addition and subtraction
+  - scalar and matrix multiplication
+  - transposition
+and uses them to evaluate the Sherman-Morrison expression.  All values
+are floats and the code avoids the ``any`` type so it can run on
+``runtime/vm``.
+*/
+
+type Matrix {
+  data: list<list<float>>,
+  rows: int,
+  cols: int
+}
+
+fun make_matrix(rows: int, cols: int, value: float): Matrix {
+  var arr: list<list<float>> = []
+  var r = 0
+  while r < rows {
+    var row: list<float> = []
+    var c = 0
+    while c < cols {
+      row = append(row, value)
+      c = c + 1
+    }
+    arr = append(arr, row)
+    r = r + 1
+  }
+  return Matrix { data: arr, rows: rows, cols: cols }
+}
+
+fun matrix_from_lists(vals: list<list<float>>): Matrix {
+  let r = len(vals)
+  let c = if r == 0 { 0 } else { len(vals[0]) }
+  return Matrix { data: vals, rows: r, cols: c }
+}
+
+fun matrix_to_string(m: Matrix): string {
+  var s = ""
+  var i = 0
+  while i < m.rows {
+    s = s + "["
+    var j = 0
+    while j < m.cols {
+      s = s + str(m.data[i][j])
+      if j < m.cols - 1 { s = s + ", " }
+      j = j + 1
+    }
+    s = s + "]"
+    if i < m.rows - 1 { s = s + "\n" }
+    i = i + 1
+  }
+  return s
+}
+
+fun matrix_add(a: Matrix, b: Matrix): Matrix {
+  if a.rows != b.rows || a.cols != b.cols {
+    return Matrix { data: [], rows: 0, cols: 0 }
+  }
+  var res: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < a.cols {
+      row = append(row, a.data[i][j] + b.data[i][j])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return Matrix { data: res, rows: a.rows, cols: a.cols }
+}
+
+fun matrix_sub(a: Matrix, b: Matrix): Matrix {
+  if a.rows != b.rows || a.cols != b.cols {
+    return Matrix { data: [], rows: 0, cols: 0 }
+  }
+  var res: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < a.cols {
+      row = append(row, a.data[i][j] - b.data[i][j])
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return Matrix { data: res, rows: a.rows, cols: a.cols }
+}
+
+fun matrix_mul_scalar(m: Matrix, k: float): Matrix {
+  var res: list<list<float>> = []
+  var i = 0
+  while i < m.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < m.cols {
+      row = append(row, m.data[i][j] * k)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return Matrix { data: res, rows: m.rows, cols: m.cols }
+}
+
+fun matrix_mul(a: Matrix, b: Matrix): Matrix {
+  if a.cols != b.rows {
+    return Matrix { data: [], rows: 0, cols: 0 }
+  }
+  var res: list<list<float>> = []
+  var i = 0
+  while i < a.rows {
+    var row: list<float> = []
+    var j = 0
+    while j < b.cols {
+      var sum = 0.0
+      var k = 0
+      while k < a.cols {
+        sum = sum + a.data[i][k] * b.data[k][j]
+        k = k + 1
+      }
+      row = append(row, sum)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return Matrix { data: res, rows: a.rows, cols: b.cols }
+}
+
+fun matrix_transpose(m: Matrix): Matrix {
+  var res: list<list<float>> = []
+  var c = 0
+  while c < m.cols {
+    var row: list<float> = []
+    var r = 0
+    while r < m.rows {
+      row = append(row, m.data[r][c])
+      r = r + 1
+    }
+    res = append(res, row)
+    c = c + 1
+  }
+  return Matrix { data: res, rows: m.cols, cols: m.rows }
+}
+
+fun sherman_morrison(ainv: Matrix, u: Matrix, v: Matrix): Matrix {
+  let vt = matrix_transpose(v)
+  let vu = matrix_mul(matrix_mul(vt, ainv), u)
+  let factor = vu.data[0][0] + 1.0
+  if factor == 0.0 {
+    return Matrix { data: [], rows: 0, cols: 0 }
+  }
+  let term1 = matrix_mul(ainv, u)
+  let term2 = matrix_mul(vt, ainv)
+  let numerator = matrix_mul(term1, term2)
+  let scaled = matrix_mul_scalar(numerator, 1.0 / factor)
+  return matrix_sub(ainv, scaled)
+}
+
+fun main() {
+  let ainv = matrix_from_lists([
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0]
+  ])
+  let u = matrix_from_lists([
+    [1.0],
+    [2.0],
+    [-3.0]
+  ])
+  let v = matrix_from_lists([
+    [4.0],
+    [-2.0],
+    [5.0]
+  ])
+  let result = sherman_morrison(ainv, u, v)
+  print(matrix_to_string(result))
+}
+
+main()
