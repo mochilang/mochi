@@ -1,0 +1,94 @@
+/*
+Merge Two Binary Trees
+
+Given two binary trees, create a new tree by summing values of overlapping
+nodes. When only one node exists at a position, that node is used directly
+in the merged tree.
+
+Algorithm:
+- If both nodes are leaves, return the other node where present.
+- Otherwise sum the values of overlapping nodes and recursively merge the
+  corresponding children.
+
+The merge visits each node that appears in either input tree exactly once,
+so the time complexity is O(n) where n is the total number of nodes across
+both trees. Only the recursion stack is used, giving O(h) auxiliary space
+where h is the height of the resulting tree.
+*/
+
+type Tree =
+  Leaf {}
+  | Node(left: Tree, value: int, right: Tree)
+
+fun merge_two_binary_trees(t1: Tree, t2: Tree): Tree {
+  return match t1 {
+    Leaf => t2
+    Node(l1, v1, r1) => match t2 {
+      Leaf => t1
+      Node(l2, v2, r2) => Node {
+        left: merge_two_binary_trees(l1, l2),
+        value: v1 + v2,
+        right: merge_two_binary_trees(r1, r2)
+      }
+    }
+  }
+}
+
+fun is_leaf(t: Tree): bool {
+  return match t {
+    Leaf => true
+    _ => false
+  }
+}
+
+fun get_left(t: Tree): Tree {
+  return match t {
+    Node(l, _, _) => l
+    _ => Leaf {}
+  }
+}
+
+fun get_right(t: Tree): Tree {
+  return match t {
+    Node(_, _, r) => r
+    _ => Leaf {}
+  }
+}
+
+fun get_value(t: Tree): int {
+  return match t {
+    Node(_, v, _) => v
+    _ => 0
+  }
+}
+
+fun print_preorder(t: Tree): unit {
+  if !is_leaf(t) {
+    let v = get_value(t)
+    let l = get_left(t)
+    let r = get_right(t)
+    print(v)
+    print_preorder(l)
+    print_preorder(r)
+  }
+}
+
+let tree1 = Node {
+  left: Node { left: Node { left: Leaf {}, value: 4, right: Leaf {} }, value: 2, right: Leaf {} },
+  value: 1,
+  right: Node { left: Leaf {}, value: 3, right: Leaf {} }
+}
+
+let tree2 = Node {
+  left: Node { left: Leaf {}, value: 4, right: Node { left: Leaf {}, value: 9, right: Leaf {} } },
+  value: 2,
+  right: Node { left: Leaf {}, value: 6, right: Node { left: Leaf {}, value: 5, right: Leaf {} } }
+}
+
+print("Tree1 is:")
+print_preorder(tree1)
+print("Tree2 is:")
+print_preorder(tree2)
+let merged_tree = merge_two_binary_trees(tree1, tree2)
+print("Merged Tree is:")
+print_preorder(merged_tree)
