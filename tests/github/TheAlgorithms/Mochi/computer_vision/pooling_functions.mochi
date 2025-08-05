@@ -1,0 +1,112 @@
+/*
+Perform max and average pooling on a square matrix.
+
+Given an n×n matrix, slide a size×size window across the
+matrix using the specified stride. For max pooling, record the
+maximum value inside each window. For average pooling, record the
+integer average of the values inside the window.
+
+The result is a smaller matrix whose dimensions are
+(n - size) / stride + 1 in each direction. These algorithms run in
+O(n^2 * size^2) time where n is the dimension of the input matrix.
+*/
+
+fun maxpooling(arr: list<list<int>>, size: int, stride: int): list<list<int>> {
+  let n = len(arr)
+  if n == 0 || len(arr[0]) != n {
+    panic("The input array is not a square matrix")
+  }
+  var result: list<list<int>> = []
+  var i = 0
+  while i + size <= n {
+    var row: list<int> = []
+    var j = 0
+    while j + size <= n {
+      var max_val = arr[i][j]
+      var r = i
+      while r < i + size {
+        var c = j
+        while c < j + size {
+          let val = arr[r][c]
+          if val > max_val {
+            max_val = val
+          }
+          c = c + 1
+        }
+        r = r + 1
+      }
+      row = append(row, max_val)
+      j = j + stride
+    }
+    result = append(result, row)
+    i = i + stride
+  }
+  return result
+}
+
+fun avgpooling(arr: list<list<int>>, size: int, stride: int): list<list<int>> {
+  let n = len(arr)
+  if n == 0 || len(arr[0]) != n {
+    panic("The input array is not a square matrix")
+  }
+  var result: list<list<int>> = []
+  var i = 0
+  while i + size <= n {
+    var row: list<int> = []
+    var j = 0
+    while j + size <= n {
+      var sum = 0
+      var r = i
+      while r < i + size {
+        var c = j
+        while c < j + size {
+          sum = sum + arr[r][c]
+          c = c + 1
+        }
+        r = r + 1
+      }
+      row = append(row, sum / (size * size))
+      j = j + stride
+    }
+    result = append(result, row)
+    i = i + stride
+  }
+  return result
+}
+
+fun print_matrix(mat: list<list<int>>): void {
+  var i = 0
+  while i < len(mat) {
+    var line: string = ""
+    var j = 0
+    while j < len(mat[i]) {
+      line = line + str(mat[i][j])
+      if j < len(mat[i]) - 1 {
+        line = line + " "
+      }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun main() {
+  let arr1 = [
+    [1,2,3,4],
+    [5,6,7,8],
+    [9,10,11,12],
+    [13,14,15,16]
+  ]
+  let arr2 = [
+    [147,180,122],
+    [241,76,32],
+    [126,13,157]
+  ]
+  print_matrix(maxpooling(arr1, 2, 2))
+  print_matrix(maxpooling(arr2, 2, 1))
+  print_matrix(avgpooling(arr1, 2, 2))
+  print_matrix(avgpooling(arr2, 2, 1))
+}
+
+main()
