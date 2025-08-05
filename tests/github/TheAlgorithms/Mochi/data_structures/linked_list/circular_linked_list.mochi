@@ -1,0 +1,117 @@
+/*
+Implement a circular singly linked list of integers using a plain array to
+store node values.  Although the underlying representation is an array, the
+list behaves like a circular linked list: the logical successor of the last
+element wraps around to the first.  Supported operations include insertion at
+any index, deletion at any index, insertion at the front or back, deletion from
+front or back, string conversion, length check, and emptiness check.  All
+operations run in O(n) time where n is the number of elements traversed.
+The demonstration builds a list, performs several insertions and deletions, and
+prints intermediate states and removed values.
+*/
+
+type CircularLinkedList {
+  data: list<int>
+}
+
+fun empty_list(): CircularLinkedList {
+  return CircularLinkedList { data: [] }
+}
+
+fun length(list: CircularLinkedList): int {
+  return len(list.data)
+}
+
+fun is_empty(list: CircularLinkedList): bool {
+  return len(list.data) == 0
+}
+
+fun to_string(list: CircularLinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var s = str(list.data[0])
+  var i = 1
+  while i < len(list.data) {
+    s = s + "->" + str(list.data[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun insert_nth(list: CircularLinkedList, index: int, value: int): CircularLinkedList {
+  if index < 0 || index > len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  while i < index {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  res = append(res, value)
+  while i < len(list.data) {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  return CircularLinkedList { data: res }
+}
+
+fun insert_head(list: CircularLinkedList, value: int): CircularLinkedList {
+  return insert_nth(list, 0, value)
+}
+
+fun insert_tail(list: CircularLinkedList, value: int): CircularLinkedList {
+  return insert_nth(list, len(list.data), value)
+}
+
+type DeleteResult {
+  list: CircularLinkedList
+  value: int
+}
+
+fun delete_nth(list: CircularLinkedList, index: int): DeleteResult {
+  if index < 0 || index >= len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  var val = 0
+  while i < len(list.data) {
+    if i == index {
+      val = list.data[i]
+    } else {
+      res = append(res, list.data[i])
+    }
+    i = i + 1
+  }
+  return DeleteResult { list: CircularLinkedList { data: res }, value: val }
+}
+
+fun delete_front(list: CircularLinkedList): DeleteResult {
+  return delete_nth(list, 0)
+}
+
+fun delete_tail(list: CircularLinkedList): DeleteResult {
+  return delete_nth(list, len(list.data) - 1)
+}
+
+fun main() {
+  var cll = empty_list()
+  var i = 0
+  while i < 5 {
+    cll = insert_tail(cll, i + 1)
+    i = i + 1
+  }
+  print(to_string(cll))
+  cll = insert_tail(cll, 6)
+  print(to_string(cll))
+  cll = insert_head(cll, 0)
+  print(to_string(cll))
+  var res = delete_front(cll)
+  cll = res.list
+  print(res.value)
+  res = delete_tail(cll)
+  cll = res.list
+  print(res.value)
+  res = delete_nth(cll, 2)
+  cll = res.list
+  print(res.value)
+  print(to_string(cll))
+}
+
+main()
