@@ -1,0 +1,42 @@
+/*
+Assign tasks to workers ensuring unique assignments.
+
+Given N tasks and M people, each person can perform only certain tasks and may
+handle at most one task. We count how many ways the tasks can be assigned so
+that no two people do the same task and each person only performs allowed tasks.
+
+The program builds the list of tasks each person can do and recursively assigns
+tasks person by person. At each step it tries all tasks available to the current
+person that have not yet been used. The recursion explores the search tree of
+possible assignments, returning 1 when every person has been assigned a task.
+This brute force search mirrors the logic of the bitmask dynamic programming
+approach in the original Python implementation.
+*/
+
+fun count_assignments(person: int, task_performed: list<list<int>>, used: list<int>): int {
+  if person == len(task_performed) {
+    return 1
+  }
+  var total = 0
+  let tasks = task_performed[person]
+  var i = 0
+  while i < len(tasks) {
+    let t = tasks[i]
+    if !(t in used) {
+      total = total + count_assignments(person + 1, task_performed, append(used, t))
+    }
+    i = i + 1
+  }
+  return total
+}
+
+fun count_no_of_ways(task_performed: list<list<int>>): int {
+  return count_assignments(0, task_performed, [])
+}
+
+fun main() {
+  let task_performed: list<list<int>> = [[1,3,4], [1,2,5], [3,4]]
+  print(str(count_no_of_ways(task_performed)))
+}
+
+main()
