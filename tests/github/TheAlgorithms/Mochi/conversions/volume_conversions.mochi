@@ -1,0 +1,86 @@
+/*
+Convert between various volume units by mapping each unit to factors
+for converting to and from cubic meters. Each conversion multiplies the
+input value by the source unit's factor to obtain cubic meters, then by
+the target unit's factor to obtain the desired unit. The lookup is
+performed using parallel lists of unit names and conversion factors.
+This runs in O(n) time for validation of unit names with constant
+space, where n is the number of supported units.
+*/
+
+let units: list<string> = [
+  "cubic meter",
+  "litre",
+  "kilolitre",
+  "gallon",
+  "cubic yard",
+  "cubic foot",
+  "cup"
+]
+
+let from_factors: list<float> = [
+  1.0,
+  0.001,
+  1.0,
+  0.00454,
+  0.76455,
+  0.028,
+  0.000236588
+]
+
+let to_factors: list<float> = [
+  1.0,
+  1000.0,
+  1.0,
+  264.172,
+  1.30795,
+  35.3147,
+  4226.75
+]
+
+fun supported_values(): string {
+  var result = units[0]
+  var i = 1
+  while i < len(units) {
+    result = result + ", " + units[i]
+    i = i + 1
+  }
+  return result
+}
+
+fun find_index(name: string): int {
+  var i = 0
+  while i < len(units) {
+    if units[i] == name {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun get_from_factor(name: string): float {
+  let idx = find_index(name)
+  if idx < 0 { panic("Invalid 'from_type' value: '" + name + "' Supported values are: " + supported_values()) }
+  return from_factors[idx]
+}
+
+fun get_to_factor(name: string): float {
+  let idx = find_index(name)
+  if idx < 0 { panic("Invalid 'to_type' value: '" + name + "' Supported values are: " + supported_values()) }
+  return to_factors[idx]
+}
+
+fun volume_conversion(value: float, from_type: string, to_type: string): float {
+  let from_factor = get_from_factor(from_type)
+  let to_factor = get_to_factor(to_type)
+  return value * from_factor * to_factor
+}
+
+print(str(volume_conversion(4.0, "cubic meter", "litre")))
+print(str(volume_conversion(1.0, "litre", "gallon")))
+print(str(volume_conversion(1.0, "kilolitre", "cubic meter")))
+print(str(volume_conversion(3.0, "gallon", "cubic yard")))
+print(str(volume_conversion(2.0, "cubic yard", "litre")))
+print(str(volume_conversion(4.0, "cubic foot", "cup")))
+print(str(volume_conversion(1.0, "cup", "kilolitre")))
