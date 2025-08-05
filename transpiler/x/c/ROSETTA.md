@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/rosetta/x/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (204/491) - Last updated 2025-08-05 07:51 +0700:
+Checklist of programs that currently transpile and run (214/491) - Last updated 2025-08-05 08:13 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | 100-doors-2 | ✓ | 65us | 17.2 KB |
@@ -240,7 +240,7 @@ Checklist of programs that currently transpile and run (204/491) - Last updated 
 | 233 | convert-seconds-to-compound-duration |  |  |  |
 | 234 | convex-hull |  |  |  |
 | 235 | conways-game-of-life |  |  |  |
-| 236 | copy-a-string-1 | ✓ | 0us | 1.4 MB |
+| 236 | copy-a-string-1 | ✓ |  |  |
 | 237 | copy-a-string-2 | ✓ | 162us | 1.4 MB |
 | 238 | copy-stdin-to-stdout-1 | ✓ | 163us | 1.5 MB |
 | 239 | copy-stdin-to-stdout-2 | ✓ | 181us | 1.4 MB |
@@ -250,16 +250,16 @@ Checklist of programs that currently transpile and run (204/491) - Last updated 
 | 243 | count-in-octal-3 | ✓ | 357us | 1.4 MB |
 | 244 | count-in-octal-4 | ✓ | 148us | 1.5 MB |
 | 245 | count-occurrences-of-a-substring | ✓ | 230us | 1.4 MB |
-| 246 | count-the-coins-1 |  |  |  |
-| 247 | count-the-coins-2 |  |  |  |
-| 248 | cramers-rule |  |  |  |
-| 249 | crc-32-1 |  |  |  |
-| 250 | crc-32-2 |  |  |  |
-| 251 | create-a-file-on-magnetic-tape |  |  |  |
-| 252 | create-a-file |  |  |  |
-| 253 | create-a-two-dimensional-array-at-runtime-1 |  |  |  |
-| 254 | create-an-html-table |  |  |  |
-| 255 | create-an-object-at-a-given-address |  |  |  |
+| 246 | count-the-coins-1 | ✓ | 351us | 1.5 MB |
+| 247 | count-the-coins-2 | ✓ | 726us | 1.5 MB |
+| 248 | cramers-rule | ✓ | 474us | 1.7 MB |
+| 249 | crc-32-1 | ✓ | 690us | 1.4 MB |
+| 250 | crc-32-2 | ✓ | 833us | 1.5 MB |
+| 251 | create-a-file-on-magnetic-tape | ✓ | 295us | 1.5 MB |
+| 252 | create-a-file | ✓ | 280us | 1.5 MB |
+| 253 | create-a-two-dimensional-array-at-runtime-1 | ✓ | 706us | 1.5 MB |
+| 254 | create-an-html-table | ✓ | 544us | 1.4 MB |
+| 255 | create-an-object-at-a-given-address | ✓ | 319us | 1.4 MB |
 | 256 | csv-data-manipulation |  |  |  |
 | 257 | csv-to-html-translation-1 |  |  |  |
 | 258 | csv-to-html-translation-2 |  |  |  |

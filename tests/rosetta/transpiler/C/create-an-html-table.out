@@ -1,0 +1,7 @@
+<table>
+    <tr><th></th><th>X</th><th>Y</th><th>Z</th></tr>
+    <tr><td>0</td><td>4294967296</td><td>2</td><td>0</td></tr>
+    <tr><td>1</td><td>17179869187</td><td>5</td><td>0</td></tr>
+    <tr><td>2</td><td>30064771078</td><td>8</td><td>0</td></tr>
+    <tr><td>3</td><td>42949672969</td><td>11</td><td>0</td></tr>
+</table>

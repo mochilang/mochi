@@ -90,6 +90,7 @@ var (
 	needSubstring           bool
 	needAtoi                bool
 	needCharAt              bool
+	needIndexOf             bool
 	needSliceInt            bool
 	needSliceDouble         bool
 	needSliceStr            bool
@@ -842,6 +843,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 						needListAppendStr = true
 						fmt.Fprintf(w, "%s = list_append_str(%s, &%s_len, ", d.Name, d.Name, d.Name)
 					default:
+						needListAppendInt = true
 						fmt.Fprintf(w, "%s = list_append_int(%s, &%s_len, ", d.Name, d.Name, d.Name)
 					}
 					e.emitExpr(w)
@@ -2785,8 +2787,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendInt {
-		buf.WriteString("static int* list_append_int(int *arr, size_t *len, int val) {\n")
-		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(int));\n")
+		buf.WriteString("static long long* list_append_int(long long *arr, size_t *len, long long val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long));\n")
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
 		buf.WriteString("    return arr;\n")
@@ -2801,9 +2803,9 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendIntNew {
-		buf.WriteString("static int* list_append_int_new(const int *arr, size_t len, int val) {\n")
-		buf.WriteString("    int *res = malloc((len + 1) * sizeof(int));\n")
-		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(int));\n")
+		buf.WriteString("static long long* list_append_int_new(const long long *arr, size_t len, long long val) {\n")
+		buf.WriteString("    long long *res = malloc((len + 1) * sizeof(long long));\n")
+		buf.WriteString("    if (arr && len) memcpy(res, arr, len * sizeof(long long));\n")
 		buf.WriteString("    res[len] = val;\n")
 		buf.WriteString("    return res;\n")
 		buf.WriteString("}\n\n")
@@ -2976,6 +2978,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    int len = (int)strlen(s);\n")
 		buf.WriteString("    if (idx < 0 || idx >= len) return 0;\n")
 		buf.WriteString("    return (unsigned char)s[idx];\n")
+		buf.WriteString("}\n\n")
+	}
+	if needIndexOf {
+		buf.WriteString("static long long indexOf(const char *s, const char *sub) {\n")
+		buf.WriteString("    const char *p = strstr(s, sub);\n")
+		buf.WriteString("    if (p) return (long long)(p - s);\n")
+		buf.WriteString("    return -1;\n")
 		buf.WriteString("}\n\n")
 	}
 	if needSliceInt {
@@ -3355,6 +3364,7 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needSubstring = false
 	needAtoi = false
 	needCharAt = false
+	needIndexOf = false
 	needSliceInt = false
 	needSliceDouble = false
 	needSliceStr = false
@@ -4910,6 +4920,9 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		if typ == "MapSS" {
 			needMapGetSS = true
 		}
+		if typ == "MapSI" {
+			needMapGetSI = true
+		}
 		if strings.Contains(typ, "double") {
 			markMath()
 		}
@@ -4960,6 +4973,9 @@ func compileFunction(env *types.Env, name string, fn *parser.FunExpr) (*Function
 		}
 		if ret == "MapSS" {
 			needMapGetSS = true
+		}
+		if ret == "MapSI" {
+			needMapGetSI = true
 		}
 	}
 	if ret == "double" {
@@ -5917,6 +5933,13 @@ func convertUnary(u *parser.Unary) Expr {
 			needGMP = true
 			funcReturnTypes[call.Func] = "long long"
 			return &CallExpr{Func: call.Func, Args: []Expr{arg}}
+		}
+		if call.Func == "indexOf" && len(call.Args) == 2 {
+			arg0 := convertExpr(call.Args[0])
+			arg1 := convertExpr(call.Args[1])
+			needIndexOf = true
+			funcReturnTypes["indexOf"] = "long long"
+			return &CallExpr{Func: "indexOf", Args: []Expr{arg0, arg1}}
 		}
 		if call.Func == "upper" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
@@ -6908,6 +6931,9 @@ func cTypeFromMochiType(t types.Type) string {
 				return "MapSS"
 			}
 			if _, ok2 := tt.Value.(types.IntType); ok2 {
+				return "MapSI"
+			}
+			if _, ok2 := tt.Value.(types.BoolType); ok2 {
 				return "MapSI"
 			}
 			if _, ok2 := tt.Value.(types.AnyType); ok2 {
