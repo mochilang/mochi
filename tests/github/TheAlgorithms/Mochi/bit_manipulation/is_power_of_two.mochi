@@ -1,0 +1,36 @@
+/*
+Check if a number is a power of two.
+-------------------------------------------------
+Given a non-negative integer, determine whether it
+represents a power of two. A power of two has only a
+single bit set in its binary representation. The
+classic approach uses a bitwise AND: n & (n - 1) == 0.
+Since the Mochi VM currently lacks bitwise operators,
+this implementation repeatedly divides the number by
+2 while it is even and then checks if the result is 1.
+If the input is negative the function panics.
+*/
+
+fun is_power_of_two(number: int): bool {
+  if number < 0 {
+    panic("number must not be negative")
+  }
+  var n = number
+  if n == 0 {
+    return true
+  }
+  while n % 2 == 0 {
+    n = n / 2
+  }
+  return n == 1
+}
+
+test "power of two" {
+  expect is_power_of_two(0) == true
+  expect is_power_of_two(1) == true
+  expect is_power_of_two(2) == true
+  expect is_power_of_two(4) == true
+  expect is_power_of_two(6) == false
+  expect is_power_of_two(8) == true
+  expect is_power_of_two(17) == false
+}
