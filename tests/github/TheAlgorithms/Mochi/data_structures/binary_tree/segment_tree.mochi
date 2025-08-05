@@ -1,0 +1,100 @@
+/*
+Segment Tree supporting range maximum query and range update.
+------------------------------------------------------------------
+A segment tree is a binary tree structure that stores aggregated
+information about array segments. This version stores the maximum
+value for each segment. It supports two operations:
+- query(a, b): return the maximum value in the array index range [a,b].
+- update(a, b, val): set every element in the range [a,b] to val and
+  rebuild affected segments.
+The tree is stored in an array using 1-based indexing and has size
+about 4*N for an input array of length N. Building the tree takes O(N)
+while each query or update operates in O(log N) time.
+*/
+
+var A: list<int> = []
+var N: int = 0
+var st: list<int> = []
+
+fun left_child(idx: int): int { return idx * 2 }
+fun right_child(idx: int): int { return idx * 2 + 1 }
+
+fun build(idx: int, left: int, right: int): void {
+  if left == right {
+    st[idx] = A[left]
+  } else {
+    let mid = (left + right) / 2
+    build(left_child(idx), left, mid)
+    build(right_child(idx), mid + 1, right)
+    let left_val = st[left_child(idx)]
+    let right_val = st[right_child(idx)]
+    st[idx] = if left_val > right_val { left_val } else { right_val }
+  }
+}
+
+fun update_recursive(idx: int, left: int, right: int, a: int, b: int, val: int): bool {
+  if right < a || left > b { return true }
+  if left == right {
+    st[idx] = val
+    return true
+  }
+  let mid = (left + right) / 2
+  update_recursive(left_child(idx), left, mid, a, b, val)
+  update_recursive(right_child(idx), mid + 1, right, a, b, val)
+  let left_val = st[left_child(idx)]
+  let right_val = st[right_child(idx)]
+  st[idx] = if left_val > right_val { left_val } else { right_val }
+  return true
+}
+
+fun update(a: int, b: int, val: int): bool {
+  return update_recursive(1, 0, N - 1, a - 1, b - 1, val)
+}
+
+let NEG_INF: int = -1000000000
+
+fun query_recursive(idx: int, left: int, right: int, a: int, b: int): int {
+  if right < a || left > b { return NEG_INF }
+  if left >= a && right <= b { return st[idx] }
+  let mid = (left + right) / 2
+  let q1 = query_recursive(left_child(idx), left, mid, a, b)
+  let q2 = query_recursive(right_child(idx), mid + 1, right, a, b)
+  return if q1 > q2 { q1 } else { q2 }
+}
+
+fun query(a: int, b: int): int {
+  return query_recursive(1, 0, N - 1, a - 1, b - 1)
+}
+
+fun show_data(): void {
+  var i = 0
+  var show_list: list<int> = []
+  while i < N {
+    show_list = append(show_list, query(i + 1, i + 1))
+    i = i + 1
+  }
+  print(show_list)
+}
+
+fun main() {
+  A = [1, 2, -4, 7, 3, -5, 6, 11, -20, 9, 14, 15, 5, 2, -8]
+  N = len(A)
+  var i = 0
+  while i < 4 * N {
+    st = append(st, 0)
+    i = i + 1
+  }
+  if N > 0 {
+    build(1, 0, N - 1)
+  }
+  print(query(4, 6))
+  print(query(7, 11))
+  print(query(7, 12))
+  update(1, 3, 111)
+  print(query(1, 15))
+  update(7, 8, 235)
+  show_data()
+}
+
+main()
+
