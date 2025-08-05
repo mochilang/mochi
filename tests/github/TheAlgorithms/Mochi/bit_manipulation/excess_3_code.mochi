@@ -1,0 +1,35 @@
+/*
+Excess-3 code is a self-complementary binary-coded decimal system. To encode a
+non-negative decimal integer, each digit is offset by adding 3 and then
+expressed in 4-bit binary. Concatenating these 4-bit groups yields the Excess-3
+representation. This implementation iterates over decimal digits, applies the
++3 offset, looks up the corresponding 4-bit binary string, and builds the final
+code prefixed with "0b".
+*/
+
+fun excess_3_code(number: int): string {
+  var n = number
+  if n < 0 { n = 0 }
+  let mapping = ["0011","0100","0101","0110","0111","1000","1001","1010","1011","1100"]
+  var res = ""
+  if n == 0 {
+    res = mapping[0]
+  } else {
+    while n > 0 {
+      let digit = n % 10
+      res = mapping[digit] + res
+      n = n / 10
+    }
+  }
+  return "0b" + res
+}
+
+fun main() {
+  print(excess_3_code(0))
+  print(excess_3_code(3))
+  print(excess_3_code(2))
+  print(excess_3_code(20))
+  print(excess_3_code(120))
+}
+
+main()
