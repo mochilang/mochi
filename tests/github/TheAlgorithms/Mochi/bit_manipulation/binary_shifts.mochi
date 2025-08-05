@@ -1,0 +1,88 @@
+/*
+Demonstrate basic bit shift operations.
+
+- logical_left_shift: append zero bits to the right of the binary form.
+- logical_right_shift: remove bits from the right, inserting zeros on the left.
+- arithmetic_right_shift: preserve the sign bit while shifting right using two's complement.
+
+Each function returns a string beginning with "0b" representing the shifted value.
+All operations run in O(n) time where n is the number of bits and use simple
+string manipulations without external libraries.
+*/
+fun repeat_char(ch: string, count: int): string {
+  var res = ""
+  var i = 0
+  while i < count {
+    res = res + ch
+    i = i + 1
+  }
+  return res
+}
+
+fun abs_int(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun pow2(exp: int): int {
+  var res = 1
+  var i = 0
+  while i < exp {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun to_binary_no_prefix(n: int): string {
+  var v = n
+  if v < 0 { v = -v }
+  if v == 0 { return "0" }
+  var res = ""
+  while v > 0 {
+    res = str(v % 2) + res
+    v = v / 2
+  }
+  return res
+}
+
+fun logical_left_shift(number: int, shift_amount: int): string {
+  if number < 0 || shift_amount < 0 { panic("both inputs must be positive integers") }
+  let binary_number = "0b" + to_binary_no_prefix(number)
+  return binary_number + repeat_char("0", shift_amount)
+}
+
+fun logical_right_shift(number: int, shift_amount: int): string {
+  if number < 0 || shift_amount < 0 { panic("both inputs must be positive integers") }
+  let binary_number = to_binary_no_prefix(number)
+  if shift_amount >= len(binary_number) { return "0b0" }
+  let shifted = substring(binary_number, 0, len(binary_number) - shift_amount)
+  return "0b" + shifted
+}
+
+fun arithmetic_right_shift(number: int, shift_amount: int): string {
+  let binary_number: string
+  if number >= 0 {
+    binary_number = "0" + to_binary_no_prefix(number)
+  } else {
+    let length = len(to_binary_no_prefix(-number))
+    let intermediate = abs_int(number) - pow2(length)
+    let bin_repr = to_binary_no_prefix(intermediate)
+    binary_number = "1" + repeat_char("0", length - len(bin_repr)) + bin_repr
+  }
+  if shift_amount >= len(binary_number) {
+    let sign = substring(binary_number, 0, 1)
+    return "0b" + repeat_char(sign, len(binary_number))
+  }
+  let sign = substring(binary_number, 0, 1)
+  let shifted = substring(binary_number, 0, len(binary_number) - shift_amount)
+  return "0b" + repeat_char(sign, shift_amount) + shifted
+}
+
+fun main() {
+  print(logical_left_shift(17, 2))
+  print(logical_right_shift(1983, 4))
+  print(arithmetic_right_shift(-17, 2))
+}
+
+main()
