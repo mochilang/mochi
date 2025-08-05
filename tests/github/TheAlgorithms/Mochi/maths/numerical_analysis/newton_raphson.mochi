@@ -1,0 +1,58 @@
+/*
+Newton-Raphson Root Finding
+---------------------------
+This implementation finds a root of a real-valued function f(x) using the
+Newton-Raphson iterative method. Starting from an initial guess x0, the method
+updates the estimate by
+
+    x_{n+1} = x_n - f(x_n) / f'(x_n)
+
+where f'(x) is approximated numerically using a symmetric finite difference.
+The iteration stops when |f(x_n)| < max_error or when the iteration limit is
+reached. Optionally, each intermediate estimate can be recorded.
+
+Time Complexity: O(max_iter) evaluations of f and f'.
+*/
+
+type NRResult { root: float, error: float, steps: list<float> }
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun fail(msg: string) {
+  print("error: " + msg)
+}
+
+fun calc_derivative(f: fun(float): float, x: float, delta_x: float): float {
+  return (f(x + delta_x / 2.0) - f(x - delta_x / 2.0)) / delta_x
+}
+
+fun newton_raphson(f: fun(float): float, x0: float, max_iter: int, step: float, max_error: float, log_steps: bool): NRResult {
+  var a: float = x0
+  var steps: list<float> = []
+  var i: int = 0
+  while i < max_iter {
+    if log_steps { steps = append(steps, a) }
+    let err: float = abs_float(f(a))
+    if err < max_error {
+      return NRResult { root: a, error: err, steps: steps }
+    }
+    let der: float = calc_derivative(f, a, step)
+    if der == 0.0 {
+      fail("No converging solution found, zero derivative")
+      return NRResult { root: a, error: err, steps: steps }
+    }
+    a = a - f(a) / der
+    i = i + 1
+  }
+  fail("No converging solution found, iteration limit reached")
+  return NRResult { root: a, error: abs_float(f(a)), steps: steps }
+}
+
+fun poly(x: float): float {
+  return x * x - 5.0 * x + 2.0
+}
+
+let result = newton_raphson(poly, 0.4, 20, 0.000001, 0.000001, false)
+print("root = " + str(result.root) + ", error = " + str(result.error))
