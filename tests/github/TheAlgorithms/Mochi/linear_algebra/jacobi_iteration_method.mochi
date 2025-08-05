@@ -1,0 +1,98 @@
+/*
+Jacobi Iteration Method for linear systems
+
+This algorithm approximates the solution of a system of n linear equations
+A * x = b where A is a strictly diagonally dominant matrix.
+
+Starting from an initial guess x^(0), each component is updated using the
+values from the previous iteration:
+
+    x_i^{(k+1)} = (b_i - \sum_{j \neq i} a_{ij} x_j^{(k)}) / a_{ii}
+
+The process repeats for a fixed number of iterations.  Convergence is
+ensured when A is strictly diagonally dominant.
+
+Time complexity: O(n^2 * iterations).
+*/
+
+fun absf(x: float): float {
+  return if x < 0.0 { -x } else { x }
+}
+
+fun strictly_diagonally_dominant(matrix: list<list<float>>): bool {
+  var n = len(matrix)
+  var i = 0
+  while i < n {
+    var sum = 0.0
+    var j = 0
+    while j < n {
+      if i != j {
+        sum = sum + absf(matrix[i][j])
+      }
+      j = j + 1
+    }
+    if absf(matrix[i][i]) <= sum {
+      panic("Coefficient matrix is not strictly diagonally dominant")
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun jacobi_iteration_method(
+  coefficient: list<list<float>>,
+  constant: list<float>,
+  init_val: list<float>,
+  iterations: int
+): list<float> {
+  let n = len(coefficient)
+  if n == 0 { panic("Coefficient matrix cannot be empty") }
+
+  // Validate matrix dimensions
+  if len(constant) != n {
+    panic("Constant vector length must equal number of rows in coefficient matrix")
+  }
+  if len(init_val) != n {
+    panic("Initial values count must match matrix size")
+  }
+  var r = 0
+  while r < n {
+    if len(coefficient[r]) != n {
+      panic("Coefficient matrix must be square")
+    }
+    r = r + 1
+  }
+  if iterations <= 0 { panic("Iterations must be at least 1") }
+
+  strictly_diagonally_dominant(coefficient)
+
+  var x = init_val
+  var k = 0
+  while k < iterations {
+    var new_x: list<float> = []
+    var i = 0
+    while i < n {
+      var sum = 0.0
+      var j = 0
+      while j < n {
+        if i != j {
+          sum = sum + coefficient[i][j] * x[j]
+        }
+        j = j + 1
+      }
+      var value = (constant[i] - sum) / coefficient[i][i]
+      new_x = append(new_x, value)
+      i = i + 1
+    }
+    x = new_x
+    k = k + 1
+  }
+  return x
+}
+
+let coefficient = [[4.0, 1.0, 1.0], [1.0, 5.0, 2.0], [1.0, 2.0, 4.0]]
+let constant = [2.0, -6.0, -4.0]
+let init_val = [0.5, -0.5, -0.5]
+let iterations = 3
+let result = jacobi_iteration_method(coefficient, constant, init_val, iterations)
+print(result)
