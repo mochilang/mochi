@@ -1,0 +1,81 @@
+/*
+Check whether a binary tree is a sum tree.
+-------------------------------------------------
+A binary tree is a sum tree if each non-leaf node's value equals the sum
+of all values in its left and right subtrees. Leaves are trivially sum
+nodes. This implementation stores the tree in an array of nodes where
+child indices of (-1) indicate the absence of a child. The algorithm
+recursively computes subtree sums and verifies the sum property for every
+node.
+*/
+
+type Node {
+  value: int,
+  left: int,
+  right: int,
+}
+
+fun tree_sum(nodes: list<Node>, idx: int): int {
+  if idx == (-1) {
+    return 0
+  }
+  let node = nodes[idx]
+  return node.value + tree_sum(nodes, node.left) + tree_sum(nodes, node.right)
+}
+
+fun is_sum_node(nodes: list<Node>, idx: int): bool {
+  let node = nodes[idx]
+  if node.left == (-1) && node.right == (-1) {
+    return true
+  }
+  let left_sum = tree_sum(nodes, node.left)
+  let right_sum = tree_sum(nodes, node.right)
+  if node.value != left_sum + right_sum {
+    return false
+  }
+  var left_ok = true
+  if node.left != (-1) {
+    left_ok = is_sum_node(nodes, node.left)
+  }
+  var right_ok = true
+  if node.right != (-1) {
+    right_ok = is_sum_node(nodes, node.right)
+  }
+  return left_ok && right_ok
+}
+
+
+fun build_a_tree(): list<Node> {
+  return [
+    Node { value: 11, left: 1, right: 2 }, // 0
+    Node { value: 2, left: 3, right: 4 },  // 1
+    Node { value: 29, left: 5, right: 6 }, // 2
+    Node { value: 1, left: (-1), right: (-1) },// 3
+    Node { value: 7, left: (-1), right: (-1) },// 4
+    Node { value: 15, left: (-1), right: (-1) },//5
+    Node { value: 40, left: 7, right: (-1) },//6
+    Node { value: 35, left: (-1), right: (-1) } //7
+  ]
+}
+
+fun build_a_sum_tree(): list<Node> {
+  return [
+    Node { value: 26, left: 1, right: 2 }, //0
+    Node { value: 10, left: 3, right: 4 }, //1
+    Node { value: 3, left: (-1), right: 5 }, //2
+    Node { value: 4, left: (-1), right: (-1) },//3
+    Node { value: 6, left: (-1), right: (-1) },//4
+    Node { value: 3, left: (-1), right: (-1) } //5
+  ]
+}
+
+test "non sum tree" {
+  let tree = build_a_tree()
+  expect is_sum_node(tree, 0) == false
+}
+
+test "sum tree" {
+  let tree = build_a_sum_tree()
+  expect is_sum_node(tree, 0) == true
+}
+
