@@ -1,0 +1,46 @@
+/*
+Demonstration of Fermat's Little Theorem for modular division.
+
+Given integers a and b and a prime modulus p where b divides a and p does not
+divide b, Fermat's little theorem states that:
+  (a / b) mod p == (a * b^(p-2)) mod p
+Thus b^(p-2) mod p acts as the multiplicative inverse of b modulo p.
+
+The program implements binary exponentiation to compute b^(p-2) mod p in O(log p)
+time and verifies the identity above. It also demonstrates a naive modular
+exponentiation using a linear-time loop.
+*/
+
+fun binary_exponentiation(a: int, n: int, mod: int): int {
+  if n == 0 { return 1 }
+  if n % 2 == 1 {
+    return (binary_exponentiation(a, n - 1, mod) * a) % mod
+  }
+  let b = binary_exponentiation(a, n / 2, mod)
+  return (b * b) % mod
+}
+
+fun naive_exponent_mod(a: int, n: int, mod: int): int {
+  var result = 1
+  var i = 0
+  while i < n {
+    result = (result * a) % mod
+    i = i + 1
+  }
+  return result
+}
+
+fun print_bool(b: bool) {
+  if b { print("true") } else { print("false") }
+}
+
+let p = 701
+let a = 1000000000
+let b = 10
+
+let left = (a / b) % p
+let right_fast = (a * binary_exponentiation(b, p - 2, p)) % p
+print_bool(left == right_fast)
+
+let right_naive = (a * naive_exponent_mod(b, p - 2, p)) % p
+print_bool(left == right_naive)
