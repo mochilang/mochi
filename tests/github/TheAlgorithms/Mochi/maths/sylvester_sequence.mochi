@@ -1,0 +1,27 @@
+/*
+Sylvester Sequence
+------------------
+This algorithm computes the nth term of the Sylvester sequence.
+The sequence is defined by:
+  a(1) = 2
+  a(n+1) = a(n) * (a(n) - 1) + 1
+Each term is one more than the product of all previous terms.
+The sequence grows very rapidly (2, 3, 7, 43, 1807, ...).
+The implementation uses simple recursion following the definition
+and validates the input is a positive integer.
+*/
+
+fun sylvester(n: int): int {
+  if n < 1 {
+    panic("The input value of n has to be > 0")
+  }
+  if n == 1 {
+    return 2
+  }
+  let prev = sylvester(n - 1)
+  let lower = prev - 1
+  let upper = prev
+  return lower * upper + 1
+}
+
+print(str(sylvester(8)))
