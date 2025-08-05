@@ -1,0 +1,49 @@
+/*
+  Sumset of two sets of integers.
+
+  Given two finite sets A and B of integers, the sumset A + B is the set of all
+  sums a + b for each a in A and b in B. Duplicate sums are included only once,
+  reflecting set semantics. For example, {1,2,3} + {4,5,6} results in
+  {5,6,7,8,9}.
+
+  This implementation represents sets as lists of unique integers. It loops over
+  every pair from the two inputs, computes the sum, and appends it to the result
+  list only if the sum has not been seen before. The algorithm runs in
+  O(len(A) * len(B)) time and uses O(k) additional space for k distinct sums.
+*/
+
+fun contains(xs: list<int>, value: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun sumset(set_a: list<int>, set_b: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len(set_a) {
+    var j = 0
+    while j < len(set_b) {
+      let s = set_a[i] + set_b[j]
+      if !contains(result, s) {
+        result = append(result, s)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let set_a: list<int> = [1, 2, 3]
+  let set_b: list<int> = [4, 5, 6]
+  print(str(sumset(set_a, set_b)))
+  let set_c: list<int> = [4, 5, 6, 7]
+  print(str(sumset(set_a, set_c)))
+}
+
+main()
