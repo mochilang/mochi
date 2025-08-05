@@ -1,0 +1,48 @@
+/*
+Determine whether a polygon can be formed from given side lengths.
+
+For a set of side lengths in Euclidean space, a polygon exists only if
+no single side is longer than the sum of the remaining sides. This
+function preserves the input order while verifying the following:
+  1. At least two side lengths are provided; monogons and digons are
+     not valid polygons.
+  2. All side lengths are positive numbers.
+  3. Compute the total perimeter and the longest side. A polygon is
+     valid when the longest side is strictly less than the sum of the
+     others.
+
+The procedure runs in O(n) time with O(1) extra space and does not
+mutate the original list of side lengths.
+*/
+
+fun check_polygon(nums: list<float>): bool {
+  if len(nums) < 2 {
+    error("Monogons and Digons are not polygons in the Euclidean space")
+  }
+  var i = 0
+  while i < len(nums) {
+    if nums[i] <= 0.0 {
+      error("All values must be greater than 0")
+    }
+    i = i + 1
+  }
+  var total = 0.0
+  var max_side = 0.0
+  i = 0
+  while i < len(nums) {
+    let v = nums[i]
+    total = total + v
+    if v > max_side {
+      max_side = v
+    }
+    i = i + 1
+  }
+  return max_side < (total - max_side)
+}
+
+print(str(check_polygon([6.0, 10.0, 5.0])))
+print(str(check_polygon([3.0, 7.0, 13.0, 2.0])))
+print(str(check_polygon([1.0, 4.3, 5.2, 12.2])))
+var nums: list<float> = [3.0, 7.0, 13.0, 2.0]
+let _ = check_polygon(nums)
+print(str(nums))
