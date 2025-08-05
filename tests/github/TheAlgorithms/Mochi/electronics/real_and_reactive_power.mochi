@@ -1,0 +1,51 @@
+/*
+Compute the real and reactive power of an AC circuit from the apparent power
+and power factor.
+
+In alternating current systems the apparent power S (in volt-amperes) is
+decomposed into real power P and reactive power Q.  With power factor pf
+(cosine of the phase angle),
+
+  P = S * pf
+  Q = S * sqrt(1 - pf^2)
+
+Both computations require that -1 <= pf <= 1.  Real power measures the useful
+energy converted, while reactive power quantifies the energy exchanged between
+the magnetic and electric fields.
+
+This implementation provides separate functions to compute P and Q and uses a
+simple Newton iteration to evaluate the square root without external
+libraries.  Example evaluations are printed for demonstration.
+*/
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun real_power(apparent_power: float, power_factor: float): float {
+  if power_factor < 0.0 - 1.0 || power_factor > 1.0 {
+    panic("power_factor must be a valid float value between -1 and 1.")
+  }
+  return apparent_power * power_factor
+}
+
+fun reactive_power(apparent_power: float, power_factor: float): float {
+  if power_factor < 0.0 - 1.0 || power_factor > 1.0 {
+    panic("power_factor must be a valid float value between -1 and 1.")
+  }
+  return apparent_power * sqrt(1.0 - power_factor * power_factor)
+}
+
+print(str(real_power(100.0, 0.9)))
+print(str(real_power(0.0, 0.8)))
+print(str(real_power(100.0, -0.9)))
+print(str(reactive_power(100.0, 0.9)))
+print(str(reactive_power(0.0, 0.8)))
+print(str(reactive_power(100.0, -0.9)))
