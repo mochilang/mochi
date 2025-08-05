@@ -1,0 +1,74 @@
+/*
+A1Z26 Cipher
+------------
+This program implements the A1Z26 substitution cipher where each letter of the
+English alphabet is replaced by its 1-indexed position (a=1, b=2, ..., z=26).
+Two functions are provided:
+  - encode: converts a lowercase string into a list of integers representing
+    each letter's position in the alphabet.
+  - decode: converts a list of integers back into the original lowercase
+    string.
+The main function demonstrates both operations by reading a line of input,
+encoding it, printing the numeric sequence, and then decoding it back to the
+original string. The implementation avoids foreign function interfaces and
+uses only the Mochi standard features, ensuring compatibility with the
+runtime VM.
+*/
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun charToNum(ch: string): int {
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  let idx = indexOf(letters, ch)
+  if idx >= 0 { return idx + 1 }
+  return 0
+}
+
+fun numToChar(n: int): string {
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 1 && n <= 26 {
+    return substring(letters, n-1, n)
+  }
+  return "?"
+}
+
+fun encode(plain: string): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(plain) {
+    let ch = lower(substring(plain, i, i+1))
+    let val = charToNum(ch)
+    if val > 0 {
+      res = append(res, val)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun decode(encoded: list<int>): string {
+  var out = ""
+  for n in encoded {
+    out = out + numToChar(n)
+  }
+  return out
+}
+
+fun main() {
+  print("-> ")
+  let text = lower(input())
+  let enc = encode(text)
+  print("Encoded: " + str(enc))
+  print("Decoded: " + decode(enc))
+}
+
+main()
