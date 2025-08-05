@@ -1,0 +1,155 @@
+/*
+Regression Decision Tree
+------------------------
+A regression decision tree predicts continuous outputs for a one-dimensional
+input. For a set of samples (x, y) it recursively partitions the domain at
+split points that minimize the mean squared error of the training inputs.
+Each leaf stores the mean of its segment as the prediction.
+
+Training:
+1. If the data set is too small or the maximum depth is reached, create a
+   leaf whose prediction is the average of the labels.
+2. Otherwise consider every possible split index. For each candidate, compute
+the squared error on the left and right partitions using their respective
+mean labels and choose the split with the smallest combined error.
+3. Recursively build subtrees for the left and right partitions and store the
+split value as the node's decision boundary.
+
+Prediction traverses the tree by comparing the query value with each
+node's boundary until a leaf is reached.
+
+Time Complexity: O(n^2) in the worst case for training as every split is
+evaluated at each level; O(h) for prediction where h is the tree height.
+*/
+
+type Tree =
+  Leaf(prediction: float)
+  | Branch(decision_boundary: float, left: Tree, right: Tree)
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun sin(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y3 = y2 * y
+  let y5 = y3 * y2
+  let y7 = y5 * y2
+  return y - y3/6.0 + y5/120.0 - y7/5040.0
+}
+
+var seed = 123456789
+fun rand(): float {
+  seed = (1103515245 * seed + 12345) % 2147483648
+  return seed as float / 2147483648.0
+}
+
+fun mean(vals: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(vals) {
+    sum = sum + vals[i]
+    i = i + 1
+  }
+  return sum / len(vals)
+}
+
+fun mean_squared_error(labels: list<float>, prediction: float): float {
+  var total = 0.0
+  var i = 0
+  while i < len(labels) {
+    let diff = labels[i] - prediction
+    total = total + diff * diff
+    i = i + 1
+  }
+  return total / len(labels)
+}
+
+fun train_tree(x: list<float>, y: list<float>, depth: int, min_leaf_size: int): Tree {
+  if len(x) < 2 * min_leaf_size { return Leaf { prediction: mean(y) } }
+  if depth == 1 { return Leaf { prediction: mean(y) } }
+  var best_split = 0
+  var min_error = mean_squared_error(x, mean(y)) * 2.0
+  var i = 0
+  while i < len(x) {
+    if len(x[0:i]) < min_leaf_size {
+      i = i
+    } else {
+      if len(x[i:]) < min_leaf_size {
+        i = i
+      } else {
+        let err_left = mean_squared_error(x[0:i], mean(y[0:i]))
+        let err_right = mean_squared_error(x[i:], mean(y[i:]))
+        let err = err_left + err_right
+        if err < min_error {
+          best_split = i
+          min_error = err
+        }
+      }
+    }
+    i = i + 1
+  }
+  if best_split != 0 {
+    let left_x = x[0:best_split]
+    let left_y = y[0:best_split]
+    let right_x = x[best_split:]
+    let right_y = y[best_split:]
+    let boundary = x[best_split]
+    let left_tree = train_tree(left_x, left_y, depth - 1, min_leaf_size)
+    let right_tree = train_tree(right_x, right_y, depth - 1, min_leaf_size)
+    return Branch { decision_boundary: boundary, left: left_tree, right: right_tree }
+  }
+  return Leaf { prediction: mean(y) }
+}
+
+fun predict(tree: Tree, value: float): float {
+  return match tree {
+    Leaf(p) => p
+    Branch(b, l, r) => if value >= b { predict(r, value) } else { predict(l, value) }
+  }
+}
+
+fun main() {
+  var x: list<float> = []
+  var v = -1.0
+  while v < 1.0 {
+    x = append(x, v)
+    v = v + 0.005
+  }
+  var y: list<float> = []
+  var i = 0
+  while i < len(x) {
+    y = append(y, sin(x[i]))
+    i = i + 1
+  }
+  let tree = train_tree(x, y, 10, 10)
+  var test_cases: list<float> = []
+  i = 0
+  while i < 10 {
+    test_cases = append(test_cases, rand() * 2.0 - 1.0)
+    i = i + 1
+  }
+  var predictions: list<float> = []
+  i = 0
+  while i < len(test_cases) {
+    predictions = append(predictions, predict(tree, test_cases[i]))
+    i = i + 1
+  }
+  var sum_err = 0.0
+  i = 0
+  while i < len(test_cases) {
+    let diff = predictions[i] - test_cases[i]
+    sum_err = sum_err + diff * diff
+    i = i + 1
+  }
+  let avg_error = sum_err / len(test_cases)
+  print("Test values: " + str(test_cases))
+  print("Predictions: " + str(predictions))
+  print("Average error: " + str(avg_error))
+}
+
+main()
