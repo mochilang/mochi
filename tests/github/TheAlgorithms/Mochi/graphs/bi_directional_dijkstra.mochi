@@ -1,0 +1,180 @@
+/*
+Bidirectional Dijkstra searches from both the source and destination.
+Each frontier performs Dijkstra relaxation on its outgoing edges while
+checking if a vertex was already explored from the opposite direction.
+When the searches meet, the combined distance is the shortest path.
+Using two simultaneous searches reduces the explored area compared to a
+standard single-source run. With a priority queue the algorithm runs in
+O((E+V) log V); here a simple list-based queue is used for clarity.
+*/
+
+type Edge {
+  to: string
+  cost: int
+}
+
+type QItem {
+  node: string
+  cost: int
+}
+
+type PassResult {
+  queue: list<QItem>
+  dist: int
+}
+
+fun get_min_index(q: list<QItem>): int {
+  var idx = 0
+  var i = 1
+  while i < len(q) {
+    if q[i].cost < q[idx].cost {
+      idx = i
+    }
+    i = i + 1
+  }
+  return idx
+}
+
+fun remove_at(q: list<QItem>, idx: int): list<QItem> {
+  var res: list<QItem> = []
+  var i = 0
+  while i < len(q) {
+    if i != idx {
+      res = append(res, q[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun pass_and_relaxation(
+  graph: map<string, list<Edge>>,
+  v: string,
+  visited_forward: map<string, bool>,
+  visited_backward: map<string, bool>,
+  cst_fwd: map<string, int>,
+  cst_bwd: map<string, int>,
+  queue: list<QItem>,
+  parent: map<string, string>,
+  shortest_distance: int
+): PassResult {
+  var q = queue
+  var sd = shortest_distance
+  for e in graph[v] {
+    let nxt = e.to
+    let d = e.cost
+    if nxt in visited_forward {
+      continue
+    }
+    let old_cost = if nxt in cst_fwd { cst_fwd[nxt] } else { 2147483647 }
+    let new_cost = cst_fwd[v] + d
+    if new_cost < old_cost {
+      q = append(q, QItem{node: nxt, cost: new_cost})
+      cst_fwd[nxt] = new_cost
+      parent[nxt] = v
+    }
+    if nxt in visited_backward {
+      let alt = cst_fwd[v] + d + cst_bwd[nxt]
+      if alt < sd {
+        sd = alt
+      }
+    }
+  }
+  return PassResult{queue: q, dist: sd}
+}
+
+fun bidirectional_dij(
+  source: string,
+  destination: string,
+  graph_forward: map<string, list<Edge>>,
+  graph_backward: map<string, list<Edge>>
+): int {
+  var shortest_path_distance = -1
+  var visited_forward: map<string, bool> = {}
+  var visited_backward: map<string, bool> = {}
+  var cst_fwd: map<string, int> = {}
+  cst_fwd[source] = 0
+  var cst_bwd: map<string, int> = {}
+  cst_bwd[destination] = 0
+  var parent_forward: map<string, string> = {}
+  parent_forward[source] = ""
+  var parent_backward: map<string, string> = {}
+  parent_backward[destination] = ""
+  var queue_forward: list<QItem> = []
+  queue_forward = append(queue_forward, QItem{node: source, cost: 0})
+  var queue_backward: list<QItem> = []
+  queue_backward = append(queue_backward, QItem{node: destination, cost: 0})
+  var shortest_distance = 2147483647
+  if source == destination {
+    return 0
+  }
+  while len(queue_forward) > 0 && len(queue_backward) > 0 {
+    let idx_f = get_min_index(queue_forward)
+    let item_f = queue_forward[idx_f]
+    queue_forward = remove_at(queue_forward, idx_f)
+    let v_fwd = item_f.node
+    visited_forward[v_fwd] = true
+
+    let idx_b = get_min_index(queue_backward)
+    let item_b = queue_backward[idx_b]
+    queue_backward = remove_at(queue_backward, idx_b)
+    let v_bwd = item_b.node
+    visited_backward[v_bwd] = true
+
+    let res_f = pass_and_relaxation(
+      graph_forward,
+      v_fwd,
+      visited_forward,
+      visited_backward,
+      cst_fwd,
+      cst_bwd,
+      queue_forward,
+      parent_forward,
+      shortest_distance
+    )
+    queue_forward = res_f.queue
+    shortest_distance = res_f.dist
+
+    let res_b = pass_and_relaxation(
+      graph_backward,
+      v_bwd,
+      visited_backward,
+      visited_forward,
+      cst_bwd,
+      cst_fwd,
+      queue_backward,
+      parent_backward,
+      shortest_distance
+    )
+    queue_backward = res_b.queue
+    shortest_distance = res_b.dist
+
+    if cst_fwd[v_fwd] + cst_bwd[v_bwd] >= shortest_distance {
+      break
+    }
+  }
+  if shortest_distance != 2147483647 {
+    shortest_path_distance = shortest_distance
+  }
+  return shortest_path_distance
+}
+
+var graph_fwd: map<string, list<Edge>> = {
+  "B": [Edge{to: "C", cost: 1}],
+  "C": [Edge{to: "D", cost: 1}],
+  "D": [Edge{to: "F", cost: 1}],
+  "E": [Edge{to: "B", cost: 1}, Edge{to: "G", cost: 2}],
+  "F": [],
+  "G": [Edge{to: "F", cost: 1}],
+}
+
+var graph_bwd: map<string, list<Edge>> = {
+  "B": [Edge{to: "E", cost: 1}],
+  "C": [Edge{to: "B", cost: 1}],
+  "D": [Edge{to: "C", cost: 1}],
+  "F": [Edge{to: "D", cost: 1}, Edge{to: "G", cost: 1}],
+  "E": [],
+  "G": [Edge{to: "E", cost: 2}],
+}
+
+print(str(bidirectional_dij("E", "F", graph_fwd, graph_bwd)))
