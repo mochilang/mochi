@@ -1,0 +1,83 @@
+/*
+IPv4 Address Validation
+-----------------------
+This module checks whether a string represents a valid IPv4 address.
+A valid IPv4 address consists of exactly four decimal octets separated by
+periods. Each octet must:
+1. Contain only digit characters.
+2. Represent a number in the range [0, 255].
+3. Have no leading zeros unless the octet is exactly "0".
+
+The algorithm avoids FFI and operates within the Mochi runtime by
+splitting the input string manually, verifying each octet, and converting
+its characters into integers. The procedure mirrors the Python version in
+TheAlgorithms repository.
+*/
+
+fun split_by_dot(s: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c == "." {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun is_digit_str(s: string): bool {
+  if len(s) == 0 { return false }
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c < "0" || c > "9" { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun parse_decimal(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun is_ip_v4_address_valid(ip: string): bool {
+  let octets = split_by_dot(ip)
+  if len(octets) != 4 { return false }
+  var i = 0
+  while i < 4 {
+    let oct = octets[i]
+    if !is_digit_str(oct) { return false }
+    let number = parse_decimal(oct)
+    if len(str(number)) != len(oct) { return false }
+    if number < 0 || number > 255 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+print(str(is_ip_v4_address_valid("192.168.0.23")))
+print(str(is_ip_v4_address_valid("192.256.15.8")))
+print(str(is_ip_v4_address_valid("172.100.0.8")))
+print(str(is_ip_v4_address_valid("255.256.0.256")))
+print(str(is_ip_v4_address_valid("1.2.33333333.4")))
+print(str(is_ip_v4_address_valid("1.2.-3.4")))
+print(str(is_ip_v4_address_valid("1.2.3")))
+print(str(is_ip_v4_address_valid("1.2.3.4.5")))
+print(str(is_ip_v4_address_valid("1.2.A.4")))
+print(str(is_ip_v4_address_valid("0.0.0.0")))
+print(str(is_ip_v4_address_valid("1.2.3.")))
+print(str(is_ip_v4_address_valid("1.2.3.05")))
