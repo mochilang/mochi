@@ -1,0 +1,95 @@
+/*
+Support Vector Machine Classifier
+
+This program implements a linear support vector machine using
+subgradient descent on the primal objective
+
+  minimize 1/2 * ||w||^2 + lambda * sum(max(0, 1 - y_i * (w·x_i + b)))
+
+At each step we update the weight vector w and bias b.
+The algorithm runs for a fixed number of epochs over the training data.
+After training, predictions are made using the sign of w·x + b.
+The implementation uses only Mochi built-ins and avoids any FFI.
+Time complexity: O(epochs * n_samples * n_features).
+*/
+
+type SVC {
+  weights: list<float>,
+  bias: float,
+  lr: float,
+  lambda: float,
+  epochs: int
+}
+
+fun dot(a: list<float>, b: list<float>): float {
+  var s = 0.0
+  var i = 0
+  while i < len(a) {
+    s = s + a[i] * b[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun new_svc(lr: float, lambda: float, epochs: int): SVC {
+  return SVC { weights: [], bias: 0.0, lr: lr, lambda: lambda, epochs: epochs }
+}
+
+fun fit(model: SVC, xs: list<list<float>>, ys: list<int>): SVC {
+  let n_features = len(xs[0])
+  var w: list<float> = []
+  var i = 0
+  while i < n_features {
+    w = append(w, 0.0)
+    i = i + 1
+  }
+  var b = 0.0
+  var epoch = 0
+  while epoch < model.epochs {
+    var j = 0
+    while j < len(xs) {
+      let x = xs[j]
+      let y = ys[j] as float
+      let prod = dot(w, x) + b
+      if y * prod < 1.0 {
+        var k = 0
+        while k < len(w) {
+          w[k] = w[k] + model.lr * (y * x[k] - 2.0 * model.lambda * w[k])
+          k = k + 1
+        }
+        b = b + model.lr * y
+      } else {
+        var k = 0
+        while k < len(w) {
+          w[k] = w[k] - model.lr * (2.0 * model.lambda * w[k])
+          k = k + 1
+        }
+      }
+      j = j + 1
+    }
+    epoch = epoch + 1
+  }
+  return SVC { weights: w, bias: b, lr: model.lr, lambda: model.lambda, epochs: model.epochs }
+}
+
+fun predict(model: SVC, x: list<float>): int {
+  let s = dot(model.weights, x) + model.bias
+  if s >= 0.0 {
+    return 1
+  } else {
+    return -1
+  }
+}
+
+let xs: list<list<float>> = [
+  [0.0, 1.0],
+  [0.0, 2.0],
+  [1.0, 1.0],
+  [1.0, 2.0]
+]
+let ys: list<int> = [1, 1, -1, -1]
+let base = new_svc(0.01, 0.01, 1000)
+let model = fit(base, xs, ys)
+print(predict(model, [0.0, 1.0]))
+print(predict(model, [1.0, 1.0]))
+print(predict(model, [2.0, 2.0]))
