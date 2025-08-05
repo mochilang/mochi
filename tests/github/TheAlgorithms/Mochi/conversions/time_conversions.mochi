@@ -1,0 +1,68 @@
+/*
+Convert a time value between common units such as seconds, minutes,
+hours, days, weeks, months, and years.
+
+The algorithm stores the number of seconds in each unit and its inverse
+for quick lookup. To convert, the input value is first transformed into
+seconds then scaled to the target unit. Inputs are case-insensitive and
+must be non-negative. Unknown units trigger a panic with a helpful
+message. The final result is rounded to three decimal places using
+basic arithmetic.
+*/
+
+let time_chart = {
+  "seconds": 1.0,
+  "minutes": 60.0,
+  "hours": 3600.0,
+  "days": 86400.0,
+  "weeks": 604800.0,
+  "months": 2629800.0,
+  "years": 31557600.0,
+}
+
+let time_chart_inverse = {
+  "seconds": 1.0,
+  "minutes": 1.0 / 60.0,
+  "hours": 1.0 / 3600.0,
+  "days": 1.0 / 86400.0,
+  "weeks": 1.0 / 604800.0,
+  "months": 1.0 / 2629800.0,
+  "years": 1.0 / 31557600.0,
+}
+
+let units = ["seconds", "minutes", "hours", "days", "weeks", "months", "years"]
+let units_str = "seconds, minutes, hours, days, weeks, months, years"
+
+fun contains(arr: list<string>, t: string): bool {
+  var i = 0
+  while i < len(arr) {
+    if arr[i] == t { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun convert_time(time_value: float, unit_from: string, unit_to: string): float {
+  if time_value < 0.0 {
+    panic("'time_value' must be a non-negative number.")
+  }
+  let from = lower(unit_from)
+  let to = lower(unit_to)
+  if (!contains(units, from)) || (!contains(units, to)) {
+    let invalid_unit = from
+    if contains(units, from) {
+      invalid_unit = to
+    }
+    panic("Invalid unit " + invalid_unit + " is not in " + units_str + ".")
+  }
+  let seconds = time_value * time_chart[from]
+  let converted = seconds * time_chart_inverse[to]
+  let scaled = converted * 1000.0
+  let int_part = int(scaled + 0.5)
+  return (int_part + 0.0) / 1000.0
+}
+
+print(convert_time(3600.0, "seconds", "hours"))
+print(convert_time(360.0, "days", "months"))
+print(convert_time(360.0, "months", "years"))
+print(convert_time(1.0, "years", "seconds"))
