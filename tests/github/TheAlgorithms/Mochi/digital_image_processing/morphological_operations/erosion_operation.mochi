@@ -1,0 +1,127 @@
+/*
+Convert an RGB image to grayscale, threshold it to a binary image, and
+apply morphological erosion. Erosion shrinks foreground regions by
+sliding a structuring element (kernel) over the binary image and keeping
+only the pixels where the kernel fits entirely within the foreground.
+
+The process is:
+1. `rgb_to_gray` computes 0.2989*R + 0.5870*G + 0.1140*B for each pixel.
+2. `gray_to_binary` keeps values in (127,255] as true.
+3. `erosion` pads the image and counts overlapping 1s under the kernel;
+   using a cross-shaped kernel with five ones, the output pixel is true
+   only when the sum equals five.
+This demonstration uses small arrays similar to the original Python
+examples.
+*/
+
+fun rgb_to_gray(rgb: list<list<list<int>>>): list<list<float>> {
+  var gray: list<list<float>> = []
+  var i = 0
+  while i < len(rgb) {
+    var row: list<float> = []
+    var j = 0
+    while j < len(rgb[i]) {
+      let r = rgb[i][j][0] as float
+      let g = rgb[i][j][1] as float
+      let b = rgb[i][j][2] as float
+      let value = 0.2989 * r + 0.5870 * g + 0.1140 * b
+      row = append(row, value)
+      j = j + 1
+    }
+    gray = append(gray, row)
+    i = i + 1
+  }
+  return gray
+}
+
+fun gray_to_binary(gray: list<list<float>>): list<list<bool>> {
+  var binary: list<list<bool>> = []
+  var i = 0
+  while i < len(gray) {
+    var row: list<bool> = []
+    var j = 0
+    while j < len(gray[i]) {
+      row = append(row, gray[i][j] > 127.0 && gray[i][j] <= 255.0)
+      j = j + 1
+    }
+    binary = append(binary, row)
+    i = i + 1
+  }
+  return binary
+}
+
+fun erosion(image: list<list<bool>>, kernel: list<list<int>>): list<list<bool>> {
+  let h = len(image)
+  let w = len(image[0])
+  let k_h = len(kernel)
+  let k_w = len(kernel[0])
+
+  let pad_y = k_h / 2
+  let pad_x = k_w / 2
+
+  // create padded image with zeros
+  var padded: list<list<bool>> = []
+  var y = 0
+  while y < h + 2 * pad_y {
+    var row: list<bool> = []
+    var x = 0
+    while x < w + 2 * pad_x {
+      row = append(row, false)
+      x = x + 1
+    }
+    padded = append(padded, row)
+    y = y + 1
+  }
+
+  // copy original image into padded
+  y = 0
+  while y < h {
+    var x = 0
+    while x < w {
+      padded[pad_y + y][pad_x + x] = image[y][x]
+      x = x + 1
+    }
+    y = y + 1
+  }
+
+  // apply erosion assuming kernel contains five ones
+  var output: list<list<bool>> = []
+  y = 0
+  while y < h {
+    var row_out: list<bool> = []
+    var x = 0
+    while x < w {
+      var sum = 0
+      var ky = 0
+      while ky < k_h {
+        var kx = 0
+        while kx < k_w {
+          if kernel[ky][kx] == 1 && padded[y + ky][x + kx] {
+            sum = sum + 1
+          }
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      row_out = append(row_out, sum == 5)
+      x = x + 1
+    }
+    output = append(output, row_out)
+    y = y + 1
+  }
+  return output
+}
+
+let rgb_img = [[[127, 255, 0]]]
+print(str(rgb_to_gray(rgb_img)))
+
+let gray_img = [[127.0, 255.0, 0.0]]
+print(str(gray_to_binary(gray_img)))
+
+let img1 = [[true, true, false]]
+let kernel1 = [[0, 1, 0]]
+print(str(erosion(img1, kernel1)))
+
+let img2 = [[true, false, false]]
+let kernel2 = [[1, 1, 0]]
+print(str(erosion(img2, kernel2)))
