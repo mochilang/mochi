@@ -1,0 +1,55 @@
+/*
+Gaussian Function Evaluation
+----------------------------
+Computes the value of the Gaussian (normal distribution) function:
+
+  g(x) = 1/(sqrt(2πσ^2)) * exp(-(x-μ)^2/(2σ^2))
+
+The implementation provides pure Mochi approximations for sqrt and exp
+using Newton's method and a Taylor series respectively so it runs on the
+runtime/vm without FFI. Useful for statistics and signal processing.
+*/
+
+let PI: float = 3.141592653589793
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun expApprox(x: float): float {
+  var is_neg = false
+  var y = x
+  if x < 0.0 {
+    is_neg = true
+    y = -x
+  }
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if is_neg { return 1.0 / sum }
+  return sum
+}
+
+fun gaussian(x: float, mu: float, sigma: float): float {
+  let coeff = 1.0 / sqrtApprox(2.0 * PI * sigma * sigma)
+  let exponent = -((x - mu) * (x - mu)) / (2.0 * sigma * sigma)
+  return coeff * expApprox(exponent)
+}
+
+fun main() {
+  let result = gaussian(1.0, 0.0, 1.0)
+  print(result)
+}
+
+main()
