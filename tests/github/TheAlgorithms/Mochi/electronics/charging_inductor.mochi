@@ -1,0 +1,68 @@
+/*
+Charging Inductor Current
+
+Given a DC source voltage applied to a series resistor-inductor (RL) circuit,
+compute the inductor current at a specific time during charging. The current
+rises according to:
+
+    I(t) = (V/R) * (1 - exp(-(R/L) * t))
+
+where V is the source voltage, R the resistance, L the inductance, and t the
+time in seconds. The exponential term reflects how the inductor opposes
+changes in current. The RL time constant is L/R and determines the rate of
+current rise. This implementation validates that voltage, resistance, and
+inductance are positive and returns the current rounded to three decimals.
+The exponential is approximated via a truncated Taylor series with recursive
+exponentiation to handle large magnitudes.
+*/
+
+fun expApprox(x: float): float {
+  if x < 0.0 { return 1.0 / expApprox(-x) }
+  if x > 1.0 {
+    let half = expApprox(x / 2.0)
+    return half * half
+  }
+  var sum = 1.0
+  var term = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun charging_inductor(source_voltage: float, resistance: float, inductance: float, time: float): float {
+  if source_voltage <= 0.0 { panic("Source voltage must be positive.") }
+  if resistance <= 0.0 { panic("Resistance must be positive.") }
+  if inductance <= 0.0 { panic("Inductance must be positive.") }
+  let exponent = (-time * resistance) / inductance
+  let current = source_voltage / resistance * (1.0 - expApprox(exponent))
+  return round(current, 3)
+}
+
+print(charging_inductor(5.8, 1.5, 2.3, 2.0))
+print(charging_inductor(8.0, 5.0, 3.0, 2.0))
+print(charging_inductor(8.0, 5.0 * pow10(2), 3.0, 2.0))
