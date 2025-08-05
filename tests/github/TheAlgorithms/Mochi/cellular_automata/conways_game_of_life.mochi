@@ -1,0 +1,83 @@
+/*
+Conway's Game of Life is a cellular automaton on a 2D grid where each cell is
+either alive (1) or dead (0). For each generation the state of a cell is
+updated according to the number of live neighbours:
+ 1. A live cell with two or three neighbours survives.
+ 2. A dead cell with exactly three neighbours becomes alive.
+ 3. All other cells die or remain dead.
+This implementation computes successive generations for a finite grid and
+mirrors the reference Python code from TheAlgorithms project.
+*/
+
+let GLIDER: list<list<int>> = [
+  [0, 1, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 0],
+  [1, 1, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+let BLINKER: list<list<int>> = [
+  [0, 1, 0],
+  [0, 1, 0],
+  [0, 1, 0]
+]
+
+fun new_generation(cells: list<list<int>>): list<list<int>> {
+  let rows = len(cells)
+  let cols = len(cells[0])
+  var next: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    var row: list<int> = []
+    var j = 0
+    while j < cols {
+      var count = 0
+      if i > 0 && j > 0 { count = count + cells[i - 1][j - 1] }
+      if i > 0 { count = count + cells[i - 1][j] }
+      if i > 0 && j < cols - 1 { count = count + cells[i - 1][j + 1] }
+      if j > 0 { count = count + cells[i][j - 1] }
+      if j < cols - 1 { count = count + cells[i][j + 1] }
+      if i < rows - 1 && j > 0 { count = count + cells[i + 1][j - 1] }
+      if i < rows - 1 { count = count + cells[i + 1][j] }
+      if i < rows - 1 && j < cols - 1 { count = count + cells[i + 1][j + 1] }
+      let alive = cells[i][j] == 1
+      if (alive && count >= 2 && count <= 3) || (!alive && count == 3) {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      j = j + 1
+    }
+    next = append(next, row)
+    i = i + 1
+  }
+  return next
+}
+
+fun generate_generations(cells: list<list<int>>, frames: int): list<list<list<int>>> {
+  var result: list<list<list<int>>> = []
+  var i = 0
+  var current = cells
+  while i < frames {
+    result = append(result, current)
+    current = new_generation(current)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let frames = generate_generations(GLIDER, 4)
+  var i = 0
+  while i < len(frames) {
+    print(frames[i])
+    i = i + 1
+  }
+}
+
+main()
+
