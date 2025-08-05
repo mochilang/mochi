@@ -1,0 +1,37 @@
+/*
+Calculate the fixed monthly payment to amortize a loan.
+Given a principal amount, annual interest rate, and number of years
+for repayment, the equated monthly installment (EMI) is computed using
+the formula:
+
+  payment = p * r * (1 + r)^n / ((1 + r)^n - 1)
+
+where p is the principal, r is the monthly interest rate, and n is the
+number of monthly payments. The function validates inputs and uses a
+simple loop-based power function to evaluate (1 + r)^n without relying
+on external libraries. This approach follows the algorithm described in
+financial mathematics for amortizing loans.
+*/
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun equated_monthly_installments(principal: float, rate_per_annum: float, years_to_repay: int): float {
+  if principal <= 0.0 { panic("Principal borrowed must be > 0") }
+  if rate_per_annum < 0.0 { panic("Rate of interest must be >= 0") }
+  if years_to_repay <= 0 { panic("Years to repay must be an integer > 0") }
+  let rate_per_month = rate_per_annum / 12.0
+  let number_of_payments = years_to_repay * 12
+  let factor = pow_float(1.0 + rate_per_month, number_of_payments)
+  return principal * rate_per_month * factor / (factor - 1.0)
+}
+
+print(str(equated_monthly_installments(25000.0, 0.12, 3)))
+print(str(equated_monthly_installments(25000.0, 0.12, 10)))
