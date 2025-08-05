@@ -1,0 +1,31 @@
+/*
+Determine whether a non‑negative integer is an automorphic number.
+
+An automorphic number is one whose square ends with the same digits as the number itself.
+For example: 5^2 = 25 ends with 5, and 376^2 = 141376 ends with 376.
+
+The algorithm squares the number then iteratively compares the least significant digits
+of the original number and the square, stripping one digit on each step. If all compared
+digits match, the number is automorphic. Negative inputs are rejected as non-automorphic.
+This runs in O(log10(n)) time and uses O(1) space.
+*/
+
+fun is_automorphic_number(number: int): bool {
+  if number < 0 { return false }
+  var n = number
+  var sq = number * number
+  while n > 0 {
+    if n % 10 != sq % 10 { return false }
+    n = n / 10
+    sq = sq / 10
+  }
+  return true
+}
+
+print(str(is_automorphic_number(0)))
+print(str(is_automorphic_number(1)))
+print(str(is_automorphic_number(5)))
+print(str(is_automorphic_number(6)))
+print(str(is_automorphic_number(7)))
+print(str(is_automorphic_number(25)))
+print(str(is_automorphic_number(376)))
