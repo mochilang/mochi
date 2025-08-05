@@ -1,0 +1,39 @@
+/*
+Boolean AND Gate
+
+Implements two forms of logical AND used in Boolean algebra.
+
+1. `and_gate` performs a two-input AND. Each input is treated as
+   True when it is non-zero. The function returns 1 only when both
+   inputs are non-zero, otherwise 0. This mirrors the behavior of a
+   physical two-input AND gate. Time complexity is O(1).
+
+2. `n_input_and_gate` accepts a list of integers and returns 1 when
+   every element is non-zero. It scans the list and stops early if a
+   zero is encountered. Time complexity is O(n) for n inputs.
+*/
+
+fun and_gate(input_1: int, input_2: int): int {
+  if input_1 != 0 && input_2 != 0 {
+    return 1
+  }
+  return 0
+}
+
+fun n_input_and_gate(inputs: list<int>): int {
+  var i = 0
+  while i < len(inputs) {
+    if inputs[i] == 0 {
+      return 0
+    }
+    i = i + 1
+  }
+  return 1
+}
+
+print(and_gate(0, 0))
+print(and_gate(0, 1))
+print(and_gate(1, 0))
+print(and_gate(1, 1))
+print(n_input_and_gate([1, 0, 1, 1, 0]))
+print(n_input_and_gate([1, 1, 1, 1, 1]))
