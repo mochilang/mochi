@@ -1,0 +1,148 @@
+/*
+Haralick Texture Descriptors
+
+The gray level co-occurrence matrix (GLCM) counts how often
+pixel values i and j occur at a given offset in an image.
+From the GLCM several statistics describe the texture
+properties of the image. The eight classic Haralick descriptors
+computed here are: maximum probability, correlation, energy,
+contrast, dissimilarity, inverse difference, homogeneity and
+entropy.
+
+This implementation builds a normalized co-occurrence matrix for
+a small integer image and computes the descriptors using only
+basic arithmetic.
+*/
+
+fun abs_int(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun ln(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  let e = 2.718281828
+  var n = 0
+  var y = x
+  while y >= e {
+    y = y / e
+    n = n + 1
+  }
+  while y <= 1.0 / e {
+    y = y * e
+    n = n - 1
+  }
+  y = y - 1.0
+  var term = y
+  var result = 0.0
+  var k = 1
+  while k <= 20 {
+    if k % 2 == 1 {
+      result = result + term / (1.0 * k)
+    } else {
+      result = result - term / (1.0 * k)
+    }
+    term = term * y
+    k = k + 1
+  }
+  return result + (1.0 * n)
+}
+
+fun matrix_concurrency(image: list<list<int>>, coord: list<int>): list<list<float>> {
+  let offset_x = coord[0]
+  let offset_y = coord[1]
+  var max_val = 0
+  for r in 0..len(image) {
+    for c in 0..len(image[r]) {
+      if image[r][c] > max_val { max_val = image[r][c] }
+    }
+  }
+  let size = max_val + 1
+  var matrix: list<list<float>> = []
+  for i in 0..size {
+    var row: list<float> = []
+    for j in 0..size {
+      row = append(row, 0.0)
+    }
+    matrix = append(matrix, row)
+  }
+  for x in 1..len(image)-1 {
+    for y in 1..len(image[x])-1 {
+      let base = image[x][y]
+      let offset = image[x + offset_x][y + offset_y]
+      matrix[base][offset] = matrix[base][offset] + 1.0
+    }
+  }
+  var total = 0.0
+  for i in 0..size {
+    for j in 0..size {
+      total = total + matrix[i][j]
+    }
+  }
+  if total == 0.0 { return matrix }
+  for i in 0..size {
+    for j in 0..size {
+      matrix[i][j] = matrix[i][j] / total
+    }
+  }
+  return matrix
+}
+
+fun haralick_descriptors(matrix: list<list<float>>): list<float> {
+  let rows = len(matrix)
+  let cols = len(matrix[0])
+  var maximum_prob = 0.0
+  var correlation = 0.0
+  var energy = 0.0
+  var contrast = 0.0
+  var dissimilarity = 0.0
+  var inverse_difference = 0.0
+  var homogeneity = 0.0
+  var entropy = 0.0
+  var i = 0
+  while i < rows {
+    var j = 0
+    while j < cols {
+      let val = matrix[i][j]
+      if val > maximum_prob { maximum_prob = val }
+      correlation = correlation + (1.0 * i * j) * val
+      energy = energy + val * val
+      let diff = i - j
+      let adiff = abs_int(diff)
+      contrast = contrast + val * (1.0 * diff * diff)
+      dissimilarity = dissimilarity + val * (1.0 * adiff)
+      inverse_difference = inverse_difference + val / (1.0 + (1.0 * adiff))
+      homogeneity = homogeneity + val / (1.0 + (1.0 * diff * diff))
+      if val > 0.0 { entropy = entropy - (val * ln(val)) }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return [maximum_prob, correlation, energy, contrast, dissimilarity, inverse_difference, homogeneity, entropy]
+}
+
+let image = [
+  [0,1,0],
+  [1,0,1],
+  [0,1,0]
+]
+
+let glcm = matrix_concurrency(image, [0,1])
+let descriptors = haralick_descriptors(glcm)
+
+var idx = 0
+while idx < len(descriptors) {
+  print(str(descriptors[idx]))
+  idx = idx + 1
+}
