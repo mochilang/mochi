@@ -1,0 +1,192 @@
+/*
+Gradient Boosting Classifier Using Decision Stumps
+-------------------------------------------------
+This example demonstrates a simplified gradient boosting classifier
+that builds an additive model of decision stumps (depth‑1 trees) to
+separate two classes labelled -1 and 1.  Each iteration fits a stump to
+the negative gradient of the logistic loss (pseudo‑residuals).  The
+final prediction is the sign of the accumulated stump outputs.
+
+Algorithm:
+1. Initialize predictions to zero for all samples.
+2. For each boosting round:
+   a. Compute pseudo‑residuals r_i = -y_i / (1 + exp(y_i * F(x_i))).
+   b. Train a decision stump on (x_i, r_i) by minimizing squared error.
+   c. Add the scaled stump output to the model.
+3. Classify by taking the sign of the aggregated stump predictions.
+
+This implementation avoids external libraries and uses simple loops to
+approximate exponentials and to search for the best stump split.  Time
+complexity is O(T * n * m * s) where T is the number of estimators, n
+the sample count, m the feature count and s the number of candidate
+splits per feature.
+*/
+
+type Stump { feature: int, threshold: float, left: float, right: float }
+
+fun exp_approx(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 10 {
+    term = term * x / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun signf(x: float): float {
+  if x >= 0.0 { return 1.0 }
+  return -1.0
+}
+
+fun gradient(target: list<float>, preds: list<float>): list<float> {
+  let n = len(target)
+  var residuals: list<float> = []
+  var i = 0
+  while i < n {
+    let t = target[i]
+    let y = preds[i]
+    let exp_val = exp_approx(t * y)
+    let res = -t / (1.0 + exp_val)
+    residuals = append(residuals, res)
+    i = i + 1
+  }
+  return residuals
+}
+
+fun predict_raw(models: list<Stump>, features: list<list<float>>, learning_rate: float): list<float> {
+  let n = len(features)
+  var preds: list<float> = []
+  var i = 0
+  while i < n {
+    preds = append(preds, 0.0)
+    i = i + 1
+  }
+  var m = 0
+  while m < len(models) {
+    let stump = models[m]
+    i = 0
+    while i < n {
+      let value = features[i][stump.feature]
+      if value <= stump.threshold {
+        preds[i] = preds[i] + learning_rate * stump.left
+      } else {
+        preds[i] = preds[i] + learning_rate * stump.right
+      }
+      i = i + 1
+    }
+    m = m + 1
+  }
+  return preds
+}
+
+fun predict(models: list<Stump>, features: list<list<float>>, learning_rate: float): list<float> {
+  let raw = predict_raw(models, features, learning_rate)
+  var result: list<float> = []
+  var i = 0
+  while i < len(raw) {
+    result = append(result, signf(raw[i]))
+    i = i + 1
+  }
+  return result
+}
+
+fun train_stump(features: list<list<float>>, residuals: list<float>): Stump {
+  let n_samples = len(features)
+  let n_features = len(features[0])
+  var best_feature = 0
+  var best_threshold = 0.0
+  var best_error: float = 1000000000.0
+  var best_left = 0.0
+  var best_right = 0.0
+  var j = 0
+  while j < n_features {
+    var t_index = 0
+    while t_index < n_samples {
+      let t = features[t_index][j]
+      var sum_left = 0.0
+      var count_left = 0
+      var sum_right = 0.0
+      var count_right = 0
+      var i = 0
+      while i < n_samples {
+        if features[i][j] <= t {
+          sum_left = sum_left + residuals[i]
+          count_left = count_left + 1
+        } else {
+          sum_right = sum_right + residuals[i]
+          count_right = count_right + 1
+        }
+        i = i + 1
+      }
+      var left_val = 0.0
+      if count_left != 0 {
+        left_val = sum_left / (count_left as float)
+      }
+      var right_val = 0.0
+      if count_right != 0 {
+        right_val = sum_right / (count_right as float)
+      }
+      var error = 0.0
+      i = 0
+      while i < n_samples {
+        let pred = if features[i][j] <= t { left_val } else { right_val }
+        let diff = residuals[i] - pred
+        error = error + diff * diff
+        i = i + 1
+      }
+      if error < best_error {
+        best_error = error
+        best_feature = j
+        best_threshold = t
+        best_left = left_val
+        best_right = right_val
+      }
+      t_index = t_index + 1
+    }
+    j = j + 1
+  }
+  return Stump{ feature: best_feature, threshold: best_threshold, left: best_left, right: best_right }
+}
+
+fun fit(n_estimators: int, learning_rate: float, features: list<list<float>>, target: list<float>): list<Stump> {
+  var models: list<Stump> = []
+  var m = 0
+  while m < n_estimators {
+    let preds = predict_raw(models, features, learning_rate)
+    let grad = gradient(target, preds)
+    var residuals: list<float> = []
+    var i = 0
+    while i < len(grad) {
+      residuals = append(residuals, -grad[i])
+      i = i + 1
+    }
+    let stump = train_stump(features, residuals)
+    models = append(models, stump)
+    m = m + 1
+  }
+  return models
+}
+
+fun accuracy(preds: list<float>, target: list<float>): float {
+  let n = len(target)
+  var correct = 0
+  var i = 0
+  while i < n {
+    if preds[i] == target[i] {
+      correct = correct + 1
+    }
+    i = i + 1
+  }
+  return (correct as float) / (n as float)
+}
+
+let features: list<list<float>> = [[1.0], [2.0], [3.0], [4.0]]
+let target: list<float> = [-1.0, -1.0, 1.0, 1.0]
+let models = fit(5, 0.5, features, target)
+let predictions = predict(models, features, 0.5)
+let acc = accuracy(predictions, target)
+print("Accuracy: " + str(acc))
+
