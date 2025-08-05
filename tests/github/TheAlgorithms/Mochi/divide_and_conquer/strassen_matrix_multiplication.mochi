@@ -1,0 +1,208 @@
+/*
+Strassen Matrix Multiplication
+
+This implementation multiplies two matrices using Strassen's divide-and-conquer algorithm.
+Each matrix is split into quadrants recursively and seven intermediary products are
+combined to obtain the result, reducing the multiplication count from eight to seven.
+For matrices that are not square or whose dimension is not a power of two, the inputs are
+padded with zeros up to the next power-of-two square and truncated afterwards.
+The algorithm runs in roughly O(n^2.807) time for n x n matrices, outperforming
+naive cubic multiplication.
+*/
+
+fun default_matrix_multiplication(a: list<list<int>>, b: list<list<int>>): list<list<int>> {
+  return [
+    [a[0][0] * b[0][0] + a[0][1] * b[1][0], a[0][0] * b[0][1] + a[0][1] * b[1][1]],
+    [a[1][0] * b[0][0] + a[1][1] * b[1][0], a[1][0] * b[0][1] + a[1][1] * b[1][1]],
+  ]
+}
+
+fun matrix_addition(matrix_a: list<list<int>>, matrix_b: list<list<int>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(matrix_a) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(matrix_a[i]) {
+      row = append(row, matrix_a[i][j] + matrix_b[i][j])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun matrix_subtraction(matrix_a: list<list<int>>, matrix_b: list<list<int>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(matrix_a) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(matrix_a[i]) {
+      row = append(row, matrix_a[i][j] - matrix_b[i][j])
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun split_matrix(a: list<list<int>>): list<list<list<int>>> {
+  let n = len(a)
+  let mid = n / 2
+  var top_left: list<list<int>> = []
+  var top_right: list<list<int>> = []
+  var bot_left: list<list<int>> = []
+  var bot_right: list<list<int>> = []
+  var i = 0
+  while i < mid {
+    var left_row: list<int> = []
+    var right_row: list<int> = []
+    var j = 0
+    while j < mid {
+      left_row = append(left_row, a[i][j])
+      right_row = append(right_row, a[i][j + mid])
+      j = j + 1
+    }
+    top_left = append(top_left, left_row)
+    top_right = append(top_right, right_row)
+    i = i + 1
+  }
+  i = mid
+  while i < n {
+    var left_row: list<int> = []
+    var right_row: list<int> = []
+    var j = 0
+    while j < mid {
+      left_row = append(left_row, a[i][j])
+      right_row = append(right_row, a[i][j + mid])
+      j = j + 1
+    }
+    bot_left = append(bot_left, left_row)
+    bot_right = append(bot_right, right_row)
+    i = i + 1
+  }
+  return [top_left, top_right, bot_left, bot_right]
+}
+
+fun matrix_dimensions(matrix: list<list<int>>): list<int> {
+  return [len(matrix), len(matrix[0])]
+}
+
+fun next_power_of_two(n: int): int {
+  var p = 1
+  while p < n {
+    p = p * 2
+  }
+  return p
+}
+
+fun pad_matrix(mat: list<list<int>>, rows: int, cols: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var i = 0
+  while i < rows {
+    var row: list<int> = []
+    var j = 0
+    while j < cols {
+      var v = 0
+      if i < len(mat) && j < len(mat[0]) { v = mat[i][j] }
+      row = append(row, v)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun actual_strassen(matrix_a: list<list<int>>, matrix_b: list<list<int>>): list<list<int>> {
+  if matrix_dimensions(matrix_a)[0] == 2 {
+    return default_matrix_multiplication(matrix_a, matrix_b)
+  }
+  let parts_a = split_matrix(matrix_a)
+  let a = parts_a[0]
+  let b = parts_a[1]
+  let c = parts_a[2]
+  let d = parts_a[3]
+  let parts_b = split_matrix(matrix_b)
+  let e = parts_b[0]
+  let f = parts_b[1]
+  let g = parts_b[2]
+  let h = parts_b[3]
+  let t1 = actual_strassen(a, matrix_subtraction(f, h))
+  let t2 = actual_strassen(matrix_addition(a, b), h)
+  let t3 = actual_strassen(matrix_addition(c, d), e)
+  let t4 = actual_strassen(d, matrix_subtraction(g, e))
+  let t5 = actual_strassen(matrix_addition(a, d), matrix_addition(e, h))
+  let t6 = actual_strassen(matrix_subtraction(b, d), matrix_addition(g, h))
+  let t7 = actual_strassen(matrix_subtraction(a, c), matrix_addition(e, f))
+  let top_left = matrix_addition(matrix_subtraction(matrix_addition(t5, t4), t2), t6)
+  let top_right = matrix_addition(t1, t2)
+  let bot_left = matrix_addition(t3, t4)
+  let bot_right = matrix_subtraction(matrix_subtraction(matrix_addition(t1, t5), t3), t7)
+  var new_matrix: list<list<int>> = []
+  var i = 0
+  while i < len(top_right) {
+    new_matrix = append(new_matrix, concat(top_left[i], top_right[i]))
+    i = i + 1
+  }
+  i = 0
+  while i < len(bot_right) {
+    new_matrix = append(new_matrix, concat(bot_left[i], bot_right[i]))
+    i = i + 1
+  }
+  return new_matrix
+}
+
+fun strassen(matrix1: list<list<int>>, matrix2: list<list<int>>): list<list<int>> {
+  let dims1 = matrix_dimensions(matrix1)
+  let dims2 = matrix_dimensions(matrix2)
+  if dims1[1] != dims2[0] {
+    return []
+  }
+  let maximum = max([dims1[0], dims1[1], dims2[0], dims2[1]]) as int
+  let size = next_power_of_two(maximum)
+  let new_matrix1 = pad_matrix(matrix1, size, size)
+  let new_matrix2 = pad_matrix(matrix2, size, size)
+  let result_padded = actual_strassen(new_matrix1, new_matrix2)
+  var final_matrix: list<list<int>> = []
+  var i = 0
+  while i < dims1[0] {
+    var row: list<int> = []
+    var j = 0
+    while j < dims2[1] {
+      row = append(row, result_padded[i][j])
+      j = j + 1
+    }
+    final_matrix = append(final_matrix, row)
+    i = i + 1
+  }
+  return final_matrix
+}
+
+fun main() {
+  let matrix1: list<list<int>> = [
+    [2, 3, 4, 5],
+    [6, 4, 3, 1],
+    [2, 3, 6, 7],
+    [3, 1, 2, 4],
+    [2, 3, 4, 5],
+    [6, 4, 3, 1],
+    [2, 3, 6, 7],
+    [3, 1, 2, 4],
+    [2, 3, 4, 5],
+    [6, 2, 3, 1],
+  ]
+  let matrix2: list<list<int>> = [
+    [0, 2, 1, 1],
+    [16, 2, 3, 3],
+    [2, 2, 7, 7],
+    [13, 11, 22, 4],
+  ]
+  let res = strassen(matrix1, matrix2)
+  print(res)
+}
+
+main()
