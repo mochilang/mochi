@@ -1,0 +1,120 @@
+/*
+Convert between Celsius, Fahrenheit, Kelvin, Rankine and Réaumur.
+
+Each function converts a temperature from one scale to another using
+basic arithmetic formulas and rounds the result to a chosen number of
+decimal places.  Rounding is implemented via a helper that multiplies by
+a power of ten, applies floor, and divides back.
+
+Functions provided:
+- celsius_to_fahrenheit, celsius_to_kelvin, celsius_to_rankine
+- fahrenheit_to_celsius, fahrenheit_to_kelvin, fahrenheit_to_rankine
+- kelvin_to_celsius, kelvin_to_fahrenheit, kelvin_to_rankine
+- rankine_to_celsius, rankine_to_fahrenheit, rankine_to_kelvin
+- reaumur_to_kelvin, reaumur_to_fahrenheit, reaumur_to_celsius, reaumur_to_rankine
+
+All computations run in constant time and rely purely on Mochi's
+standard arithmetic without external libraries or FFI.
+*/
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round_to(x: float, ndigits: int): float {
+  let m = pow10(ndigits)
+  return floor(x * m + 0.5) / m
+}
+
+fun celsius_to_fahrenheit(c: float, ndigits: int): float {
+  return round_to(c * 9.0 / 5.0 + 32.0, ndigits)
+}
+
+fun celsius_to_kelvin(c: float, ndigits: int): float {
+  return round_to(c + 273.15, ndigits)
+}
+
+fun celsius_to_rankine(c: float, ndigits: int): float {
+  return round_to(c * 9.0 / 5.0 + 491.67, ndigits)
+}
+
+fun fahrenheit_to_celsius(f: float, ndigits: int): float {
+  return round_to((f - 32.0) * 5.0 / 9.0, ndigits)
+}
+
+fun fahrenheit_to_kelvin(f: float, ndigits: int): float {
+  return round_to((f - 32.0) * 5.0 / 9.0 + 273.15, ndigits)
+}
+
+fun fahrenheit_to_rankine(f: float, ndigits: int): float {
+  return round_to(f + 459.67, ndigits)
+}
+
+fun kelvin_to_celsius(k: float, ndigits: int): float {
+  return round_to(k - 273.15, ndigits)
+}
+
+fun kelvin_to_fahrenheit(k: float, ndigits: int): float {
+  return round_to((k - 273.15) * 9.0 / 5.0 + 32.0, ndigits)
+}
+
+fun kelvin_to_rankine(k: float, ndigits: int): float {
+  return round_to(k * 9.0 / 5.0, ndigits)
+}
+
+fun rankine_to_celsius(r: float, ndigits: int): float {
+  return round_to((r - 491.67) * 5.0 / 9.0, ndigits)
+}
+
+fun rankine_to_fahrenheit(r: float, ndigits: int): float {
+  return round_to(r - 459.67, ndigits)
+}
+
+fun rankine_to_kelvin(r: float, ndigits: int): float {
+  return round_to(r * 5.0 / 9.0, ndigits)
+}
+
+fun reaumur_to_kelvin(r: float, ndigits: int): float {
+  return round_to(r * 1.25 + 273.15, ndigits)
+}
+
+fun reaumur_to_fahrenheit(r: float, ndigits: int): float {
+  return round_to(r * 2.25 + 32.0, ndigits)
+}
+
+fun reaumur_to_celsius(r: float, ndigits: int): float {
+  return round_to(r * 1.25, ndigits)
+}
+
+fun reaumur_to_rankine(r: float, ndigits: int): float {
+  return round_to(r * 2.25 + 32.0 + 459.67, ndigits)
+}
+
+print(celsius_to_fahrenheit(0.0, 2))
+print(celsius_to_kelvin(0.0, 2))
+print(celsius_to_rankine(0.0, 2))
+print(fahrenheit_to_celsius(32.0, 2))
+print(fahrenheit_to_kelvin(32.0, 2))
+print(fahrenheit_to_rankine(32.0, 2))
+print(kelvin_to_celsius(273.15, 2))
+print(kelvin_to_fahrenheit(273.15, 2))
+print(kelvin_to_rankine(273.15, 2))
+print(rankine_to_celsius(491.67, 2))
+print(rankine_to_fahrenheit(491.67, 2))
+print(rankine_to_kelvin(491.67, 2))
+print(reaumur_to_kelvin(80.0, 2))
+print(reaumur_to_fahrenheit(80.0, 2))
+print(reaumur_to_celsius(80.0, 2))
+print(reaumur_to_rankine(80.0, 2))
