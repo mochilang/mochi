@@ -1,0 +1,43 @@
+/*
+  Determine whether a number is a Sophie Germain prime or a safe prime.
+  A number p is a Sophie Germain prime if both p and 2*p + 1 are prime.
+  The associated safe prime is q = 2*p + 1. Conversely a number q is a safe
+  prime if q is prime and (q - 1) / 2 is also prime.
+  This program uses simple trial division for primality testing which runs
+  in O(sqrt(n)) time and O(1) extra space.
+*/
+
+fun is_prime(n: int): bool {
+  if n < 2 { return false }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun is_germain_prime(n: int): bool {
+  if n < 1 { panic("Input must be a positive integer") }
+  return is_prime(n) && is_prime(2 * n + 1)
+}
+
+fun is_safe_prime(n: int): bool {
+  if n < 1 { panic("Input must be a positive integer") }
+  let even = ((n - 1) % 2) == 0
+  return even && is_prime(n) && is_prime((n - 1) / 2)
+}
+
+print(str(is_germain_prime(3)))
+print(str(is_germain_prime(11)))
+print(str(is_germain_prime(4)))
+print(str(is_germain_prime(23)))
+print(str(is_germain_prime(13)))
+print(str(is_germain_prime(20)))
+
+print(str(is_safe_prime(5)))
+print(str(is_safe_prime(11)))
+print(str(is_safe_prime(1)))
+print(str(is_safe_prime(2)))
+print(str(is_safe_prime(3)))
+print(str(is_safe_prime(47)))
