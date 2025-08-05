@@ -1,0 +1,142 @@
+/*
+Borůvka's algorithm for constructing a minimum spanning tree (MST).
+
+For each connected component of an undirected weighted graph, the algorithm
+selects the lightest outgoing edge. All selected edges are added to the MST
+simultaneously and their incident components are merged via union-find. The
+process repeats until a single component remains. Because each phase at least
+halves the number of components, the overall running time is O(E log V) where E
+is the number of edges and V the number of vertices. The extra memory required
+is O(V + E) for storing edges, component identifiers, and union-find metadata.
+*/
+
+type Edge { u: int, v: int, w: int }
+
+type Graph { num_nodes: int, edges: list<Edge>, component: map<int, int> }
+
+type UnionResult { graph: Graph, component_size: list<int> }
+
+fun new_graph(num_nodes: int): Graph {
+  return Graph{ num_nodes: num_nodes, edges: [], component: {} }
+}
+
+fun add_edge(g: Graph, u: int, v: int, w: int): Graph {
+  var es = g.edges
+  es = append(es, Edge{ u: u, v: v, w: w })
+  return Graph{ num_nodes: g.num_nodes, edges: es, component: g.component }
+}
+
+fun find_component(g: Graph, node: int): int {
+  if g.component[node] == node {
+    return node
+  }
+  return find_component(g, g.component[node])
+}
+
+fun set_component(g: Graph, node: int): Graph {
+  if g.component[node] != node {
+    var comp = g.component
+    for k in keys(comp) {
+      comp[k] = find_component(g, k)
+    }
+    g = Graph{ num_nodes: g.num_nodes, edges: g.edges, component: comp }
+  }
+  return g
+}
+
+fun union(g: Graph, component_size: list<int>, u: int, v: int): UnionResult {
+  var comp_size = component_size
+  var comp = g.component
+  if comp_size[u] <= comp_size[v] {
+    comp[u] = v
+    comp_size[v] = comp_size[v] + comp_size[u]
+    g = Graph{ num_nodes: g.num_nodes, edges: g.edges, component: comp }
+    g = set_component(g, u)
+  } else {
+    comp[v] = u
+    comp_size[u] = comp_size[u] + comp_size[v]
+    g = Graph{ num_nodes: g.num_nodes, edges: g.edges, component: comp }
+    g = set_component(g, v)
+  }
+  return UnionResult{ graph: g, component_size: comp_size }
+}
+
+fun create_empty_edges(n: int): list<Edge> {
+  var res: list<Edge> = []
+  var i = 0
+  while i < n {
+    res = append(res, Edge{ u: -1, v: -1, w: -1 })
+    i = i + 1
+  }
+  return res
+}
+
+fun boruvka(g: Graph): int {
+  var component_size: list<int> = []
+  var i = 0
+  while i < g.num_nodes {
+    component_size = append(component_size, 1)
+    g.component[i] = i
+    i = i + 1
+  }
+  var mst_weight = 0
+  var num_components = g.num_nodes
+  var minimum_weight_edge = create_empty_edges(g.num_nodes)
+
+  while num_components > 1 {
+    for e in g.edges {
+      let u = e.u
+      let v = e.v
+      let w = e.w
+      let u_comp = g.component[u]
+      let v_comp = g.component[v]
+      if u_comp != v_comp {
+        let current_u = minimum_weight_edge[u_comp]
+        if current_u.u == -1 || current_u.w > w {
+          minimum_weight_edge[u_comp] = Edge{ u: u, v: v, w: w }
+        }
+        let current_v = minimum_weight_edge[v_comp]
+        if current_v.u == -1 || current_v.w > w {
+          minimum_weight_edge[v_comp] = Edge{ u: u, v: v, w: w }
+        }
+      }
+    }
+
+    for e in minimum_weight_edge {
+      if e.u != -1 {
+        let u = e.u
+        let v = e.v
+        let w = e.w
+        let u_comp = g.component[u]
+        let v_comp = g.component[v]
+        if u_comp != v_comp {
+          mst_weight = mst_weight + w
+          let res = union(g, component_size, u_comp, v_comp)
+          g = res.graph
+          component_size = res.component_size
+          print("Added edge [" + str(u) + " - " + str(v) + "]")
+          print("Added weight: " + str(w))
+          print("")
+          num_components = num_components - 1
+        }
+      }
+    }
+    minimum_weight_edge = create_empty_edges(g.num_nodes)
+  }
+  print("The total weight of the minimal spanning tree is: " + str(mst_weight))
+  return mst_weight
+}
+
+fun main() {
+  var g = new_graph(8)
+  let edges: list<list<int>> = [
+    [0, 1, 10], [0, 2, 6], [0, 3, 5], [1, 3, 15], [2, 3, 4],
+    [3, 4, 8], [4, 5, 10], [4, 6, 6], [4, 7, 5], [5, 7, 15], [6, 7, 4]
+  ]
+  for e in edges {
+    g = add_edge(g, e[0], e[1], e[2])
+  }
+  boruvka(g)
+}
+
+main()
