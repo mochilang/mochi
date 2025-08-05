@@ -1,0 +1,10 @@
+call graph: main -> insert_many -> insert -> insert
+stack trace:
+  insert at tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:69
+    if !(first in children) {
+  insert at tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:221
+    insert_many(tree, words)
+  insert_many at tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:221
+    insert_many(tree, words)
+  main at tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:227
+    main()
