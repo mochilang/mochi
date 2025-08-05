@@ -1,0 +1,80 @@
+/*
+One-time pad style cipher using pseudo-random keys.
+
+Each character of the plaintext is converted to its ASCII code. A pseudo-random
+integer key in [1,300] is generated for every character. The ciphertext value
+is (code + key) * key. Decryption divides the cipher value by the key and
+subtracts the key again to recover the character.
+
+The random numbers are produced by a simple linear congruential generator with
+configurable seed to allow deterministic results. Only printable ASCII
+characters (codes 32-126) are supported.
+*/
+
+var seed: int = 1
+
+fun set_seed(s: int) {
+  seed = s
+}
+
+fun randint(a: int, b: int): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return (seed % (b - a + 1)) + a
+}
+
+let ascii_chars = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ascii_chars) {
+    if ascii_chars[i] == ch {
+      return 32 + i
+    }
+    i = i + 1
+  }
+  return 0
+}
+
+fun chr(code: int): string {
+  if code < 32 || code > 126 {
+    return ""
+  }
+  return ascii_chars[code - 32]
+}
+
+fun encrypt(text: string): map<string, list<int>> {
+  var cipher: list<int> = []
+  var key: list<int> = []
+  var i = 0
+  while i < len(text) {
+    let p = ord(text[i])
+    let k = randint(1, 300)
+    let c = (p + k) * k
+    cipher = append(cipher, c)
+    key = append(key, k)
+    i = i + 1
+  }
+  var res: map<string, list<int>> = {}
+  res["cipher"] = cipher
+  res["key"] = key
+  return res
+}
+
+fun decrypt(cipher: list<int>, key: list<int>): string {
+  var plain = ""
+  var i = 0
+  while i < len(key) {
+    let p = ((cipher[i] - key[i] * key[i]) / key[i])
+    plain = plain + chr(p)
+    i = i + 1
+  }
+  return plain
+}
+
+set_seed(1)
+let res = encrypt("Hello")
+let cipher = res["cipher"]
+let key = res["key"]
+print(cipher)
+print(key)
+print(decrypt(cipher, key))
