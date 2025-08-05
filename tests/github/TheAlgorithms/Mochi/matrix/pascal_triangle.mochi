@@ -1,0 +1,78 @@
+/*
+Pascal's Triangle Generation
+----------------------------
+This program builds Pascal's triangle, a triangular array of binomial
+coefficients.  Each element is the sum of the two elements directly above
+it in the previous row.  The function `generate_pascal_triangle` constructs
+all rows up to a given number using only integer arithmetic and lists.
+`print_pascal_triangle` prints the triangle with simple left padding so
+the triangular shape is visible.  The implementation avoids foreign
+interfaces so it can run on the Mochi runtime/vm.  Building the triangle of
+n rows requires O(n^2) time and space.
+*/
+
+fun populate_current_row(triangle: list<list<int>>, current_row_idx: int): list<int> {
+  var row: list<int> = []
+  var i = 0
+  while i <= current_row_idx {
+    if i == 0 || i == current_row_idx {
+      row = append(row, 1)
+    } else {
+      let left = triangle[current_row_idx - 1][i - 1]
+      let right = triangle[current_row_idx - 1][i]
+      row = append(row, left + right)
+    }
+    i = i + 1
+  }
+  return row
+}
+
+fun generate_pascal_triangle(num_rows: int): list<list<int>> {
+  if num_rows <= 0 {
+    return []
+  }
+  var triangle: list<list<int>> = []
+  var row_idx = 0
+  while row_idx < num_rows {
+    let row = populate_current_row(triangle, row_idx)
+    triangle = append(triangle, row)
+    row_idx = row_idx + 1
+  }
+  return triangle
+}
+
+fun row_to_string(row: list<int>, total_rows: int, row_idx: int): string {
+  var line = ""
+  var spaces = total_rows - row_idx - 1
+  var s = 0
+  while s < spaces {
+    line = line + " "
+    s = s + 1
+  }
+  var c = 0
+  while c <= row_idx {
+    line = line + str(row[c])
+    if c != row_idx {
+      line = line + " "
+    }
+    c = c + 1
+  }
+  return line
+}
+
+fun print_pascal_triangle(num_rows: int) {
+  let triangle = generate_pascal_triangle(num_rows)
+  var r = 0
+  while r < num_rows {
+    let line = row_to_string(triangle[r], num_rows, r)
+    print(line)
+    r = r + 1
+  }
+}
+
+fun main() {
+  print_pascal_triangle(5)
+  print(str(generate_pascal_triangle(5)))
+}
+
+main()
