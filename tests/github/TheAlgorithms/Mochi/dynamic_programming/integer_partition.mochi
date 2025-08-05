@@ -1,0 +1,55 @@
+/*
+Count the number of integer partitions of a positive integer.
+An integer partition expresses `m` as a sum of positive integers
+where order does not matter.  The algorithm builds a dynamic
+programming table `memo` where `memo[n][k]` stores the number of
+ways to partition `n` using parts up to size `k + 1`.  Each entry
+is composed of two cases:
+
+* `memo[n][k - 1]`   – partitions that do not use the part `k + 1`
+* `memo[n - (k + 1)][k]` – partitions that use at least one part `k + 1`
+
+By iterating over all `n` and `k` the table accumulates the counts
+for every prefix.  The final answer for `m` is found in
+`memo[m][m - 1]`.  The dynamic program runs in O(m^2) time and
+uses O(m^2) space.
+*/
+
+fun partition(m: int): int {
+  var memo: list<list<int>> = []
+  var i = 0
+  // initialize memo with zeros
+  while i < m + 1 {
+    var row: list<int> = []
+    var j = 0
+    while j < m {
+      row = append(row, 0)
+      j = j + 1
+    }
+    memo = append(memo, row)
+    i = i + 1
+  }
+  // set base cases
+  i = 0
+  while i < m + 1 {
+    memo[i][0] = 1
+    i = i + 1
+  }
+  var n = 0
+  while n < m + 1 {
+    var k = 1
+    while k < m {
+      memo[n][k] = memo[n][k] + memo[n][k - 1]
+      if n - k > 0 {
+        memo[n][k] = memo[n][k] + memo[n - k - 1][k]
+      }
+      k = k + 1
+    }
+    n = n + 1
+  }
+  return memo[m][m - 1]
+}
+
+print(partition(5))
+print(partition(7))
+print(partition(100))
