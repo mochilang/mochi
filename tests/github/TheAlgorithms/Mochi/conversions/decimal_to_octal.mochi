@@ -1,0 +1,41 @@
+/*
+Convert a non-negative integer from decimal to octal representation.
+
+The algorithm repeatedly divides the decimal number by eight and collects
+remainders, which form the octal digits from least to most significant.
+Each remainder is multiplied by an appropriate power of ten to build
+the octal value in base ten, which is then prefixed with "0o".
+Time complexity is O(log_8 n) and space complexity is O(1).
+*/
+
+fun int_pow(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun decimal_to_octal(num: int): string {
+  if num == 0 {
+    return "0o0"
+  }
+  var octal = 0
+  var counter = 0
+  var value = num
+  while value > 0 {
+    let remainder = value % 8
+    octal = octal + remainder * int_pow(10, counter)
+    counter = counter + 1
+    value = value / 8
+  }
+  return "0o" + str(octal)
+}
+
+print(decimal_to_octal(2))
+print(decimal_to_octal(8))
+print(decimal_to_octal(65))
+print(decimal_to_octal(216))
+print(decimal_to_octal(512))
