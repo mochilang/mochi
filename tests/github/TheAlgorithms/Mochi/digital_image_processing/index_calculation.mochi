@@ -1,0 +1,239 @@
+/*
+Vegetation index calculations for remote sensing.
+
+This Mochi translation reproduces the Python class that computes many
+vegetation indices from spectral bands (red, green, blue, red edge and
+near infrared).  Each index is a specific arithmetic combination of the
+bands highlighting particular vegetation properties such as chlorophyll
+content or soil adjustment.  The implementation uses helper functions for
+absolute value, square root and arctangent to keep the code pure Mochi.
+
+Implemented indices:
+ARVI2, CCCI, CVI, GLI, NDVI, BNDVI, redEdgeNDVI, GNDVI, GBNDVI, GRNDVI,
+RBNDVI, PNDVI, ATSAVI, BWDRVI, CIgreen, CIrededge, CI, CTVI, GDVI, EVI,
+GEMI, GOSAVI, GSAVI, Hue, IVI, IPVI, I, RVI, MRVI, MSAVI, NormG,
+NormNIR, NormR, NGRDI, RI, S, IF, DVI, TVI and NDRE.
+
+For simplicity the band values are scalar floats instead of matrices.
+The example at the end computes the NDVI and CCCI indices for sample
+band values.
+*/
+
+fun abs(x: float): float { if x < 0.0 { return -x } return x }
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return 1.5707963267948966 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -1.5707963267948966 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun max3(a: float, b: float, c: float): float {
+  var m = a
+  if b > m { m = b }
+  if c > m { m = c }
+  return m
+}
+
+fun min3(a: float, b: float, c: float): float {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+fun arvi2(red: float, nir: float): float {
+  return -0.18 + 1.17 * ((nir - red) / (nir + red))
+}
+
+fun ccci(red: float, redEdge: float, nir: float): float {
+  return ((nir - redEdge)/(nir + redEdge))/((nir - red)/(nir + red))
+}
+
+fun cvi(red: float, green: float, nir: float): float {
+  return nir * (red / (green * green))
+}
+
+fun gli(red: float, green: float, blue: float): float {
+  return (2.0 * green - red - blue) / (2.0 * green + red + blue)
+}
+
+fun ndvi(red: float, nir: float): float {
+  return (nir - red) / (nir + red)
+}
+
+fun bndvi(blue: float, nir: float): float {
+  return (nir - blue) / (nir + blue)
+}
+
+fun redEdgeNDVI(red: float, redEdge: float): float {
+  return (redEdge - red) / (redEdge + red)
+}
+
+fun gndvi(green: float, nir: float): float {
+  return (nir - green) / (nir + green)
+}
+
+fun gbndvi(green: float, blue: float, nir: float): float {
+  let gb = green + blue
+  return (nir - gb) / (nir + gb)
+}
+
+fun grndvi(red: float, green: float, nir: float): float {
+  let rg = green + red
+  return (nir - rg) / (nir + rg)
+}
+
+fun rbndvi(red: float, blue: float, nir: float): float {
+  let rb = blue + red
+  return (nir - rb) / (nir + rb)
+}
+
+fun pndvi(red: float, green: float, blue: float, nir: float): float {
+  let rgb = red + green + blue
+  return (nir - rgb) / (nir + rgb)
+}
+
+fun atsavi(red: float, nir: float): float {
+  let x = 0.08
+  let a = 1.22
+  let b = 0.03
+  return a * ((nir - a * red - b) / (a * nir + red - a * b + x * (1.0 + a * a)))
+}
+
+fun bwdrvi(blue: float, nir: float): float {
+  return (0.1 * nir - blue) / (0.1 * nir + blue)
+}
+
+fun ci_green(green: float, nir: float): float {
+  return nir / green - 1.0
+}
+
+fun ci_rededge(redEdge: float, nir: float): float {
+  return nir / redEdge - 1.0
+}
+
+fun ci(red: float, blue: float): float {
+  return (red - blue) / red
+}
+
+fun ctvi(red: float, nir: float): float {
+  let n = ndvi(red, nir)
+  let v = n + 0.5
+  return (v / abs(v)) * sqrtApprox(abs(v))
+}
+
+fun gdvi(green: float, nir: float): float {
+  return nir - green
+}
+
+fun evi(red: float, blue: float, nir: float): float {
+  return 2.5 * ((nir - red) / (nir + 6.0 * red - 7.5 * blue + 1.0))
+}
+
+fun gemi(red: float, nir: float): float {
+  let n = (2.0 * (nir * nir - red * red) + 1.5 * nir + 0.5 * red) / (nir + red + 0.5)
+  return n * (1.0 - 0.25 * n) - (red - 0.125) / (1.0 - red)
+}
+
+fun gosavi(green: float, nir: float): float {
+  let y = 0.16
+  return (nir - green) / (nir + green + y)
+}
+
+fun gsavi(green: float, nir: float): float {
+  let n = 0.5
+  return ((nir - green) / (nir + green + n)) * (1.0 + n)
+}
+
+fun hue(red: float, green: float, blue: float): float {
+  return atanApprox(((2.0 * red - green - blue) / 30.5) * (green - blue))
+}
+
+fun ivi(red: float, nir: float): float {
+  let a = 1.0
+  let b = 0.0
+  return (nir - b) / (a * red)
+}
+
+fun ipvi(red: float, nir: float): float {
+  return (nir / ((nir + red) / 2.0)) * (ndvi(red, nir) + 1.0)
+}
+
+fun intensity(red: float, green: float, blue: float): float {
+  return (red + green + blue) / 30.5
+}
+
+fun rvi(red: float, nir: float): float {
+  return nir / red
+}
+
+fun mrvi(red: float, nir: float): float {
+  let r = rvi(red, nir)
+  return (r - 1.0) / (r + 1.0)
+}
+
+fun msavi(red: float, nir: float): float {
+  let a = 2.0 * nir + 1.0
+  return (a - sqrtApprox(a * a - 8.0 * (nir - red))) / 2.0
+}
+
+fun norm_g(red: float, green: float, nir: float): float {
+  return green / (nir + red + green)
+}
+
+fun norm_nir(red: float, green: float, nir: float): float {
+  return nir / (nir + red + green)
+}
+
+fun norm_r(red: float, green: float, nir: float): float {
+  return red / (nir + red + green)
+}
+
+fun ngrdi(red: float, green: float): float {
+  return (green - red) / (green + red)
+}
+
+fun ri(red: float, green: float): float {
+  return (red - green) / (red + green)
+}
+
+fun saturation(red: float, green: float, blue: float): float {
+  let maxv = max3(red, green, blue)
+  let minv = min3(red, green, blue)
+  return (maxv - minv) / maxv
+}
+
+fun shape_index(red: float, green: float, blue: float): float {
+  return (2.0 * red - green - blue) / (green - blue)
+}
+
+fun dvi(red: float, nir: float): float {
+  return nir / red
+}
+
+fun tvi(red: float, nir: float): float {
+  return sqrtApprox(ndvi(red, nir) + 0.5)
+}
+
+fun ndre(redEdge: float, nir: float): float {
+  return (nir - redEdge) / (nir + redEdge)
+}
+
+let red = 50.0
+let green = 25.0
+let blue = 10.0
+let redEdge = 40.0
+let nir = 100.0
+
+print(str(ndvi(red, nir)))
+print(str(ccci(red, redEdge, nir)))
