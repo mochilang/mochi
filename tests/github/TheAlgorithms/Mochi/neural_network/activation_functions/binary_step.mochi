@@ -1,0 +1,34 @@
+/*
+Binary Step Activation Function.
+
+This activation function outputs 1 for inputs greater than or equal to zero
+and 0 otherwise. It models a simple threshold neuron.
+
+Given a vector of floating-point numbers, apply the binary step to each
+entry and produce a list of integers indicating activation. This is a common
+building block in early neural network models.
+
+Time complexity: O(n) for a vector of length n.
+*/
+
+fun binary_step(vector: list<float>): list<int> {
+  var out: list<int> = []
+  var i = 0
+  while i < len(vector) {
+    if vector[i] >= 0.0 {
+      out = append(out, 1)
+    } else {
+      out = append(out, 0)
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let vector: list<float> = [-1.2, 0.0, 2.0, 1.45, -3.7, 0.3]
+  let result: list<int> = binary_step(vector)
+  print(result)
+}
+
+main()
