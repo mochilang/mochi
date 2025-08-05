@@ -1,0 +1,215 @@
+/*
+Fractionated Morse Cipher implementation in Mochi.
+
+This classical cipher first converts plaintext to Morse code where each letter
+is translated to dots and dashes and separated by 'x'.  The resulting Morse
+string is padded with 'x' so its length is a multiple of three.  Every group of
+three symbols (trigram) is then mapped to a letter using a key-derived alphabet,
+which mixes plaintext letters across the ciphertext making simple frequency
+analysis difficult.
+
+Decryption reverses the process: the key reconstructs the trigram mapping,
+ciphertext letters are expanded back into Morse trigrams, and the Morse code is
+split on 'x' boundaries to recover the original characters.
+*/
+
+let MORSE_CODE_DICT: map<string, string> = {
+  "A": ".-",
+  "B": "-...",
+  "C": "-.-.",
+  "D": "-..",
+  "E": ".",
+  "F": "..-.",
+  "G": "--.",
+  "H": "....",
+  "I": "..",
+  "J": ".---",
+  "K": "-.-",
+  "L": ".-..",
+  "M": "--",
+  "N": "-.",
+  "O": "---",
+  "P": ".--.",
+  "Q": "--.-",
+  "R": ".-.",
+  "S": "...",
+  "T": "-",
+  "U": "..-",
+  "V": "...-",
+  "W": ".--",
+  "X": "-..-",
+  "Y": "-.--",
+  "Z": "--..",
+  " ": ""
+}
+
+let MORSE_COMBINATIONS: list<string> = [
+  "...", "..-", "..x", ".-.", ".--", ".-x", ".x.", ".x-", ".xx",
+  "-..", "-.-", "-.x", "--.", "---", "--x", "-x.", "-x-", "-xx",
+  "x..", "x.-", "x.x", "x-.", "x--", "x-x", "xx.", "xx-", "xxx"
+]
+
+let REVERSE_DICT: map<string, string> = {
+  ".-": "A",
+  "-...": "B",
+  "-.-.": "C",
+  "-..": "D",
+  ".": "E",
+  "..-.": "F",
+  "--.": "G",
+  "....": "H",
+  "..": "I",
+  ".---": "J",
+  "-.-": "K",
+  ".-..": "L",
+  "--": "M",
+  "-.": "N",
+  "---": "O",
+  ".--.": "P",
+  "--.-": "Q",
+  ".-.": "R",
+  "...": "S",
+  "-": "T",
+  "..-": "U",
+  "...-": "V",
+  ".--": "W",
+  "-..-": "X",
+  "-.--": "Y",
+  "--..": "Z",
+  "": " "
+}
+
+fun encodeToMorse(plaintext: string): string {
+  var morse = ""
+  var i = 0
+  while i < len(plaintext) {
+    let ch = upper(plaintext[i:i+1])
+    var code = ""
+    if ch in MORSE_CODE_DICT {
+      code = MORSE_CODE_DICT[ch]
+    }
+    if i > 0 {
+      morse = morse + "x"
+    }
+    morse = morse + code
+    i = i + 1
+  }
+  return morse
+}
+
+fun encryptFractionatedMorse(plaintext: string, key: string): string {
+  var morseCode = encodeToMorse(plaintext)
+  var combinedKey = upper(key) + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var dedupKey = ""
+  var i = 0
+  while i < len(combinedKey) {
+    let ch = combinedKey[i:i+1]
+    if !(ch in dedupKey) {
+      dedupKey = dedupKey + ch
+    }
+    i = i + 1
+  }
+  var paddingLength = 3 - (len(morseCode) % 3)
+  var p = 0
+  while p < paddingLength {
+    morseCode = morseCode + "x"
+    p = p + 1
+  }
+  var dict: map<string, string> = {}
+  var j = 0
+  while j < 26 {
+    let combo = MORSE_COMBINATIONS[j]
+    let letter = dedupKey[j:j+1]
+    dict[combo] = letter
+    j = j + 1
+  }
+  dict["xxx"] = ""
+  var encrypted = ""
+  var k = 0
+  while k < len(morseCode) {
+    let group = morseCode[k:k+3]
+    encrypted = encrypted + dict[group]
+    k = k + 3
+  }
+  return encrypted
+}
+
+fun decryptFractionatedMorse(ciphertext: string, key: string): string {
+  var combinedKey = upper(key) + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var dedupKey = ""
+  var i = 0
+  while i < len(combinedKey) {
+    let ch = combinedKey[i:i+1]
+    if !(ch in dedupKey) {
+      dedupKey = dedupKey + ch
+    }
+    i = i + 1
+  }
+  var inv: map<string, string> = {}
+  var j = 0
+  while j < 26 {
+    let letter = dedupKey[j:j+1]
+    inv[letter] = MORSE_COMBINATIONS[j]
+    j = j + 1
+  }
+  var morse = ""
+  var k = 0
+  while k < len(ciphertext) {
+    let ch = ciphertext[k:k+1]
+    if ch in inv {
+      morse = morse + inv[ch]
+    }
+    k = k + 1
+  }
+  var codes: list<string> = []
+  var current = ""
+  var m = 0
+  while m < len(morse) {
+    let ch = morse[m:m+1]
+    if ch == "x" {
+      codes = append(codes, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    m = m + 1
+  }
+  codes = append(codes, current)
+  var decrypted = ""
+  var idx = 0
+  while idx < len(codes) {
+    let code = codes[idx]
+    decrypted = decrypted + REVERSE_DICT[code]
+    idx = idx + 1
+  }
+  var start = 0
+  while true {
+    if start < len(decrypted) {
+      if decrypted[start:start+1] == " " {
+        start = start + 1
+        continue
+      }
+    }
+    break
+  }
+  var end = len(decrypted)
+  while true {
+    if end > start {
+      if decrypted[end-1:end] == " " {
+        end = end - 1
+        continue
+      }
+    }
+    break
+  }
+  return decrypted[start:end]
+}
+
+let plaintext = "defend the east"
+print("Plain Text:", plaintext)
+let key = "ROUNDTABLE"
+let ciphertext = encryptFractionatedMorse(plaintext, key)
+print("Encrypted:", ciphertext)
+let decrypted = decryptFractionatedMorse(ciphertext, key)
+print("Decrypted:", decrypted)
+
