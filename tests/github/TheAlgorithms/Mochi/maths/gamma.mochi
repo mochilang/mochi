@@ -1,0 +1,109 @@
+/*
+Gamma Function Implementations
+------------------------------
+The gamma function Γ(z) extends the factorial function to real numbers:
+Γ(n) = (n-1)! and Γ(z) = ∫₀^∞ x^{z-1} e^{-x} dx.
+
+This module mirrors the Python implementation and provides two approaches:
+
+1. gamma_iterative(z) approximates the integral definition using the
+   trapezoidal rule.  The integral evaluates x^(z-1) * exp(-x) from a small
+   positive epsilon up to a large finite limit.  The support routines exp,
+   ln, and powf are implemented via power series so the code runs on the
+   runtime/vm without foreign interfaces.
+
+2. gamma_recursive(z) uses the relation Γ(z) = (z-1) Γ(z-1) and the special
+   value Γ(1/2) = √π.  It accepts only positive integers and half-integers,
+   validating the input similar to the original Python version.
+
+Both functions avoid the "any" type and rely solely on pure Mochi code.
+*/
+
+let PI = 3.141592653589793
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrt(x: float): float {
+  if x < 0.0 { panic("sqrt domain error") }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun ln(x: float): float {
+  if x <= 0.0 { panic("ln domain error") }
+  let y = (x - 1.0) / (x + 1.0)
+  let y2 = y * y
+  var term = y
+  var sum = 0.0
+  var k = 0
+  while k < 10 {
+    let denom = (2 * k + 1) as float
+    sum = sum + term / denom
+    term = term * y2
+    k = k + 1
+  }
+  return 2.0 * sum
+}
+
+fun exp_series(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun powf(base: float, exponent: float): float {
+  if base <= 0.0 { return 0.0 }
+  return exp_series(exponent * ln(base))
+}
+
+fun integrand(x: float, z: float): float {
+  return powf(x, z - 1.0) * exp_series(-x)
+}
+
+fun gamma_iterative(num: float): float {
+  if num <= 0.0 { panic("math domain error") }
+  let step = 0.001
+  let limit = 100.0
+  var x = step
+  var total = 0.0
+  while x < limit {
+    total = total + integrand(x, num) * step
+    x = x + step
+  }
+  return total
+}
+
+fun gamma_recursive(num: float): float {
+  if num <= 0.0 { panic("math domain error") }
+  if num > 171.5 { panic("math range error") }
+  let int_part = int(num)
+  let frac = num - (int_part as float)
+  if !(absf(frac) < 0.000001 || absf(frac - 0.5) < 0.000001) {
+    panic("num must be an integer or a half-integer")
+  }
+  if absf(num - 0.5) < 0.000001 { return sqrt(PI) }
+  if absf(num - 1.0) < 0.000001 { return 1.0 }
+  return (num - 1.0) * gamma_recursive(num - 1.0)
+}
+
+fun main() {
+  print(gamma_iterative(5.0))
+  print(gamma_recursive(5.0))
+  print(gamma_recursive(0.5))
+}
+
+main()
