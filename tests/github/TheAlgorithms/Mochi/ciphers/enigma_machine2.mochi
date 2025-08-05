@@ -1,0 +1,256 @@
+/*
+Simulate the WWII-era Enigma machine for encryption and decryption.
+
+The Enigma machine encrypts each letter of a message by passing it through
+three rotating substitution rotors, a reflector, and back through the rotors.
+A plugboard swaps configurable pairs of letters before and after the rotors.
+
+Algorithm steps for each input symbol:
+1. Apply the plugboard mapping if the letter is paired.
+2. Pass through rotor A, then B, then C using the current rotor offsets.
+3. Reflect the letter using a fixed reflector mapping.
+4. Pass back through rotors C, B, and A using the inverse mappings.
+5. Apply the plugboard mapping again.
+6. Advance the first rotor; on overflow advance the second, and so on.
+
+The implementation mirrors the classical Enigma setup with nine optional
+rotors and a hard coded reflector. Rotor positions range from 1 to 26.
+Input text is processed case insensitively; non alphabetic characters are
+left unchanged.
+*/
+
+let abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let low_abc = "abcdefghijklmnopqrstuvwxyz"
+
+let rotor1 = "EGZWVONAHDCLFQMSIPJBYUKXTR"
+let rotor2 = "FOBHMDKEXQNRAULPGSJVTYICZW"
+let rotor3 = "ZJXESIUQLHAVRMDOYGTNFWPBKC"
+let rotor4 = "RMDJXFUWGISLHVTCQNKYPBEZOA"
+let rotor5 = "SGLCPQWZHKXAREONTFBVIYJUDM"
+let rotor6 = "HVSICLTYKQUBXDWAJZOMFGPREN"
+let rotor7 = "RZWQHFMVDBKICJLNTUXAGYPSOE"
+let rotor8 = "LFKIJODBEGAMQPXVUHYSTCZRWN"
+let rotor9 = "KOAEGVDHXPQZMLFTYWJNBRCIUS"
+
+let reflector_pairs = ["AN", "BO", "CP", "DQ", "ER", "FS", "GT", "HU", "IV", "JW", "KX", "LY", "MZ"]
+
+fun list_contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun index_in_string(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun contains_char(s: string, ch: string): bool {
+  return index_in_string(s, ch) >= 0
+}
+
+fun to_uppercase(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    let idx = index_in_string(low_abc, ch)
+    if idx >= 0 {
+      res = res + substring(abc, idx, idx + 1)
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun plugboard_map(pb: list<string>, ch: string): string {
+  var i = 0
+  while i < len(pb) {
+    let pair = pb[i]
+    let a = substring(pair, 0, 1)
+    let b = substring(pair, 1, 2)
+    if ch == a {
+      return b
+    }
+    if ch == b {
+      return a
+    }
+    i = i + 1
+  }
+  return ch
+}
+
+fun reflector_map(ch: string): string {
+  var i = 0
+  while i < len(reflector_pairs) {
+    let pair = reflector_pairs[i]
+    let a = substring(pair, 0, 1)
+    let b = substring(pair, 1, 2)
+    if ch == a {
+      return b
+    }
+    if ch == b {
+      return a
+    }
+    i = i + 1
+  }
+  return ch
+}
+
+fun count_unique(xs: list<string>): int {
+  var unique: list<string> = []
+  var i = 0
+  while i < len(xs) {
+    if !list_contains(unique, xs[i]) {
+      unique = append(unique, xs[i])
+    }
+    i = i + 1
+  }
+  return len(unique)
+}
+
+fun build_plugboard(pbstring: string): list<string> {
+  if len(pbstring) == 0 {
+    return [] as list<string>
+  }
+  if len(pbstring) % 2 != 0 {
+    panic("Odd number of symbols(" + str(len(pbstring)) + ")")
+  }
+  var pbstring_nospace = ""
+  var i = 0
+  while i < len(pbstring) {
+    let ch = substring(pbstring, i, i + 1)
+    if ch != " " {
+      pbstring_nospace = pbstring_nospace + ch
+    }
+    i = i + 1
+  }
+  var seen: list<string> = []
+  i = 0
+  while i < len(pbstring_nospace) {
+    let ch = substring(pbstring_nospace, i, i + 1)
+    if !contains_char(abc, ch) {
+      panic("'" + ch + "' not in list of symbols")
+    }
+    if list_contains(seen, ch) {
+      panic("Duplicate symbol(" + ch + ")")
+    }
+    seen = append(seen, ch)
+    i = i + 1
+  }
+  var pb: list<string> = []
+  i = 0
+  while i < len(pbstring_nospace) - 1 {
+    let a = substring(pbstring_nospace, i, i + 1)
+    let b = substring(pbstring_nospace, i + 1, i + 2)
+    pb = append(pb, a + b)
+    i = i + 2
+  }
+  return pb
+}
+
+fun validator(rotpos: list<int>, rotsel: list<string>, pb: string) {
+  if count_unique(rotsel) < 3 {
+    panic("Please use 3 unique rotors (not " + str(count_unique(rotsel)) + ")")
+  }
+  if len(rotpos) != 3 {
+    panic("Rotor position must have 3 values")
+  }
+  let r1 = rotpos[0]
+  let r2 = rotpos[1]
+  let r3 = rotpos[2]
+  if !(0 < r1 && r1 <= len(abc)) {
+    panic("First rotor position is not within range of 1..26 (" + str(r1) + ")")
+  }
+  if !(0 < r2 && r2 <= len(abc)) {
+    panic("Second rotor position is not within range of 1..26 (" + str(r2) + ")")
+  }
+  if !(0 < r3 && r3 <= len(abc)) {
+    panic("Third rotor position is not within range of 1..26 (" + str(r3) + ")")
+  }
+  // plugboard string is validated by build_plugboard when called separately
+}
+
+fun enigma(text: string, rotor_position: list<int>, rotor_selection: list<string>, plugb: string): string {
+  let up_text = to_uppercase(text)
+  let up_pb = to_uppercase(plugb)
+  validator(rotor_position, rotor_selection, up_pb)
+  let plugboard = build_plugboard(up_pb)
+  var rotorpos1 = rotor_position[0] - 1
+  var rotorpos2 = rotor_position[1] - 1
+  var rotorpos3 = rotor_position[2] - 1
+  let rotor_a = rotor_selection[0]
+  let rotor_b = rotor_selection[1]
+  let rotor_c = rotor_selection[2]
+  var result = ""
+  var i = 0
+  while i < len(up_text) {
+    var symbol = substring(up_text, i, i + 1)
+    if contains_char(abc, symbol) {
+      symbol = plugboard_map(plugboard, symbol)
+      var index = index_in_string(abc, symbol) + rotorpos1
+      symbol = substring(rotor_a, index % len(abc), index % len(abc) + 1)
+      index = index_in_string(abc, symbol) + rotorpos2
+      symbol = substring(rotor_b, index % len(abc), index % len(abc) + 1)
+      index = index_in_string(abc, symbol) + rotorpos3
+      symbol = substring(rotor_c, index % len(abc), index % len(abc) + 1)
+      symbol = reflector_map(symbol)
+      index = index_in_string(rotor_c, symbol) - rotorpos3
+      if index < 0 {
+        index = index + len(abc)
+      }
+      symbol = substring(abc, index, index + 1)
+      index = index_in_string(rotor_b, symbol) - rotorpos2
+      if index < 0 {
+        index = index + len(abc)
+      }
+      symbol = substring(abc, index, index + 1)
+      index = index_in_string(rotor_a, symbol) - rotorpos1
+      if index < 0 {
+        index = index + len(abc)
+      }
+      symbol = substring(abc, index, index + 1)
+      symbol = plugboard_map(plugboard, symbol)
+      rotorpos1 = rotorpos1 + 1
+      if rotorpos1 >= len(abc) {
+        rotorpos1 = 0
+        rotorpos2 = rotorpos2 + 1
+      }
+      if rotorpos2 >= len(abc) {
+        rotorpos2 = 0
+        rotorpos3 = rotorpos3 + 1
+      }
+      if rotorpos3 >= len(abc) {
+        rotorpos3 = 0
+      }
+    }
+    result = result + symbol
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let message = "This is my Python script that emulates the Enigma machine from WWII."
+  let rotor_pos = [1, 1, 1]
+  let pb = "pictures"
+  let rotor_sel = [rotor2, rotor4, rotor8]
+  let en = enigma(message, rotor_pos, rotor_sel, pb)
+  print("Encrypted message: " + en)
+  print("Decrypted message: " + enigma(en, rotor_pos, rotor_sel, pb))
+}
+
+main()
