@@ -1,0 +1,84 @@
+/*
+Automatic Differentiation with Dual Numbers (Forward Mode)
+
+This implementation demonstrates automatic differentiation using
+dual numbers for scalar values.  Each variable is represented as a
+pair `(value, deriv)` where `deriv` stores the derivative with respect
+to a chosen input.  Operations propagate derivatives according to the
+chain rule, allowing exact computation of derivatives alongside function
+values.
+
+Supported operations:
+- addition, subtraction
+- multiplication, division
+- integer powers
+
+To differentiate a function `f(x)` at a point, create a dual number with
+`deriv = 1` for the variable of interest and `0` for constants.  Evaluating
+the function yields both the value and derivative.
+*/
+
+type Dual {
+  value: float,
+  deriv: float
+}
+
+fun dual(v: float, d: float): Dual {
+  return Dual { value: v, deriv: d }
+}
+
+fun pow_float(base: float, exp: int): float {
+  var res = 1.0
+  var i = 0
+  while i < exp {
+    res = res * base
+    i = i + 1
+  }
+  return res
+}
+
+fun add(a: Dual, b: Dual): Dual {
+  return Dual { value: a.value + b.value, deriv: a.deriv + b.deriv }
+}
+
+fun sub(a: Dual, b: Dual): Dual {
+  return Dual { value: a.value - b.value, deriv: a.deriv - b.deriv }
+}
+
+fun mul(a: Dual, b: Dual): Dual {
+  return Dual {
+    value: a.value * b.value,
+    deriv: a.deriv * b.value + b.deriv * a.value
+  }
+}
+
+fun div(a: Dual, b: Dual): Dual {
+  return Dual {
+    value: a.value / b.value,
+    deriv: (a.deriv * b.value - b.deriv * a.value) / (b.value * b.value)
+  }
+}
+
+fun power(a: Dual, p: int): Dual {
+  return Dual {
+    value: pow_float(a.value, p),
+    deriv: (1.0 * p) * pow_float(a.value, p - 1) * a.deriv
+  }
+}
+
+fun main() {
+  // f(a, b) = (a + b) / (a * b), df/da at a=2, b=1 => -0.25
+  let a = dual(2.0, 1.0)
+  let b = dual(1.0, 0.0)
+  let c = add(a, b)
+  let d = mul(a, b)
+  let e = div(c, d)
+  print(str(e.deriv))
+
+  // g(x) = x^3, dg/dx at x=2 => 12
+  let x = dual(2.0, 1.0)
+  let y = power(x, 3)
+  print(str(y.deriv))
+}
+
+main()
