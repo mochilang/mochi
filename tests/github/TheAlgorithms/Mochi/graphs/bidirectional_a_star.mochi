@@ -1,0 +1,283 @@
+/*
+Bidirectional A* search on a 2D grid with obstacles.
+
+The grid is represented by 0 for free cells and 1 for obstacles.  The
+algorithm searches for the shortest path from a start position to a
+goal position.  We implement both the standard A* search and a
+bidirectional variant that simultaneously expands from the start and
+goal and meets in the middle.  The heuristic can be Manhattan distance
+(HEURISTIC = 1) or Euclidean distance (HEURISTIC = 0).  All data
+structures are implemented purely in Mochi without any FFI or "any"
+types.
+*/
+
+let HEURISTIC = 0
+
+let grid: list<list<int>> = [
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0],
+  [1, 0, 1, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 1, 0, 0]
+]
+
+let delta: list<list<int>> = [[-1,0], [0,-1], [1,0], [0,1]]
+
+type Pos { y: int, x: int }
+
+type Node {
+  pos: Pos,
+  g_cost: int,
+  h_cost: float,
+  f_cost: float,
+  path: list<Pos>
+}
+
+fun abs(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun heuristic(a: Pos, b: Pos): float {
+  let dy = a.y - b.y
+  let dx = a.x - b.x
+  if HEURISTIC == 1 {
+    return (abs(dy) + abs(dx)) as float
+  }
+  let dyf = (dy as float)
+  let dxf = (dx as float)
+  return sqrtApprox(dyf*dyf + dxf*dxf)
+}
+
+fun pos_equal(a: Pos, b: Pos): bool {
+  return a.y == b.y && a.x == b.x
+}
+
+fun contains_pos(lst: list<Pos>, p: Pos): bool {
+  var i = 0
+  while i < len(lst) {
+    if pos_equal(lst[i], p) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun open_index_of_pos(open: list<Node>, p: Pos): int {
+  var i = 0
+  while i < len(open) {
+    if pos_equal(open[i].pos, p) { return i }
+    i = i + 1
+  }
+  return 0 - 1
+}
+
+fun remove_node_at(nodes: list<Node>, idx: int): list<Node> {
+  var res: list<Node> = []
+  var i = 0
+  while i < len(nodes) {
+    if i != idx { res = append(res, nodes[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun append_pos_list(path: list<Pos>, p: Pos): list<Pos> {
+  var res: list<Pos> = []
+  var i = 0
+  while i < len(path) {
+    res = append(res, path[i])
+    i = i + 1
+  }
+  res = append(res, p)
+  return res
+}
+
+fun reverse_pos_list(lst: list<Pos>): list<Pos> {
+  var res: list<Pos> = []
+  var i = len(lst) - 1
+  while i >= 0 {
+    res = append(res, lst[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun concat_pos_lists(a: list<Pos>, b: list<Pos>): list<Pos> {
+  var res: list<Pos> = []
+  var i = 0
+  while i < len(a) {
+    res = append(res, a[i])
+    i = i + 1
+  }
+  var j = 0
+  while j < len(b) {
+    res = append(res, b[j])
+    j = j + 1
+  }
+  return res
+}
+
+fun get_successors(p: Pos): list<Pos> {
+  var res: list<Pos> = []
+  var i = 0
+  while i < len(delta) {
+    let nx = p.x + delta[i][1]
+    let ny = p.y + delta[i][0]
+    if nx >= 0 && ny >= 0 && nx < len(grid[0]) && ny < len(grid) {
+      if grid[ny][nx] == 0 {
+        res = append(res, Pos { y: ny, x: nx })
+      }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun find_lowest_f(open: list<Node>): int {
+  var best = 0
+  var i = 1
+  while i < len(open) {
+    if open[i].f_cost < open[best].f_cost { best = i }
+    i = i + 1
+  }
+  return best
+}
+
+fun astar(start: Pos, goal: Pos): list<Pos> {
+  let h0 = heuristic(start, goal)
+  var open: list<Node> = [Node { pos: start, g_cost: 0, h_cost: h0, f_cost: h0, path: [start] }]
+  var closed: list<Pos> = []
+  while len(open) > 0 {
+    let idx = find_lowest_f(open)
+    let current = open[idx]
+    open = remove_node_at(open, idx)
+    if pos_equal(current.pos, goal) {
+      return current.path
+    }
+    closed = append(closed, current.pos)
+    let succ = get_successors(current.pos)
+    var i = 0
+    while i < len(succ) {
+      let pos = succ[i]
+      if contains_pos(closed, pos) {
+        i = i + 1
+        continue
+      }
+      let tentative_g = current.g_cost + 1
+      let idx_open = open_index_of_pos(open, pos)
+      if idx_open == 0 - 1 || tentative_g < open[idx_open].g_cost {
+        let new_path = append_pos_list(current.path, pos)
+        let h = heuristic(pos, goal)
+        let f = (tentative_g as float) + h
+        if idx_open != 0 - 1 { open = remove_node_at(open, idx_open) }
+        open = append(open, Node { pos: pos, g_cost: tentative_g, h_cost: h, f_cost: f, path: new_path })
+      }
+      i = i + 1
+    }
+  }
+  return [start]
+}
+
+fun combine_paths(fwd: Node, bwd: Node): list<Pos> {
+  var bwd_copy: list<Pos> = []
+  var i = 0
+  while i < len(bwd.path) - 1 {
+    bwd_copy = append(bwd_copy, bwd.path[i])
+    i = i + 1
+  }
+  bwd_copy = reverse_pos_list(bwd_copy)
+  return concat_pos_lists(fwd.path, bwd_copy)
+}
+
+fun bidirectional_astar(start: Pos, goal: Pos): list<Pos> {
+  let hf = heuristic(start, goal)
+  let hb = heuristic(goal, start)
+  var open_f: list<Node> = [Node { pos: start, g_cost: 0, h_cost: hf, f_cost: hf, path: [start] }]
+  var open_b: list<Node> = [Node { pos: goal, g_cost: 0, h_cost: hb, f_cost: hb, path: [goal] }]
+  var closed_f: list<Pos> = []
+  var closed_b: list<Pos> = []
+  while len(open_f) > 0 && len(open_b) > 0 {
+    let idx_f = find_lowest_f(open_f)
+    let current_f = open_f[idx_f]
+    open_f = remove_node_at(open_f, idx_f)
+    let idx_b = find_lowest_f(open_b)
+    let current_b = open_b[idx_b]
+    open_b = remove_node_at(open_b, idx_b)
+    if pos_equal(current_f.pos, current_b.pos) {
+      return combine_paths(current_f, current_b)
+    }
+    closed_f = append(closed_f, current_f.pos)
+    closed_b = append(closed_b, current_b.pos)
+    let succ_f = get_successors(current_f.pos)
+    var i = 0
+    while i < len(succ_f) {
+      let pos = succ_f[i]
+      if contains_pos(closed_f, pos) {
+        i = i + 1
+        continue
+      }
+      let tentative_g = current_f.g_cost + 1
+      let h = heuristic(pos, current_b.pos)
+      let f = (tentative_g as float) + h
+      let idx_open = open_index_of_pos(open_f, pos)
+      if idx_open == 0 - 1 || tentative_g < open_f[idx_open].g_cost {
+        let new_path = append_pos_list(current_f.path, pos)
+        if idx_open != 0 - 1 { open_f = remove_node_at(open_f, idx_open) }
+        open_f = append(open_f, Node { pos: pos, g_cost: tentative_g, h_cost: h, f_cost: f, path: new_path })
+      }
+      i = i + 1
+    }
+    let succ_b = get_successors(current_b.pos)
+    i = 0
+    while i < len(succ_b) {
+      let pos = succ_b[i]
+      if contains_pos(closed_b, pos) {
+        i = i + 1
+        continue
+      }
+      let tentative_g = current_b.g_cost + 1
+      let h = heuristic(pos, current_f.pos)
+      let f = (tentative_g as float) + h
+      let idx_open = open_index_of_pos(open_b, pos)
+      if idx_open == 0 - 1 || tentative_g < open_b[idx_open].g_cost {
+        let new_path = append_pos_list(current_b.path, pos)
+        if idx_open != 0 - 1 { open_b = remove_node_at(open_b, idx_open) }
+        open_b = append(open_b, Node { pos: pos, g_cost: tentative_g, h_cost: h, f_cost: f, path: new_path })
+      }
+      i = i + 1
+    }
+  }
+  return [start]
+}
+
+fun path_to_string(path: list<Pos>): string {
+  if len(path) == 0 { return "[]" }
+  var s = "[(" + str(path[0].y) + ", " + str(path[0].x) + ")"
+  var i = 1
+  while i < len(path) {
+    s = s + ", (" + str(path[i].y) + ", " + str(path[i].x) + ")"
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let start = Pos { y: 0, x: 0 }
+let goal = Pos { y: len(grid) - 1, x: len(grid[0]) - 1 }
+let path1 = astar(start, goal)
+print(path_to_string(path1))
+let path2 = bidirectional_astar(start, goal)
+print(path_to_string(path2))
