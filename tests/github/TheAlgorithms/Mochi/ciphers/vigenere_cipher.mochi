@@ -1,0 +1,102 @@
+/*
+Vigenere Cipher for text encryption and decryption.
+
+The Vigenere cipher shifts each letter of the message by the corresponding
+letter of a repeating key. Each letter's index in the alphabet is adjusted by
+the index of the matching key letter. This implementation preserves case and
+leaves non-alphabetic characters unchanged. Time complexity is O(n) for a
+message of length n.
+*/
+
+let LETTERS: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LETTERS_LOWER: string = "abcdefghijklmnopqrstuvwxyz"
+
+fun find_index(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun to_upper_char(ch: string): string {
+  let idx = find_index(LETTERS_LOWER, ch)
+  if idx >= 0 { return LETTERS[idx] }
+  return ch
+}
+
+fun to_lower_char(ch: string): string {
+  let idx = find_index(LETTERS, ch)
+  if idx >= 0 { return LETTERS_LOWER[idx] }
+  return ch
+}
+
+fun is_upper(ch: string): bool {
+  return find_index(LETTERS, ch) >= 0
+}
+
+fun to_upper_string(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    res = res + to_upper_char(s[i])
+    i = i + 1
+  }
+  return res
+}
+
+// Example usage with fixed key and message
+let key = "HDarji"
+let message = "This is Harshil Darji from Dharmaj."
+let key_up = to_upper_string(key)
+
+var encrypted = ""
+var key_index = 0
+var i = 0
+while i < len(message) {
+  let symbol = message[i]
+  let upper_symbol = to_upper_char(symbol)
+  var num = find_index(LETTERS, upper_symbol)
+  if num >= 0 {
+    num = num + find_index(LETTERS, key_up[key_index])
+    num = num % len(LETTERS)
+    if is_upper(symbol) {
+      encrypted = encrypted + LETTERS[num]
+    } else {
+      encrypted = encrypted + to_lower_char(LETTERS[num])
+    }
+    key_index = key_index + 1
+    if key_index == len(key_up) { key_index = 0 }
+  } else {
+    encrypted = encrypted + symbol
+  }
+  i = i + 1
+}
+
+print(encrypted)
+
+var decrypted = ""
+key_index = 0
+i = 0
+while i < len(encrypted) {
+  let symbol = encrypted[i]
+  let upper_symbol = to_upper_char(symbol)
+  var num = find_index(LETTERS, upper_symbol)
+  if num >= 0 {
+    num = num - find_index(LETTERS, key_up[key_index])
+    num = num % len(LETTERS)
+    if is_upper(symbol) {
+      decrypted = decrypted + LETTERS[num]
+    } else {
+      decrypted = decrypted + to_lower_char(LETTERS[num])
+    }
+    key_index = key_index + 1
+    if key_index == len(key_up) { key_index = 0 }
+  } else {
+    decrypted = decrypted + symbol
+  }
+  i = i + 1
+}
+
+print(decrypted)
