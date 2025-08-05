@@ -1,0 +1,49 @@
+/*
+Compute the Euclidean distance between two vectors as the square root of the
+sum of squared coordinate differences.
+
+Both functions expect lists of equal length and return the distance as a
+floating-point number:
+- euclidean_distance: core implementation using iterative summation.
+- euclidean_distance_no_np: identical calculation provided for parity with the
+  original Python version that offered a variant without NumPy.
+
+The square root is approximated with Newton's method to keep the implementation
+pure Mochi.
+*/
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun euclidean_distance(v1: list<float>, v2: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(v1) {
+    let diff = v1[i] - v2[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sqrtApprox(sum)
+}
+
+fun euclidean_distance_no_np(v1: list<float>, v2: list<float>): float {
+  return euclidean_distance(v1, v2)
+}
+
+fun main() {
+  print(str(euclidean_distance([0.0, 0.0], [2.0, 2.0])))
+  print(str(euclidean_distance([0.0, 0.0, 0.0], [2.0, 2.0, 2.0])))
+  print(str(euclidean_distance([1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0])))
+  print(str(euclidean_distance_no_np([1.0, 2.0, 3.0, 4.0], [5.0, 6.0, 7.0, 8.0])))
+  print(str(euclidean_distance_no_np([0.0, 0.0], [2.0, 2.0])))
+}
+
+main()
