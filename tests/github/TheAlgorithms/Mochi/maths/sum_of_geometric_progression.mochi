@@ -1,0 +1,64 @@
+/*
+Sum of Geometric Progression
+----------------------------
+Computes the sum of the first `n` terms of a geometric progression with
+initial term `a` and common ratio `r`.
+
+For `r = 1` the series degenerates into an arithmetic progression so the
+sum is `n * a`.  Otherwise the closed form is:
+
+  S_n = a * (1 - r^n) / (1 - r)
+
+Exponentiation is implemented via repeated multiplication to stay within
+pure Mochi so the program runs on the runtime/vm without foreign
+functions. The helper handles negative exponents by inverting the
+product. The overall time complexity is O(|n|).
+*/
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var exponent = exp
+  if exponent < 0 {
+    exponent = -exponent
+    var i = 0
+    while i < exponent {
+      result = result * base
+      i = i + 1
+    }
+    return 1.0 / result
+  }
+  var i = 0
+  while i < exponent {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun sum_of_geometric_progression(first_term: int, common_ratio: int, num_of_terms: int): float {
+  if common_ratio == 1 {
+    return (num_of_terms * first_term) as float
+  }
+  let a = first_term as float
+  let r = common_ratio as float
+  return (a / (1.0 - r)) * (1.0 - pow_float(r, num_of_terms))
+}
+
+fun test_sum() {
+  if sum_of_geometric_progression(1, 2, 10) != 1023.0 {
+    panic("example1 failed")
+  }
+  if sum_of_geometric_progression(1, 10, 5) != 11111.0 {
+    panic("example2 failed")
+  }
+  if sum_of_geometric_progression(-1, 2, 10) != (-1023.0) {
+    panic("example3 failed")
+  }
+}
+
+fun main() {
+  test_sum()
+  print(sum_of_geometric_progression(1, 2, 10))
+}
+
+main()
