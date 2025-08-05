@@ -1,0 +1,81 @@
+/*
+Circular Convolution of Two Discrete Signals
+-------------------------------------------
+Circular convolution multiplies two equal-length discrete signals where the
+summation index wraps around at the signal length. Given sequences x and y of
+length N, the output sequence z is defined as
+  z[n] = Σ_{k=0}^{N-1} x[k] * y[(n - k) mod N]
+This is equivalent to constructing a matrix of all rotations of one signal and
+multiplying it with the other signal. The operation is common in digital signal
+processing and corresponds to multiplication in the discrete-time Fourier
+transform domain. The implementation pads the shorter signal with zeros, builds
+the convolution using nested loops, rounds each result to two decimal places, and
+runs in O(N^2) time for sequences of length N.
+*/
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun roundn(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun pad(signal: list<float>, target: int): list<float> {
+  var s = signal
+  while len(s) < target {
+    s = append(s, 0.0)
+  }
+  return s
+}
+
+fun circular_convolution(a: list<float>, b: list<float>): list<float> {
+  let n1 = len(a)
+  let n2 = len(b)
+  let n = if n1 > n2 { n1 } else { n2 }
+  var x = pad(a, n)
+  var y = pad(b, n)
+  var res: list<float> = []
+  var i = 0
+  while i < n {
+    var sum = 0.0
+    var k = 0
+    while k < n {
+      let j = (i - k) % n
+      let idx = if j < 0 { j + n } else { j }
+      sum = sum + x[k] * y[idx]
+      k = k + 1
+    }
+    res = append(res, roundn(sum, 2))
+    i = i + 1
+  }
+  return res
+}
+
+let example1 = circular_convolution([2.0, 1.0, 2.0, -1.0], [1.0, 2.0, 3.0, 4.0])
+print(str(example1))
+
+let example2 = circular_convolution(
+  [0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 1.4, 1.6],
+  [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 1.5]
+)
+print(str(example2))
+
+let example3 = circular_convolution([-1.0, 1.0, 2.0, -2.0], [0.5, 1.0, -1.0, 2.0, 0.75])
+print(str(example3))
+
+let example4 = circular_convolution([1.0, -1.0, 2.0, 3.0, -1.0], [1.0, 2.0, 3.0])
+print(str(example4))
