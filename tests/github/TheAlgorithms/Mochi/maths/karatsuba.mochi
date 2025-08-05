@@ -1,0 +1,45 @@
+/*
+Karatsuba Multiplication
+------------------------
+Recursively multiplies two non‑negative integers using the Karatsuba
+algorithm. The numbers are split around the middle of their decimal
+digit lengths. Three recursive products of the high and low parts are
+combined to form the final result, reducing the multiplication time
+complexity from O(n^2) to about O(n^1.585).
+*/
+
+fun int_pow(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun karatsuba(a: int, b: int): int {
+  if len(str(a)) == 1 || len(str(b)) == 1 {
+    return a * b
+  }
+  var m1 = len(str(a))
+  let lb = len(str(b))
+  if lb > m1 { m1 = lb }
+  let m2 = m1 / 2
+  let power = int_pow(10, m2)
+  let a1 = a / power
+  let a2 = a % power
+  let b1 = b / power
+  let b2 = b % power
+  let x = karatsuba(a2, b2)
+  let y = karatsuba(a1 + a2, b1 + b2)
+  let z = karatsuba(a1, b1)
+  let result = z * int_pow(10, 2 * m2) + (y - z - x) * power + x
+  return result
+}
+
+fun main() {
+  print(str(karatsuba(15463, 23489)))
+}
+
+main()
