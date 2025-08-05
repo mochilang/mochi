@@ -1,0 +1,98 @@
+/*
+Counting Inversions in an Array
+-------------------------------
+An inversion is a pair of indices (i, j) such that i < j and arr[i] > arr[j].
+This program implements two approaches to count inversions:
+
+1. Brute Force:  O(n^2) time using nested loops to check all pairs.
+2. Divide and Conquer:  O(n log n) time using a merge step similar to
+   merge sort. The array is recursively split, sorted halves are merged
+   while counting cross inversions between them.
+
+Both functions operate on lists of integers and return the inversion count.
+The divide-and-conquer variant also produces the sorted array as it merges.
+*/
+
+type InvResult {
+  arr: list<int>
+  inv: int
+}
+
+fun slice_list(arr: list<int>, start: int, end: int): list<int> {
+  var res: list<int> = []
+  var k = start
+  while k < end {
+    res = append(res, arr[k])
+    k = k + 1
+  }
+  return res
+}
+
+fun count_inversions_bf(arr: list<int>): int {
+  let n = len(arr)
+  var inv = 0
+  var i = 0
+  while i < n - 1 {
+    var j = i + 1
+    while j < n {
+      if arr[i] > arr[j] {
+        inv = inv + 1
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return inv
+}
+
+fun count_cross_inversions(p: list<int>, q: list<int>): InvResult {
+  var r: list<int> = []
+  var i = 0
+  var j = 0
+  var inv = 0
+  while i < len(p) && j < len(q) {
+    if p[i] > q[j] {
+      inv = inv + (len(p) - i)
+      r = append(r, q[j])
+      j = j + 1
+    } else {
+      r = append(r, p[i])
+      i = i + 1
+    }
+  }
+  if i < len(p) {
+    r = concat(r, slice_list(p, i, len(p)))
+  } else {
+    r = concat(r, slice_list(q, j, len(q)))
+  }
+  return InvResult { arr: r, inv: inv }
+}
+
+fun count_inversions_recursive(arr: list<int>): InvResult {
+  if len(arr) <= 1 {
+    return InvResult { arr: arr, inv: 0 }
+  }
+  let mid = len(arr) / 2
+  let p = slice_list(arr, 0, mid)
+  let q = slice_list(arr, mid, len(arr))
+  let res_p = count_inversions_recursive(p)
+  let res_q = count_inversions_recursive(q)
+  let res_cross = count_cross_inversions(res_p.arr, res_q.arr)
+  let total = res_p.inv + res_q.inv + res_cross.inv
+  return InvResult { arr: res_cross.arr, inv: total }
+}
+
+var arr_1: list<int> = [10, 2, 1, 5, 5, 2, 11]
+let nbf = count_inversions_bf(arr_1)
+let nrec = count_inversions_recursive(arr_1).inv
+print("number of inversions = ", nbf)
+
+arr_1 = [1, 2, 2, 5, 5, 10, 11]
+let nbf2 = count_inversions_bf(arr_1)
+let nrec2 = count_inversions_recursive(arr_1).inv
+print("number of inversions = ", nbf2)
+
+arr_1 = []
+let nbf3 = count_inversions_bf(arr_1)
+let nrec3 = count_inversions_recursive(arr_1).inv
+print("number of inversions = ", nbf3)
