@@ -1,0 +1,47 @@
+/*
+Remove Digit for Maximum Number
+------------------------------
+Given an integer, remove exactly one digit to produce the largest possible result.
+
+Algorithm:
+1. Work with the absolute value of the input so negative numbers are treated as their positive counterparts.
+2. For each digit position, compute the number that results from removing that digit using arithmetic:
+   - Split the number into a higher prefix and lower suffix around the digit.
+   - Recombine prefix and suffix ignoring the digit.
+3. Track and return the maximum candidate encountered.
+
+The implementation avoids strings and uses only integer arithmetic so it can run on runtime/vm without FFI.
+*/
+
+fun remove_digit(num: int): int {
+  var n = num
+  if n < 0 {
+    n = -n
+  }
+  var max_val = 0
+  var divisor = 1
+  while divisor <= n {
+    let higher = n / (divisor * 10)
+    let lower = n % divisor
+    let candidate = higher * divisor + lower
+    if candidate > max_val {
+      max_val = candidate
+    }
+    divisor = divisor * 10
+  }
+  return max_val
+}
+
+fun test_remove_digit() {
+  if remove_digit(152) != 52 { panic("remove_digit(152) failed") }
+  if remove_digit(6385) != 685 { panic("remove_digit(6385) failed") }
+  if remove_digit(-11) != 1 { panic("remove_digit(-11) failed") }
+  if remove_digit(2222222) != 222222 { panic("remove_digit(2222222) failed") }
+}
+
+fun main() {
+  test_remove_digit()
+  print(remove_digit(152))
+}
+
+main()
