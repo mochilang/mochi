@@ -1,0 +1,86 @@
+/*
+Softmax Function
+----------------
+Transforms a list of real numbers into a probability distribution where each
+output is proportional to e^x of the corresponding input. The algorithm first
+computes the exponential of every element, sums these exponentials, and divides
+each by the sum so all probabilities add up to one.
+
+Because the VM has no built-in exponential, we approximate e^x using a truncated
+Taylor series with 20 terms:
+  e^x \approx \sum_{n=0}^{19} x^n / n!
+This is sufficient for the small input ranges in the accompanying tests.
+
+Time complexity is O(n * k) where n is the length of the input vector and k is
+the number of terms in the series (constant 20). Space complexity is O(n) for
+the list of exponentials.
+*/
+
+fun exp_approx(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var i = 1
+  while i < 20 {
+    term = term * x / (i as float)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun softmax(vec: list<float>): list<float> {
+  var exps: list<float> = []
+  var i = 0
+  while i < len(vec) {
+    exps = append(exps, exp_approx(vec[i]))
+    i = i + 1
+  }
+  var total = 0.0
+  i = 0
+  while i < len(exps) {
+    total = total + exps[i]
+    i = i + 1
+  }
+  var result: list<float> = []
+  i = 0
+  while i < len(exps) {
+    result = append(result, exps[i] / total)
+    i = i + 1
+  }
+  return result
+}
+
+fun abs_val(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun approx_equal(a: float, b: float): bool {
+  return abs_val(a - b) < 0.0001
+}
+
+fun test_softmax() {
+  let s1 = softmax([1.0, 2.0, 3.0, 4.0])
+  var sum1 = 0.0
+  var i = 0
+  while i < len(s1) {
+    sum1 = sum1 + s1[i]
+    i = i + 1
+  }
+  if !approx_equal(sum1, 1.0) { panic("sum test failed") }
+
+  let s2 = softmax([5.0, 5.0])
+  if !(approx_equal(s2[0], 0.5) && approx_equal(s2[1], 0.5)) {
+    panic("equal elements test failed")
+  }
+
+  let s3 = softmax([0.0])
+  if !approx_equal(s3[0], 1.0) { panic("zero vector test failed") }
+}
+
+fun main() {
+  test_softmax()
+  print(str(softmax([1.0, 2.0, 3.0, 4.0])))
+}
+
+main()
