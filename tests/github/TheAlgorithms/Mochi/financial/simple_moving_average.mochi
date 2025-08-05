@@ -1,0 +1,51 @@
+/*
+Calculate the simple moving average (SMA) of a time series.
+For each position i in the data list we consider the last `window_size`
+values including the current one. If fewer than `window_size` values
+exist we record that no average is available. Otherwise we compute the
+mean of the window. This uses a sliding window sum so the algorithm runs
+in O(n) time where n is the number of data points and uses O(1) extra
+space beyond the output list.
+*/
+
+type SMAValue {
+  value: float,
+  ok: bool,
+}
+
+fun simple_moving_average(data: list<float>, window_size: int): list<SMAValue> {
+  if window_size < 1 {
+    panic("Window size must be a positive integer")
+  }
+  var result: list<SMAValue> = []
+  var window_sum: float = 0.0
+  var i: int = 0
+  while i < len(data) {
+    window_sum = window_sum + data[i]
+    if i >= window_size {
+      window_sum = window_sum - data[i - window_size]
+    }
+    if i >= window_size - 1 {
+      let avg = window_sum / window_size
+      result = append(result, SMAValue { value: avg, ok: true })
+    } else {
+      result = append(result, SMAValue { value: 0.0, ok: false })
+    }
+    i = i + 1
+  }
+  return result
+}
+
+let data = [10.0, 12.0, 15.0, 13.0, 14.0, 16.0, 18.0, 17.0, 19.0, 21.0]
+let window_size = 3
+let sma_values = simple_moving_average(data, window_size)
+var idx = 0
+while idx < len(sma_values) {
+  let item = sma_values[idx]
+  if item.ok {
+    print("Day " + str(idx + 1) + ": " + str(item.value))
+  } else {
+    print("Day " + str(idx + 1) + ": Not enough data for SMA")
+  }
+  idx = idx + 1
+}
