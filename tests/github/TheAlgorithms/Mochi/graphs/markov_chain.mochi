@@ -1,0 +1,94 @@
+/*
+Simulating state transitions in a discrete-time Markov chain.
+
+A Markov chain models a system that moves between discrete states with
+fixed probabilities.  The next state depends only on the current one.
+Given a list of transitions (source, destination, probability), we can
+iterate the chain and count how often each state is visited.
+
+This program mirrors the reference Python implementation using pure
+Mochi code.  A simple linear congruential generator provides
+pseudo-random numbers so results are deterministic without external
+libraries or FFI.
+*/
+
+type Transition {
+  src: string,
+  dst: string,
+  prob: float
+}
+
+var seed = 1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (1.0 * rand()) / 2147483648.0
+}
+
+fun get_nodes(trans: list<Transition>): list<string> {
+  var seen: map<string, bool> = {}
+  for t in trans {
+    seen[t.src] = true
+    seen[t.dst] = true
+  }
+  var nodes: list<string> = []
+  for k in keys(seen) {
+    nodes = append(nodes, k)
+  }
+  return nodes
+}
+
+fun transition(current: string, trans: list<Transition>): string {
+  var current_probability = 0.0
+  let random_value = random()
+  for t in trans {
+    if t.src == current {
+      current_probability = current_probability + t.prob
+      if current_probability > random_value {
+        return t.dst
+      }
+    }
+  }
+  return ""
+}
+
+fun get_transitions(start: string, trans: list<Transition>,
+                    steps: int): map<string, int> {
+  var visited: map<string, int> = {}
+  for node in get_nodes(trans) {
+    var one = 1
+    visited[node] = one
+  }
+  var node = start
+  var i = 0
+  while i < steps {
+    node = transition(node, trans)
+    var count = visited[node]
+    count = count + 1
+    visited[node] = count
+    i = i + 1
+  }
+  return visited
+}
+
+fun main(): void {
+  let transitions: list<Transition> = [
+    Transition{ src: "a", dst: "a", prob: 0.9 },
+    Transition{ src: "a", dst: "b", prob: 0.075 },
+    Transition{ src: "a", dst: "c", prob: 0.025 },
+    Transition{ src: "b", dst: "a", prob: 0.15 },
+    Transition{ src: "b", dst: "b", prob: 0.8 },
+    Transition{ src: "b", dst: "c", prob: 0.05 },
+    Transition{ src: "c", dst: "a", prob: 0.25 },
+    Transition{ src: "c", dst: "b", prob: 0.25 },
+    Transition{ src: "c", dst: "c", prob: 0.5 }
+  ]
+  let result = get_transitions("a", transitions, 5000)
+  print(str(result["a"]) + " " + str(result["b"]) + " " + str(result["c"]))
+}
+
+main()
