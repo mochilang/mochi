@@ -1,0 +1,296 @@
+/*
+Multi-Heuristic A* search on a 2D grid
+
+This program demonstrates the Multi-Heuristic A* pathfinding algorithm.  The
+search is performed on a 20x20 grid with obstacles.  Three heuristics are
+used:
+  1. Euclidean distance (consistent)
+  2. Manhattan distance (inconsistent)
+  3. Euclidean distance divided by an iteration counter (inconsistent)
+
+At each step the algorithm selects which heuristic queue to expand according to
+weights W1 and W2 and updates the open lists.  If a path from the start cell to
+the goal cell exists it is reconstructed by following the back pointers.  If
+no path can be found the algorithm reports failure.
+*/
+
+
+let W1 = 1.0
+let W2 = 1.0
+let n = 20
+let n_heuristic = 3
+
+// position type
+ type Pos { x: int, y: int }
+
+// node in priority queue
+type PQNode { pos: Pos, pri: float }
+
+type PQPopResult { pq: list<PQNode>, node: PQNode }
+
+let INF = 1000000000.0
+
+var t = 1
+
+fun pos_equal(a: Pos, b: Pos): bool {
+  return a.x == b.x && a.y == b.y
+}
+
+fun pos_key(p: Pos): string {
+  return str(p.x) + "," + str(p.y)
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun consistent_heuristic(p: Pos, goal: Pos): float {
+  let dx = (p.x - goal.x) as float
+  let dy = (p.y - goal.y) as float
+  return sqrtApprox(dx * dx + dy * dy)
+}
+
+fun iabs(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun heuristic_1(p: Pos, goal: Pos): float {
+  return (iabs(p.x - goal.x) + iabs(p.y - goal.y)) as float
+}
+
+fun heuristic_2(p: Pos, goal: Pos): float {
+  let h = consistent_heuristic(p, goal)
+  return h / (t as float)
+}
+
+fun heuristic(i: int, p: Pos, goal: Pos): float {
+  if i == 0 { return consistent_heuristic(p, goal) }
+  if i == 1 { return heuristic_1(p, goal) }
+  return heuristic_2(p, goal)
+}
+
+fun key_fn(start: Pos, i: int, goal: Pos, g_func: map<string, float>): float {
+  let g = g_func[pos_key(start)]
+  return g + W1 * heuristic(i, start, goal)
+}
+
+fun valid(p: Pos): bool {
+  if p.x < 0 || p.x > n - 1 { return false }
+  if p.y < 0 || p.y > n - 1 { return false }
+  return true
+}
+
+let blocks: list<Pos> = [
+  Pos { x: 0, y: 1 },
+  Pos { x: 1, y: 1 },
+  Pos { x: 2, y: 1 },
+  Pos { x: 3, y: 1 },
+  Pos { x: 4, y: 1 },
+  Pos { x: 5, y: 1 },
+  Pos { x: 6, y: 1 },
+  Pos { x: 7, y: 1 },
+  Pos { x: 8, y: 1 },
+  Pos { x: 9, y: 1 },
+  Pos { x: 10, y: 1 },
+  Pos { x: 11, y: 1 },
+  Pos { x: 12, y: 1 },
+  Pos { x: 13, y: 1 },
+  Pos { x: 14, y: 1 },
+  Pos { x: 15, y: 1 },
+  Pos { x: 16, y: 1 },
+  Pos { x: 17, y: 1 },
+  Pos { x: 18, y: 1 },
+  Pos { x: 19, y: 1 }
+]
+
+fun in_blocks(p: Pos): bool {
+  var i = 0
+  while i < len(blocks) {
+    if pos_equal(blocks[i], p) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun pq_put(pq: list<PQNode>, node: Pos, pri: float): list<PQNode> {
+  var updated = false
+  var i = 0
+  while i < len(pq) {
+    if pos_equal(pq[i].pos, node) {
+      if pri < pq[i].pri {
+        pq[i] = PQNode { pos: node, pri: pri }
+      }
+      updated = true
+    }
+    i = i + 1
+  }
+  if !updated {
+    pq = append(pq, PQNode { pos: node, pri: pri })
+  }
+  return pq
+}
+
+fun pq_minkey(pq: list<PQNode>): float {
+  if len(pq) == 0 { return INF }
+  var first = pq[0]
+  var m = first.pri
+  var i = 1
+  while i < len(pq) {
+    var item = pq[i]
+    if item.pri < m { m = item.pri }
+    i = i + 1
+  }
+  return m
+}
+
+fun pq_pop_min(pq: list<PQNode>): PQPopResult {
+  var best = pq[0]
+  var idx = 0
+  var i = 1
+  while i < len(pq) {
+    if pq[i].pri < best.pri {
+      best = pq[i]
+      idx = i
+    }
+    i = i + 1
+  }
+  var new_pq: list<PQNode> = []
+  i = 0
+  while i < len(pq) {
+    if i != idx {
+      new_pq = append(new_pq, pq[i])
+    }
+    i = i + 1
+  }
+  return PQPopResult { pq: new_pq, node: best }
+}
+
+fun pq_remove(pq: list<PQNode>, node: Pos): list<PQNode> {
+  var new_pq: list<PQNode> = []
+  var i = 0
+  while i < len(pq) {
+    if !pos_equal(pq[i].pos, node) {
+      new_pq = append(new_pq, pq[i])
+    }
+    i = i + 1
+  }
+  return new_pq
+}
+
+fun reconstruct(back_pointer: map<string, Pos>, goal: Pos, start: Pos): list<Pos> {
+  var path: list<Pos> = []
+  var current = goal
+  var key = pos_key(current)
+  path = append(path, current)
+  while !(pos_equal(current, start)) {
+    current = back_pointer[key]
+    key = pos_key(current)
+    path = append(path, current)
+  }
+  // reverse path
+  var rev: list<Pos> = []
+  var i = len(path) - 1
+  while i >= 0 {
+    rev = append(rev, path[i])
+    i = i - 1
+  }
+  return rev
+}
+
+fun neighbours(p: Pos): list<Pos> {
+  let left = Pos { x: p.x - 1, y: p.y }
+  let right = Pos { x: p.x + 1, y: p.y }
+  let up = Pos { x: p.x, y: p.y + 1 }
+  let down = Pos { x: p.x, y: p.y - 1 }
+  return [left, right, up, down]
+}
+
+fun multi_a_star(start: Pos, goal: Pos, n_heuristic: int) {
+  var g_function: map<string, float> = {}
+  var back_pointer: map<string, Pos> = {}
+  var visited: map<string, bool> = {}
+  var open_list: list<list<PQNode>> = []
+  g_function[pos_key(start)] = 0.0
+  g_function[pos_key(goal)] = INF
+  back_pointer[pos_key(start)] = Pos { x: -1, y: -1 }
+  back_pointer[pos_key(goal)] = Pos { x: -1, y: -1 }
+  visited[pos_key(start)] = true
+  var i = 0
+  while i < n_heuristic {
+    open_list = append(open_list, [])
+    let pri = key_fn(start, i, goal, g_function)
+    open_list[i] = pq_put(open_list[i], start, pri)
+    i = i + 1
+  }
+  while pq_minkey(open_list[0]) < INF {
+    var chosen = 0
+    i = 1
+    while i < n_heuristic {
+      if pq_minkey(open_list[i]) <= W2 * pq_minkey(open_list[0]) {
+        chosen = i
+        break
+      }
+      i = i + 1
+    }
+    if chosen != 0 { t = t + 1 }
+    var pair = pq_pop_min(open_list[chosen])
+    open_list[chosen] = pair.pq
+    let current = pair.node
+    // remove current from other queues
+    i = 0
+    while i < n_heuristic {
+      if i != chosen {
+        open_list[i] = pq_remove(open_list[i], current.pos)
+      }
+      i = i + 1
+    }
+    let ckey = pos_key(current.pos)
+    if ckey in visited { continue }
+    visited[ckey] = true
+    if pos_equal(current.pos, goal) {
+      let path = reconstruct(back_pointer, goal, start)
+      var j = 0
+      while j < len(path) {
+        let p = path[j]
+        print("(" + str(p.x) + "," + str(p.y) + ")")
+        j = j + 1
+      }
+      return
+    }
+    let neighs = neighbours(current.pos)
+    var k = 0
+    while k < len(neighs) {
+      let nb = neighs[k]
+      if valid(nb) && (in_blocks(nb) == false) {
+        let nkey = pos_key(nb)
+        let tentative = g_function[ckey] + 1.0
+        if !(nkey in g_function) || tentative < g_function[nkey] {
+          g_function[nkey] = tentative
+          back_pointer[nkey] = current.pos
+          i = 0
+          while i < n_heuristic {
+            let pri2 = tentative + W1 * heuristic(i, nb, goal)
+            open_list[i] = pq_put(open_list[i], nb, pri2)
+            i = i + 1
+          }
+        }
+      }
+      k = k + 1
+    }
+  }
+  print("No path found to goal")
+}
+
+let start = Pos { x: 0, y: 0 }
+let goal = Pos { x: n - 1, y: n - 1 }
+
+multi_a_star(start, goal, n_heuristic)
+
