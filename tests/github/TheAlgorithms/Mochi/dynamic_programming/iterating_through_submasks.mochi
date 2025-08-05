@@ -1,0 +1,45 @@
+/*
+Generate all non-zero submasks of a given bitmask.
+
+A submask of an integer mask is another integer where every bit set in the
+submask is also set in the original mask.  To iterate efficiently through all
+submasks, start from the mask itself and repeatedly apply
+`submask = (submask - 1) AND mask`.  Each step clears the lowest set bit of the
+current submask while keeping only bits that belong to the original mask.
+This visits every submask exactly once in decreasing order and runs in
+O(k) where k is the number of submasks (2^(number of set bits)).
+*/
+
+fun bitwise_and(a: int, b: int): int {
+  var result = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit == 1 && bbit == 1 {
+      result = result + bit
+    }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return result
+}
+
+fun list_of_submasks(mask: int): list<int> {
+  if mask <= 0 {
+    panic("mask needs to be positive integer, your input " + str(mask))
+  }
+  var all_submasks: list<int> = []
+  var submask = mask
+  while submask != 0 {
+    all_submasks = append(all_submasks, submask)
+    submask = bitwise_and(submask - 1, mask)
+  }
+  return all_submasks
+}
+
+print(str(list_of_submasks(15)))
+print(str(list_of_submasks(13)))
