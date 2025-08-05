@@ -1,0 +1,57 @@
+/*
+Genetic algorithm primitives for evolving a string toward a target.
+
+This simplified implementation demonstrates the key operations used by a
+basic genetic algorithm:
+
+1. **Evaluation** counts how many characters match the target.
+2. **Crossover** splices two parent strings at the halfway point to
+   create two children.
+3. **Mutation** replaces the last character of a string with a gene from
+   the allowed set.
+
+The functions are exercised on small examples that mirror the Python
+reference implementation from TheAlgorithms.  They run in linear time with
+respect to the string lengths.
+*/
+
+fun evaluate(item: string, target: string): int {
+  var score = 0
+  var i = 0
+  while i < len(item) && i < len(target) {
+    if substring(item, i, i + 1) == substring(target, i, i + 1) {
+      score = score + 1
+    }
+    i = i + 1
+  }
+  return score
+}
+
+type PairString {
+  first: string,
+  second: string
+}
+
+fun crossover(parent1: string, parent2: string): PairString {
+  let cut = len(parent1) / 2
+  let child1 = substring(parent1, 0, cut) + substring(parent2, cut, len(parent2))
+  let child2 = substring(parent2, 0, cut) + substring(parent1, cut, len(parent1))
+  return PairString { first: child1, second: child2 }
+}
+
+fun mutate(child: string, genes: list<string>): string {
+  if len(child) == 0 { return child }
+  let gene = genes[0]
+  return substring(child, 0, len(child) - 1) + gene
+}
+
+fun main() {
+  print(str(evaluate("Helxo Worlx", "Hello World")))
+  let pair = crossover("123456", "abcdef")
+  print(pair.first)
+  print(pair.second)
+  let mut = mutate("123456", ["A", "B", "C", "D", "E", "F"])
+  print(mut)
+}
+
+main()
