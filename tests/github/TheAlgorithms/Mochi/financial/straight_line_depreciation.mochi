@@ -1,0 +1,37 @@
+/*
+Straight-line depreciation spreads the cost of an asset evenly across
+its useful life.  Given an asset's purchase value, residual value, and
+number of useful years, the algorithm computes the yearly depreciation
+expenses.  The last year adjusts for floating-point rounding so that the
+sum of yearly expenses equals the depreciable cost.
+*/
+
+fun straight_line_depreciation(useful_years: int, purchase_value: float, residual_value: float): list<float> {
+  if useful_years < 1 { panic("Useful years cannot be less than 1") }
+  if purchase_value < 0.0 { panic("Purchase value cannot be less than zero") }
+  if purchase_value < residual_value { panic("Purchase value cannot be less than residual value") }
+
+  let depreciable_cost = purchase_value - residual_value
+  let annual_expense = depreciable_cost / (1.0 * useful_years)
+
+  var expenses: list<float> = []
+  var accumulated = 0.0
+  var period = 0
+  while period < useful_years {
+    if period != useful_years - 1 {
+      accumulated = accumulated + annual_expense
+      expenses = append(expenses, annual_expense)
+    } else {
+      let end_year_expense = depreciable_cost - accumulated
+      expenses = append(expenses, end_year_expense)
+    }
+    period = period + 1
+  }
+  return expenses
+}
+
+print(str(straight_line_depreciation(10, 1100.0, 100.0)))
+print(str(straight_line_depreciation(6, 1250.0, 50.0)))
+print(str(straight_line_depreciation(4, 1001.0, 0.0)))
+print(str(straight_line_depreciation(11, 380.0, 50.0)))
+print(str(straight_line_depreciation(1, 4985.0, 100.0)))
