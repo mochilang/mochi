@@ -1,0 +1,41 @@
+/*
+Convert a non-negative integer from decimal to its representation in another base between 2 and 36.
+The algorithm repeatedly divides the number by the target base, collecting remainders.
+Digits 0-9 are represented directly, while digits 10-35 are mapped to letters A-Z.
+Input validation ensures the number is non-negative and base is within 2..36.
+*/
+
+fun decimal_to_any(num: int, base: int): string {
+  if num < 0 {
+    panic("parameter must be positive int")
+  }
+  if base < 2 {
+    panic("base must be >= 2")
+  }
+  if base > 36 {
+    panic("base must be <= 36")
+  }
+  if num == 0 {
+    return "0"
+  }
+  let symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var n = num
+  var result = ""
+  while n > 0 {
+    let mod = n % base
+    let digit = substring(symbols, mod, mod + 1)
+    result = digit + result
+    n = n / base
+  }
+  return result
+}
+
+fun main() {
+  print(decimal_to_any(0, 2))
+  print(decimal_to_any(5, 4))
+  print(decimal_to_any(20, 3))
+  print(decimal_to_any(58, 16))
+  print(decimal_to_any(243, 17))
+}
+
+main()
