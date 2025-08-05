@@ -1,0 +1,27 @@
+/*
+Find the largest power of two less than or equal to a given integer.
+The algorithm starts from 1 and repeatedly doubles the result while the
+next doubling does not exceed the input number. Doubling is equivalent
+ to left shifting a single set bit, so each iteration corresponds to the
+next higher power of two. This runs in O(log n) time because the number
+of doublings is proportional to the number of bits in the input, and it
+uses O(1) additional space.
+*/
+
+fun largest_pow_of_two_le_num(n: int): int {
+  if n <= 0 { return 0 }
+  var res: int = 1
+  while res * 2 <= n {
+    res = res * 2
+  }
+  return res
+}
+
+print(str(largest_pow_of_two_le_num(0)))
+print(str(largest_pow_of_two_le_num(1)))
+print(str(largest_pow_of_two_le_num(-1)))
+print(str(largest_pow_of_two_le_num(3)))
+print(str(largest_pow_of_two_le_num(15)))
+print(str(largest_pow_of_two_le_num(99)))
+print(str(largest_pow_of_two_le_num(178)))
+print(str(largest_pow_of_two_le_num(999999)))
