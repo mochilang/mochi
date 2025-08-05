@@ -1,0 +1,69 @@
+/*
+Sum of Digits Algorithms
+------------------------
+This module provides three methods to compute the sum of decimal digits of an integer:
+
+1. `sum_of_digits(n)`: Iteratively accumulates the last digit of the absolute value of
+   `n` using modulo and division operations.
+2. `sum_of_digits_recursion(n)`: Recursively peels off the final digit and calls itself
+   on the remaining prefix.
+3. `sum_of_digits_compact(n)`: Converts the absolute value of `n` to a string and sums
+   the numeric value of each character.
+
+All functions avoid foreign interfaces and run on `runtime/vm`. Tests cover positive,
+negative, and zero inputs.
+*/
+
+fun abs_int(n: int): int {
+  if n < 0 { return -n }
+  return n
+}
+
+fun sum_of_digits(n: int): int {
+  var m = abs_int(n)
+  var res = 0
+  while m > 0 {
+    res = res + (m % 10)
+    m = m / 10
+  }
+  return res
+}
+
+fun sum_of_digits_recursion(n: int): int {
+  let m = abs_int(n)
+  if m < 10 { return m }
+  return (m % 10) + sum_of_digits_recursion(m / 10)
+}
+
+fun sum_of_digits_compact(n: int): int {
+  let s = str(abs_int(n))
+  var res = 0
+  var i = 0
+  while i < len(s) {
+    res = res + (s[i] as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun test_sum_of_digits() {
+  if sum_of_digits(12345) != 15 { panic("sum_of_digits 12345 failed") }
+  if sum_of_digits(123) != 6 { panic("sum_of_digits 123 failed") }
+  if sum_of_digits(-123) != 6 { panic("sum_of_digits -123 failed") }
+  if sum_of_digits(0) != 0 { panic("sum_of_digits 0 failed") }
+  if sum_of_digits_recursion(12345) != 15 { panic("recursion 12345 failed") }
+  if sum_of_digits_recursion(123) != 6 { panic("recursion 123 failed") }
+  if sum_of_digits_recursion(-123) != 6 { panic("recursion -123 failed") }
+  if sum_of_digits_recursion(0) != 0 { panic("recursion 0 failed") }
+  if sum_of_digits_compact(12345) != 15 { panic("compact 12345 failed") }
+  if sum_of_digits_compact(123) != 6 { panic("compact 123 failed") }
+  if sum_of_digits_compact(-123) != 6 { panic("compact -123 failed") }
+  if sum_of_digits_compact(0) != 0 { panic("compact 0 failed") }
+}
+
+fun main() {
+  test_sum_of_digits()
+  print(str(sum_of_digits(12345)))
+}
+
+main()
