@@ -1,0 +1,64 @@
+/*
+Nearest-neighbor image resizing
+------------------------------
+Given an image represented as a 3-D list (height x width x channels),
+resize it to a target width and height using nearest-neighbor interpolation.
+For each destination pixel, the algorithm chooses the source pixel whose
+coordinates are obtained by scaling by the ratios src_w/dst_w and src_h/dst_h.
+This mirrors the Python implementation from TheAlgorithms project.
+The example resizes a tiny 2x2 RGB image to 4x4.
+*/
+
+fun zeros3d(h: int, w: int, c: int): list<list<list<int>>> {
+  var arr: list<list<list<int>>> = []
+  var y = 0
+  while y < h {
+    var row: list<list<int>> = []
+    var x = 0
+    while x < w {
+      var pixel: list<int> = []
+      var k = 0
+      while k < c {
+        pixel = append(pixel, 0)
+        k = k + 1
+      }
+      row = append(row, pixel)
+      x = x + 1
+    }
+    arr = append(arr, row)
+    y = y + 1
+  }
+  return arr
+}
+
+fun resize_nn(img: list<list<list<int>>>, dst_w: int, dst_h: int): list<list<list<int>>> {
+  let src_h = len(img)
+  let src_w = len(img[0])
+  let channels = len(img[0][0])
+  let ratio_x = (src_w as float) / (dst_w as float)
+  let ratio_y = (src_h as float) / (dst_h as float)
+  var out = zeros3d(dst_h, dst_w, channels)
+  var i = 0
+  while i < dst_h {
+    var j = 0
+    while j < dst_w {
+      let src_x = (ratio_x * (j as float)) as int
+      let src_y = (ratio_y * (i as float)) as int
+      out[i][j] = img[src_y][src_x]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let img: list<list<list<int>>> = [
+    [[0, 0, 0], [255, 255, 255]],
+    [[255, 0, 0], [0, 255, 0]]
+  ]
+  let resized = resize_nn(img, 4, 4)
+  print(resized)
+}
+
+main()
