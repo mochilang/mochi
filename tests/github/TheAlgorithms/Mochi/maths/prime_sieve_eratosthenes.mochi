@@ -1,0 +1,74 @@
+/*
+Sieve of Eratosthenes
+---------------------
+Given a positive integer n, this algorithm enumerates all prime numbers not
+exceeding n.  It maintains a boolean array representing whether each number is
+assumed prime.  Starting from 2, each prime p marks all multiples of p as
+composite beginning at p*p.  The remaining indices set to true correspond to the
+primes.  The procedure runs in O(n log log n) time and mirrors the Python
+implementation from TheAlgorithms.
+*/
+
+fun prime_sieve_eratosthenes(num: int): list<int> {
+  if num <= 0 {
+    panic("Input must be a positive integer")
+  }
+  var primes: list<bool> = []
+  var i = 0
+  while i <= num {
+    primes = append(primes, true)
+    i = i + 1
+  }
+  var p = 2
+  while p * p <= num {
+    if primes[p] {
+      var j = p * p
+      while j <= num {
+        primes[j] = false
+        j = j + p
+      }
+    }
+    p = p + 1
+  }
+  var result: list<int> = []
+  var k = 2
+  while k <= num {
+    if primes[k] {
+      result = append(result, k)
+    }
+    k = k + 1
+  }
+  return result
+}
+
+fun list_eq(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun test_prime_sieve_eratosthenes() {
+  if !list_eq(prime_sieve_eratosthenes(10), [2, 3, 5, 7]) {
+    panic("test 10 failed")
+  }
+  if !list_eq(prime_sieve_eratosthenes(20), [2, 3, 5, 7, 11, 13, 17, 19]) {
+    panic("test 20 failed")
+  }
+  if !list_eq(prime_sieve_eratosthenes(2), [2]) {
+    panic("test 2 failed")
+  }
+  if len(prime_sieve_eratosthenes(1)) != 0 {
+    panic("test 1 failed")
+  }
+}
+
+fun main() {
+  test_prime_sieve_eratosthenes()
+  print(str(prime_sieve_eratosthenes(20)))
+}
+
+main()
