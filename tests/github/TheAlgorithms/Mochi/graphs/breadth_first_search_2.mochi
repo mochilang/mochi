@@ -1,0 +1,85 @@
+/*
+Perform breadth-first search on an unweighted graph.
+
+The algorithm explores the graph level by level starting from a given
+source vertex.  A queue stores the frontier.  Each iteration removes the
+front vertex, visits all unseen neighbors, marks them visited and enqueues
+them.  The visit order is the BFS traversal order and covers each vertex
+at the minimal distance from the start.  Runtime is O(V + E) for V
+vertices and E edges.
+
+Two versions are provided:
+1. `breadth_first_search` uses list slicing to dequeue, mimicking a simple
+   queue structure.
+2. `breadth_first_search_with_deque` keeps a head index to dequeue in O(1)
+   time similar to a double-ended queue.
+*/
+
+fun join(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    s = s + xs[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun breadth_first_search(graph: map<string, list<string>>, start: string): list<string> {
+  var explored: map<string, bool> = {}
+  explored[start] = true
+  var result: list<string> = [start]
+  var queue: list<string> = [start]
+  while len(queue) > 0 {
+    let v = queue[0]
+    queue = queue[1:len(queue)]
+    let children = graph[v]
+    var i = 0
+    while i < len(children) {
+      let w = children[i]
+      if !(w in explored) {
+        explored[w] = true
+        result = append(result, w)
+        queue = append(queue, w)
+      }
+      i = i + 1
+    }
+  }
+  return result
+}
+
+fun breadth_first_search_with_deque(graph: map<string, list<string>>, start: string): list<string> {
+  var visited: map<string, bool> = {}
+  visited[start] = true
+  var result: list<string> = [start]
+  var queue: list<string> = [start]
+  var head = 0
+  while head < len(queue) {
+    let v = queue[head]
+    head = head + 1
+    let children = graph[v]
+    var i = 0
+    while i < len(children) {
+      let child = children[i]
+      if !(child in visited) {
+        visited[child] = true
+        result = append(result, child)
+        queue = append(queue, child)
+      }
+      i = i + 1
+    }
+  }
+  return result
+}
+
+let G: map<string, list<string>> = {
+  "A": ["B", "C"],
+  "B": ["A", "D", "E"],
+  "C": ["A", "F"],
+  "D": ["B"],
+  "E": ["B", "F"],
+  "F": ["C", "E"]
+}
+
+print(join(breadth_first_search(G, "A")))
+print(join(breadth_first_search_with_deque(G, "A")))
