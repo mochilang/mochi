@@ -1,0 +1,62 @@
+/*
+Find the longest increasing subsequence (LIS) of a list of integers.
+
+The LIS of a sequence is the longest subsequence where each element is
+strictly greater than the previous one.  This implementation mirrors the
+recursive pivot-based strategy from the reference Python version:
+- Choose the first element as a pivot.
+- Search for the first smaller element and recursively compute the LIS
+  starting from that position.
+- Build another candidate by filtering the remaining elements that are
+  greater than or equal to the pivot, prepend the pivot and recurse.
+- Return the longer of the two candidates.
+The algorithm runs in O(n^2) time in the worst case.
+*/
+
+fun longest_subsequence(xs: list<int>): list<int> {
+  let n = len(xs)
+  if n <= 1 {
+    return xs
+  }
+  let pivot = xs[0]
+  var is_found = false
+  var i = 1
+  var longest_subseq: list<int> = []
+  while !is_found && i < n {
+    if xs[i] < pivot {
+      is_found = true
+      var temp_array = slice(xs, i, n)
+      temp_array = longest_subsequence(temp_array)
+      if len(temp_array) > len(longest_subseq) {
+        longest_subseq = temp_array
+      }
+    } else {
+      i = i + 1
+    }
+  }
+  var filtered: list<int> = []
+  var j = 1
+  while j < n {
+    if xs[j] >= pivot {
+      filtered = append(filtered, xs[j])
+    }
+    j = j + 1
+  }
+  var candidate: list<int> = []
+  candidate = append(candidate, pivot)
+  candidate = concat(candidate, longest_subsequence(filtered))
+  if len(candidate) > len(longest_subseq) {
+    return candidate
+  } else {
+    return longest_subseq
+  }
+}
+
+test "examples" {
+  expect longest_subsequence([10, 22, 9, 33, 21, 50, 41, 60, 80]) == [10, 22, 33, 41, 60, 80]
+  expect longest_subsequence([4, 8, 7, 5, 1, 12, 2, 3, 9]) == [1, 2, 3, 9]
+  expect longest_subsequence([28, 26, 12, 23, 35, 39]) == [12, 23, 35, 39]
+  expect longest_subsequence([9, 8, 7, 6, 5, 7]) == [5, 7]
+  expect longest_subsequence([1, 1, 1]) == [1, 1, 1]
+  expect longest_subsequence([]) == []
+}
