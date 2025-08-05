@@ -1,0 +1,139 @@
+/*
+Implement a singly linked list of integers and common operations using a
+simple array-based representation. Each list stores its elements in a
+plain array while the functions operate as if nodes were linked in one
+direction only. Supported operations mirror the Python version from The
+Algorithms repository: insertion at the head, tail or an arbitrary index,
+deleting nodes from those positions, searching for a value, reversing the
+list, obtaining its length and checking for emptiness. The demonstration
+builds a list, performs several operations and prints intermediate
+results. All logic is written in pure Mochi without FFI and avoids the
+`any` type.
+*/
+
+type LinkedList {
+  data: list<int>
+}
+
+fun empty_list(): LinkedList {
+  return LinkedList { data: [] }
+}
+
+fun length(list: LinkedList): int {
+  return len(list.data)
+}
+
+fun is_empty(list: LinkedList): bool {
+  return len(list.data) == 0
+}
+
+fun to_string(list: LinkedList): string {
+  if len(list.data) == 0 { return "" }
+  var s = str(list.data[0])
+  var i = 1
+  while i < len(list.data) {
+    s = s + "->" + str(list.data[i])
+    i = i + 1
+  }
+  return s
+}
+
+fun insert_nth(list: LinkedList, index: int, value: int): LinkedList {
+  if index < 0 || index > len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  while i < index {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  res = append(res, value)
+  while i < len(list.data) {
+    res = append(res, list.data[i])
+    i = i + 1
+  }
+  return LinkedList { data: res }
+}
+
+fun insert_head(list: LinkedList, value: int): LinkedList {
+  return insert_nth(list, 0, value)
+}
+
+fun insert_tail(list: LinkedList, value: int): LinkedList {
+  return insert_nth(list, len(list.data), value)
+}
+
+type DeleteResult {
+  list: LinkedList,
+  value: int
+}
+
+fun delete_nth(list: LinkedList, index: int): DeleteResult {
+  if index < 0 || index >= len(list.data) { panic("index out of range") }
+  var res: list<int> = []
+  var i = 0
+  var val = 0
+  while i < len(list.data) {
+    if i == index {
+      val = list.data[i]
+    } else {
+      res = append(res, list.data[i])
+    }
+    i = i + 1
+  }
+  return DeleteResult { list: LinkedList { data: res }, value: val }
+}
+
+fun delete_head(list: LinkedList): DeleteResult {
+  return delete_nth(list, 0)
+}
+
+fun delete_tail(list: LinkedList): DeleteResult {
+  return delete_nth(list, len(list.data) - 1)
+}
+
+fun search(list: LinkedList, value: int): int {
+  var i = 0
+  while i < len(list.data) {
+    if list.data[i] == value { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun reverse_list(list: LinkedList): LinkedList {
+  var res: list<int> = []
+  var i = len(list.data) - 1
+  while i >= 0 {
+    res = append(res, list.data[i])
+    i = i - 1
+  }
+  return LinkedList { data: res }
+}
+
+fun main() {
+  var ll = empty_list()
+  var i = 1
+  while i <= 5 {
+    ll = insert_tail(ll, i)
+    i = i + 1
+  }
+  print(to_string(ll))
+  ll = insert_head(ll, 0)
+  print(to_string(ll))
+  ll = insert_nth(ll, 3, 99)
+  print(to_string(ll))
+  print(str(search(ll, 99)))
+  var res = delete_head(ll)
+  ll = res.list
+  print(str(res.value))
+  res = delete_tail(ll)
+  ll = res.list
+  print(str(res.value))
+  res = delete_nth(ll, 2)
+  ll = res.list
+  print(str(res.value))
+  ll = reverse_list(ll)
+  print(to_string(ll))
+}
+
+main()
