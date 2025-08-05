@@ -1,0 +1,56 @@
+/*
+Compute the square root of a positive number using Newton's method.
+
+Given a target value `a`, we seek `x` such that x^2 = a. Define
+f(x) = x^2 - a and f'(x) = 2x. Starting from an initial guess greater
+than `a` found by repeatedly squaring 2, Newton's iteration updates
+
+    x_{n+1} = x_n - f(x_n) / f'(x_n)
+
+The process repeats until the change between iterations is below a
+tolerance or a maximum iteration count is reached. The method
+converges quadratically for positive `a`. Negative inputs raise a
+runtime error. This implementation runs in O(k) time for k iterations
+and uses only basic arithmetic.
+*/
+
+fun fx(x: float, a: float): float {
+  return x * x - a
+}
+
+fun fx_derivative(x: float): float {
+  return 2.0 * x
+}
+
+fun get_initial_point(a: float): float {
+  var start = 2.0
+  while start <= a {
+    start = start * start
+  }
+  return start
+}
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun square_root_iterative(a: float, max_iter: int, tolerance: float): float {
+  if a < 0.0 { panic("math domain error") }
+  var value = get_initial_point(a)
+  var i = 0
+  while i < max_iter {
+    let prev_value = value
+    value = value - fx(value, a) / fx_derivative(value)
+    if abs_float(prev_value - value) < tolerance { return value }
+    i = i + 1
+  }
+  return value
+}
+
+let r1 = square_root_iterative(4.0, 9999, 0.00000000000001)
+print(str(r1))
+let r2 = square_root_iterative(3.2, 9999, 0.00000000000001)
+print(str(r2))
+let r3 = square_root_iterative(140.0, 9999, 0.00000000000001)
+print(str(r3))
