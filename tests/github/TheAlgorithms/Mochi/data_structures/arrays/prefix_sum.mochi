@@ -1,0 +1,68 @@
+/*
+Compute prefix sums of an integer array to enable fast range sum queries.
+The constructor produces a list where each entry is the sum of all elements
+up to that index. A range sum from start..end is then obtained in O(1)
+by subtracting adjacent prefix values. The data structure also supports
+checking if any contiguous subarray totals to a target value by tracking
+seen prefix sums. For an array of length n this construction runs in O(n)
+time and uses O(n) space, while queries run in O(1).
+*/
+
+type PrefixSum = { prefix_sum: list<int> }
+
+fun make_prefix_sum(arr: list<int>): PrefixSum {
+  var prefix: list<int> = []
+  var running = 0
+  var i = 0
+  while i < len(arr) {
+    running = running + arr[i]
+    prefix = append(prefix, running)
+    i = i + 1
+  }
+  return PrefixSum{ prefix_sum: prefix }
+}
+
+fun get_sum(ps: PrefixSum, start: int, end: int): int {
+  let prefix = ps.prefix_sum
+  if len(prefix) == 0 {
+    panic("The array is empty.")
+  }
+  if start < 0 || end >= len(prefix) || start > end {
+    panic("Invalid range specified.")
+  }
+  if start == 0 {
+    return prefix[end]
+  }
+  return prefix[end] - prefix[start - 1]
+}
+
+fun contains_sum(ps: PrefixSum, target_sum: int): bool {
+  let prefix = ps.prefix_sum
+  var sums: list<int> = [0]
+  var i = 0
+  while i < len(prefix) {
+    let sum_item = prefix[i]
+    var j = 0
+    while j < len(sums) {
+      if sums[j] == sum_item - target_sum {
+        return true
+      }
+      j = j + 1
+    }
+    sums = append(sums, sum_item)
+    i = i + 1
+  }
+  return false
+}
+
+let ps = make_prefix_sum([1, 2, 3])
+print(str(get_sum(ps, 0, 2)))
+print(str(get_sum(ps, 1, 2)))
+print(str(get_sum(ps, 2, 2)))
+print(str(contains_sum(ps, 6)))
+print(str(contains_sum(ps, 5)))
+print(str(contains_sum(ps, 3)))
+print(str(contains_sum(ps, 4)))
+print(str(contains_sum(ps, 7)))
+let ps2 = make_prefix_sum([1, -2, 3])
+print(str(contains_sum(ps2, 2)))
