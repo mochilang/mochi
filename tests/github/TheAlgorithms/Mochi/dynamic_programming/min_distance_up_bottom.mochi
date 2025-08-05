@@ -1,0 +1,68 @@
+/*
+Edit Distance via Top-Down Dynamic Programming (Up-Bottom)
+---------------------------------------------------------
+Given two strings, compute the minimum number of single-character edits
+(insertions, deletions, substitutions) required to transform the first
+string into the second. This implementation uses a top-down recursive
+approach with memoization (an "up-bottom" dynamic programming strategy).
+
+For indices `i` and `j` into the two strings, we consider:
+1. Deleting a character from word1 (`i+1, j`)
+2. Inserting a character into word1 (`i, j+1`)
+3. Replacing or matching the current characters (`i+1, j+1`)
+
+The result is the minimum of these options plus the cost of the current
+operation (0 if characters match, 1 otherwise). Base cases occur when one
+index exceeds its word length, in which case the remaining characters of
+the other word must all be inserted or deleted.
+
+Time Complexity: O(m * n)
+Space Complexity: O(m * n)
+*/
+
+fun min3(a: int, b: int, c: int): int {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+fun helper(word1: string, word2: string, cache: list<list<int>>, i: int, j: int, len1: int, len2: int): int {
+  if i >= len1 {
+    return len2 - j
+  }
+  if j >= len2 {
+    return len1 - i
+  }
+  if cache[i][j] != (0 - 1) {
+    return cache[i][j]
+  }
+  var diff = 0
+  if substring(word1, i, i + 1) != substring(word2, j, j + 1) {
+    diff = 1
+  }
+  let delete_cost = 1 + helper(word1, word2, cache, i + 1, j, len1, len2)
+  let insert_cost = 1 + helper(word1, word2, cache, i, j + 1, len1, len2)
+  let replace_cost = diff + helper(word1, word2, cache, i + 1, j + 1, len1, len2)
+  cache[i][j] = min3(delete_cost, insert_cost, replace_cost)
+  return cache[i][j]
+}
+
+fun min_distance_up_bottom(word1: string, word2: string): int {
+  let len1 = len(word1)
+  let len2 = len(word2)
+  var cache: list<list<int>> = []
+  for _ in 0..len1 {
+    var row: list<int> = []
+    for _2 in 0..len2 {
+      row = append(row, 0 - 1)
+    }
+    cache = append(cache, row)
+  }
+  return helper(word1, word2, cache, 0, 0, len1, len2)
+}
+
+print(str(min_distance_up_bottom("intention", "execution")))
+print(str(min_distance_up_bottom("intention", "")))
+print(str(min_distance_up_bottom("", "")))
+print(str(min_distance_up_bottom("zooicoarchaeologist", "zoologist")))
