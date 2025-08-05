@@ -1,0 +1,222 @@
+/*
+SHA-1 Cryptographic Hash Function
+---------------------------------
+This Mochi program implements the SHA-1 hashing algorithm. SHA-1 processes
+an input message in 512-bit blocks to produce a 160-bit digest. The steps are:
+1. Convert the input string to a byte array using simple ASCII codes.
+2. Pad the message with a single 1 bit (0x80) followed by zeros so that the
+   length is congruent to 56 modulo 64. Append the original length as a
+   64-bit big-endian integer.
+3. Break the padded message into 512-bit blocks. Each block is expanded into
+   eighty 32-bit words using XOR and a left rotation.
+4. Initialize five 32-bit state variables and iterate over the 80 rounds of
+   the compression function. Different logical functions and constants are
+   used in rounds [0,20), [20,40), [40,60) and [60,80).
+5. After processing all blocks, the state variables are added to the initial
+   values and formatted as a 40-character hexadecimal digest.
+The implementation avoids foreign function interfaces and implements bitwise
+operations using integer arithmetic so it can run on the Mochi runtime/vm.
+*/
+
+let MOD = 4294967296
+let ASCII = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun ord(ch: string): int {
+  var i = 0
+  while i < len(ASCII) {
+    if ASCII[i:i+1] == ch { return 32 + i }
+    i = i + 1
+  }
+  return 0
+}
+
+fun pow2(n: int): int {
+  var res = 1
+  var i = 0
+  while i < n {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_and(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    if (x % 2 == 1) && (y % 2 == 1) { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_or(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    let abit = x % 2
+    let bbit = y % 2
+    if abit == 1 || bbit == 1 { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_xor(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  var i = 0
+  while i < 32 {
+    let abit = x % 2
+    let bbit = y % 2
+    if (abit == 1 && bbit == 0) || (abit == 0 && bbit == 1) { res = res + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_not(a: int): int {
+  return (MOD - 1) - a
+}
+
+fun rotate_left(n: int, b: int): int {
+  let left = (n * pow2(b)) % MOD
+  let right = n / pow2(32 - b)
+  return (left + right) % MOD
+}
+
+fun to_hex32(n: int): string {
+  let digits = "0123456789abcdef"
+  var num = n
+  var s = ""
+  if num == 0 { s = "0" }
+  while num > 0 {
+    let d = num % 16
+    s = digits[d:d+1] + s
+    num = num / 16
+  }
+  while len(s) < 8 { s = "0" + s }
+  if len(s) > 8 { s = s[len(s)-8:len(s)] }
+  return s
+}
+
+fun sha1(message: string): string {
+  var bytes: list<int> = []
+  var i = 0
+  while i < len(message) {
+    bytes = append(bytes, ord(message[i:i+1]))
+    i = i + 1
+  }
+  bytes = append(bytes, 128)
+  while (len(bytes) + 8) % 64 != 0 {
+    bytes = append(bytes, 0)
+  }
+  let bit_len = len(message) * 8
+  var len_bytes: list<int> = [0,0,0,0,0,0,0,0]
+  var bl = bit_len
+  var k = 7
+  while k >= 0 {
+    len_bytes[k] = bl % 256
+    bl = bl / 256
+    k = k - 1
+  }
+  var j = 0
+  while j < 8 {
+    bytes = append(bytes, len_bytes[j])
+    j = j + 1
+  }
+  var blocks: list<list<int>> = []
+  var pos = 0
+  while pos < len(bytes) {
+    var block: list<int> = []
+    var j2 = 0
+    while j2 < 64 {
+      block = append(block, bytes[pos + j2])
+      j2 = j2 + 1
+    }
+    blocks = append(blocks, block)
+    pos = pos + 64
+  }
+  var h0 = 1732584193
+  var h1 = 4023233417
+  var h2 = 2562383102
+  var h3 = 271733878
+  var h4 = 3285377520
+  var bindex = 0
+  while bindex < len(blocks) {
+    let block = blocks[bindex]
+    var w: list<int> = []
+    var t = 0
+    while t < 16 {
+      let j3 = t * 4
+      let word = (((block[j3] * 256 + block[j3 + 1]) * 256 + block[j3 + 2]) * 256 + block[j3 + 3])
+      w = append(w, word)
+      t = t + 1
+    }
+    while t < 80 {
+      let tmp = bit_xor(bit_xor(bit_xor(w[t - 3], w[t - 8]), w[t - 14]), w[t - 16])
+      w = append(w, rotate_left(tmp, 1))
+      t = t + 1
+    }
+    var a = h0
+    var b = h1
+    var c = h2
+    var d = h3
+    var e = h4
+    var i2 = 0
+    while i2 < 80 {
+      var f = 0
+      var kconst = 0
+      if i2 < 20 {
+        f = bit_or(bit_and(b, c), bit_and(bit_not(b), d))
+        kconst = 1518500249
+      } else if i2 < 40 {
+        f = bit_xor(bit_xor(b, c), d)
+        kconst = 1859775393
+      } else if i2 < 60 {
+        f = bit_or(bit_or(bit_and(b, c), bit_and(b, d)), bit_and(c, d))
+        kconst = 2400959708
+      } else {
+        f = bit_xor(bit_xor(b, c), d)
+        kconst = 3395469782
+      }
+      let temp = (rotate_left(a, 5) + f + e + kconst + w[i2]) % MOD
+      e = d
+      d = c
+      c = rotate_left(b, 30)
+      b = a
+      a = temp
+      i2 = i2 + 1
+    }
+    h0 = (h0 + a) % MOD
+    h1 = (h1 + b) % MOD
+    h2 = (h2 + c) % MOD
+    h3 = (h3 + d) % MOD
+    h4 = (h4 + e) % MOD
+    bindex = bindex + 1
+  }
+  return to_hex32(h0) + to_hex32(h1) + to_hex32(h2) + to_hex32(h3) + to_hex32(h4)
+}
+
+fun main() {
+  print(sha1("Test String"))
+}
+
+main()
