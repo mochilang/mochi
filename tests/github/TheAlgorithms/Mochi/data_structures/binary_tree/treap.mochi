@@ -1,0 +1,106 @@
+/*
+Treap (Tree + Heap)
+
+A treap maintains the binary search tree property on node values and the
+heap property on randomly assigned priorities. Each node stores an integer
+value and a float priority. Arrays store node fields by index so the
+structure remains fully typed without using `any`.
+
+Operations:
+  - split: partition tree into nodes less than a value and nodes greater or equal
+  - merge: combine two trees where all left values < right values
+  - insert: insert a value by splitting and merging
+  - erase: delete all nodes with a given value
+  - inorder: collect sorted values
+
+This demonstration follows the doctest from the Python original.
+*/
+
+let NIL = 0 - 1
+var node_values: list<int> = []
+var node_priors: list<float> = []
+var node_lefts: list<int> = []
+var node_rights: list<int> = []
+
+var seed = 1
+fun random(): float {
+  seed = (seed * 13 + 7) % 100
+  return (seed as float) / 100.0
+}
+
+fun new_node(value: int): int {
+  node_values = append(node_values, value)
+  node_priors = append(node_priors, random())
+  node_lefts = append(node_lefts, NIL)
+  node_rights = append(node_rights, NIL)
+  return len(node_values) - 1
+}
+
+type SplitResult { left: int, right: int }
+
+fun split(root: int, value: int): SplitResult {
+  if root == NIL { return SplitResult { left: NIL, right: NIL } }
+  if value < node_values[root] {
+    let res = split(node_lefts[root], value)
+    node_lefts[root] = res.right
+    return SplitResult { left: res.left, right: root }
+  }
+  let res = split(node_rights[root], value)
+  node_rights[root] = res.left
+  return SplitResult { left: root, right: res.right }
+}
+
+fun merge(left: int, right: int): int {
+  if left == NIL { return right }
+  if right == NIL { return left }
+  if node_priors[left] < node_priors[right] {
+    node_rights[left] = merge(node_rights[left], right)
+    return left
+  }
+  node_lefts[right] = merge(left, node_lefts[right])
+  return right
+}
+
+fun insert(root: int, value: int): int {
+  let node = new_node(value)
+  let res = split(root, value)
+  return merge(merge(res.left, node), res.right)
+}
+
+fun erase(root: int, value: int): int {
+  let res1 = split(root, value - 1)
+  let res2 = split(res1.right, value)
+  return merge(res1.left, res2.right)
+}
+
+fun inorder(i: int, acc: list<int>): list<int> {
+  if i == NIL { return acc }
+  let left_acc = inorder(node_lefts[i], acc)
+  let with_node = append(left_acc, node_values[i])
+  return inorder(node_rights[i], with_node)
+}
+
+fun main() {
+  var root = NIL
+  root = insert(root, 1)
+  print(str(inorder(root, [])))
+  root = insert(root, 3)
+  root = insert(root, 5)
+  root = insert(root, 17)
+  root = insert(root, 19)
+  root = insert(root, 2)
+  root = insert(root, 16)
+  root = insert(root, 4)
+  root = insert(root, 0)
+  print(str(inorder(root, [])))
+  root = insert(root, 4)
+  root = insert(root, 4)
+  root = insert(root, 4)
+  print(str(inorder(root, [])))
+  root = erase(root, 0)
+  print(str(inorder(root, [])))
+  root = erase(root, 4)
+  print(str(inorder(root, [])))
+}
+
+main()
