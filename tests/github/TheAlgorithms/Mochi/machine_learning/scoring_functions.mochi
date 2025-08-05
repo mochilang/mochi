@@ -1,0 +1,138 @@
+/*
+Evaluate regression and classification predictions using classic scoring
+metrics translated from TheAlgorithms' Python implementations.
+
+Functions implemented:
+- Mean Absolute Error (MAE): average absolute difference.
+- Mean Squared Error (MSE): average squared difference.
+- Root Mean Squared Error (RMSE): square root of MSE.
+- Root Mean Square Logarithmic Error (RMSLE): RMSE on log-transformed values.
+- Mean Bias Deviation (MBD): average bias as a percentage of the mean actual
+  value, indicating over- or under-prediction.
+- Manual Accuracy: fraction of exact matches between predictions and actuals.
+
+Each function runs in O(n) time and O(1) extra space where n is the number
+of observations.  Sqrt and natural log are approximated using iterative
+methods to keep the implementation in pure Mochi without FFI.
+*/
+
+fun absf(x: float): float {
+  if x < 0.0 { return 0.0 - x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun ln_series(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun ln(x: float): float {
+  var y = x
+  var k = 0
+  while y >= 10.0 {
+    y = y / 10.0
+    k = k + 1
+  }
+  while y < 1.0 {
+    y = y * 10.0
+    k = k - 1
+  }
+  return ln_series(y) + (k as float) * ln_series(10.0)
+}
+
+fun mae(predict: list<float>, actual: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(predict) {
+    let diff = predict[i] - actual[i]
+    sum = sum + absf(diff)
+    i = i + 1
+  }
+  return sum / (len(predict) as float)
+}
+
+fun mse(predict: list<float>, actual: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(predict) {
+    let diff = predict[i] - actual[i]
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sum / (len(predict) as float)
+}
+
+fun rmse(predict: list<float>, actual: list<float>): float {
+  return sqrtApprox(mse(predict, actual))
+}
+
+fun rmsle(predict: list<float>, actual: list<float>): float {
+  var sum = 0.0
+  var i = 0
+  while i < len(predict) {
+    let lp = ln(predict[i] + 1.0)
+    let la = ln(actual[i] + 1.0)
+    let diff = lp - la
+    sum = sum + diff * diff
+    i = i + 1
+  }
+  return sqrtApprox(sum / (len(predict) as float))
+}
+
+fun mbd(predict: list<float>, actual: list<float>): float {
+  var diff_sum = 0.0
+  var actual_sum = 0.0
+  var i = 0
+  while i < len(predict) {
+    diff_sum = diff_sum + (predict[i] - actual[i])
+    actual_sum = actual_sum + actual[i]
+    i = i + 1
+  }
+  let n = len(predict) as float
+  let numerator = diff_sum / n
+  let denominator = actual_sum / n
+  return numerator / denominator * 100.0
+}
+
+fun manual_accuracy(predict: list<float>, actual: list<float>): float {
+  var correct = 0
+  var i = 0
+  while i < len(predict) {
+    if predict[i] == actual[i] { correct = correct + 1 }
+    i = i + 1
+  }
+  return (correct as float) / (len(predict) as float)
+}
+
+fun main() {
+  let actual = [1.0, 2.0, 3.0]
+  let predict = [1.0, 4.0, 3.0]
+  print(str(mae(predict, actual)))
+  print(str(mse(predict, actual)))
+  print(str(rmse(predict, actual)))
+  print(str(rmsle([10.0, 2.0, 30.0], [10.0, 10.0, 30.0])))
+  print(str(mbd([2.0, 3.0, 4.0], [1.0, 2.0, 3.0])))
+  print(str(mbd([0.0, 1.0, 1.0], [1.0, 2.0, 3.0])))
+  print(str(manual_accuracy(predict, actual)))
+}
+
+main()
