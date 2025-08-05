@@ -1,0 +1,86 @@
+/*
+Random graph generator using adjacency list.
+
+Given number of vertices `n` and probability `p`, the algorithm adds edges
+between every pair of vertices with independent probability `p`. When `directed`
+is false, edges are mirrored to create an undirected graph; otherwise edges are
+one-way. The graph is represented as a map from each vertex to its list of
+neighbours.
+
+Special cases:
+• p ≥ 1 → complete graph.
+• p ≤ 0 → graph without edges.
+
+A simple linear congruential generator (LCG) provides pseudo-random numbers so
+results are deterministic once a seed is set. Time complexity is O(n²) because
+we examine every pair of vertices exactly once.
+*/
+
+var seed = 1
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun random(): float {
+  return (1.0 * rand()) / 2147483648.0
+}
+
+fun complete_graph(vertices_number: int): map<int, list<int>> {
+  var graph: map<int, list<int>> = {}
+  var i = 0
+  while i < vertices_number {
+    var neighbors: list<int> = []
+    var j = 0
+    while j < vertices_number {
+      if j != i {
+        neighbors = append(neighbors, j)
+      }
+      j = j + 1
+    }
+    graph[i] = neighbors
+    i = i + 1
+  }
+  return graph
+}
+
+fun random_graph(vertices_number: int, probability: float, directed: bool): map<int, list<int>> {
+  var graph: map<int, list<int>> = {}
+  var i = 0
+  while i < vertices_number {
+    graph[i] = []
+    i = i + 1
+  }
+  if probability >= 1.0 {
+    return complete_graph(vertices_number)
+  }
+  if probability <= 0.0 {
+    return graph
+  }
+  i = 0
+  while i < vertices_number {
+    var j = i + 1
+    while j < vertices_number {
+      if random() < probability {
+        graph[i] = append(graph[i], j)
+        if !directed {
+          graph[j] = append(graph[j], i)
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return graph
+}
+
+fun main() {
+  seed = 1
+  let g1 = random_graph(4, 0.5, false)
+  print(g1)
+  seed = 1
+  let g2 = random_graph(4, 0.5, true)
+  print(g2)
+}
+
+main()
