@@ -1,0 +1,26 @@
+/*
+Determine whether a positive integer is a power of four.
+
+A number is a power of four if it is positive and can be repeatedly divided
+by 4 until the value becomes 1. This procedure is equivalent to checking
+that only one bit is set in the binary representation and that the set bit
+is located at an even position. We avoid direct bitwise operations by using
+integer division and remainder. The loop runs O(log_4 n) iterations.
+*/
+
+fun power_of_4(number: int): bool {
+  if number <= 0 {
+    return false
+  }
+  var n = number
+  while n % 4 == 0 {
+    n = n / 4
+  }
+  return n == 1
+}
+
+print(str(power_of_4(1)))
+print(str(power_of_4(2)))
+print(str(power_of_4(4)))
+print(str(power_of_4(6)))
+print(str(power_of_4(64)))
