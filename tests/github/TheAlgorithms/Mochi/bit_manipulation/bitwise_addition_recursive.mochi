@@ -1,0 +1,53 @@
+/*
+Bitwise Addition (Recursive)
+---------------------------
+Given two non-negative integers, this algorithm computes their sum
+using only bitwise logic.  At each step we compute the partial sum
+using XOR which adds the bits without carries, and the carry bits
+using AND.  If no carries remain the partial sum is the result.
+Otherwise the function recurses on the partial sum and the carry
+shifted left by one bit.  This emulates binary addition where carries
+propagate to higher bit positions until none remain.
+*/
+
+fun bitwise_xor(a: int, b: int): int {
+  var result = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 || y > 0 {
+    let ax = x % 2
+    let by = y % 2
+    if (ax + by) % 2 == 1 { result = result + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return result
+}
+
+fun bitwise_and(a: int, b: int): int {
+  var result = 0
+  var bit = 1
+  var x = a
+  var y = b
+  while x > 0 && y > 0 {
+    if x % 2 == 1 && y % 2 == 1 { result = result + bit }
+    x = x / 2
+    y = y / 2
+    bit = bit * 2
+  }
+  return result
+}
+
+fun bitwise_addition_recursive(number: int, other_number: int): int {
+  if number < 0 || other_number < 0 { panic("Both arguments MUST be non-negative!") }
+  let bitwise_sum = bitwise_xor(number, other_number)
+  let carry = bitwise_and(number, other_number)
+  if carry == 0 { return bitwise_sum }
+  return bitwise_addition_recursive(bitwise_sum, carry * 2)
+}
+
+print(str(bitwise_addition_recursive(4, 5)))
+print(str(bitwise_addition_recursive(8, 9)))
+print(str(bitwise_addition_recursive(0, 4)))
