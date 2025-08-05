@@ -1,0 +1,76 @@
+/*
+Dodecahedron Surface Area and Volume
+------------------------------------
+A regular dodecahedron is a polyhedron with 12 congruent pentagonal
+faces. The following functions compute its surface area and volume
+from the length of an edge using the formulas:
+
+- Surface area: 3 * sqrt(25 + 10 * sqrt(5)) * e^2
+- Volume: ((15 + 7 * sqrt(5)) / 4) * e^3
+
+Both routines validate that the edge length is positive. Square roots
+are approximated with Newton's method so the code runs on the Mochi
+runtime/vm without any foreign function interface.
+*/
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun abs_val(num: float): float {
+  if num < 0.0 {
+    return -num
+  }
+  return num
+}
+
+fun approx_equal(a: float, b: float, eps: float): bool {
+  return abs_val(a - b) < eps
+}
+
+fun dodecahedron_surface_area(edge: int): float {
+  if edge <= 0 {
+    panic("Length must be a positive.")
+  }
+  let term = sqrtApprox(25.0 + 10.0 * sqrtApprox(5.0))
+  let e = edge as float
+  return 3.0 * term * e * e
+}
+
+fun dodecahedron_volume(edge: int): float {
+  if edge <= 0 {
+    panic("Length must be a positive.")
+  }
+  let term = (15.0 + 7.0 * sqrtApprox(5.0)) / 4.0
+  let e = edge as float
+  return term * e * e * e
+}
+
+fun test_dodecahedron() {
+  if !approx_equal(dodecahedron_surface_area(5), 516.1432201766901, 0.0001) {
+    panic("surface area 5 failed")
+  }
+  if !approx_equal(dodecahedron_surface_area(10), 2064.5728807067603, 0.0001) {
+    panic("surface area 10 failed")
+  }
+  if !approx_equal(dodecahedron_volume(5), 957.8898700780791, 0.0001) {
+    panic("volume 5 failed")
+  }
+  if !approx_equal(dodecahedron_volume(10), 7663.118960624633, 0.0001) {
+    panic("volume 10 failed")
+  }
+}
+
+fun main() {
+  test_dodecahedron()
+  print(dodecahedron_surface_area(5))
+  print(dodecahedron_volume(5))
+}
+
+main()
