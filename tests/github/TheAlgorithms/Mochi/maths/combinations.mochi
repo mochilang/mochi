@@ -1,0 +1,27 @@
+/*
+Combinations (Binomial Coefficient)
+-----------------------------------
+Given integers n and k with n >= k >= 0, compute the number of
+ways to choose k items from n without regard to order. The algorithm
+uses a multiplicative formula that builds the result iteratively:
+res = res * (n - i) / (i + 1) for i from 0 to k-1. This avoids
+factorials and keeps intermediate values small. Time complexity O(k).
+*/
+
+fun combinations(n: int, k: int): int {
+  if k < 0 || n < k { panic("Please enter positive integers for n and k where n >= k") }
+  var res: int = 1
+  var i: int = 0
+  while i < k {
+    res = res * (n - i)
+    res = res / (i + 1)
+    i = i + 1
+  }
+  return res
+}
+
+print("The number of five-card hands possible from a standard fifty-two card deck is: " + str(combinations(52, 5)))
+print("")
+print("If a class of 40 students must be arranged into groups of 4 for group projects, there are " + str(combinations(40, 4)) + " ways to arrange them.")
+print("")
+print("If 10 teams are competing in a Formula One race, there are " + str(combinations(10, 3)) + " ways that first, second and third place can be awarded.")
