@@ -1,0 +1,42 @@
+/*
+  Adjust the brightness of a grayscale image by shifting each pixel value.
+
+  The image is represented as a matrix of integers in the range 0-255.
+  For each pixel c, the transformation used by the original Python
+  implementation is:
+
+      brightness(c) = 128 + level + (c - 128) = c + level
+
+  Positive levels make the image lighter and negative levels make it
+  darker. The level is restricted to the range [-255, 255]; otherwise
+  the routine fails. The algorithm processes every pixel once, so the
+  time complexity is O(n*m) for an n×m image and it allocates a new
+  matrix of the same size for the result.
+*/
+fun change_brightness(img: list<list<int>>, level: float): list<list<int>> {
+  if !(level >= -255.0 && level <= 255.0) {
+    panic("level must be between -255.0 (black) and 255.0 (white)")
+  }
+
+  fun brightness(c: int): int {
+    return (128.0 + level + ((c as float) - 128.0)) as int
+  }
+
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(img) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(img[i]) {
+      row = append(row, brightness(img[i][j]))
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+let sample_image = [[0, 127, 255], [64, 128, 192]]
+let brighter = change_brightness(sample_image, 50.0)
+print(str(brighter))
