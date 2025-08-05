@@ -1,0 +1,148 @@
+/*
+Nagel-Schreckenberg traffic flow model
+
+This cellular automaton simulates cars on a one-dimensional highway loop.
+Each cell is either empty (-1) or holds a car with integer speed from 0 to
+`max_speed`.  A highway state is represented as a single list of speeds and
+simulation history is a list of such rows.
+
+The update rules applied each timestep:
+1. Acceleration: increase each car's speed by 1 up to `max_speed`.
+2. Braking: ensure a car will not crash by limiting speed to the number of
+   empty cells before the next car.
+3. Randomization: with probability `probability` a car slows down by 1.
+4. Movement: cars move forward by their speed (wrap around the loop).
+
+The algorithm mirrors the reference Python implementation and supports
+optional random placement and speeds when constructing the initial highway.
+A simple linear congruential generator provides deterministic pseudo-random
+numbers so the program remains pure Mochi without external libraries.
+*/
+
+var seed = 1
+let NEG_ONE = -1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun randint(a: int, b: int): int {
+  let r = rand()
+  return a + r % (b - a + 1)
+}
+
+fun random(): float {
+  return (1.0 * rand()) / 2147483648.0
+}
+
+fun construct_highway(number_of_cells: int, frequency: int, initial_speed: int,
+                      random_frequency: bool, random_speed: bool, max_speed: int): list<list<int>> {
+  var row: list<int> = []
+  var i = 0
+  while i < number_of_cells {
+    row = append(row, -1)
+    i = i + 1
+  }
+  var highway: list<list<int>> = []
+  highway = append(highway, row)
+  i = 0
+  if initial_speed < 0 {
+    initial_speed = 0
+  }
+  while i < number_of_cells {
+    var speed = initial_speed
+    if random_speed {
+      speed = randint(0, max_speed)
+    }
+    highway[0][i] = speed
+    var step = frequency
+    if random_frequency {
+      step = randint(1, max_speed * 2)
+    }
+    i = i + step
+  }
+  return highway
+}
+
+fun get_distance(highway_now: list<int>, car_index: int): int {
+  var distance = 0
+  var i = car_index + 1
+  while i < len(highway_now) {
+    if highway_now[i] > NEG_ONE {
+      return distance
+    }
+    distance = distance + 1
+    i = i + 1
+  }
+  return distance + get_distance(highway_now, -1)
+}
+
+fun update(highway_now: list<int>, probability: float, max_speed: int): list<int> {
+  let number_of_cells = len(highway_now)
+  var next_highway: list<int> = []
+  var i = 0
+  while i < number_of_cells {
+    next_highway = append(next_highway, -1)
+    i = i + 1
+  }
+  var car_index = 0
+  while car_index < number_of_cells {
+    let speed = highway_now[car_index]
+    if speed > NEG_ONE {
+      var new_speed = speed + 1
+      if new_speed > max_speed {
+        new_speed = max_speed
+      }
+      let dn = get_distance(highway_now, car_index) - 1
+      if new_speed > dn {
+        new_speed = dn
+      }
+      if random() < probability {
+        new_speed = new_speed - 1
+        if new_speed < 0 {
+          new_speed = 0
+        }
+      }
+      next_highway[car_index] = new_speed
+    }
+    car_index = car_index + 1
+  }
+  return next_highway
+}
+
+fun simulate(highway: list<list<int>>, number_of_update: int, probability: float,
+             max_speed: int): list<list<int>> {
+  let number_of_cells = len(highway[0])
+  var i = 0
+  while i < number_of_update {
+    let next_speeds = update(highway[i], probability, max_speed)
+    var real_next: list<int> = []
+    var j = 0
+    while j < number_of_cells {
+      real_next = append(real_next, -1)
+      j = j + 1
+    }
+    var k = 0
+    while k < number_of_cells {
+      let speed = next_speeds[k]
+      if speed > NEG_ONE {
+        let index = (k + speed) % number_of_cells
+        real_next[index] = speed
+      }
+      k = k + 1
+    }
+    highway = append(highway, real_next)
+    i = i + 1
+  }
+  return highway
+}
+
+fun main() {
+  let ex1 = simulate(construct_highway(6, 3, 0, false, false, 2), 2, 0.0, 2)
+  print(str(ex1))
+  let ex2 = simulate(construct_highway(5, 2, -2, false, false, 2), 3, 0.0, 2)
+  print(str(ex2))
+}
+
+main()
