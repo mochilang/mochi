@@ -1,0 +1,81 @@
+/*
+Implement a fixed-size circular queue of integers.
+The queue uses a list with front and rear indices that wrap via modulo arithmetic.
+Enqueue inserts at the rear if space permits, and dequeue removes from the front.
+Size, emptiness, and first-element queries are supported.
+The demonstration enqueues a few values, performs a dequeue, and prints results.
+*/
+
+type CircularQueue {
+  data: list<int>
+  front: int
+  rear: int
+  size: int
+  capacity: int
+}
+
+fun create_queue(capacity: int): CircularQueue {
+  var arr: list<int> = []
+  var i = 0
+  while i < capacity {
+    arr = append(arr, 0)
+    i = i + 1
+  }
+  return CircularQueue { data: arr, front: 0, rear: 0, size: 0, capacity: capacity }
+}
+
+fun length(q: CircularQueue): int {
+  return q.size
+}
+
+fun is_empty(q: CircularQueue): bool {
+  return q.size == 0
+}
+
+fun front(q: CircularQueue): int {
+  if is_empty(q) { return 0 }
+  return q.data[q.front]
+}
+
+fun enqueue(q: CircularQueue, value: int): CircularQueue {
+  if q.size >= q.capacity { panic("QUEUE IS FULL") }
+  var arr = q.data
+  arr[q.rear] = value
+  q.data = arr
+  q.rear = (q.rear + 1) % q.capacity
+  q.size = q.size + 1
+  return q
+}
+
+type DequeueResult {
+  queue: CircularQueue
+  value: int
+}
+
+fun dequeue(q: CircularQueue): DequeueResult {
+  if q.size == 0 { panic("UNDERFLOW") }
+  let value = q.data[q.front]
+  var arr2 = q.data
+  arr2[q.front] = 0
+  q.data = arr2
+  q.front = (q.front + 1) % q.capacity
+  q.size = q.size - 1
+  return DequeueResult { queue: q, value: value }
+}
+
+fun main() {
+  var q = create_queue(5)
+  print(is_empty(q))
+  q = enqueue(q, 10)
+  print(is_empty(q))
+  q = enqueue(q, 20)
+  q = enqueue(q, 30)
+  print(front(q))
+  var r = dequeue(q)
+  q = r.queue
+  print(r.value)
+  print(front(q))
+  print(length(q))
+}
+
+main()
