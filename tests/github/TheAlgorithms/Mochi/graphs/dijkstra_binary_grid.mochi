@@ -1,0 +1,118 @@
+/*
+Dijkstra's Shortest Path on a Binary Grid
+-----------------------------------------
+Given a 2D grid of 0s and 1s, where 1 indicates a walkable cell and 0
+indicates an obstacle, find the shortest path between a start and end
+cell using Dijkstra's algorithm. Movement is allowed in four
+orthogonal directions and optionally in the four diagonals. Each move
+has a cost of 1. With uniform costs the priority queue can be replaced
+by a FIFO queue, effectively performing a breadth‑first search while
+still modeling Dijkstra's exploration of increasing distance.
+The function returns the distance and the reconstructed path as a list
+of coordinates.
+
+This implementation uses maps to track distances and predecessors.
+The time complexity is O(V + E) and the space complexity is O(V)
+where V is the number of grid cells and E the number of edges.
+*/
+
+type Point {
+  x: int
+  y: int
+}
+
+type Result {
+  distance: float
+  path: list<Point>
+}
+
+fun key(p: Point): string {
+  return str(p.x) + "," + str(p.y)
+}
+
+fun path_to_string(path: list<Point>): string {
+  var s = "["
+  var i = 0
+  while i < len(path) {
+    let pt = path[i]
+    s = s + "(" + str(pt.x) + ", " + str(pt.y) + ")"
+    if i < len(path) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun dijkstra(
+  grid: list<list<int>>,
+  source: Point,
+  destination: Point,
+  allow_diagonal: bool
+): Result {
+  let rows = len(grid)
+  let cols = len(grid[0])
+  var dx: list<int> = [-1, 1, 0, 0]
+  var dy: list<int> = [0, 0, -1, 1]
+  if allow_diagonal {
+    dx = concat(dx, [-1, -1, 1, 1])
+    dy = concat(dy, [-1, 1, -1, 1])
+  }
+  let INF = 1000000000000.0
+  var queue: list<Point> = [source]
+  var front = 0
+  var dist_map: map<string, float> = { key(source): 0.0 }
+  var prev: map<string, Point> = {}
+  while front < len(queue) {
+    let current = queue[front]
+    front = front + 1
+    let cur_key = key(current)
+    if current.x == destination.x && current.y == destination.y {
+      break
+    }
+    var i = 0
+    while i < len(dx) {
+      let nx = current.x + dx[i]
+      let ny = current.y + dy[i]
+      if nx >= 0 && nx < rows && ny >= 0 && ny < cols {
+        if grid[nx][ny] == 1 {
+          let n_key = str(nx) + "," + str(ny)
+          if !(n_key in dist_map) {
+            dist_map[n_key] = dist_map[cur_key] + 1.0
+            prev[n_key] = current
+            queue = append(queue, Point { x: nx, y: ny })
+          }
+        }
+      }
+      i = i + 1
+    }
+  }
+  let dest_key = key(destination)
+  if dest_key in dist_map {
+    var path_rev: list<Point> = [destination]
+    var step_key = dest_key
+    var step_pt = destination
+    while step_key != key(source) {
+      step_pt = prev[step_key]
+      step_key = key(step_pt)
+      path_rev = append(path_rev, step_pt)
+    }
+    var path: list<Point> = []
+    var k = len(path_rev) - 1
+    while k >= 0 {
+      path = append(path, path_rev[k])
+      k = k - 1
+    }
+    return Result { distance: dist_map[dest_key], path: path }
+  }
+  return Result { distance: INF, path: [] }
+}
+
+fun print_result(res: Result) {
+  print(str(res.distance) + ", " + path_to_string(res.path))
+}
+
+var grid1: list<list<int>> = [[1, 1, 1], [0, 1, 0], [0, 1, 1]]
+print_result(dijkstra(grid1, Point { x: 0, y: 0 }, Point { x: 2, y: 2 }, false))
+print_result(dijkstra(grid1, Point { x: 0, y: 0 }, Point { x: 2, y: 2 }, true))
+var grid2: list<list<int>> = [[1, 1, 1], [0, 0, 1], [0, 1, 1]]
+print_result(dijkstra(grid2, Point { x: 0, y: 0 }, Point { x: 2, y: 2 }, false))
