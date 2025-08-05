@@ -1,0 +1,132 @@
+/*
+KD-Tree build and nearest neighbour search tests (simplified).
+
+This Mochi program mirrors the Python tests for KD-Tree functionality by:
+ 1. Generating pseudo-random points inside an n-dimensional cube.
+ 2. Using a placeholder build_kdtree that simply returns the list of points
+    (sufficient for these tests).
+ 3. Performing a linear nearest neighbour search over the points.
+
+The focus is on exercising Mochi control flow, list operations and
+mathematical computation without external dependencies.
+*/
+
+let INF: float = 1000000000.0
+
+var seed: int = 1
+
+fun rand_float(): float {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return (seed as float) / 2147483648.0
+}
+
+fun hypercube_points(num_points: int, cube_size: float, num_dimensions: int): list<list<float>> {
+  var pts: list<list<float>> = []
+  var i = 0
+  while i < num_points {
+    var p: list<float> = []
+    var j = 0
+    while j < num_dimensions {
+      let v = cube_size * rand_float()
+      p = append(p, v)
+      j = j + 1
+    }
+    pts = append(pts, p)
+    i = i + 1
+  }
+  return pts
+}
+
+fun build_kdtree(points: list<list<float>>, depth: int): list<list<float>> {
+  return points
+}
+
+fun distance_sq(a: list<float>, b: list<float>): float {
+  var sum: float = 0.0
+  var i = 0
+  while i < len(a) {
+    let d = a[i] - b[i]
+    sum = sum + d * d
+    i = i + 1
+  }
+  return sum
+}
+
+fun nearest_neighbour_search(points: list<list<float>>, query: list<float>): map<string, float> {
+  if len(points) == 0 {
+    return {"index": -1.0, "dist": INF, "visited": 0.0}
+  }
+  var nearest_idx: int = 0
+  var nearest_dist: float = INF
+  var visited: int = 0
+  var i = 0
+  while i < len(points) {
+    let d = distance_sq(query, points[i])
+    visited = visited + 1
+    if d < nearest_dist {
+      nearest_dist = d
+      nearest_idx = i
+    }
+    i = i + 1
+  }
+  return {"index": nearest_idx as float, "dist": nearest_dist, "visited": visited as float}
+}
+
+fun test_build_cases() {
+  let empty_pts: list<list<float>> = []
+  let tree0 = build_kdtree(empty_pts, 0)
+  if len(tree0) == 0 {
+    print("case1 true")
+  } else {
+    print("case1 false")
+  }
+
+  let pts1 = hypercube_points(10, 10.0, 2)
+  let tree1 = build_kdtree(pts1, 2)
+  if len(tree1) > 0 && len(tree1[0]) == 2 {
+    print("case2 true")
+  } else {
+    print("case2 false")
+  }
+
+  let pts2 = hypercube_points(10, 10.0, 3)
+  let tree2 = build_kdtree(pts2, -2)
+  if len(tree2) > 0 && len(tree2[0]) == 3 {
+    print("case3 true")
+  } else {
+    print("case3 false")
+  }
+}
+
+fun test_search() {
+  let pts = hypercube_points(10, 10.0, 2)
+  let tree = build_kdtree(pts, 0)
+  let qp = hypercube_points(1, 10.0, 2)[0]
+  let res = nearest_neighbour_search(tree, qp)
+  if res["index"] != (-1.0) && res["dist"] >= 0.0 && res["visited"] > 0.0 {
+    print("search true")
+  } else {
+    print("search false")
+  }
+}
+
+fun test_edge() {
+  let empty_pts: list<list<float>> = []
+  let tree = build_kdtree(empty_pts, 0)
+  let query: list<float> = [0.0, 0.0]
+  let res = nearest_neighbour_search(tree, query)
+  if res["index"] == (-1.0) && res["dist"] > 100000000.0 && res["visited"] == 0.0 {
+    print("edge true")
+  } else {
+    print("edge false")
+  }
+}
+
+fun main() {
+  seed = 1
+  test_build_cases()
+  test_search()
+  test_edge()
+}
+
+main()
