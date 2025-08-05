@@ -1,0 +1,20 @@
+/*
+  Check if an integer is even using bit manipulation. In binary, even numbers
+  have 0 as their least significant bit while odd numbers have 1. By applying a
+  bitwise AND with 1 we isolate this bit; a result of 0 indicates the number is
+  even and 1 means it is odd. This constant-time approach avoids division or
+  modulo operations. In Mochi we emulate this by taking the number modulo 2,
+  which yields the same least-significant bit.
+*/
+
+fun is_even(number: int): bool {
+  return number % 2 == 0
+}
+
+print(str(is_even(1)))
+print(str(is_even(4)))
+print(str(is_even(9)))
+print(str(is_even(15)))
+print(str(is_even(40)))
+print(str(is_even(100)))
+print(str(is_even(101)))
