@@ -1,0 +1,119 @@
+/*
+Rail Fence Cipher - Transposition Cipher
+
+The algorithm writes the message in a zigzag pattern on a set of rails
+whose count is determined by the key. Characters are placed row by row
+while moving down and up the rails. Reading the rows sequentially
+produces the encrypted text.
+
+To decrypt, the pattern of traversal is reconstructed to determine how
+many characters belong to each rail. The cipher text is then sliced and
+filled into the rails before reading them again in a zigzag to recover
+the original message. A helper function demonstrates brute forcing all
+possible keys.
+
+Time complexity is O(n) for both encryption and decryption where n is
+the length of the input string.
+*/
+
+fun encrypt(input_string: string, key: int): string {
+  if key <= 0 { panic("Height of grid can't be 0 or negative") }
+  if key == 1 || len(input_string) <= key { return input_string }
+  let lowest = key - 1
+  var temp_grid: list<list<string>> = []
+  var i = 0
+  while i < key {
+    temp_grid = append(temp_grid, [] as list<string>)
+    i = i + 1
+  }
+  var position = 0
+  while position < len(input_string) {
+    var num = position % (lowest * 2)
+    let alt = lowest * 2 - num
+    if num > alt { num = alt }
+    var row = temp_grid[num]
+    row = append(row, substring(input_string, position, position + 1))
+    temp_grid[num] = row
+    position = position + 1
+  }
+  var output = ""
+  i = 0
+  while i < key {
+    var row = temp_grid[i]
+    var j = 0
+    while j < len(row) {
+      output = output + row[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return output
+}
+
+fun decrypt(input_string: string, key: int): string {
+  if key <= 0 { panic("Height of grid can't be 0 or negative") }
+  if key == 1 { return input_string }
+  let lowest = key - 1
+  var counts: list<int> = []
+  var i = 0
+  while i < key {
+    counts = append(counts, 0)
+    i = i + 1
+  }
+  var pos = 0
+  while pos < len(input_string) {
+    var num = pos % (lowest * 2)
+    let alt = lowest * 2 - num
+    if num > alt { num = alt }
+    counts[num] = counts[num] + 1
+    pos = pos + 1
+  }
+  var grid: list<list<string>> = []
+  var counter = 0
+  i = 0
+  while i < key {
+    let length = counts[i]
+    let slice = substring(input_string, counter, counter + length)
+    var row: list<string> = []
+    var j = 0
+    while j < len(slice) {
+      row = append(row, slice[j])
+      j = j + 1
+    }
+    grid = append(grid, row)
+    counter = counter + length
+    i = i + 1
+  }
+  var indices: list<int> = []
+  i = 0
+  while i < key {
+    indices = append(indices, 0)
+    i = i + 1
+  }
+  var output = ""
+  pos = 0
+  while pos < len(input_string) {
+    var num = pos % (lowest * 2)
+    let alt = lowest * 2 - num
+    if num > alt { num = alt }
+    output = output + grid[num][indices[num]]
+    indices[num] = indices[num] + 1
+    pos = pos + 1
+  }
+  return output
+}
+
+fun bruteforce(input_string: string): map<int, string> {
+  var results: map<int, string> = {}
+  var key_guess = 1
+  while key_guess < len(input_string) {
+    results[key_guess] = decrypt(input_string, key_guess)
+    key_guess = key_guess + 1
+  }
+  return results
+}
+
+print(encrypt("Hello World", 4))
+print(decrypt("HWe olordll", 4))
+let bf = bruteforce("HWe olordll")
+print(bf[4])
