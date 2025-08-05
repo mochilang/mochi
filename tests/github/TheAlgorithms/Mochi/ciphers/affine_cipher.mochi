@@ -1,0 +1,138 @@
+/*
+Implement the Affine cipher for encryption and decryption using the 95 printable
+ASCII characters as the symbol set.
+
+Each character is mapped to its index within the symbol set. Encryption applies
+(x * keyA + keyB) mod m, where m is the size of the symbol set. Decryption uses
+the modular inverse of keyA so that the original index is recovered as
+((y - keyB) * invA) mod m.
+
+Keys are validated to ensure that keyA and m are coprime and keyB is within the
+valid range. The example at the bottom encrypts a sample message and then
+decrypts it back to the original text.
+*/
+
+let SYMBOLS = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let temp = x % y
+    x = y
+    y = temp
+  }
+  return x
+}
+
+fun mod_inverse(a: int, m: int): int {
+  if gcd(a, m) != 1 {
+    panic("mod inverse of " + str(a) + " and " + str(m) + " does not exist")
+  }
+  var u1 = 1
+  var u2 = 0
+  var u3 = a
+  var v1 = 0
+  var v2 = 1
+  var v3 = m
+  while v3 != 0 {
+    let q = u3 / v3
+    let t1 = u1 - q * v1
+    let t2 = u2 - q * v2
+    let t3 = u3 - q * v3
+    u1 = v1
+    u2 = v2
+    u3 = v3
+    v1 = t1
+    v2 = t2
+    v3 = t3
+  }
+  let res = u1 % m
+  if res < 0 {
+    return res + m
+  }
+  return res
+}
+
+fun find_symbol(ch: string): int {
+  var i = 0
+  while i < len(SYMBOLS) {
+    if SYMBOLS[i] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun check_keys(key_a: int, key_b: int, mode: string): void {
+  let m = len(SYMBOLS)
+  if mode == "encrypt" {
+    if key_a == 1 {
+      panic("The affine cipher becomes weak when key A is set to 1. Choose different key")
+    }
+    if key_b == 0 {
+      panic("The affine cipher becomes weak when key B is set to 0. Choose different key")
+    }
+  }
+  if key_a < 0 || key_b < 0 || key_b > m - 1 {
+    panic("Key A must be greater than 0 and key B must be between 0 and " + str(m - 1))
+  }
+  if gcd(key_a, m) != 1 {
+    panic("Key A " + str(key_a) + " and the symbol set size " + str(m) + " are not relatively prime. Choose a different key.")
+  }
+}
+
+fun encrypt_message(key: int, message: string): string {
+  let m = len(SYMBOLS)
+  let key_a = key / m
+  let key_b = key % m
+  check_keys(key_a, key_b, "encrypt")
+  var cipher_text = ""
+  var i = 0
+  while i < len(message) {
+    let ch = message[i]
+    let index = find_symbol(ch)
+    if index >= 0 {
+      cipher_text = cipher_text + SYMBOLS[(index * key_a + key_b) % m]
+    } else {
+      cipher_text = cipher_text + ch
+    }
+    i = i + 1
+  }
+  return cipher_text
+}
+
+fun decrypt_message(key: int, message: string): string {
+  let m = len(SYMBOLS)
+  let key_a = key / m
+  let key_b = key % m
+  check_keys(key_a, key_b, "decrypt")
+  let inv = mod_inverse(key_a, m)
+  var plain_text = ""
+  var i = 0
+  while i < len(message) {
+    let ch = message[i]
+    let index = find_symbol(ch)
+    if index >= 0 {
+      var n = (index - key_b) * inv
+      let pos = n % m
+      let final = if pos < 0 { pos + m } else { pos }
+      plain_text = plain_text + SYMBOLS[final]
+    } else {
+      plain_text = plain_text + ch
+    }
+    i = i + 1
+  }
+  return plain_text
+}
+
+fun main(): void {
+  let key = 4545
+  let msg = "The affine cipher is a type of monoalphabetic substitution cipher."
+  let enc = encrypt_message(key, msg)
+  print(enc)
+  print(decrypt_message(key, enc))
+}
+
+main()
