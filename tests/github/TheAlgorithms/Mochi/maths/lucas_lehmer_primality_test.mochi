@@ -1,0 +1,41 @@
+/*
+Lucas-Lehmer Primality Test
+---------------------------
+Determines if the Mersenne number M_p = 2^p - 1 is prime. For p > 2,
+initialize s = 4 and repeatedly compute s = (s * s - 2) mod M_p for
+p - 2 iterations. If the final s is 0 then M_p is prime, otherwise it is
+composite. This algorithm is used by the Great Internet Mersenne Prime
+Search (GIMPS) to locate large primes. Time complexity is O(p^2) because
+there are p-2 modular multiplications of numbers roughly p bits long.
+*/
+
+fun pow2(p: int): int {
+  var result = 1
+  var i = 0
+  while i < p {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun lucas_lehmer_test(p: int): bool {
+  if p < 2 { panic("p should not be less than 2!") }
+  if p == 2 { return true }
+
+  var s = 4
+  let m = pow2(p) - 1
+  var i = 0
+  while i < p - 2 {
+    s = ((s * s) - 2) % m
+    i = i + 1
+  }
+  return s == 0
+}
+
+fun main() {
+  print(str(lucas_lehmer_test(7)))
+  print(str(lucas_lehmer_test(11)))
+}
+
+main()
