@@ -1,0 +1,67 @@
+/*
+Harmonic Series Utilities
+-------------------------
+This module provides two routines translated from TheAlgorithms/Python:
+
+1. `is_harmonic_series` verifies whether a list of numbers forms a harmonic
+   progression. The reciprocals of a harmonic progression form an arithmetic
+   progression, so the function converts each element to its reciprocal and
+   checks that successive differences remain constant. The input list must be
+   non-empty and cannot contain zero.
+
+2. `harmonic_mean` computes the harmonic mean of a list of positive numbers.
+   The mean is defined as the number of elements divided by the sum of the
+   reciprocals of the elements. The list must also be non-empty.
+
+The implementation avoids foreign interfaces and only uses core Mochi
+features so it can be executed with `runtime/vm`.
+*/
+
+fun is_harmonic_series(series: list<float>): bool {
+  if len(series) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  if len(series) == 1 {
+    if series[0] == 0.0 {
+      panic("Input series cannot have 0 as an element")
+    }
+    return true
+  }
+  var rec_series: list<float> = []
+  var i = 0
+  while i < len(series) {
+    let val = series[i]
+    if val == 0.0 {
+      panic("Input series cannot have 0 as an element")
+    }
+    rec_series = append(rec_series, 1.0 / val)
+    i = i + 1
+  }
+  let common_diff = rec_series[1] - rec_series[0]
+  var idx = 2
+  while idx < len(rec_series) {
+    if rec_series[idx] - rec_series[idx - 1] != common_diff {
+      return false
+    }
+    idx = idx + 1
+  }
+  return true
+}
+
+fun harmonic_mean(series: list<float>): float {
+  if len(series) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  var total = 0.0
+  var i = 0
+  while i < len(series) {
+    total = total + 1.0 / series[i]
+    i = i + 1
+  }
+  return (len(series) as float) / total
+}
+
+print(is_harmonic_series([1.0, 2.0/3.0, 1.0/2.0, 2.0/5.0, 1.0/3.0]))
+print(is_harmonic_series([1.0, 2.0/3.0, 2.0/5.0, 1.0/3.0]))
+print(harmonic_mean([1.0, 4.0, 4.0]))
+print(harmonic_mean([3.0, 6.0, 9.0, 12.0]))
