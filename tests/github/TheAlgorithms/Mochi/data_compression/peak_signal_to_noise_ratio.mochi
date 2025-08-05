@@ -1,0 +1,80 @@
+/*
+Peak signal-to-noise ratio (PSNR) measures the quality of a compressed image.
+Given two images represented as 2‑D lists of pixel intensities in the range
+0–255, compute the mean squared error (MSE) between corresponding pixels and
+derive the PSNR value in decibels:
+
+  PSNR = 20 * log10(MAX_I / sqrt(MSE))
+
+where MAX_I is the maximum possible pixel value (255). If MSE is zero, the
+images are identical and PSNR is defined as 100. This implementation provides
+simple Newton iteration for square roots and a series expansion for natural
+logarithms so that no external libraries or FFI are required.
+*/
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun ln(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun log10(x: float): float {
+  return ln(x) / ln(10.0)
+}
+
+fun peak_signal_to_noise_ratio(original: list<list<int>>, contrast: list<list<int>>): float {
+  var mse = 0.0
+  var i = 0
+  while i < len(original) {
+    var j = 0
+    while j < len(original[i]) {
+      let diff = (original[i][j] - contrast[i][j]) as float
+      mse = mse + diff * diff
+      j = j + 1
+    }
+    i = i + 1
+  }
+  let size = (len(original) * len(original[0])) as float
+  mse = mse / size
+  if mse == 0.0 {
+    return 100.0
+  }
+  let PIXEL_MAX = 255.0
+  return 20.0 * log10(PIXEL_MAX / sqrtApprox(mse))
+}
+
+test "identical images" {
+  let img: list<list<int>> = [[52, 55], [61, 59]]
+  expect peak_signal_to_noise_ratio(img, img) == 100.0
+}
+
+test "single pixel difference" {
+  let original: list<list<int>> = [[0, 0], [0, 0]]
+  let contrast: list<list<int>> = [[0, 0], [0, 1]]
+  let psnr = peak_signal_to_noise_ratio(original, contrast)
+  let expected = 20.0 * log10(255.0 / sqrtApprox(0.25))
+  expect abs(psnr - expected) < 0.0001
+}
