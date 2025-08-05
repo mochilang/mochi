@@ -1,0 +1,67 @@
+/*
+Bezier Curve Generation
+
+A Bezier curve is a weighted sum of control points P0..Pn.  For a
+parameter t in [0, 1], the point on the curve is computed as:
+
+  B(t) = sum_{i=0}^n C(n, i) * (1 - t)^(n - i) * t^i * Pi
+
+where C(n, i) is the binomial coefficient and Pi are the control
+points.  This implementation computes the basis weights and evaluates
+the curve for 2D control points.  Each evaluation performs O(n)
+work.
+*/
+
+fun n_choose_k(n: int, k: int): float {
+  if k < 0 || k > n { return 0.0 }
+  if k == 0 || k == n { return 1.0 }
+  var result = 1.0
+  var i = 1
+  while i <= k {
+    result = result * (1.0 * (n - k + i)) / (1.0 * i)
+    i = i + 1
+  }
+  return result
+}
+
+fun pow_float(base: float, exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun basis_function(points: list<list<float>>, t: float): list<float> {
+  let degree = len(points) - 1
+  var res: list<float> = []
+  var i = 0
+  while i <= degree {
+    let coef = n_choose_k(degree, i)
+    let term = pow_float(1.0 - t, degree - i) * pow_float(t, i)
+    res = append(res, coef * term)
+    i = i + 1
+  }
+  return res
+}
+
+fun bezier_point(points: list<list<float>>, t: float): list<float> {
+  let basis = basis_function(points, t)
+  var x = 0.0
+  var y = 0.0
+  var i = 0
+  while i < len(points) {
+    x = x + basis[i] * points[i][0]
+    y = y + basis[i] * points[i][1]
+    i = i + 1
+  }
+  return [x, y]
+}
+
+let control = [[1.0, 1.0], [1.0, 2.0]]
+print(str(basis_function(control, 0.0)))
+print(str(basis_function(control, 1.0)))
+print(str(bezier_point(control, 0.0)))
+print(str(bezier_point(control, 1.0)))
