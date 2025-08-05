@@ -1,0 +1,38 @@
+/*
+Convert a decimal integer to its representation in base -2 (negabinary).
+
+The algorithm repeatedly divides the input number by -2 using integer division
+and collects the remainders. Because dividing by a negative base can yield
+negative remainders, each step adjusts the remainder and quotient so that the
+remainder is 0 or 1:
+  rem = n % -2
+  n = n / -2
+  if rem < 0:
+    rem += 2
+    n += 1
+The digits are prepended to a string and finally converted back to an integer.
+This process runs in O(log |n|) time.
+*/
+
+fun decimal_to_negative_base_2(num: int): int {
+  if num == 0 {
+    return 0
+  }
+  var n = num
+  var ans = ""
+  while n != 0 {
+    var rem = n % -2
+    n = n / -2
+    if rem < 0 {
+      rem = rem + 2
+      n = n + 1
+    }
+    ans = str(rem) + ans
+  }
+  return int(ans)
+}
+
+print(decimal_to_negative_base_2(0))
+print(decimal_to_negative_base_2(-19))
+print(decimal_to_negative_base_2(4))
+print(decimal_to_negative_base_2(7))
