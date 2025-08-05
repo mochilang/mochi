@@ -1,0 +1,3 @@
+rank_till_index 6 at 6 -> <nil>
+rank 6 in [3,13] -> <nil>
+quantile index 2 in [2,5] -> <nil>
