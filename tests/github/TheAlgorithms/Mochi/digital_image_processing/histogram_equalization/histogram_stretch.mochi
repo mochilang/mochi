@@ -1,0 +1,74 @@
+/*
+Histogram Stretch / Equalization for Grayscale Images
+
+This algorithm redistributes the pixel intensities of a grayscale image so
+that the histogram spans the full 0-255 range.  It computes the frequency of
+each intensity, forms the cumulative distribution function (CDF), and maps
+each original pixel value to a new intensity using
+floor((cdf[pixel] / total_pixels) * 255).  The implementation is based on the
+Python version from TheAlgorithms and operates on in-memory 2D lists without
+external libraries.
+*/
+
+fun make_list(n: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun histogram_stretch(image: list<list<int>>): list<list<int>> {
+  let height = len(image)
+  let width = len(image[0])
+  var hist: list<int> = make_list(256, 0)
+  var i = 0
+  while i < height {
+    var j = 0
+    while j < width {
+      let val = image[i][j]
+      hist[val] = hist[val] + 1
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var mapping: list<int> = make_list(256, 0)
+  var cumulative = 0
+  let total = height * width
+  var h = 0
+  while h < 256 {
+    cumulative = cumulative + hist[h]
+    mapping[h] = (255 * cumulative) / total
+    h = h + 1
+  }
+  i = 0
+  while i < height {
+    var j = 0
+    while j < width {
+      let val = image[i][j]
+      image[i][j] = mapping[val]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return image
+}
+
+fun print_image(image: list<list<int>>) {
+  var i = 0
+  while i < len(image) {
+    print(image[i])
+    i = i + 1
+  }
+}
+
+let img = [
+  [52, 55, 61],
+  [59, 79, 61],
+  [85, 76, 62],
+]
+
+let result = histogram_stretch(img)
+print_image(result)
