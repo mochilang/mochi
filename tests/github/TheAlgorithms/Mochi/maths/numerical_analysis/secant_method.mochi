@@ -1,0 +1,47 @@
+/*
+Secant Method Root Finder
+-------------------------
+
+This algorithm approximates a root of the equation f(x) = 0 using the
+secant method.  Starting from two initial guesses x0 and x1, each
+iteration computes a new estimate via
+
+    x_{n+1} = x_n - f(x_n) * (x_n - x_{n-1}) / (f(x_n) - f(x_{n-1}))
+
+For this example we solve f(x) = 8x - 2 * e^{-x}.  The exponential is
+approximated using a 20-term Taylor series so the implementation remains
+pure Mochi.
+*/
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i: int = 1
+  while i <= 20 {
+    term = term * x / i
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun f(x: float): float {
+  return 8.0 * x - 2.0 * exp_approx(-x)
+}
+
+fun secant_method(lower_bound: float, upper_bound: float, repeats: int): float {
+  var x0: float = lower_bound
+  var x1: float = upper_bound
+  var i: int = 0
+  while i < repeats {
+    let fx1 = f(x1)
+    let fx0 = f(x0)
+    let new_x = x1 - (fx1 * (x1 - x0)) / (fx1 - fx0)
+    x0 = x1
+    x1 = new_x
+    i = i + 1
+  }
+  return x1
+}
+
+print(str(secant_method(1.0, 3.0, 2)))
