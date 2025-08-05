@@ -1,0 +1,54 @@
+/*
+Problem: Compute the number of possible binary trees and binary search trees (Catalan numbers)
+for a given number of nodes.
+
+Algorithms:
+- binomial_coefficient: iteratively compute C(n,k) using multiplicative formula.
+- catalan_number: use binomial coefficient 2n choose n divided by (n+1).
+- factorial: compute n! as product of 1..n.
+- binary_tree_count: multiply Catalan number by n! to count labeled binary trees.
+*/
+
+fun binomial_coefficient(n: int, k: int): int {
+  var result: int = 1
+  var kk: int = k
+  if k > n - k {
+    kk = n - k
+  }
+  for i in 0..kk {
+    result = result * (n - i)
+    result = result / (i + 1)
+  }
+  return result
+}
+
+fun catalan_number(node_count: int): int {
+  return binomial_coefficient(2 * node_count, node_count) / (node_count + 1)
+}
+
+fun factorial(n: int): int {
+  if n < 0 {
+    print("factorial() not defined for negative values")
+    return 0
+  }
+  var result: int = 1
+  for i in 1..(n + 1) {
+    result = result * i
+  }
+  return result
+}
+
+fun binary_tree_count(node_count: int): int {
+  return catalan_number(node_count) * factorial(node_count)
+}
+
+print("Enter the number of nodes:")
+let input_str: string = input()
+let node_count: int = int(input_str)
+if node_count <= 0 {
+  print("We need some nodes to work with.")
+} else {
+  let bst: int = catalan_number(node_count)
+  let bt: int = binary_tree_count(node_count)
+  print("Given", node_count, "nodes, there are", bt, "binary trees and", bst, "binary search trees.")
+}
