@@ -1,0 +1,91 @@
+/*
+Build a sparse table to answer range minimum queries on a static list.
+The table stores minima for intervals of length 2^j starting at each index.
+Precomputation runs in O(n log n) time and space.  Each query for the
+minimum over [L,R] uses two overlapping intervals covering the range,
+returning the minimum in O(1) time.
+*/
+
+fun pow2(n: int): int {
+  var result = 1
+  var i = 0
+  while i < n {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun int_log2(n: int): int {
+  var v = n
+  var res = 0
+  while v > 1 {
+    v = v / 2
+    res = res + 1
+  }
+  return res
+}
+
+fun build_sparse_table(number_list: list<int>): list<list<int>> {
+  if len(number_list) == 0 {
+    panic("empty number list not allowed")
+  }
+  let length = len(number_list)
+  let row = int_log2(length) + 1
+  var sparse_table: list<list<int>> = []
+  var j = 0
+  while j < row {
+    var inner: list<int> = []
+    var i = 0
+    while i < length {
+      inner = append(inner, 0)
+      i = i + 1
+    }
+    sparse_table = append(sparse_table, inner)
+    j = j + 1
+  }
+  var i = 0
+  while i < length {
+    sparse_table[0][i] = number_list[i]
+    i = i + 1
+  }
+  j = 1
+  while pow2(j) <= length {
+    i = 0
+    while i + pow2(j) - 1 < length {
+      let left = sparse_table[j - 1][i + pow2(j - 1)]
+      let right = sparse_table[j - 1][i]
+      if left < right {
+        sparse_table[j][i] = left
+      } else {
+        sparse_table[j][i] = right
+      }
+      i = i + 1
+    }
+    j = j + 1
+  }
+  return sparse_table
+}
+
+fun query(sparse_table: list<list<int>>, left_bound: int, right_bound: int): int {
+  if left_bound < 0 || right_bound >= len(sparse_table[0]) {
+    panic("list index out of range")
+  }
+  let interval = right_bound - left_bound + 1
+  let j = int_log2(interval)
+  let val1 = sparse_table[j][right_bound - pow2(j) + 1]
+  let val2 = sparse_table[j][left_bound]
+  if val1 < val2 {
+    return val1
+  }
+  return val2
+}
+
+let st1 = build_sparse_table([8, 1, 0, 3, 4, 9, 3])
+print(str(st1))
+let st2 = build_sparse_table([3, 1, 9])
+print(str(st2))
+print(str(query(st1, 0, 4)))
+print(str(query(st1, 4, 6)))
+print(str(query(st2, 2, 2)))
+print(str(query(st2, 0, 1)))
