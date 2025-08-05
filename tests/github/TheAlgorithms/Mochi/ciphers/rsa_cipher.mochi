@@ -1,0 +1,167 @@
+/*
+RSA Cipher
+Implements basic RSA encryption and decryption for text messages.
+The message is split into blocks of bytes (base 256). Each block is
+encrypted by modular exponentiation with a public key (n, e) and decrypted
+with a private key (n, d). Helper functions convert between text and
+numeric blocks and perform modular exponentiation. The example uses a
+small key pair (n=3233, e=17, d=2753) to encrypt and decrypt "hello world".
+*/
+
+let BYTE_SIZE: int = 256
+
+fun pow_int(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun mod_pow(base: int, exponent: int, modulus: int): int {
+  var result = 1
+  var b = base % modulus
+  var e = exponent
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % modulus
+    }
+    e = e / 2
+    b = (b * b) % modulus
+  }
+  return result
+}
+
+fun ord(ch: string): int {
+  if ch == " " { return 32 }
+  if ch == "a" { return 97 }
+  if ch == "b" { return 98 }
+  if ch == "c" { return 99 }
+  if ch == "d" { return 100 }
+  if ch == "e" { return 101 }
+  if ch == "f" { return 102 }
+  if ch == "g" { return 103 }
+  if ch == "h" { return 104 }
+  if ch == "i" { return 105 }
+  if ch == "j" { return 106 }
+  if ch == "k" { return 107 }
+  if ch == "l" { return 108 }
+  if ch == "m" { return 109 }
+  if ch == "n" { return 110 }
+  if ch == "o" { return 111 }
+  if ch == "p" { return 112 }
+  if ch == "q" { return 113 }
+  if ch == "r" { return 114 }
+  if ch == "s" { return 115 }
+  if ch == "t" { return 116 }
+  if ch == "u" { return 117 }
+  if ch == "v" { return 118 }
+  if ch == "w" { return 119 }
+  if ch == "x" { return 120 }
+  if ch == "y" { return 121 }
+  if ch == "z" { return 122 }
+  return 0
+}
+
+fun chr(code: int): string {
+  if code == 32 { return " " }
+  if code == 97 { return "a" }
+  if code == 98 { return "b" }
+  if code == 99 { return "c" }
+  if code == 100 { return "d" }
+  if code == 101 { return "e" }
+  if code == 102 { return "f" }
+  if code == 103 { return "g" }
+  if code == 104 { return "h" }
+  if code == 105 { return "i" }
+  if code == 106 { return "j" }
+  if code == 107 { return "k" }
+  if code == 108 { return "l" }
+  if code == 109 { return "m" }
+  if code == 110 { return "n" }
+  if code == 111 { return "o" }
+  if code == 112 { return "p" }
+  if code == 113 { return "q" }
+  if code == 114 { return "r" }
+  if code == 115 { return "s" }
+  if code == 116 { return "t" }
+  if code == 117 { return "u" }
+  if code == 118 { return "v" }
+  if code == 119 { return "w" }
+  if code == 120 { return "x" }
+  if code == 121 { return "y" }
+  if code == 122 { return "z" }
+  return ""
+}
+
+fun get_blocks_from_text(message: string, block_size: int): list<int> {
+  var block_ints: list<int> = []
+  var block_start = 0
+  while block_start < len(message) {
+    var block_int = 0
+    var i = block_start
+    while i < block_start + block_size && i < len(message) {
+      block_int = block_int + ord(message[i]) * pow_int(BYTE_SIZE, i - block_start)
+      i = i + 1
+    }
+    block_ints = append(block_ints, block_int)
+    block_start = block_start + block_size
+  }
+  return block_ints
+}
+
+fun get_text_from_blocks(block_ints: list<int>, message_length: int, block_size: int): string {
+  var message = ""
+  for block_int in block_ints {
+    var block = block_int
+    var i = block_size - 1
+    var block_message = ""
+    while i >= 0 {
+      if len(message) + i < message_length {
+        let ascii_number = block / pow_int(BYTE_SIZE, i)
+        block = block % pow_int(BYTE_SIZE, i)
+        block_message = chr(ascii_number) + block_message
+      }
+      i = i - 1
+    }
+    message = message + block_message
+  }
+  return message
+}
+
+fun encrypt_message(message: string, n: int, e: int, block_size: int): list<int> {
+  var encrypted: list<int> = []
+  let blocks = get_blocks_from_text(message, block_size)
+  for block in blocks {
+    encrypted = append(encrypted, mod_pow(block, e, n))
+  }
+  return encrypted
+}
+
+fun decrypt_message(blocks: list<int>, message_length: int, n: int, d: int, block_size: int): string {
+  var decrypted_blocks: list<int> = []
+  for block in blocks {
+    decrypted_blocks = append(decrypted_blocks, mod_pow(block, d, n))
+  }
+  var message = ""
+  for num in decrypted_blocks {
+    message = message + chr(num)
+  }
+  return message
+}
+
+fun main() {
+  let message = "hello world"
+  let n = 3233
+  let e = 17
+  let d = 2753
+  let block_size = 1
+  let encrypted = encrypt_message(message, n, e, block_size)
+  print(str(encrypted))
+  let decrypted = decrypt_message(encrypted, len(message), n, d, block_size)
+  print(decrypted)
+}
+
+main()
