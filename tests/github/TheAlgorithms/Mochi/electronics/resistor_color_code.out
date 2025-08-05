@@ -1,0 +1,5 @@
+[94;1mtests/github/TheAlgorithms/Mochi/electronics/resistor_color_code.mochi[0;22m
+   [33mtest[0m 3 band resistor                ... [32mok[0m (3.0ms)
+   [33mtest[0m 4 band resistor                ... [32mok[0m (6.0ms)
+   [33mtest[0m 5 band resistor                ... [32mok[0m (2.0ms)
+   [33mtest[0m 6 band resistor                ... [32mok[0m (3.0ms)
