@@ -1,0 +1,45 @@
+/*
+Compute the Exponential Moving Average (EMA) for a list of stock prices.
+
+EMA applies exponentially decreasing weights to past observations. For a
+window size N, the smoothing factor is
+
+    alpha = 2 / (1 + N)
+
+For each price x_t the new average is computed as:
+
+    s_t = alpha * x_t + (1 - alpha) * s_{t-1}
+
+During the initial N steps we approximate the EMA by using the simple average
+between the current price and the previous average. The algorithm processes
+all prices once and returns a list of EMA values with the same length as the
+input.
+*/
+
+fun exponential_moving_average(stock_prices: list<float>, window_size: int): list<float> {
+  if window_size <= 0 { panic("window_size must be > 0") }
+  let alpha = 2.0 / (1.0 + (window_size as float))
+  var moving_average = 0.0
+  var result: list<float> = []
+  var i = 0
+  while i < len(stock_prices) {
+    let price = stock_prices[i]
+    if i <= window_size {
+      if i == 0 {
+        moving_average = price
+      } else {
+        moving_average = (moving_average + price) * 0.5
+      }
+    } else {
+      moving_average = alpha * price + (1.0 - alpha) * moving_average
+    }
+    result = append(result, moving_average)
+    i = i + 1
+  }
+  return result
+}
+
+let stock_prices: list<float> = [2.0, 5.0, 3.0, 8.2, 6.0, 9.0, 10.0]
+let window_size = 3
+let result = exponential_moving_average(stock_prices, window_size)
+print(str(result))
