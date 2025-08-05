@@ -1,0 +1,90 @@
+/*
+Deterministic Miller-Rabin primality test for 64-bit integers.
+The algorithm uses a fixed set of bases derived from number theory to
+quickly determine if a number is prime. First, it handles trivial cases
+and checks simple divisibility rules. It then represents n - 1 as d * 2^s
+and tests each base by repeated squaring under modulo n. If any base
+reveals a non-trivial square root of 1, the number is composite. If all
+bases pass, the number is guaranteed prime for numbers below ~3.8e18.
+*/
+
+fun mod_pow(base: int, exp: int, mod: int): int {
+  var result = 1
+  var b = base % mod
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 {
+      result = (result * b) % mod
+    }
+    b = (b * b) % mod
+    e = e / 2
+  }
+  return result
+}
+
+fun miller_rabin(n: int, allow_probable: bool): bool {
+  if n == 2 { return true }
+  if n < 2 || n % 2 == 0 { return false }
+  if n > 5 {
+    let last = n % 10
+    if !(last == 1 || last == 3 || last == 7 || last == 9) { return false }
+  }
+  let limit = 3825123056546413051
+  if n > limit && (!allow_probable) {
+    panic("Warning: upper bound of deterministic test is exceeded. Pass allow_probable=true to allow probabilistic test.")
+  }
+  let bounds = [2047, 1373653, 25326001, 3215031751, 2152302898747, 3474749660383, 341550071728321, limit]
+  let primes = [2,3,5,7,11,13,17,19]
+  var i = 0
+  var plist_len = len(primes)
+  while i < len(bounds) {
+    if n < bounds[i] {
+      plist_len = i + 1
+      i = len(bounds)
+    } else {
+      i = i + 1
+    }
+  }
+  var d = n - 1
+  var s = 0
+  while d % 2 == 0 {
+    d = d / 2
+    s = s + 1
+  }
+  var j = 0
+  while j < plist_len {
+    let prime = primes[j]
+    var x = mod_pow(prime, d, n)
+    var pr = false
+    if x == 1 || x == n - 1 {
+      pr = true
+    } else {
+      var r = 1
+      while r < s && (!pr) {
+        x = (x * x) % n
+        if x == n - 1 { pr = true }
+        r = r + 1
+      }
+    }
+    if !pr { return false }
+    j = j + 1
+  }
+  return true
+}
+
+print(str(miller_rabin(561, false)))
+print(str(miller_rabin(563, false)))
+print(str(miller_rabin(838201, false)))
+print(str(miller_rabin(838207, false)))
+print(str(miller_rabin(17316001, false)))
+print(str(miller_rabin(17316017, false)))
+print(str(miller_rabin(3078386641, false)))
+print(str(miller_rabin(3078386653, false)))
+print(str(miller_rabin(1713045574801, false)))
+print(str(miller_rabin(1713045574819, false)))
+print(str(miller_rabin(2779799728307, false)))
+print(str(miller_rabin(2779799728327, false)))
+print(str(miller_rabin(113850023909441, false)))
+print(str(miller_rabin(113850023909527, false)))
+print(str(miller_rabin(1275041018848804351, false)))
+print(str(miller_rabin(1275041018848804391, false)))
