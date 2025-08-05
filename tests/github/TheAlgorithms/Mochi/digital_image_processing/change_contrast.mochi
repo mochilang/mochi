@@ -1,0 +1,65 @@
+/*
+Change the contrast of an image represented as a 2D list of pixel values.
+
+Each pixel has intensity 0-255.  A contrast level from -255 to 255
+modifies the difference from mid-gray (128) by a factor derived from the
+standard contrast formula:
+
+  factor = (259 * (level + 255)) / (255 * (259 - level))
+
+Every pixel c is transformed as
+
+  128 + factor * (c - 128)
+
+Values are clamped to the range 0-255.  This program demonstrates the
+operation on a small 3x3 image.
+*/
+
+fun change_contrast(img: list<list<int>>, level: int): list<list<int>> {
+  let factor = (259.0 * ((level as float) + 255.0)) / (255.0 * (259.0 - (level as float)))
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(img) {
+    var row = img[i]
+    var new_row: list<int> = []
+    var j = 0
+    while j < len(row) {
+      let c = row[j]
+      let contrasted = (128.0 + factor * ((c as float) - 128.0)) as int
+      let clamped = if contrasted < 0 {
+        0
+      } else if contrasted > 255 {
+        255
+      } else {
+        contrasted
+      }
+      new_row = append(new_row, clamped)
+      j = j + 1
+    }
+    result = append(result, new_row)
+    i = i + 1
+  }
+  return result
+}
+
+fun print_image(img: list<list<int>>) {
+  var i = 0
+  while i < len(img) {
+    var row = img[i]
+    var j = 0
+    var line = ""
+    while j < len(row) {
+      line = line + str(row[j]) + " "
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+let image = [[100, 125, 150], [175, 200, 225], [50, 75, 100]]
+print("Original image:")
+print_image(image)
+let contrasted = change_contrast(image, 170)
+print("After contrast:")
+print_image(contrasted)
