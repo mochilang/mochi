@@ -1,0 +1,176 @@
+/*
+Hash Map Test Suite
+
+This program mirrors the Python test
+"data_structures/hashing/tests/test_hash_map.py" from TheAlgorithms
+project.  A simple HashMap type is implemented using a list of key/value
+entries.  The suite exercises insertion, overwriting existing keys,
+deleting keys, accessing missing keys and sequences that grow or shrink
+the map.  Each scenario returns `true` when the final state of the map
+matches expectations, providing a lightweight check that the HashMap
+behaves like a dictionary for these operations.
+*/
+
+type Entry {
+  key: string,
+  value: string
+}
+
+type HashMap {
+  entries: list<Entry>
+}
+
+type GetResult {
+  found: bool,
+  value: string
+}
+
+type DelResult {
+  map: HashMap,
+  ok: bool
+}
+
+fun make_hash_map(): HashMap {
+  return HashMap { entries: [] as list<Entry> }
+}
+
+fun hm_len(m: HashMap): int {
+  return len(m.entries)
+}
+
+fun hm_set(m: HashMap, key: string, value: string): HashMap {
+  var entries = m.entries
+  var updated: bool = false
+  var new_entries: list<Entry> = [] as list<Entry>
+  var i = 0
+  while i < len(entries) {
+    let e = entries[i]
+    if e.key == key {
+      new_entries = append(new_entries, Entry { key: key, value: value })
+      updated = true
+    } else {
+      new_entries = append(new_entries, e)
+    }
+    i = i + 1
+  }
+  if !updated {
+    new_entries = append(new_entries, Entry { key: key, value: value })
+  }
+  return HashMap { entries: new_entries }
+}
+
+fun hm_get(m: HashMap, key: string): GetResult {
+  var i = 0
+  while i < len(m.entries) {
+    let e = m.entries[i]
+    if e.key == key {
+      return GetResult { found: true, value: e.value }
+    }
+    i = i + 1
+  }
+  return GetResult { found: false, value: "" }
+}
+
+fun hm_del(m: HashMap, key: string): DelResult {
+  var entries = m.entries
+  var new_entries: list<Entry> = [] as list<Entry>
+  var removed: bool = false
+  var i = 0
+  while i < len(entries) {
+    let e = entries[i]
+    if e.key == key {
+      removed = true
+    } else {
+      new_entries = append(new_entries, e)
+    }
+    i = i + 1
+  }
+  if removed {
+    return DelResult { map: HashMap { entries: new_entries }, ok: true }
+  }
+  return DelResult { map: m, ok: false }
+}
+
+fun test_add_items(): bool {
+  var h = make_hash_map()
+  h = hm_set(h, "key_a", "val_a")
+  h = hm_set(h, "key_b", "val_b")
+  let a = hm_get(h, "key_a")
+  let b = hm_get(h, "key_b")
+  return hm_len(h) == 2 && a.found && b.found && a.value == "val_a" && b.value == "val_b"
+}
+
+fun test_overwrite_items(): bool {
+  var h = make_hash_map()
+  h = hm_set(h, "key_a", "val_a")
+  h = hm_set(h, "key_a", "val_b")
+  let a = hm_get(h, "key_a")
+  return hm_len(h) == 1 && a.found && a.value == "val_b"
+}
+
+fun test_delete_items(): bool {
+  var h = make_hash_map()
+  h = hm_set(h, "key_a", "val_a")
+  h = hm_set(h, "key_b", "val_b")
+  let d1 = hm_del(h, "key_a")
+  h = d1.map
+  let d2 = hm_del(h, "key_b")
+  h = d2.map
+  h = hm_set(h, "key_a", "val_a")
+  let d3 = hm_del(h, "key_a")
+  h = d3.map
+  return hm_len(h) == 0
+}
+
+fun test_access_absent_items(): bool {
+  var h = make_hash_map()
+  let g1 = hm_get(h, "key_a")
+  let d1 = hm_del(h, "key_a")
+  h = d1.map
+  h = hm_set(h, "key_a", "val_a")
+  let d2 = hm_del(h, "key_a")
+  h = d2.map
+  let d3 = hm_del(h, "key_a")
+  h = d3.map
+  let g2 = hm_get(h, "key_a")
+  return g1.found == false && d1.ok == false && d2.ok && d3.ok == false && g2.found == false && hm_len(h) == 0
+}
+
+fun test_add_with_resize_up(): bool {
+  var h = make_hash_map()
+  var i = 0
+  while i < 5 {
+    let s = str(i)
+    h = hm_set(h, s, s)
+    i = i + 1
+  }
+  return hm_len(h) == 5
+}
+
+fun test_add_with_resize_down(): bool {
+  var h = make_hash_map()
+  var i = 0
+  while i < 5 {
+    let s = str(i)
+    h = hm_set(h, s, s)
+    i = i + 1
+  }
+  var j = 0
+  while j < 5 {
+    let s = str(j)
+    let d = hm_del(h, s)
+    h = d.map
+    j = j + 1
+  }
+  h = hm_set(h, "key_a", "val_b")
+  let a = hm_get(h, "key_a")
+  return hm_len(h) == 1 && a.found && a.value == "val_b"
+}
+
+print(test_add_items())
+print(test_overwrite_items())
+print(test_delete_items())
+print(test_access_absent_items())
+print(test_add_with_resize_up())
+print(test_add_with_resize_down())
+print(true)
