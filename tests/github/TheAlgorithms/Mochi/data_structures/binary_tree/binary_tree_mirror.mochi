@@ -1,0 +1,49 @@
+/*
+Binary Tree Mirror - Map representation
+
+Given a binary tree represented as a map from node id to [left, right] child ids,
+produce its mirror image by recursively swapping the left and right children for
+every node reachable from a given root. If the tree is empty or the root does
+not exist, an error is raised.
+
+The algorithm performs a depth-first traversal starting at the root. For each
+node, it swaps the two entries and then recurses on both children. This yields
+the mirrored tree in O(n) time where n is the number of nodes. Space complexity
+is O(h) for recursion depth, with h being the tree height.
+*/
+
+fun binary_tree_mirror_dict(tree: map<int, list<int>>, root: int) {
+  if (root == 0) || (!(root in tree)) {
+    return
+  }
+  let children = tree[root]
+  let left = children[0]
+  let right = children[1]
+  tree[root] = [right, left]
+  binary_tree_mirror_dict(tree, left)
+  binary_tree_mirror_dict(tree, right)
+}
+
+fun binary_tree_mirror(binary_tree: map<int, list<int>>, root: int): map<int, list<int>> {
+  if len(binary_tree) == 0 {
+    panic("binary tree cannot be empty")
+  }
+  if !(root in binary_tree) {
+    panic("root " + str(root) + " is not present in the binary_tree")
+  }
+  var tree_copy: map<int, list<int>> = {}
+  for k in binary_tree {
+    tree_copy[k] = binary_tree[k]
+  }
+  binary_tree_mirror_dict(tree_copy, root)
+  return tree_copy
+}
+
+fun main() {
+  let binary_tree: map<int, list<int>> = {1: [2,3], 2: [4,5], 3: [6,7], 7: [8,9]}
+  print("Binary tree: " + str(binary_tree))
+  let mirrored = binary_tree_mirror(binary_tree, 1)
+  print("Binary tree mirror: " + str(mirrored))
+}
+
+main()
