@@ -1,0 +1,87 @@
+/*
+Dijkstra's Shortest Path (Adjacency Matrix)
+
+This program computes shortest distances from a source vertex to all
+others in a weighted directed graph with non-negative edge weights.
+The graph is stored as an adjacency matrix using a large constant to
+represent absent edges. It mirrors the Python implementation from
+TheAlgorithms/Python.
+
+Algorithm:
+- Repeatedly select the unvisited vertex with smallest tentative distance.
+- Relax all edges from that vertex.
+The process repeats until all vertices are processed.
+*/
+
+let INF = 1000000000.0
+
+fun print_dist(dist: list<float>) {
+  print("Vertex Distance")
+  var i = 0
+  while i < len(dist) {
+    if dist[i] >= INF {
+      print(i, "\tINF")
+    } else {
+      print(i, "\t", dist[i] as int)
+    }
+    i = i + 1
+  }
+}
+
+fun min_dist(mdist: list<float>, vset: list<bool>): int {
+  var min_val = INF
+  var min_ind = -1
+  var i = 0
+  while i < len(mdist) {
+    if !(vset[i]) && mdist[i] < min_val {
+      min_val = mdist[i]
+      min_ind = i
+    }
+    i = i + 1
+  }
+  return min_ind
+}
+
+fun dijkstra(graph: list<list<float>>, src: int): list<float> {
+  let v = len(graph)
+  var mdist: list<float> = []
+  var vset: list<bool> = []
+  var i = 0
+  while i < v {
+    mdist = append(mdist, INF)
+    vset = append(vset, false)
+    i = i + 1
+  }
+  mdist[src] = 0.0
+
+  var count = 0
+  while count < v - 1 {
+    let u = min_dist(mdist, vset)
+    vset[u] = true
+
+    var i = 0
+    while i < v {
+      let alt = mdist[u] + graph[u][i]
+      if !(vset[i]) && graph[u][i] < INF && alt < mdist[i] {
+        mdist[i] = alt
+      }
+      i = i + 1
+    }
+    count = count + 1
+  }
+  return mdist
+}
+
+fun main() {
+  let graph: list<list<float>> = [
+    [0.0, 10.0, INF, INF, 5.0],
+    [INF, 0.0, 1.0, INF, 2.0],
+    [INF, INF, 0.0, 4.0, INF],
+    [INF, INF, 6.0, 0.0, INF],
+    [INF, 3.0, 9.0, 2.0, 0.0]
+  ]
+  let dist = dijkstra(graph, 0)
+  print_dist(dist)
+}
+
+main()
