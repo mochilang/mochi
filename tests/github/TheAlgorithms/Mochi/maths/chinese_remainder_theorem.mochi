@@ -1,0 +1,64 @@
+/*
+Chinese Remainder Theorem (CRT)
+
+Given two congruences:
+  n ≡ r1 (mod n1)
+  n ≡ r2 (mod n2)
+where n1 and n2 are coprime, CRT guarantees a unique solution modulo n1 * n2.
+
+Algorithm:
+1. Use the extended Euclidean algorithm to find integers x and y such that n1*x + n2*y = 1.
+2. The solution to the system is n = r2 * x * n1 + r1 * y * n2 (mod m) where m = n1 * n2.
+3. We also implement modular inversion using the same extended Euclidean routine and
+   present an alternative CRT formulation that leverages modular inverses.
+
+All routines are implemented in pure Mochi without FFI and without using the `any` type.
+*/
+
+type EuclidResult { x: int, y: int }
+
+fun extended_euclid(a: int, b: int): EuclidResult {
+  if b == 0 {
+    return EuclidResult{x: 1, y: 0}
+  }
+  let res = extended_euclid(b, a % b)
+  let k = a / b
+  return EuclidResult{x: res.y, y: res.x - k * res.y}
+}
+
+fun chinese_remainder_theorem(n1: int, r1: int, n2: int, r2: int): int {
+  let res = extended_euclid(n1, n2)
+  let x = res.x
+  let y = res.y
+  let m = n1 * n2
+  let n = r2 * x * n1 + r1 * y * n2
+  return ((n % m) + m) % m
+}
+
+fun invert_modulo(a: int, n: int): int {
+  let res = extended_euclid(a, n)
+  var b = res.x
+  if b < 0 {
+    b = (b % n + n) % n
+  }
+  return b
+}
+
+fun chinese_remainder_theorem2(n1: int, r1: int, n2: int, r2: int): int {
+  let x = invert_modulo(n1, n2)
+  let y = invert_modulo(n2, n1)
+  let m = n1 * n2
+  let n = r2 * x * n1 + r1 * y * n2
+  return ((n % m) + m) % m
+}
+
+let e1 = extended_euclid(10, 6)
+print(str(e1.x) + "," + str(e1.y))
+let e2 = extended_euclid(7, 5)
+print(str(e2.x) + "," + str(e2.y))
+print(str(chinese_remainder_theorem(5, 1, 7, 3)))
+print(str(chinese_remainder_theorem(6, 1, 4, 3)))
+print(str(invert_modulo(2, 5)))
+print(str(invert_modulo(8, 7)))
+print(str(chinese_remainder_theorem2(5, 1, 7, 3)))
+print(str(chinese_remainder_theorem2(6, 1, 4, 3)))
