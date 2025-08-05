@@ -1,0 +1,291 @@
+/*
+Matrix-Based Game Simulation
+
+This program reproduces the logic of the Python script
+`matrix/matrix_based_game.py` from TheAlgorithms.
+A square board contains characters representing colored pieces.
+Given a sequence of moves (x, y) where (0,0) refers to the bottom
+left corner, each move removes the connected region of identical
+characters at that location. Removed cells turn into '-' and the
+board then collapses: cells fall down within each column and empty
+columns shift left. The score for a move with k removed cells is
+k*(k+1)/2. The program validates inputs, performs depth-first
+search to find connected components, applies gravity and column
+compaction, and computes the total score for a set of moves.
+
+Implemented in pure Mochi so it runs on the runtime/vm without any
+foreign interfaces or usage of the `any` type.
+*/
+
+type Coord {
+  x: int,
+  y: int,
+}
+
+type PlayResult {
+  matrix: list<list<string>>,
+  score: int,
+}
+
+fun is_alnum(ch: string): bool {
+  return (ch >= "0" && ch <= "9") || (ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z")
+}
+
+fun to_int(token: string): int {
+  var res = 0
+  var i = 0
+  while i < len(token) {
+    res = res * 10 + (substring(token, i, i + 1) as int)
+    i = i + 1
+  }
+  return res
+}
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun parse_moves(input_str: string): list<Coord> {
+  let pairs = split(input_str, ",")
+  var moves: list<Coord> = []
+  var i = 0
+  while i < len(pairs) {
+    let pair = pairs[i]
+    var numbers: list<string> = []
+    var num = ""
+    var j = 0
+    while j < len(pair) {
+      let ch = substring(pair, j, j + 1)
+      if ch == " " {
+        if num != "" {
+          numbers = append(numbers, num)
+          num = ""
+        }
+      } else {
+        num = num + ch
+      }
+      j = j + 1
+    }
+    if num != "" {
+      numbers = append(numbers, num)
+    }
+    if len(numbers) != 2 {
+      panic("Each move must have exactly two numbers.")
+    }
+    let x = to_int(numbers[0])
+    let y = to_int(numbers[1])
+    moves = append(moves, Coord { x: x, y: y })
+    i = i + 1
+  }
+  return moves
+}
+
+fun validate_matrix_size(size: int) {
+  if size <= 0 { panic("Matrix size must be a positive integer.") }
+}
+
+fun validate_matrix_content(matrix: list<string>, size: int) {
+  if len(matrix) != size { panic("The matrix dont match with size.") }
+  var i = 0
+  while i < size {
+    let row = matrix[i]
+    if len(row) != size { panic("Each row in the matrix must have exactly " + str(size) + " characters.") }
+    var j = 0
+    while j < size {
+      let ch = substring(row, j, j + 1)
+      if !is_alnum(ch) { panic("Matrix rows can only contain letters and numbers.") }
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+fun validate_moves(moves: list<Coord>, size: int) {
+  var i = 0
+  while i < len(moves) {
+    let mv = moves[i]
+    if mv.x < 0 || mv.x >= size || mv.y < 0 || mv.y >= size {
+      panic("Move is out of bounds for a matrix.")
+    }
+    i = i + 1
+  }
+}
+
+fun contains(pos: list<Coord>, r: int, c: int): bool {
+  var i = 0
+  while i < len(pos) {
+    let p = pos[i]
+    if p.x == r && p.y == c { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun find_repeat(matrix_g: list<list<string>>, row: int, column: int, size: int): list<Coord> {
+  column = size - 1 - column
+  var visited: list<Coord> = []
+  var repeated: list<Coord> = []
+  let color = matrix_g[column][row]
+  if color == "-" { return repeated }
+  var stack: list<Coord> = [Coord { x: column, y: row }]
+  while len(stack) > 0 {
+    let idx = len(stack) - 1
+    let pos = stack[idx]
+    stack = stack[0:idx]
+    if pos.x < 0 || pos.x >= size || pos.y < 0 || pos.y >= size {
+      continue
+    }
+    if contains(visited, pos.x, pos.y) { continue }
+    visited = append(visited, pos)
+    if matrix_g[pos.x][pos.y] == color {
+      repeated = append(repeated, pos)
+      stack = append(stack, Coord { x: pos.x - 1, y: pos.y })
+      stack = append(stack, Coord { x: pos.x + 1, y: pos.y })
+      stack = append(stack, Coord { x: pos.x, y: pos.y - 1 })
+      stack = append(stack, Coord { x: pos.x, y: pos.y + 1 })
+    }
+  }
+  return repeated
+}
+
+fun increment_score(count: int): int {
+  return count * (count + 1) / 2
+}
+
+fun move_x(matrix_g: list<list<string>>, column: int, size: int): list<list<string>> {
+  var new_list: list<string> = []
+  var row = 0
+  while row < size {
+    let val = matrix_g[row][column]
+    if val != "-" {
+      new_list = append(new_list, val)
+    } else {
+      new_list = concat([val], new_list)
+    }
+    row = row + 1
+  }
+  row = 0
+  while row < size {
+    matrix_g[row][column] = new_list[row]
+    row = row + 1
+  }
+  return matrix_g
+}
+
+fun move_y(matrix_g: list<list<string>>, size: int): list<list<string>> {
+  var empty_cols: list<int> = []
+  var column = size - 1
+  while column >= 0 {
+    var row = 0
+    var all_empty = true
+    while row < size {
+      if matrix_g[row][column] != "-" {
+        all_empty = false
+        break
+      }
+      row = row + 1
+    }
+    if all_empty {
+      empty_cols = append(empty_cols, column)
+    }
+    column = column - 1
+  }
+  var i = 0
+  while i < len(empty_cols) {
+    let col = empty_cols[i]
+    var c = col + 1
+    while c < size {
+      var r = 0
+      while r < size {
+        matrix_g[r][c - 1] = matrix_g[r][c]
+        r = r + 1
+      }
+      c = c + 1
+    }
+    var r = 0
+    while r < size {
+      matrix_g[r][size - 1] = "-"
+      r = r + 1
+    }
+    i = i + 1
+  }
+  return matrix_g
+}
+
+fun play(matrix_g: list<list<string>>, pos_x: int, pos_y: int, size: int): PlayResult {
+  let same_colors = find_repeat(matrix_g, pos_x, pos_y, size)
+  if len(same_colors) != 0 {
+    var i = 0
+    while i < len(same_colors) {
+      let p = same_colors[i]
+      matrix_g[p.x][p.y] = "-"
+      i = i + 1
+    }
+    var column = 0
+    while column < size {
+      matrix_g = move_x(matrix_g, column, size)
+      column = column + 1
+    }
+    matrix_g = move_y(matrix_g, size)
+  }
+  let sc = increment_score(len(same_colors))
+  return PlayResult { matrix: matrix_g, score: sc }
+}
+
+fun build_matrix(matrix: list<string>): list<list<string>> {
+  var res: list<list<string>> = []
+  var i = 0
+  while i < len(matrix) {
+    let row = matrix[i]
+    var row_list: list<string> = []
+    var j = 0
+    while j < len(row) {
+      row_list = append(row_list, substring(row, j, j + 1))
+      j = j + 1
+    }
+    res = append(res, row_list)
+    i = i + 1
+  }
+  return res
+}
+
+fun process_game(size: int, matrix: list<string>, moves: list<Coord>): int {
+  var game_matrix = build_matrix(matrix)
+  var total = 0
+  var i = 0
+  while i < len(moves) {
+    let mv = moves[i]
+    let res = play(game_matrix, mv.x, mv.y, size)
+    game_matrix = res.matrix
+    total = total + res.score
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  let size = 4
+  let matrix = ["RRBG", "RBBG", "YYGG", "XYGG"]
+  let moves = parse_moves("0 1,1 1")
+  validate_matrix_size(size)
+  validate_matrix_content(matrix, size)
+  validate_moves(moves, size)
+  let score = process_game(size, matrix, moves)
+  print(str(score))
+}
+
+main()
