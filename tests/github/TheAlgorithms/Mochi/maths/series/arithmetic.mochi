@@ -1,0 +1,50 @@
+/*
+Arithmetic Series and Mean
+-------------------------
+This module provides two utilities:
+
+1. is_arithmetic_series(xs): checks if a list of numbers forms an arithmetic
+   series where the difference between consecutive elements is constant.
+2. arithmetic_mean(xs): computes the average value of a list by summing all
+   elements and dividing by the number of items.
+
+Both functions panic when given an empty list to mirror the error handling of
+The Algorithms' Python reference implementation. The algorithm runs in O(n)
+where n is the length of the list and uses O(1) extra space.
+*/
+
+fun is_arithmetic_series(xs: list<float>): bool {
+  if len(xs) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  if len(xs) == 1 {
+    return true
+  }
+  let diff = xs[1] - xs[0]
+  var i: int = 0
+  while i < len(xs) - 1 {
+    if xs[i + 1] - xs[i] != diff {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun arithmetic_mean(xs: list<float>): float {
+  if len(xs) == 0 {
+    panic("Input list must be a non empty list")
+  }
+  var total: float = 0.0
+  var i: int = 0
+  while i < len(xs) {
+    total = total + xs[i]
+    i = i + 1
+  }
+  return total / (len(xs) as float)
+}
+
+print(str(is_arithmetic_series([2.0, 4.0, 6.0])))
+print(str(is_arithmetic_series([3.0, 6.0, 12.0, 24.0])))
+print(str(arithmetic_mean([2.0, 4.0, 6.0])))
+print(str(arithmetic_mean([3.0, 6.0, 9.0, 12.0])))
