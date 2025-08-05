@@ -1,0 +1,67 @@
+/*
+  Determine whether a binary tree is symmetric around its center.
+
+  A tree is symmetric if the left subtree is a mirror of the right subtree.
+  The algorithm compares nodes in pairs moving outward from the root:
+    1. If both nodes in a pair are absent, continue.
+    2. If only one is absent or values differ, the tree is asymmetric.
+    3. Otherwise, push their children in mirrored order and repeat.
+
+  The tree is represented as an array of nodes.  Each node is a list
+  [value, left_index, right_index] where -1 marks a missing child.  Using
+  indices avoids nullable types while still allowing traversal.
+*/
+
+fun make_symmetric_tree(): list<list<int>> {
+  return [
+    [1, 1, 2],
+    [2, 3, 4],
+    [2, 5, 6],
+    [3, -1, -1],
+    [4, -1, -1],
+    [4, -1, -1],
+    [3, -1, -1]
+  ]
+}
+
+fun make_asymmetric_tree(): list<list<int>> {
+  return [
+    [1, 1, 2],
+    [2, 3, 4],
+    [2, 5, 6],
+    [3, -1, -1],
+    [4, -1, -1],
+    [3, -1, -1],
+    [4, -1, -1]
+  ]
+}
+
+fun is_symmetric_tree(tree: list<list<int>>): bool {
+  var stack: list<int> = [tree[0][1], tree[0][2]]
+  while len(stack) >= 2 {
+    let left = stack[len(stack) - 2]
+    let right = stack[len(stack) - 1]
+    stack = stack[0:len(stack) - 2]
+    if left == (-1) && right == (-1) {
+      continue
+    }
+    if left == (-1) || right == (-1) {
+      return false
+    }
+    let lnode = tree[left]
+    let rnode = tree[right]
+    if lnode[0] != rnode[0] {
+      return false
+    }
+    stack = append(stack, lnode[1])
+    stack = append(stack, rnode[2])
+    stack = append(stack, lnode[2])
+    stack = append(stack, rnode[1])
+  }
+  return true
+}
+
+let symmetric_tree = make_symmetric_tree()
+let asymmetric_tree = make_asymmetric_tree()
+print(str(is_symmetric_tree(symmetric_tree)))
+print(str(is_symmetric_tree(asymmetric_tree)))
