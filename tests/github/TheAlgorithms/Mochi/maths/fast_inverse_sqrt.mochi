@@ -1,0 +1,171 @@
+/*
+Fast Inverse Square Root (Quake III Algorithm)
+---------------------------------------------
+Computes an approximation of 1/sqrt(x) for positive floating point numbers.
+
+Steps:
+1. Interpret the 32-bit float as an integer and apply the magic constant
+   0x5F3759DF to obtain a rough estimate of the reciprocal square root.
+2. Convert the manipulated bits back to a float.
+3. Refine the approximation with one iteration of Newton's method.
+
+Because the Mochi VM lacks native bitwise operators and bit casts, the
+conversion between floats and their IEEE-754 bit representations is
+implemented manually using integer arithmetic on the sign, exponent and
+mantissa fields. The routine runs in constant time.
+*/
+
+fun pow2_int(n: int): int {
+  var result = 1
+  var i = 0
+  while i < n {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun pow2_float(n: int): float {
+  var result = 1.0
+  if n >= 0 {
+    var i = 0
+    while i < n {
+      result = result * 2.0
+      i = i + 1
+    }
+  } else {
+    var i = 0
+    let m = 0 - n
+    while i < m {
+      result = result / 2.0
+      i = i + 1
+    }
+  }
+  return result
+}
+
+fun lshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun rshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = (result - (result % 2)) / 2
+    i = i + 1
+  }
+  return result
+}
+
+fun log2_floor(x: float): int {
+  var n = x
+  var e = 0
+  while n >= 2.0 {
+    n = n / 2.0
+    e = e + 1
+  }
+  while n < 1.0 {
+    n = n * 2.0
+    e = e - 1
+  }
+  return e
+}
+
+fun float_to_bits(x: float): int {
+  var num = x
+  var sign = 0
+  if num < 0.0 {
+    sign = 1
+    num = -num
+  }
+  let exp = log2_floor(num)
+  let pow = pow2_float(exp)
+  let normalized = num / pow
+  let frac = normalized - 1.0
+  let mantissa = (frac * pow2_float(23)) as int
+  let exp_bits = exp + 127
+  return lshift(sign, 31) + lshift(exp_bits, 23) + mantissa
+}
+
+fun bits_to_float(bits: int): float {
+  let sign_bit = rshift(bits, 31) % 2
+  var sign = 1.0
+  if sign_bit == 1 { sign = -1.0 }
+  let exp_bits = rshift(bits, 23) % 256
+  let exp = exp_bits - 127
+  let mantissa_bits = bits % pow2_int(23)
+  let mantissa = 1.0 + (mantissa_bits as float) / pow2_float(23)
+  return sign * mantissa * pow2_float(exp)
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun is_close(a: float, b: float, rel_tol: float): bool {
+  return absf(a - b) <= rel_tol * absf(b)
+}
+
+fun fast_inverse_sqrt(number: float): float {
+  if number <= 0.0 {
+    panic("Input must be a positive number.")
+  }
+  let i = float_to_bits(number)
+  let magic = 1597463007 // 0x5F3759DF
+  let y_bits = magic - rshift(i, 1)
+  var y = bits_to_float(y_bits)
+  y = y * (1.5 - 0.5 * number * y * y)
+  return y
+}
+
+fun test_fast_inverse_sqrt() {
+  if absf(fast_inverse_sqrt(10.0) - 0.3156857923527257) > 0.0001 {
+    panic("fast_inverse_sqrt(10) failed")
+  }
+  if absf(fast_inverse_sqrt(4.0) - 0.49915357479239103) > 0.0001 {
+    panic("fast_inverse_sqrt(4) failed")
+  }
+  if absf(fast_inverse_sqrt(4.1) - 0.4932849504615651) > 0.0001 {
+    panic("fast_inverse_sqrt(4.1) failed")
+  }
+  var i = 50
+  while i < 60 {
+    let y = fast_inverse_sqrt(i as float)
+    let actual = 1.0 / sqrtApprox(i as float)
+    if !is_close(y, actual, 0.00132) {
+      panic("relative error too high")
+    }
+    i = i + 1
+  }
+}
+
+fun main() {
+  test_fast_inverse_sqrt()
+  var i = 5
+  while i <= 100 {
+    let diff = (1.0 / sqrtApprox(i as float)) - fast_inverse_sqrt(i as float)
+    print(str(i) + ": " + str(diff))
+    i = i + 5
+  }
+}
+
+main()
