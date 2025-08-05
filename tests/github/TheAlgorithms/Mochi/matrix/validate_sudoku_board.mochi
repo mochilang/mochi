@@ -1,0 +1,82 @@
+/*
+Validate Sudoku Board
+
+Given a partially filled 9x9 Sudoku grid represented by digits "1"-"9" and ".",
+this program checks whether the board is valid. A board is valid if each row,
+column and each of the nine 3x3 sub-boxes contains no repeated digits. Empty
+cells denoted by '.' are ignored. The algorithm scans all cells while tracking
+seen digits for every row, column and box using lists to emulate sets. If a digit
+reappears in its row, column or box, the board is invalid.
+
+Time complexity: O(81) because the board has fixed size.
+Space complexity: O(81) for the tracking structures.
+*/
+
+let NUM_SQUARES = 9
+let EMPTY_CELL = "."
+
+fun is_valid_sudoku_board(board: list<list<string>>): bool {
+  if len(board) != NUM_SQUARES {
+    return false
+  }
+  var i = 0
+  while i < NUM_SQUARES {
+    if len(board[i]) != NUM_SQUARES {
+      return false
+    }
+    i = i + 1
+  }
+  var rows: list<list<string>> = []
+  var cols: list<list<string>> = []
+  var boxes: list<list<string>> = []
+  i = 0
+  while i < NUM_SQUARES {
+    rows = append(rows, [])
+    cols = append(cols, [])
+    boxes = append(boxes, [])
+    i = i + 1
+  }
+  for r in 0..NUM_SQUARES {
+    for c in 0..NUM_SQUARES {
+      let value = board[r][c]
+      if value == EMPTY_CELL {
+        continue
+      }
+      let box: int = int(r / 3) * 3 + int(c / 3)
+      if value in rows[r] || value in cols[c] || value in boxes[box] {
+        return false
+      }
+      rows[r] = append(rows[r], value)
+      cols[c] = append(cols[c], value)
+      boxes[box] = append(boxes[box], value)
+    }
+  }
+  return true
+}
+
+let valid_board: list<list<string>> = [
+  ["5","3",".",".","7",".",".",".","."],
+  ["6",".",".","1","9","5",".",".","."],
+  [".","9","8",".",".",".",".","6","."],
+  ["8",".",".",".","6",".",".",".","3"],
+  ["4",".",".","8",".","3",".",".","1"],
+  ["7",".",".",".","2",".",".",".","6"],
+  [".","6",".",".",".",".","2","8","."],
+  [".",".",".","4","1","9",".",".","5"],
+  [".",".",".",".","8",".",".","7","9"]
+]
+
+let invalid_board: list<list<string>> = [
+  ["8","3",".",".","7",".",".",".","."],
+  ["6",".",".","1","9","5",".",".","."],
+  [".","9","8",".",".",".",".","6","."],
+  ["8",".",".",".","6",".",".",".","3"],
+  ["4",".",".","8",".","3",".",".","1"],
+  ["7",".",".",".","2",".",".",".","6"],
+  [".","6",".",".",".",".","2","8","."],
+  [".",".",".","4","1","9",".",".","5"],
+  [".",".",".",".","8",".",".","7","9"]
+]
+
+print(is_valid_sudoku_board(valid_board))
+print(is_valid_sudoku_board(invalid_board))
