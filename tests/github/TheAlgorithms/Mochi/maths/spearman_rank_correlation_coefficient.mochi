@@ -1,0 +1,68 @@
+/*
+Spearman Rank Correlation Coefficient
+------------------------------------
+This algorithm measures the strength and direction of the monotonic relationship between two variables.
+Each variable's values are converted to ranks and the coefficient is computed as:
+
+rho = 1 - (6 * Σ d_i^2) / (n * (n^2 - 1))
+
+where d_i is the difference between paired ranks and n is the number of observations.
+This implementation mirrors the Python version from TheAlgorithms without using any foreign interfaces,
+and is compatible with the runtime/vm.
+*/
+
+fun assign_ranks(data: list<float>): list<int> {
+  var ranks: list<int> = []
+  let n = len(data)
+  var i = 0
+  while i < n {
+    var rank = 1
+    var j = 0
+    while j < n {
+      if data[j] < data[i] || (data[j] == data[i] && j < i) {
+        rank = rank + 1
+      }
+      j = j + 1
+    }
+    ranks = append(ranks, rank)
+    i = i + 1
+  }
+  return ranks
+}
+
+fun calculate_spearman_rank_correlation(var1: list<float>, var2: list<float>): float {
+  if len(var1) != len(var2) {
+    panic("Lists must have equal length")
+  }
+  let n = len(var1)
+  let rank1 = assign_ranks(var1)
+  let rank2 = assign_ranks(var2)
+  var i = 0
+  var d_sq: float = 0.0
+  while i < n {
+    let diff = ((rank1[i] - rank2[i]) as float)
+    d_sq = d_sq + diff * diff
+    i = i + 1
+  }
+  let n_f = (n as float)
+  return 1.0 - (6.0 * d_sq) / (n_f * (n_f * n_f - 1.0))
+}
+
+fun test_spearman() {
+  let x: list<float> = [1.0, 2.0, 3.0, 4.0, 5.0]
+  let y_inc: list<float> = [2.0, 4.0, 6.0, 8.0, 10.0]
+  if calculate_spearman_rank_correlation(x, y_inc) != 1.0 { panic("case1") }
+  let y_dec: list<float> = [5.0, 4.0, 3.0, 2.0, 1.0]
+  if calculate_spearman_rank_correlation(x, y_dec) != (-1.0) { panic("case2") }
+  let y_mix: list<float> = [5.0, 1.0, 2.0, 9.0, 5.0]
+  if calculate_spearman_rank_correlation(x, y_mix) != 0.6 { panic("case3") }
+}
+
+fun main() {
+  test_spearman()
+  print(str(calculate_spearman_rank_correlation([1.0, 2.0, 3.0, 4.0, 5.0], [2.0, 4.0, 6.0, 8.0, 10.0])))
+  print(str(calculate_spearman_rank_correlation([1.0, 2.0, 3.0, 4.0, 5.0], [5.0, 4.0, 3.0, 2.0, 1.0])))
+  print(str(calculate_spearman_rank_correlation([1.0, 2.0, 3.0, 4.0, 5.0], [5.0, 1.0, 2.0, 9.0, 5.0])))
+}
+
+main()
