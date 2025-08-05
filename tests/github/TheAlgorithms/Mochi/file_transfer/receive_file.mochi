@@ -1,0 +1,48 @@
+/*
+Receive File via Simulated Socket
+
+The original Python program connects to a server using TCP, sends a greeting,
+then receives file data in 1024-byte chunks until no more data is available.
+Each chunk is written to a local file before the connection is closed.
+
+This Mochi version avoids real network and file I/O to remain runnable in the
+VM. Instead, it simulates incoming network packets using a list of string
+chunks. Each non-empty chunk is appended to an output buffer until an empty
+string indicates the end of transmission. The concatenated result represents
+the received file.
+
+Algorithm:
+1. Initialize output buffer.
+2. For each chunk in the input list:
+   - Stop if the chunk is an empty string.
+   - Append the chunk to the buffer.
+3. Return the assembled data.
+
+Time complexity is O(n) where n is the total length of all chunks.
+*/
+
+fun receive_file(chunks: list<string>): string {
+  var out = ""
+  var i = 0
+  print("File opened")
+  print("Receiving data...")
+  while i < len(chunks) {
+    let data = chunks[i]
+    if data == "" {
+      break
+    }
+    out = out + data
+    i = i + 1
+  }
+  print("Successfully received the file")
+  print("Connection closed")
+  return out
+}
+
+fun main() {
+  let incoming = ["Hello ", "from ", "server"]
+  let received = receive_file(incoming)
+  print(received)
+}
+
+main()
