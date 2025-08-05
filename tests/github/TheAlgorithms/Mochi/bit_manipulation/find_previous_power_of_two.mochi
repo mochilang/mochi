@@ -1,0 +1,37 @@
+/*
+Find the largest power of two less than or equal to a given non-negative integer.
+The algorithm iteratively doubles a value starting from 1 until it would exceed the
+input number, then returns the previous value. This uses only integer operations and
+runs in O(log n) time where n is the input value. If the input is negative the program
+raises an error.
+*/
+
+fun find_previous_power_of_two(number: int): int {
+  if number < 0 {
+    panic("Input must be a non-negative integer")
+  }
+  if number == 0 {
+    return 0
+  }
+  var power = 1
+  while power <= number {
+    power = power * 2
+  }
+  if number > 1 {
+    return power / 2
+  } else {
+    return 1
+  }
+}
+
+fun main() {
+  var results: list<int> = []
+  var i = 0
+  while i < 18 {
+    results = append(results, find_previous_power_of_two(i))
+    i = i + 1
+  }
+  print(str(results))
+}
+
+main()
