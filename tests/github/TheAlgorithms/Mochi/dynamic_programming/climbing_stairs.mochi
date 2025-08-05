@@ -1,0 +1,35 @@
+/*
+Climbing Stairs
+----------------
+Given a staircase with `number_of_steps` steps, each move can climb
+either 1 or 2 steps. The goal is to count the number of distinct ways
+to reach the top. This is equivalent to computing Fibonacci numbers
+with F(1) = 1 and F(2) = 2. The iterative solution maintains two
+variables representing the ways to reach the previous two steps and
+updates them until the desired step is reached.
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+*/
+
+fun climb_stairs(number_of_steps: int): int {
+  if number_of_steps <= 0 {
+    panic("number_of_steps needs to be positive")
+  }
+  if number_of_steps == 1 {
+    return 1
+  }
+  var previous = 1
+  var current = 1
+  var i = 0
+  while i < number_of_steps - 1 {
+    let next = current + previous
+    previous = current
+    current = next
+    i = i + 1
+  }
+  return current
+}
+
+print(climb_stairs(3))
+print(climb_stairs(1))
