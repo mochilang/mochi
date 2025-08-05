@@ -1,0 +1,58 @@
+/*
+Finds the kth largest element in an array using a quickselect strategy.
+The array is partitioned around a pivot so that values greater than or
+equal to the pivot move to the left and smaller values move to the right.
+Repeating the partition step until the pivot index matches the desired
+position yields the kth largest element in average linear time.
+*/
+
+fun partition(arr: list<int>, low: int, high: int): int {
+  let pivot = arr[high]
+  var i = low - 1
+  var j = low
+  while j < high {
+    if arr[j] >= pivot {
+      i = i + 1
+      var tmp = arr[i]
+      arr[i] = arr[j]
+      arr[j] = tmp
+    }
+    j = j + 1
+  }
+  var k: int = i + 1
+  var tmp = arr[k]
+  arr[k] = arr[high]
+  arr[high] = tmp
+  return k
+}
+
+fun kth_largest_element(arr: list<int>, position: int): int {
+  if len(arr) == 0 {
+    return -1
+  }
+  if position < 1 || position > len(arr) {
+    return -1
+  }
+  var low = 0
+  var high = len(arr) - 1
+  while low <= high {
+    if low > len(arr) - 1 || high < 0 {
+      return -1
+    }
+    var pivot_index = partition(arr, low, high)
+    if pivot_index == position - 1 {
+      return arr[pivot_index]
+    } else if pivot_index > position - 1 {
+      high = pivot_index - 1
+    } else {
+      low = pivot_index + 1
+    }
+  }
+  return -1
+}
+
+let arr1 = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
+print(kth_largest_element(arr1, 3))
+print("\n")
+let arr2 = [2, 5, 6, 1, 9, 3, 8, 4, 7, 3, 5]
+print(kth_largest_element(arr2, 1))
