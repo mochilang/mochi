@@ -1,0 +1,96 @@
+/*
+Stack Using Singly Linked List
+-------------------------------
+
+This program implements a stack where each element is stored in a node
+of a singly linked list.  For simplicity and to avoid using pointers,
+the nodes are kept in an array and each node stores the index of the
+next node, forming a linked structure.  The stack supports:
+
+  • push   - insert an item at the top of the stack
+  • pop    - remove and return the item at the top
+  • peek   - return the top item without removing it
+  • is_empty - check whether the stack has any items
+  • clear  - remove all items
+
+Each push appends a node to the array and records the previous top as
+its next index.  Pop retrieves the node at the current top index and
+moves the top pointer to the next index.  All operations are O(1).
+
+The demonstration below pushes and pops a few strings and prints the
+intermediate results.
+*/
+
+type Node {
+  value: string,
+  next: int,
+}
+
+type Stack {
+  nodes: list<Node>,
+  top: int,
+}
+
+fun empty_stack(): Stack {
+  return Stack { nodes: [], top: (-1) }
+}
+
+fun is_empty(stack: Stack): bool {
+  return stack.top == (-1)
+}
+
+fun push(stack: Stack, item: string): Stack {
+  let new_node = Node { value: item, next: stack.top }
+  var new_nodes = stack.nodes
+  new_nodes = append(new_nodes, new_node)
+  let new_top = len(new_nodes) - 1
+  return Stack { nodes: new_nodes, top: new_top }
+}
+
+type PopResult {
+  stack: Stack,
+  value: string,
+}
+
+fun pop(stack: Stack): PopResult {
+  if stack.top == (-1) { panic("pop from empty stack") }
+  let node = (stack.nodes[stack.top])
+  let new_top = node.next
+  let new_stack = Stack { nodes: stack.nodes, top: new_top }
+  return PopResult { stack: new_stack, value: node.value }
+}
+
+fun peek(stack: Stack): string {
+  if stack.top == (-1) { panic("peek from empty stack") }
+  let node = (stack.nodes[stack.top])
+  return node.value
+}
+
+fun clear(stack: Stack): Stack {
+  return Stack { nodes: [], top: (-1) }
+}
+
+fun main() {
+  var stack = empty_stack()
+  print(is_empty(stack))
+  stack = push(stack, "5")
+  stack = push(stack, "9")
+  stack = push(stack, "python")
+  print(is_empty(stack))
+  var res = pop(stack)
+  stack = res.stack
+  print(res.value)
+  stack = push(stack, "algorithms")
+  res = pop(stack)
+  stack = res.stack
+  print(res.value)
+  res = pop(stack)
+  stack = res.stack
+  print(res.value)
+  res = pop(stack)
+  stack = res.stack
+  print(res.value)
+  print(is_empty(stack))
+}
+
+main()
