@@ -1,0 +1,542 @@
+/*
+Implement weighted directed and undirected graphs using adjacency lists.
+
+The structures store a map from each vertex to a list of outgoing edges.
+Each edge is represented as a two-element list `[w, v]` where `w` is the
+weight and `v` the destination vertex.  The directed version keeps only
+one direction of every edge while the undirected version inserts edges in
+both directions.
+
+The provided functions support basic graph operations:
+  • adding and removing weighted edges
+  • depth-first and breadth-first traversal
+  • computing in/out degree (directed) or degree (undirected)
+  • topological sort for directed acyclic graphs
+  • detecting whether cycles exist and listing vertices involved
+  • simple random graph generation and timing helpers
+
+All code is written in pure Mochi without FFI and avoids the `any` type.
+*/
+
+// ---------- Common helpers ----------
+
+fun list_contains_int(xs: list<int>, x: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun edge_exists(edges: list<list<int>>, w: int, v: int): bool {
+  var i = 0
+  while i < len(edges) {
+    if edges[i][0] == w && edges[i][1] == v { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun first_key(m: map<int, list<list<int>>>): int {
+  for k in m { return k }
+  return 0
+}
+
+fun rand_range(low: int, high: int): int {
+  return (now() % (high - low)) + low
+}
+
+// ---------- Directed graph ----------
+
+type DirectedGraph {
+  graph: map<int, list<list<int>>>
+}
+
+fun dg_make_graph(): DirectedGraph {
+  return DirectedGraph { graph: {} }
+}
+
+fun dg_add_pair(g: DirectedGraph, u: int, v: int, w: int) {
+  if u in g.graph {
+    var edges: list<list<int>> = g.graph[u]
+    if !edge_exists(edges, w, v) {
+      edges = append(edges, [w, v])
+      var m = g.graph
+      m[u] = edges
+      g.graph = m
+    }
+  } else {
+    var m0 = g.graph
+    m0[u] = [[w, v]]
+    g.graph = m0
+  }
+  if !(v in g.graph) {
+    var m1 = g.graph
+    m1[v] = []
+    g.graph = m1
+  }
+}
+
+fun dg_remove_pair(g: DirectedGraph, u: int, v: int) {
+  if u in g.graph {
+    var edges: list<list<int>> = g.graph[u]
+    var new_edges: list<list<int>> = []
+    var i = 0
+    while i < len(edges) {
+      if edges[i][1] != v {
+        new_edges = append(new_edges, edges[i])
+      }
+      i = i + 1
+    }
+    var m = g.graph
+    m[u] = new_edges
+    g.graph = m
+  }
+}
+
+fun dg_all_nodes(g: DirectedGraph): list<int> {
+  var res: list<int> = []
+  for k in g.graph { res = append(res, k) }
+  return res
+}
+
+fun dg_dfs_util(g: DirectedGraph, node: int, visited: map<int, bool>, order: list<int>, d: int): list<int> {
+  visited[node] = true
+  order = append(order, node)
+  if d != (-1) && node == d { return order }
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      order = dg_dfs_util(g, neigh, visited, order, d)
+      if d != (-1) && order[len(order) - 1] == d { return order }
+    }
+    i = i + 1
+  }
+  return order
+}
+
+fun dg_dfs(g: DirectedGraph, s: int, d: int): list<int> {
+  if s == d { return [] }
+  let start = if s == (-2) { first_key(g.graph) } else { s }
+  var visited: map<int, bool> = {}
+  var order: list<int> = []
+  order = dg_dfs_util(g, start, visited, order, d)
+  return order
+}
+
+fun dg_bfs(g: DirectedGraph, s: int): list<int> {
+  var queue: list<int> = []
+  var visited: map<int, bool> = {}
+  var order: list<int> = []
+  let start = if s == (-2) { first_key(g.graph) } else { s }
+  queue = append(queue, start)
+  visited[start] = true
+  while len(queue) > 0 {
+    let node = queue[0]
+    queue = queue[1:len(queue)]
+    order = append(order, node)
+    var edges = g.graph[node]
+    var i = 0
+    while i < len(edges) {
+      let neigh = edges[i][1]
+      if !(neigh in visited) {
+        queue = append(queue, neigh)
+        visited[neigh] = true
+      }
+      i = i + 1
+    }
+  }
+  return order
+}
+
+fun dg_in_degree(g: DirectedGraph, u: int): int {
+  var count = 0
+  for k in g.graph {
+    var edges = g.graph[k]
+    var i = 0
+    while i < len(edges) {
+      if edges[i][1] == u { count = count + 1 }
+      i = i + 1
+    }
+  }
+  return count
+}
+
+fun dg_out_degree(g: DirectedGraph, u: int): int {
+  if u in g.graph { return len(g.graph[u]) }
+  return 0
+}
+
+fun dg_topo_util(g: DirectedGraph, node: int, visited: map<int, bool>, stack: list<int>): list<int> {
+  visited[node] = true
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      stack = dg_topo_util(g, neigh, visited, stack)
+    }
+    i = i + 1
+  }
+  stack = append(stack, node)
+  return stack
+}
+
+fun dg_topological_sort(g: DirectedGraph): list<int> {
+  var visited: map<int, bool> = {}
+  var stack: list<int> = []
+  for k in g.graph {
+    if !(k in visited) {
+      stack = dg_topo_util(g, k, visited, stack)
+    }
+  }
+  var res: list<int> = []
+  var i = len(stack) - 1
+  while i >= 0 {
+    res = append(res, stack[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun dg_cycle_util(g: DirectedGraph, node: int, visited: map<int, bool>, rec: map<int, bool>, res: list<int>): list<int> {
+  visited[node] = true
+  rec[node] = true
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      res = dg_cycle_util(g, neigh, visited, rec, res)
+    } else if rec[neigh] {
+      if !list_contains_int(res, neigh) { res = append(res, neigh) }
+      if !list_contains_int(res, node) { res = append(res, node) }
+    }
+    i = i + 1
+  }
+  rec[node] = false
+  return res
+}
+
+fun dg_cycle_nodes(g: DirectedGraph): list<int> {
+  var visited: map<int, bool> = {}
+  var rec: map<int, bool> = {}
+  var res: list<int> = []
+  for k in g.graph {
+    if !(k in visited) {
+      res = dg_cycle_util(g, k, visited, rec, res)
+    }
+  }
+  return res
+}
+
+fun dg_has_cycle_util(g: DirectedGraph, node: int, visited: map<int, bool>, rec: map<int, bool>): bool {
+  visited[node] = true
+  rec[node] = true
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      if dg_has_cycle_util(g, neigh, visited, rec) { return true }
+    } else if rec[neigh] {
+      return true
+    }
+    i = i + 1
+  }
+  rec[node] = false
+  return false
+}
+
+fun dg_has_cycle(g: DirectedGraph): bool {
+  var visited: map<int, bool> = {}
+  var rec: map<int, bool> = {}
+  for k in g.graph {
+    if !(k in visited) {
+      if dg_has_cycle_util(g, k, visited, rec) { return true }
+    }
+  }
+  return false
+}
+
+fun dg_fill_graph_randomly(g: DirectedGraph, c: int) {
+  var count = c
+  if count == (-1) {
+    count = rand_range(10, 10010)
+  }
+  var i = 0
+  while i < count {
+    var edge_count = rand_range(1, 103)
+    var j = 0
+    while j < edge_count {
+      let n = rand_range(0, count)
+      if n != i {
+        dg_add_pair(g, i, n, 1)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+fun dg_dfs_time(g: DirectedGraph, s: int, e: int): int {
+  let begin = now()
+  dg_dfs(g, s, e)
+  let end = now()
+  return end - begin
+}
+
+fun dg_bfs_time(g: DirectedGraph, s: int): int {
+  let begin = now()
+  dg_bfs(g, s)
+  let end = now()
+  return end - begin
+}
+
+// ---------- Undirected graph ----------
+
+type Graph {
+  graph: map<int, list<list<int>>>
+}
+
+fun g_make_graph(): Graph {
+  return Graph { graph: {} }
+}
+
+fun g_add_pair(g: Graph, u: int, v: int, w: int) {
+  if u in g.graph {
+    var edges: list<list<int>> = g.graph[u]
+    if !edge_exists(edges, w, v) {
+      edges = append(edges, [w, v])
+      var m = g.graph
+      m[u] = edges
+      g.graph = m
+    }
+  } else {
+    var m0 = g.graph
+    m0[u] = [[w, v]]
+    g.graph = m0
+  }
+  if v in g.graph {
+    var edges2: list<list<int>> = g.graph[v]
+    if !edge_exists(edges2, w, u) {
+      edges2 = append(edges2, [w, u])
+      var m2 = g.graph
+      m2[v] = edges2
+      g.graph = m2
+    }
+  } else {
+    var m3 = g.graph
+    m3[v] = [[w, u]]
+    g.graph = m3
+  }
+}
+fun g_remove_pair(g: Graph, u: int, v: int) {
+  if u in g.graph {
+    var edges: list<list<int>> = g.graph[u]
+    var new_edges: list<list<int>> = []
+    var i = 0
+    while i < len(edges) {
+      if edges[i][1] != v {
+        new_edges = append(new_edges, edges[i])
+      }
+      i = i + 1
+    }
+    var m = g.graph
+    m[u] = new_edges
+    g.graph = m
+  }
+  if v in g.graph {
+    var edges2: list<list<int>> = g.graph[v]
+    var new_edges2: list<list<int>> = []
+    var j = 0
+    while j < len(edges2) {
+      if edges2[j][1] != u {
+        new_edges2 = append(new_edges2, edges2[j])
+      }
+      j = j + 1
+    }
+    var m2 = g.graph
+    m2[v] = new_edges2
+    g.graph = m2
+  }
+}
+fun g_all_nodes(g: Graph): list<int> {
+  var res: list<int> = []
+  for k in g.graph { res = append(res, k) }
+  return res
+}
+
+fun g_dfs_util(g: Graph, node: int, visited: map<int, bool>, order: list<int>, d: int): list<int> {
+  visited[node] = true
+  order = append(order, node)
+  if d != (-1) && node == d { return order }
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      order = g_dfs_util(g, neigh, visited, order, d)
+      if d != (-1) && order[len(order) - 1] == d { return order }
+    }
+    i = i + 1
+  }
+  return order
+}
+
+fun g_dfs(g: Graph, s: int, d: int): list<int> {
+  if s == d { return [] }
+  let start = if s == (-2) { first_key(g.graph) } else { s }
+  var visited: map<int, bool> = {}
+  var order: list<int> = []
+  order = g_dfs_util(g, start, visited, order, d)
+  return order
+}
+
+fun g_bfs(g: Graph, s: int): list<int> {
+  var queue: list<int> = []
+  var visited: map<int, bool> = {}
+  var order: list<int> = []
+  let start = if s == (-2) { first_key(g.graph) } else { s }
+  queue = append(queue, start)
+  visited[start] = true
+  while len(queue) > 0 {
+    let node = queue[0]
+    queue = queue[1:len(queue)]
+    order = append(order, node)
+    var edges = g.graph[node]
+    var i = 0
+    while i < len(edges) {
+      let neigh = edges[i][1]
+      if !(neigh in visited) {
+        queue = append(queue, neigh)
+        visited[neigh] = true
+      }
+      i = i + 1
+    }
+  }
+  return order
+}
+
+fun g_degree(g: Graph, u: int): int {
+  if u in g.graph { return len(g.graph[u]) }
+  return 0
+}
+
+fun g_cycle_util(g: Graph, node: int, visited: map<int, bool>, parent: int, res: list<int>): list<int> {
+  visited[node] = true
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      res = g_cycle_util(g, neigh, visited, node, res)
+    } else if neigh != parent {
+      if !list_contains_int(res, neigh) { res = append(res, neigh) }
+      if !list_contains_int(res, node) { res = append(res, node) }
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun g_cycle_nodes(g: Graph): list<int> {
+  var visited: map<int, bool> = {}
+  var res: list<int> = []
+  for k in g.graph {
+    if !(k in visited) {
+      res = g_cycle_util(g, k, visited, -1, res)
+    }
+  }
+  return res
+}
+
+fun g_has_cycle_util(g: Graph, node: int, visited: map<int, bool>, parent: int): bool {
+  visited[node] = true
+  var edges = g.graph[node]
+  var i = 0
+  while i < len(edges) {
+    let neigh = edges[i][1]
+    if !(neigh in visited) {
+      if g_has_cycle_util(g, neigh, visited, node) { return true }
+    } else if neigh != parent {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun g_has_cycle(g: Graph): bool {
+  var visited: map<int, bool> = {}
+  for k in g.graph {
+    if !(k in visited) {
+      if g_has_cycle_util(g, k, visited, -1) { return true }
+    }
+  }
+  return false
+}
+
+fun g_fill_graph_randomly(g: Graph, c: int) {
+  var count = c
+  if count == (-1) {
+    count = rand_range(10, 10010)
+  }
+  var i = 0
+  while i < count {
+    var edge_count = rand_range(1, 103)
+    var j = 0
+    while j < edge_count {
+      let n = rand_range(0, count)
+      if n != i {
+        g_add_pair(g, i, n, 1)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+}
+
+fun g_dfs_time(g: Graph, s: int, e: int): int {
+  let begin = now()
+  g_dfs(g, s, e)
+  let end = now()
+  return end - begin
+}
+
+fun g_bfs_time(g: Graph, s: int): int {
+  let begin = now()
+  g_bfs(g, s)
+  let end = now()
+  return end - begin
+}
+
+// ---------- Demonstration ----------
+
+fun main() {
+  var dg = dg_make_graph()
+  dg_add_pair(dg, 0, 1, 5)
+  dg_add_pair(dg, 0, 2, 3)
+  dg_add_pair(dg, 1, 3, 2)
+  dg_add_pair(dg, 2, 3, 4)
+  print(str(dg_dfs(dg, -2, -1)))
+  print(str(dg_bfs(dg, -2)))
+  print(str(dg_in_degree(dg, 3)))
+  print(str(dg_out_degree(dg, 0)))
+  print(str(dg_topological_sort(dg)))
+  print(str(dg_has_cycle(dg)))
+
+  var ug = g_make_graph()
+  g_add_pair(ug, 0, 1, 1)
+  g_add_pair(ug, 1, 2, 1)
+  g_add_pair(ug, 2, 0, 1)
+  print(str(g_dfs(ug, -2, -1)))
+  print(str(g_bfs(ug, -2)))
+  print(str(g_degree(ug, 1)))
+  print(str(g_has_cycle(ug)))
+}
+
+main()
