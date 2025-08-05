@@ -1,0 +1,59 @@
+/*
+Swap two nodes in a singly linked list by their integer values. The list is
+modeled as a simple wrapper around a list of integers. Pushing prepends a value
+and swapping traverses the list to find the first occurrences of the targets
+and exchanges them if both are present. This mirrors the Python
+implementation from TheAlgorithms while remaining pure Mochi so it runs on
+the `runtime/vm`.
+*/
+
+type LinkedList {
+  data: list<int>
+}
+
+fun empty_list(): LinkedList {
+  return LinkedList { data: [] }
+}
+
+fun push(list: LinkedList, value: int): LinkedList {
+  var res: list<int> = [value]
+  res = concat(res, list.data)
+  return LinkedList { data: res }
+}
+
+fun swap_nodes(list: LinkedList, v1: int, v2: int): LinkedList {
+  if v1 == v2 { return list }
+  var idx1: int = 0 - 1
+  var idx2: int = 0 - 1
+  var i: int = 0
+  while i < len(list.data) {
+    if list.data[i] == v1 && idx1 == 0 - 1 { idx1 = i }
+    if list.data[i] == v2 && idx2 == 0 - 1 { idx2 = i }
+    i = i + 1
+  }
+  if idx1 == 0 - 1 || idx2 == 0 - 1 { return list }
+  var res = list.data
+  let temp = res[idx1]
+  res[idx1] = res[idx2]
+  res[idx2] = temp
+  return LinkedList { data: res }
+}
+
+fun to_string(list: LinkedList): string {
+  return str(list.data)
+}
+
+fun main() {
+  var ll = empty_list()
+  var i = 5
+  while i > 0 {
+    ll = push(ll, i)
+    i = i - 1
+  }
+  print("Original Linked List: " + to_string(ll))
+  ll = swap_nodes(ll, 1, 4)
+  print("Modified Linked List: " + to_string(ll))
+  print("After swapping the nodes whose data is 1 and 4.")
+}
+
+main()
