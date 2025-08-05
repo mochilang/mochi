@@ -1,0 +1,125 @@
+/*
+Rayleigh Quotient
+-----------------
+The Rayleigh quotient of a Hermitian matrix A and vector v is
+(v* A v) / (v* v) where v* is the conjugate transpose of v.  It is real
+and gives the eigenvalue corresponding to vector v when v is an eigenvector.
+
+Algorithm:
+1. Verify the matrix is Hermitian by checking a_ij equals the conjugate of a_ji.
+2. Compute the conjugate transpose of v.
+3. Multiply v* with A, then with v.
+4. Divide by v* v to obtain a real scalar.
+
+All complex arithmetic is implemented manually without foreign interfaces,
+and no usage of the "any" type occurs.  The implementation uses matrices as
+lists of lists and runs in O(n^2) time for an n x n matrix.
+*/
+
+type Complex { re: float, im: float }
+
+fun complex_conj(z: Complex): Complex {
+  return Complex { re: z.re, im: -z.im }
+}
+
+fun complex_eq(a: Complex, b: Complex): bool {
+  return a.re == b.re && a.im == b.im
+}
+
+fun complex_add(a: Complex, b: Complex): Complex {
+  return Complex { re: a.re + b.re, im: a.im + b.im }
+}
+
+fun complex_mul(a: Complex, b: Complex): Complex {
+  let real = a.re * b.re - a.im * b.im
+  let imag = a.re * b.im + a.im * b.re
+  return Complex { re: real, im: imag }
+}
+
+fun conj_vector(v: list<Complex>): list<Complex> {
+  var res: list<Complex> = []
+  var i = 0
+  while i < len(v) {
+    res = append(res, complex_conj(v[i]))
+    i = i + 1
+  }
+  return res
+}
+
+fun vec_mat_mul(v: list<Complex>, m: list<list<Complex>>): list<Complex> {
+  var result: list<Complex> = []
+  var col = 0
+  while col < len(m[0]) {
+    var sum = Complex { re: 0.0, im: 0.0 }
+    var row = 0
+    while row < len(v) {
+      sum = complex_add(sum, complex_mul(v[row], m[row][col]))
+      row = row + 1
+    }
+    result = append(result, sum)
+    col = col + 1
+  }
+  return result
+}
+
+fun dot(a: list<Complex>, b: list<Complex>): Complex {
+  var sum = Complex { re: 0.0, im: 0.0 }
+  var i = 0
+  while i < len(a) {
+    sum = complex_add(sum, complex_mul(a[i], b[i]))
+    i = i + 1
+  }
+  return sum
+}
+
+fun is_hermitian(m: list<list<Complex>>): bool {
+  var i = 0
+  while i < len(m) {
+    var j = 0
+    while j < len(m) {
+      if !complex_eq(m[i][j], complex_conj(m[j][i])) {
+        return false
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun rayleigh_quotient(a: list<list<Complex>>, v: list<Complex>): float {
+  let v_star = conj_vector(v)
+  let v_star_dot = vec_mat_mul(v_star, a)
+  let num = dot(v_star_dot, v)
+  let den = dot(v_star, v)
+  return num.re / den.re
+}
+
+let a = [
+  [Complex { re: 2.0, im: 0.0 }, Complex { re: 2.0, im: 1.0 }, Complex { re: 4.0, im: 0.0 }],
+  [Complex { re: 2.0, im: -1.0 }, Complex { re: 3.0, im: 0.0 }, Complex { re: 0.0, im: 1.0 }],
+  [Complex { re: 4.0, im: 0.0 }, Complex { re: 0.0, im: -1.0 }, Complex { re: 1.0, im: 0.0 }],
+]
+
+let v = [
+  Complex { re: 1.0, im: 0.0 },
+  Complex { re: 2.0, im: 0.0 },
+  Complex { re: 3.0, im: 0.0 },
+]
+
+if is_hermitian(a) {
+  let r1 = rayleigh_quotient(a, v)
+  print(r1)
+  print("\n")
+}
+
+let b = [
+  [Complex { re: 1.0, im: 0.0 }, Complex { re: 2.0, im: 0.0 }, Complex { re: 4.0, im: 0.0 }],
+  [Complex { re: 2.0, im: 0.0 }, Complex { re: 3.0, im: 0.0 }, Complex { re: -1.0, im: 0.0 }],
+  [Complex { re: 4.0, im: 0.0 }, Complex { re: -1.0, im: 0.0 }, Complex { re: 1.0, im: 0.0 }],
+]
+
+if is_hermitian(b) {
+  let r2 = rayleigh_quotient(b, v)
+  print(r2)
+}
