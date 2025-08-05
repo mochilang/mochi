@@ -1,0 +1,52 @@
+/*
+Compute the equivalent capacitance for a group of capacitors
+arranged either in parallel or in series.
+
+1. Capacitors in parallel simply add: Ceq = C1 + C2 + ... + Cn.
+2. Capacitors in series add through the reciprocal formula:
+   1/Ceq = 1/C1 + 1/C2 + ... + 1/Cn.
+
+Both functions iterate once through the list of values and verify that
+each capacitance is positive. Encountering a non-positive value triggers
+a panic. The runtime complexity is O(n) for n capacitors since each list
+is traversed exactly once.
+*/
+
+fun capacitor_parallel(capacitors: list<float>): float {
+  var sum_c = 0.0
+  var i = 0
+  while i < len(capacitors) {
+    let c = capacitors[i]
+    if c < 0.0 {
+      panic("Capacitor at index " + str(i) + " has a negative value!")
+      return 0.0
+    }
+    sum_c = sum_c + c
+    i = i + 1
+  }
+  return sum_c
+}
+
+fun capacitor_series(capacitors: list<float>): float {
+  var first_sum = 0.0
+  var i = 0
+  while i < len(capacitors) {
+    let c = capacitors[i]
+    if c <= 0.0 {
+      panic("Capacitor at index " + str(i) + " has a negative or zero value!")
+      return 0.0
+    }
+    first_sum = first_sum + 1.0 / c
+    i = i + 1
+  }
+  return 1.0 / first_sum
+}
+
+fun main() {
+  let parallel = capacitor_parallel([5.71389, 12.0, 3.0])
+  let series = capacitor_series([5.71389, 12.0, 3.0])
+  print(str(parallel))
+  print(str(series))
+}
+
+main()
