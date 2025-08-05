@@ -1,0 +1,173 @@
+/*
+Estimate dense optical flow between two grayscale images using the
+Horn–Schunck method.  The algorithm assumes that pixel brightness
+remains constant between consecutive frames and that the flow field is
+spatially smooth.  At each iteration a local average of the current
+flow is combined with image derivatives to refine the horizontal and
+vertical components.
+
+Main steps per iteration:
+1. Warp the first image according to the current flow estimate.
+2. Compute image derivatives using small convolution kernels.
+3. Compute the average flow using a Laplacian kernel.
+4. Update the flow using the Horn–Schunck update equation.
+
+This implementation operates on small 2‑D arrays and uses only basic
+language constructs—no external libraries or FFI.  Time complexity is
+O(n * m * k) where n×m is image size and k is the number of iterations.
+*/
+
+fun round_int(x: float): int {
+  if x >= 0.0 {
+    return int(x + 0.5)
+  }
+  return int(x - 0.5)
+}
+
+fun zeros(rows: int, cols: int): list<list<float>> {
+  var res: list<list<float>> = []
+  var i = 0
+  while i < rows {
+    var row: list<float> = []
+    var j = 0
+    while j < cols {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    res = append(res, row)
+    i = i + 1
+  }
+  return res
+}
+
+fun warp(image: list<list<float>>, h_flow: list<list<float>>, v_flow: list<list<float>>): list<list<float>> {
+  let h = len(image)
+  let w = len(image[0])
+  var out: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      let sx = x - round_int(h_flow[y][x])
+      let sy = y - round_int(v_flow[y][x])
+      if sx >= 0 && sx < w && sy >= 0 && sy < h {
+        row = append(row, image[sy][sx])
+      } else {
+        row = append(row, 0.0)
+      }
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun convolve(img: list<list<float>>, ker: list<list<float>>): list<list<float>> {
+  let h = len(img)
+  let w = len(img[0])
+  let kh = len(ker)
+  let kw = len(ker[0])
+  let py = kh / 2
+  let px = kw / 2
+  var out: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      var s = 0.0
+      var ky = 0
+      while ky < kh {
+        var kx = 0
+        while kx < kw {
+          let iy = y + ky - py
+          let ix = x + kx - px
+          if iy >= 0 && iy < h && ix >= 0 && ix < w {
+            s = s + img[iy][ix] * ker[ky][kx]
+          }
+          kx = kx + 1
+        }
+        ky = ky + 1
+      }
+      row = append(row, s)
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun horn_schunck(image0: list<list<float>>, image1: list<list<float>>, num_iter: int, alpha: float): list<list<list<float>>> {
+  let h = len(image0)
+  let w = len(image0[0])
+  var u = zeros(h, w)
+  var v = zeros(h, w)
+  let kernel_x: list<list<float>> = [[-0.25, 0.25], [-0.25, 0.25]]
+  let kernel_y: list<list<float>> = [[-0.25, -0.25], [0.25, 0.25]]
+  let kernel_t: list<list<float>> = [[0.25, 0.25], [0.25, 0.25]]
+  let laplacian: list<list<float>> = [[0.0833333333333, 0.166666666667, 0.0833333333333], [0.166666666667, 0.0, 0.166666666667], [0.0833333333333, 0.166666666667, 0.0833333333333]]
+  var it = 0
+  while it < num_iter {
+    let warped = warp(image0, u, v)
+    let dx1 = convolve(warped, kernel_x)
+    let dx2 = convolve(image1, kernel_x)
+    let dy1 = convolve(warped, kernel_y)
+    let dy2 = convolve(image1, kernel_y)
+    let dt1 = convolve(warped, kernel_t)
+    let dt2 = convolve(image1, kernel_t)
+    let avg_u = convolve(u, laplacian)
+    let avg_v = convolve(v, laplacian)
+    var y = 0
+    while y < h {
+      var x = 0
+      while x < w {
+        let dx = dx1[y][x] + dx2[y][x]
+        let dy = dy1[y][x] + dy2[y][x]
+        let dt = dt1[y][x] - dt2[y][x]
+        let au = avg_u[y][x]
+        let av = avg_v[y][x]
+        let numer = dx * au + dy * av + dt
+        let denom = alpha * alpha + dx * dx + dy * dy
+        let upd = numer / denom
+        u[y][x] = au - dx * upd
+        v[y][x] = av - dy * upd
+        x = x + 1
+      }
+      y = y + 1
+    }
+    it = it + 1
+  }
+  return [u, v]
+}
+
+fun print_matrix(mat: list<list<float>>) {
+  var y = 0
+  while y < len(mat) {
+    var row = mat[y]
+    var x = 0
+    var line = ""
+    while x < len(row) {
+      line = line + str(round_int(row[x]))
+      if x + 1 < len(row) { line = line + " " }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+fun main() {
+  let image0: list<list<float>> = [[0.0, 0.0, 2.0], [0.0, 0.0, 2.0]]
+  let image1: list<list<float>> = [[0.0, 2.0, 0.0], [0.0, 2.0, 0.0]]
+  let flows = horn_schunck(image0, image1, 20, 0.1)
+  let u = flows[0]
+  let v = flows[1]
+  print_matrix(u)
+  print("---")
+  print_matrix(v)
+}
+
+main()
