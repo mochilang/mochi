@@ -1,0 +1,116 @@
+/*
+Autokey cipher implementation.
+
+The Autokey cipher is a polyalphabetic substitution cipher where the key is
+formed by concatenating a short secret key with the plaintext itself. During
+encryption we append the plaintext to the key and for each letter produce a new
+letter by adding the key letter and plaintext letter positions within the
+alphabet modulo 26. Non alphabetic characters are copied unchanged and they do
+not advance the key. Decryption repeats the process: for each ciphertext letter
+we subtract the key letter position to recover the plaintext. As each plaintext
+letter is recovered it is appended to the key so later letters can be decoded.
+This implementation only works on ASCII letters and keeps other characters as
+they are. Time complexity for both operations is O(n) where n is the length of
+input text.
+*/
+
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun to_lowercase(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    var j = 0
+    var found = false
+    while j < 26 {
+      if c == UPPER[j] {
+        res = res + LOWER[j]
+        found = true
+        break
+      }
+      j = j + 1
+    }
+    if !found {
+      res = res + c
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun char_index(c: string): int {
+  var i = 0
+  while i < 26 {
+    if c == LOWER[i] { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun index_char(i: int): string {
+  return LOWER[i]
+}
+
+fun encrypt(plaintext: string, key: string): string {
+  if len(plaintext) == 0 { panic("plaintext is empty") }
+  if len(key) == 0 { panic("key is empty") }
+  var full_key = key + plaintext
+  plaintext = to_lowercase(plaintext)
+  full_key = to_lowercase(full_key)
+  var p_i = 0
+  var k_i = 0
+  var ciphertext = ""
+  while p_i < len(plaintext) {
+    let p_char = plaintext[p_i]
+    let p_idx = char_index(p_char)
+    if p_idx < 0 {
+      ciphertext = ciphertext + p_char
+      p_i = p_i + 1
+    } else {
+      let k_char = full_key[k_i]
+      let k_idx = char_index(k_char)
+      if k_idx < 0 {
+        k_i = k_i + 1
+      } else {
+        let c_idx = (p_idx + k_idx) % 26
+        ciphertext = ciphertext + index_char(c_idx)
+        k_i = k_i + 1
+        p_i = p_i + 1
+      }
+    }
+  }
+  return ciphertext
+}
+
+fun decrypt(ciphertext: string, key: string): string {
+  if len(ciphertext) == 0 { panic("ciphertext is empty") }
+  if len(key) == 0 { panic("key is empty") }
+  var current_key = to_lowercase(key)
+  var c_i = 0
+  var k_i = 0
+  var plaintext = ""
+  while c_i < len(ciphertext) {
+    let c_char = ciphertext[c_i]
+    let c_idx = char_index(c_char)
+    if c_idx < 0 {
+      plaintext = plaintext + c_char
+    } else {
+      let k_char = current_key[k_i]
+      let k_idx = char_index(k_char)
+      let p_idx = (c_idx - k_idx + 26) % 26
+      let p_char = index_char(p_idx)
+      plaintext = plaintext + p_char
+      current_key = current_key + p_char
+      k_i = k_i + 1
+    }
+    c_i = c_i + 1
+  }
+  return plaintext
+}
+
+print(encrypt("hello world", "coffee"))
+print(decrypt("jsqqs avvwo", "coffee"))
+print(encrypt("coffee is good as python", "TheAlgorithms"))
+print(decrypt("vvjfpk wj ohvp su ddylsv", "TheAlgorithms"))
