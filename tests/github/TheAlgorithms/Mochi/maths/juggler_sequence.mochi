@@ -1,0 +1,59 @@
+/*
+Juggler Sequence Generator
+-------------------------
+The *juggler sequence* is a series of integers defined by an initial
+positive integer `n`. Each subsequent term depends on the parity of the
+current term:
+
+- If the term is even, the next term is `floor(sqrt(term))`.
+- If the term is odd, the next term is `floor(term^(3/2))`.
+
+The sequence always eventually reaches 1. This implementation mirrors the
+logic of `maths/juggler_sequence.py` from TheAlgorithms repository. It
+implements its own square root, floor, and integer-to-float conversion so it
+can run on the Mochi runtime/vm without foreign function interfaces.
+*/
+
+fun to_float(x: int): float {
+  return x * 1.0
+}
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun floor(x: float): int {
+  var n = 0
+  var y = x
+  while y >= 1.0 {
+    y = y - 1.0
+    n = n + 1
+  }
+  return n
+}
+
+fun juggler_sequence(n: int): list<int> {
+  if n < 1 { panic("number must be a positive integer") }
+  var seq: list<int> = [n]
+  var current = n
+  while current != 1 {
+    if current % 2 == 0 {
+      current = floor(sqrt(to_float(current)))
+    } else {
+      let r = sqrt(to_float(current))
+      current = floor(r * r * r)
+    }
+    seq = append(seq, current)
+  }
+  return seq
+}
+
+print(str(juggler_sequence(3)))
+print(str(juggler_sequence(10)))
