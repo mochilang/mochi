@@ -1,0 +1,27 @@
+/*
+Calculate employee pay including overtime at time and a half.
+
+Given the total hours worked, the hourly pay rate, and the number of
+standard hours before overtime applies, the algorithm computes the
+regular pay for all hours worked and then adds an extra half-rate
+for each hour above the threshold. This effectively pays 1.5 times
+for every overtime hour.
+*/
+
+fun pay(hours_worked: float, pay_rate: float, hours: float): float {
+  let normal_pay: float = hours_worked * pay_rate
+  var over_time: float = hours_worked - hours
+  if over_time < 0.0 {
+    over_time = 0.0
+  }
+  let over_time_pay: float = over_time * pay_rate / 2.0
+  return normal_pay + over_time_pay
+}
+
+fun main() {
+  print(str(pay(41.0, 1.0, 40.0)))
+  print(str(pay(65.0, 19.0, 40.0)))
+  print(str(pay(10.0, 1.0, 40.0)))
+}
+
+main()
