@@ -1,0 +1,221 @@
+/*
+Compute Mel Frequency Cepstral Coefficients (MFCC) for a short audio
+signal.  The procedure mirrors the standard pipeline used in speech and
+audio processing:
+
+1. **Normalization** – scale the samples so the maximum absolute value is
+   1.0.
+2. **Fourier Transform** – convert the frame to the frequency domain using
+a discrete Fourier transform and take the squared magnitude (power
+spectrum).
+3. **Mel Filter Bank** – here simplified as a set of linearly spaced
+   triangular filters to approximate the mel scale.
+4. **Log Compression** – apply log base‑10 to each filter energy.
+5. **Discrete Cosine Transform** – run a DCT on the log energies to obtain
+   the MFCC vector.
+
+The implementation is entirely in Mochi with small helper functions for
+sine, cosine, logarithm and square root approximations.  It operates on a
+single frame for demonstration purposes.
+*/
+
+let PI = 3.141592653589793
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n) * (2*n+1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n-1)*(2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun expApprox(x: float): float {
+  var sum = 1.0
+  var term = 1.0
+  var n = 1
+  while n < 10 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun ln(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var sum = 0.0
+  var n = 1
+  while n <= 19 {
+    sum = sum + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * sum
+}
+
+fun log10(x: float): float {
+  return ln(x) / ln(10.0)
+}
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun normalize(audio: list<float>): list<float> {
+  var max_val = 0.0
+  var i = 0
+  while i < len(audio) {
+    let v = absf(audio[i])
+    if v > max_val { max_val = v }
+    i = i + 1
+  }
+  var res: list<float> = []
+  i = 0
+  while i < len(audio) {
+    res = append(res, audio[i] / max_val)
+    i = i + 1
+  }
+  return res
+}
+
+fun dft(frame: list<float>, bins: int): list<float> {
+  let N = len(frame)
+  var spec: list<float> = []
+  var k = 0
+  while k < bins {
+    var real = 0.0
+    var imag = 0.0
+    var n = 0
+    while n < N {
+      let angle = -2.0 * PI * (k as float) * (n as float) / (N as float)
+      real = real + frame[n] * cosApprox(angle)
+      imag = imag + frame[n] * sinApprox(angle)
+      n = n + 1
+    }
+    spec = append(spec, real * real + imag * imag)
+    k = k + 1
+  }
+  return spec
+}
+
+fun triangular_filters(bins: int, spectrum_size: int): list<list<float>> {
+  var filters: list<list<float>> = []
+  var b = 0
+  while b < bins {
+    let center = ((b + 1) * spectrum_size) / (bins + 1)
+    var filt: list<float> = []
+    var i = 0
+    while i < spectrum_size {
+      var v = 0.0
+      if i <= center {
+        v = (i as float) / (center as float)
+      } else {
+        v = ((spectrum_size - i) as float) / ((spectrum_size - center) as float)
+      }
+      filt = append(filt, v)
+      i = i + 1
+    }
+    filters = append(filters, filt)
+    b = b + 1
+  }
+  return filters
+}
+
+fun dot(mat: list<list<float>>, vec: list<float>): list<float> {
+  var res: list<float> = []
+  var i = 0
+  while i < len(mat) {
+    var sum = 0.0
+    var j = 0
+    while j < len(vec) {
+      sum = sum + mat[i][j] * vec[j]
+      j = j + 1
+    }
+    res = append(res, sum)
+    i = i + 1
+  }
+  return res
+}
+
+fun discrete_cosine_transform(dct_filter_num: int, filter_num: int): list<list<float>> {
+  var basis: list<list<float>> = []
+  var i = 0
+  while i < dct_filter_num {
+    var row: list<float> = []
+    var j = 0
+    while j < filter_num {
+      if i == 0 {
+        row = append(row, 1.0 / sqrtApprox(filter_num as float))
+      } else {
+        let angle = ((2 * j + 1) as float) * (i as float) * PI / (2.0 * (filter_num as float))
+        row = append(row, cosApprox(angle) * sqrtApprox(2.0 / (filter_num as float)))
+      }
+      j = j + 1
+    }
+    basis = append(basis, row)
+    i = i + 1
+  }
+  return basis
+}
+
+fun mfcc(audio: list<float>, bins: int, dct_num: int): list<float> {
+  let norm = normalize(audio)
+  let spec = dft(norm, bins + 2)
+  let filters = triangular_filters(bins, len(spec))
+  let energies = dot(filters, spec)
+  var logfb: list<float> = []
+  var i = 0
+  while i < len(energies) {
+    logfb = append(logfb, 10.0 * log10(energies[i] + 0.0000000001))
+    i = i + 1
+  }
+  let dct_basis = discrete_cosine_transform(dct_num, bins)
+  var res = dot(dct_basis, logfb)
+  if len(res) == 0 { res = [0.0, 0.0, 0.0] }
+  return res
+}
+
+let sample_rate = 8000
+let size = 16
+var audio: list<float> = []
+var n = 0
+while n < size {
+  let t = (n as float) / (sample_rate as float)
+  audio = append(audio, sinApprox(2.0 * PI * 440.0 * t))
+  n = n + 1
+}
+let coeffs = mfcc(audio, 5, 3)
+for c in coeffs {
+  print(c)
+}
