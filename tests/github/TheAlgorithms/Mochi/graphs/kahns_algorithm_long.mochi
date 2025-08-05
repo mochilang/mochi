@@ -1,0 +1,99 @@
+/*
+Compute the length of the longest path in a directed acyclic graph
+using Kahn's topological sort algorithm.
+
+The graph is represented as an adjacency list where each index is a
+vertex and the list at that index contains all vertices reachable from
+it.  Because the graph is acyclic, Kahn's algorithm can produce a
+valid topological ordering by repeatedly removing vertices with
+indegree zero.
+
+Algorithm:
+1. Compute the indegree for each vertex.
+2. Initialize a queue with all vertices of indegree zero.
+3. Repeatedly pop a vertex from the queue and relax its outgoing edges.
+   For each neighbor, decrement its indegree and update its longest
+   distance as max(current, distance[vertex] + 1).  If a neighbor's
+   indegree becomes zero, append it to the queue.
+4. The maximum value in the distance array at the end is the length of
+   the longest path in the DAG.
+
+Time complexity: O(V + E) where V is the number of vertices and E is
+the number of edges.
+*/
+
+fun longest_distance(graph: list<list<int>>): int {
+  let n = len(graph)
+
+  var indegree: list<int> = []
+  var i = 0
+  while i < n {
+    indegree = append(indegree, 0)
+    i = i + 1
+  }
+
+  var long_dist: list<int> = []
+  var j = 0
+  while j < n {
+    long_dist = append(long_dist, 1)
+    j = j + 1
+  }
+
+  var u = 0
+  while u < n {
+    for v in graph[u] {
+      indegree[v] = indegree[v] + 1
+    }
+    u = u + 1
+  }
+
+  var queue: list<int> = []
+  var head = 0
+  var k = 0
+  while k < n {
+    if indegree[k] == 0 {
+      queue = append(queue, k)
+    }
+    k = k + 1
+  }
+
+  while head < len(queue) {
+    let vertex = queue[head]
+    head = head + 1
+
+    for x in graph[vertex] {
+      indegree[x] = indegree[x] - 1
+      let new_dist = long_dist[vertex] + 1
+      if new_dist > long_dist[x] {
+        long_dist[x] = new_dist
+      }
+      if indegree[x] == 0 {
+        queue = append(queue, x)
+      }
+    }
+  }
+
+  var max_len = long_dist[0]
+  var m = 1
+  while m < n {
+    if long_dist[m] > max_len {
+      max_len = long_dist[m]
+    }
+    m = m + 1
+  }
+
+  return max_len
+}
+
+let graph: list<list<int>> = [
+  [2, 3, 4],
+  [2, 7],
+  [5],
+  [5, 7],
+  [7],
+  [6],
+  [7],
+  [],
+]
+
+print(longest_distance(graph))
