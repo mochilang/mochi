@@ -1,0 +1,75 @@
+/*
+Compute the nth Proth number.
+
+A Proth number has the form k * 2^n + 1 where k is odd and k < 2^n.
+The sequence begins 3, 5, 9, 13, 17, 25, ... .
+
+This implementation generates Proth numbers in ascending order using a
+block method similar to the reference Python algorithm:
+1. Prepopulate the list with the first two Proth numbers 3 and 5.
+2. For each block, append numbers offset from the previous ones by a
+   power of two.  The number of elements added doubles each block.
+3. Continue until the requested index is produced.
+
+Time complexity grows roughly O(n) for generating the first n numbers,
+while space complexity is also O(n) to store them.
+*/
+
+fun pow2(exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun proth(number: int): int {
+  if number < 1 {
+    panic("Input value must be > 0")
+  }
+  if number == 1 {
+    return 3
+  }
+  if number == 2 {
+    return 5
+  }
+
+  let temp = (number / 3) as int
+  var pow = 1
+  var block_index = 1
+  while pow <= temp {
+    pow = pow * 2
+    block_index = block_index + 1
+  }
+
+  var proth_list: list<int> = [3, 5]
+  var proth_index = 2
+  var increment = 3
+  var block = 1
+  while block < block_index {
+    var i = 0
+    while i < increment {
+      let next_val = pow2(block + 1) + proth_list[proth_index - 1]
+      proth_list = append(proth_list, next_val)
+      proth_index = proth_index + 1
+      i = i + 1
+    }
+    increment = increment * 2
+    block = block + 1
+  }
+
+  return proth_list[number - 1]
+}
+
+fun main() {
+  var n = 1
+  while n <= 10 {
+    let value = proth(n)
+    print("The " + str(n) + "th Proth number: " + str(value))
+    n = n + 1
+  }
+}
+
+main()
