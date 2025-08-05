@@ -1,0 +1,77 @@
+/*
+Compute one missing electrical parameter (voltage, current, or power) given the other two.
+
+Electric power is defined by the relation P = V * I. This routine accepts three arguments—voltage,
+current, and power—where exactly one must be zero. It validates that only one parameter is zero and
+that power is non-negative. Depending on which value is missing, it computes and returns a Result
+struct containing the parameter name and numeric value. Voltage or current are obtained by dividing
+power by the other quantity. Power is calculated as the absolute product of voltage and current and
+rounded to two decimal places.
+
+Examples:
+  electric_power(0.0, 2.0, 5.0) -> voltage = 2.5
+  electric_power(2.0, 2.0, 0.0) -> power = 4.0
+  electric_power(-2.0, 3.0, 0.0) -> power = 6.0
+  electric_power(2.2, 2.2, 0.0) -> power = 4.84
+  electric_power(2.0, 0.0, 6.0) -> current = 3.0
+
+The algorithm runs in O(1) time using simple arithmetic.
+*/
+
+type Result { name: string, value: float }
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round_to(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun electric_power(voltage: float, current: float, power: float): Result {
+  var zeros = 0
+  if voltage == 0.0 { zeros = zeros + 1 }
+  if current == 0.0 { zeros = zeros + 1 }
+  if power == 0.0 { zeros = zeros + 1 }
+  if zeros != 1 {
+    panic("Exactly one argument must be 0")
+  } else if power < 0.0 {
+    panic("Power cannot be negative in any electrical/electronics system")
+  } else if voltage == 0.0 {
+    return Result{ name: "voltage", value: power / current }
+  } else if current == 0.0 {
+    return Result{ name: "current", value: power / voltage }
+  } else if power == 0.0 {
+    let p = absf(voltage * current)
+    return Result{ name: "power", value: round_to(p, 2) }
+  } else {
+    panic("Unhandled case")
+  }
+}
+
+fun str_result(r: Result): string {
+  return "Result(name='" + r.name + "', value=" + str(r.value) + ")"
+}
+
+let r1 = electric_power(0.0, 2.0, 5.0)
+print(str_result(r1))
+let r2 = electric_power(2.0, 2.0, 0.0)
+print(str_result(r2))
+let r3 = electric_power(-2.0, 3.0, 0.0)
+print(str_result(r3))
+let r4 = electric_power(2.2, 2.2, 0.0)
+print(str_result(r4))
+let r5 = electric_power(2.0, 0.0, 6.0)
+print(str_result(r5))
