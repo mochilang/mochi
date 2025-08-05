@@ -1,0 +1,166 @@
+/*
+Trifid Cipher Encryption and Decryption
+
+The Trifid cipher is a classical fractionating cipher that extends the
+Bifid cipher into three dimensions. A 3×3×3 cube indexes a 27-character
+alphabet and assigns each symbol a three-digit trigram. To encrypt, the
+message is split into groups (the period). Each character is replaced by its
+trigram and written vertically. Reading the digits row-wise produces new
+trigrams that are mapped back to ciphertext characters. Decryption reverses
+this process by reconstructing the original trigrams from the grouped
+ciphertext digits. Both operations run in O(n) time for a message of length n.
+*/
+
+let triagrams: list<string> = [
+  "111", "112", "113",
+  "121", "122", "123",
+  "131", "132", "133",
+  "211", "212", "213",
+  "221", "222", "223",
+  "231", "232", "233",
+  "311", "312", "313",
+  "321", "322", "323",
+  "331", "332", "333"
+]
+
+fun remove_spaces(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let c = substring(s, i, i + 1)
+    if c != " " {
+      res = res + c
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun char_to_trigram(ch: string, alphabet: string): string {
+  var i = 0
+  while i < len(alphabet) {
+    if substring(alphabet, i, i + 1) == ch {
+      return triagrams[i]
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun trigram_to_char(tri: string, alphabet: string): string {
+  var i = 0
+  while i < len(triagrams) {
+    if triagrams[i] == tri {
+      return substring(alphabet, i, i + 1)
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun encrypt_part(part: string, alphabet: string): string {
+  var one = ""
+  var two = ""
+  var three = ""
+  var i = 0
+  while i < len(part) {
+    let tri = char_to_trigram(substring(part, i, i + 1), alphabet)
+    one = one + substring(tri, 0, 1)
+    two = two + substring(tri, 1, 2)
+    three = three + substring(tri, 2, 3)
+    i = i + 1
+  }
+  return one + two + three
+}
+
+fun encrypt_message(message: string, alphabet: string, period: int): string {
+  let msg = remove_spaces(message)
+  let alpha = remove_spaces(alphabet)
+  if len(alpha) != 27 {
+    return ""
+  }
+  var encrypted_numeric = ""
+  var i = 0
+  while i < len(msg) {
+    var end = i + period
+    if end > len(msg) {
+      end = len(msg)
+    }
+    let part = substring(msg, i, end)
+    encrypted_numeric = encrypted_numeric + encrypt_part(part, alpha)
+    i = i + period
+  }
+  var encrypted = ""
+  var j = 0
+  while j < len(encrypted_numeric) {
+    let tri = substring(encrypted_numeric, j, j + 3)
+    encrypted = encrypted + trigram_to_char(tri, alpha)
+    j = j + 3
+  }
+  return encrypted
+}
+
+fun decrypt_part(part: string, alphabet: string): list<string> {
+  var converted = ""
+  var i = 0
+  while i < len(part) {
+    let tri = char_to_trigram(substring(part, i, i + 1), alphabet)
+    converted = converted + tri
+    i = i + 1
+  }
+  var result: list<string> = []
+  var tmp = ""
+  var j = 0
+  while j < len(converted) {
+    tmp = tmp + substring(converted, j, j + 1)
+    if len(tmp) == len(part) {
+      result = append(result, tmp)
+      tmp = ""
+    }
+    j = j + 1
+  }
+  return result
+}
+
+fun decrypt_message(message: string, alphabet: string, period: int): string {
+  let msg = remove_spaces(message)
+  let alpha = remove_spaces(alphabet)
+  if len(alpha) != 27 {
+    return ""
+  }
+  var decrypted_numeric: list<string> = []
+  var i = 0
+  while i < len(msg) {
+    var end = i + period
+    if end > len(msg) {
+      end = len(msg)
+    }
+    let part = substring(msg, i, end)
+    let groups = decrypt_part(part, alpha)
+    var k = 0
+    while k < len(groups[0]) {
+      let tri = substring(groups[0], k, k + 1) + substring(groups[1], k, k + 1) + substring(groups[2], k, k + 1)
+      decrypted_numeric = append(decrypted_numeric, tri)
+      k = k + 1
+    }
+    i = i + period
+  }
+  var decrypted = ""
+  var j = 0
+  while j < len(decrypted_numeric) {
+    decrypted = decrypted + trigram_to_char(decrypted_numeric[j], alpha)
+    j = j + 1
+  }
+  return decrypted
+}
+
+fun main() {
+  let msg = "DEFEND THE EAST WALL OF THE CASTLE."
+  let alphabet = "EPSDUCVWYM.ZLKXNBTFGORIJHAQ"
+  let encrypted = encrypt_message(msg, alphabet, 5)
+  let decrypted = decrypt_message(encrypted, alphabet, 5)
+  print("Encrypted: " + encrypted)
+  print("Decrypted: " + decrypted)
+}
+
+main()
