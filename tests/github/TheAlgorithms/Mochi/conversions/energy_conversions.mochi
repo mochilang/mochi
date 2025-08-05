@@ -1,0 +1,44 @@
+/*
+Energy Unit Conversions
+-----------------------
+This module converts a numeric value from one energy unit to another.
+All conversion factors are stored relative to the joule in a map.
+The conversion algorithm multiplies the input value by the factor of the
+source unit and divides by the factor of the target unit.  If either unit
+is not recognised the function raises a panic.
+
+Supported units include:
+- joule, kilojoule, megajoule, gigajoule
+- wattsecond, watthour, kilowatthour, newtonmeter
+- calorie_nutr, kilocalorie_nutr, electronvolt
+- britishthermalunit_it, footpound
+
+Time complexity is O(1) because map lookups are constant time.
+*/
+
+let ENERGY_CONVERSION: map<string, float> = {
+  "joule": 1.0,
+  "kilojoule": 1000.0,
+  "megajoule": 1000000.0,
+  "gigajoule": 1000000000.0,
+  "wattsecond": 1.0,
+  "watthour": 3600.0,
+  "kilowatthour": 3600000.0,
+  "newtonmeter": 1.0,
+  "calorie_nutr": 4186.8,
+  "kilocalorie_nutr": 4186800.0,
+  "electronvolt": 0.0000000000000000001602176634,
+  "britishthermalunit_it": 1055.05585,
+  "footpound": 1.355818
+}
+
+fun energy_conversion(from_type: string, to_type: string, value: float): float {
+  if (from_type in ENERGY_CONVERSION) == false || (to_type in ENERGY_CONVERSION) == false {
+    panic("Incorrect 'from_type' or 'to_type'")
+  }
+  return value * ENERGY_CONVERSION[from_type] / ENERGY_CONVERSION[to_type]
+}
+
+print(str(energy_conversion("joule", "kilojoule", 1.0)))
+print(str(energy_conversion("kilowatthour", "joule", 10.0)))
+print(str(energy_conversion("britishthermalunit_it", "footpound", 1.0)))
