@@ -1,0 +1,36 @@
+/*
+Ohm's Law relates three fundamental electrical quantities:
+voltage (V), current (I), and resistance (R).
+For any electrical component, knowing any two of these values
+allows computation of the third using V = I * R.
+This function accepts three floats where exactly one value
+must be 0. It validates the inputs (ensuring only one zero and
+non‑negative resistance) and returns a map containing the
+missing quantity.
+*/
+
+fun ohms_law(voltage: float, current: float, resistance: float): map<string, float> {
+  var zeros = 0
+  if voltage == 0.0 { zeros = zeros + 1 }
+  if current == 0.0 { zeros = zeros + 1 }
+  if resistance == 0.0 { zeros = zeros + 1 }
+  if zeros != 1 {
+    print("One and only one argument must be 0")
+    return {}
+  }
+  if resistance < 0.0 {
+    print("Resistance cannot be negative")
+    return {}
+  }
+  if voltage == 0.0 {
+    return {"voltage": current * resistance}
+  }
+  if current == 0.0 {
+    return {"current": voltage / resistance}
+  }
+  return {"resistance": voltage / current}
+}
+
+json(ohms_law(10.0, 0.0, 5.0))
+json(ohms_law(-10.0, 1.0, 0.0))
+json(ohms_law(0.0, -1.5, 2.0))
