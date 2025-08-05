@@ -1,0 +1,65 @@
+/*
+Define a node used in a suffix tree.  Each node keeps a map from single
+characters to child nodes, a flag marking whether it represents the end of a
+suffix, the start and end indexes of that suffix in the original text, and a
+suffix link to speed up constructions such as Ukkonen's algorithm.
+
+To avoid recursive types, children and suffix links store indexes of other
+nodes in an external list.  Default values mirror the Python implementation:
+no children, no suffix link and undefined start/end positions represented by
+-1.
+
+The demonstration builds a root node and a child corresponding to the suffix
+"a" starting at position 0.  The root gains a child edge labelled "a" pointing
+to the leaf node whose suffix link references the root.  The program prints
+whether the root has this child, whether the leaf marks the end of a string,
+and the leaf's start, end and suffix link indexes.
+*/
+
+type SuffixTreeNode {
+  children: map<string, int>,
+  is_end_of_string: bool,
+  start: int,
+  end: int,
+  suffix_link: int
+}
+
+fun new_suffix_tree_node(
+  children: map<string, int>,
+  is_end_of_string: bool,
+  start: int,
+  end: int,
+  suffix_link: int
+): SuffixTreeNode {
+  return SuffixTreeNode {
+    children: children,
+    is_end_of_string: is_end_of_string,
+    start: start,
+    end: end,
+    suffix_link: suffix_link
+  }
+}
+
+fun empty_suffix_tree_node(): SuffixTreeNode {
+  return new_suffix_tree_node({}, false, 0 - 1, 0 - 1, 0 - 1)
+}
+
+fun has_key(m: map<string, int>, k: string): bool {
+  for key in m {
+    if key == k {
+      return true
+    }
+  }
+  return false
+}
+
+let root = new_suffix_tree_node({"a": 1}, false, 0 - 1, 0 - 1, 0 - 1)
+let leaf = new_suffix_tree_node({}, true, 0, 2, 0)
+var nodes: list<SuffixTreeNode> = [root, leaf]
+var root_check = nodes[0]
+var leaf_check = nodes[1]
+print(str(has_key(root_check.children, "a")))
+print(str(leaf_check.is_end_of_string))
+print(str(leaf_check.start))
+print(str(leaf_check.end))
+print(str(leaf_check.suffix_link))
