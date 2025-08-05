@@ -1,0 +1,234 @@
+/*
+Radix Tree (compressed trie) implementation using index-based nodes.
+
+Each node stores a prefix string, a leaf flag and a map from first characters
+to child node indexes. This avoids recursive types by storing all nodes in a
+list inside a RadixTree structure. Operations include insertion, search,
+delete and printing the tree. Time complexity is proportional to the length
+of the processed word.
+*/
+
+type RadixNode {
+  prefix: string,
+  is_leaf: bool,
+  children: map<string, int>,
+}
+
+type RadixTree {
+  nodes: list<RadixNode>,
+}
+
+type MatchResult {
+  common: string,
+  rem_prefix: string,
+  rem_word: string,
+}
+
+fun new_node(prefix: string, is_leaf: bool): RadixNode {
+  return RadixNode { prefix: prefix, is_leaf: is_leaf, children: {} }
+}
+
+fun new_tree(): RadixTree {
+  var nodes: list<RadixNode> = [new_node("", false)]
+  return RadixTree { nodes: nodes }
+}
+
+fun match_prefix(node: RadixNode, word: string): MatchResult {
+  var x = 0
+  var p = node.prefix
+  var w = word
+  var min_len = len(p)
+  if len(w) < min_len { min_len = len(w) }
+  while x < min_len {
+    if substring(p, x, x+1) != substring(w, x, x+1) { break }
+    x = x + 1
+  }
+  let common = substring(p, 0, x)
+  let rem_prefix = substring(p, x, len(p))
+  let rem_word = substring(w, x, len(w))
+  return MatchResult { common: common, rem_prefix: rem_prefix, rem_word: rem_word }
+}
+
+fun insert_many(tree: RadixTree, words: list<string>) {
+  for w in words {
+    insert(tree, 0, w)
+  }
+}
+
+fun insert(tree: RadixTree, idx: int, word: string) {
+  var nodes = tree.nodes
+  var node = nodes[idx]
+  if (node.prefix == word) && (!node.is_leaf) {
+    node.is_leaf = true
+    nodes[idx] = node
+    tree.nodes = nodes
+    return
+  }
+  let first = substring(word, 0,1)
+  var children: map<string, int> = node.children
+  if !has_key(children, first) {
+    let new_idx = len(nodes)
+    nodes = append(nodes, new_node(word, true))
+    children[first] = new_idx
+    node.children = children
+    nodes[idx] = node
+    tree.nodes = nodes
+    return
+  }
+  let child_idx = children[first]
+  var child = nodes[child_idx]
+  let res = match_prefix(child, word)
+  if res.rem_prefix == "" {
+    insert(tree, child_idx, res.rem_word)
+    return
+  }
+  child.prefix = res.rem_prefix
+  nodes[child_idx] = child
+  var new_children: map<string, int> = {}
+  new_children[substring(res.rem_prefix, 0,1)] = child_idx
+  let new_idx = len(nodes)
+  nodes = append(nodes, new_node(res.common, false))
+  nodes[new_idx].children = new_children
+  if res.rem_word == "" {
+    nodes[new_idx].is_leaf = true
+  } else {
+    insert(tree, new_idx, res.rem_word)
+  }
+  children[first] = new_idx
+  node.children = children
+  nodes[idx] = node
+  tree.nodes = nodes
+}
+
+fun find(tree: RadixTree, idx: int, word: string): bool {
+  var nodes = tree.nodes
+  let node = nodes[idx]
+  let first = substring(word, 0,1)
+  let children: map<string, int> = node.children
+  if !has_key(children, first) { return false }
+  let child_idx = children[first]
+  let child = nodes[child_idx]
+  let res = match_prefix(child, word)
+  if res.rem_prefix != "" { return false }
+  if res.rem_word == "" { return child.is_leaf }
+  return find(tree, child_idx, res.rem_word)
+}
+
+fun remove_key(m: map<string, int>, k: string): map<string, int> {
+  var out: map<string, int> = {}
+  for key in m {
+    if key != k {
+      out[key] = m[key]
+    }
+  }
+  return out
+}
+
+fun has_key(m: map<string, int>, k: string): bool {
+  for key in m {
+    if key == k { return true }
+  }
+  return false
+}
+
+fun delete(tree: RadixTree, idx: int, word: string): bool {
+  var nodes = tree.nodes
+  var node = nodes[idx]
+  let first = substring(word, 0,1)
+  var children: map<string, int> = node.children
+  if !has_key(children, first) { return false }
+  let child_idx = children[first]
+  var child = nodes[child_idx]
+  let res = match_prefix(child, word)
+  if res.rem_prefix != "" { return false }
+  if res.rem_word != "" {
+    let deleted = delete(tree, child_idx, res.rem_word)
+    if deleted {
+      nodes = tree.nodes
+      node = nodes[idx]
+    }
+    return deleted
+  }
+  if !child.is_leaf { return false }
+  if len(child.children) == 0 {
+    children = remove_key(children, first)
+    node.children = children
+    nodes[idx] = node
+    tree.nodes = nodes
+    if (len(children) == 1) && (!node.is_leaf) {
+      var only_key = ""
+      for k in children { only_key = k }
+      let merge_idx = children[only_key]
+      let merge_node = nodes[merge_idx]
+      node.is_leaf = merge_node.is_leaf
+      node.prefix = node.prefix + merge_node.prefix
+      node.children = merge_node.children
+      nodes[idx] = node
+      tree.nodes = nodes
+    }
+  } else if len(child.children) > 1 {
+    child.is_leaf = false
+    nodes[child_idx] = child
+    tree.nodes = nodes
+  } else {
+    var only_key = ""
+    for k in child.children { only_key = k }
+    let merge_idx = child.children[only_key]
+    let merge_node = nodes[merge_idx]
+    child.is_leaf = merge_node.is_leaf
+    child.prefix = child.prefix + merge_node.prefix
+    child.children = merge_node.children
+    nodes[child_idx] = child
+    tree.nodes = nodes
+  }
+  return true
+}
+
+fun print_tree(tree: RadixTree, idx: int, height: int) {
+  var nodes = tree.nodes
+  let node = nodes[idx]
+  if node.prefix != "" {
+    var line = ""
+    var i = 0
+    while i < height { line = line + "-"; i = i + 1 }
+    line = line + " " + node.prefix
+    if node.is_leaf { line = line + "  (leaf)" }
+    print(line)
+  }
+  let children: map<string, int> = node.children
+  for k in children {
+    let child_idx = children[k]
+    print_tree(tree, child_idx, height + 1)
+  }
+}
+
+fun test_trie(): bool {
+  let words = ["banana", "bananas", "bandana", "band", "apple", "all", "beast"]
+  let tree = new_tree()
+  insert_many(tree, words)
+  var ok = true
+  for w in words { if !find(tree, 0, w) { ok = false } }
+  if find(tree, 0, "bandanas") { ok = false }
+  if find(tree, 0, "apps") { ok = false }
+  delete(tree, 0, "all")
+  if find(tree, 0, "all") { ok = false }
+  delete(tree, 0, "banana")
+  if find(tree, 0, "banana") { ok = false }
+  if !find(tree, 0, "bananas") { ok = false }
+  return ok
+}
+
+fun pytests() {
+  if !test_trie() { panic("test failed") }
+}
+
+fun main() {
+  let tree = new_tree()
+  let words = ["banana", "bananas", "bandanas", "bandana", "band", "apple", "all", "beast"]
+  insert_many(tree, words)
+  print("Words: " + str(words))
+  print("Tree:")
+  print_tree(tree, 0, 0)
+}
+
+main()
