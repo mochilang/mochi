@@ -1,0 +1,51 @@
+/*
+Fibonacci Sequence Using Dynamic Programming
+
+Generates the first n numbers of the Fibonacci sequence, where
+F(0) = 0 and F(1) = 1. Each subsequent number is the sum of the
+previous two. The algorithm stores previously computed values in a
+list and extends it iteratively, so each term is computed only once.
+This bottom-up dynamic programming approach runs in O(n) time and
+O(n) space.
+*/
+
+type Fibonacci {
+  sequence: list<int>
+}
+
+type FibGetResult {
+  fib: Fibonacci
+  values: list<int>
+}
+
+fun create_fibonacci(): Fibonacci {
+  return Fibonacci { sequence: [0, 1] }
+}
+
+fun fib_get(f: Fibonacci, index: int): FibGetResult {
+  var seq = f.sequence
+  while len(seq) < index {
+    let next = seq[len(seq) - 1] + seq[len(seq) - 2]
+    seq = append(seq, next)
+  }
+  f.sequence = seq
+  var result: list<int> = []
+  var i = 0
+  while i < index {
+    result = append(result, seq[i])
+    i = i + 1
+  }
+  return FibGetResult { fib: f, values: result }
+}
+
+fun main() {
+  var fib = create_fibonacci()
+  var res = fib_get(fib, 10)
+  fib = res.fib
+  print(str(res.values))
+  res = fib_get(fib, 5)
+  fib = res.fib
+  print(str(res.values))
+}
+
+main()
