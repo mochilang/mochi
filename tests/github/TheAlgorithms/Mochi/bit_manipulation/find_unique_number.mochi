@@ -1,0 +1,43 @@
+/*
+Find Unique Number - Bit Manipulation
+
+Given a list of integers where every element appears twice except for one,
+this algorithm returns the non-repeated element. It relies on the bitwise
+XOR operation: a number XORed with itself is 0 and XOR with 0 is the number.
+By XORing all elements together, duplicated pairs cancel out leaving only the
+unique value. The function validates that the list is non-empty and then
+accumulates the XOR of all elements.
+*/
+
+fun bit_xor(a: int, b: int): int {
+  var ua = a
+  var ub = b
+  var res = 0
+  var bit = 1
+  while ua > 0 || ub > 0 {
+    let abit = ua % 2
+    let bbit = ub % 2
+    if (abit == 1 && bbit == 0) || (abit == 0 && bbit == 1) {
+      res = res + bit
+    }
+    ua = (ua / 2) as int
+    ub = (ub / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun find_unique_number(arr: list<int>): int {
+  if len(arr) == 0 {
+    panic("input list must not be empty")
+  }
+  var result = 0
+  for num in arr {
+    result = bit_xor(result, num)
+  }
+  return result
+}
+
+print(str(find_unique_number([1, 1, 2, 2, 3])))
+print(str(find_unique_number([4, 5, 4, 6, 6])))
+print(str(find_unique_number([7])))
