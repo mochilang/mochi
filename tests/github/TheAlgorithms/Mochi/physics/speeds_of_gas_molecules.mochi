@@ -1,0 +1,58 @@
+/*
+Speeds of Gas Molecules
+-----------------------
+Given the absolute temperature and molar mass of a gas, this module computes
+characteristic molecular speeds derived from the Maxwell-Boltzmann distribution.
+The distribution describes the probability of molecular speeds in an ideal gas
+and leads to closed-form expressions for:
+
+1. Average speed (v_avg) – the mean of the distribution: sqrt(8RT/(pi*M)).
+2. Most probable speed (v_mp) – the peak of the distribution: sqrt(2RT/M).
+
+R is the universal gas constant (8.31446261815324 J/(mol*K)) and pi is the
+circle constant. Inputs are validated to ensure physical meaning: temperature
+must be non-negative and molar mass must be positive.
+*/
+
+let PI = 3.141592653589793
+let R = 8.31446261815324
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun avg_speed_of_molecule(temperature: float, molar_mass: float): float {
+  if temperature < 0.0 {
+    panic("Absolute temperature cannot be less than 0 K")
+  }
+  if molar_mass <= 0.0 {
+    panic("Molar mass should be greater than 0 kg/mol")
+  }
+  let expr: float = 8.0 * R * temperature / (PI * molar_mass)
+  let s = sqrt(expr)
+  return s
+}
+
+fun mps_speed_of_molecule(temperature: float, molar_mass: float): float {
+  if temperature < 0.0 {
+    panic("Absolute temperature cannot be less than 0 K")
+  }
+  if molar_mass <= 0.0 {
+    panic("Molar mass should be greater than 0 kg/mol")
+  }
+  let expr: float = 2.0 * R * temperature / molar_mass
+  let s = sqrt(expr)
+  return s
+}
+
+print(str(avg_speed_of_molecule(273.0, 0.028)))
+print(str(avg_speed_of_molecule(300.0, 0.032)))
+print(str(mps_speed_of_molecule(273.0, 0.028)))
+print(str(mps_speed_of_molecule(300.0, 0.032)))
