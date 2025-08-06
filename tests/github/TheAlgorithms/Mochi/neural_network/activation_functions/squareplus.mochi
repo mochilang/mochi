@@ -1,0 +1,47 @@
+/*
+Squareplus Activation Function
+------------------------------
+Applies the Squareplus activation to each element of a vector. For an input
+x and positive parameter beta, the function is defined as
+
+  f(x) = (x + sqrt(x^2 + beta)) / 2
+
+Squareplus smoothly enhances positive values while keeping negative values
+bounded above zero. This implementation follows the Python version from
+TheAlgorithms and uses Newton's method to approximate the square root so that
+it runs without foreign function interfaces.
+
+Time Complexity: O(n) for n inputs.
+*/
+
+fun sqrtApprox(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess: float = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun squareplus(vector: list<float>, beta: float): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let val = (x + sqrtApprox(x * x + beta)) / 2.0
+    result = append(result, val)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let v1: list<float> = [2.3, 0.6, -2.0, -3.8]
+  let v2: list<float> = [-9.2, -0.3, 0.45, -4.56]
+  print(str(squareplus(v1, 2.0)))
+  print(str(squareplus(v2, 3.0)))
+}
+
+main()
