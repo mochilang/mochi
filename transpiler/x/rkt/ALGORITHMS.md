@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated Racket code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Racket`.
-Last updated: 2025-08-06 09:36 UTC
+Last updated: 2025-08-06 13:44 UTC
 
-## Algorithms Golden Test Checklist (10/1077)
+## Algorithms Golden Test Checklist (20/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 9m31.223891s | 18.0 KB |
-| 2 | backtracking/all_permutations | ✓ | 9m31.223891s | 373.3 KB |
-| 3 | backtracking/all_subsequences | ✓ | 9m31.223891s | 21.4 KB |
-| 4 | backtracking/coloring | ✓ | 9m31.223891s | 169.7 KB |
+| 2 | backtracking/all_permutations | ✓ | 9m31.223891s | 373.2 KB |
+| 3 | backtracking/all_subsequences | ✓ | 9m31.223891s | 21.3 KB |
+| 4 | backtracking/coloring | ✓ | 9m31.223891s | 169.3 KB |
 | 5 | backtracking/combination_sum | ✓ | 9m31.223891s | 41.5 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 9m31.223891s | 516.2 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 9m31.223891s | 515.9 KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 9m31.223891s | 384 B |
-| 8 | backtracking/knight_tour | ✓ | 9m31.223891s | 5.0 KB |
+| 8 | backtracking/knight_tour | ✓ | 9m31.223891s | 736 B |
 | 9 | backtracking/match_word_pattern | ✓ | 9m31.223891s | 598.7 KB |
 | 10 | backtracking/minimax | ✓ | 9m31.223891s | 10.0 KB |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 11 | backtracking/n_queens | ✓ | 9m31.223891s | 206.5 KB |
+| 12 | backtracking/n_queens_math | ✓ | 9m31.223891s | 15.6 KB |
+| 13 | backtracking/power_sum | ✓ | 9m31.223891s | 70.3 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 9m31.223891s | 37.7 KB |
+| 15 | backtracking/sudoku | ✓ | 9m31.223891s |  |
+| 16 | backtracking/sum_of_subsets | ✓ | 9m31.223891s | 50.9 KB |
+| 17 | backtracking/word_break | ✓ | 9m31.223891s | 31.8 KB |
+| 18 | backtracking/word_ladder | ✓ | 9m31.223891s | 1.1 MB |
+| 19 | backtracking/word_search | ✓ | 9m31.223891s | 88.7 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 9m31.223891s | 73.1 KB |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
