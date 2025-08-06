@@ -1,0 +1,2 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/bit_manipulation/excess_3_code.zig:20:56: error: invalid operands to binary expression: 'Pointer' and 'Pointer'

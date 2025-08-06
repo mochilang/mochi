@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 20:30 +0700
+Last updated: 2025-08-06 20:58 +0700
 
-## Program Checklist (13/1077)
+## Program Checklist (33/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -20,27 +20,27 @@ Last updated: 2025-08-06 20:30 +0700
 | 11 | backtracking/n_queens | ✓ | 1.663ms | 384.0 KB |
 | 12 | backtracking/n_queens_math | ✓ | 2.652ms | 768.0 KB |
 | 13 | backtracking/power_sum | ✓ | 642µs | 256.0 KB |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
+| 14 | backtracking/rat_in_maze | ✓ | 2.022ms | 640.0 KB |
+| 15 | backtracking/sudoku | ✓ | 47.423ms | 7.9 MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 1.215ms | 256.0 KB |
+| 17 | backtracking/word_break | ✓ | 599µs | 256.0 KB |
+| 18 | backtracking/word_ladder | ✓ | 67.003ms | 13.2 MB |
+| 19 | backtracking/word_search | ✓ | 2.554ms | 512.0 KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 5.357ms | 1.0 MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 3.267ms | 768.0 KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 513µs | 256.0 KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 697µs | 256.0 KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 1.557ms | 384.0 KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 2.266ms | 512.0 KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 2.077ms | 640.0 KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 5.146ms | 1.1 MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 707µs | 128.0 KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 597µs | 256.0 KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 910µs | 256.0 KB |
 | 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.449ms | 384.0 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 703µs | 256.0 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.663ms | 384.0 KB |
 | 35 | bit_manipulation/highest_set_bit |   |  |  |
 | 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
 | 37 | bit_manipulation/is_even |   |  |  |
