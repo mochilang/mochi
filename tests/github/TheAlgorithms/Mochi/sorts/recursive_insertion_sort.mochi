@@ -1,0 +1,68 @@
+/*
+Recursive Insertion Sort
+------------------------
+This program implements a recursive version of insertion sort. The algorithm
+sorts a list in ascending order by repeatedly ensuring that the element at
+position `index-1` is inserted into the correct location among the subsequent
+items. The procedure works as follows:
+
+1. `insert_next` compares the element at `index-1` with the element at
+   `index`. If they are out of order, it swaps them and recursively continues
+   with the next pair. This effectively bubbles the selected element forward
+   until it reaches its sorted position.
+2. `rec_insertion_sort` calls `insert_next` on the prefix of length `n` to place
+   the `(n-1)`th element correctly, then recursively sorts the remaining
+   prefix of length `n-1`.
+
+The overall time complexity is O(n^2) and the sort operates in-place with
+O(1) additional space. This mirrors the behavior of the corresponding Python
+implementation from TheAlgorithms repository.
+*/
+
+fun insert_next(collection: list<int>, index: int): list<int> {
+  var arr = collection
+  if index >= len(arr) || arr[index - 1] <= arr[index] {
+    return arr
+  }
+  var j: int = index - 1
+  let temp = arr[j]
+  arr[j] = arr[index]
+  arr[index] = temp
+  return insert_next(arr, index + 1)
+}
+
+fun rec_insertion_sort(collection: list<int>, n: int): list<int> {
+  var arr = collection
+  if len(arr) <= 1 || n <= 1 {
+    return arr
+  }
+  arr = insert_next(arr, n - 1)
+  return rec_insertion_sort(arr, n - 1)
+}
+
+fun test_rec_insertion_sort() {
+  var col1: list<int> = [1, 2, 1]
+  col1 = rec_insertion_sort(col1, len(col1))
+  if col1[0] != 1 || col1[1] != 1 || col1[2] != 2 { panic("test1 failed") }
+
+  var col2: list<int> = [2, 1, 0, -1, -2]
+  col2 = rec_insertion_sort(col2, len(col2))
+  if col2[0] != (0 - 2) { panic("test2 failed") }
+  if col2[1] != (0 - 1) { panic("test2 failed") }
+  if col2[2] != 0 { panic("test2 failed") }
+  if col2[3] != 1 { panic("test2 failed") }
+  if col2[4] != 2 { panic("test2 failed") }
+
+  var col3: list<int> = [1]
+  col3 = rec_insertion_sort(col3, len(col3))
+  if col3[0] != 1 { panic("test3 failed") }
+}
+
+fun main() {
+  test_rec_insertion_sort()
+  var numbers: list<int> = [5, 3, 4, 1, 2]
+  numbers = rec_insertion_sort(numbers, len(numbers))
+  print(str(numbers))
+}
+
+main()
