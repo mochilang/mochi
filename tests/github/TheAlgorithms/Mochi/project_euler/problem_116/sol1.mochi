@@ -1,0 +1,55 @@
+/*
+Project Euler Problem 116: Counting ways to replace grey tiles with colored tiles without mixing colors.
+
+We are given a row of N grey square tiles. We may replace some of these tiles with colored oblong tiles of
+length 2 (red), 3 (green), or 4 (blue). Tiles of different colors may not be mixed. For a given row length we
+seek the number of different ways to replace at least one tile with a single chosen color.
+
+The algorithm uses dynamic programming separately for each tile length. For each row length r and tile length t
+(2 ≤ t ≤ 4) we count how many ways the first r tiles can be filled using only tiles of length t.  For every start
+position where a tile of length t fits we add the number of ways to fill the remaining tiles to the right plus one
+representing placing this tile alone.  This yields a table ways[r][t-2].  The answer for a row of the desired length
+is the sum over the three colors.
+
+Time complexity is O(n^2) where n is the row length and space complexity is O(n).
+*/
+
+fun solution(length: int): int {
+  var ways: list<list<int>> = []
+  var i: int = 0
+  while i <= length {
+    var row: list<int> = []
+    row = append(row, 0)
+    row = append(row, 0)
+    row = append(row, 0)
+    ways = append(ways, row)
+    i = i + 1
+  }
+
+  var row_length: int = 0
+  while row_length <= length {
+    var tile_length: int = 2
+    while tile_length <= 4 {
+      var tile_start: int = 0
+      while tile_start <= row_length - tile_length {
+        let remaining = row_length - tile_start - tile_length
+        ways[row_length][tile_length - 2] =
+          ways[row_length][tile_length - 2] + ways[remaining][tile_length - 2] + 1
+        tile_start = tile_start + 1
+      }
+      tile_length = tile_length + 1
+    }
+    row_length = row_length + 1
+  }
+
+  var total: int = 0
+  var j: int = 0
+  while j < 3 {
+    total = total + ways[length][j]
+    j = j + 1
+  }
+  return total
+}
+
+print(solution(5))
+print(solution(50))
