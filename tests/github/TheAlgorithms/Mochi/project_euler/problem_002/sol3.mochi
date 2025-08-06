@@ -1,0 +1,28 @@
+/*
+Project Euler Problem 2: Sum of even Fibonacci numbers not exceeding a limit.
+
+The Fibonacci sequence starts 1, 2, 3, 5, 8, ... where each term is the sum
+of the previous two. Every third Fibonacci number is even and these even
+terms follow the recurrence E(n) = 4 * E(n-1) + E(n-2) with base values
+E(0) = 0 and E(1) = 2. This allows us to iterate only over even terms,
+accumulating their sum until the next term would exceed the provided limit.
+The time complexity is O(log n) because the number of generated even terms
+grows logarithmically with respect to the limit, and the space complexity
+is O(1) as only a few integers are stored.
+*/
+
+fun solution(n: int): int {
+  if n <= 1 { return 0 }
+  var a: int = 0
+  var b: int = 2
+  var count: int = 0
+  while 4 * b + a <= n {
+    let next: int = 4 * b + a
+    a = b
+    b = next
+    count = count + a
+  }
+  return count + b
+}
+
+print("solution() = " + str(solution(4000000)))
