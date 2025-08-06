@@ -1260,6 +1260,19 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 		}
 	}
 
+	if vr, ok := a.Value.(*VarRef); ok && len(a.Indexes) == 0 && len(a.Fields) == 0 {
+		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasSuffix(vt, "[]") {
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, vr.Name)
+			if strings.HasSuffix(vt, "[][]") && !strings.Contains(vt, "char[][]") {
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, vr.Name)
+				writeIndent(w, indent)
+				fmt.Fprintf(w, "%s_lens_len = %s_lens_len;\n", a.Name, vr.Name)
+			}
+		}
+	}
+
 	if call, ok := a.Value.(*CallExpr); ok {
 		if call.Func == "_slice_int" || call.Func == "_slice_double" || call.Func == "_slice_str" {
 			sliceLen := "_slice_int_len"
@@ -3105,8 +3118,8 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needListAppendPtr {
-		buf.WriteString("static int** list_append_intptr(int **arr, size_t *len, int *val) {\n")
-		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(int*));\n")
+		buf.WriteString("static long long** list_append_intptr(long long **arr, size_t *len, long long *val) {\n")
+		buf.WriteString("    arr = realloc(arr, (*len + 1) * sizeof(long long*));\n")
 		buf.WriteString("    arr[*len] = val;\n")
 		buf.WriteString("    (*len)++;\n")
 		buf.WriteString("    return arr;\n")
@@ -7096,7 +7109,18 @@ func inferExprType(env *types.Env, e Expr) string {
 		}
 		tname := inferExprType(env, v.Target)
 		if strings.HasSuffix(tname, "[]") {
-			return strings.TrimSuffix(tname, "[]")
+			elem := strings.TrimSuffix(tname, "[]")
+			if strings.HasSuffix(elem, "[]") {
+				base := strings.TrimSuffix(elem, strings.Repeat("[]", strings.Count(elem, "[]")))
+				if base == "int" {
+					base = "long long"
+				}
+				return base + strings.Repeat("[]", strings.Count(elem, "[]"))
+			}
+			if elem == "int" {
+				return "long long"
+			}
+			return elem
 		}
 		if tname == "const char*" {
 			return "const char*"

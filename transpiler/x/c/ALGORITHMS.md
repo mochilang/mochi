@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (56/1077) - Last updated 2025-08-06 22:21 +0700:
+Checklist of programs that currently transpile and run (57/1077) - Last updated 2025-08-06 23:11 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -68,7 +68,7 @@ Checklist of programs that currently transpile and run (56/1077) - Last updated 
 | 61 | cellular_automata/langtons_ant | ✓ |  |  |
 | 62 | cellular_automata/nagel_schrekenberg | ✓ | 206us | 1.4 MB |
 | 63 | cellular_automata/one_dimensional |  |  |  |
-| 64 | cellular_automata/wa_tor |  |  |  |
+| 64 | cellular_automata/wa_tor | ✓ | 1.53ms | 1.6 MB |
 | 65 | ciphers/a1z26 |  |  |  |
 | 66 | ciphers/affine_cipher |  |  |  |
 | 67 | ciphers/atbash |  |  |  |
