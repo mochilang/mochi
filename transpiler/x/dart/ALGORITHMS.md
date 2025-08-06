@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-06 20:52 GMT+7
+Last updated: 2025-08-06 21:23 GMT+7
 
-## Algorithms Golden Test Checklist (42/1077)
+## Algorithms Golden Test Checklist (71/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.624ms | 3.5 MB |
@@ -48,36 +48,36 @@ Last updated: 2025-08-06 20:52 GMT+7
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 12.774ms | 2.5 MB |
 | 40 | bit_manipulation/missing_number | ✓ | 28.83ms | 9.7 MB |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 11.647ms | 1.0 MB |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life | ✓ | 16.978ms | 896.0 KB |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 21.258ms | 1.6 MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 30.607ms | 3.0 MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 17.547ms | 2.8 MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 24.311ms | 3.5 MB |
+| 46 | blockchain/diophantine_equation | ✓ | 24.261ms | 4.1 MB |
+| 47 | boolean_algebra/and_gate | ✓ | 18.629ms | 3.1 MB |
+| 48 | boolean_algebra/imply_gate | ✓ | 24.195ms | 1.6 MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 25.396ms | 3.9 MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 32.856ms | 9.8 MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 48.211ms | 10.7 MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 28.655ms | 1.7 MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 32.238ms | 3.6 MB |
+| 54 | boolean_algebra/not_gate | ✓ | 21.513ms | 1.1 MB |
+| 55 | boolean_algebra/or_gate | ✓ | 21.515ms | 3.1 MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 28.138ms | 4.2 MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 30.333ms | 9.8 MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 17.986ms | 2.0 MB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 29.216ms | 4.1 MB |
+| 60 | cellular_automata/game_of_life | ✓ | 33.082ms | 2.9 MB |
+| 61 | cellular_automata/langtons_ant | ✓ | 24.272ms | 3.2 MB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 26.964ms | 4.5 MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 27.965ms | 3.1 MB |
+| 64 | cellular_automata/wa_tor | ✓ | 32.004ms | 5.2 MB |
+| 65 | ciphers/a1z26 | ✓ | 44.425ms | 6.4 MB |
+| 66 | ciphers/affine_cipher | ✓ | 42.859ms | 10.3 MB |
+| 67 | ciphers/atbash | ✓ | 20.176ms | 3.1 MB |
+| 68 | ciphers/autokey | ✓ | 49.847ms | 4.9 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 51.697ms | 9.8 MB |
+| 70 | ciphers/base16 | ✓ | 43.27ms | 9.6 MB |
+| 71 | ciphers/base32 | ✓ | 19.562ms | 3.2 MB |
 | 72 | ciphers/base64_cipher |   |  |  |
 | 73 | ciphers/base85 |   |  |  |
 | 74 | ciphers/beaufort_cipher |   |  |  |

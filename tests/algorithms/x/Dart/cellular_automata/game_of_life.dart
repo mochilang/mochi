@@ -91,7 +91,7 @@ List<List<bool>> step(List<List<bool>> board) {
     new_row = [...new_row, updated];
     c = c + 1;
   }
-    new_board = ([...new_board, new_row] as List).map((e) => List<bool>.from(e)).toList();
+    new_board = ([...new_board, new_row] as List).map((e) => (List<bool>.from(e) as List<bool>)).toList();
     r = r + 1;
   }
   return new_board;
