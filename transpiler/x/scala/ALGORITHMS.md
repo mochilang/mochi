@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 71/1077
-Last updated: 2025-08-06 21:17 +0700
+Completed programs: 110/1077
+Last updated: 2025-08-06 21:34 +0700
 
 Checklist:
 
@@ -78,47 +78,47 @@ Checklist:
 | 69 | ciphers/baconian_cipher | ✓ | 4µs | 3.5 MB |
 | 70 | ciphers/base16 | ✓ | 9µs | 3.4 MB |
 | 71 | ciphers/base32 | ✓ | 9µs | 3.4 MB |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
+| 72 | ciphers/base64_cipher | ✓ | 11µs | 3.4 MB |
+| 73 | ciphers/base85 | ✓ | 6µs | 3.4 MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 3µs | 3.4 MB |
+| 75 | ciphers/bifid | ✓ | 10µs | 3.4 MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 15µs | 3.4 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 34µs | 3.4 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 3µs | 3.4 MB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 3µs | 3.5 MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 34µs | 3.4 MB |
+| 81 | ciphers/diffie | ✓ | 5µs | 3.4 MB |
+| 82 | ciphers/diffie_hellman | ✓ | 2µs | 3.4 MB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 19µs | 3.5 MB |
+| 84 | ciphers/enigma_machine2 | ✓ | 18µs | 3.4 MB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 2µs | 3.5 MB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 8µs | 3.4 MB |
+| 87 | ciphers/hill_cipher | ✓ | 14µs | 3.5 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 20µs | 3.5 MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 3µs | 3.4 MB |
+| 90 | ciphers/morse_code | ✓ | 2µs | 3.4 MB |
+| 91 | ciphers/onepad_cipher | ✓ | 6µs | 3.4 MB |
+| 92 | ciphers/permutation_cipher | ✓ | 8µs | 3.4 MB |
+| 93 | ciphers/playfair_cipher | ✓ | 13µs | 3.4 MB |
+| 94 | ciphers/polybius | ✓ | 5µs | 3.4 MB |
+| 95 | ciphers/porta_cipher | ✓ | 10µs | 3.4 MB |
+| 96 | ciphers/rabin_miller | ✓ | 4µs | 3.5 MB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 4µs | 3.4 MB |
+| 98 | ciphers/rot13 | ✓ | 12µs | 3.4 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 13µs | 3.4 MB |
+| 100 | ciphers/rsa_factorization | ✓ | 15µs | 3.4 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 2µs | 3.4 MB |
+| 102 | ciphers/running_key_cipher | ✓ | 2µs | 3.4 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 3µs | 3.4 MB |
+| 104 | ciphers/simple_keyword_cypher | error |  |  |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 5µs | 3.4 MB |
+| 106 | ciphers/transposition_cipher | error |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 1µs | 3.4 MB |
+| 108 | ciphers/trifid_cipher | ✓ | 8µs | 3.4 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 2µs | 3.4 MB |
+| 110 | ciphers/vigenere_cipher | ✓ | 10µs | 3.4 MB |
+| 111 | ciphers/xor_cipher | ✓ | 3µs | 3.4 MB |
+| 112 | computer_vision/cnn_classification | ✓ | 4µs | 3.5 MB |
 | 113 | computer_vision/flip_augmentation |   |  |  |
 | 114 | computer_vision/haralick_descriptors |   |  |  |
 | 115 | computer_vision/harris_corner |   |  |  |

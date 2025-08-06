@@ -269,7 +269,7 @@ type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer) {
 	if call, ok := s.Expr.(*CallExpr); ok {
-		if n, ok2 := call.Fn.(*Name); ok2 && n.Name == "panic" && len(call.Args) == 1 {
+		if n, ok2 := call.Fn.(*Name); ok2 && (n.Name == "panic" || n.Name == "error") && len(call.Args) == 1 {
 			fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
 			call.Args[0].emit(w)
 			fmt.Fprint(w, "))")
@@ -341,6 +341,7 @@ type ForEachStmt struct {
 	Name     string
 	Iterable Expr
 	Body     []Stmt
+	IterType string
 }
 
 // BreakStmt represents a break statement.
@@ -746,8 +747,12 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		contVar = fmt.Sprintf("_ct%d", id)
 		fmt.Fprintf(w, "  val %s = new Breaks\n", contVar)
 	}
-	fmt.Fprintf(w, "  for (%s <- ", fe.Name)
-	iterType := inferTypeWithEnv(fe.Iterable, nil)
+	iterType := fe.IterType
+	loopName := fe.Name
+	if iterType == "String" {
+		loopName = "_" + fe.Name
+	}
+	fmt.Fprintf(w, "  for (%s <- ", loopName)
 	if strings.HasPrefix(iterType, "Map[") || strings.HasPrefix(iterType, "scala.collection.mutable.Map[") {
 		fe.Iterable.emit(w)
 		fmt.Fprint(w, ".keys")
@@ -755,6 +760,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 		fe.Iterable.emit(w)
 	}
 	fmt.Fprint(w, ") {\n")
+	if iterType == "String" {
+		fmt.Fprintf(w, "    val %s: String = %s.toString\n", fe.Name, loopName)
+	}
 	if hasCont {
 		fmt.Fprintf(w, "    %s.breakable {\n", contVar)
 		continueStack = append(continueStack, contVar)
@@ -937,7 +945,7 @@ func (l *LenExpr) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	if n, ok := c.Fn.(*Name); ok && n.Name == "panic" && len(c.Args) == 1 {
+	if n, ok := c.Fn.(*Name); ok && (n.Name == "panic" || n.Name == "error") && len(c.Args) == 1 {
 		fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
 		c.Args[0].emit(w)
 		fmt.Fprint(w, "))")
@@ -1465,7 +1473,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "<" || b.Op == ">" || b.Op == "<=" || b.Op == ">=" {
 		if sl, ok := left.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(rightExpr, nil)
-			if t == "String" {
+			if t == "String" || t == "" {
 				left = &CharLit{Value: sl.Value}
 				rightExpr = &CallExpr{Fn: &FieldExpr{Receiver: rightExpr, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
 			} else {
@@ -1473,7 +1481,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		} else if sl, ok := rightExpr.(*StringLit); ok && len(sl.Value) == 1 {
 			t := inferTypeWithEnv(left, nil)
-			if t == "String" {
+			if t == "String" || t == "" {
 				rightExpr = &CharLit{Value: sl.Value}
 				left = &CallExpr{Fn: &FieldExpr{Receiver: left, Name: "charAt"}, Args: []Expr{&IntLit{Value: 0}}}
 			} else {
@@ -2269,10 +2277,27 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 		}
+		if (typ == "" || typ == "Any") && env != nil {
+			if tt, err := env.GetVar(st.Var.Name); err == nil {
+				if tts := toScalaTypeFromType(tt); tts != "" {
+					typ = tts
+				}
+			}
+		}
 		if typ == "" || typ == "Any" {
 			if n, ok := e.(*Name); ok {
 				if lt, ok2 := localVarTypes[n.Name]; ok2 {
 					typ = lt
+				}
+			} else if ce, ok := e.(*CallExpr); ok {
+				if f, ok2 := ce.Fn.(*FieldExpr); ok2 {
+					if f.Name == "slice" || f.Name == "substring" {
+						typ = "String"
+					}
+				}
+			} else if ix, ok := e.(*IndexExpr); ok {
+				if inferTypeWithEnv(ix.Value, env) == "String" {
+					typ = "String"
 				}
 			}
 		}
@@ -2281,6 +2306,9 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 		if e != nil {
 			valType := inferTypeWithEnv(e, env)
+			if (typ == "" || typ == "Any") && valType != "" && valType != "Any" {
+				typ = valType
+			}
 			if typ != "" && typ != "Any" && valType != "" && valType != typ {
 				e = &CastExpr{Value: e, Type: typ}
 			}
@@ -4466,7 +4494,7 @@ func convertForStmt(fs *parser.ForStmt, env *types.Env) (Stmt, error) {
 		}
 		body = append(body, s)
 	}
-	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body}, nil
+	return &ForEachStmt{Name: fs.Name, Iterable: iter, Body: body, IterType: itType}, nil
 }
 
 func convertSaveStmt(se *parser.SaveExpr, env *types.Env) (Stmt, error) {
@@ -4948,6 +4976,14 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 				}
 			}
 		}
+	case *UnaryExpr:
+		return inferTypeWithEnv(ex.Expr, env)
+	case *IfExpr:
+		t1 := inferTypeWithEnv(ex.Then, env)
+		t2 := inferTypeWithEnv(ex.Else, env)
+		if t1 == t2 {
+			return t1
+		}
 	case *IndexExpr:
 		t := inferTypeWithEnv(ex.Value, env)
 		if strings.HasPrefix(t, "ArrayBuffer[") {
@@ -5000,6 +5036,14 @@ func inferTypeWithEnv(e Expr, env *types.Env) string {
 			}
 			if n.Name == "String.valueOf" {
 				return "String"
+			}
+		}
+		if f, ok := ex.Fn.(*FieldExpr); ok {
+			if inferTypeWithEnv(f.Receiver, env) == "String" {
+				switch f.Name {
+				case "slice", "substring", "toString":
+					return "String"
+				}
 			}
 		}
 	}

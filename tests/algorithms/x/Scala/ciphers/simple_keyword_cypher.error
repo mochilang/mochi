@@ -1,0 +1,7 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/ciphers/simple_keyword_cypher.scala:98: error: type mismatch;
+ found   : Any
+ required: String
+    while (contains_char(cleaned, char)) {
+                                  ^
+1 error
