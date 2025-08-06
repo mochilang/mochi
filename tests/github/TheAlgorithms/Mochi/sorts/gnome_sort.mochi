@@ -1,0 +1,33 @@
+/*
+Gnome Sort Algorithm (also known as Stupid Sort)
+
+The algorithm iterates through the list comparing the current element with the previous one.
+If the pair is in correct order, the index moves forward. Otherwise the two elements are swapped
+and the index steps back to re‑check previously ordered pairs. This process continues until the
+end of the list is reached, producing a sorted list.
+
+This implementation operates on lists of integers and performs the sort in place.
+Time complexity: O(n^2) in the worst and average case, O(n) when the list is already sorted.
+Space complexity: O(1) auxiliary space.
+*/
+
+fun gnome_sort(lst: list<int>): list<int> {
+  if len(lst) <= 1 { return lst }
+  var i: int = 1
+  while i < len(lst) {
+    if lst[i - 1] <= lst[i] {
+      i = i + 1
+    } else {
+      let tmp: int = lst[i - 1]
+      lst[i - 1] = lst[i]
+      lst[i] = tmp
+      i = i - 1
+      if i == 0 { i = 1 }
+    }
+  }
+  return lst
+}
+
+print(gnome_sort([0, 5, 3, 2, 2]))
+print(gnome_sort([]))
+print(gnome_sort([-2, -5, -45]))
