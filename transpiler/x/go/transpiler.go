@@ -47,6 +47,7 @@ type Program struct {
 	UseReflect   bool
 	UseRuntime   bool
 	UseRepeat    bool
+	UseConcat    bool
 	UseMapConv   bool
 	BenchMain    bool
 	FetchStructs []string
@@ -74,6 +75,7 @@ var (
 	usesReflect        bool
 	usesRuntime        bool
 	usesRepeat         bool
+	usesConcat         bool
 	usesMapConv        bool
 	assignAnyVars      map[string]bool
 	topEnv             *types.Env
@@ -250,7 +252,7 @@ func (t *TestBlockStmt) emit(w io.Writer) {
 	io.WriteString(w, ")\n")
 	fmt.Fprint(w, "}()\n")
 	fmt.Fprintf(w, "fmt.Printf(%q, %q)\n",
-		"   \x1b[33mtest\x1b[0m %s                         ... \x1b[32mok\x1b[0m (0s)\n", t.Name)
+		"   \x1b[33mtest\x1b[0m %s                   ... \x1b[32mok\x1b[0m (1.0ms)\n", t.Name)
 	fmt.Fprint(w, "}()\n")
 }
 
@@ -2150,6 +2152,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesReflect = false
 	usesRuntime = false
 	usesRepeat = false
+	usesConcat = false
 	usesMapConv = false
 	usesFetch = false
 	assignAnyVars = map[string]bool{}
@@ -2200,6 +2203,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseRepeat = usesRepeat
+	gp.UseConcat = usesConcat
 	gp.UseMapConv = usesMapConv
 	gp.UseSHA256 = usesSHA256
 	gp.UseBigInt = usesBigInt
@@ -2279,6 +2283,10 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 			fixListLits(s.Value, env)
 		case *ExprStmt:
 			fixListLits(s.Expr, env)
+		case *ReturnStmt:
+			if s.Value != nil {
+				fixListLits(s.Value, env)
+			}
 		case *IndexAssignStmt:
 			fixListLits(s.Index, env)
 			fixListLits(s.Value, env)
@@ -4279,6 +4287,9 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	fixListLits(val, env)
+	if ll, ok := val.(*ListLit); ok && ll.ElemType == "any" && strings.HasPrefix(currentRetType, "[]") && currentRetType != "[]any" {
+		ll.ElemType = strings.TrimPrefix(currentRetType, "[]")
+	}
 	if currentRetType == "map[string]any" {
 		if ml, ok := val.(*MapLit); ok {
 			ml.ValueType = "any"
@@ -5594,6 +5605,9 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesRepeat = true
 			usesStrings = true
 			return &CallExpr{Func: "_repeat", Args: args[:2]}, nil
+		case "concat":
+			usesConcat = true
+			return &CallExpr{Func: "_concat", Args: args[:2]}, nil
 		case "slice":
 			usesSlice = true
 			return &CallExpr{Func: "_slice", Args: args[:3]}, nil
@@ -5625,6 +5639,13 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 				if lt, ok := types.TypeOfExpr(p.Call.Args[0], env).(types.ListType); ok {
 					et := toGoTypeFromType(lt.Elem)
 					if et != "" && et != "any" {
+						if ll, ok2 := args[0].(*ListLit); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
+							if strings.HasPrefix(et, "[]") {
+								ll.ElemType = strings.TrimPrefix(et, "[]")
+							} else {
+								ll.ElemType = et
+							}
+						}
 						for i := 1; i < len(args); i++ {
 							at := types.TypeOfExpr(p.Call.Args[i], env)
 							if types.IsAnyType(at) {
@@ -6535,6 +6556,11 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("    return strings.Repeat(s, n)\n")
 		buf.WriteString("}\n\n")
 	}
+	if prog.UseConcat {
+		buf.WriteString("func _concat[T any](a, b []T) []T {\n")
+		buf.WriteString("    return append(append([]T{}, a...), b...)\n")
+		buf.WriteString("}\n\n")
+	}
 	if prog.UseFetch {
 		buf.WriteString("func _fetch(url string) any {\n")
 		buf.WriteString("    resp, err := http.Get(url)\n")
@@ -7193,6 +7219,11 @@ func fixListLits(expr Expr, env *types.Env) {
 	case *NotExpr:
 		fixListLits(ex.Expr, env)
 	case *AssertExpr:
+		if ll, ok := ex.Expr.(*ListLit); ok && ll.ElemType == "any" && len(ll.Elems) == 0 {
+			if strings.HasPrefix(ex.Type, "[]") && ex.Type != "[]any" {
+				ll.ElemType = strings.TrimPrefix(ex.Type, "[]")
+			}
+		}
 		fixListLits(ex.Expr, env)
 	case *IndexExpr:
 		fixListLits(ex.X, env)
