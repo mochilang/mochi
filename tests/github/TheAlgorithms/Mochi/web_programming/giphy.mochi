@@ -1,0 +1,43 @@
+/*
+Retrieve GIF URLs for a search query. The Python version sends an HTTP
+request to the Giphy API with the query terms joined by '+', then parses
+the JSON response to collect each GIF's canonical URL. This Mochi
+translation mirrors the data processing and URL formatting steps while
+using a locally stored JSON sample instead of making a network request.
+*/
+
+type Gif { url: string }
+
+fun format_query(q: string): string {
+  var result = ""
+  var i = 0
+  while i < len(q) {
+    let ch = q[i:i+1]
+    if ch == " " { result = result + "+" } else { result = result + ch }
+    i = i + 1
+  }
+  return result
+}
+
+fun join(xs: list<string>, sep: string): string {
+  if len(xs) == 0 { return "" }
+  var out = xs[0]
+  var i = 1
+  while i < len(xs) {
+    out = out + sep + xs[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun get_gifs(query: string): list<string> {
+  let formatted = format_query(query)
+  let gifs = load "tests/github/TheAlgorithms/Mochi/web_programming/giphy.json" as Gif with { format: "json" }
+  var urls: list<string> = []
+  for g in gifs {
+    urls = append(urls, g.url)
+  }
+  return urls
+}
+
+print(join(get_gifs("space ship"), "\n"))
