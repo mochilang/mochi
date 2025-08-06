@@ -170,6 +170,7 @@ type Program struct {
 	UseFGL             bool
 	Stmts              []Stmt
 	UseSysUtils        bool
+	UseStrUtils        bool
 	UseVariants        bool
 	UseMath            bool
 	NeedAvg            bool
@@ -679,8 +680,21 @@ type CastExpr struct {
 
 func (c *CastExpr) emit(w io.Writer) {
 	switch c.Type {
-	case "int":
-		if inferType(c.Expr) == "string" {
+	case "int", "integer":
+		t := inferType(c.Expr)
+		if t == "" {
+			if v, ok := c.Expr.(*VarRef); ok {
+				name := v.Name
+				if s, ok := lookupName(name); ok {
+					name = s
+				}
+				if vt, ok := currentVarTypes[name]; ok && vt == "string" {
+					t = "string"
+				}
+			}
+		}
+		if t == "string" {
+			currProg.UseSysUtils = true
 			io.WriteString(w, "StrToInt(")
 			c.Expr.emit(w)
 			io.WriteString(w, ")")
@@ -866,7 +880,10 @@ type IfExpr struct {
 }
 
 func (i *IfExpr) emit(w io.Writer) {
-	currProg.UseMath = true
+	t := inferType(i.Then)
+	if t == "" && i.Else != nil {
+		t = inferType(i.Else)
+	}
 	io.WriteString(w, "IfThen(")
 	i.Cond.emit(w)
 	io.WriteString(w, ", ")
@@ -877,7 +894,11 @@ func (i *IfExpr) emit(w io.Writer) {
 	} else if i.Else != nil {
 		i.Else.emit(w)
 	} else {
-		io.WriteString(w, "''")
+		if t == "string" {
+			io.WriteString(w, "''")
+		} else {
+			io.WriteString(w, "0")
+		}
 	}
 	io.WriteString(w, ")")
 }
@@ -1176,6 +1197,9 @@ func (p *Program) Emit() []byte {
 	var uses []string
 	if p.UseSysUtils {
 		uses = append(uses, "SysUtils")
+	}
+	if p.UseStrUtils {
+		uses = append(uses, "StrUtils")
 	}
 	if p.UseVariants {
 		uses = append(uses, "Variants")
@@ -2024,6 +2048,9 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if err != nil {
 					return nil, err
 				}
+				for k, v := range local {
+					varTypes[k] = v
+				}
 				popScope()
 				locals := append([]VarDecl(nil), currProg.Vars[startVarCount:]...)
 				currProg.Vars = currProg.Vars[:startVarCount]
@@ -2147,16 +2174,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	if len(pr.Funs) > 0 && len(pr.Vars) > 0 {
 		var globals []VarDecl
 		for _, gv := range pr.Vars {
-			moved := false
+			best := -1
+			bestLen := 0
 			for i := range pr.Funs {
 				prefix := pr.Funs[i].Name + "_"
-				if strings.HasPrefix(gv.Name, prefix) {
-					pr.Funs[i].Locals = append(pr.Funs[i].Locals, gv)
-					moved = true
-					break
+				if strings.HasPrefix(gv.Name, prefix) && len(prefix) > bestLen {
+					best = i
+					bestLen = len(prefix)
 				}
 			}
-			if !moved {
+			if best >= 0 {
+				pr.Funs[best].Locals = append(pr.Funs[best].Locals, gv)
+			} else {
 				globals = append(globals, gv)
 			}
 		}
@@ -2633,6 +2662,9 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 			fnBody, err := convertBody(env, fn.Body, local)
 			if err != nil {
 				return nil, err
+			}
+			for k, v := range local {
+				varTypes[k] = v
 			}
 			popScope()
 			var params []string
@@ -4856,7 +4888,15 @@ func convertIfExpr(env *types.Env, ie *parser.IfExpr) (*IfExpr, error) {
 		elseExpr = e
 	}
 	if currProg != nil {
-		currProg.UseMath = true
+		t := inferType(thenExpr)
+		if t == "" && elseExpr != nil {
+			t = inferType(elseExpr)
+		}
+		if t == "string" {
+			currProg.UseStrUtils = true
+		} else {
+			currProg.UseMath = true
+		}
 	}
 	return &IfExpr{Cond: cond, Then: thenExpr, ElseIf: elseIf, Else: elseExpr}, nil
 }

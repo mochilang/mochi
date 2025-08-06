@@ -42,49 +42,29 @@ var
   bench_dur_0: integer;
   bench_mem_0: int64;
   bench_memdiff_0: int64;
-  a: integer;
-  b: integer;
-function binary_or(a: integer; b: integer): string; forward;
-function binary_or(a: integer; b: integer): string;
+  num1: integer;
+  num2: integer;
+function different_signs(num1: integer; num2: integer): boolean; forward;
+function different_signs(num1: integer; num2: integer): boolean;
 var
-  binary_or_res: string;
-  binary_or_x: integer;
-  binary_or_y: integer;
-  binary_or_bit_a: integer;
-  binary_or_bit_b: integer;
+  different_signs_sign1: boolean;
+  different_signs_sign2: boolean;
 begin
-  if (a < 0) or (b < 0) then begin
-  exit('ValueError');
-end;
-  binary_or_res := '';
-  binary_or_x := a;
-  binary_or_y := b;
-  while (binary_or_x > 0) or (binary_or_y > 0) do begin
-  binary_or_bit_a := binary_or_x mod 2;
-  binary_or_bit_b := binary_or_y mod 2;
-  if (binary_or_bit_a = 1) or (binary_or_bit_b = 1) then begin
-  binary_or_res := '1' + binary_or_res;
-end else begin
-  binary_or_res := '0' + binary_or_res;
-end;
-  binary_or_x := binary_or_x div 2;
-  binary_or_y := binary_or_y div 2;
-end;
-  if binary_or_res = '' then begin
-  binary_or_res := '0';
-end;
-  exit('0b' + binary_or_res);
+  different_signs_sign1 := num1 < 0;
+  different_signs_sign2 := num2 < 0;
+  exit(different_signs_sign1 <> different_signs_sign2);
 end;
 begin
   init_now();
   bench_mem_0 := _mem();
   bench_start_0 := _bench_now();
-  writeln(binary_or(25, 32));
-  writeln(binary_or(37, 50));
-  writeln(binary_or(21, 30));
-  writeln(binary_or(58, 73));
-  writeln(binary_or(0, 255));
-  writeln(binary_or(0, 256));
+  writeln(LowerCase(BoolToStr(different_signs(1, -1), true)));
+  writeln(LowerCase(BoolToStr(different_signs(1, 1), true)));
+  writeln(LowerCase(BoolToStr(different_signs(1000000000000000000, -1000000000000000000), true)));
+  writeln(LowerCase(BoolToStr(different_signs(-1000000000000000000, 1000000000000000000), true)));
+  writeln(LowerCase(BoolToStr(different_signs(50, 278), true)));
+  writeln(LowerCase(BoolToStr(different_signs(0, 2), true)));
+  writeln(LowerCase(BoolToStr(different_signs(2, 0), true)));
   Sleep(1);
   bench_memdiff_0 := _mem() - bench_mem_0;
   bench_dur_0 := (_bench_now() - bench_start_0) div 1000;
