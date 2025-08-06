@@ -1,0 +1,160 @@
+/*
+Introsort implementation
+-------------------------
+This program sorts a list of integers using Introspective Sort (introsort).
+Introsort begins with quicksort and switches to heapsort when the recursion
+depth exceeds a limit of 2 * floor(log2(n)) ensuring O(n log n) worst-case
+time. For small partitions (size <= 16) it performs insertion sort.
+
+Algorithm steps:
+1. Determine the maximum recursion depth based on array length.
+2. While the current partition is larger than the threshold:
+   a. If depth limit reached, fall back to heap sort.
+   b. Choose pivot via median-of-three.
+   c. Partition array around pivot and recurse on the right partition.
+   d. Continue with left partition.
+3. Finish by running insertion sort on the remaining small portion.
+
+All functions are implemented purely in Mochi and avoid any foreign interfaces.
+*/
+
+fun insertion_sort(a: list<int>, start: int, end_: int): list<int> {
+  var arr = a
+  var i = start
+  while i < end_ {
+    let key = arr[i]
+    var j = i
+    while j > start && arr[j - 1] > key {
+      arr[j] = arr[j - 1]
+      j = j - 1
+    }
+    arr[j] = key
+    i = i + 1
+  }
+  return arr
+}
+
+fun heapify(a: list<int>, index: int, heap_size: int): list<int> {
+  var arr = a
+  var largest = index
+  let left = 2 * index + 1
+  let right = 2 * index + 2
+  if left < heap_size && arr[left] > arr[largest] {
+    largest = left
+  }
+  if right < heap_size && arr[right] > arr[largest] {
+    largest = right
+  }
+  if largest != index {
+    let temp = arr[index]
+    arr[index] = arr[largest]
+    arr[largest] = temp
+    arr = heapify(arr, largest, heap_size)
+  }
+  return arr
+}
+
+fun heap_sort(a: list<int>): list<int> {
+  var arr = a
+  let n = len(arr)
+  if n <= 1 {
+    return arr
+  }
+  var i = n / 2
+  while true {
+    arr = heapify(arr, i, n)
+    if i == 0 {
+      break
+    }
+    i = i - 1
+  }
+  i = n - 1
+  while i > 0 {
+    let temp = arr[0]
+    arr[0] = arr[i]
+    arr[i] = temp
+    arr = heapify(arr, 0, i)
+    i = i - 1
+  }
+  return arr
+}
+
+fun median_of_3(arr: list<int>, first: int, middle: int, last: int): int {
+  let a = arr[first]
+  let b = arr[middle]
+  let c = arr[last]
+  if (a > b && a < c) || (a < b && a > c) {
+    return a
+  } else if (b > a && b < c) || (b < a && b > c) {
+    return b
+  } else {
+    return c
+  }
+}
+
+fun partition(arr: list<int>, low: int, high: int, pivot: int): int {
+  var i = low
+  var j = high
+  while true {
+    while arr[i] < pivot {
+      i = i + 1
+    }
+    j = j - 1
+    while pivot < arr[j] {
+      j = j - 1
+    }
+    if i >= j {
+      return i
+    }
+    let temp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = temp
+    i = i + 1
+  }
+}
+
+fun int_log2(n: int): int {
+  var v = n
+  var r = 0
+  while v > 1 {
+    v = v / 2
+    r = r + 1
+  }
+  return r
+}
+
+fun intro_sort(arr: list<int>, start: int, end_: int, size_threshold: int, max_depth: int): list<int> {
+  var array = arr
+  var s = start
+  var e = end_
+  var depth = max_depth
+  while e - s > size_threshold {
+    if depth == 0 {
+      return heap_sort(array)
+    }
+    depth = depth - 1
+    let pivot = median_of_3(array, s, s + ((e - s) / 2) + 1, e - 1)
+    let p = partition(array, s, e, pivot)
+    array = intro_sort(array, p, e, size_threshold, depth)
+    e = p
+  }
+  let res = insertion_sort(array, s, e)
+  let _ = len(res)
+  return res
+}
+
+fun intro_sort_main(arr: list<int>) {
+  if len(arr) == 0 {
+    print(arr)
+    return
+  }
+  let max_depth = 2 * int_log2(len(arr))
+  let sorted = intro_sort(arr, 0, len(arr), 16, max_depth)
+  print(sorted)
+}
+
+let example1: list<int> = [4, 2, 6, 8, 1, 7, 8, 22, 14, 56, 27, 79, 23, 45, 14, 12]
+intro_sort_main(example1)
+
+let example2: list<int> = [21, 15, 11, 45, -2, -11, 46]
+intro_sort_main(example2)
