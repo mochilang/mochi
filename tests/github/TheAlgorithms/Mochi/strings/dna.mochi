@@ -1,0 +1,54 @@
+/*
+Complementary DNA Strand
+------------------------
+Given a DNA strand composed solely of the characters 'A', 'T', 'C', and 'G',
+return its complementary strand where A pairs with T and C pairs with G.
+If any other character is present, the input is considered invalid.
+
+Algorithm:
+1. Validate that every character belongs to {A, T, C, G}.
+2. For each character append its complement (A<->T, C<->G).
+3. If validation fails, print "ValueError: Invalid Strand" and return an empty string.
+
+Time Complexity: O(n) for a strand of length n.
+*/
+
+fun is_valid(strand: string): bool {
+  var i = 0
+  while i < len(strand) {
+    let ch = substring(strand, i, i + 1)
+    if ch != "A" && ch != "T" && ch != "C" && ch != "G" {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun dna(strand: string): string {
+  if !is_valid(strand) {
+    print("ValueError: Invalid Strand")
+    return ""
+  }
+  var result = ""
+  var i = 0
+  while i < len(strand) {
+    let ch = substring(strand, i, i + 1)
+    if ch == "A" {
+      result = result + "T"
+    } else if ch == "T" {
+      result = result + "A"
+    } else if ch == "C" {
+      result = result + "G"
+    } else { // ch == "G"
+      result = result + "C"
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(dna("GCTA"))
+print(dna("ATGC"))
+print(dna("CTGA"))
+print(dna("GFGG"))
