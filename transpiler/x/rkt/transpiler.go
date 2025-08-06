@@ -309,7 +309,7 @@ func (b *BenchStmt) emit(w io.Writer) {
 	var body []Stmt
 	for _, st := range b.Body {
 		switch st.(type) {
-		case *FunDecl, StmtList:
+		case *FunDecl, StmtList, *LetStmt:
 			st.emit(w)
 		default:
 			body = append(body, st)
@@ -2979,6 +2979,16 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 	case "append":
 		if len(args) == 2 {
 			return &CallExpr{Func: "append", Args: []Expr{args[0], &CallExpr{Func: "list", Args: []Expr{args[1]}}}}, nil
+		}
+	case "concat":
+		if len(args) >= 2 {
+			if env != nil {
+				t := types.TypeOfExprBasic(c.Args[0], env)
+				if _, ok := t.(types.StringType); ok {
+					return &CallExpr{Func: "string-append", Args: args}, nil
+				}
+			}
+			return &CallExpr{Func: "append", Args: args}, nil
 		}
 	case "avg":
 		if len(args) == 1 {
