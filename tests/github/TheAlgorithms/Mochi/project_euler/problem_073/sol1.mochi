@@ -1,0 +1,46 @@
+/*
+Project Euler Problem 73: Count reduced proper fractions between 1/3 and 1/2
+
+Consider fractions n/d with n and d positive integers, n < d, and gcd(n, d) = 1.
+These are reduced proper fractions. We seek the number of such fractions that lie
+strictly between 1/3 and 1/2 for denominators d up to a maximum value.
+
+Algorithm:
+  - Iterate over each denominator d from 1 to max_d.
+  - For each d, enumerate numerators n starting just above d/3 and stopping
+    before n reaches d/2. This ensures 1/3 < n/d < 1/2.
+  - Use the Euclidean algorithm to test gcd(n, d) == 1, counting those fractions.
+
+The time complexity is roughly O(max_d^2) due to the nested loops, but the
+iteration bounds reduce the inner loop to the range of interest.
+*/
+
+fun gcd(a: int, b: int): int {
+  var x: int = a
+  var y: int = b
+  while y != 0 {
+    let temp: int = x % y
+    x = y
+    y = temp
+  }
+  if x < 0 { return -x } else { return x }
+}
+
+fun solution(max_d: int): int {
+  var fractions_number: int = 0
+  var d: int = 1
+  while d <= max_d {
+    var n: int = d / 3 + 1
+    let upper: int = (d + 1) / 2
+    while n < upper {
+      if gcd(n, d) == 1 {
+        fractions_number = fractions_number + 1
+      }
+      n = n + 1
+    }
+    d = d + 1
+  }
+  return fractions_number
+}
+
+print(str(solution(12000)))
