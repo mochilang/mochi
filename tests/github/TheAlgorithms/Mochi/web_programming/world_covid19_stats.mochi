@@ -1,0 +1,75 @@
+/*
+Collect worldwide COVID-19 statistics by scraping an HTML page.
+
+This example mimics the behaviour of the Python implementation which
+fetches data from "https://www.worldometers.info/coronavirus/".
+Since Mochi's standard library does not include an HTML parser or HTTP
+client, a small sample of the page is embedded and parsed manually.
+The algorithm scans the HTML for heading tags (<h1>) and panel titles
+(<span class="panel-title">) to gather statistic labels. It similarly
+extracts the numerical values from elements with classes
+"maincounter-number" and "number-table-main". Labels and values are
+paired in the order found and printed.
+*/
+
+fun index_of(s: string, sub: string, start: int): int {
+  let n = len(s)
+  let m = len(sub)
+  var i = start
+  while i <= n - m {
+    var j = 0
+    while j < m && s[i + j:i + j + 1] == sub[j:j + 1] {
+      j = j + 1
+    }
+    if j == m {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun find_all(html: string, open: string, close: string): list<string> {
+  var res: list<string> = []
+  var pos = 0
+  let ol = len(open)
+  let cl = len(close)
+  while true {
+    let start = index_of(html, open, pos)
+    if start == -1 { break }
+    let begin = start + ol
+    let end = index_of(html, close, begin)
+    if end == -1 { break }
+    res = append(res, html[begin:end])
+    pos = end + cl
+  }
+  return res
+}
+
+fun world_covid19_stats(html: string): list<list<string>> {
+  var keys = find_all(html, "<h1>", "</h1>")
+  var values = find_all(html, "<div class=\"maincounter-number\"><span>", "</span></div>")
+  let extra_keys = find_all(html, "<span class=\"panel-title\">", "</span>")
+  for k in extra_keys { keys = append(keys, k) }
+  let extra_vals = find_all(html, "<div class=\"number-table-main\">", "</div>")
+  for v in extra_vals { values = append(values, v) }
+  var res: list<list<string>> = []
+  var i = 0
+  while i < len(keys) && i < len(values) {
+    res = append(res, [keys[i], values[i]])
+    i = i + 1
+  }
+  return res
+}
+
+let sample_html: string = "<h1>Coronavirus Cases:</h1><div class=\"maincounter-number\"><span>100</span></div><h1>Deaths:</h1><div class=\"maincounter-number\"><span>10</span></div><h1>Recovered:</h1><div class=\"maincounter-number\"><span>50</span></div><span class=\"panel-title\">Active Cases</span><div class=\"number-table-main\">20</div><span class=\"panel-title\">Closed Cases</span><div class=\"number-table-main\">80</div>"
+
+let stats = world_covid19_stats(sample_html)
+
+print("COVID-19 Status of the World\n")
+var i = 0
+while i < len(stats) {
+  print(stats[i][0])
+  print(stats[i][1])
+  i = i + 1
+}
