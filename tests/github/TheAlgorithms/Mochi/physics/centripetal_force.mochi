@@ -1,0 +1,61 @@
+/*
+Centripetal force calculation.
+
+For an object moving in a circular path, the centripetal force F keeps the
+object in its curved trajectory and points toward the center of rotation.
+The magnitude is given by the formula
+
+    F = m * v^2 / r
+
+where m is mass, v is tangential velocity, and r is the radius of the
+circle.  This implementation validates the inputs so that mass is non-
+negative and radius is strictly positive.
+
+Algorithm:
+1. Check that mass >= 0 and radius > 0.  If not, panic with an error.
+2. Compute mass * velocity * velocity / radius.
+
+Time complexity is O(1).
+*/
+
+fun centripetal(mass: float, velocity: float, radius: float): float {
+  if mass < 0.0 {
+    panic("The mass of the body cannot be negative")
+  }
+  if radius <= 0.0 {
+    panic("The radius is always a positive non zero integer")
+  }
+  return mass * velocity * velocity / radius
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var p = 1.0
+  var i = 0
+  while i < n {
+    p = p * 10.0
+    i = i + 1
+  }
+  return p
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  return floor(x * m + 0.5) / m
+}
+
+fun show(mass: float, velocity: float, radius: float) {
+  let f = centripetal(mass, velocity, radius)
+  print(str(round(f, 2)))
+}
+
+show(15.5, -30.0, 10.0)
+show(10.0, 15.0, 5.0)
+show(20.0, -50.0, 15.0)
+show(12.25, 40.0, 25.0)
+show(50.0, 100.0, 50.0)
