@@ -1,0 +1,145 @@
+/*
+Project Euler Problem 54 poker hand evaluator.
+Parse five-card hands, classify rank (high card to royal flush) and
+compare two hands. The algorithm counts card occurrences,
+checks for flush and straight including the special five-high straight,
+assigns a numeric rank, and compares ranks and card values to decide
+Win/Loss/Tie.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur: string = ""
+  var i: int = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + s[i:i+1]
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun card_value(ch: string): int {
+  if ch == "A" { return 14 }
+  else if ch == "K" { return 13 }
+  else if ch == "Q" { return 12 }
+  else if ch == "J" { return 11 }
+  else if ch == "T" { return 10 }
+  else if ch == "9" { return 9 }
+  else if ch == "8" { return 8 }
+  else if ch == "7" { return 7 }
+  else if ch == "6" { return 6 }
+  else if ch == "5" { return 5 }
+  else if ch == "4" { return 4 }
+  else if ch == "3" { return 3 }
+  else { return 2 }
+}
+
+type Hand { rank: int, values: list<int> }
+
+fun parse_hand(hand: string): Hand {
+  var counts: list<int> = []
+  var i: int = 0
+  while i <= 14 {
+    counts = append(counts, 0)
+    i = i + 1
+  }
+  var suits: list<string> = []
+  for card in split(hand, " ") {
+    let v = card_value(card[0:1])
+    counts[v] = counts[v] + 1
+    suits = append(suits, card[1:2])
+  }
+  var vals: list<int> = []
+  var v: int = 14
+  while v >= 2 {
+    var c: int = counts[v]
+    var k: int = 0
+    while k < c {
+      vals = append(vals, v)
+      k = k + 1
+    }
+    v = v - 1
+  }
+  var is_straight: bool = false
+  if len(vals) == 5 && vals[0] == 14 && vals[1] == 5 && vals[2] == 4 && vals[3] == 3 && vals[4] == 2 {
+    is_straight = true
+    vals[0] = 5
+    vals[1] = 4
+    vals[2] = 3
+    vals[3] = 2
+    vals[4] = 14
+  } else {
+    is_straight = true
+    var j: int = 0
+    while j < 4 {
+      if vals[j] - vals[j + 1] != 1 {
+        is_straight = false
+      }
+      j = j + 1
+    }
+  }
+  var is_flush: bool = true
+  var s0: string = suits[0]
+  var t: int = 1
+  while t < len(suits) {
+    if suits[t] != s0 { is_flush = false }
+    t = t + 1
+  }
+  var four_val: int = 0
+  var three_val: int = 0
+  var pair_vals: list<int> = []
+  v = 14
+  while v >= 2 {
+    if counts[v] == 4 { four_val = v }
+    else if counts[v] == 3 { three_val = v }
+    else if counts[v] == 2 { pair_vals = append(pair_vals, v) }
+    v = v - 1
+  }
+  var rank: int = 1
+  if is_flush && is_straight && vals[0] == 14 && vals[4] == 10 { rank = 10 }
+  else if is_flush && is_straight { rank = 9 }
+  else if four_val != 0 { rank = 8 }
+  else if three_val != 0 && len(pair_vals) == 1 { rank = 7 }
+  else if is_flush { rank = 6 }
+  else if is_straight { rank = 5 }
+  else if three_val != 0 { rank = 4 }
+  else if len(pair_vals) == 2 { rank = 3 }
+  else if len(pair_vals) == 1 { rank = 2 }
+  else { rank = 1 }
+  return Hand{ rank: rank, values: vals }
+}
+
+fun compare(a: Hand, b: Hand): string {
+  if a.rank > b.rank { return "Win" }
+  if a.rank < b.rank { return "Loss" }
+  var i: int = 0
+  while i < len(a.values) {
+    if a.values[i] > b.values[i] { return "Win" }
+    if a.values[i] < b.values[i] { return "Loss" }
+    i = i + 1
+  }
+  return "Tie"
+}
+
+fun main() {
+  let tests: list<list<string>> = [
+    ["2H 3H 4H 5H 6H", "KS AS TS QS JS", "Loss"],
+    ["2H 3H 4H 5H 6H", "AS AD AC AH JD", "Win"],
+    ["AS AH 2H AD AC", "JS JD JC JH 3D", "Win"],
+    ["2S AH 2H AS AC", "JS JD JC JH AD", "Loss"],
+    ["2S AH 2H AS AC", "2H 3H 5H 6H 7H", "Win"]
+  ]
+  for t in tests {
+    let res = compare(parse_hand(t[0]), parse_hand(t[1]))
+    print(res + " expected " + t[2])
+  }
+}
+
+main()
