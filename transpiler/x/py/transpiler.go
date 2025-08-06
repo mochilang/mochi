@@ -4824,29 +4824,31 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			args = append(args, ae)
 		}
-		if currentEnv != nil {
-			if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
-				if len(args) < len(fn.Params) {
-					rem := fn.Params[len(args):]
-					var names []string
-					var extra []Expr
-					for _, p := range rem {
-						names = append(names, p.Name)
-						extra = append(extra, &Name{Name: p.Name})
-					}
-					call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
-					return &LambdaExpr{Params: names, Expr: call}, nil
-				}
-			}
-			if t, err := currentEnv.GetVar("self"); err == nil {
-				if st, ok := t.(types.StructType); ok {
-					if _, ok := st.Methods[p.Call.Func]; ok {
-						return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
-					}
-				}
-			}
-		}
-		switch p.Call.Func {
+               hasFunc := false
+               if currentEnv != nil {
+                       if fn, ok := currentEnv.GetFunc(p.Call.Func); ok {
+                               hasFunc = true
+                               if len(args) < len(fn.Params) {
+                                       rem := fn.Params[len(args):]
+                                       var names []string
+                                       var extra []Expr
+                                       for _, p := range rem {
+                                               names = append(names, p.Name)
+                                               extra = append(extra, &Name{Name: p.Name})
+                                       }
+                                       call := &CallExpr{Func: &Name{Name: p.Call.Func}, Args: append(args, extra...)}
+                                       return &LambdaExpr{Params: names, Expr: call}, nil
+                               }
+                       }
+                       if t, err := currentEnv.GetVar("self"); err == nil {
+                               if st, ok := t.(types.StructType); ok {
+                                       if _, ok := st.Methods[p.Call.Func]; ok {
+                                               return &CallExpr{Func: &FieldExpr{Target: &Name{Name: "self"}, Name: p.Call.Func}, Args: args}, nil
+                                       }
+                               }
+                       }
+               }
+               switch p.Call.Func {
 		case "print":
 			outArgs := make([]Expr, len(args))
 			for i, a := range args {
@@ -4910,16 +4912,16 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: "len"}, Args: args}, nil
 			}
-		case "values":
-			if len(args) == 1 {
-				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
-				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-			}
-		case "keys":
-			if len(args) == 1 {
-				call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
-				return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
-			}
+               case "values":
+                       if !hasFunc && len(args) == 1 {
+                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "values"}, Args: nil}
+                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+                       }
+               case "keys":
+                       if !hasFunc && len(args) == 1 {
+                               call := &CallExpr{Func: &FieldExpr{Target: args[0], Name: "keys"}, Args: nil}
+                               return &CallExpr{Func: &Name{Name: "list"}, Args: []Expr{call}}, nil
+                       }
 		case "min", "max":
 			if len(args) == 1 {
 				return &CallExpr{Func: &Name{Name: p.Call.Func}, Args: args}, nil
