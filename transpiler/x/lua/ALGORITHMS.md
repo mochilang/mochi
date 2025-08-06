@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 21:18 GMT+7
+Last updated: 2025-08-06 21:35 GMT+7
 
-## Algorithms Golden Test Checklist (80/1077)
+## Algorithms Golden Test Checklist (119/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -87,46 +87,46 @@ Last updated: 2025-08-06 21:18 GMT+7
 | 78 | ciphers/cryptomath_module | ✓ | 102µs | 136 B |
 | 79 | ciphers/decrypt_caesar_with_chi_squared | error |  |  |
 | 80 | ciphers/deterministic_miller_rabin | ✓ | 299µs | 840 B |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher | ✓ | 172µs | 992 B |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
+| 81 | ciphers/diffie | ✓ | 279µs | 880 B |
+| 82 | ciphers/diffie_hellman | ✓ | 50µs | 904 B |
+| 83 | ciphers/elgamal_key_generator | ✓ | 84µs | 1.8 KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 14.707ms | 1.8 KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 675µs | 3.4 KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 3.915ms | 1.1 KB |
+| 87 | ciphers/hill_cipher | ✓ | 2.777ms | 1.9 KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 765µs | 1.1 KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 174µs | 1.0 KB |
+| 90 | ciphers/morse_code | ✓ | 499µs | 2.3 KB |
+| 91 | ciphers/onepad_cipher | ✓ | 338µs | 1.5 KB |
+| 92 | ciphers/permutation_cipher | ✓ | 197µs | 1.4 KB |
+| 93 | ciphers/playfair_cipher | ✓ | 655µs | 1.2 KB |
+| 94 | ciphers/polybius | ✓ | 412µs | 1.8 KB |
+| 95 | ciphers/porta_cipher | ✓ | 955µs | 1.6 KB |
+| 96 | ciphers/rabin_miller | ✓ | 436µs | 1.1 KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 441µs | 1.5 KB |
+| 98 | ciphers/rot13 | ✓ | 5.022ms | 1.0 KB |
+| 99 | ciphers/rsa_cipher | ✓ | 168µs | 1.2 KB |
+| 100 | ciphers/rsa_factorization | ✓ | 126µs | 872 B |
+| 101 | ciphers/rsa_key_generator | ✓ | 94µs | 752 B |
+| 102 | ciphers/running_key_cipher | ✓ | 495µs | 1.2 KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 2.433ms | 7.2 KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 991µs | 2.6 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 1.159ms | 1.3 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 143µs | 992 B |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 50µs | 886 B |
+| 108 | ciphers/trifid_cipher | ✓ | 1.628ms | 1.2 KB |
+| 109 | ciphers/vernam_cipher | ✓ | 95µs | 1.1 KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 3.129ms | 1.2 KB |
+| 111 | ciphers/xor_cipher | ✓ | 1.807ms | 1.1 KB |
+| 112 | computer_vision/cnn_classification | ✓ | 177µs | 4.1 KB |
+| 113 | computer_vision/flip_augmentation | ✓ | 302µs | 3.1 KB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 152µs | 1.8 KB |
+| 115 | computer_vision/harris_corner | ✓ | 191µs | 2.4 KB |
+| 116 | computer_vision/horn_schunck | ✓ | 1.248ms | 2.4 KB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 145µs | 976 B |
+| 118 | computer_vision/mean_threshold | ✓ | 102µs | 1.3 KB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 12.064ms | 2.1 KB |
+| 120 | computer_vision/pooling_functions | ✓ | 138µs | 992 B |
 | 121 | conversions/astronomical_length_scale_conversion |   |  |  |
 | 122 | conversions/binary_to_decimal |   |  |  |
 | 123 | conversions/binary_to_hexadecimal |   |  |  |

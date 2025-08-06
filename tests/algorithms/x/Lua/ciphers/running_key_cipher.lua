@@ -27,21 +27,37 @@ end
 return os.time() * 1000000000 + math.floor(os.clock() * 1000000000)
 end
 
-local function _substring(s, i, j)
-i = i + 1
-if j == nil then j = #s end
-local si = utf8.offset(s, i)
-if not si then return '' end
-local sj = utf8.offset(s, j+1)
-if not sj then sj = -1 end
-return string.sub(s, si, sj-1)
+local function _indexOf(s, ch)
+if type(s) == 'string' then
+  for i = 1, #s do
+    if string.sub(s, i, i) == ch then
+      return i - 1
+    end
+  end
+elseif type(s) == 'table' then
+    for i, v in ipairs(s) do
+      if v == ch then
+        return i - 1
+      end
+    end
+  end
+  return -1
+end
+
+local function slice(lst, s, e)
+if s < 0 then s = #lst + s end
+if e == nil then e = #lst end
+local r = {}
+for i = s + 1, e do
+  r[#r+1] = lst[i]
+end
+return r
 end
 do
   collectgarbage()
   local _bench_start_mem = collectgarbage('count') * 1024
   local _bench_start = os.clock()
-  function join_strings(xs)
-    local res = ""
+  function indexOf(s, ch)
     local i = 0
     while (i < (function(v)
     if type(v) == 'table' and v.items ~= nil then
@@ -59,43 +75,74 @@ do
           else
             return 0
           end
-        end)(xs)) do
-          res = (res .. xs[i + 1])
+        end)(s)) do
+          if (string.sub(s, (i + 1), (i + 1)) == ch) then
+            return i
+          end
           i = (i + 1)
         end
-        return res
+        return (-1)
       end
-      function encrypt_message(key, message)
-        local result = ""
-        local col = 0
-        while (col < key) do
-          local pointer = col
-          while (pointer < (function(v)
-          if type(v) == 'table' and v.items ~= nil then
-            return #v.items
-          elseif type(v) == 'table' and (v[1] == nil) then
-              local c = 0
-              for _ in pairs(v) do c = c + 1 end
-              return c
-            elseif type(v) == 'string' then
-                local l = utf8.len(v)
-                if l then return l end
+      function ord(ch)
+        local upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        local lower = "abcdefghijklmnopqrstuvwxyz"
+        local idx = _indexOf(upper, ch)
+        if (idx >= 0) then
+          return (65 + idx)
+        end
+        idx = _indexOf(lower, ch)
+        if (idx >= 0) then
+          return (97 + idx)
+        end
+        return 0
+      end
+      function chr(n)
+        local upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        local lower = "abcdefghijklmnopqrstuvwxyz"
+        if ((n >= 65) and (n < 91)) then
+          return string.sub(upper, ((n - 65) + 1), (n - 64))
+        end
+        if ((n >= 97) and (n < 123)) then
+          return string.sub(lower, ((n - 97) + 1), (n - 96))
+        end
+        return "?"
+      end
+      function clean_text(s)
+        local out = ""
+        local i = 0
+        while (i < (function(v)
+        if type(v) == 'table' and v.items ~= nil then
+          return #v.items
+        elseif type(v) == 'table' and (v[1] == nil) then
+            local c = 0
+            for _ in pairs(v) do c = c + 1 end
+            return c
+          elseif type(v) == 'string' then
+              local l = utf8.len(v)
+              if l then return l end
+              return #v
+            elseif type(v) == 'table' then
                 return #v
-              elseif type(v) == 'table' then
-                  return #v
-                else
-                  return 0
-                end
-              end)(message)) do
-                result = (result .. _substring(message, pointer, (pointer + 1)))
-                pointer = (pointer + key)
+              else
+                return 0
               end
-              col = (col + 1)
+            end)(s)) do
+              local ch = string.sub(s, (i + 1), (i + 1))
+              if ((ch >= "A") and (ch <= "Z")) then
+                out = (out .. ch)
+              else
+                if ((ch >= "a") and (ch <= "z")) then
+                  out = (out .. chr((ord(ch) - 32)))
+                end
+              end
+              i = (i + 1)
             end
-            return result
+            return out
           end
-          function decrypt_message(key, message)
-            local num_cols = ((((function(v)
+          function running_key_encrypt(key, plaintext)
+            local pt = clean_text(plaintext)
+            local k = clean_text(key)
+            local key_len = (function(v)
             if type(v) == 'table' and v.items ~= nil then
               return #v.items
             elseif type(v) == 'table' and (v[1] == nil) then
@@ -111,9 +158,11 @@ do
                   else
                     return 0
                   end
-                end)(message) + key) - 1) // key)
-                local num_rows = key
-                local num_shaded_boxes = ((num_cols * num_rows) - (function(v)
+                end)(k)
+                local res = ""
+                local ord_a = ord("A")
+                local i = 0
+                while (i < (function(v)
                 if type(v) == 'table' and v.items ~= nil then
                   return #v.items
                 elseif type(v) == 'table' and (v[1] == nil) then
@@ -129,125 +178,67 @@ do
                       else
                         return 0
                       end
-                    end)(message))
-                    local plain_text = {}
-                    local i = 0
-                    while (i < num_cols) do
-                      plain_text = (function(lst, item)
-                      local res = {table.unpack(lst or {})}
-                      table.insert(res, item)
-                      return res
-                    end)(plain_text, "")
-                    i = (i + 1)
-                  end
-                  local col = 0
-                  local row = 0
-                  local index = 0
-                  while (index < (function(v)
-                  if type(v) == 'table' and v.items ~= nil then
-                    return #v.items
-                  elseif type(v) == 'table' and (v[1] == nil) then
-                      local c = 0
-                      for _ in pairs(v) do c = c + 1 end
-                      return c
-                    elseif type(v) == 'string' then
-                        local l = utf8.len(v)
-                        if l then return l end
-                        return #v
-                      elseif type(v) == 'table' then
-                          return #v
-                        else
-                          return 0
-                        end
-                      end)(message)) do
-                        plain_text[col + 1] = (plain_text[col + 1] .. _substring(message, index, (index + 1)))
-                        col = (col + 1)
-                        if ((col == num_cols) or ((col == (num_cols - 1)) and (row >= (num_rows - num_shaded_boxes)))) then
-                          col = 0
-                          row = (row + 1)
-                        end
-                        index = (index + 1)
-                      end
-                      return join_strings(plain_text)
+                    end)(pt)) do
+                      local p = (ord(string.sub(pt, (i + 1), (i + 1))) - ord_a)
+                      local kv = (ord(string.sub(k, ((i % key_len) + 1), ((i % key_len) + 1))) - ord_a)
+                      local c = ((p + kv) % 26)
+                      res = (res .. chr((c + ord_a)))
+                      i = (i + 1)
                     end
-                    function main()
-                      print("Enter message: ")
-                      local message = input()
-                      local max_key = ((function(v)
-                      if type(v) == 'table' and v.items ~= nil then
-                        return #v.items
-                      elseif type(v) == 'table' and (v[1] == nil) then
-                          local c = 0
-                          for _ in pairs(v) do c = c + 1 end
-                          return c
-                        elseif type(v) == 'string' then
-                            local l = utf8.len(v)
-                            if l then return l end
+                    return res
+                  end
+                  function running_key_decrypt(key, ciphertext)
+                    local ct = clean_text(ciphertext)
+                    local k = clean_text(key)
+                    local key_len = (function(v)
+                    if type(v) == 'table' and v.items ~= nil then
+                      return #v.items
+                    elseif type(v) == 'table' and (v[1] == nil) then
+                        local c = 0
+                        for _ in pairs(v) do c = c + 1 end
+                        return c
+                      elseif type(v) == 'string' then
+                          local l = utf8.len(v)
+                          if l then return l end
+                          return #v
+                        elseif type(v) == 'table' then
                             return #v
-                          elseif type(v) == 'table' then
-                              return #v
-                            else
-                              return 0
-                            end
-                          end)(message) - 1)
-                          print((((type((("Enter key [2-" .. tostring(max_key)) .. "]: ")) == "table")) and (
-                          (function(v)
-                          local function encode(x)
-                          if type(x) == "table" then
-                            if x.__name and x.__order then
-                              local parts = {x.__name, " {"}
-                              for i, k in ipairs(x.__order) do
-                                if i > 1 then parts[#parts+1] = ", " end
-                                parts[#parts+1] = k .. " = " .. encode(x[k])
-                              end
-                              parts[#parts+1] = "}"
-                              return table.concat(parts)
-                            elseif #x > 0 then
-                                local allTables = true
-                                for _, v in ipairs(x) do
-                                  if type(v) ~= "table" then allTables = false break end
-                                end
-                                local parts = {}
-                                if not allTables then parts[#parts+1] = "[" end
-                                for i, val in ipairs(x) do
-                                  parts[#parts+1] = encode(val)
-                                  if i < #x then parts[#parts+1] = " " end
-                                end
-                                if not allTables then parts[#parts+1] = "]" end
-                                return table.concat(parts)
-                              else
-                                local keys = {}
-                                for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
-                                table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
-                                local parts = {"{"}
-                                for i, k in ipairs(keys) do
-                                  parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
-                                  if i < #keys then parts[#parts+1] = ", " end
-                                end
-                                parts[#parts+1] = "}"
-                                return table.concat(parts)
-                              end
-                            elseif type(x) == "string" then
-                                return '"' .. x .. '"'
-                              else
-                                return tostring(x)
-                              end
-                            end
-                            return encode(v)
-                          end)((("Enter key [2-" .. tostring(max_key)) .. "]: "))) or ((("Enter key [2-" .. tostring(max_key)) .. "]: "))))
-                          local key = math.floor(tonumber(input()) or 0)
-                          print("Encryption/Decryption [e/d]: ")
-                          local mode = input()
-                          local text = ""
-                          local first = _substring(mode, 0, 1)
-                          if ((first == "e") or (first == "E")) then
-                            text = encrypt_message(key, message)
                           else
-                            if ((first == "d") or (first == "D")) then
-                              text = decrypt_message(key, message)
-                            end
+                            return 0
                           end
-                          print((((type((("Output:\n" .. text) .. "|")) == "table")) and (
+                        end)(k)
+                        local res = ""
+                        local ord_a = ord("A")
+                        local i = 0
+                        while (i < (function(v)
+                        if type(v) == 'table' and v.items ~= nil then
+                          return #v.items
+                        elseif type(v) == 'table' and (v[1] == nil) then
+                            local c = 0
+                            for _ in pairs(v) do c = c + 1 end
+                            return c
+                          elseif type(v) == 'string' then
+                              local l = utf8.len(v)
+                              if l then return l end
+                              return #v
+                            elseif type(v) == 'table' then
+                                return #v
+                              else
+                                return 0
+                              end
+                            end)(ct)) do
+                              local c = (ord(string.sub(ct, (i + 1), (i + 1))) - ord_a)
+                              local kv = (ord(string.sub(k, ((i % key_len) + 1), ((i % key_len) + 1))) - ord_a)
+                              local p = (((c - kv) + 26) % 26)
+                              res = (res .. chr((p + ord_a)))
+                              i = (i + 1)
+                            end
+                            return res
+                          end
+                          key = "How does the duck know that? said Victor"
+                          plaintext = "DEFEND THIS"
+                          ciphertext = running_key_encrypt(key, plaintext)
+                          print((((type(ciphertext) == "table")) and (
                           (function(v)
                           local function encode(x)
                           if type(x) == "table" then
@@ -291,13 +282,56 @@ do
                               end
                             end
                             return encode(v)
-                          end)((("Output:\n" .. text) .. "|"))) or ((("Output:\n" .. text) .. "|"))))
-                        end
-                        main()
-                        local _bench_end = os.clock()
-                        collectgarbage()
-                        local _bench_end_mem = collectgarbage('count') * 1024
-                        local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
-                        local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
-                        print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
-                      end;
+                          end)(ciphertext)) or (ciphertext)))
+                          print((((type(running_key_decrypt(key, ciphertext)) == "table")) and (
+                          (function(v)
+                          local function encode(x)
+                          if type(x) == "table" then
+                            if x.__name and x.__order then
+                              local parts = {x.__name, " {"}
+                              for i, k in ipairs(x.__order) do
+                                if i > 1 then parts[#parts+1] = ", " end
+                                parts[#parts+1] = k .. " = " .. encode(x[k])
+                              end
+                              parts[#parts+1] = "}"
+                              return table.concat(parts)
+                            elseif #x > 0 then
+                                local allTables = true
+                                for _, v in ipairs(x) do
+                                  if type(v) ~= "table" then allTables = false break end
+                                end
+                                local parts = {}
+                                if not allTables then parts[#parts+1] = "[" end
+                                for i, val in ipairs(x) do
+                                  parts[#parts+1] = encode(val)
+                                  if i < #x then parts[#parts+1] = " " end
+                                end
+                                if not allTables then parts[#parts+1] = "]" end
+                                return table.concat(parts)
+                              else
+                                local keys = {}
+                                for k in pairs(x) do if k ~= "__name" and k ~= "__order" then table.insert(keys, k) end end
+                                table.sort(keys, function(a,b) return tostring(a) > tostring(b) end)
+                                local parts = {"{"}
+                                for i, k in ipairs(keys) do
+                                  parts[#parts+1] = "'" .. tostring(k) .. "': " .. encode(x[k])
+                                  if i < #keys then parts[#parts+1] = ", " end
+                                end
+                                parts[#parts+1] = "}"
+                                return table.concat(parts)
+                              end
+                            elseif type(x) == "string" then
+                                return '"' .. x .. '"'
+                              else
+                                return tostring(x)
+                              end
+                            end
+                            return encode(v)
+                          end)(running_key_decrypt(key, ciphertext))) or (running_key_decrypt(key, ciphertext))))
+                          local _bench_end = os.clock()
+                          collectgarbage()
+                          local _bench_end_mem = collectgarbage('count') * 1024
+                          local _bench_duration_us = math.floor((_bench_end - _bench_start) * 1000000)
+                          local _bench_mem = math.floor(math.max(0, _bench_end_mem - _bench_start_mem))
+                          print('{\n  "duration_us": ' .. _bench_duration_us .. ',\n  "memory_bytes": ' .. _bench_mem .. ',\n  "name": "main"\n}')
+                        end;
