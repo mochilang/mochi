@@ -49,6 +49,7 @@ var useLen bool
 var usePanic bool
 var funcDepth int
 var returnOutsideFunc bool
+var paramStack []map[string]bool
 
 var reserved = map[string]bool{
 	"break": true, "case": true, "catch": true, "class": true, "const": true,
@@ -2456,6 +2457,14 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		}
 		typeStr := tsType(t)
 		if transpileEnv != nil {
+			// If the name matches a function parameter, we cannot re-declare it.
+			if len(paramStack) > 0 && paramStack[len(paramStack)-1][s.Var.Name] {
+				transpileEnv.SetVarDeep(s.Var.Name, t, true)
+				if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
+					typeStr = q.ElemType + "[]"
+				}
+				return &AssignStmt{Name: s.Var.Name, Expr: e}, nil
+			}
 			transpileEnv.SetVar(s.Var.Name, t, true)
 		}
 		if q, ok := e.(*QueryExprJS); ok && q.ElemType != "" {
@@ -2610,6 +2619,7 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		child := types.NewEnv(transpileEnv)
 		var params []string
 		var typesArr []string
+		paramMap := map[string]bool{}
 		for _, p := range s.Fun.Params {
 			params = append(params, p.Name)
 			var pt types.Type
@@ -2621,13 +2631,16 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 				typesArr = append(typesArr, "")
 			}
 			child.SetVar(p.Name, pt, true)
+			paramMap[p.Name] = true
 		}
 		prev := transpileEnv
 		transpileEnv = child
+		paramStack = append(paramStack, paramMap)
 		funcDepth++
 		body, err := convertStmtList(s.Fun.Body)
 		funcDepth--
 		transpileEnv = prev
+		paramStack = paramStack[:len(paramStack)-1]
 		if err != nil {
 			return nil, err
 		}
