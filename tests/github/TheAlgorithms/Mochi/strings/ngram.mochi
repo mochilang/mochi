@@ -1,0 +1,32 @@
+/*
+N-gram Generation
+-----------------
+An n-gram is a contiguous sequence of n characters taken from a given string. This
+routine produces all n-grams for a sentence by sliding a window of size `ngram_size`
+one character at a time and collecting each substring. If `ngram_size` exceeds the
+sentence length, no n-grams are produced. The algorithm runs in O(m) time, where m is
+the length of the sentence, and uses O(m) space for the resulting list. Implemented
+in pure Mochi so it can execute on the runtime/vm without any foreign function
+interfaces or use of the "any" type.
+*/
+
+fun create_ngram(sentence: string, ngram_size: int): list<string> {
+  var res: list<string> = []
+  let bound = len(sentence) - ngram_size + 1
+  if bound <= 0 { return res }
+  var i = 0
+  while i < bound {
+    res = append(res, substring(sentence, i, i + ngram_size))
+    i = i + 1
+  }
+  return res
+}
+
+let example1 = "I am a sentence"
+print(create_ngram(example1, 2))
+
+let example2 = "I am an NLPer"
+print(create_ngram(example2, 2))
+
+let example3 = "This is short"
+print(create_ngram(example3, 50))
