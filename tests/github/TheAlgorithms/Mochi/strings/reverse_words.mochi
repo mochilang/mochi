@@ -1,0 +1,52 @@
+/*
+Reverse Words in a String
+-------------------------
+Given an input string, produce a new string with the words in reverse
+order. Words are contiguous sequences of non-space characters. Multiple
+spaces are treated as a single separator. The algorithm splits the input
+into words, reverses the list, and joins them with single spaces.
+This mirrors the Python implementation using `" ".join(input_str.split()[::-1])`.
+*/
+
+fun split_words(s: string): list<string> {
+  var words: list<string> = []
+  var current: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == " " {
+      if len(current) > 0 {
+        words = append(words, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if len(current) > 0 {
+    words = append(words, current)
+  }
+  return words
+}
+
+fun reverse_words(input_str: string): string {
+  let words = split_words(input_str)
+  var res: string = ""
+  var i = len(words) - 1
+  while i >= 0 {
+    res = res + words[i]
+    if i > 0 {
+      res = res + " "
+    }
+    i = i - 1
+  }
+  return res
+}
+
+fun main() {
+  print(reverse_words("I love Python"))
+  print(reverse_words("I     Love          Python"))
+}
+
+main()
