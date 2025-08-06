@@ -1340,8 +1340,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	case "%":
 		if b.FloatMod {
 			fmt.Fprintf(w, "(%s.truncatingRemainder(dividingBy: %s))", left, right)
-			return
+		} else {
+			fmt.Fprintf(w, "((%s %% %s + %s) %% %s)", left, right, right, right)
 		}
+		return
 	}
 
 	var op string
