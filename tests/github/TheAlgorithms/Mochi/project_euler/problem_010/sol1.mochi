@@ -1,0 +1,45 @@
+/*
+Project Euler Problem 10
+-----------------------
+Summation of primes
+
+Given a positive integer n, compute the sum of all prime numbers
+strictly less than n. A prime is an integer greater than 1 with no
+positive divisors other than 1 and itself. This implementation uses
+the fact that all primes greater than 3 are of the form 6k ± 1 and
+checks divisibility up to the square root of the candidate.
+
+The solution iterates over odd numbers starting from 3 and adds them
+to the sum when they are prime. For n <= 2 the result is 0, otherwise
+the sum is initialised with 2 (the smallest prime).
+*/
+
+fun is_prime(number: int): bool {
+  if number < 2 { return false }
+  if number < 4 { return true }
+  if number % 2 == 0 || number % 3 == 0 { return false }
+  var i = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun solution(n: int): int {
+  if n <= 2 { return 0 }
+  var total = 2
+  var num = 3
+  while num < n {
+    if is_prime(num) {
+      total = total + num
+    }
+    num = num + 2
+  }
+  return total
+}
+
+let result = solution(1000)
+print("solution() = " + str(result))
