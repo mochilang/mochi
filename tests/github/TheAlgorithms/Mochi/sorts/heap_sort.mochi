@@ -1,0 +1,60 @@
+/*
+Heap Sort
+
+Sorts a list of integers in ascending order using the heap sort algorithm.
+
+Algorithm:
+1. Build a max heap by calling `heapify` on each non-leaf node from
+   `n/2 - 1` down to `0`.
+2. Repeatedly swap the first element (maximum) with the last element of the
+   heap, shrink the heap size, and restore the heap property with another
+   `heapify` call.
+
+`heapify` compares a node with its left and right children. If either child is
+larger than the node, they are swapped and `heapify` recurses on the affected
+subtree. This in-place algorithm runs in `O(n log n)` time with `O(1)` extra
+space.
+*/
+
+fun heapify(arr: list<int>, index: int, heap_size: int) {
+  var largest = index
+  let left_index = 2 * index + 1
+  let right_index = 2 * index + 2
+  if left_index < heap_size && arr[left_index] > arr[largest] {
+    largest = left_index
+  }
+  if right_index < heap_size && arr[right_index] > arr[largest] {
+    largest = right_index
+  }
+  if largest != index {
+    let temp = arr[largest]
+    arr[largest] = arr[index]
+    arr[index] = temp
+    heapify(arr, largest, heap_size)
+  }
+}
+
+fun heap_sort(arr: list<int>): list<int> {
+  let n = len(arr)
+  var i = n / 2 - 1
+  while i >= 0 {
+    heapify(arr, i, n)
+    i = i - 1
+  }
+  i = n - 1
+  while i > 0 {
+    let temp = arr[0]
+    arr[0] = arr[i]
+    arr[i] = temp
+    heapify(arr, 0, i)
+    i = i - 1
+  }
+  return arr
+}
+
+var data: list<int> = [3, 7, 9, 28, 123, -5, 8, -30, -200, 0, 4]
+var result = heap_sort(data)
+print(result)
+if str(result) != str([-200, -30, -5, 0, 3, 4, 7, 8, 9, 28, 123]) {
+  panic("Assertion error")
+}
