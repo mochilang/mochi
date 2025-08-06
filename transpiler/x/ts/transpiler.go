@@ -498,7 +498,7 @@ func (s *ExprStmt) emit(w io.Writer) {
 }
 
 func (c *CallExpr) emit(w io.Writer) {
-	io.WriteString(w, c.Func)
+	io.WriteString(w, safeName(c.Func))
 	if b, ok := w.(interface{ WriteByte(byte) error }); ok {
 		b.WriteByte('(')
 	} else {
@@ -860,7 +860,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 	}
 	m.Target.emit(w)
 	io.WriteString(w, ".")
-	io.WriteString(w, m.Method)
+	io.WriteString(w, safeName(m.Method))
 	io.WriteString(w, "(")
 	for i, a := range m.Args {
 		if i > 0 {
@@ -2628,7 +2628,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 		if s.Fun.Return != nil {
 			retType = tsType(types.ResolveTypeRef(s.Fun.Return, transpileEnv))
 		}
-		return &FuncDecl{Name: s.Fun.Name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}, nil
+		name := safeName(s.Fun.Name)
+		return &FuncDecl{Name: name, Params: params, ParamTypes: typesArr, ReturnType: retType, Body: body, Async: useFetch}, nil
 	case s.If != nil:
 		return convertIfStmt(s.If, transpileEnv)
 	case s.While != nil:
