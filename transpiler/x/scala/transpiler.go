@@ -1284,6 +1284,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		// Mochi ints are arbitrary precision. Treat casts to int as BigInt
 		// conversions so large values don't overflow Scala Int.
 		needsBigInt = true
+		if n, ok := c.Value.(*Name); ok && n.Name == "null" {
+			fmt.Fprint(w, "null.asInstanceOf[BigInt]")
+			return
+		}
 		typ := inferType(c.Value)
 		fmt.Fprint(w, "BigInt(")
 		switch c.Value.(type) {
@@ -1303,6 +1307,10 @@ func (c *CastExpr) emit(w io.Writer) {
 		return
 	case "BigInt", "bigint":
 		needsBigInt = true
+		if n, ok := c.Value.(*Name); ok && n.Name == "null" {
+			fmt.Fprint(w, "null.asInstanceOf[BigInt]")
+			return
+		}
 		if il, ok := c.Value.(*IntLit); ok {
 			if il.Value > math.MaxInt32 || il.Value < math.MinInt32 || il.Long {
 				fmt.Fprintf(w, "BigInt(\"%d\")", il.Value)
@@ -3565,6 +3573,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "keys":
 		if len(args) == 1 {
+			if env != nil {
+				if _, ok := env.GetFunc("keys"); ok {
+					break
+				}
+			}
 			// Return sorted keys to match deterministic iteration
 			ks := &FieldExpr{Receiver: args[0], Name: "keys"}
 			seq := &FieldExpr{Receiver: ks, Name: "toSeq"}
@@ -3572,6 +3585,11 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "values":
 		if len(args) == 1 {
+			if env != nil {
+				if _, ok := env.GetFunc("values"); ok {
+					break
+				}
+			}
 			vals := &FieldExpr{Receiver: args[0], Name: "values"}
 			return &FieldExpr{Receiver: vals, Name: "toList"}, nil
 		}
