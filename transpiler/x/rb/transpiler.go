@@ -1265,8 +1265,14 @@ var builtinConsts = map[string]bool{
 }
 
 func safeName(n string) string {
-	if reserved[n] || builtinConsts[n] {
+	if reserved[n] {
 		return n + "_"
+	}
+	if n == "Array" || n == "Hash" {
+		return n
+	}
+	if builtinConsts[n] {
+		return n
 	}
 	if n != "" && unicode.IsUpper(rune(n[0])) {
 		if n == strings.ToUpper(n) {
@@ -1345,6 +1351,11 @@ func identName(n string) string {
 	}
 	if inScope(n) && name != "" && unicode.IsUpper(rune(n[0])) {
 		name = "_" + name
+	}
+	if currentEnv != nil {
+		if _, ok := currentEnv.GetStruct(name); ok {
+			return name
+		}
 	}
 	switch name {
 	case "nil", "true", "false":
@@ -4010,9 +4021,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("exists takes one arg")
 			}
-			emptyCall := &MethodCallExpr{Target: args[0], Method: "empty?"}
-			boolVal := &UnaryExpr{Op: "!", Expr: emptyCall}
-			return &MethodCallExpr{Target: &GroupExpr{Expr: boolVal}, Method: "to_s"}, nil
+			return &MethodCallExpr{Target: args[0], Method: "is_a?", Args: []Expr{&Ident{Name: "Array"}}}, nil
 		case "append":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("append takes two args")
@@ -4252,7 +4261,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			fields[i] = StructField{Name: fieldName(f.Name), Value: v}
 		}
-		return &StructNewExpr{Name: toTypeName(p.Struct.Name), Fields: fields}, nil
+		return &StructNewExpr{Name: identName(toTypeName(p.Struct.Name)), Fields: fields}, nil
 	case p.Match != nil:
 		return convertMatchExpr(p.Match)
 	case p.If != nil:
