@@ -1,0 +1,84 @@
+/*
+Reverse selected words in a sentence based on length.
+
+Given a sentence and a non-negative length threshold, the algorithm
+processes each whitespace-separated word:
+- If the word's number of characters is greater than the threshold,
+  the word is reversed.
+- Otherwise the word is left unchanged.
+
+The result is the space-joined list of processed words.  For example,
+with sentence "Hey wollef sroirraw" and threshold 3, only the words
+longer than three characters are reversed producing "Hey fellow warriors".
+The function runs in O(n) time where n is the total number of
+characters in the sentence.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun join_with_space(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    s = s + xs[i]
+    if i + 1 < len(xs) { s = s + " " }
+    i = i + 1
+  }
+  return s
+}
+
+fun reverse_str(s: string): string {
+  var res = ""
+  var i = len(s) - 1
+  while i >= 0 {
+    res = res + s[i]
+    i = i - 1
+  }
+  return res
+}
+
+fun reverse_letters(sentence: string, length: int): string {
+  let words = split(sentence, " ")
+  var result: list<string> = []
+  var i = 0
+  while i < len(words) {
+    let word = words[i]
+    if len(word) > length {
+      result = append(result, reverse_str(word))
+    } else {
+      result = append(result, word)
+    }
+    i = i + 1
+  }
+  return join_with_space(result)
+}
+
+fun test_reverse_letters() {
+  if reverse_letters("Hey wollef sroirraw", 3) != "Hey fellow warriors" { panic("test1 failed") }
+  if reverse_letters("nohtyP is nohtyP", 2) != "Python is Python" { panic("test2 failed") }
+  if reverse_letters("1 12 123 1234 54321 654321", 0) != "1 21 321 4321 12345 123456" { panic("test3 failed") }
+  if reverse_letters("racecar", 0) != "racecar" { panic("test4 failed") }
+}
+
+fun main() {
+  test_reverse_letters()
+  print(reverse_letters("Hey wollef sroirraw", 3))
+}
+
+main()
