@@ -1,13 +1,13 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 193/1077
-Last updated: 2025-08-06 20:56 +0700
+Completed programs: 213/1077
+Last updated: 2025-08-06 21:22 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1ms | 11.9 KB |
+| 1 | backtracking/all_combinations | ✓ | 1ms | 14.0 KB |
 | 2 | backtracking/all_permutations | ✓ | 1ms | 59.0 KB |
 | 3 | backtracking/all_subsequences | ✓ | 1ms | 16.8 KB |
 | 4 | backtracking/coloring | ✓ | 1ms | 11.0 KB |
@@ -201,26 +201,26 @@ Checklist:
 | 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 1ms | 11.3 KB |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 1ms | 16.9 KB |
 | 194 | data_structures/binary_tree/red_black_tree | ✓ | 1ms | 15.4 KB |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 1ms | 12.0 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 1ms | 84.2 KB |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 1ms | 30.0 KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 1ms | 10.9 KB |
+| 199 | data_structures/binary_tree/treap | ✓ | 1ms | 30.1 KB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1ms | 28.4 KB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 1ms | 11.6 KB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 1ms | 53.6 KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 1ms | 229.7 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 1ms | 10.8 KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 1ms | 17.7 KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 1ms | 13.4 KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 1ms | 13.0 KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 1ms | 9.3 KB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 1ms | 13.2 KB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 1ms | 32.5 KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 1ms | 13.9 KB |
+| 212 | data_structures/heap/heap | ✓ | 1ms | 20.2 KB |
+| 213 | data_structures/heap/heap_generic | ✓ | 1ms | 20.0 KB |
+| 214 | data_structures/heap/max_heap | ✓ | 1ms | 10.2 KB |
 | 215 | data_structures/heap/min_heap |   |  |  |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
 | 217 | data_structures/kd_tree/build_kdtree |   |  |  |
