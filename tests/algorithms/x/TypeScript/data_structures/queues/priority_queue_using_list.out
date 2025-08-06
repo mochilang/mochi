@@ -1,0 +1,30 @@
+Priority 0: [10, 100, 128]
+Priority 1: [70, 7, 64]
+Priority 2: [1, 5, 4]
+10
+100
+128
+70
+7
+Priority 0: []
+Priority 1: [64]
+Priority 2: [1, 5, 4]
+64
+1
+5
+4
+All queues are empty
+0
+10,70,100,1,5,7,4,64,128
+1
+4
+5
+7
+10
+70,100,64,128
+64
+70
+100
+128
+The queue is empty
+0
