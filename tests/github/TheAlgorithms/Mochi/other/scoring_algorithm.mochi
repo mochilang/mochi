@@ -1,0 +1,116 @@
+/*
+Range-based percentual proximity scoring algorithm.
+
+The algorithm normalizes each column of a dataset to values in the
+range [0,1] and sums the column scores according to a weight vector.
+Weights indicate whether lower (0) or higher (1) values are preferable.
+The row with the highest final score best matches the desired criteria.
+
+Functions implemented:
+1. get_data – convert rows into column lists.
+2. calculate_each_score – normalize column values based on weights.
+3. generate_final_scores – sum scores across columns.
+4. procentual_proximity – append final scores to the original rows.
+
+The example ranks vehicles by price, mileage, and registration year.
+*/
+
+fun get_data(source_data: list<list<float>>): list<list<float>> {
+  var data_lists: list<list<float>> = []
+  var i = 0
+  while i < len(source_data) {
+    let row = source_data[i]
+    var j = 0
+    while j < len(row) {
+      if len(data_lists) < j + 1 {
+        var empty: list<float> = []
+        data_lists = append(data_lists, empty)
+      }
+      data_lists[j] = append(data_lists[j], row[j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return data_lists
+}
+fun calculate_each_score(data_lists: list<list<float>>, weights: list<int>): list<list<float>> {
+  var score_lists: list<list<float>> = []
+  var i = 0
+  while i < len(data_lists) {
+    let dlist = data_lists[i]
+    let weight = weights[i]
+    var mind = dlist[0]
+    var maxd = dlist[0]
+    var j = 1
+    while j < len(dlist) {
+      let val = dlist[j]
+      if val < mind { mind = val }
+      if val > maxd { maxd = val }
+      j = j + 1
+    }
+    var score: list<float> = []
+    j = 0
+    if weight == 0 {
+      while j < len(dlist) {
+        let item = dlist[j]
+        if maxd - mind == 0.0 {
+          score = append(score, 1.0)
+        } else {
+          score = append(score, 1.0 - ((item - mind) / (maxd - mind)))
+        }
+        j = j + 1
+      }
+    } else {
+      while j < len(dlist) {
+        let item = dlist[j]
+        if maxd - mind == 0.0 {
+          score = append(score, 0.0)
+        } else {
+          score = append(score, (item - mind) / (maxd - mind))
+        }
+        j = j + 1
+      }
+    }
+    score_lists = append(score_lists, score)
+    i = i + 1
+  }
+  return score_lists
+}
+fun generate_final_scores(score_lists: list<list<float>>): list<float> {
+  let count = len(score_lists[0])
+  var final_scores: list<float> = []
+  var i = 0
+  while i < count {
+    final_scores = append(final_scores, 0.0)
+    i = i + 1
+  }
+  i = 0
+  while i < len(score_lists) {
+    let slist = score_lists[i]
+    var j = 0
+    while j < len(slist) {
+      final_scores[j] = final_scores[j] + slist[j]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return final_scores
+}
+fun procentual_proximity(source_data: list<list<float>>, weights: list<int>): list<list<float>> {
+  let data_lists = get_data(source_data)
+  let score_lists = calculate_each_score(data_lists, weights)
+  let final_scores = generate_final_scores(score_lists)
+  var i = 0
+  while i < len(final_scores) {
+    source_data[i] = append(source_data[i], final_scores[i])
+    i = i + 1
+  }
+  return source_data
+}
+var vehicles: list<list<float>> = []
+vehicles = append(vehicles, [20.0, 60.0, 2012.0])
+vehicles = append(vehicles, [23.0, 90.0, 2015.0])
+vehicles = append(vehicles, [22.0, 50.0, 2011.0])
+var weights: list<int> = [0,0,1]
+let result = procentual_proximity(vehicles, weights)
+print(str(result))
