@@ -98,6 +98,17 @@ func popAliasScope() {
 	if len(aliasStack) == 0 {
 		return
 	}
+	// decrement nameCounts for names declared in this scope
+	for _, name := range namesStack[len(namesStack)-1] {
+		if cnt, ok := nameCounts[name]; ok {
+			if cnt <= 1 {
+				delete(nameCounts, name)
+			} else {
+				nameCounts[name] = cnt - 1
+			}
+		}
+		delete(varTypes, name)
+	}
 	aliasStack = aliasStack[:len(aliasStack)-1]
 	namesStack = namesStack[:len(namesStack)-1]
 }
@@ -544,6 +555,32 @@ func (ae *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, ") catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
 }
 
+// ConcatExpr concatenates two lists.
+type ConcatExpr struct {
+	A        Expr
+	B        Expr
+	ElemType string
+}
+
+func (ce *ConcatExpr) emit(w io.Writer) {
+	elem := ce.ElemType
+	if elem == "" {
+		t := zigTypeFromExpr(ce.A)
+		if strings.HasPrefix(t, "[]") {
+			elem = t[2:]
+		} else {
+			elem = "i64"
+		}
+	}
+	fmt.Fprintf(w, "blk: { var _tmp = std.ArrayList(%s).init(std.heap.page_allocator); ", elem)
+	fmt.Fprintf(w, "_tmp.appendSlice(@as([]const %s, ", elem)
+	ce.A.emit(w)
+	io.WriteString(w, ")) catch |err| handleError(err); ")
+	fmt.Fprintf(w, "_tmp.appendSlice(@as([]const %s, ", elem)
+	ce.B.emit(w)
+	io.WriteString(w, ")) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); }")
+}
+
 type FieldExpr struct {
 	Target Expr
 	Name   string
@@ -798,7 +835,10 @@ func zigTypeFromExpr(e Expr) string {
 	case *BoolLit:
 		return "bool"
 	case *NullLit:
-		return "Value"
+		if useValue {
+			return "Value"
+		}
+		return "[]const u8"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -958,6 +998,16 @@ func zigTypeFromExpr(e Expr) string {
 			return lt
 		}
 		return "[]" + zigTypeFromExpr(ae.Value)
+	case *ConcatExpr:
+		ce := e.(*ConcatExpr)
+		if ce.ElemType != "" {
+			return "[]" + ce.ElemType
+		}
+		t := zigTypeFromExpr(ce.A)
+		if strings.HasPrefix(t, "[]") {
+			return t
+		}
+		return "[]i64"
 	case *IndexExpr:
 		ix := e.(*IndexExpr)
 		t := zigTypeFromExpr(ix.Target)
@@ -1546,7 +1596,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	mut := varMut[v.Name]
+	mut := v.Mutable && varMut[v.Name]
 	targetType := v.Type
 	if targetType == "" {
 		if t, ok := varTypes[v.Name]; ok && t != "" {
@@ -2063,9 +2113,11 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "..")
 	if sli.End != nil {
-		io.WriteString(w, "@as(usize, @intCast(")
+		io.WriteString(w, "@min(@as(usize, @intCast(")
 		sli.End.emit(w)
-		io.WriteString(w, "))")
+		io.WriteString(w, ")), @as(usize, @intCast(")
+		sli.Target.emit(w)
+		io.WriteString(w, ".len)))")
 	}
 	io.WriteString(w, "]")
 }
@@ -2134,7 +2186,7 @@ func (n *NullLit) emit(w io.Writer) {
 	if useValue {
 		io.WriteString(w, "Value{.Null = {}}")
 	} else {
-		io.WriteString(w, "0")
+		io.WriteString(w, "\"\"")
 	}
 }
 
@@ -2389,7 +2441,11 @@ func (c *CallExpr) emit(w io.Writer) {
 				c.Args[1].emit(w)
 				io.WriteString(w, ")")
 			} else {
-				io.WriteString(w, "std.mem.indexOf(u8, ")
+				elem := "u8"
+				if strings.HasPrefix(targetType, "[]") {
+					elem = targetType[2:]
+				}
+				fmt.Fprintf(w, "std.mem.indexOfScalar(%s, ", elem)
 				c.Args[0].emit(w)
 				io.WriteString(w, ", ")
 				c.Args[1].emit(w)
@@ -3090,6 +3146,9 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			args[i] = ex
 		}
+		if _, ok := funcReturns[p.Call.Func]; ok {
+			return &CallExpr{Func: p.Call.Func, Args: args}, nil
+		}
 		switch p.Call.Func {
 		case "now":
 			if len(args) != 0 {
@@ -3157,6 +3216,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			usePrint = true
 			return &CallExpr{Func: "_print", Args: args}, nil
+		case "concat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects two arguments")
+			}
+			elemT := ""
+			if t := zigTypeFromExpr(args[0]); strings.HasPrefix(t, "[]") {
+				elemT = t[2:]
+			}
+			return &ConcatExpr{A: args[0], B: args[1], ElemType: elemT}, nil
+		case "panic":
+			if len(args) != 1 {
+				return nil, fmt.Errorf("panic expects one argument")
+			}
+			funcReturns["@panic"] = ""
+			return &CallExpr{Func: "@panic", Args: args}, nil
 		case "sum":
 			if len(args) == 1 {
 				if list, ok := args[0].(*ListLit); ok {
