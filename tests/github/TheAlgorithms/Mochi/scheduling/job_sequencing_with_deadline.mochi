@@ -1,0 +1,103 @@
+/*
+Job Sequencing with Deadlines
+
+Given a set of jobs where each job takes one unit of time, has a deadline,
+and yields a profit if finished by its deadline, the task is to schedule jobs
+to maximize total profit. Only one job can be executed at a time slot.
+
+The greedy solution sorts jobs in descending order of profit and iterates
+through them, placing each job in the latest available slot before its
+deadline. This ensures that high-profit jobs are selected and scheduled as
+late as possible, leaving earlier slots for other jobs. The algorithm runs in
+O(n^2) time for n jobs due to the nested loops used for sorting and slot
+assignment.
+
+This program implements the algorithm and demonstrates it with two sample job
+lists from TheAlgorithms/Python repository.
+*/
+
+type Job {
+  id: int,
+  deadline: int,
+  profit: int,
+}
+
+fun sort_jobs_by_profit(jobs: list<Job>): list<Job> {
+  var js = jobs
+  var i = 0
+  while i < len(js) {
+    var j = 0
+    while j < len(js) - i - 1 {
+      let a = js[j]
+      let b = js[j + 1]
+      if a.profit < b.profit {
+        js[j] = b
+        js[j + 1] = a
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return js
+}
+
+fun max_deadline(jobs: list<Job>): int {
+  var max_d = 0
+  var i = 0
+  while i < len(jobs) {
+    let job = jobs[i]
+    let d = job.deadline
+    if d > max_d {
+      max_d = d
+    }
+    i = i + 1
+  }
+  return max_d
+}
+
+fun job_sequencing_with_deadlines(jobs: list<Job>): list<int> {
+  var js = sort_jobs_by_profit(jobs)
+  let max_d = max_deadline(js)
+  var time_slots: list<int> = []
+  var t = 0
+  while t < max_d {
+    time_slots = append(time_slots, 0 - 1)
+    t = t + 1
+  }
+  var count = 0
+  var max_profit = 0
+  var i = 0
+  while i < len(js) {
+    let job = js[i]
+    var j = job.deadline - 1
+    while j >= 0 {
+      if time_slots[j] == 0 - 1 {
+        time_slots[j] = job.id
+        count = count + 1
+        max_profit = max_profit + job.profit
+        break
+      }
+      j = j - 1
+    }
+    i = i + 1
+  }
+  var result: list<int> = []
+  result = append(result, count)
+  result = append(result, max_profit)
+  return result
+}
+
+var jobs1: list<Job> = []
+jobs1 = append(jobs1, Job { id: 1, deadline: 4, profit: 20 })
+jobs1 = append(jobs1, Job { id: 2, deadline: 1, profit: 10 })
+jobs1 = append(jobs1, Job { id: 3, deadline: 1, profit: 40 })
+jobs1 = append(jobs1, Job { id: 4, deadline: 1, profit: 30 })
+print(str(job_sequencing_with_deadlines(jobs1)))
+
+var jobs2: list<Job> = []
+jobs2 = append(jobs2, Job { id: 1, deadline: 2, profit: 100 })
+jobs2 = append(jobs2, Job { id: 2, deadline: 1, profit: 19 })
+jobs2 = append(jobs2, Job { id: 3, deadline: 2, profit: 27 })
+jobs2 = append(jobs2, Job { id: 4, deadline: 1, profit: 25 })
+jobs2 = append(jobs2, Job { id: 5, deadline: 1, profit: 15 })
+print(str(job_sequencing_with_deadlines(jobs2)))
