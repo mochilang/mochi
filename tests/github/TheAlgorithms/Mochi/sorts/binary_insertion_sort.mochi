@@ -1,0 +1,47 @@
+/*
+Binary Insertion Sort
+---------------------
+Binary insertion sort enhances the classic insertion sort by using binary
+search to find the correct position for each element. For each index i, the
+algorithm performs a binary search on the sorted prefix arr[0:i] to determine
+where arr[i] should be inserted. Elements are shifted to make room for the
+value. Although comparisons drop to O(n log n), shifting keeps the overall
+worst-case time complexity at O(n^2). Space complexity is O(1) because the
+sorting happens in-place.
+*/
+
+fun binary_insertion_sort(arr: list<int>): list<int> {
+  var i = 1
+  while i < len(arr) {
+    let value = arr[i]
+    var low = 0
+    var high = i - 1
+    while low <= high {
+      let mid = (low + high) / 2
+      if value < arr[mid] {
+        high = mid - 1
+      } else {
+        low = mid + 1
+      }
+    }
+    var j = i
+    while j > low {
+      arr[j] = arr[j - 1]
+      j = j - 1
+    }
+    arr[low] = value
+    i = i + 1
+  }
+  return arr
+}
+
+fun main() {
+  let example1 = [5, 2, 4, 6, 1, 3]
+  print(str(binary_insertion_sort(example1)))
+  let example2: list<int> = []
+  print(str(binary_insertion_sort(example2)))
+  let example3 = [4, 2, 4, 1, 3]
+  print(str(binary_insertion_sort(example3)))
+}
+
+main()
