@@ -1,0 +1,38 @@
+/*
+Project Euler Problem 20: Sum of digits of factorial.
+Given a positive integer n, compute n! and then sum the digits of the result.
+Algorithm:
+1. Compute factorial iteratively by multiplying numbers from 2 through n.
+2. Repeatedly extract the last decimal digit using modulo 10 and accumulate the sum,
+   discarding the digit each step by integer division by 10.
+This mirrors the classic solution for Euler #20.  The factorial grows quickly so
+built-in big integers handle large values like 100!.
+*/
+
+fun factorial(num: int): int {
+  var res: int = 1
+  var i: int = 2
+  while i <= num {
+    res = res * i
+    i = i + 1
+  }
+  return res
+}
+
+fun split_and_add(number: int): int {
+  var sum: int = 0
+  var n: int = number
+  while n > 0 {
+    let last: int = n % 10
+    sum = sum + last
+    n = n / 10
+  }
+  return sum
+}
+
+fun solution(num: int): int {
+  let nfact = factorial(num)
+  return split_and_add(nfact)
+}
+
+print(str(solution(100)))
