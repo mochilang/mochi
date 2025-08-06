@@ -1,0 +1,83 @@
+/*
+Validate a Spanish National Identity Number (DNI).
+A DNI consists of eight digits followed by a letter. The letter is a checksum
+computed from the number modulo 23 and looked up in a fixed table
+"TRWAGMYFPDXBNJZSQVHLCKE". Input may include dashes and is case-insensitive.
+The algorithm removes any dash, converts the string to upper case, verifies
+that the cleaned ID has exactly nine characters and that the first eight are
+numeric while the final one is a letter. The checksum letter is calculated and
+compared to the provided letter. Runs in O(n) time for n characters.
+*/
+
+let DIGITS = "0123456789"
+let UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let LOWER = "abcdefghijklmnopqrstuvwxyz"
+let LOOKUP_LETTERS = "TRWAGMYFPDXBNJZSQVHLCKE"
+let ERROR_MSG = "Input must be a string of 8 numbers plus letter"
+
+fun to_upper(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    var j = 0
+    var converted = ch
+    while j < len(LOWER) {
+      if LOWER[j] == ch {
+        converted = UPPER[j]
+        break
+      }
+      j = j + 1
+    }
+    res = res + converted
+    i = i + 1
+  }
+  return res
+}
+
+fun is_digit(ch: string): bool {
+  var i = 0
+  while i < len(DIGITS) {
+    if DIGITS[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun clean_id(spanish_id: string): string {
+  let upper_id = to_upper(spanish_id)
+  var cleaned = ""
+  var i = 0
+  while i < len(upper_id) {
+    let ch = upper_id[i]
+    if ch != "-" {
+      cleaned = cleaned + ch
+    }
+    i = i + 1
+  }
+  return cleaned
+}
+
+fun is_spain_national_id(spanish_id: string): bool {
+  let sid = clean_id(spanish_id)
+  if len(sid) != 9 { panic(ERROR_MSG) }
+  var i = 0
+  while i < 8 {
+    if !is_digit(sid[i]) { panic(ERROR_MSG) }
+    i = i + 1
+  }
+  let number = int(substring(sid, 0, 8))
+  let letter = sid[8]
+  if is_digit(letter) { panic(ERROR_MSG) }
+  let expected = LOOKUP_LETTERS[number % 23]
+  return letter == expected
+}
+
+fun main() {
+  print(is_spain_national_id("12345678Z"))
+  print(is_spain_national_id("12345678z"))
+  print(is_spain_national_id("12345678x"))
+  print(is_spain_national_id("12345678I"))
+  print(is_spain_national_id("12345678-Z"))
+}
+main()
