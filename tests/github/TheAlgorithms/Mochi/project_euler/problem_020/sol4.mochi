@@ -1,0 +1,36 @@
+/*
+Project Euler Problem 20 - Factorial Digit Sum
+----------------------------------------------
+Given an integer n, compute n! (n factorial) and then return the sum of the
+decimal digits in the resulting number.  For example, 10! = 3628800 and the
+sum of its digits is 3 + 6 + 2 + 8 + 8 + 0 + 0 = 27.  The algorithm here uses
+simple iterative multiplication to obtain the factorial and then converts the
+result to a string to accumulate each digit.  The implementation avoids foreign
+interfaces and the `any` type so it can run on the Mochi runtime/vm.
+*/
+
+fun factorial_digit_sum(num: int): int {
+  var factorial = 1
+  var i = 1
+  while i <= num {
+    factorial = factorial * i
+    i = i + 1
+  }
+
+  let s = str(factorial)
+  var result = 0
+  var j = 0
+  while j < len(s) {
+    result = result + (s[j] as int)
+    j = j + 1
+  }
+  return result
+}
+
+fun main() {
+  print("Enter the Number: ")
+  let n = int(input())
+  print(str(factorial_digit_sum(n)))
+}
+
+main()
