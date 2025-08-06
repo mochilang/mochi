@@ -1,0 +1,93 @@
+/*
+Unknown Sort (Min-Max Selection)
+--------------------------------
+This algorithm sorts a list by repeatedly selecting both the minimum and
+maximum elements from the remaining unsorted portion. On each iteration:
+
+1. Find the current minimum and maximum values.
+2. Append the minimum to a `start` list.
+3. Append the maximum to an `end` list.
+4. Remove both values from the working list.
+
+After the loop finishes, the `end` list is reversed so that the collected
+maximum values appear in ascending order, and the final result is:
+`start + remaining + reversed(end)`.
+
+The worst-case time complexity is O(n^2) because each iteration scans the
+remaining list to compute the minimum and maximum. This implementation
+is written in pure Mochi without FFI or use of the `any` type, ensuring
+compatibility with `runtime/vm`.
+*/
+fun list_min(xs: list<int>): int {
+  var i = 1
+  var m = xs[0]
+  while i < len(xs) {
+    if xs[i] < m { m = xs[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun list_max(xs: list<int>): int {
+  var i = 1
+  var m = xs[0]
+  while i < len(xs) {
+    if xs[i] > m { m = xs[i] }
+    i = i + 1
+  }
+  return m
+}
+
+fun remove_once(xs: list<int>, value: int): list<int> {
+  var res: list<int> = []
+  var removed: bool = false
+  var i = 0
+  while i < len(xs) {
+    if !removed && xs[i] == value {
+      removed = true
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun reverse_list(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i = len(xs) - 1
+  while i >= 0 {
+    res = append(res, xs[i])
+    i = i - 1
+  }
+  return res
+}
+
+fun merge_sort(collection: list<int>): list<int> {
+  var start: list<int> = []
+  var end: list<int> = []
+  var coll = collection
+  while len(coll) > 1 {
+    let mn = list_min(coll)
+    let mx = list_max(coll)
+    start = append(start, mn)
+    end = append(end, mx)
+    coll = remove_once(coll, mn)
+    coll = remove_once(coll, mx)
+  }
+  end = reverse_list(end)
+  return concat(concat(start, coll), end)
+}
+
+fun test_merge_sort() {
+  if merge_sort([0, 5, 3, 2, 2]) != [0, 2, 2, 3, 5] { panic("case1 failed") }
+  if merge_sort([]) != [] { panic("case2 failed") }
+  if merge_sort([-2, -5, -45]) != [-45, -5, -2] { panic("case3 failed") }
+}
+
+fun main() {
+  test_merge_sort()
+  print(str(merge_sort([0, 5, 3, 2, 2])))
+}
+
+main()
