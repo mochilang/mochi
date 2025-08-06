@@ -1324,6 +1324,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
 		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
 		buf.WriteString("    }\n")
+		if useValue {
+			buf.WriteString("    if (@TypeOf(v) == Value) {\n")
+			buf.WriteString("        return switch (v) {\n")
+			buf.WriteString("            .Int => std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v.Int}) catch unreachable,\n")
+			buf.WriteString("            .Float => std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v.Float}) catch unreachable,\n")
+			buf.WriteString("            .Str => std.fmt.allocPrint(std.heap.page_allocator, \"'{s}'\", .{v.Str}) catch unreachable,\n")
+			buf.WriteString("            .Bool => if (v.Bool) \"true\" else \"false\",\n")
+			buf.WriteString("            .List => _str(v.List),\n")
+			buf.WriteString("            .StrList => _str(v.StrList),\n")
+			buf.WriteString("            else => \"null\",\n")
+			buf.WriteString("        };\n")
+			buf.WriteString("    }\n")
+		}
 		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
 		buf.WriteString("    if (info == .Pointer and info.Pointer.size == .Slice) {\n")
 		buf.WriteString("        var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
@@ -1470,38 +1483,63 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 		io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
 		return
 	}
+	if len(s.Values) == 1 {
+		if sl, ok := s.Values[0].(*StringLit); ok && sl.Value == "\n" {
+			io.WriteString(w, "std.debug.print(\"\\n\", .{});\n")
+			return
+		}
+	}
 	fmtSpec := make([]string, len(s.Values))
+	io.WriteString(w, "std.debug.print(\"")
 	for i, v := range s.Values {
+		if i > 0 {
+			io.WriteString(w, " ")
+		}
+		tname := zigTypeFromExpr(v)
 		switch t := v.(type) {
 		case *IndexExpr:
 			if t.Map {
+				io.WriteString(w, "{s}")
 				fmtSpec[i] = "{s}"
 			} else {
+				io.WriteString(w, "{d}")
 				fmtSpec[i] = "{d}"
 			}
 		case *StringLit:
+			io.WriteString(w, "{s}")
 			fmtSpec[i] = "{s}"
 		case *FloatLit:
+			io.WriteString(w, "{d}")
 			fmtSpec[i] = "{d}"
 		default:
-			tname := zigTypeFromExpr(v)
 			if tname == "[]const u8" {
+				io.WriteString(w, "{s}")
 				fmtSpec[i] = "{s}"
 			} else if tname == "f64" || tname == "f32" {
+				io.WriteString(w, "{d}")
 				fmtSpec[i] = "{d}"
 			} else {
-				fmtSpec[i] = "{any}"
+				io.WriteString(w, "{s}")
+				fmtSpec[i] = "{s}"
 			}
 		}
 	}
-	io.WriteString(w, "std.debug.print(\"")
-	io.WriteString(w, strings.Join(fmtSpec, " "))
 	io.WriteString(w, "\\n\", .{")
 	for i, v := range s.Values {
 		if i > 0 {
 			io.WriteString(w, ", ")
 		}
-		v.emit(w)
+		tname := zigTypeFromExpr(v)
+		if tname == "[]const u8" || tname == "f64" || tname == "f32" {
+			v.emit(w)
+		} else if ie, ok := v.(*IndexExpr); ok && !ie.Map {
+			v.emit(w)
+		} else {
+			useStr = true
+			io.WriteString(w, "_str(")
+			v.emit(w)
+			io.WriteString(w, ")")
+		}
 	}
 	io.WriteString(w, "});\n")
 }
@@ -2017,7 +2055,7 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
 	if sli.Start != nil {
-		io.WriteString(w, "@intCast(")
+		io.WriteString(w, "@intCast(usize, ")
 		sli.Start.emit(w)
 		io.WriteString(w, ")")
 	} else {
@@ -2025,7 +2063,7 @@ func (sli *SliceExpr) emit(w io.Writer) {
 	}
 	io.WriteString(w, "..")
 	if sli.End != nil {
-		io.WriteString(w, "@intCast(")
+		io.WriteString(w, "@intCast(usize, ")
 		sli.End.emit(w)
 		io.WriteString(w, ")")
 	}
@@ -2033,6 +2071,13 @@ func (sli *SliceExpr) emit(w io.Writer) {
 }
 
 func (c *CastExpr) emit(w io.Writer) {
+	if strings.HasPrefix(c.Type, "[]") {
+		if l, ok := c.Value.(*ListLit); ok && l.ElemType == "" {
+			l.ElemType = c.Type[2:]
+			l.emit(w)
+			return
+		}
+	}
 	switch c.Type {
 	case "int", "i64":
 		if zigTypeFromExpr(c.Value) == "[]const u8" {
@@ -2510,6 +2555,9 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 		if st.Var != nil {
 			globalNames[st.Var.Name] = true
 		}
+		if st.Fun != nil {
+			globalNames[st.Fun.Name] = true
+		}
 	}
 	mutables := map[string]bool{}
 	collectMutables(prog.Statements, mutables)
@@ -2973,7 +3021,7 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			funParamsStack = funParamsStack[:len(funParamsStack)-1]
 		}()
 		ret := ""
-		if p.FunExpr.Return != nil {
+		if p.FunExpr.Return != nil && (p.FunExpr.Return.Simple != nil || p.FunExpr.Return.Generic != nil || p.FunExpr.Return.Fun != nil) {
 			if p.FunExpr.Return.Simple != nil && *p.FunExpr.Return.Simple == "any" {
 				ret = ""
 			} else {
@@ -3859,6 +3907,8 @@ func toZigType(t *parser.TypeRef) string {
 		case "any":
 			useValue = true
 			return "Value"
+		case "void":
+			return "void"
 		}
 	}
 	if t.Generic != nil {
@@ -3932,7 +3982,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		funParamsStack = funParamsStack[:len(funParamsStack)-1]
 	}()
 	ret := ""
-	if fn.Return != nil {
+	if fn.Return != nil && (fn.Return.Simple != nil || fn.Return.Generic != nil || fn.Return.Fun != nil) {
 		ret = toZigType(fn.Return)
 	}
 	funcReturns[name] = ret
@@ -4077,6 +4127,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				varTypes[s.Let.Name] = vd.Type
 			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
 				lst.ElemType = vd.Type[2:]
+			} else if vd.Type == "[]Value" {
+				lst.ElemType = "Value"
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {
@@ -4175,6 +4227,8 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 				varTypes[s.Var.Name] = vd.Type
 			} else if lst.ElemType == "" && vd.Type != "" && strings.HasPrefix(vd.Type, "[]") {
 				lst.ElemType = vd.Type[2:]
+			} else if vd.Type == "[]Value" {
+				lst.ElemType = "Value"
 			}
 		}
 		if ml, ok := expr.(*MapLit); ok {

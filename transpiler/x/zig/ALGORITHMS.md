@@ -2,18 +2,18 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 15:56 +0700
+Last updated: 2025-08-06 18:11 +0700
 
-## Program Checklist (1/1077)
+## Program Checklist (6/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.32ms | 512.0 KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 1.065ms | 384.0 KB |
+| 2 | backtracking/all_permutations | ✓ | 10.646ms | 2.4 MB |
+| 3 | backtracking/all_subsequences | ✓ | 1.176ms | 572.0 KB |
+| 4 | backtracking/coloring | ✓ | 600µs | 256.0 KB |
+| 5 | backtracking/combination_sum | ✓ | 893µs | 384.0 KB |
 | 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 235µs |  |
 | 8 | backtracking/knight_tour |   |  |  |
 | 9 | backtracking/match_word_pattern |   |  |  |
 | 10 | backtracking/minimax |   |  |  |

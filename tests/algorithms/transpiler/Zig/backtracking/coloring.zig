@@ -5,34 +5,58 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn create_all_state(increment: i64, total: i64, level: i64, current: []i64, result_param: [][]i64) [][]i64 {
-    var result_var: [][]i64 = result_param;
-    if (level == 0) {
-        return blk: { var _tmp = std.ArrayList([]i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const []i64, result_var)) catch |err| handleError(err); _tmp.append(current) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-    }
-    var i: i64 = increment;
-    while (i <= total - level + 1) {
-        const next_current: []i64 = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, current)) catch |err| handleError(err); _tmp.append(i) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-        result_var = create_all_state(i + 1, total, level - 1, next_current, result_var);
+var graph_var: [][]i64 = &[_][]i64{};
+
+fn valid_coloring(neighbours: []i64, colored_vertices: []i64, color_param: i64) bool {
+    var i: i64 = 0;
+    while (i < @as(i64, @intCast(neighbours.len))) {
+        if (neighbours[@intCast(i)] == 1 and colored_vertices[@intCast(i)] == color_param) {
+            return false;
+        }
         i = i + 1;
     }
-    return result_var;
+    return true;
 }
 
-fn generate_all_combinations(n: i64, k: i64) [][]i64 {
-    if (k < 0 or n < 0) {
-        return &[_][]i64{};
+fn util_color(graph_param: [][]i64, max_colors: i64, colored_vertices_1: []i64, index: i64) bool {
+    if (index == @as(i64, @intCast(graph_param.len))) {
+        return true;
     }
-    const result: [][]i64 = &[_][]i64{};
-    return create_all_state(1, n, k, &[_]i64{}, result);
+    var c: i64 = 0;
+    while (c < max_colors) {
+        if (valid_coloring(graph_param[@intCast(index)], colored_vertices_1, c)) {
+            colored_vertices_1[@intCast(index)] = c;
+            if (util_color(graph_param, max_colors, colored_vertices_1, index + 1)) {
+                return true;
+            }
+            colored_vertices_1[@intCast(index)] = 0 - 1;
+        }
+        c = c + 1;
+    }
+    return false;
+}
+
+fn color(graph_param: [][]i64, max_colors_1: i64) []i64 {
+    var colored_vertices_2: []i64 = &[_]i64{};
+    var i_1: i64 = 0;
+    while (i_1 < @as(i64, @intCast(graph_param.len))) {
+        colored_vertices_2 = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, colored_vertices_2)) catch |err| handleError(err); _tmp.append(0 - 1) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+        i_1 = i_1 + 1;
+    }
+    if (util_color(graph_param, max_colors_1, colored_vertices_2, 0)) {
+        return colored_vertices_2;
+    }
+    return &[_]i64{};
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(generate_all_combinations(4, 2))});
-        std.debug.print("{s}\n", .{_str(generate_all_combinations(3, 1))});
+        graph_var = blk0: { var _tmp0 = std.heap.page_allocator.alloc([]i64, 5) catch unreachable; _tmp0[0] = blk1: { var _tmp1 = std.heap.page_allocator.alloc(i64, 5) catch unreachable; _tmp1[0] = 0; _tmp1[1] = 1; _tmp1[2] = 0; _tmp1[3] = 0; _tmp1[4] = 0; break :blk1 _tmp1; }; _tmp0[1] = blk2: { var _tmp2 = std.heap.page_allocator.alloc(i64, 5) catch unreachable; _tmp2[0] = 1; _tmp2[1] = 0; _tmp2[2] = 1; _tmp2[3] = 0; _tmp2[4] = 1; break :blk2 _tmp2; }; _tmp0[2] = blk3: { var _tmp3 = std.heap.page_allocator.alloc(i64, 5) catch unreachable; _tmp3[0] = 0; _tmp3[1] = 1; _tmp3[2] = 0; _tmp3[3] = 1; _tmp3[4] = 0; break :blk3 _tmp3; }; _tmp0[3] = blk4: { var _tmp4 = std.heap.page_allocator.alloc(i64, 5) catch unreachable; _tmp4[0] = 0; _tmp4[1] = 1; _tmp4[2] = 1; _tmp4[3] = 0; _tmp4[4] = 0; break :blk4 _tmp4; }; _tmp0[4] = blk5: { var _tmp5 = std.heap.page_allocator.alloc(i64, 5) catch unreachable; _tmp5[0] = 0; _tmp5[1] = 1; _tmp5[2] = 0; _tmp5[3] = 0; _tmp5[4] = 0; break :blk5 _tmp5; }; break :blk0 _tmp0; };
+        std.debug.print("{s}\n", .{_str(color(graph_var, 3))});
+        std.debug.print("\n", .{});
+        std.debug.print("{s}\n", .{_str(@as(i64, @intCast(color(graph_var, 2).len)))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
