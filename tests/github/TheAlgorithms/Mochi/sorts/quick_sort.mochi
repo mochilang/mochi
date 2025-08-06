@@ -1,0 +1,39 @@
+/*
+Sort a list of integers using the quick sort algorithm.
+
+Quick sort is a divide and conquer algorithm. A pivot element is chosen
+(here, the first element of the list). The remaining items are partitioned
+into those less than or equal to the pivot and those greater than it.
+Each partition is then sorted recursively and concatenated with the pivot
+in between to produce a sorted list.
+
+This implementation runs in O(n log n) time on average and O(n^2) in the
+worst case. Space complexity is O(n) due to the creation of new lists for
+the partitions.
+*/
+
+fun quick_sort(items: list<int>): list<int> {
+  if len(items) < 2 {
+    return items
+  }
+
+  let pivot = items[0]
+  var lesser: list<int> = []
+  var greater: list<int> = []
+  var i = 1
+  while i < len(items) {
+    let item = items[i]
+    if item <= pivot {
+      lesser = append(lesser, item)
+    } else {
+      greater = append(greater, item)
+    }
+    i = i + 1
+  }
+
+  return concat(concat(quick_sort(lesser), [pivot]), quick_sort(greater))
+}
+
+print("sorted1:", quick_sort([0, 5, 3, 2, 2]))
+print("sorted2:", quick_sort([]))
+print("sorted3:", quick_sort([-2, 5, 0, -45]))
