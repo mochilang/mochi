@@ -1,0 +1,114 @@
+/*
+Simulate the Round Robin CPU scheduling algorithm.
+
+Each process has a burst time representing its required CPU time. Round
+Robin assigns a fixed time quantum to each process in a cyclic order.
+Processes that do not finish within their quantum are placed back in the
+queue with their remaining burst time. This continues until all processes
+finish.
+
+The algorithm computes two metrics:
+1. Waiting Time – total time a process spends waiting before its last
+   execution finishes.
+2. Turnaround Time – total time from arrival to completion, equal to burst
+   time plus waiting time.
+
+Implementation details:
+- `calculate_waiting_times` iteratively simulates execution with a
+  constant quantum (2 units) and records waiting times.
+- `calculate_turn_around_times` adds burst and waiting times for each
+  process.
+- `mean` computes the average of a list of integers.
+- `format_float_5` formats a float to 5 decimal places without using any
+  external libraries.
+
+Time complexity for computing waiting and turnaround times is
+O(n * m) where `n` is the number of processes and `m` is the number of
+quantum cycles required for the longest burst time.
+*/
+
+fun calculate_waiting_times(burst_times: list<int>): list<int> {
+  let quantum = 2
+  var rem: list<int> = []
+  var i = 0
+  while i < len(burst_times) {
+    rem = append(rem, burst_times[i])
+    i = i + 1
+  }
+  var waiting: list<int> = []
+  i = 0
+  while i < len(burst_times) {
+    waiting = append(waiting, 0)
+    i = i + 1
+  }
+  var t = 0
+  while true {
+    var done = true
+    var j = 0
+    while j < len(burst_times) {
+      if rem[j] > 0 {
+        done = false
+        if rem[j] > quantum {
+          t = t + quantum
+          rem[j] = rem[j] - quantum
+        } else {
+          t = t + rem[j]
+          waiting[j] = t - burst_times[j]
+          rem[j] = 0
+        }
+      }
+      j = j + 1
+    }
+    if done { return waiting }
+  }
+  return waiting
+}
+
+fun calculate_turn_around_times(burst_times: list<int>, waiting_times: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len(burst_times) {
+    result = append(result, burst_times[i] + waiting_times[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun mean(values: list<int>): float {
+  var total = 0
+  var i = 0
+  while i < len(values) {
+    total = total + values[i]
+    i = i + 1
+  }
+  return (total as float) / (len(values) as float)
+}
+
+fun format_float_5(x: float): string {
+  let scaled = int(x * 100000.0 + 0.5)
+  let int_part = scaled / 100000
+  let frac_part = scaled % 100000
+  var frac_str = str(frac_part)
+  while len(frac_str) < 5 {
+    frac_str = "0" + frac_str
+  }
+  return str(int_part) + "." + frac_str
+}
+
+fun main() {
+  let burst_times = [3, 5, 7]
+  let waiting_times = calculate_waiting_times(burst_times)
+  let turn_around_times = calculate_turn_around_times(burst_times, waiting_times)
+  print("Process ID \tBurst Time \tWaiting Time \tTurnaround Time")
+  var i = 0
+  while i < len(burst_times) {
+    let line = "  " + str(i + 1) + "\t\t  " + str(burst_times[i]) + "\t\t  " + str(waiting_times[i]) + "\t\t  " + str(turn_around_times[i])
+    print(line)
+    i = i + 1
+  }
+  print("")
+  print("Average waiting time = " + format_float_5(mean(waiting_times)))
+  print("Average turn around time = " + format_float_5(mean(turn_around_times)))
+}
+
+main()
