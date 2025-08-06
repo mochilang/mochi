@@ -1,0 +1,65 @@
+/*
+Wave String
+
+Generates a "Mexican wave" representation of a string.
+For each alphabetic character in the input, a new string is
+created with that character capitalized while the rest remain
+unchanged. Non-letter characters are skipped.
+
+Algorithm:
+1. Iterate over the characters of the input string.
+2. If the current character is alphabetic, uppercase it and
+   concatenate the prefix and suffix around it.
+3. Append each modified string to a result list.
+
+Uppercasing and alphabet checks are implemented manually using
+ASCII lookup tables, avoiding any external dependencies.
+
+Time complexity is O(n * 26) due to the alphabet scans, effectively
+O(n) for typical ASCII strings.
+*/
+
+let lowercase = "abcdefghijklmnopqrstuvwxyz"
+let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, c: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == c {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun is_alpha(c: string): bool {
+  return index_of(lowercase, c) >= 0 || index_of(uppercase, c) >= 0
+}
+
+fun to_upper(c: string): string {
+  let idx = index_of(lowercase, c)
+  if idx >= 0 {
+    return substring(uppercase, idx, idx + 1)
+  }
+  return c
+}
+
+fun wave(txt: string): list<string> {
+  var result: list<string> = []
+  var i = 0
+  while i < len(txt) {
+    let ch = substring(txt, i, i + 1)
+    if is_alpha(ch) {
+      let prefix = substring(txt, 0, i)
+      let suffix = substring(txt, i + 1, len(txt))
+      result = append(result, prefix + to_upper(ch) + suffix)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(str(wave("cat")))
+print(str(wave("one")))
+print(str(wave("book")))
