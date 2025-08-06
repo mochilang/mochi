@@ -2552,7 +2552,7 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 	}
 	operands = append(operands, first)
 	for _, p := range e.Binary.Right {
-		r, err := compilePostfix(p.Right)
+		r, err := compileUnary(p.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -3077,206 +3077,39 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		}
 		return nil, nil
 	case s.Assign != nil:
-		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
-			val, err := compileExpr(s.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 {
-				nameAlias := s.Assign.Name
-				if alias, ok := varAliases[nameAlias]; ok {
-					nameAlias = alias
-				}
-				if vt, ok := varTypes[nameAlias]; ok && strings.HasSuffix(vt, "[]") {
-					list.ElemType = vt
-				}
-			}
-			if mp, ok := val.(*MapLit); ok {
-				nameAlias := s.Assign.Name
-				if alias, ok := varAliases[nameAlias]; ok {
-					nameAlias = alias
-				}
-				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
-					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
-					arr := strings.Split(parts, ",")
-					if len(arr) == 2 {
-						mp.KeyType = strings.TrimSpace(arr[0])
-						mp.ValType = strings.TrimSpace(arr[1])
-					}
-				}
-			}
-			if app, ok := val.(*AppendExpr); ok {
-				nameAlias := s.Assign.Name
-				if alias, ok := varAliases[nameAlias]; ok {
-					nameAlias = alias
-				}
-				if vt, ok2 := varTypes[nameAlias]; ok2 {
-					item := app.Item
-					if ll, ok4 := item.(*ListLit); ok4 && len(ll.Elems) == 0 && strings.HasSuffix(vt, "[]") {
-						ll.ElemType = strings.TrimSuffix(vt, "[]")
-					}
-					if mp, ok3 := item.(*MapLit); ok3 {
-						if len(mp.Items) > 2 {
-							if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
-								item = res
-							}
-						}
-					}
-					t := typeOfExpr(item)
-					if t != "" && t != "object" {
-						if vt == "" || vt == "object[]" {
-							varTypes[nameAlias] = t + "[]"
-						} else if strings.HasSuffix(vt, "[]") {
-							cur := strings.TrimSuffix(vt, "[]")
-							if cur != t {
-								if cur == "int" && t == "double" {
-									varTypes[nameAlias] = "double[]"
-								} else {
-									varTypes[nameAlias] = "object[]"
-								}
-							}
-						}
-						finalVarTypes[nameAlias] = varTypes[nameAlias]
-					}
-					val = &AppendExpr{List: app.List, Item: item}
-				}
+		val, err := compileExpr(s.Assign.Value)
+		if err != nil {
+			return nil, err
+		}
+		targetExpr, err := compilePostfix(s.Assign.Target)
+		if err != nil {
+			return nil, err
+		}
+		switch t := targetExpr.(type) {
+		case *VarRef:
+			name := t.Name
+			if alias, ok := varAliases[name]; ok {
+				name = alias
 			}
 			if isStringExpr(val) {
-				stringVars[s.Assign.Name] = true
+				stringVars[name] = true
 			}
 			if isMapExpr(val) {
-				mapVars[s.Assign.Name] = true
-				if mp, ok := val.(*MapLit); ok {
-					if len(mp.Items) > 2 {
-						if res, changed := inferStructMap(s.Assign.Name, prog, mp); changed {
-							val = res
-						}
-					}
-				}
+				mapVars[name] = true
 			}
-			if t := typeOfExpr(val); t != "" && t != "object" {
-				name := s.Assign.Name
-				if alias, ok := varAliases[name]; ok {
-					name = alias
-				}
-				varTypes[name] = t
-				finalVarTypes[name] = t
+			if tt := typeOfExpr(val); tt != "" && tt != "object" {
+				varTypes[name] = tt
+				finalVarTypes[name] = tt
 			}
-			if alias, ok := varAliases[s.Assign.Name]; ok {
-				mutatedVars[alias] = true
-			} else {
-				mutatedVars[s.Assign.Name] = true
-			}
-			name := s.Assign.Name
-			if alias, ok := varAliases[name]; ok {
-				name = alias
-			}
+			mutatedVars[name] = true
 			return &AssignStmt{Name: name, Value: val}, nil
+		case *IndexExpr:
+			return &AssignIndexStmt{Target: t.Target, Index: t.Index, Value: val}, nil
+		case *FieldExpr:
+			return &AssignFieldStmt{Target: t.Target, Name: t.Name, Value: val}, nil
+		default:
+			return nil, fmt.Errorf("unsupported assignment target")
 		}
-		if len(s.Assign.Index) > 0 && len(s.Assign.Field) == 0 {
-			name := s.Assign.Name
-			if alias, ok := varAliases[name]; ok {
-				name = alias
-			}
-			var target Expr = &VarRef{Name: name}
-			for i := 0; i < len(s.Assign.Index)-1; i++ {
-				idx, err := compileExpr(s.Assign.Index[i].Start)
-				if err != nil {
-					return nil, err
-				}
-				target = &IndexExpr{Target: target, Index: idx}
-			}
-			idx, err := compileExpr(s.Assign.Index[len(s.Assign.Index)-1].Start)
-			if err != nil {
-				return nil, err
-			}
-			val, err := compileExpr(s.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			if list, ok := val.(*ListLit); ok && len(list.Elems) == 0 {
-				nameAlias := s.Assign.Name
-				if alias, ok := varAliases[nameAlias]; ok {
-					nameAlias = alias
-				}
-				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
-					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
-					arr := strings.Split(parts, ",")
-					if len(arr) == 2 {
-						list.ElemType = strings.TrimSpace(arr[1])
-					}
-				}
-			}
-			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
-				nameAlias := s.Assign.Name
-				if alias, ok := varAliases[nameAlias]; ok {
-					nameAlias = alias
-				}
-				if vt, ok := varTypes[nameAlias]; ok && strings.HasPrefix(vt, "Dictionary<") {
-					parts := strings.TrimPrefix(strings.TrimSuffix(vt, ">"), "Dictionary<")
-					arr := splitTop(parts)
-					if len(arr) == 2 {
-						valPart := arr[1]
-						if strings.HasPrefix(valPart, "Dictionary<") && strings.HasSuffix(valPart, ">") {
-							inner := strings.TrimPrefix(strings.TrimSuffix(valPart, ">"), "Dictionary<")
-							innerArr := splitTop(inner)
-							if len(innerArr) == 2 {
-								mp.KeyType = innerArr[0]
-								mp.ValType = innerArr[1]
-							}
-						}
-					}
-				}
-			}
-			return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
-		}
-		if len(s.Assign.Field) > 0 && len(s.Assign.Index) == 0 {
-			name := s.Assign.Name
-			if alias, ok := varAliases[name]; ok {
-				name = alias
-			}
-			var target Expr = &VarRef{Name: name}
-			for i := 0; i < len(s.Assign.Field)-1; i++ {
-				target = &FieldExpr{Target: target, Name: s.Assign.Field[i].Name}
-			}
-			fieldName := s.Assign.Field[len(s.Assign.Field)-1].Name
-			val, err := compileExpr(s.Assign.Value)
-			if err != nil {
-				return nil, err
-			}
-			if mp, ok := val.(*MapLit); ok && len(mp.Items) == 0 {
-				structName := ""
-				if t, ok := varTypes[name]; ok {
-					structName = t
-				} else {
-					structName = typeOfExpr(&VarRef{Name: name})
-				}
-				if st, ok := structTypes[structName]; ok {
-					if ft, ok2 := st.Fields[fieldName]; ok2 {
-						if mt, ok3 := ft.(types.MapType); ok3 {
-							mp.KeyType = csTypeFromType(mt.Key)
-							mp.ValType = csTypeFromType(mt.Value)
-						} else {
-							tStr := csTypeFromType(ft)
-							if strings.HasPrefix(tStr, "Dictionary<") && strings.HasSuffix(tStr, ">") {
-								parts := strings.TrimPrefix(strings.TrimSuffix(tStr, ">"), "Dictionary<")
-								arr := strings.Split(parts, ",")
-								if len(arr) == 2 {
-									mp.KeyType = strings.TrimSpace(arr[0])
-									mp.ValType = strings.TrimSpace(arr[1])
-								}
-							}
-						}
-					}
-				}
-			}
-			if isMapExpr(target) {
-				idx := &StringLit{Value: fieldName}
-				return &AssignIndexStmt{Target: target, Index: idx, Value: val}, nil
-			}
-			return &AssignFieldStmt{Target: target, Name: fieldName, Value: val}, nil
-		}
-		return nil, fmt.Errorf("unsupported assignment")
 	case s.Fun != nil:
 		params := make([]string, len(s.Fun.Params))
 		ptypes := make([]string, len(s.Fun.Params))

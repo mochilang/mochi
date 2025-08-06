@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected Node, got bool
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/suffix_tree/suffix_tree.mochi:59:27
+
+ 59 |   node.is_end_of_string = true
+    |                           ^
+
+help:
+  Change the value to match the expected type.

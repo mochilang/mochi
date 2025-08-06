@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected LinkedQueue, got [any]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/queues/linked_queue.mochi:34:13
+
+ 34 |   q.nodes = append(q.nodes, node)
+    |             ^
+
+help:
+  Change the value to match the expected type.

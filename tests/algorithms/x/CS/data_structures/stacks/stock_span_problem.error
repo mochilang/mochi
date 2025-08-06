@@ -1,0 +1,12 @@
+exit status 134
+Unhandled exception. System.TypeInitializationException: The type initializer for 'Program' threw an exception.
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int32' to type 'System.Int64'.
+   at System.Linq.Enumerable.CastIterator[TResult](IEnumerable source)+MoveNext()
+   at System.Collections.Generic.LargeArrayBuilder`1.AddRange(IEnumerable`1 items)
+   at System.Collections.Generic.EnumerableHelpers.ToArray[T](IEnumerable`1 source)
+   at System.Linq.Enumerable.ToArray[TSource](IEnumerable`1 source)
+   at Program.calculation_span(Int64[] price_0) in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_stock_span_problem293676804/001/Program.cs:line 116
+   at Program..cctor() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_stock_span_problem293676804/001/Program.cs:line 101
+   --- End of inner exception stack trace ---
+   at Program._now() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_stock_span_problem293676804/001/Program.cs:line 13
+   at Program.Main() in /tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_stacks_stock_span_problem293676804/001/Program.cs:line 128

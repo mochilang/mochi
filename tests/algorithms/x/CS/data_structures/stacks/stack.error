@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected Stack, got [any]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/stacks/stack.mochi:43:13
+
+ 43 |   s.items = append(s.items, item)
+    |             ^
+
+help:
+  Change the value to match the expected type.
