@@ -70,7 +70,7 @@ func sanitize(name string) string {
 	}
 	newName := name
 	switch name {
-	case "label", "xor", "and", "or", "div", "mod", "type", "set":
+	case "label", "xor", "and", "or", "div", "mod", "type", "set", "result":
 		// Avoid Pascal reserved keywords
 		newName = name + "_"
 	}
@@ -1121,7 +1121,7 @@ func (p *Program) Emit() []byte {
 	if p.UseSHA256 {
 		uses = append(uses, "Unix")
 	}
-	if p.NeedShowList || p.NeedShowList2 {
+	if p.NeedShowList || p.NeedShowList2 || p.NeedListStr2 {
 		if p.ArrayAliases == nil {
 			p.ArrayAliases = make(map[string]string)
 		}
@@ -1129,7 +1129,7 @@ func (p *Program) Emit() []byte {
 			p.ArrayAliases["integer"] = "IntArray"
 		}
 	}
-	if p.NeedShowList2 {
+	if p.NeedShowList2 || p.NeedListStr2 {
 		if p.ArrayAliases == nil {
 			p.ArrayAliases = make(map[string]string)
 		}
@@ -1291,6 +1291,17 @@ begin
   Result := '[';
   for i := 0 to High(xs) do begin
     Result := Result + IntToStr(xs[i]);
+    if i < High(xs) then Result := Result + ' ';
+  end;
+  Result := Result + ']';
+end;
+`)
+		buf.WriteString(`function list_list_int_to_str(xs: array of IntArray): string;
+var i: integer;
+begin
+  Result := '[';
+  for i := 0 to High(xs) do begin
+    Result := Result + list_int_to_str(xs[i]);
     if i < High(xs) then Result := Result + ' ';
   end;
   Result := Result + ']';
@@ -4306,6 +4317,10 @@ func convertPrimary(env *types.Env, p *parser.Primary) (Expr, error) {
 				currProg.NeedListStrReal = true
 				currProg.UseSysUtils = true
 				return &CallExpr{Name: "list_real_to_str", Args: args}, nil
+			}
+			if strings.HasPrefix(t, "array of array of ") || strings.HasPrefix(t, "array of IntArray") || strings.HasSuffix(t, "IntArrayArray") {
+				currProg.NeedListStr2 = true
+				return &CallExpr{Name: "list_list_int_to_str", Args: args}, nil
 			}
 			if strings.HasPrefix(t, "array of ") || isArrayAlias(t) {
 				currProg.NeedListStr2 = true
