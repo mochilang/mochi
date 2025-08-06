@@ -1,0 +1,53 @@
+/*
+Totient Maximum (Project Euler Problem 69)
+
+Find the integer n ≤ N that maximizes the ratio n/phi(n) where phi is Euler's
+Totient function.  The ratio is maximized by multiplying consecutive primes starting
+from 2 until the product would exceed N.  This follows from Euler's product formula
+and the fact that phi(p) = p - 1 for prime p.
+
+Algorithm:
+1. Starting with result = 1 and prime candidate p = 2.
+2. While result * p ≤ N:
+   - If p is prime, multiply result by p.
+   - Increment p.
+3. Return result which is the product of the first primes whose product does not exceed N.
+
+Implemented in pure Mochi without the "any" type so it runs on runtime/vm.
+*/
+
+fun is_prime(n: int): bool {
+  if n < 2 {
+    return false
+  }
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun solution(limit: int): int {
+  if limit < 2 {
+    return 1
+  }
+  var result = 1
+  var p = 2
+  while result * p <= limit {
+    if is_prime(p) {
+      result = result * p
+    }
+    p = p + 1
+  }
+  return result
+}
+
+fun main() {
+  let ans = solution(1000000)
+  print(ans)
+}
+
+main()
