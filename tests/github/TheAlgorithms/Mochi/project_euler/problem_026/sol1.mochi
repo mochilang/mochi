@@ -1,0 +1,56 @@
+/*
+Longest Recurring Cycle for Unit Fractions (Project Euler Problem 26)
+--------------------------------------------------------------------
+Given a fraction numerator/d where numerator is fixed (usually 1)
+and denominator d ranges from a starting value up to a maximum bound,
+this program finds the denominator with the longest recurring cycle
+in its decimal representation.
+
+The algorithm simulates long division. For each denominator d, it
+tracks previously seen remainders during the decimal expansion of
+numerator/d. When a remainder repeats, the number of unique remainders
+seen is the length of the repeating cycle. We iterate through all
+denominators, keeping track of the one yielding the longest cycle.
+
+Time complexity: O(n^2) for range n, because for each denominator we
+simulate at most 'limit' steps of long division. Space complexity: O(n)
+for storing remainders of the current denominator.
+*/
+
+fun contains(lst: list<int>, val: int): bool {
+  for x in lst {
+    if x == val { return true }
+  }
+  return false
+}
+
+fun solution(numerator: int, limit: int): int {
+  var the_digit = 1
+  var longest_len = 0
+  for d in numerator..limit {
+    var remainders: list<int> = []
+    var rem = numerator
+    var count = 1
+    while count <= limit {
+      if contains(remainders, rem) {
+        if longest_len < len(remainders) {
+          longest_len = len(remainders)
+          the_digit = d
+        }
+      } else {
+        remainders = append(remainders, rem)
+        rem = rem * 10 % d
+      }
+      count = count + 1
+    }
+  }
+  return the_digit
+}
+
+fun main() {
+  print(str(solution(1, 10)))
+  print(str(solution(10, 100)))
+  print(str(solution(10, 1000)))
+}
+
+main()
