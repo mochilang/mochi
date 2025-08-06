@@ -1,0 +1,54 @@
+/*
+Count Lychrel numbers below a limit using the reverse-and-add process.
+A Lychrel number is one that does not form a palindrome within 50
+iterations of repeatedly reversing its digits and adding the result to
+the original number. For each n from 1 up to the limit, we generate the
+sequence n + reverse(n); if a palindrome appears before 50 iterations
+n is not a Lychrel number. Otherwise it is counted. This solution runs in
+O(limit * iterations * d) time where d is the number of digits of the
+intermediate sums.
+*/
+
+fun reverse_string(s: string): string {
+  var result = ""
+  var i: int = len(s) - 1
+  while i >= 0 {
+    result = result + s[i]
+    i = i - 1
+  }
+  return result
+}
+
+fun is_palindrome(n: int): bool {
+  let s = str(n)
+  return s == reverse_string(s)
+}
+
+fun sum_reverse(n: int): int {
+  let s = str(n)
+  let r = reverse_string(s)
+  return n + int(r)
+}
+
+fun solution(limit: int): int {
+  var count: int = 0
+  var num: int = 1
+  while num < limit {
+    var iterations: int = 0
+    var current: int = num
+    while iterations < 50 {
+      current = sum_reverse(current)
+      iterations = iterations + 1
+      if is_palindrome(current) {
+        break
+      }
+    }
+    if iterations == 50 && !is_palindrome(current) {
+      count = count + 1
+    }
+    num = num + 1
+  }
+  return count
+}
+
+print("solution() = " + str(solution(10000)))
