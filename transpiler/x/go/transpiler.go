@@ -1458,12 +1458,12 @@ func (lh *LookupHostExpr) emit(w io.Writer) {
 type IntCastExpr struct{ Expr Expr }
 
 func (ic *IntCastExpr) emit(w io.Writer) {
-	io.WriteString(w, "any(")
+	io.WriteString(w, "int(")
 	ic.Expr.emit(w)
 	if _, ok := ic.Expr.(*BigBinaryExpr); ok {
 		io.WriteString(w, ".Int64()")
 	}
-	io.WriteString(w, ").(int)")
+	io.WriteString(w, ")")
 }
 
 // ExistsExpr represents the exists() builtin result to preserve boolean output.
@@ -2409,6 +2409,9 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					ex = &StructJSONExpr{Value: ex}
 				case types.FloatType:
 					ex = &FloatStringExpr{Value: ex}
+					if imports != nil {
+						imports["math"] = "math"
+					}
 				case types.BoolType:
 					// keep boolean value as is
 				}

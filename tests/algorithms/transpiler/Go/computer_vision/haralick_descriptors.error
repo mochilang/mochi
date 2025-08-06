@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/computer_vision/haralick_descriptors.go:189:35: invalid operation: (1.0 * float64(i)) * j (mismatched types float64 and int)
+../../../tests/algorithms/transpiler/Go/computer_vision/haralick_descriptors.go:195:35: invalid operation: (1.0 * float64(diff)) * diff (mismatched types float64 and int)
+../../../tests/algorithms/transpiler/Go/computer_vision/haralick_descriptors.go:198:48: invalid operation: (1.0 * float64(diff)) * diff (mismatched types float64 and int)

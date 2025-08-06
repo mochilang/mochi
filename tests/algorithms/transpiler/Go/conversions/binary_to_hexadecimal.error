@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/conversions/binary_to_hexadecimal.go:121:14: in call to _slice, type string of s does not match []T (cannot infer T)
+../../../tests/algorithms/transpiler/Go/conversions/binary_to_hexadecimal.go:146:29: in call to _slice, type string of s does not match []T (cannot infer T)

@@ -1,0 +1,13 @@
+exit status 1
+panic: interface conversion: interface {} is float64, not int
+
+goroutine 1 [running]:
+main.update_image_and_anno({0x0?, 0x0?, 0x0?}, {0x0?, 0x0?, 0x0?}, {0x0?, 0x0?, 0x0?}, {0xc0000904c8, ...}, ...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/mosaic_augmentation.go:65 +0x1d1
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/mosaic_augmentation.go:241 +0x50e
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/mosaic_augmentation.go:391
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/mosaic_augmentation.go:398 +0x92
+exit status 2
