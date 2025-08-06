@@ -36,41 +36,40 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
-        x = (x / 2);
-    }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
-    }
-    return result.clone()
-};
-    fn binary_coded_decimal(mut number: i64) -> String {
-    let mut n: i64 = number;
-    if (n < 0) {
-        n = 0;
-    }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
+    fn pow2(mut exp: i64) -> i64 {
+    let mut result: i64 = 1;
     let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
+    while (i < exp) {
+        result = (result * 2);
         i = (i + 1);
     }
-    return out.clone()
+    return result
 };
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    fn gray_code(mut bit_count: i64) -> Vec<i64> {
+    if (bit_count == 0) {
+        return vec![0]
+    }
+    let mut prev: Vec<i64> = gray_code((bit_count - 1));
+    let mut add_val: i64 = pow2((bit_count - 1));
+    let mut res: Vec<i64> = vec![];
+    let mut i: i64 = 0;
+    while (i < (prev.len() as i64)) {
+        res = { let mut _v = res.clone(); _v.push(prev[i as usize]); _v };
+        i = (i + 1);
+    }
+    let mut j = ((prev.len() as i64) - 1);
+    while (j >= 0) {
+        res = { let mut _v = res.clone(); _v.push((prev[j as usize] + add_val)); _v };
+        j = (j - 1);
+    }
+    return res
+};
+    let mut seq2: Vec<i64> = gray_code(2);
+    println!("{}", format!("{:?}", seq2));
+    let mut seq1: Vec<i64> = gray_code(1);
+    println!("{}", format!("{:?}", seq1));
+    let mut seq3: Vec<i64> = gray_code(3);
+    println!("{}", format!("{:?}", seq3));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

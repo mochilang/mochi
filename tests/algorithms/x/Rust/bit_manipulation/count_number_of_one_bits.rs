@@ -36,41 +36,61 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
-        x = (x / 2);
+    fn bit_and(mut a: i64, mut b: i64) -> i64 {
+    let mut ua: i64 = a;
+    let mut ub: i64 = b;
+    let mut res: i64 = 0;
+    let mut bit: i64 = 1;
+    while ((ua > 0) || (ub > 0)) {
+        if (((ua % 2) == 1) && ((ub % 2) == 1)) {
+            res = (res + bit);
+        }
+        ua = (ua / 2);
+        ub = (ub / 2);
+        bit = (bit * 2);
     }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
-    }
-    return result.clone()
+    return res
 };
-    fn binary_coded_decimal(mut number: i64) -> String {
-    let mut n: i64 = number;
+    fn count_bits_kernighan(mut n: i64) -> i64 {
     if (n < 0) {
-        n = 0;
+        panic!("the value of input must not be negative");
     }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
+    let mut num: i64 = n;
+    let mut result: i64 = 0;
+    while (num != 0) {
+        num = bit_and(num, (num - 1));
+        result = (result + 1);
+    }
+    return result
+};
+    fn count_bits_modulo(mut n: i64) -> i64 {
+    if (n < 0) {
+        panic!("the value of input must not be negative");
+    }
+    let mut num: i64 = n;
+    let mut result: i64 = 0;
+    while (num != 0) {
+        if ((num % 2) == 1) {
+            result = (result + 1);
+        }
+        num = (num / 2);
+    }
+    return result
+};
+    fn mochi_main() {
+    let mut numbers: Vec<i64> = vec![25, 37, 21, 58, 0, 256];
     let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
+    while (i < (numbers.len() as i64)) {
+        println!("{}", count_bits_kernighan(numbers[i as usize]).to_string());
         i = (i + 1);
     }
-    return out.clone()
+    i = 0;
+    while (i < (numbers.len() as i64)) {
+        println!("{}", count_bits_modulo(numbers[i as usize]).to_string());
+        i = (i + 1);
+    }
 };
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    mochi_main();
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

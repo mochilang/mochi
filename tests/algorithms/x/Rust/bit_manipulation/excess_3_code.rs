@@ -36,41 +36,32 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
-        x = (x / 2);
-    }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
-    }
-    return result.clone()
-};
-    fn binary_coded_decimal(mut number: i64) -> String {
+    fn excess_3_code(mut number: i64) -> String {
     let mut n: i64 = number;
     if (n < 0) {
         n = 0;
     }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
-    let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
-        i = (i + 1);
+    let mut mapping: Vec<String> = vec![String::from("0011").clone(), String::from("0100").clone(), String::from("0101").clone(), String::from("0110").clone(), String::from("0111").clone(), String::from("1000").clone(), String::from("1001").clone(), String::from("1010").clone(), String::from("1011").clone(), String::from("1100").clone()];
+    let mut res: String = String::from("").clone();
+    if (n == 0) {
+        res = mapping[0 as usize].clone();
+    } else {
+        while (n > 0) {
+            let mut digit: i64 = (n % 10);
+            res = format!("{}{}", mapping[digit as usize].clone(), res);
+            n = (n / 10);
+        }
     }
-    return out.clone()
+    return format!("{}{}", "0b", res).clone()
 };
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    fn mochi_main() {
+    println!("{}", excess_3_code(0));
+    println!("{}", excess_3_code(3));
+    println!("{}", excess_3_code(2));
+    println!("{}", excess_3_code(20));
+    println!("{}", excess_3_code(120));
+};
+    mochi_main();
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();
