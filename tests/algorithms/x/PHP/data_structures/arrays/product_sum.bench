@@ -1,0 +1,6 @@
+Fatal error: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, int given in /workspace/mochi/tests/algorithms/x/PHP/data_structures/arrays/product_sum.php:26
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/data_structures/arrays/product_sum.php(37): product_sum(Array, 1)
+#1 /workspace/mochi/tests/algorithms/x/PHP/data_structures/arrays/product_sum.php(41): product_sum_array(Array)
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/data_structures/arrays/product_sum.php on line 26

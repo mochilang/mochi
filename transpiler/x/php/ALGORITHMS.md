@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 21:05 GMT+7
+Last updated: 2025-08-06 21:35 GMT+7
 
-## Algorithms Golden Test Checklist (143/1077)
+## Algorithms Golden Test Checklist (188/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -152,57 +152,57 @@ Last updated: 2025-08-06 21:05 GMT+7
 | 143 | conversions/rectangular_to_polar | ✓ | 245µs | 39.7 KB |
 | 144 | conversions/rgb_cmyk_conversion | ✓ | 150µs | 38.7 KB |
 | 145 | conversions/rgb_hsv_conversion | ✓ | 226µs | 72.7 KB |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
-| 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
+| 146 | conversions/roman_numerals | ✓ | 1µs | 37.8 KB |
+| 147 | conversions/speed_conversions | ✓ | 76µs | 38.0 KB |
+| 148 | conversions/temperature_conversions | ✓ | 109µs | 59.3 KB |
+| 149 | conversions/time_conversions | ✓ | 114µs | 35.4 KB |
+| 150 | conversions/volume_conversions | ✓ | 95µs | 36.8 KB |
+| 151 | conversions/weight_conversion | ✓ | 107µs | 36.5 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 142µs | 39.2 KB |
+| 153 | data_compression/huffman | error |  |  |
+| 154 | data_compression/lempel_ziv | ✓ | 175µs | 36.6 KB |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 262µs | 40.3 KB |
+| 156 | data_compression/lz77 | ✓ | 186µs | 40.8 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | error |  |  |
+| 158 | data_compression/run_length_encoding | ✓ | 75µs | 35.6 KB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 75µs | 34.6 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 167µs | 36.6 KB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 183µs | 39.4 KB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 60µs | 38.3 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 149µs | 36.1 KB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 77µs | 38.9 KB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 66µs | 38.3 KB |
+| 166 | data_structures/arrays/permutations | ✓ | 166µs | 40.8 KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 210µs | 36.4 KB |
+| 168 | data_structures/arrays/product_sum | error |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 211µs | 36.2 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 720µs | 39.4 KB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 110µs | 70.7 KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 99µs | 37.5 KB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 133µs | 40.3 KB |
+| 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 159µs | 36.5 KB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 60µs | 39.1 KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 249µs | 37.5 KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 238µs | 70.9 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 79µs | 34.8 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 619µs | 92.1 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 90µs | 40.1 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 140µs | 35.7 KB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 254µs | 36.4 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 1µs | 35.9 KB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 435µs | 70.1 KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 174µs | 36.7 KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 65.779ms | 520.4 KB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 172µs | 37.0 KB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 157µs | 39.9 KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 251µs | 35.4 KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 134µs | 69.6 KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 46µs | 35.7 KB |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 216µs | 70.0 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 197µs | 41.1 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap |   |  |  |

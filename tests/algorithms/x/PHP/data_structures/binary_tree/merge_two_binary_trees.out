@@ -1,0 +1,27 @@
+Tree1 is:
+1
+2
+4
+3
+Tree2 is:
+2
+4
+9
+6
+5
+
+Warning: Undefined variable $t2 in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 21
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 13
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 15
+Merged Tree is:
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 28
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 60
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 38
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/binary_tree/merge_two_binary_trees.php on line 49
+0
