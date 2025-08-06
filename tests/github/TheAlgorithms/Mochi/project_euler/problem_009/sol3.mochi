@@ -1,0 +1,26 @@
+/*
+Project Euler Problem 9: Find the unique Pythagorean triplet (a, b, c)
+for which a + b + c = 1000 and a^2 + b^2 = c^2, then compute the
+product a * b * c. The algorithm iterates over all pairs (a, b),
+computes c = 1000 - a - b, and checks the Pythagorean condition.
+When the condition is satisfied, the product is returned. This brute
+force search runs in O(n^2) time for n = 1000 with constant space.
+*/
+
+fun solution(): int {
+  var a = 1
+  while a < 999 {
+    var b = a
+    while b < 999 {
+      let c = 1000 - a - b
+      if a * a + b * b == c * c {
+        return a * b * c
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return -1
+}
+
+print(str(solution()))
