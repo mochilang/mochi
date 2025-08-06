@@ -45,6 +45,7 @@ var useHas bool
 var useFetch bool
 var useLookupHost bool
 var useStr bool
+var useLen bool
 var funcDepth int
 var returnOutsideFunc bool
 
@@ -567,16 +568,9 @@ func (l *LenExpr) emit(w io.Writer) {
 		io.WriteString(w, "0")
 		return
 	}
-	io.WriteString(w, "Number(")
-	io.WriteString(w, "Array.isArray(")
+	io.WriteString(w, "_len(")
 	l.Value.emit(w)
-	io.WriteString(w, ") || typeof ")
-	l.Value.emit(w)
-	io.WriteString(w, " === 'string' ? ")
-	l.Value.emit(w)
-	io.WriteString(w, ".length : Object.keys(")
-	l.Value.emit(w)
-	io.WriteString(w, " ?? {}).length)")
+	io.WriteString(w, ")")
 }
 
 func (a *AppendExpr) emit(w io.Writer) {
@@ -1863,16 +1857,16 @@ func (iw *indentWriter) WriteByte(c byte) error {
 }
 
 func Emit(p *Program) []byte {
-        var b bytes.Buffer
-        if os.Getenv("MOCHI_NO_HEADER") == "" {
-                b.Write(meta.Header("//"))
-                b.WriteByte('\n')
-        }
-        iw := &indentWriter{w: &b, indent: "  "}
-        for _, s := range p.Stmts {
-                emitStmt(iw, s, 0)
-        }
-        return b.Bytes()
+	var b bytes.Buffer
+	if os.Getenv("MOCHI_NO_HEADER") == "" {
+		b.Write(meta.Header("//"))
+		b.WriteByte('\n')
+	}
+	iw := &indentWriter{w: &b, indent: "  "}
+	for _, s := range p.Stmts {
+		emitStmt(iw, s, 0)
+	}
+	return b.Bytes()
 }
 
 func emitStmt(w *indentWriter, s Stmt, level int) {
@@ -2058,6 +2052,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 	useFetch = false
 	useLookupHost = false
 	useStr = false
+	useLen = false
 	funcDepth = 0
 	returnOutsideFunc = false
 	defer func() {
@@ -2078,6 +2073,7 @@ func Transpile(prog *parser.Program, env *types.Env, benchMain bool) (*Program, 
 		useFetch = false
 		useLookupHost = false
 		useStr = false
+		useLen = false
 		funcDepth = 0
 		returnOutsideFunc = false
 	}()
@@ -2267,6 +2263,9 @@ function sha256(bs: number[]): number[] {
 	}
 	if useParseIntStr {
 		prelude = append(prelude, &RawStmt{Code: `function parseIntStr(s: string, base: number): number { return parseInt(s, Math.trunc(base)); }`})
+	}
+	if useLen {
+		prelude = append(prelude, &RawStmt{Code: `function _len(x: any): number { return Array.isArray(x) || typeof x === 'string' ? x.length : Object.keys(x ?? {}).length; }`})
 	}
 	if useStr {
 		prelude = append(prelude, &RawStmt{Code: `function _str(x: any): string {
@@ -3776,6 +3775,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					args[0] = &IndexExpr{Target: args[0], Index: &StringLit{Value: "items"}}
 				}
 			}
+			useLen = true
 			return &LenExpr{Value: args[0]}, nil
 		case "append":
 			if len(args) != 2 {
@@ -3796,6 +3796,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					args[0] = &IndexExpr{Target: args[0], Index: &StringLit{Value: "items"}}
 				}
 			}
+			useLen = true
 			return &LenExpr{Value: args[0]}, nil
 		case "sum":
 			if len(args) != 1 {
