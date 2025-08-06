@@ -1,0 +1,52 @@
+/*
+Soboleva Modified Hyperbolic Tangent (SMHT) Activation Function
+
+This activation transforms each element x of an input vector using
+parameters a, b, c, and d:
+
+    f(x) = (e^(a*x) - e^(-b*x)) / (e^(c*x) + e^(-d*x))
+
+It is a variation of the hyperbolic tangent introduced by E. V. Soboleva.
+The implementation computes exponentials with a truncated Taylor series
+and applies the transformation element-wise. The complexity is O(n) for
+n elements.
+*/
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / to_float(n)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun soboleva_modified_hyperbolic_tangent(
+  vector: list<float>,
+  a_value: float,
+  b_value: float,
+  c_value: float,
+  d_value: float
+): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let numerator = exp(a_value * x) - exp(-b_value * x)
+    let denominator = exp(c_value * x) + exp(-d_value * x)
+    result = append(result, numerator / denominator)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let vector: list<float> = [5.4, -2.4, 6.3, -5.23, 3.27, 0.56]
+  let res = soboleva_modified_hyperbolic_tangent(vector, 0.2, 0.4, 0.6, 0.8)
+  json(res)
+}
+
+main()
