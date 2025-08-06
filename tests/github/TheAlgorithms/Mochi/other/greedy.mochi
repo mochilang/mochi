@@ -1,0 +1,107 @@
+/*
+Greedy selection of items under a weight constraint.
+
+Each item has a name, value, and weight.  To maximise the total value of the
+selected items without exceeding a maximum allowed weight, the algorithm
+sorts items in descending order of a supplied key function (e.g. value or
+value-to-weight ratio) and iteratively adds items while the cumulative weight
+remains within the limit.  The function returns the chosen items and the sum
+of their values.
+
+This approach is a generic greedy heuristic for knapsack-like problems.
+Sorting dominates the complexity: insertion sort is used here giving O(n^2)
+time.
+*/
+
+type Thing {
+  name: string,
+  value: float,
+  weight: float
+}
+
+fun get_value(t: Thing): float { return t.value }
+fun get_weight(t: Thing): float { return t.weight }
+fun get_name(t: Thing): string { return t.name }
+fun value_weight(t: Thing): float { return t.value / t.weight }
+
+fun build_menu(names: list<string>, values: list<float>, weights: list<float>): list<Thing> {
+  var menu: list<Thing> = []
+  var i = 0
+  while i < len(values) && i < len(names) && i < len(weights) {
+    menu = append(menu, Thing { name: names[i], value: values[i], weight: weights[i] })
+    i = i + 1
+  }
+  return menu
+}
+
+fun sort_desc(items: list<Thing>, key_func: fun(Thing): float): list<Thing> {
+  var arr: list<Thing> = []
+  var i = 0
+  while i < len(items) {
+    arr = append(arr, items[i])
+    i = i + 1
+  }
+  var j = 1
+  while j < len(arr) {
+    let key_item = arr[j]
+    let key_val = key_func(key_item)
+    var k = j - 1
+    while k >= 0 && key_func(arr[k]) < key_val {
+      arr[k + 1] = arr[k]
+      k = k - 1
+    }
+    arr[k + 1] = key_item
+    j = j + 1
+  }
+  return arr
+}
+
+type GreedyResult {
+  items: list<Thing>,
+  total_value: float
+}
+
+fun greedy(items: list<Thing>, max_cost: float, key_func: fun(Thing): float): GreedyResult {
+  let items_copy = sort_desc(items, key_func)
+  var result: list<Thing> = []
+  var total_value = 0.0
+  var total_cost = 0.0
+  var i = 0
+  while i < len(items_copy) {
+    let it = items_copy[i]
+    let w = get_weight(it)
+    if total_cost + w <= max_cost {
+      result = append(result, it)
+      total_cost = total_cost + w
+      total_value = total_value + get_value(it)
+    }
+    i = i + 1
+  }
+  return GreedyResult { items: result, total_value: total_value }
+}
+
+fun thing_to_string(t: Thing): string {
+  return "Thing(" + t.name + ", " + str(t.value) + ", " + str(t.weight) + ")"
+}
+
+fun list_to_string(ts: list<Thing>): string {
+  var s = "["
+  var i = 0
+  while i < len(ts) {
+    s = s + thing_to_string(ts[i])
+    if i < len(ts) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let food: list<string> = ["Burger", "Pizza", "Coca Cola", "Rice", "Sambhar", "Chicken", "Fries", "Milk"]
+let value: list<float> = [80.0, 100.0, 60.0, 70.0, 50.0, 110.0, 90.0, 60.0]
+let weight: list<float> = [40.0, 60.0, 40.0, 70.0, 100.0, 85.0, 55.0, 70.0]
+let foods = build_menu(food, value, weight)
+print(list_to_string(foods))
+let res = greedy(foods, 500.0, get_value)
+print(list_to_string(res.items))
+print(str(res.total_value))
+
