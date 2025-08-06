@@ -195,6 +195,29 @@ func validIdent(name string) bool {
 	return true
 }
 
+func zeroValue(typ string) string {
+	switch typ {
+	case "int", "num", "double":
+		return "0"
+	case "BigInt":
+		return "BigInt.zero"
+	case "bool":
+		return "false"
+	case "String":
+		return "\"\""
+	default:
+		if strings.HasPrefix(typ, "List<") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(typ, "List<"), ">")
+			return "<" + elem + ">[]"
+		}
+		if strings.HasPrefix(typ, "Map<") {
+			kv := strings.TrimSuffix(strings.TrimPrefix(typ, "Map<"), ">")
+			return "<" + kv + ">{}"
+		}
+	}
+	return "null"
+}
+
 func emitWithBigIntCast(w io.Writer, e Expr, from, to string) error {
 	if to == "BigInt" && from == "int" {
 		if lit, ok := e.(*IntLit); ok {
@@ -611,6 +634,29 @@ func (s *VarStmt) emit(w io.Writer) error {
 		}
 		return s.Value.emit(w)
 	}
+	baseType := strings.TrimSuffix(typ, "?")
+	if strings.HasPrefix(baseType, "List<") {
+		elem := strings.TrimSuffix(strings.TrimPrefix(baseType, "List<"), ">")
+		_, err := io.WriteString(w, " = <"+elem+">[]")
+		return err
+	}
+	if strings.HasPrefix(baseType, "Map<") {
+		kv := strings.TrimSuffix(strings.TrimPrefix(baseType, "Map<"), ">")
+		_, err := io.WriteString(w, " = <"+kv+">{}")
+		return err
+	}
+	if typ == "String" {
+		_, err := io.WriteString(w, " = \"\"")
+		return err
+	}
+	if typ == "bool" {
+		_, err := io.WriteString(w, " = false")
+		return err
+	}
+	if typ == "int" || typ == "num" || typ == "double" || typ == "BigInt" {
+		_, err := io.WriteString(w, " = 0")
+		return err
+	}
 	return nil
 }
 
@@ -627,6 +673,37 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		return nil
 	}
 	if iex, ok := s.Target.(*IndexExpr); ok {
+		base := strings.TrimSuffix(inferType(iex.Target), "?")
+		if strings.HasPrefix(base, "List<") {
+			elem := strings.TrimSuffix(strings.TrimPrefix(base, "List<"), ">")
+			if _, err := io.WriteString(w, "while ("); err != nil {
+				return err
+			}
+			if err := iex.Target.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ".length <= "); err != nil {
+				return err
+			}
+			if err := iex.Index.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ") { "); err != nil {
+				return err
+			}
+			if err := iex.Target.emit(w); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, ".add("); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, zeroValue(elem)); err != nil {
+				return err
+			}
+			if _, err := io.WriteString(w, "); } "); err != nil {
+				return err
+			}
+		}
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
 		iex.NoBang = true

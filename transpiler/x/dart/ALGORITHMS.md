@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-06 16:49 GMT+7
+Last updated: 2025-08-06 18:33 GMT+7
 
-## Algorithms Golden Test Checklist (17/1077)
+## Algorithms Golden Test Checklist (20/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.624ms | 3.5 MB |
@@ -13,7 +13,7 @@ Last updated: 2025-08-06 16:49 GMT+7
 | 4 | backtracking/coloring | ✓ | 18.927ms | 10.1 MB |
 | 5 | backtracking/combination_sum | ✓ | 31.294ms | 9.5 MB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 10.703ms | 3.8 MB |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 25.325ms | 11.2 MB |
 | 8 | backtracking/knight_tour | ✓ | 17.982ms | 2.4 MB |
 | 9 | backtracking/match_word_pattern | ✓ | 14.316ms | 2.0 MB |
 | 10 | backtracking/minimax | ✓ | 19.575ms | 10.8 MB |
@@ -24,9 +24,9 @@ Last updated: 2025-08-06 16:49 GMT+7
 | 15 | backtracking/sudoku | ✓ | 15.752ms | 4.4 MB |
 | 16 | backtracking/sum_of_subsets | ✓ | 12.918ms | 4.4 MB |
 | 17 | backtracking/word_break | ✓ | 19.939ms | 10.1 MB |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 18 | backtracking/word_ladder | ✓ | 41.474ms | 9.5 MB |
+| 19 | backtracking/word_search | ✓ | 18.9ms | 1.6 MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 21.36ms | 10.0 MB |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
@@ -206,7 +206,7 @@ Last updated: 2025-08-06 16:49 GMT+7
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
 | 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
 | 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 10.537ms | 3.1 MB |
+| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
 | 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
 | 203 | data_structures/hashing/bloom_filter |   |  |  |
