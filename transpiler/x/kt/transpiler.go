@@ -3305,12 +3305,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				if typ == "MutableMap<Any, Any>" {
 					typ = "MutableMap<String, Any>"
 				}
-				if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
-					typ = gt
-				}
-				if strings.Contains(typ, "Any?") && guessType(val) != typ {
-					typ = ""
-				}
+                               if gt := guessType(val); strings.Contains(gt, "Long") && !strings.Contains(typ, "Long") {
+                                       typ = gt
+                               }
+                               if strings.Contains(typ, "BigInteger") {
+                                       if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
+                                               typ = gt
+                                       }
+                                       if strings.Contains(typ, "BigInteger") {
+                                               typ = ""
+                                       }
+                               }
+                               if strings.Contains(typ, "Any?") && guessType(val) != typ {
+                                       typ = ""
+                               }
 				if _, ok := val.(*NullLit); ok {
 					if typ == "" {
 						typ = "Any?"
@@ -3391,10 +3399,18 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 						}
 					}
 				}
-				if typ == "Any" {
-					typ = ""
-				}
-			}
+                               if typ == "Any" {
+                                       typ = ""
+                               }
+                               if strings.Contains(typ, "BigInteger") {
+                                       if gt := guessType(val); gt != "" && !strings.Contains(gt, "BigInteger") {
+                                               typ = gt
+                                       }
+                                       if strings.Contains(typ, "BigInteger") {
+                                               typ = ""
+                                       }
+                               }
+                       }
 			if st.Var.Type != nil {
 				if _, ok := val.(*MapLit); ok {
 					val = &CastExpr{Value: val, Type: typ}
