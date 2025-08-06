@@ -671,34 +671,34 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
-       case "min":
-               if len(c.Args) == 2 {
-                       io.WriteString(w, "math.min(")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, ", ")
-                       c.Args[1].emit(w)
-                       io.WriteString(w, ")")
-               } else {
-                       io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v < m then\n      m = v\n    end\n  end\n  return m\nend)(")
-                       if len(c.Args) > 0 {
-                               c.Args[0].emit(w)
-                       }
-                       io.WriteString(w, ")")
-               }
-       case "max":
-               if len(c.Args) == 2 {
-                       io.WriteString(w, "math.max(")
-                       c.Args[0].emit(w)
-                       io.WriteString(w, ", ")
-                       c.Args[1].emit(w)
-                       io.WriteString(w, ")")
-               } else {
-                       io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v > m then\n      m = v\n    end\n  end\n  return m\nend)(")
-                       if len(c.Args) > 0 {
-                               c.Args[0].emit(w)
-                       }
-                       io.WriteString(w, ")")
-               }
+	case "min":
+		if len(c.Args) == 2 {
+			io.WriteString(w, "math.min(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v < m then\n      m = v\n    end\n  end\n  return m\nend)(")
+			if len(c.Args) > 0 {
+				c.Args[0].emit(w)
+			}
+			io.WriteString(w, ")")
+		}
+	case "max":
+		if len(c.Args) == 2 {
+			io.WriteString(w, "math.max(")
+			c.Args[0].emit(w)
+			io.WriteString(w, ", ")
+			c.Args[1].emit(w)
+			io.WriteString(w, ")")
+		} else {
+			io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v > m then\n      m = v\n    end\n  end\n  return m\nend)(")
+			if len(c.Args) > 0 {
+				c.Args[0].emit(w)
+			}
+			io.WriteString(w, ")")
+		}
 	case "values":
 		io.WriteString(w, "(function(m)\n  local keys = {}\n  for k in pairs(m) do\n    if k ~= '__name' and k ~= '__order' then table.insert(keys, k) end\n  end\n  table.sort(keys, function(a,b) return a<b end)\n  local res = {}\n  for _, k in ipairs(keys) do\n    table.insert(res, m[k])\n  end\n  return res\nend)(")
 		if len(c.Args) > 0 {
@@ -2297,6 +2297,17 @@ func identNameUnary(u *parser.Unary) (string, bool) {
 	return p.Target.Selector.Root, true
 }
 
+func intValueUnary(u *parser.Unary) (int, bool) {
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return 0, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
+		return 0, false
+	}
+	return int(*p.Target.Lit.Int), true
+}
+
 // intValue returns the integer value represented by the expression if it is a
 // literal integer.
 func intValue(e *parser.Expr) (int, bool) {
@@ -2309,13 +2320,6 @@ func intValue(e *parser.Expr) (int, bool) {
 	}
 	p := u.Value
 	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
-		return 0, false
-	}
-	return int(*p.Target.Lit.Int), true
-}
-
-func intValuePostfix(p *parser.PostfixExpr) (int, bool) {
-	if p == nil || len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Int == nil {
 		return 0, false
 	}
 	return int(*p.Target.Lit.Int), true
@@ -2338,7 +2342,7 @@ func isStartPlusOne(start, end *parser.Expr) bool {
 	if !ok || leftName != startName {
 		return false
 	}
-	if val, ok := intValuePostfix(op.Right); ok && val == 1 {
+	if val, ok := intValueUnary(op.Right); ok && val == 1 {
 		return true
 	}
 	return false
@@ -2923,7 +2927,7 @@ func convertBinary(b *parser.BinaryExpr) (Expr, error) {
 	exprs := []Expr{left}
 	ops := []string{}
 	for _, op := range b.Right {
-		right, err := convertPostfix(op.Right)
+		right, err := convertUnary(op.Right)
 		if err != nil {
 			return nil, err
 		}
@@ -4103,23 +4107,23 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		return convertImportStmt(st.Import)
 	case st.Type != nil:
 		ms := &MultiStmt{}
-               var fields []string
-               fieldTypes := map[string]types.Type{}
-               methods := map[string]types.Method{}
-               if st.Type.Members != nil {
-                       for _, m := range st.Type.Members {
-                               if m.Field != nil {
-                                       fields = append(fields, m.Field.Name)
-                                       var ft types.Type = types.AnyType{}
-                                       if m.Field.Type != nil {
-                                               ft = types.ResolveTypeRef(m.Field.Type, currentEnv)
-                                       }
-                                       fieldTypes[m.Field.Name] = ft
-                               }
-                       }
-                       // predeclare methods so they are available during translation
-                       for _, m := range st.Type.Members {
-                               if m.Method != nil {
+		var fields []string
+		fieldTypes := map[string]types.Type{}
+		methods := map[string]types.Method{}
+		if st.Type.Members != nil {
+			for _, m := range st.Type.Members {
+				if m.Field != nil {
+					fields = append(fields, m.Field.Name)
+					var ft types.Type = types.AnyType{}
+					if m.Field.Type != nil {
+						ft = types.ResolveTypeRef(m.Field.Type, currentEnv)
+					}
+					fieldTypes[m.Field.Name] = ft
+				}
+			}
+			// predeclare methods so they are available during translation
+			for _, m := range st.Type.Members {
+				if m.Method != nil {
 					params := []types.Type{types.StructType{Name: st.Type.Name}}
 					for _, p := range m.Method.Params {
 						if p.Type != nil {
@@ -4137,8 +4141,8 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 					currentEnv.SetVar(m.Method.Name, ft, true)
 				}
 			}
-                       stInfo := types.StructType{Name: st.Type.Name, Fields: fieldTypes, Order: fields, Methods: methods}
-                       currentEnv.SetStruct(st.Type.Name, stInfo)
+			stInfo := types.StructType{Name: st.Type.Name, Fields: fieldTypes, Order: fields, Methods: methods}
+			currentEnv.SetStruct(st.Type.Name, stInfo)
 			for _, m := range st.Type.Members {
 				if m.Method != nil {
 					fn, err := convertMethodStmt(m.Method, st.Type.Name, fields)
@@ -4252,38 +4256,17 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		if err != nil {
 			return nil, err
 		}
-		if len(st.Assign.Index) > 0 {
-			target := Expr(&Ident{Name: st.Assign.Name})
-			for _, idx := range st.Assign.Index {
-				iexpr, err := convertExpr(idx.Start)
-				if err != nil {
-					return nil, err
-				}
-				kind := "list"
-				if isStringExpr(target) {
-					kind = "string"
-				} else if isMapExpr(target) {
-					kind = "map"
-				} else if isStringExpr(iexpr) {
-					kind = "map"
-				} else if _, ok := iexpr.(*StringLit); ok {
-					kind = "map"
-				}
-				target = &IndexExpr{Target: target, Index: iexpr, Kind: kind}
+		target, err := convertPostfix(st.Assign.Target)
+		if err != nil {
+			return nil, err
+		}
+		if id, ok := target.(*Ident); ok {
+			if qc, ok := expr.(*QueryComp); ok {
+				return &QueryAssignStmt{Name: id.Name, Query: qc}, nil
 			}
-			return &IndexAssignStmt{Target: target, Value: expr}, nil
+			return &AssignStmt{Name: id.Name, Value: expr}, nil
 		}
-		if len(st.Assign.Field) > 0 {
-			target := Expr(&Ident{Name: st.Assign.Name})
-			for _, f := range st.Assign.Field {
-				target = &IndexExpr{Target: target, Index: &StringLit{Value: f.Name}, Kind: "map"}
-			}
-			return &IndexAssignStmt{Target: target, Value: expr}, nil
-		}
-		if qc, ok := expr.(*QueryComp); ok {
-			return &QueryAssignStmt{Name: st.Assign.Name, Query: qc}, nil
-		}
-		return &AssignStmt{Name: st.Assign.Name, Value: expr}, nil
+		return &IndexAssignStmt{Target: target, Value: expr}, nil
 	case st.Fun != nil:
 		return convertFunStmt(st.Fun)
 	case st.Return != nil:
