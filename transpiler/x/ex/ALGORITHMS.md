@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 21:51 GMT+7
+Last updated: 2025-08-06 22:36 GMT+7
 
-## Algorithms Golden Test Checklist (89/1077)
+## Algorithms Golden Test Checklist (91/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -120,8 +120,8 @@ Last updated: 2025-08-06 21:51 GMT+7
 | 111 | ciphers/xor_cipher | ✓ |  |  |
 | 112 | computer_vision/cnn_classification | ✓ |  |  |
 | 113 | computer_vision/flip_augmentation | error |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
+| 114 | computer_vision/haralick_descriptors | ✓ | 5.31ms | 32.7 MB |
+| 115 | computer_vision/harris_corner | ✓ | 5.13ms | 25.0 MB |
 | 116 | computer_vision/horn_schunck |   |  |  |
 | 117 | computer_vision/intensity_based_segmentation |   |  |  |
 | 118 | computer_vision/mean_threshold |   |  |  |

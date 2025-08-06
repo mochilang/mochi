@@ -1,0 +1,78 @@
+warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │           {row, x} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:27:17: Main.zeros/2
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 40 │       {m, y} = try do
+    │           ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:40:11: Main.zeros/2
+
+    warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 71 │           {dx, dy, x} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:71:20: Main.gradient/1
+
+    warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 83 │       {dx, dy, y} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:83:16: Main.gradient/1
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 121 │           {ixx, ixy, iyy, x} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:121:27: Main.harris/4
+
+     warning: variable "xx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │                   {wxx, wxy, wyy, xx} = try do
+     │                                   ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:165:35: Main.harris/4
+
+     warning: variable "corners" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 187 │                 corners = (corners ++ [[x, y]])
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:187:17: Main.harris/4
+
+     warning: variable "yy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 177 │               {wxx, wxy, wyy, yy} = try do
+     │                               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:177:31: Main.harris/4
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 195 │           x = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:195:11: Main.harris/4
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 133 │       {ixx, ixy, iyy, y} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:133:23: Main.harris/4
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 207 │       y = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/harris_corner.exs:207:7: Main.harris/4
+
+[]
