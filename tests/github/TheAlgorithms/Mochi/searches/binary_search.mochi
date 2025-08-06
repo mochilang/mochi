@@ -1,0 +1,98 @@
+/*
+Binary Search, Recursive Binary Search, and Exponential Search
+-------------------------------------------------------------
+This module implements three classic search algorithms on an ascending
+sorted list of integers.
+
+1. binary_search: iterative binary search that returns the index of the
+   target or -1 when not present. It first verifies the list is sorted.
+
+2. binary_search_by_recursion: recursive version working on a subrange.
+
+3. exponential_search: quickly finds a search bound that may contain the
+target by repeated doubling, then calls the recursive binary search.
+All implementations rely solely on Mochi primitives so they can run on
+the runtime/vm without foreign interfaces or the `any` type.
+*/
+
+fun is_sorted(arr: list<int>): bool {
+  var i: int = 1
+  while i < len(arr) {
+    if arr[i - 1] > arr[i] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun binary_search(sorted_collection: list<int>, item: int): int {
+  if !is_sorted(sorted_collection) {
+    return -1
+  }
+  var left: int = 0
+  var right: int = len(sorted_collection) - 1
+  while left <= right {
+    let midpoint: int = left + (right - left) / 2
+    let current_item: int = sorted_collection[midpoint]
+    if current_item == item {
+      return midpoint
+    }
+    if item < current_item {
+      right = midpoint - 1
+    } else {
+      left = midpoint + 1
+    }
+  }
+  return -1
+}
+
+fun binary_search_by_recursion(sorted_collection: list<int>, item: int, left: int, right: int): int {
+  if right < left {
+    return -1
+  }
+  let midpoint: int = left + (right - left) / 2
+  if sorted_collection[midpoint] == item {
+    return midpoint
+  }
+  if sorted_collection[midpoint] > item {
+    return binary_search_by_recursion(sorted_collection, item, left, midpoint - 1)
+  }
+  return binary_search_by_recursion(sorted_collection, item, midpoint + 1, right)
+}
+
+fun exponential_search(sorted_collection: list<int>, item: int): int {
+  if !is_sorted(sorted_collection) {
+    return -1
+  }
+  if len(sorted_collection) == 0 {
+    return -1
+  }
+  var bound: int = 1
+  while bound < len(sorted_collection) && sorted_collection[bound] < item {
+    bound = bound * 2
+  }
+  let left: int = bound / 2
+  let right: int = min([bound, len(sorted_collection) - 1])
+  return binary_search_by_recursion(sorted_collection, item, left, right)
+}
+
+fun main() {
+  let data: list<int> = [0, 5, 7, 10, 15]
+  print(str(binary_search(data, 0)))
+  print(str(binary_search(data, 15)))
+  print(str(binary_search(data, 5)))
+  print(str(binary_search(data, 6)))
+
+  print(str(binary_search_by_recursion(data, 0, 0, len(data) - 1)))
+  print(str(binary_search_by_recursion(data, 15, 0, len(data) - 1)))
+  print(str(binary_search_by_recursion(data, 5, 0, len(data) - 1)))
+  print(str(binary_search_by_recursion(data, 6, 0, len(data) - 1)))
+
+  print(str(exponential_search(data, 0)))
+  print(str(exponential_search(data, 15)))
+  print(str(exponential_search(data, 5)))
+  print(str(exponential_search(data, 6)))
+}
+
+main()
