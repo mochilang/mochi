@@ -37,27 +37,28 @@ function _append($arr, $x) {
 }
 $__start_mem = memory_get_usage();
 $__start = _now();
-  function create_all_state($increment, $total, $level, $current, $result) {
-  if ($level == 0) {
-  return _append($result, $current);
+  function backtrack($candidates, $start, $target, $path, $result) {
+  if ($target == 0) {
+  return _append($result, $path);
 }
-  $i = $increment;
-  while ($i <= $total - $level + 1) {
-  $next_current = _append($current, $i);
-  $result = create_all_state($i + 1, $total, $level - 1, $next_current, $result);
+  $i = $start;
+  while ($i < count($candidates)) {
+  $value = $candidates[$i];
+  if ($value <= $target) {
+  $new_path = _append($path, $value);
+  $result = backtrack($candidates, $i, $target - $value, $new_path, $result);
+}
   $i = $i + 1;
 };
   return $result;
 };
-  function generate_all_combinations($n, $k) {
-  if ($k < 0 || $n < 0) {
-  return [];
-}
+  function combination_sum($candidates, $target) {
+  $path = [];
   $result = [];
-  return create_all_state(1, $n, $k, [], $result);
+  return backtrack($candidates, 0, $target, $path, $result);
 };
-  echo rtrim(_str(generate_all_combinations(4, 2))), PHP_EOL;
-  echo rtrim(_str(generate_all_combinations(3, 1))), PHP_EOL;
+  echo rtrim(_str(combination_sum([2, 3, 5], 8))), PHP_EOL;
+  echo rtrim(_str(combination_sum([2, 3, 6, 7], 7))), PHP_EOL;
 $__end = _now();
 $__end_mem = memory_get_peak_usage();
 $__duration = max(1, intdiv($__end - $__start, 1000));

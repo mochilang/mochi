@@ -25,6 +25,7 @@ var builtinNames = map[string]struct{}{
 	"str": {}, "min": {}, "max": {}, "append": {}, "json": {}, "exists": {},
 	"values": {}, "keys": {}, "load": {}, "save": {}, "now": {}, "input": {},
 	"upper": {}, "lower": {}, "num": {}, "denom": {}, "indexOf": {}, "repeat": {}, "parseIntStr": {}, "slice": {}, "split": {}, "contains": {}, "substr": {}, "pow": {}, "getoutput": {}, "intval": {}, "floatval": {}, "int": {}, "float": {},
+	"concat": {},
 }
 
 const helperLookupHost = `function _lookup_host($host) {
@@ -3149,6 +3150,13 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			args[1] = replaceStringNamesWithVars(args[1])
 			usesAppend = true
 			return &CallExpr{Func: "_append", Args: []Expr{args[0], args[1]}}, nil
+		} else if name == "concat" {
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			args[0] = replaceStringNamesWithVars(args[0])
+			args[1] = replaceStringNamesWithVars(args[1])
+			return &CallExpr{Func: "array_merge", Args: []Expr{args[0], args[1]}}, nil
 		} else if name == "json" {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("json expects 1 arg")
