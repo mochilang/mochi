@@ -1,0 +1,7 @@
+/*
+Quine:
+
+A quine is a program that outputs its own source code using string substitution.
+*/
+let code: string = "/*\nQuine:\n\nA quine is a program that outputs its own source code using string substitution.\n*/\nlet code: string = %s\nprint(code)\n"
+print(code)
