@@ -1,0 +1,45 @@
+/*
+Shell Sort
+-----------
+Shell sort is an in-place comparison sorting algorithm that generalizes
+insertion sort to allow the exchange of items that are far apart.  The
+list is repeatedly processed using a gap sequence to perform gapped
+insertion sorts.  Each pass reduces the gap until it becomes 1, at which
+point the algorithm is equivalent to a regular insertion sort.
+
+This implementation uses Marcin Ciura's gap sequence
+[701, 301, 132, 57, 23, 10, 4, 1].  Elements are shifted to create space
+for smaller items encountered during the gapped insertion process.
+
+The algorithm runs in-place and requires no extra memory beyond the list.
+Its running time depends on the chosen gaps and typically lies between
+O(n^(3/2)) and O(n^2).
+*/
+
+fun shell_sort(collection: list<int>): list<int> {
+  var arr = collection
+  let gaps = [701, 301, 132, 57, 23, 10, 4, 1]
+  var g = 0
+  while g < len(gaps) {
+    let gap = gaps[g]
+    var i = gap
+    while i < len(arr) {
+      let insert_value = arr[i]
+      var j = i
+      while j >= gap && arr[j - gap] > insert_value {
+        arr[j] = arr[j - gap]
+        j = j - gap
+      }
+      if j != i {
+        arr[j] = insert_value
+      }
+      i = i + 1
+    }
+    g = g + 1
+  }
+  return arr
+}
+
+print(str(shell_sort([0, 5, 3, 2, 2])))
+print(str(shell_sort([])))
+print(str(shell_sort([-2, -5, -45])))
