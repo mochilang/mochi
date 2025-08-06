@@ -1,0 +1,31 @@
+/*
+Project Euler Problem 2: Sum of even Fibonacci numbers not exceeding a limit.
+
+The Fibonacci sequence starts with 1 and 2, and each subsequent term is the
+sum of the previous two.  We iterate through the sequence using two variables
+representing consecutive Fibonacci numbers.  When the current term is even we
+add it to an accumulator.  The pair of variables is then updated to the next
+pair by setting (i, j) := (j, i + j).
+
+The loop terminates once the next term would exceed the given limit.  This
+runs in O(k) time where k is the number of generated Fibonacci numbers and uses
+O(1) additional space.
+*/
+
+fun solution(n: int): int {
+  var i: int = 1
+  var j: int = 2
+  var total: int = 0
+  while j <= n {
+    if j % 2 == 0 {
+      total = total + j
+    }
+    let next: int = i + j
+    i = j
+    j = next
+  }
+  return total
+}
+
+let result: int = solution(4000000)
+print("solution() = " + str(result))
