@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 22:45 GMT+7
+Last updated: 2025-08-06 23:14 GMT+7
 
-## Algorithms Golden Test Checklist (67/1077)
+## Algorithms Golden Test Checklist (74/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -88,13 +88,13 @@ Last updated: 2025-08-06 22:45 GMT+7
 | 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 23.96ms | 83.23KiB |
 | 80 | ciphers/deterministic_miller_rabin | error |  |  |
 | 81 | ciphers/diffie | error |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
+| 82 | ciphers/diffie_hellman | ✓ | 9.31ms | 134.12KiB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 18.63ms | 121.55KiB |
+| 84 | ciphers/enigma_machine2 | ✓ | 33.19ms | 81.02KiB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 58.55ms | 94.93KiB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 15.71ms | 122.26KiB |
+| 87 | ciphers/hill_cipher | ✓ | 23.81ms | 82.16KiB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 31.83ms | 123.28KiB |
 | 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
 | 90 | ciphers/morse_code |   |  |  |
 | 91 | ciphers/onepad_cipher |   |  |  |

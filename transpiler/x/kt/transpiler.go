@@ -1239,14 +1239,10 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else if typ == "BigInteger" {
 			io.WriteString(w, "(")
 			e.emit(w)
-			switch t := guessType(e); t {
-			case "BigInteger":
-				io.WriteString(w, ")")
-			case "Any", "Any?":
-				io.WriteString(w, " as Int).toBigInteger()")
-			default:
-				io.WriteString(w, ").toBigInteger()")
+			if t := guessType(e); t == "Any" || t == "Any?" {
+				io.WriteString(w, " as Int")
 			}
+			io.WriteString(w, ").toBigInteger()")
 		} else if typ == "Long" {
 			io.WriteString(w, "(")
 			e.emit(w)
