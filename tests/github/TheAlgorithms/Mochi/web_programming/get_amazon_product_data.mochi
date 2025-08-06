@@ -1,0 +1,154 @@
+/*
+Get Amazon Product Data
+-----------------------
+This program demonstrates scraping of product information from an Amazon
+search results page. Given a product name, the code parses the HTML for each
+result entry to extract:
+  - Product title
+  - Link
+  - Current price
+  - Rating
+  - Listed MRP
+  - Discount percentage
+
+The implementation uses Mochi's string processing to locate relevant HTML
+fragments for each search result. It iterates over every
+`<div class="s-result-item" data-component-type="s-search-result">`
+block and extracts the required fields using helper functions.
+The discount is computed from the price and MRP if both are available.
+
+This is a pure Mochi implementation without FFI so it can run inside
+`runtime/vm`.
+*/
+
+type Product {
+  title: string
+  link: string
+  price: string
+  rating: string
+  mrp: string
+  discount: float
+}
+
+fun find_index(s: string, pat: string, start: int): int {
+  var i = start
+  while i <= len(s) - len(pat) {
+    var j = 0
+    var ok = true
+    while j < len(pat) {
+      if s[i + j] != pat[j] {
+        ok = false
+        break
+      }
+      j = j + 1
+    }
+    if ok {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun slice_between(s: string, start_pat: string, end_pat: string, from: int): string {
+  let a = find_index(s, start_pat, from)
+  if a < 0 {
+    return ""
+  }
+  let b = a + len(start_pat)
+  let c = find_index(s, end_pat, b)
+  if c < 0 {
+    return ""
+  }
+  return substring(s, b, c)
+}
+
+fun char_to_digit(c: string): int {
+  if c == "0" { return 0 }
+  if c == "1" { return 1 }
+  if c == "2" { return 2 }
+  if c == "3" { return 3 }
+  if c == "4" { return 4 }
+  if c == "5" { return 5 }
+  if c == "6" { return 6 }
+  if c == "7" { return 7 }
+  if c == "8" { return 8 }
+  return 9
+}
+
+fun parse_int(txt: string): int {
+  var n = 0
+  var i = 0
+  while i < len(txt) {
+    let c = txt[i]
+    if c >= "0" && c <= "9" {
+      n = n * 10 + char_to_digit(c)
+    }
+    i = i + 1
+  }
+  return n
+}
+
+fun parse_product(block: string): Product {
+  let href = slice_between(block, "href=\"", "\"", 0)
+  let link = "https://www.amazon.in" + href
+  let title = slice_between(block, ">", "</a>", find_index(block, "<a", 0))
+  let price = slice_between(block, "<span class=\"a-offscreen\">", "</span>", 0)
+  var rating = slice_between(block, "<span class=\"a-icon-alt\">", "</span>", 0)
+  if len(rating) == 0 {
+    rating = "Not available"
+  }
+  var mrp = slice_between(block, "<span class=\"a-price a-text-price\">", "</span>", 0)
+  var disc: float = 0.0
+  if len(mrp) > 0 && len(price) > 0 {
+    let p = parse_int(price)
+    let m = parse_int(mrp)
+    if m > 0 {
+      disc = ((m - p) * 100) as float / (m as float)
+    }
+  } else {
+    mrp = ""
+    disc = 0.0
+  }
+  return Product{
+    title: title,
+    link: link,
+    price: price,
+    rating: rating,
+    mrp: mrp,
+    discount: disc
+  }
+}
+
+fun get_amazon_product_data(product: string): list<Product> {
+  // Sample HTML containing two products for demonstration
+  let html = "<div class=\"s-result-item\" data-component-type=\"s-search-result\"><h2><a href=\"/sample_product\">Sample Product</a></h2><span class=\"a-offscreen\">₹900</span><span class=\"a-icon-alt\">4.3 out of 5 stars</span><span class=\"a-price a-text-price\">₹1000</span></div><div class=\"s-result-item\" data-component-type=\"s-search-result\"><h2><a href=\"/item2\">Another Product</a></h2><span class=\"a-offscreen\">₹500</span><span class=\"a-icon-alt\">3.8 out of 5 stars</span><span class=\"a-price a-text-price\">₹800</span></div>"
+  var out: list<Product> = []
+  var start = 0
+  while true {
+    let div_start = find_index(html, "<div class=\"s-result-item\"", start)
+    if div_start < 0 {
+      break
+    }
+    let div_end = find_index(html, "</div>", div_start)
+    if div_end < 0 {
+      break
+    }
+    let block = substring(html, div_start, div_end)
+    out = append(out, parse_product(block))
+    start = div_end + len("</div>")
+  }
+  return out
+}
+
+fun main() {
+  let products = get_amazon_product_data("laptop")
+  var i = 0
+  while i < len(products) {
+    let p = products[i]
+    print(p.title + " | " + p.link + " | " + p.price + " | " + p.rating + " | " + p.mrp + " | " + str(p.discount))
+    i = i + 1
+  }
+}
+
+main()
