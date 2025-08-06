@@ -1,0 +1,196 @@
+/*
+Calculate the minimum cost sequence of operations to transform one string into
+another using dynamic programming. Allowed operations are:
+- copy a matching character (cost `copy_cost`)
+- replace one character with another (cost `replace_cost`)
+- delete a character (cost `delete_cost`)
+- insert a character (cost `insert_cost`)
+The algorithm builds two tables: `costs` storing the minimal cost and `ops`
+recording the chosen operation at each step.  Backtracking through `ops`
+produces the optimal sequence of edits.  Complexity is O(m*n) for strings of
+length m and n.  Implemented in pure Mochi so it can run on runtime/vm.
+*/
+
+type TransformTables {
+  costs: list<list<int>>,
+  ops: list<list<string>>,
+}
+
+fun string_to_chars(s: string): list<string> {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(s) {
+    chars = append(chars, substring(s, i, i + 1))
+    i = i + 1
+  }
+  return chars
+}
+
+fun join_chars(chars: list<string>): string {
+  var res = ""
+  var i = 0
+  while i < len(chars) {
+    res = res + chars[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun insert_at(chars: list<string>, index: int, ch: string): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < index {
+    res = append(res, chars[i])
+    i = i + 1
+  }
+  res = append(res, ch)
+  while i < len(chars) {
+    res = append(res, chars[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun remove_at(chars: list<string>, index: int): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(chars) {
+    if i != index {
+      res = append(res, chars[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun make_matrix_int(rows: int, cols: int, init: int): list<list<int>> {
+  var matrix: list<list<int>> = []
+  for _ in 0..rows {
+    var row: list<int> = []
+    for _2 in 0..cols {
+      row = append(row, init)
+    }
+    matrix = append(matrix, row)
+  }
+  return matrix
+}
+
+fun make_matrix_string(rows: int, cols: int, init: string): list<list<string>> {
+  var matrix: list<list<string>> = []
+  for _ in 0..rows {
+    var row: list<string> = []
+    for _2 in 0..cols {
+      row = append(row, init)
+    }
+    matrix = append(matrix, row)
+  }
+  return matrix
+}
+
+fun compute_transform_tables(source_string: string, destination_string: string, copy_cost: int, replace_cost: int, delete_cost: int, insert_cost: int): TransformTables {
+  let source_seq = string_to_chars(source_string)
+  let dest_seq = string_to_chars(destination_string)
+  let m = len(source_seq)
+  let n = len(dest_seq)
+  var costs = make_matrix_int(m + 1, n + 1, 0)
+  var ops = make_matrix_string(m + 1, n + 1, "0")
+
+  var i = 1
+  while i <= m {
+    costs[i][0] = i * delete_cost
+    ops[i][0] = "D" + source_seq[i - 1]
+    i = i + 1
+  }
+
+  var j = 1
+  while j <= n {
+    costs[0][j] = j * insert_cost
+    ops[0][j] = "I" + dest_seq[j - 1]
+    j = j + 1
+  }
+
+  i = 1
+  while i <= m {
+    j = 1
+    while j <= n {
+      if source_seq[i - 1] == dest_seq[j - 1] {
+        costs[i][j] = costs[i - 1][j - 1] + copy_cost
+        ops[i][j] = "C" + source_seq[i - 1]
+      } else {
+        costs[i][j] = costs[i - 1][j - 1] + replace_cost
+        ops[i][j] = "R" + source_seq[i - 1] + dest_seq[j - 1]
+      }
+      if costs[i - 1][j] + delete_cost < costs[i][j] {
+        costs[i][j] = costs[i - 1][j] + delete_cost
+        ops[i][j] = "D" + source_seq[i - 1]
+      }
+      if costs[i][j - 1] + insert_cost < costs[i][j] {
+        costs[i][j] = costs[i][j - 1] + insert_cost
+        ops[i][j] = "I" + dest_seq[j - 1]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return TransformTables { costs: costs, ops: ops }
+}
+
+fun assemble_transformation(ops: list<list<string>>, i: int, j: int): list<string> {
+  if i == 0 && j == 0 { return [] }
+  let op = ops[i][j]
+  let kind = substring(op, 0, 1)
+  if kind == "C" || kind == "R" {
+    var seq = assemble_transformation(ops, i - 1, j - 1)
+    seq = append(seq, op)
+    return seq
+  } else if kind == "D" {
+    var seq = assemble_transformation(ops, i - 1, j)
+    seq = append(seq, op)
+    return seq
+  } else {
+    var seq = assemble_transformation(ops, i, j - 1)
+    seq = append(seq, op)
+    return seq
+  }
+}
+
+fun main() {
+  let copy_cost = -1
+  let replace_cost = 1
+  let delete_cost = 2
+  let insert_cost = 2
+  let src = "Python"
+  let dst = "Algorithms"
+  let tables = compute_transform_tables(src, dst, copy_cost, replace_cost, delete_cost, insert_cost)
+  let operations = tables.ops
+  let m = len(operations)
+  let n = len(operations[0])
+  var sequence = assemble_transformation(operations, m - 1, n - 1)
+  var string_list = string_to_chars(src)
+  var idx = 0
+  var cost = 0
+  var k = 0
+  while k < len(sequence) {
+    print(join_chars(string_list))
+    let op = sequence[k]
+    let kind = substring(op, 0, 1)
+    if kind == "C" {
+      cost = cost + copy_cost
+    } else if kind == "R" {
+      string_list[idx] = substring(op, 2, 3)
+      cost = cost + replace_cost
+    } else if kind == "D" {
+      string_list = remove_at(string_list, idx)
+      cost = cost + delete_cost
+    } else {
+      string_list = insert_at(string_list, idx, substring(op, 1, 2))
+      cost = cost + insert_cost
+    }
+    idx = idx + 1
+    k = k + 1
+  }
+  print(join_chars(string_list))
+  print("Cost: " + str(cost))
+}
+
+main()
