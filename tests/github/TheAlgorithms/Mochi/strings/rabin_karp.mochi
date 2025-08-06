@@ -1,0 +1,122 @@
+/*
+Rabin-Karp String Search
+
+This algorithm checks whether a pattern occurs within a given text by
+using a rolling hash.  It first computes the hash of the pattern and the
+first window of the text of the same length.  Then it slides the window
+across the text, updating the hash in O(1) time.  When the window hash
+matches the pattern hash, the substring is compared directly to confirm
+a match.  The method runs in O(n + m) average time for text length n and
+pattern length m.
+*/
+
+let alphabet_size: int = 256
+let modulus: int = 1000003
+
+fun index_of_char(s: string, ch: string): int {
+  var i: int = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let digits = "0123456789"
+  var idx: int = index_of_char(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = index_of_char(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  idx = index_of_char(digits, ch)
+  if idx >= 0 { return 48 + idx }
+  if ch == "ü" { return 252 }
+  if ch == "Ü" { return 220 }
+  if ch == " " { return 32 }
+  return 0
+}
+
+fun rabin_karp(pattern: string, text: string): bool {
+  let p_len: int = len(pattern)
+  let t_len: int = len(text)
+  if p_len > t_len { return false }
+
+  var p_hash: int = 0
+  var t_hash: int = 0
+  var modulus_power: int = 1
+  var i: int = 0
+  while i < p_len {
+    p_hash = (ord(pattern[i]) + p_hash * alphabet_size) % modulus
+    t_hash = (ord(text[i]) + t_hash * alphabet_size) % modulus
+    if i != p_len - 1 {
+      modulus_power = (modulus_power * alphabet_size) % modulus
+    }
+    i = i + 1
+  }
+
+  var j: int = 0
+  while j <= t_len - p_len {
+    if t_hash == p_hash && substring(text, j, j + p_len) == pattern {
+      return true
+    }
+    if j == t_len - p_len {
+      j = j + 1
+      continue
+    }
+    t_hash = ((t_hash - ord(text[j]) * modulus_power) * alphabet_size + ord(text[j + p_len])) % modulus
+    if t_hash < 0 {
+      t_hash = t_hash + modulus
+    }
+    j = j + 1
+  }
+
+  return false
+}
+
+fun test_rabin_karp(): void {
+  let pattern1: string = "abc1abc12"
+  let text1: string = "alskfjaldsabc1abc1abc12k23adsfabcabc"
+  let text2: string = "alskfjaldsk23adsfabcabc"
+  if !rabin_karp(pattern1, text1) || rabin_karp(pattern1, text2) {
+    print("Failure")
+    return
+  }
+
+  let pattern2: string = "ABABX"
+  let text3: string = "ABABZABABYABABX"
+  if !rabin_karp(pattern2, text3) {
+    print("Failure")
+    return
+  }
+
+  let pattern3: string = "AAAB"
+  let text4: string = "ABAAAAAB"
+  if !rabin_karp(pattern3, text4) {
+    print("Failure")
+    return
+  }
+
+  let pattern4: string = "abcdabcy"
+  let text5: string = "abcxabcdabxabcdabcdabcy"
+  if !rabin_karp(pattern4, text5) {
+    print("Failure")
+    return
+  }
+
+  let pattern5: string = "Lü"
+  let text6: string = "Lüsai"
+  if !rabin_karp(pattern5, text6) {
+    print("Failure")
+    return
+  }
+  let pattern6: string = "Lue"
+  if rabin_karp(pattern6, text6) {
+    print("Failure")
+    return
+  }
+  print("Success.")
+}
+
+test_rabin_karp()
