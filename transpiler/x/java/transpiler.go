@@ -469,16 +469,26 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 					return
 				}
 			}
-		case *MapLit:
-			if strings.Contains(typ, "Map") {
-				jt := javaType(typ)
-				fmt.Fprintf(w, "((%s)(", jt)
-				e.emit(w)
-				fmt.Fprint(w, "))")
-				return
-			}
-		}
-	}
+               case *MapLit:
+                       if strings.Contains(typ, "Map") {
+                               if ex.ValueType == "" {
+                                       if vt := mapValueType(javaType(typ)); vt != "" {
+                                               ex.ValueType = vt
+                                       }
+                               }
+                               if ex.KeyType == "" {
+                                       if kt := mapKeyType(javaType(typ)); kt != "" {
+                                               ex.KeyType = kt
+                                       }
+                               }
+                               jt := javaType(typ)
+                               fmt.Fprintf(w, "((%s)(", jt)
+                               e.emit(w)
+                               fmt.Fprint(w, "))")
+                               return
+                       }
+               }
+       }
 	jt := javaType(typ)
 	if jt == "String" && !isStringExpr(e) {
 		if se, ok := e.(*SliceExpr); ok && isArrayExpr(se.Value) {
@@ -613,10 +623,12 @@ func fieldTypeFromVar(target Expr, name string) (string, bool) {
 
 func inferType(e Expr) string {
 	switch ex := e.(type) {
-	case *IntLit:
-		return "int"
-	case *FloatLit:
-		return "double"
+       case *IntLit:
+               return "int"
+       case *LongLit:
+               return "int"
+       case *FloatLit:
+               return "double"
 	case *BoolLit:
 		return "boolean"
 	case *InputExpr:
@@ -1513,14 +1525,14 @@ func (s *IfStmt) emit(w io.Writer, indent string) {
 type ExprStmt struct{ Expr Expr }
 
 func (s *ExprStmt) emit(w io.Writer, indent string) {
-	if call, ok := s.Expr.(*CallExpr); ok && call.Func == "panic" && len(call.Args) == 1 {
-		fmt.Fprint(w, indent)
-		fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
-		call.Args[0].emit(w)
-		fmt.Fprint(w, "));")
-		fmt.Fprint(w, "\n")
-		return
-	}
+       if call, ok := s.Expr.(*CallExpr); ok && (call.Func == "panic" || call.Func == "error") && len(call.Args) == 1 {
+               fmt.Fprint(w, indent)
+               fmt.Fprint(w, "throw new RuntimeException(String.valueOf(")
+               call.Args[0].emit(w)
+               fmt.Fprint(w, "));")
+               fmt.Fprint(w, "\n")
+               return
+       }
 	fmt.Fprint(w, indent)
 	s.Expr.emit(w)
 	fmt.Fprint(w, ";\n")
@@ -2369,11 +2381,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 type IntLit struct{ Value int }
 
 func (i *IntLit) emit(w io.Writer) {
-	if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
-		fmt.Fprintf(w, "(int)%dL", int64(i.Value))
-	} else {
-		fmt.Fprint(w, i.Value)
-	}
+        if i.Value > math.MaxInt32 || i.Value < math.MinInt32 {
+                fmt.Fprintf(w, "(int)%dL", int64(i.Value))
+        } else {
+                fmt.Fprint(w, i.Value)
+        }
+}
+
+type LongLit struct{ Value int64 }
+
+func (l *LongLit) emit(w io.Writer) {
+       fmt.Fprintf(w, "%dL", l.Value)
 }
 
 type FloatLit struct{ Value float64 }
@@ -4692,18 +4710,23 @@ func applyBinaryOp(left Expr, op *parser.BinaryOp, right Expr) (Expr, error) {
 				}
 			}
 		}
-		if op.Op == "%" {
-			lt := inferType(left)
-			rt := inferType(right)
-			if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
-				if ce, ok := right.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
-					needModPow2 = true
-					return &CallExpr{Func: "_modPow2", Args: []Expr{left, ce.Args[0]}}, nil
-				}
-				return &CallExpr{Func: "Math.floorMod", Args: []Expr{left, right}}, nil
-			}
-		}
-		return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil
+                if op.Op == "%" {
+                        lt := inferType(left)
+                        rt := inferType(right)
+                        if lt != "double" && lt != "float" && rt != "double" && rt != "float" && lt != "bigint" && rt != "bigint" && lt != "java.math.BigInteger" && rt != "java.math.BigInteger" {
+                                if ce, ok := right.(*CallExpr); ok && ce.Func == "pow2" && len(ce.Args) == 1 {
+                                        needModPow2 = true
+                                        return &CallExpr{Func: "_modPow2", Args: []Expr{left, ce.Args[0]}}, nil
+                                }
+                               if il, ok := right.(*IntLit); ok && il.Value == 1<<31 {
+                                       left = &CastExpr{Type: "long", Value: left}
+                                       call := &CallExpr{Func: "Math.floorMod", Args: []Expr{left, &LongLit{Value: int64(il.Value)}}}
+                                       return &CastExpr{Type: "int", Value: call}, nil
+                               }
+                               return &CallExpr{Func: "Math.floorMod", Args: []Expr{left, right}}, nil
+                        }
+                }
+                return &BinaryExpr{Left: left, Op: op.Op, Right: right}, nil
 	case "in":
 		if isStringExpr(right) {
 			return &MethodCallExpr{Target: right, Name: "contains", Args: []Expr{left}}, nil
