@@ -48,6 +48,7 @@ var (
 	needStrListInt          bool
 	needStrListStr          bool
 	needStrListListInt      bool
+	needJSONListListInt     bool
 	needUpper               bool
 	needLower               bool
 	needPadStart            bool
@@ -128,7 +129,12 @@ func emitLenExpr(w io.Writer, e Expr) {
 		v.Target.emitExpr(w)
 		io.WriteString(w, "."+v.Name+"_len")
 	case *CallExpr:
-		io.WriteString(w, v.Func+"_len")
+		if v.Func == "append" && len(v.Args) == 2 {
+			emitLenExpr(w, v.Args[0])
+			io.WriteString(w, " + 1")
+		} else {
+			io.WriteString(w, v.Func+"_len")
+		}
 	case *ListLit:
 		fmt.Fprintf(w, "%d", len(v.Elems))
 	case *IndexExpr:
@@ -562,6 +568,35 @@ func (c *CallStmt) emit(w io.Writer, indent int) {
 		a.emitExpr(w)
 		emitExtraArgs(w, paramType, a)
 	}
+	io.WriteString(w, ");\n")
+}
+
+type JSONCall struct {
+	Arg Expr
+}
+
+func (j *JSONCall) emit(w io.Writer, indent int) {
+	if ce, ok := j.Arg.(*CallExpr); ok {
+		if ret, ok2 := funcReturnTypes[ce.Func]; ok2 && strings.HasSuffix(ret, "[]") {
+			tmp := fmt.Sprintf("__tmp%d", tempCounter)
+			tempCounter++
+			decl := listPtrType(ret)
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "%s %s = ", decl, tmp)
+			ce.emitExpr(w)
+			io.WriteString(w, ";\n")
+			writeIndent(w, indent)
+			fmt.Fprintf(w, "json_list_list_int(%s, %s_len, %s_lens);\n", tmp, ce.Func, ce.Func)
+			return
+		}
+	}
+	writeIndent(w, indent)
+	io.WriteString(w, "json_list_list_int(")
+	j.Arg.emitExpr(w)
+	io.WriteString(w, ", ")
+	emitLenExpr(w, j.Arg)
+	io.WriteString(w, ", ")
+	emitLensExpr(w, j.Arg)
 	io.WriteString(w, ");\n")
 }
 
@@ -2808,6 +2843,21 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return buf;\n")
 		buf.WriteString("}\n\n")
 	}
+	if needJSONListListInt {
+		buf.WriteString("static void json_list_list_int(long long **arr, size_t len, const size_t lens[]) {\n")
+		buf.WriteString("    printf(\"[\\n\");\n")
+		buf.WriteString("    for (size_t i = 0; i < len; i++) {\n")
+		buf.WriteString("        printf(\"  [\\n\");\n")
+		buf.WriteString("        for (size_t j = 0; j < lens[i]; j++) {\n")
+		buf.WriteString("            printf(\"    %lld\", arr[i][j]);\n")
+		buf.WriteString("            if (j + 1 < lens[i]) printf(\",\\n\"); else printf(\"\\n\");\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        printf(\"  ]\");\n")
+		buf.WriteString("        if (i + 1 < len) printf(\",\\n\"); else printf(\"\\n\");\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    printf(\"]\");\n")
+		buf.WriteString("}\n\n")
+	}
 	if needUpper {
 		buf.WriteString("static char* str_upper(const char *s) {\n")
 		buf.WriteString("    size_t n = strlen(s);\n")
@@ -3477,6 +3527,8 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 	needStrBool = false
 	needStrListInt = false
 	needStrListStr = false
+	needStrListListInt = false
+	needJSONListListInt = false
 	needUpper = false
 	needLower = false
 	needPadStart = false
@@ -3744,6 +3796,11 @@ func compileStmt(env *types.Env, s *parser.Statement) (Stmt, error) {
 			arg := convertExpr(call.Args[0])
 			if str, ok := evalString(&CallExpr{Func: "json", Args: []Expr{arg}}); ok {
 				return &PrintStmt{Args: []Expr{&StringLit{Value: str}}, Types: []string{"string"}}, nil
+			}
+			typ := inferExprType(currentEnv, arg)
+			if strings.HasPrefix(typ, "long long") && strings.HasSuffix(typ, "[][]") {
+				needJSONListListInt = true
+				return &JSONCall{Arg: arg}, nil
 			}
 			return nil, fmt.Errorf("unsupported json argument")
 		}

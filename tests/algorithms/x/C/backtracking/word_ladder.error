@@ -1,0 +1,57 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c: In function ‘word_ladder’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:135:24: warning: passing argument 1 of ‘strstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  135 |             if (strstr(words, transformed) != NULL) {
+      |                        ^~~~~
+      |                        |
+      |                        const char **
+In file included from /workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:3:
+/usr/include/string.h:350:34: note: expected ‘const char *’ but argument is of type ‘const char **’
+  350 | extern char *strstr (const char *__haystack, const char *__needle)
+      |                      ~~~~~~~~~~~~^~~~~~~~~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:138:42: error: ‘remove_item_lens’ undeclared (first use in this function); did you mean ‘remove_item_len’?
+  138 |                 size_t *new_words_lens = remove_item_lens;
+      |                                          ^~~~~~~~~~~~~~~~
+      |                                          remove_item_len
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:138:42: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:143:53: warning: passing argument 1 of ‘strlen’ from incompatible pointer type [-Wincompatible-pointer-types]
+  143 |                 size_t result_len = result ? strlen(result) : 0;
+      |                                                     ^~~~~~
+      |                                                     |
+      |                                                     const char **
+/usr/include/string.h:407:35: note: expected ‘const char *’ but argument is of type ‘const char **’
+  407 | extern size_t strlen (const char *__s)
+      |                       ~~~~~~~~~~~~^~~
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c: In function ‘user_main’:
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:168:18: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  168 |     puts(str_int(word_ladder("hit", (const char*[]){ "hit" }, 1, "cog", w1, w1_len)));
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |
+      |                  const char **
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:22:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   22 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:176:18: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  176 |     puts(str_int(word_ladder("hit", (const char*[]){ "hit" }, 1, "cog", w2, w2_len)));
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |
+      |                  const char **
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:22:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   22 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:184:18: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  184 |     puts(str_int(word_ladder("lead", (const char*[]){ "lead" }, 1, "gold", w3, w3_len)));
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |
+      |                  const char **
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:22:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   22 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:192:18: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  192 |     puts(str_int(word_ladder("game", (const char*[]){ "game" }, 1, "code", w4, w4_len)));
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                  |
+      |                  const char **
+/workspace/mochi/tests/algorithms/x/C/backtracking/word_ladder.c:22:32: note: expected ‘long long int’ but argument is of type ‘const char **’
+   22 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
