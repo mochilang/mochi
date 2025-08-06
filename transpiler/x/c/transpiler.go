@@ -3286,7 +3286,7 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("}\n\n")
 	}
 	if needIndexOf {
-		buf.WriteString("static long long indexOf(const char *s, const char *sub) {\n")
+		buf.WriteString("static long long _indexOf(const char *s, const char *sub) {\n")
 		buf.WriteString("    const char *p = strstr(s, sub);\n")
 		buf.WriteString("    if (p) return (long long)(p - s);\n")
 		buf.WriteString("    return -1;\n")
@@ -6261,11 +6261,13 @@ func convertUnary(u *parser.Unary) Expr {
 			return &CallExpr{Func: call.Func, Args: []Expr{arg}}
 		}
 		if call.Func == "indexOf" && len(call.Args) == 2 {
-			arg0 := convertExpr(call.Args[0])
-			arg1 := convertExpr(call.Args[1])
-			needIndexOf = true
-			funcReturnTypes["indexOf"] = "long long"
-			return &CallExpr{Func: "indexOf", Args: []Expr{arg0, arg1}}
+			if _, ok := funcParamTypes["indexOf"]; !ok {
+				arg0 := convertExpr(call.Args[0])
+				arg1 := convertExpr(call.Args[1])
+				needIndexOf = true
+				funcReturnTypes["_indexOf"] = "long long"
+				return &CallExpr{Func: "_indexOf", Args: []Expr{arg0, arg1}}
+			}
 		}
 		if call.Func == "upper" && len(call.Args) == 1 {
 			arg := convertExpr(call.Args[0])
