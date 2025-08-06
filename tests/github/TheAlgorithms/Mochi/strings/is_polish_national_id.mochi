@@ -1,0 +1,64 @@
+/*
+Validate Polish national identification numbers (PESEL).
+
+A PESEL contains 11 digits encoding the birth date and a checksum.
+This implementation verifies:
+1. The input string is numeric and within the allowed range.
+2. Month digits encode a valid month for the proper century.
+3. Day digits form a value between 1 and 31.
+4. The final digit matches the checksum computed with weights
+   [1,3,7,9,1,3,7,9,1,3].
+
+The code is written in pure Mochi without FFI and avoids the "any" type,
+so it can execute on the runtime/vm.
+*/
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun is_polish_national_id(id: string): bool {
+  if len(id) == 0 { return false }
+  if substring(id, 0, 1) == "-" { return false }
+
+  let input_int = parse_int(id)
+  if input_int < 10100000 || input_int > 99923199999 { return false }
+
+  let month = parse_int(substring(id, 2, 4))
+  if !((month >= 1 && month <= 12) ||
+       (month >= 21 && month <= 32) ||
+       (month >= 41 && month <= 52) ||
+       (month >= 61 && month <= 72) ||
+       (month >= 81 && month <= 92)) {
+    return false
+  }
+
+  let day = parse_int(substring(id, 4, 6))
+  if day < 1 || day > 31 { return false }
+
+  let multipliers: list<int> = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3]
+  var subtotal = 0
+  var i = 0
+  while i < len(multipliers) {
+    let digit = parse_int(substring(id, i, i + 1))
+    subtotal = subtotal + (digit * multipliers[i]) % 10
+    i = i + 1
+  }
+
+  let checksum = 10 - (subtotal % 10)
+  return checksum == input_int % 10
+}
+
+print(str(is_polish_national_id("02070803628")))
+print(str(is_polish_national_id("02150803629")))
+print(str(is_polish_national_id("02075503622")))
+print(str(is_polish_national_id("-99012212349")))
+print(str(is_polish_national_id("990122123499999")))
+print(str(is_polish_national_id("02070803621")))
