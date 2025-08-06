@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 16:36 GMT+7
+Last updated: 2025-08-06 18:46 GMT+7
 
-## Algorithms Golden Test Checklist (10/1077)
+## Algorithms Golden Test Checklist (20/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 28.0ms | 46.14KB |
-| 2 | backtracking/all_permutations | ✓ | 33.0ms | 45.75KB |
-| 3 | backtracking/all_subsequences | ✓ | 26.0ms | 45.54KB |
-| 4 | backtracking/coloring | ✓ | 29.0ms | 46.43KB |
-| 5 | backtracking/combination_sum | ✓ | 32.0ms | 46.14KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 14.0ms | 1.40KB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 16.0ms | 0B |
-| 8 | backtracking/knight_tour | ✓ | 30.0ms | 46.20KB |
-| 9 | backtracking/match_word_pattern | ✓ | 15.0ms | 760B |
-| 10 | backtracking/minimax | ✓ | 24.0ms | 37.65KB |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
+| 2 | backtracking/all_permutations | ✓ | 42.0ms | 45.75KB |
+| 3 | backtracking/all_subsequences | ✓ | 60.0ms | 45.54KB |
+| 4 | backtracking/coloring | ✓ | 42.0ms | 46.43KB |
+| 5 | backtracking/combination_sum | ✓ | 62.0ms | 46.14KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 22.0ms | 1.40KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 21.0ms | 0B |
+| 8 | backtracking/knight_tour | ✓ | 42.0ms | 46.20KB |
+| 9 | backtracking/match_word_pattern | ✓ | 20.0ms | 760B |
+| 10 | backtracking/minimax | ✓ | 34.0ms | 37.65KB |
+| 11 | backtracking/n_queens | ✓ | 45.0ms | 55.08KB |
+| 12 | backtracking/n_queens_math | ✓ | 66.0ms | 96.51KB |
+| 13 | backtracking/power_sum | ✓ | 19.0ms | 448B |
+| 14 | backtracking/rat_in_maze | ✓ | 43.0ms | 46.48KB |
+| 15 | backtracking/sudoku | ✓ | 39.0ms | 40.27KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 39.0ms | 46.46KB |
+| 17 | backtracking/word_break | ✓ | 22.0ms | 1.23KB |
+| 18 | backtracking/word_ladder | ✓ | 67.0ms | 99.90KB |
+| 19 | backtracking/word_search | ✓ | 44.0ms | 46.98KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 55.0ms | 39.45KB |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |

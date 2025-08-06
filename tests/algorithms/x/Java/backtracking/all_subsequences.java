@@ -13,7 +13,7 @@ public class Main {
     }
 
     static void generate_all_subsequences(Object[] sequence) {
-        create_state_space_tree(((Object[])(sequence)), ((Object[])(((Object[])(new Object[]{})))), 0);
+        create_state_space_tree(((Object[])(sequence)), ((Object[])(new Object[]{})), 0);
     }
     public static void main(String[] args) {
         seq = new Object[]{1, 2, 3};
