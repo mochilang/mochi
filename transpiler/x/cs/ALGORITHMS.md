@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 16:41 GMT+7
+Last updated: 2025-08-06 17:50 GMT+7
 
-## Algorithms Golden Test Checklist (10/1077)
+## Algorithms Golden Test Checklist (30/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
@@ -17,26 +17,26 @@ Last updated: 2025-08-06 16:41 GMT+7
 | 8 | backtracking/knight_tour | ✓ | 3.0ms | 16.62KB |
 | 9 | backtracking/match_word_pattern | ✓ | 3.0ms | 56.11KB |
 | 10 | backtracking/minimax | ✓ | 3.0ms | 16.56KB |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
+| 11 | backtracking/n_queens | ✓ | 3.0ms | 19.54KB |
+| 12 | backtracking/n_queens_math | ✓ | 3.0ms | 25.38KB |
+| 13 | backtracking/power_sum | ✓ | 2.0ms | 16.41KB |
+| 14 | backtracking/rat_in_maze | ✓ | 2.0ms | 22.80KB |
+| 15 | backtracking/sudoku | ✓ | 2.0ms | 73.86KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 8.0ms | 111.99KB |
+| 17 | backtracking/word_break | ✓ | 2.0ms | 14.39KB |
+| 18 | backtracking/word_ladder | ✓ | 5.0ms | 170.99KB |
+| 19 | backtracking/word_search | ✓ | 3.0ms | 20.87KB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 2.0ms | 23.11KB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 2.0ms | 19.38KB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 2.0ms | 16.53KB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 2.0ms | 16.56KB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 2.0ms | 14.28KB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 4.0ms | 18.00KB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 2.0ms | 18.09KB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 2.0ms | 23.74KB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 2.0ms | 16.45KB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 1.0ms | 16.53KB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 2.0ms | 16.80KB |
 | 31 | bit_manipulation/excess_3_code |   |  |  |
 | 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
 | 33 | bit_manipulation/find_unique_number |   |  |  |

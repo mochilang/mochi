@@ -2281,6 +2281,20 @@ func (a *AppendExpr) emit(w io.Writer) {
 	fmt.Fprint(w, ")))")
 }
 
+type ConcatExpr struct {
+	A Expr
+	B Expr
+}
+
+func (c *ConcatExpr) emit(w io.Writer) {
+	usesLinq = true
+	fmt.Fprint(w, "(Enumerable.ToArray(Enumerable.Concat(")
+	c.A.emit(w)
+	fmt.Fprint(w, ", ")
+	c.B.emit(w)
+	fmt.Fprint(w, ")))")
+}
+
 type StrExpr struct{ Arg Expr }
 
 func (s *StrExpr) emit(w io.Writer) {
@@ -2741,7 +2755,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil:
 			if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" && len(op.Cast.Type.Generic.Args) == 1 {
 				typ := fmt.Sprintf("%s[]", csType(op.Cast.Type.Generic.Args[0]))
-				expr = &RawExpr{Code: fmt.Sprintf("(%s as %s) ?? new %s{}", exprString(expr), typ, typ), Type: typ}
+				if lit, ok := expr.(*ListLit); ok && len(lit.Elems) == 0 {
+					lit.ElemType = typ
+					expr = lit
+				} else {
+					expr = &RawExpr{Code: fmt.Sprintf("(%s as %s) ?? new %s{}", exprString(expr), typ, typ), Type: typ}
+				}
 			} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "map" && len(op.Cast.Type.Generic.Args) == 2 {
 				kt := csType(op.Cast.Type.Generic.Args[0])
 				vt := csType(op.Cast.Type.Generic.Args[1])
@@ -3886,6 +3905,11 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				usesLinq = true
 				return &AppendExpr{List: args[0], Item: args[1]}, nil
+			}
+		case "concat":
+			if len(args) == 2 {
+				usesLinq = true
+				return &ConcatExpr{A: args[0], B: args[1]}, nil
 			}
 		case "exists":
 			if len(args) == 1 {
