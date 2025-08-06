@@ -1,0 +1,73 @@
+/*
+Damerau-Levenshtein Distance Algorithm
+
+Computes the edit distance between two strings allowing four operations:
+- insertion
+- deletion
+- substitution
+- transposition of adjacent characters
+
+The algorithm builds a (m+1) x (n+1) dynamic programming matrix where m and n
+are the lengths of the input strings. Each cell dp[i][j] represents the cost of
+converting the first i characters of the first string to the first j characters
+of the second string. The value is derived from the minimum of the four
+possible operations. The resulting distance is found in the bottom-right cell.
+The time complexity is O(m * n) and space complexity is also O(m * n).
+*/
+
+fun damerau_levenshtein_distance(first_string: string, second_string: string): int {
+  let len1 = len(first_string)
+  let len2 = len(second_string)
+
+  var dp_matrix: list<list<int>> = []
+  for _ in 0..(len1 + 1) {
+    var row: list<int> = []
+    for _2 in 0..(len2 + 1) {
+      row = append(row, 0)
+    }
+    dp_matrix = append(dp_matrix, row)
+  }
+
+  for i in 0..(len1 + 1) {
+    var row = dp_matrix[i]
+    row[0] = i
+    dp_matrix[i] = row
+  }
+  var first_row = dp_matrix[0]
+  for j in 0..(len2 + 1) {
+    first_row[j] = j
+  }
+  dp_matrix[0] = first_row
+
+  for i in 1..(len1 + 1) {
+    var row = dp_matrix[i]
+    let first_char = substring(first_string, i - 1, i)
+    for j in 1..(len2 + 1) {
+      let second_char = substring(second_string, j - 1, j)
+      let cost = if first_char == second_char { 0 } else { 1 }
+
+      var value = dp_matrix[i - 1][j] + 1
+      let insertion = row[j - 1] + 1
+      if insertion < value { value = insertion }
+      let substitution = dp_matrix[i - 1][j - 1] + cost
+      if substitution < value { value = substitution }
+      row[j] = value
+
+      if i > 1 && j > 1 &&
+         substring(first_string, i - 1, i) == substring(second_string, j - 2, j - 1) &&
+         substring(first_string, i - 2, i - 1) == substring(second_string, j - 1, j) {
+        let transposition = dp_matrix[i - 2][j - 2] + cost
+        if transposition < row[j] { row[j] = transposition }
+      }
+    }
+    dp_matrix[i] = row
+  }
+
+  return dp_matrix[len1][len2]
+}
+
+print(str(damerau_levenshtein_distance("cat", "cut")))
+print(str(damerau_levenshtein_distance("kitten", "sitting")))
+print(str(damerau_levenshtein_distance("hello", "world")))
+print(str(damerau_levenshtein_distance("book", "back")))
+print(str(damerau_levenshtein_distance("container", "containment")))
