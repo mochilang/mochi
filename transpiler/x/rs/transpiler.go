@@ -104,18 +104,23 @@ func isConstExpr(e Expr) bool {
 	if e == nil {
 		return true
 	}
-	switch v := e.(type) {
-	case *StringLit, *NumberLit, *BoolLit, *NullLit:
-		return true
-	case *StringCastExpr:
-		return isConstExpr(v.Expr)
-	case *IntCastExpr:
-		return isConstExpr(v.Expr)
-	case *ListLit:
-		for _, el := range v.Elems {
-			if !isConstExpr(el) {
-				return false
-			}
+       switch v := e.(type) {
+       case *StringLit, *NumberLit, *BoolLit, *NullLit:
+               return true
+       case *StringCastExpr:
+               return isConstExpr(v.Expr)
+       case *IntCastExpr:
+               return isConstExpr(v.Expr)
+       case *UnaryExpr:
+               if v.Op == "-" || v.Op == "+" {
+                       return isConstExpr(v.Expr)
+               }
+               return false
+       case *ListLit:
+               for _, el := range v.Elems {
+                       if !isConstExpr(el) {
+                               return false
+                       }
 		}
 		return true
 	case *MapLit:
