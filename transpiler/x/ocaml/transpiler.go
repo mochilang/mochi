@@ -1301,6 +1301,18 @@ type AppendBuiltin struct {
 }
 
 func (a *AppendBuiltin) emit(w io.Writer) {
+	if l, ok := a.List.(*ListLit); ok && len(l.Elems) == 0 {
+		io.WriteString(w, "[")
+		if a.Elem != "" {
+			io.WriteString(w, "(Obj.magic (")
+			a.Value.emit(w)
+			fmt.Fprintf(w, ") : %s)", ocamlType(a.Elem))
+		} else {
+			a.Value.emit(w)
+		}
+		io.WriteString(w, "]")
+		return
+	}
 	io.WriteString(w, "(List.append (")
 	a.List.emit(w)
 	io.WriteString(w, ") [")
