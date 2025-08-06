@@ -1,0 +1,51 @@
+/*
+Project Euler Problem 92: Square digit chains
+
+Given a starting number, form a chain by repeatedly replacing the number with
+   the sum of the squares of its decimal digits.  Every starting value eventually
+   reaches a loop containing either 1 or 89.  This program counts how many
+   starting numbers below a limit arrive at 89.  For each starting value we
+   iteratively follow its chain until it reaches 1 or 89, then increment the
+   counter when 89 is reached.  The implementation uses only Mochi's core
+   features and avoids recursion so it runs on runtime/vm without FFI.
+*/
+
+fun next_number(number: int): int {
+  var n = number
+  var total = 0
+  while n > 0 {
+    let d = n % 10
+    total = total + d * d
+    n = n / 10
+  }
+  return total
+}
+
+fun chain(number: int): bool {
+  var n = number
+  while n != 1 && n != 89 {
+    n = next_number(n)
+  }
+  return n == 1
+}
+
+fun solution(limit: int): int {
+  var count = 0
+  var i = 1
+  while i < limit {
+    if !chain(i) {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  return count
+}
+
+print(str(next_number(44)))
+print(str(next_number(10)))
+print(str(next_number(32)))
+print(str(chain(10)))
+print(str(chain(58)))
+print(str(chain(1)))
+print(str(solution(100)))
+print(str(solution(1000)))
