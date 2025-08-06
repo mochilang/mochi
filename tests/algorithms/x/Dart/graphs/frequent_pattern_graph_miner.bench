@@ -1,0 +1,23 @@
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:127:9: Error: Method not found: 'toi'.
+    if (toi(table[j]["count"]!).compareTo(toi(table[max_i]["count"]!)) > 0) {
+        ^^^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:127:43: Error: Method not found: 'toi'.
+    if (toi(table[j]["count"]!).compareTo(toi(table[max_i]["count"]!)) > 0) {
+                                          ^^^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:147:46: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    nodes[code] = List<String>.from([...nodes[code], edge]);
+                                             ^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:164:50: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    clusters[wt] = List<String>.from([...clusters[wt], code]);
+                                                 ^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:233:48: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    graph[i_code] = List<String>.from([...graph[i_code], j_code]);
+                                               ^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:267:50: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    graph["Header"] = List<String>.from([...graph["Header"], code]);
+                                                 ^
+../../../tests/algorithms/x/Dart/graphs/frequent_pattern_graph_miner.dart:296:25: Error: The type 'List<String>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+  for (var node in graph[start]) {
+                        ^

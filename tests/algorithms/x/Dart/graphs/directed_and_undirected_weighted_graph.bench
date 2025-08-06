@@ -1,0 +1,16 @@
+../../../tests/algorithms/x/Dart/graphs/directed_and_undirected_weighted_graph.dart:206:23: Error: Property 'length' cannot be accessed on 'List<List<int>>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+    return g.graph[u].length;
+                      ^^^^^^
+../../../tests/algorithms/x/Dart/graphs/directed_and_undirected_weighted_graph.dart:253:12: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (rec[neigh]) {
+           ^
+../../../tests/algorithms/x/Dart/graphs/directed_and_undirected_weighted_graph.dart:292:12: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (rec[neigh]) {
+           ^
+../../../tests/algorithms/x/Dart/graphs/directed_and_undirected_weighted_graph.dart:480:23: Error: Property 'length' cannot be accessed on 'List<List<int>>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+    return g.graph[u].length;
+                      ^^^^^^

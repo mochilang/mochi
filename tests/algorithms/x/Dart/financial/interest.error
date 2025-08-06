@@ -1,0 +1,13 @@
+run: exit status 255
+3240.0
+0.09
+1800.0
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      powf (file:///workspace/mochi/tests/algorithms/x/Dart/financial/interest.dart:46:19)
+#1      compound_interest (file:///workspace/mochi/tests/algorithms/x/Dart/financial/interest.dart:82:23)
+#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/financial/interest.dart:105:10)
+#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/financial/interest.dart:118:3)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/financial/interest.dart:128:16)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

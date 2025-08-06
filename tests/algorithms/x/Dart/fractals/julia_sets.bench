@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      prepare_grid (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/julia_sets.dart:142:57)
+#1      julia_demo (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/julia_sets.dart:154:30)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/fractals/julia_sets.dart:187:3)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

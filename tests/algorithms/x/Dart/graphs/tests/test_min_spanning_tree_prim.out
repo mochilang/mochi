@@ -1,0 +1,21 @@
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:43:16: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (visited[u]) {
+               ^
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:44:28: Error: The type 'List<Neighbor>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<Neighbor>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Neighbor' is from '../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart'.
+ - 'Iterable' is from 'dart:core'.
+    for (var n in adjacency[u]) {
+                           ^
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:45:17: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (!visited[(n.node).toInt()] && n.cost.compareTo(best_cost) < 0) {
+                ^
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:73:53: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    adjacency[u] = List<Neighbor>.from([...adjacency[u], Neighbor(node: v, cost: w)]);
+                                                    ^
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:74:53: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    adjacency[v] = List<Neighbor>.from([...adjacency[v], Neighbor(node: u, cost: w)]);
+                                                    ^
+../../../tests/algorithms/x/Dart/graphs/tests/test_min_spanning_tree_prim.dart:87:14: Error: A value of type 'bool?' can't be assigned to a variable of type 'bool' because 'bool?' is nullable and 'bool' isn't.
+    if (!seen[key]) {
+             ^

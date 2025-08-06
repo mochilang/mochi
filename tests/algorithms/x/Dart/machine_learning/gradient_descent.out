@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      get_cost_derivative (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_descent.dart:60:75)
+#1      run_gradient_descent (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_descent.dart:87:20)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/gradient_descent.dart:114:22)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

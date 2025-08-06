@@ -1,0 +1,9 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      distance (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/ant_colony_optimization_algorithms.dart:65:35)
+#1      city_select (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/ant_colony_optimization_algorithms.dart:95:19)
+#2      ant_colony (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/ant_colony_optimization_algorithms.dart:180:21)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/graphs/ant_colony_optimization_algorithms.dart:219:3)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

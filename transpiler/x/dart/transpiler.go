@@ -1336,14 +1336,12 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 	if iex, ok := b.Left.(*IndexExpr); ok && strings.HasSuffix(lt, "?") {
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
-		iex.NoBang = true
 		iex.NoSuffix = false
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
 	if iex, ok := b.Right.(*IndexExpr); ok && strings.HasSuffix(rt, "?") {
 		oldBang := iex.NoBang
 		oldSuf := iex.NoSuffix
-		iex.NoBang = true
 		iex.NoSuffix = false
 		defer func() { iex.NoBang = oldBang; iex.NoSuffix = oldSuf }()
 	}
@@ -1950,7 +1948,7 @@ func (m *MapLit) emit(w io.Writer) error {
 	t := inferType(m)
 	valOptional := true
 	if strings.HasPrefix(t, "Map<") {
-		kv := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+		kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
 		parts := strings.SplitN(kv, ",", 2)
 		if len(parts) == 2 {
 			valOptional = strings.HasSuffix(strings.TrimSpace(parts[1]), "?")
@@ -2227,9 +2225,9 @@ func (i *IndexExpr) emit(w io.Writer) error {
 	}
 	if strings.HasPrefix(t, "Map<") {
 		if !i.NoBang {
-			kv := strings.TrimSuffix(strings.TrimPrefix(t, "Map<"), ">")
+			kv := strings.TrimSuffix(strings.TrimPrefix(strings.TrimSuffix(t, "?"), "Map<"), ">")
 			parts := strings.SplitN(kv, ",", 2)
-			val := "null"
+			val := ""
 			if len(parts) == 2 {
 				vt := strings.TrimSpace(parts[1])
 				switch vt {
@@ -2242,22 +2240,28 @@ func (i *IndexExpr) emit(w io.Writer) error {
 				default:
 					if strings.HasPrefix(vt, "Map<") {
 						val = "{}"
-					} else {
+					} else if strings.HasSuffix(vt, "?") {
 						val = "null"
 					}
 				}
 			}
-			_, err := io.WriteString(w, " ?? "+val)
-			if err != nil {
-				return err
-			}
-			if needDefault {
-				_, err = io.WriteString(w, ")")
+			if val == "" {
+				if _, err := io.WriteString(w, "!"); err != nil {
+					return err
+				}
+			} else {
+				_, err := io.WriteString(w, " ?? "+val)
 				if err != nil {
 					return err
 				}
+				if needDefault {
+					_, err = io.WriteString(w, ")")
+					if err != nil {
+						return err
+					}
+				}
+				return nil
 			}
-			return nil
 		} else if !i.NoSuffix {
 			_, err := io.WriteString(w, "!")
 			return err
@@ -5313,10 +5317,6 @@ func convertPostfix(pf *parser.PostfixExpr) (Expr, error) {
 					return nil, err
 				}
 				iex := &IndexExpr{Target: expr, Index: idx}
-				if strings.HasPrefix(strings.TrimSuffix(inferType(expr), "?"), "Map<") {
-					iex.NoBang = true
-					iex.NoSuffix = true
-				}
 				expr = iex
 			}
 		case op.Field != nil:

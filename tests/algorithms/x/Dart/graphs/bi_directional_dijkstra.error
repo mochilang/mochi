@@ -1,0 +1,16 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/bi_directional_dijkstra.dart:84:22: Error: The type 'List<Edge>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<Edge>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Edge' is from '../../../tests/algorithms/x/Dart/graphs/bi_directional_dijkstra.dart'.
+ - 'Iterable' is from 'dart:core'.
+  for (var e in graph[v]) {
+                     ^
+../../../tests/algorithms/x/Dart/graphs/bi_directional_dijkstra.dart:93:39: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    q = [...q, QItem(node: nxt, cost: new_cost)];
+                                      ^
+../../../tests/algorithms/x/Dart/graphs/bi_directional_dijkstra.dart:98:34: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    double alt = cst_fwd[v]! + d + cst_bwd[nxt]!;
+                                 ^
+../../../tests/algorithms/x/Dart/graphs/bi_directional_dijkstra.dart:100:10: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    sd = alt;
+         ^

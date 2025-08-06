@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      calc_profit (file:///workspace/mochi/tests/algorithms/x/Dart/knapsack/tests/test_greedy_knapsack.dart:77:31)
+#1      test_sorted (file:///workspace/mochi/tests/algorithms/x/Dart/knapsack/tests/test_greedy_knapsack.dart:103:20)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/knapsack/tests/test_greedy_knapsack.dart:149:9)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,0 +1,18 @@
+component0 ok
+component2 ok
+str_vector ok
+size ok
+add0 ok
+add1 ok
+add2 ok
+sub0 ok
+sub1 ok
+sub2 ok
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      vector_scalar_mul (file:///workspace/mochi/tests/algorithms/x/Dart/linear_algebra/src/test_linear_algebra.dart:145:26)
+#1      vmul (file:///workspace/mochi/tests/algorithms/x/Dart/linear_algebra/src/test_linear_algebra.dart:427:21)
+#2      vmul (file:///workspace/mochi/tests/algorithms/x/Dart/linear_algebra/src/test_linear_algebra.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/linear_algebra/src/test_linear_algebra.dart:459:45)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

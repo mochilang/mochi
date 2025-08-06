@@ -1,0 +1,4 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/machine_learning/linear_discriminant_analysis.dart:52:28: Error: Unexpected token 'as'.
+  return x - (x / m as int as double) * m;
+                           ^^

@@ -1,0 +1,6 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/graphs/greedy_min_vertex_cover.dart:59:32: Error: Property 'length' cannot be accessed on 'List<int>?' because it is potentially null.
+ - 'List' is from 'dart:core'.
+Try accessing using ?. instead.
+    int deg = (g[key] ?? null).length;
+                               ^^^^^^

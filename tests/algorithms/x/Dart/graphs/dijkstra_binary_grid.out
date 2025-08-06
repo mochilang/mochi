@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/graphs/dijkstra_binary_grid.dart:101:37: Error: The argument type 'double?' can't be assigned to the parameter type 'double' because 'double?' is nullable and 'double' isn't.
+    return Result(distance: dist_map[dest_key], path: path);
+                                    ^

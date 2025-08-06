@@ -1,0 +1,16 @@
+Unhandled exception:
+type 'List<String>' is not a subtype of type 'String'
+#0      new List.from (dart:core-patch/array_patch.dart:30:5)
+#1      apriori.<anonymous closure> (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/apriori_algorithm.dart:208:68)
+#2      MappedListIterable.elementAt (dart:_internal/iterable.dart:442:31)
+#3      ListIterator.moveNext (dart:_internal/iterable.dart:371:26)
+#4      new _GrowableList._ofEfficientLengthIterable (dart:core-patch/growable_array.dart:194:27)
+#5      new _GrowableList.of (dart:core-patch/growable_array.dart:154:28)
+#6      new List.of (dart:core-patch/array_patch.dart:40:18)
+#7      ListIterable.toList (dart:_internal/iterable.dart:224:7)
+#8      apriori (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/apriori_algorithm.dart:208:107)
+#9      frequent_itemsets (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/apriori_algorithm.dart:213:35)
+#10     frequent_itemsets (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/apriori_algorithm.dart)
+#11     main (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/apriori_algorithm.dart:215:22)
+#12     _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#13     _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

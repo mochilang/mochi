@@ -1,0 +1,10 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      revise_centroids (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/k_means_clust.dart:96:44)
+#1      kmeans (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/k_means_clust.dart:137:17)
+#2      result (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/k_means_clust.dart:152:23)
+#3      result (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/k_means_clust.dart)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/machine_learning/k_means_clust.dart:160:10)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

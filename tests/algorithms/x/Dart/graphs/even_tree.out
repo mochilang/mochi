@@ -1,0 +1,11 @@
+../../../tests/algorithms/x/Dart/graphs/even_tree.dart:21:21: Error: The type 'List<int>?' used in the 'for' loop must implement 'Iterable<dynamic>' because 'List<int>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+  for (var v in tree[start]) {
+                    ^
+../../../tests/algorithms/x/Dart/graphs/even_tree.dart:52:24: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    tree[u] = ([...tree[u], v] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+                       ^
+../../../tests/algorithms/x/Dart/graphs/even_tree.dart:53:24: Error: An expression whose value can be 'null' must be null-checked before it can be dereferenced.
+    tree[v] = ([...tree[v], u] as List).map((e) => (e is BigInt ? e.toInt() : (e as int))).toList();
+                       ^
