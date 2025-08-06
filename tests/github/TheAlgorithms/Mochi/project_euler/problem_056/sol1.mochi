@@ -1,0 +1,66 @@
+/*
+Project Euler Problem 56: Powerful Digit Sum
+
+Given natural numbers of the form a^b for 0 <= a < limit_a and 0 <= b < limit_b,
+the task is to find the maximum possible sum of digits of a^b.
+
+Algorithm:
+1. Iterate over all bases and exponents within the provided bounds.
+2. For each pair, compute the power using repeated multiplication (no FFI).
+3. Convert the result to a string and accumulate the integer value of each character to get the digit sum.
+4. Track and return the largest digit sum encountered.
+
+Complexity: O(limit_a * limit_b * log(value)) due to computing each power and summing its digits.
+*/
+
+fun pow_int(base: int, exp: int): int {
+  var result = 1
+  var i = 0
+  while i < exp {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun digital_sum(n: int): int {
+  let s = str(n)
+  var sum = 0
+  var i = 0
+  while i < len(s) {
+    sum = sum + (s[i] as int)
+    i = i + 1
+  }
+  return sum
+}
+
+fun solution(a: int, b: int): int {
+  var max_sum = 0
+  var base = 0
+  while base < a {
+    var power = 0
+    while power < b {
+      let value = pow_int(base, power)
+      let ds = digital_sum(value)
+      if ds > max_sum {
+        max_sum = ds
+      }
+      power = power + 1
+    }
+    base = base + 1
+  }
+  return max_sum
+}
+
+fun test_solution() {
+  if solution(10, 10) != 45 { panic("solution 10 10 failed") }
+  if solution(100, 100) != 972 { panic("solution 100 100 failed") }
+  if solution(100, 200) != 1872 { panic("solution 100 200 failed") }
+}
+
+fun main() {
+  test_solution()
+  print(str(solution(100, 100)))
+}
+
+main()
