@@ -1,0 +1,43 @@
+/*
+Count vowels in a string.
+
+This program counts the number of English vowels in a given string.  A
+vowel is one of the letters "aeiou" in either lowercase or uppercase.  We
+iterate over every character of the input and increment a counter each
+time it matches a vowel.  The algorithm runs in O(n) time where n is the
+length of the string.
+*/
+
+let vowels = "aeiouAEIOU"
+
+fun is_vowel(c: string): bool {
+  var i = 0
+  while i < len(vowels) {
+    if vowels[i] == c { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun count_vowels(s: string): int {
+  var count = 0
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if is_vowel(ch) { count = count + 1 }
+    i = i + 1
+  }
+  return count
+}
+
+fun show(s: string) {
+  print(str(count_vowels(s)))
+}
+
+show("hello world")
+show("HELLO WORLD")
+show("123 hello world")
+show("")
+show("a quick brown fox")
+show("the quick BROWN fox")
+show("PYTHON")
