@@ -1,0 +1,58 @@
+/*
+Cycle Sort
+----------
+Cycle sort places each element in its correct position by counting how many
+items are smaller. If an item is already in the correct spot, the next index
+is processed. Otherwise the item is written to its final position and the
+previously displaced item continues the cycle until the starting position is
+reached. This minimizes the number of writes. The algorithm runs in O(n^2)
+comparisons and uses O(1) extra space.
+*/
+
+fun cycle_sort(arr: list<int>): list<int> {
+  var n = len(arr)
+  var cycle_start = 0
+  while cycle_start < n - 1 {
+    var item = arr[cycle_start]
+    var pos = cycle_start
+    var i = cycle_start + 1
+    while i < n {
+      if arr[i] < item {
+        pos = pos + 1
+      }
+      i = i + 1
+    }
+    if pos == cycle_start {
+      cycle_start = cycle_start + 1
+      continue
+    }
+    while item == arr[pos] {
+      pos = pos + 1
+    }
+    let temp = arr[pos]
+    arr[pos] = item
+    item = temp
+    while pos != cycle_start {
+      pos = cycle_start
+      i = cycle_start + 1
+      while i < n {
+        if arr[i] < item {
+          pos = pos + 1
+        }
+        i = i + 1
+      }
+      while item == arr[pos] {
+        pos = pos + 1
+      }
+      let temp2 = arr[pos]
+      arr[pos] = item
+      item = temp2
+    }
+    cycle_start = cycle_start + 1
+  }
+  return arr
+}
+
+print(str(cycle_sort([4, 3, 2, 1])))
+print(str(cycle_sort([-4, 20, 0, -50, 100, -1])))
+print(str(cycle_sort([])))
