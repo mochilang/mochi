@@ -1,0 +1,51 @@
+/*
+Wiggle Sort reorders a list of numbers so that they alternate between
+less-than and greater-than comparisons: nums[0] < nums[1] > nums[2] < nums[3]...
+
+The algorithm performs a single pass over the list. For each index i from 0 to
+len(list)-1, it checks whether the pair (nums[i-1], nums[i]) violates the
+required relation for its position:
+- at odd indices i, we expect nums[i-1] < nums[i]
+- at even indices i, we expect nums[i-1] > nums[i]
+For i = 0, the element at i-1 refers to the final element of the list.
+If a violation is detected, the elements are swapped. Because lists are
+immutable in Mochi, swapping returns a new list with the two elements
+exchanged. The overall time complexity is O(n).
+*/
+
+fun swap(xs: list<float>, i: int, j: int): list<float> {
+  var res: list<float> = []
+  var k = 0
+  while k < len(xs) {
+    if k == i {
+      res = append(res, xs[j])
+    } else if k == j {
+      res = append(res, xs[i])
+    } else {
+      res = append(res, xs[k])
+    }
+    k = k + 1
+  }
+  return res
+}
+
+fun wiggle_sort(nums: list<float>): list<float> {
+  var i = 0
+  var res = nums
+  while i < len(res) {
+    let j = if i == 0 { len(res) - 1 } else { i - 1 }
+    let prev = res[j]
+    let curr = res[i]
+    if (i % 2 == 1) == (prev > curr) {
+      res = swap(res, j, i)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+print(str(wiggle_sort([3.0, 5.0, 2.0, 1.0, 6.0, 4.0])))
+print(str(wiggle_sort([0.0, 5.0, 3.0, 2.0, 2.0])))
+print(str(wiggle_sort([] as list<float>)))
+print(str(wiggle_sort([-2.0, -5.0, -45.0])))
+print(str(wiggle_sort([-2.1, -5.68, -45.11])))
