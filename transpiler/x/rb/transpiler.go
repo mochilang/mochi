@@ -2291,9 +2291,9 @@ func (m *MethodCallExpr) emit(e *emitter) {
 func (a *AppendExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	a.List.emit(e)
-	io.WriteString(e.w, " + [")
+	io.WriteString(e.w, " << ")
 	a.Elem.emit(e)
-	io.WriteString(e.w, "])")
+	io.WriteString(e.w, ")")
 }
 
 func (s *SliceExpr) emit(e *emitter) {
@@ -2961,13 +2961,13 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 		var stmts []Stmt
 		for _, v := range st.Type.Variants {
 			if len(v.Fields) == 0 {
-				stmts = append(stmts, &LetStmt{Name: identName(v.Name), Value: &Ident{Name: "nil"}})
+				stmts = append(stmts, &LetStmt{Name: identName(v.Name), Value: &CallExpr{Func: "Object.new"}})
 			} else {
 				fields := make([]string, len(v.Fields))
 				for i, f := range v.Fields {
 					fields[i] = fieldName(f.Name)
 				}
-				name := identName(toTypeName(v.Name))
+				name := toTypeName(v.Name)
 				stmts = append(stmts, &StructDefStmt{Name: name, Fields: fields})
 			}
 		}
@@ -4253,6 +4253,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		}
 		return nil, fmt.Errorf("unsupported save expression")
 	case p.Struct != nil:
+		if len(p.Struct.Fields) == 0 {
+			return &Ident{Name: identName(toTypeName(p.Struct.Name))}, nil
+		}
 		fields := make([]StructField, len(p.Struct.Fields))
 		for i, f := range p.Struct.Fields {
 			v, err := convertExpr(f.Value)
