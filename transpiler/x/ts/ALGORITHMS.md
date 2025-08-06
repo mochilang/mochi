@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-06 12:20 UTC
+Last updated: 2025-08-06 13:07 UTC
 
-## Algorithms Golden Test Checklist (60/1077)
+## Algorithms Golden Test Checklist (80/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -67,26 +67,26 @@ Last updated: 2025-08-06 12:20 UTC
 | 58 | boolean_algebra/xor_gate | ✓ | 817µs | 22.0 KB |
 | 59 | cellular_automata/conways_game_of_life | ✓ | 1.558ms | 46.9 KB |
 | 60 | cellular_automata/game_of_life | ✓ | 2.956ms | 119.8 KB |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
+| 61 | cellular_automata/langtons_ant | ✓ | 8µs | 3.3 KB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 1.278ms | 33.1 KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 1.54ms | 100.1 KB |
+| 64 | cellular_automata/wa_tor | ✓ | 2.975ms | 669.4 KB |
+| 65 | ciphers/a1z26 | ✓ | 945µs | 30.1 KB |
+| 66 | ciphers/affine_cipher | ✓ | 2.349ms | 537.4 KB |
+| 67 | ciphers/atbash | ✓ | 1.418ms | 24.3 KB |
+| 68 | ciphers/autokey | ✓ | 1.975ms | 544.5 KB |
+| 69 | ciphers/baconian_cipher | ✓ | 1.469ms | 36.9 KB |
+| 70 | ciphers/base16 | ✓ | 1.411ms | 33.8 KB |
+| 71 | ciphers/base32 | ✓ | 3.105ms | 89.2 KB |
+| 72 | ciphers/base64_cipher | ✓ | 1.925ms | 33.8 KB |
+| 73 | ciphers/base85 | ✓ | 1.923ms | 563.6 KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 1.775ms | 29.1 KB |
+| 75 | ciphers/bifid | ✓ | 2.33ms | 47.7 KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 2.61ms | 112.6 KB |
+| 77 | ciphers/caesar_cipher | ✓ | 4.318ms | 79.6 KB |
+| 78 | ciphers/cryptomath_module | ✓ | 615µs | 23.3 KB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 9.83ms | 265.3 KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 3.004ms | 106.3 KB |
 | 81 | ciphers/diffie |   |  |  |
 | 82 | ciphers/diffie_hellman |   |  |  |
 | 83 | ciphers/elgamal_key_generator |   |  |  |
