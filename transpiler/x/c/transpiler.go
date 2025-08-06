@@ -761,6 +761,13 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 	if typ == "" || typ == "int" {
 		typ = "long long"
 	}
+	if strings.HasSuffix(typ, "[][]") {
+		dims := strings.Count(typ, "[]")
+		base := strings.TrimSuffix(typ, strings.Repeat("[]", dims))
+		if strings.Contains(base, "char") && dims == 2 {
+			typ = base + "[]"
+		}
+	}
 	writeIndent(w, indent)
 	if strings.HasSuffix(typ, "[][]") {
 		dims := strings.Count(typ, "[]")
@@ -1269,14 +1276,18 @@ func (a *AssignStmt) emit(w io.Writer, indent int) {
 			}
 			return
 		}
-		if strings.HasSuffix(funcReturnTypes[call.Func], "[]") {
+		typ := funcReturnTypes[call.Func]
+		if vt, ok := varTypes[a.Name]; ok && vt != "" {
+			typ = strings.ReplaceAll(vt, "*", "[]")
+		}
+		if strings.HasSuffix(typ, "[]") {
 			writeIndent(w, indent)
 			if _, declared := varTypes[a.Name]; declared {
 				fmt.Fprintf(w, "%s_len = %s_len;\n", a.Name, call.Func)
 			} else {
 				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", a.Name, call.Func)
 			}
-			if strings.HasSuffix(funcReturnTypes[call.Func], "[][]") {
+			if strings.HasSuffix(typ, "[][]") && !strings.Contains(typ, "char[][]") {
 				writeIndent(w, indent)
 				if _, declared := varTypes[a.Name]; declared {
 					fmt.Fprintf(w, "%s_lens = %s_lens;\n", a.Name, call.Func)
