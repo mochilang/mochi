@@ -5,34 +5,35 @@ fn handleError(err: anyerror) noreturn {
     std.debug.panic("{any}", .{err});
 }
 
-fn create_all_state(increment: i64, total: i64, level: i64, current: []i64, result_param: [][]i64) [][]i64 {
+fn backtrack(candidates: []i64, start: i64, target: i64, path: []i64, result_param: [][]i64) [][]i64 {
     var result_var: [][]i64 = result_param;
-    if (level == 0) {
-        return blk: { var _tmp = std.ArrayList([]i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const []i64, result_var)) catch |err| handleError(err); _tmp.append(current) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+    if (target == 0) {
+        return blk: { var _tmp = std.ArrayList([]i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const []i64, result_var)) catch |err| handleError(err); _tmp.append(path) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
     }
-    var i: i64 = increment;
-    while (i <= total - level + 1) {
-        const next_current: []i64 = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, current)) catch |err| handleError(err); _tmp.append(i) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
-        result_var = create_all_state(i + 1, total, level - 1, next_current, result_var);
+    var i: i64 = start;
+    while (i < @as(i64, @intCast(candidates.len))) {
+        const value: i64 = candidates[@intCast(i)];
+        if (value <= target) {
+            const new_path: []i64 = blk: { var _tmp = std.ArrayList(i64).init(std.heap.page_allocator); _tmp.appendSlice(@as([]const i64, path)) catch |err| handleError(err); _tmp.append(value) catch |err| handleError(err); break :blk (_tmp.toOwnedSlice() catch |err| handleError(err)); };
+            result_var = backtrack(candidates, i, target - value, new_path, result_var);
+        }
         i = i + 1;
     }
     return result_var;
 }
 
-fn generate_all_combinations(n: i64, k: i64) [][]i64 {
-    if (k < 0 or n < 0) {
-        return &[_][]i64{};
-    }
+fn combination_sum(candidates_1: []i64, target_1: i64) [][]i64 {
+    const path_1: []i64 = &[_]i64{};
     const result: [][]i64 = &[_][]i64{};
-    return create_all_state(1, n, k, &[_]i64{}, result);
+    return backtrack(candidates_1, 0, target_1, path_1, result);
 }
 
 pub fn main() void {
     {
         const __start = _now();
         const __start_mem: i64 = _mem();
-        std.debug.print("{s}\n", .{_str(generate_all_combinations(4, 2))});
-        std.debug.print("{s}\n", .{_str(generate_all_combinations(3, 1))});
+        std.debug.print("{s}\n", .{_str(combination_sum(blk0: { var _tmp0 = std.heap.page_allocator.alloc(i64, 3) catch unreachable; _tmp0[0] = 2; _tmp0[1] = 3; _tmp0[2] = 5; break :blk0 _tmp0; }, 8))});
+        std.debug.print("{s}\n", .{_str(combination_sum(blk1: { var _tmp1 = std.heap.page_allocator.alloc(i64, 4) catch unreachable; _tmp1[0] = 2; _tmp1[1] = 3; _tmp1[2] = 6; _tmp1[3] = 7; break :blk1 _tmp1; }, 7))});
         const __end = _now();
         const __end_mem: i64 = _mem();
         const __duration_us: i64 = @divTrunc(@as(i64, @intCast(__end - __start)), 1000);
