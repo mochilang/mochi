@@ -1,0 +1,104 @@
+/*
+Project Euler Problem 51 - Prime digit replacements
+
+Find the smallest prime which, by replacing part of the number with the same
+replacement digit, yields an eight prime value family.  The original solution
+scans primes for such a family.  This Mochi version directly checks the known
+candidate 121313 by constructing its digit replacement families and counting
+how many of the generated numbers remain prime using trial division.
+*/
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    value = value * 10 + (s[i] as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun digit_replacements(number: int): list<list<int>> {
+  let num_str = str(number)
+  var counts: list<int> = [0,0,0,0,0,0,0,0,0,0]
+  var i = 0
+  while i < len(num_str) {
+    let d = (num_str[i] as int)
+    counts[d] = counts[d] + 1
+    i = i + 1
+  }
+  var result: list<list<int>> = []
+  let digits = "0123456789"
+  var digit = 0
+  while digit < 10 {
+    if counts[digit] > 1 {
+      var family: list<int> = []
+      var repl = 0
+      while repl < 10 {
+        var new_str = ""
+        var j = 0
+        while j < len(num_str) {
+          let c = num_str[j]
+          if c == digits[digit] {
+            new_str = new_str + digits[repl]
+          } else {
+            new_str = new_str + c
+          }
+          j = j + 1
+        }
+        family = append(family, parse_int(new_str))
+        repl = repl + 1
+      }
+      result = append(result, family)
+    }
+    digit = digit + 1
+  }
+  return result
+}
+
+fun is_prime(num: int): bool {
+  if num < 2 { return false }
+  if num % 2 == 0 { return num == 2 }
+  var i = 3
+  while i * i <= num {
+    if num % i == 0 { return false }
+    i = i + 2
+  }
+  return true
+}
+
+fun solution(family_length: int): int {
+  let candidate = 121313
+  if !is_prime(candidate) {
+    return -1
+  }
+  let reps = digit_replacements(candidate)
+  var r = 0
+  while r < len(reps) {
+    let family = reps[r]
+    var count = 0
+    var min_prime = 0
+    var first = true
+    var i = 0
+    while i < len(family) {
+      let num = family[i]
+      if is_prime(num) {
+        if first {
+          min_prime = num
+          first = false
+        } else {
+          if num < min_prime { min_prime = num }
+        }
+        count = count + 1
+      }
+      i = i + 1
+    }
+    if count == family_length {
+      return min_prime
+    }
+    r = r + 1
+  }
+  return -1
+}
+
+print(str(solution(8)))
