@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 61/1077
-Last updated: 2025-08-06 20:47 +0700
+Completed programs: 91/1077
+Last updated: 2025-08-06 21:14 +0700
 
 Checklist:
 
@@ -77,36 +77,36 @@ Checklist:
 | 68 | ciphers/autokey | ✓ | 820.0µs | 3.59MB |
 | 69 | ciphers/baconian_cipher | ✓ | 199.0µs | 3.62MB |
 | 70 | ciphers/base16 | ✓ | 282.0µs | 3.49MB |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
+| 71 | ciphers/base32 | ✓ | 1.0ms | 3.70MB |
+| 72 | ciphers/base64_cipher | ✓ | 406.0µs | 3.71MB |
+| 73 | ciphers/base85 | ✓ | 536.0µs | 3.60MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 252.0µs | 3.64MB |
+| 75 | ciphers/bifid | ✓ | 520.0µs | 3.59MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.0ms | 3.73MB |
+| 77 | ciphers/caesar_cipher | ✓ | 7.0ms | 3.71MB |
+| 78 | ciphers/cryptomath_module | ✓ | 206.0µs | 3.55MB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 408.0µs | 3.77MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 268.0µs | 3.70MB |
+| 81 | ciphers/diffie | ✓ | 254.0µs | 3.68MB |
+| 82 | ciphers/diffie_hellman | ✓ | 295.0µs | 3.48MB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 261.0µs | 3.53MB |
+| 84 | ciphers/enigma_machine2 | ✓ | 3.0ms | 3.60MB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 275.0µs | 3.55MB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 719.0µs | 3.48MB |
+| 87 | ciphers/hill_cipher | ✓ | 691.0µs | 3.67MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 693.0µs | 3.58MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 196.0µs | 3.56MB |
+| 90 | ciphers/morse_code | ✓ | 211.0µs | 3.65MB |
+| 91 | ciphers/onepad_cipher | ✓ | 165.0µs | 3.61MB |
+| 92 | ciphers/permutation_cipher | ✓ | 247.0µs | 3.68MB |
+| 93 | ciphers/playfair_cipher | ✓ | 470.0µs | 3.60MB |
+| 94 | ciphers/polybius | ✓ | 332.0µs | 3.71MB |
+| 95 | ciphers/porta_cipher | ✓ | 468.0µs | 3.57MB |
+| 96 | ciphers/rabin_miller | ✓ | 221.0µs | 3.80MB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 275.0µs | 3.47MB |
+| 98 | ciphers/rot13 | ✓ | 1.0ms | 3.56MB |
+| 99 | ciphers/rsa_cipher | ✓ | 300.0µs | 3.71MB |
+| 100 | ciphers/rsa_factorization | ✓ | 299.0µs | 3.63MB |
 | 101 | ciphers/rsa_key_generator |   |  |  |
 | 102 | ciphers/running_key_cipher |   |  |  |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |

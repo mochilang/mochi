@@ -42,6 +42,7 @@ var useBigInt bool
 var useBigRat bool
 var useRepeat bool
 var useSplit bool
+var useJSON bool
 var usesPanic bool
 var usesSubprocess bool
 var useFetch bool
@@ -157,6 +158,7 @@ type Program struct {
 	UseBigRat      bool
 	UseRepeat      bool
 	UseSplit       bool
+	UseJSON        bool
 	UseBenchNow    bool
 	UsePanic       bool
 	UseSubprocess  bool
@@ -865,6 +867,25 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    if(v.type() == typeid(bool)) return std::any_cast<bool>(v) ? \"true\" : \"false\";")
 		fmt.Fprintln(w, "    return std::string();")
 		fmt.Fprintln(w, "}")
+	}
+	if p.UseJSON {
+		fmt.Fprintln(w, "static void any_to_json(std::ostream& os, const std::any& val) {")
+		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << '\"' << std::any_cast<std::string>(val) << '\"';")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << v[i]; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; os << '\"' << v[i] << '\"'; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_json(os, v[i]); } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) {")
+		fmt.Fprintln(w, "        const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val);")
+		fmt.Fprintln(w, "        os << '{'; bool first=true;")
+		fmt.Fprintln(w, `        for(const auto& p : m){ if(!first) os << ', '; first=false; os << '"' << p.first << '"' << ": "; any_to_json(os, p.second); }`)
+		fmt.Fprintln(w, "        os << '}'; }")
+		fmt.Fprintln(w, "    else os << \"null\";")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "template<typename T> static void _json(const T& v) { any_to_json(std::cout, std::any(v)); std::cout << std::endl; }")
 	}
 
 	fmt.Fprintln(w, "template <typename T>")
@@ -1593,7 +1614,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 					if currentProgram != nil {
 						currentProgram.addInclude("<any>")
 					}
-					io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
+					io.WriteString(w, "([](const auto& __m){ auto __it = __m.find(")
 					i.Index.emit(w)
 					io.WriteString(w, "); return __it != __m.end() ? std::any_cast<"+resType+">(__it->second) : "+defaultValueForType(resType)+"; })")
 					io.WriteString(w, "(")
@@ -1608,7 +1629,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(t, "std::map<"), ">"), ",", 2)
 		if len(parts) == 2 {
 			valType := strings.TrimSpace(parts[1])
-			io.WriteString(w, "([&](const auto& __m){ auto __it = __m.find(")
+			io.WriteString(w, "([](const auto& __m){ auto __it = __m.find(")
 			i.Index.emit(w)
 			io.WriteString(w, "); return __it != __m.end() ? __it->second : "+defaultValueForType(valType)+"; })")
 			io.WriteString(w, "(")
@@ -1876,7 +1897,7 @@ func (c *CastExpr) emit(w io.Writer) {
 			valType = "std::any"
 		}
 	}
-	if ml, ok := c.Value.(*MapLit); ok && strings.HasPrefix(c.Type, "std::map<") && valType == "std::map<std::string, std::any>" {
+	if ml, ok := c.Value.(*MapLit); ok && strings.HasPrefix(c.Type, "std::map<") {
 		parts := strings.SplitN(strings.TrimSuffix(strings.TrimPrefix(c.Type, "std::map<"), ">"), ",", 2)
 		if len(parts) == 2 {
 			kt := strings.TrimSpace(parts[0])
@@ -3422,6 +3443,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useFetch = false
 	fetchStructs = nil
 	useMD5 = false
+	useJSON = false
 	useBigInt = false
 	useBigRat = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
@@ -3905,6 +3927,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
 	cp.UseSplit = useSplit
+	cp.UseJSON = useJSON
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
 	cp.UseSubprocess = usesSubprocess
@@ -4378,6 +4401,8 @@ func convertStmt(s *parser.Statement) (Stmt, error) {
 			}
 			if _, ok := val.(*NullLit); ok && currentReturnType == "void" {
 				val = nil
+			} else if _, ok := val.(*NullLit); ok && currentReturnType == "std::string" {
+				val = &StringLit{Value: ""}
 			} else if exprType(val) == "std::any" && currentReturnType != "" && currentReturnType != "std::any" {
 				val = &CastExpr{Value: val, Type: currentReturnType}
 			}
@@ -5290,6 +5315,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				useSplit = true
 				return &CallExpr{Name: "_split", Args: []Expr{s0, s1}}, nil
 			}
+		case "json":
+			if len(p.Call.Args) == 1 {
+				arg, err := convertExpr(p.Call.Args[0])
+				if err != nil {
+					return nil, err
+				}
+				useJSON = true
+				if currentProgram != nil {
+					currentProgram.addInclude("<any>")
+					currentProgram.addInclude("<vector>")
+					currentProgram.addInclude("<map>")
+				}
+				return &CallExpr{Name: "_json", Args: []Expr{arg}}, nil
+			}
 		case "contains":
 			if len(p.Call.Args) == 2 {
 				if currentEnv != nil {
@@ -5461,8 +5500,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				}
 			}
 		}
-		if p.Call.Func == "panic" {
+		if p.Call.Func == "panic" || p.Call.Func == "error" {
 			usesPanic = true
+			return &CallExpr{Name: "panic", Args: args}, nil
 		}
 		return &CallExpr{Name: safeName(p.Call.Func), Args: args}, nil
 	case p.Selector != nil:
