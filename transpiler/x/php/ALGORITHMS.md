@@ -2,23 +2,23 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 16:15 GMT+7
+Last updated: 2025-08-06 16:32 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (12/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 81µs | 38.8 KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
+| 2 | backtracking/all_permutations | ✓ | 192µs | 36.0 KB |
+| 3 | backtracking/all_subsequences | ✓ | 133µs | 35.6 KB |
+| 4 | backtracking/coloring | ✓ | 99µs | 39.2 KB |
+| 5 | backtracking/combination_sum | ✓ | 134µs | 38.8 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 112µs | 39.4 KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 1µs | 35.6 KB |
+| 8 | backtracking/knight_tour | ✓ | 88µs | 40.2 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 171µs | 37.0 KB |
+| 10 | backtracking/minimax | ✓ | 105µs | 38.5 KB |
+| 11 | backtracking/n_queens | ✓ | 126µs | 36.9 KB |
+| 12 | backtracking/n_queens_math | ✓ | 131µs | 38.1 KB |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
 | 15 | backtracking/sudoku |   |  |  |
