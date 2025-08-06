@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/ciphers/onepad_cipher.ml", line 152, characters 31-37:
+152 |   print_endline (string_of_int cipher);
+                                     ^^^^^^
+Error: This expression has type int list
+       but an expression was expected of type int
