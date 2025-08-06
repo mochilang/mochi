@@ -923,6 +923,7 @@ func (i *IndexExpr) emit(w io.Writer) {
 			return
 		}
 		if mapVars[t.Name] || strings.HasPrefix(ttype, "HashMap") {
+			closeBlock := false
 			if lockedMap != "" && lockedMap == t.Name {
 				io.WriteString(w, "_map")
 			} else if globalVars[t.Name] {
@@ -930,8 +931,10 @@ func (i *IndexExpr) emit(w io.Writer) {
 				if newName, ok := globalRenames[t.Name]; ok && !isLocal(t.Name) {
 					name = newName
 				}
+				io.WriteString(w, "{ let _map = ")
 				io.WriteString(w, name)
-				io.WriteString(w, ".lock().unwrap()")
+				io.WriteString(w, ".lock().unwrap(); _map")
+				closeBlock = true
 			} else {
 				t.emit(w)
 			}
@@ -957,6 +960,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 				}
 				io.WriteString(w, ")")
 				io.WriteString(w, ".cloned().unwrap_or_default()")
+				if closeBlock {
+					io.WriteString(w, " }")
+				}
 				return
 			}
 			io.WriteString(w, "[")
@@ -975,6 +981,9 @@ func (i *IndexExpr) emit(w io.Writer) {
 				i.Index.emit(w)
 			}
 			io.WriteString(w, "]")
+			if closeBlock {
+				io.WriteString(w, " }")
+			}
 			return
 		}
 		if key, ok := literalStringExpr(i.Index); ok {

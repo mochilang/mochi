@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-06 22:41 GMT+7
+Last updated: 2025-08-06 23:15 GMT+7
 
-## Algorithms Golden Test Checklist (133/1077)
+## Algorithms Golden Test Checklist (136/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -144,9 +144,9 @@ Last updated: 2025-08-06 22:41 GMT+7
 | 135 | conversions/length_conversion | ✓ | 85µs | 1.9 MB |
 | 136 | conversions/molecular_chemistry | ✓ | 47µs | 2.0 MB |
 | 137 | conversions/octal_to_binary | ✓ | 140µs | 2.0 MB |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
+| 138 | conversions/octal_to_decimal | ✓ | 49µs | 1.9 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 36µs | 2.0 MB |
+| 140 | conversions/prefix_conversions | ✓ | 163µs | 2.1 MB |
 | 141 | conversions/prefix_conversions_string |   |  |  |
 | 142 | conversions/pressure_conversions |   |  |  |
 | 143 | conversions/rectangular_to_polar |   |  |  |
