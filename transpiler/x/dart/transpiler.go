@@ -809,6 +809,16 @@ func (s *LetStmt) emit(w io.Writer) error {
 		// assignments of differing types do not cause runtime errors.
 		typ = "dynamic"
 	}
+	if s.Value == nil {
+		nextStructHint = ""
+		localVarTypes[s.Name] = typ
+		decl := typ + " " + s.Name + ";"
+		if typ != "dynamic" && !strings.HasSuffix(typ, "?") {
+			decl = "late " + typ + " " + s.Name + ";"
+		}
+		_, err := io.WriteString(w, decl)
+		return err
+	}
 	if inFunc && s.Type == "" {
 		valType := inferType(s.Value)
 		if valType != "" && valType != "dynamic" {
@@ -4837,10 +4847,6 @@ func convertStmtInternal(st *parser.Statement) (Stmt, error) {
 			if err != nil {
 				return nil, err
 			}
-		} else if st.Let.Type != nil && st.Let.Type.Simple != nil && *st.Let.Type.Simple == "int" {
-			e = &IntLit{Value: 0}
-		} else {
-			return nil, fmt.Errorf("let missing value not supported")
 		}
 		name := sanitize(st.Let.Name)
 		typ := typeRefString(st.Let.Type)
