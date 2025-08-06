@@ -1,13 +1,13 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 20/1077
-Last updated: 2025-08-06 18:11 +0700
+Completed programs: 43/1077
+Last updated: 2025-08-06 20:30 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 7µs | 8.7 MB |
+| 1 | backtracking/all_combinations | ✓ | 10µs | 3.5 MB |
 | 2 | backtracking/all_permutations | ✓ | 13µs | 8.7 MB |
 | 3 | backtracking/all_subsequences | ✓ | 6µs | 8.7 MB |
 | 4 | backtracking/coloring | ✓ | 11µs | 8.7 MB |
@@ -26,34 +26,34 @@ Checklist:
 | 17 | backtracking/word_break | ✓ | 7µs | 8.7 MB |
 | 18 | backtracking/word_ladder | ✓ | 19µs | 8.7 MB |
 | 19 | backtracking/word_search | ✓ | 13µs | 8.7 MB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 11µs | 8.8 MB |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 6µs | 3.5 MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 5µs | 3.5 MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 3µs | 3.5 MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 4µs | 3.5 MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 5µs | 3.5 MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 5µs | 3.5 MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 5µs | 3.5 MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 4µs | 3.5 MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 5µs | 3.5 MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 4µs | 3.5 MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 11µs | 3.5 MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 8µs | 3.5 MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 14µs | 3.5 MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 13µs | 3.5 MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 8µs | 3.5 MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 2µs | 3.5 MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 6µs | 3.5 MB |
+| 37 | bit_manipulation/is_even | ✓ | 3µs | 3.5 MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ |  |  |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 19µs | 3.5 MB |
+| 40 | bit_manipulation/missing_number | ✓ | 6µs | 3.5 MB |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 4µs | 3.5 MB |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
 | 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
 | 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
+| 46 | blockchain/diophantine_equation | ✓ | 11µs | 3.5 MB |
+| 47 | boolean_algebra/and_gate | ✓ | 5µs | 3.5 MB |
 | 48 | boolean_algebra/imply_gate |   |  |  |
 | 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
 | 50 | boolean_algebra/multiplexer |   |  |  |

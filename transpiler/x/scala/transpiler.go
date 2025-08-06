@@ -83,6 +83,11 @@ var scalaKeywords = map[string]bool{
 	"match":  true,
 	"with":   true,
 	"Map":    true,
+	// Future Scala keywords
+	"enum":  true,
+	"given": true,
+	"then":  true,
+	"yield": true,
 }
 
 func escapeName(name string) string {
