@@ -2133,6 +2133,9 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		if rt == "String" {
 			b.Right.emit(w)
 			io.WriteString(w, ".contains(")
+			if inferType(b.Left) == "String" {
+				io.WriteString(w, "&")
+			}
 			b.Left.emit(w)
 			io.WriteString(w, ")")
 			return
@@ -3263,7 +3266,9 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			if nref, ok2 := app.List.(*NameRef); ok2 && nref.Name == stmt.Assign.Name {
 				elemType := inferType(app.Elem)
 				if elemType != "" {
-					varTypes[stmt.Assign.Name] = fmt.Sprintf("Vec<%s>", elemType)
+					if old, ok3 := varTypes[stmt.Assign.Name]; !ok3 || old == "" || old == "Vec<i64>" {
+						varTypes[stmt.Assign.Name] = fmt.Sprintf("Vec<%s>", elemType)
+					}
 					updated = true
 				}
 			}
@@ -4317,10 +4322,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			funReturns[name] = "String"
 		}
 		if name == "int" && len(args) == 1 {
+			argT := inferType(args[0])
 			usesInt = true
 			funReturns[name] = "i64"
-			if inferType(args[0]) == "String" {
+			if argT == "String" {
 				return &AtoiExpr{Expr: args[0]}, nil
+			}
+			if argT != "" && argT != "i64" {
+				return &IntCastExpr{Expr: args[0]}, nil
 			}
 		}
 		if name == "float" && len(args) == 1 {
