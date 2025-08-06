@@ -1,0 +1,7 @@
+-1062731775
+167772415
+-1062731775
+167772415
+Exception in thread "main" java.lang.RuntimeException: Invalid decimal IPv4 address
+	at Main.decimal_to_ipv4(Main.java:109)
+	at Main.main(Main.java:140)

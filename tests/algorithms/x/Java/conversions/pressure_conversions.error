@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden142_pressure_conversions3763175978/001/Main.java:19: error: cannot find symbol
+            Object keys = Object.keys(PRESSURE_CONVERSION).join(", ");
+                                ^
+  symbol:   method keys(Map<String,FromTo>)
+  location: class Object
+/tmp/TestJavaTranspiler_Algorithms_Golden142_pressure_conversions3763175978/001/Main.java:23: error: cannot find symbol
+            Object keys_1 = Object.keys(PRESSURE_CONVERSION).join(", ");
+                                  ^
+  symbol:   method keys(Map<String,FromTo>)
+  location: class Object
+2 errors
