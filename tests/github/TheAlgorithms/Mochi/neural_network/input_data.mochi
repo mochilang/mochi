@@ -1,0 +1,145 @@
+/*
+MNIST-like Data Handling and Mini-batch Iteration
+
+The original Python module downloads the MNIST dataset and provides a _DataSet
+class with a next_batch method that returns mini-batches of examples, looping
+through the data and starting a new epoch when the end is reached.  Labels may
+be converted to one-hot vectors.  This Mochi translation implements the core
+ideas in a self-contained manner:
+
+- dense_to_one_hot: convert scalar labels to one-hot encoded vectors.
+- DataSet: store images and labels along with bookkeeping fields.
+- next_batch: sequentially yield mini-batches and cycle at epoch boundaries.
+- read_data_sets: split given arrays into training, validation, and test sets.
+
+For demonstration the program constructs a tiny dataset, divides it into train,
+validation, and test portions, then requests three batches from the training
+set showing how the iteration wraps around after an epoch.
+*/
+
+type DataSet {
+  images: list<list<int>>,
+  labels: list<list<int>>,
+  num_examples: int,
+  index_in_epoch: int,
+  epochs_completed: int
+}
+
+type Datasets {
+  train: DataSet,
+  validation: DataSet,
+  test_ds: DataSet
+}
+
+fun dense_to_one_hot(labels: list<int>, num_classes: int): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  while i < len(labels) {
+    var row: list<int> = []
+    var j = 0
+    while j < num_classes {
+      if j == labels[i] {
+        row = append(row, 1)
+      } else {
+        row = append(row, 0)
+      }
+      j = j + 1
+    }
+    result = append(result, row)
+    i = i + 1
+  }
+  return result
+}
+
+fun new_dataset(images: list<list<int>>, labels: list<list<int>>): DataSet {
+  return DataSet {
+    images: images,
+    labels: labels,
+    num_examples: len(images),
+    index_in_epoch: 0,
+    epochs_completed: 0
+  }
+}
+
+type BatchResult {
+  dataset: DataSet,
+  images: list<list<int>>,
+  labels: list<list<int>>
+}
+
+fun next_batch(ds: DataSet, batch_size: int): BatchResult {
+  let start = ds.index_in_epoch
+  if start + batch_size > ds.num_examples {
+    let rest = ds.num_examples - start
+    let images_rest = ds.images[start:ds.num_examples]
+    let labels_rest = ds.labels[start:ds.num_examples]
+    let new_index = batch_size - rest
+    let images_new = ds.images[0:new_index]
+    let labels_new = ds.labels[0:new_index]
+    let batch_images = concat(images_rest, images_new)
+    let batch_labels = concat(labels_rest, labels_new)
+    let new_ds = DataSet {
+      images: ds.images,
+      labels: ds.labels,
+      num_examples: ds.num_examples,
+      index_in_epoch: new_index,
+      epochs_completed: ds.epochs_completed + 1
+    }
+    return BatchResult { dataset: new_ds, images: batch_images, labels: batch_labels }
+  } else {
+    let end = start + batch_size
+    let batch_images = ds.images[start:end]
+    let batch_labels = ds.labels[start:end]
+    let new_ds = DataSet {
+      images: ds.images,
+      labels: ds.labels,
+      num_examples: ds.num_examples,
+      index_in_epoch: end,
+      epochs_completed: ds.epochs_completed
+    }
+    return BatchResult { dataset: new_ds, images: batch_images, labels: batch_labels }
+  }
+}
+
+fun read_data_sets(
+  train_images: list<list<int>>,
+  train_labels_raw: list<int>,
+  test_images: list<list<int>>,
+  test_labels_raw: list<int>,
+  validation_size: int,
+  num_classes: int
+): Datasets {
+  let train_labels = dense_to_one_hot(train_labels_raw, num_classes)
+  let test_labels = dense_to_one_hot(test_labels_raw, num_classes)
+  let validation_images = train_images[0:validation_size]
+  let validation_labels = train_labels[0:validation_size]
+  let train_images_rest = train_images[validation_size:len(train_images)]
+  let train_labels_rest = train_labels[validation_size:len(train_labels)]
+  let train = new_dataset(train_images_rest, train_labels_rest)
+  let validation = new_dataset(validation_images, validation_labels)
+  let testset = new_dataset(test_images, test_labels)
+  return Datasets { train: train, validation: validation, test_ds: testset }
+}
+
+fun main() {
+  let train_images = [[0,1], [1,2], [2,3], [3,4], [4,5]]
+  let train_labels_raw = [0,1,2,3,4]
+  let test_images = [[5,6], [6,7]]
+  let test_labels_raw = [5,6]
+  let data = read_data_sets(train_images, train_labels_raw, test_images, test_labels_raw, 2, 10)
+  var ds = data.train
+  var res = next_batch(ds, 2)
+  ds = res.dataset
+  print(str(res.images))
+  print(str(res.labels))
+  res = next_batch(ds, 2)
+  ds = res.dataset
+  print(str(res.images))
+  print(str(res.labels))
+  res = next_batch(ds, 2)
+  ds = res.dataset
+  print(str(res.images))
+  print(str(res.labels))
+}
+
+main()
