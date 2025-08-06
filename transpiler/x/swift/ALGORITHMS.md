@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 12/1077
-Last updated: 2025-08-06 16:21 +0700
+Completed programs: 20/1077
+Last updated: 2025-08-06 18:11 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -20,14 +20,14 @@ Last updated: 2025-08-06 16:21 +0700
 | 11 | backtracking/n_queens | ✓ | 452µs | 2.9 MB |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum | ✓ | 423µs | 3.2 MB |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 14 | backtracking/rat_in_maze | ✓ | 1.956ms | 4.0 MB |
+| 15 | backtracking/sudoku | ✓ | 4.823ms | 3.2 MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 1.353ms | 3.5 MB |
+| 17 | backtracking/word_break | ✓ | 520µs | 2.9 MB |
+| 18 | backtracking/word_ladder | ✓ | 5.828ms | 3.5 MB |
+| 19 | backtracking/word_search | ✓ | 601µs | 2.9 MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 357µs | 3.4 MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 499µs | 3.2 MB |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
 | 24 | bit_manipulation/binary_or_operator |   |  |  |

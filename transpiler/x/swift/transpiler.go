@@ -40,6 +40,7 @@ var usesSet bool
 var usesLen bool
 var usesSplit bool
 var usesFetch bool
+var usesJSON bool
 var fetchStructs map[string]bool
 var funcMutParams map[string][]bool
 var funcInOutParams map[string][]bool
@@ -83,6 +84,7 @@ type Program struct {
 	UseLen        bool
 	UseSplit      bool
 	UseFetch      bool
+	UseJSON       bool
 	FetchStructs  map[string]bool
 }
 
@@ -1977,6 +1979,14 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return String(repeating: s, count: n)\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseJSON {
+		buf.WriteString("func _json(_ v: Any) {\n")
+		buf.WriteString("    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys, .prettyPrinted]),\n")
+		buf.WriteString("       let str = String(data: data, encoding: .utf8) {\n")
+		buf.WriteString("        print(str)\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseMem {
 		buf.WriteString("func _mem() -> Int {\n")
 		buf.WriteString("    if let status = try? String(contentsOfFile: \"/proc/self/status\") {\n")
@@ -2211,6 +2221,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesLen = false
 	usesSplit = false
 	usesFetch = false
+	usesJSON = false
 	fetchStructs = map[string]bool{}
 	funcMutParams = map[string][]bool{}
 	funcInOutParams = map[string][]bool{}
@@ -2251,6 +2262,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
 	p.UseFetch = usesFetch
+	p.UseJSON = usesJSON
 	p.FetchStructs = fetchStructs
 	return p, nil
 }
@@ -2373,6 +2385,7 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 				env.SetVar(st.Var.Name, t, true)
 			}
 		case st.If != nil:
+			scanExpr(st.If.Cond)
 			findUpdatedVars(env, st.If.Then, vars, anyVars)
 			if st.If.Else != nil {
 				findUpdatedVars(env, st.If.Else, vars, anyVars)
@@ -2382,8 +2395,11 @@ func findUpdatedVars(env *types.Env, list []*parser.Statement, vars map[string]b
 				findUpdatedVars(env, []*parser.Statement{child}, vars, anyVars)
 			}
 		case st.For != nil:
+			scanExpr(st.For.Source)
+			scanExpr(st.For.RangeEnd)
 			findUpdatedVars(env, st.For.Body, vars, anyVars)
 		case st.While != nil:
+			scanExpr(st.While.Cond)
 			findUpdatedVars(env, st.While.Body, vars, anyVars)
 		case st.Test != nil:
 			findUpdatedVars(env, st.Test.Body, vars, anyVars)
@@ -4796,6 +4812,14 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesAppend = true
 			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
+		}
+		if pr.Call.Func == "json" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			usesJSON = true
+			return &CallExpr{Func: "_json", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "now" && len(pr.Call.Args) == 0 {
 			usesNow = true
