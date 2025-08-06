@@ -1,0 +1,25 @@
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 51
+
+Deprecated: Implicit conversion from float 2.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float 0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 54
+
+Deprecated: Implicit conversion from float 0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 51
+
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float -0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float 0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 54
+
+Deprecated: Implicit conversion from float 0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 51
+
+Deprecated: Implicit conversion from float 1.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float -0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 52
+
+Deprecated: Implicit conversion from float 0.5 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/data_structures/kd_tree/build_kdtree.php on line 54
+[map[point:[7 2] left:1 right:3] map[point:[5 4] left:2 right:-1] map[point:[2 3] left:-1 right:-1] map[point:[9 6] left:4 right:-1] map[point:[8 1] left:-1 right:-1]]
+0
