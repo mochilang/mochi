@@ -3582,9 +3582,12 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			expr = valExpr
 			if valTyp == "" {
 				if r, ok := valExpr.(*RawExpr); ok && r.Code == "nil" {
-					if strings.HasPrefix(typ, "map-") || strings.HasPrefix(typ, "list-") {
+					if typ != "" {
 						expr = defaultValueExpr(typ)
 						valTyp = typ
+					} else {
+						expr = defaultValueExpr("int")
+						valTyp = "int"
 					}
 				}
 			} else if valTyp == "list" && strings.HasPrefix(typ, "list-") {
@@ -3600,7 +3603,10 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 			return nil, fmt.Errorf("var without type or value not supported")
 		}
 		if typ == "" {
-			typ = "int"
+			typ = valTyp
+			if typ == "" {
+				typ = "int"
+			}
 		}
 		if typ != "" && valTyp != "" && typ != valTyp {
 			if typ == "bigint" && valTyp == "int" {
