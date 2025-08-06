@@ -1,0 +1,28 @@
+/*
+Fetch public profile information for a GitHub user via the GitHub REST API.
+
+The program demonstrates basic web programming in Mochi. It sends an HTTP GET
+request using the `fetch` expression to the endpoint
+`https://api.github.com/users/<username>`. The JSON response is deserialized into
+a strongly typed `User` record containing the login name and numeric id of the
+account. Finally the program prints the login and id fields. The implementation
+uses only Mochi features and avoids the `any` type.
+*/
+
+type User {
+  login: string,
+  id: int
+}
+
+fun fetch_github_info(username: string): User {
+  let url = "https://api.github.com/users/" + username
+  let res: User = fetch url with { headers: { "User-Agent": "mochi" } }
+  return res
+}
+
+fun main() {
+  let user = fetch_github_info("octocat")
+  print(user.login + " " + str(user.id))
+}
+
+main()
