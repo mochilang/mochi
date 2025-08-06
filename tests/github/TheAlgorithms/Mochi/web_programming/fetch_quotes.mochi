@@ -1,0 +1,37 @@
+/*
+Fetch quotes from the ZenQuotes API using HTTP GET requests.
+
+The API provides two endpoints:
+  - /today returns the quote of the day
+  - /random returns a random quote
+
+Both endpoints respond with a JSON array of objects
+containing the fields:
+  q: the quote text
+  a: the author's name
+  h: the quote in HTML format
+
+The program defines a Quote type and two helper functions
+that use Mochi's built-in `fetch` to retrieve the data. The
+functions return a list of Quote values.  At the end a random
+quote is fetched and printed.  The implementation uses only
+Mochi primitives so it runs on runtime/vm without any FFI
+and avoids the `any` type.
+*/
+
+type Quote {
+  q: string
+  a: string
+  h: string
+}
+
+fun quote_of_the_day(): list<Quote> {
+  return fetch "https://zenquotes.io/api/today"
+}
+
+fun random_quotes(): list<Quote> {
+  return fetch "https://zenquotes.io/api/random"
+}
+
+let response = random_quotes()
+print(response)
