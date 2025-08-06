@@ -1,0 +1,81 @@
+/*
+Check Whether a String Contains Only Unique Characters
+
+Given an input string, determine if all characters appear exactly once.
+This implementation uses an integer bitmap to track seen Unicode code points
+without additional data structures. For each character, its code point is
+computed, the corresponding bit is checked via right shifts, and set by left
+shifting 1 by that code. If a bit is already set, a duplicate character exists.
+
+Algorithm:
+1. Initialize bitmap = 0.
+2. For each character ch in the string:
+   a. Compute its Unicode code point using a small ASCII ord helper.
+   b. If the bit at that index in bitmap is 1, return false.
+   c. Otherwise set the bit and continue.
+3. If no duplicates are found, return true.
+
+Time Complexity: O(n) for string length.
+Space Complexity: O(1) aside from the integer bitmap.
+*/
+
+fun ord(ch: string): int {
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let digits = "0123456789"
+  var i = 0
+  while i < len(lower) {
+    if lower[i] == ch { return 97 + i }
+    i = i + 1
+  }
+  i = 0
+  while i < len(upper) {
+    if upper[i] == ch { return 65 + i }
+    i = i + 1
+  }
+  i = 0
+  while i < len(digits) {
+    if digits[i] == ch { return 48 + i }
+    i = i + 1
+  }
+  if ch == " " { return 32 }
+  if ch == "_" { return 95 }
+  if ch == "." { return 46 }
+  if ch == "'" { return 39 }
+  return 0
+}
+
+fun lshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun rshift(num: int, k: int): int {
+  var result = num
+  var i = 0
+  while i < k {
+    result = (result - (result % 2)) / 2
+    i = i + 1
+  }
+  return result
+}
+
+fun is_contains_unique_chars(input_str: string): bool {
+  var bitmap: int = 0
+  var i = 0
+  while i < len(input_str) {
+    let code = ord(input_str[i])
+    if rshift(bitmap, code) % 2 == 1 { return false }
+    bitmap = bitmap + lshift(1, code)
+    i = i + 1
+  }
+  return true
+}
+
+print(str(is_contains_unique_chars("I_love.py")))
+print(str(is_contains_unique_chars("I don't love Python")))
