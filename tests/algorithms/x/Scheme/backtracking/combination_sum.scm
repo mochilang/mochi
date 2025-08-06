@@ -111,7 +111,7 @@
    (
     begin (
       define (
-        create_all_state increment total level current result
+        backtrack candidates start target path result
       )
        (
         call/cc (
@@ -121,13 +121,13 @@
            (
             begin (
               if (
-                equal? level 0
+                equal? target 0
               )
                (
                 begin (
                   ret1 (
                     append result (
-                      _list current
+                      _list path
                     )
                   )
                 )
@@ -141,7 +141,7 @@
              (
               let (
                 (
-                  i increment
+                  i start
                 )
               )
                (
@@ -159,34 +159,51 @@
                             )
                              (
                               if (
-                                <= i (
-                                  + (
-                                    - total level
-                                  )
-                                   1
+                                < i (
+                                  _len candidates
                                 )
                               )
                                (
                                 begin (
                                   let (
                                     (
-                                      next_current (
-                                        append current (
-                                          _list i
-                                        )
+                                      value (
+                                        list-ref candidates i
                                       )
                                     )
                                   )
                                    (
                                     begin (
-                                      set! result (
-                                        create_all_state (
-                                          + i 1
+                                      if (
+                                        <= value target
+                                      )
+                                       (
+                                        begin (
+                                          let (
+                                            (
+                                              new_path (
+                                                append path (
+                                                  _list value
+                                                )
+                                              )
+                                            )
+                                          )
+                                           (
+                                            begin (
+                                              set! result (
+                                                backtrack candidates i (
+                                                  - target value
+                                                )
+                                                 new_path result
+                                              )
+                                            )
+                                          )
                                         )
-                                         total (
-                                          - level 1
+                                      )
+                                       (
+                                        quote (
+                                          
                                         )
-                                         next_current result
                                       )
                                     )
                                      (
@@ -226,7 +243,7 @@
     )
      (
       define (
-        generate_all_combinations n k
+        combination_sum candidates target
       )
        (
         call/cc (
@@ -234,43 +251,27 @@
             ret4
           )
            (
-            begin (
-              if (
-                or (
-                  < k 0
-                )
-                 (
-                  < n 0
-                )
-              )
-               (
-                begin (
-                  ret4 (
-                    _list
-                  )
-                )
-              )
-               (
-                quote (
-                  
+            let (
+              (
+                path (
+                  _list
                 )
               )
             )
              (
-              let (
-                (
-                  result (
-                    _list
-                  )
-                )
-              )
-               (
-                begin (
-                  ret4 (
-                    create_all_state 1 n k (
+              begin (
+                let (
+                  (
+                    result (
                       _list
                     )
-                     result
+                  )
+                )
+                 (
+                  begin (
+                    ret4 (
+                      backtrack candidates 0 target path result
+                    )
                   )
                 )
               )
@@ -284,19 +285,28 @@
         if (
           string? (
             to-str-space (
-              generate_all_combinations 4 2
+              combination_sum (
+                _list 2 3 5
+              )
+               8
             )
           )
         )
          (
           to-str-space (
-            generate_all_combinations 4 2
+            combination_sum (
+              _list 2 3 5
+            )
+             8
           )
         )
          (
           to-str (
             to-str-space (
-              generate_all_combinations 4 2
+              combination_sum (
+                _list 2 3 5
+              )
+               8
             )
           )
         )
@@ -310,19 +320,28 @@
         if (
           string? (
             to-str-space (
-              generate_all_combinations 3 1
+              combination_sum (
+                _list 2 3 6 7
+              )
+               7
             )
           )
         )
          (
           to-str-space (
-            generate_all_combinations 3 1
+            combination_sum (
+              _list 2 3 6 7
+            )
+             7
           )
         )
          (
           to-str (
             to-str-space (
-              generate_all_combinations 3 1
+              combination_sum (
+                _list 2 3 6 7
+              )
+               7
             )
           )
         )
