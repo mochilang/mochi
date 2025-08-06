@@ -1,0 +1,80 @@
+run: exit status 1
+    warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:152:7: Main.contains/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:176:8: Main.repeat/2
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 202 │       {board, i} = try do
+     │               ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:202:15: Main.build_board/2
+
+     error: undefined variable "concat"
+     │
+ 234 │             boards = concat.(boards, result)
+     │                      ^^^^^^
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:234:22: Main.depth_first_search/4
+
+     warning: variable "boards" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 234 │             boards = concat.(boards, result)
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:234:13: Main.depth_first_search/4
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 235 │             col = col + 1
+     │             ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:235:13: Main.depth_first_search/4
+
+     warning: variable "col" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 244 │       {boards, col} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:244:16: Main.depth_first_search/4
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 271 │           j = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:271:11: Main.n_queens_solution/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 284 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs:284:7: Main.n_queens_solution/1
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/backtracking/n_queens_math.exs: cannot compile module Main (errors have been logged)
+

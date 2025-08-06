@@ -1,0 +1,176 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:15:15: Main._now/0
+
+     warning: variable "puzzle" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │           puzzle = List.replace_at(puzzle, row, List.replace_at(Enum.at(puzzle, row), col + i, ch))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:163:11: Main.place_word/5
+
+     warning: variable "puzzle" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │           puzzle = List.replace_at(puzzle, row + i, List.replace_at(Enum.at(puzzle, row + i), col, ch))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:161:11: Main.place_word/5
+
+     warning: variable "puzzle" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │           puzzle = List.replace_at(puzzle, row, List.replace_at(Enum.at(puzzle, row), col + i, ""))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:176:11: Main.remove_word/5
+
+     warning: variable "puzzle" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 174 │           puzzle = List.replace_at(puzzle, row + i, List.replace_at(Enum.at(puzzle, row + i), col, ""))
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:174:11: Main.remove_word/5
+
+     warning: variable "used" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 198 │                     used = List.replace_at(used, i, false)
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:198:21: Main.solve_crossword/3
+
+    warning: function _slice/3 is unused
+    │
+ 50 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:50:8: Main (module)
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:109:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 31 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:31:8: Main (module)
+
+     warning: function _md5_hex/1 is unused
+     │
+ 135 │   defp _md5_hex(s) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:135:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:34:8: Main (module)
+
+     warning: function _getoutput/1 is unused
+     │
+ 119 │   defp _getoutput(cmd) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:119:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:113:8: Main (module)
+
+     warning: function _fetch/1 is unused
+     │
+ 123 │   defp _fetch(url) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:123:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:116:8: Main (module)
+
+    warning: function _clamp_slice/3 is unused
+    │
+ 43 │   defp _clamp_slice(n, start, stop) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:43:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:70:8: Main (module)
+
+    warning: function _bench_now/0 is unused
+    │
+ 28 │   defp _bench_now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/backtracking/crossword_puzzle_solver.exs:28:8: Main (module)
+
+No solution found:
