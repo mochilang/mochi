@@ -1,0 +1,85 @@
+/*
+Validate credit card numbers using the Luhn checksum.
+
+This implementation mirrors typical credit card validation rules:
+1. All characters must be digits.
+2. The length must be between 13 and 16 characters.
+3. The number must start with one of the common issuer prefixes
+   (34, 35, 37, 4, 5 or 6).
+4. The Luhn algorithm is applied: starting from the rightmost digit,
+   every second digit is doubled; if the doubled value exceeds 9 it is
+   reduced by subtracting 9.  Summing all digits yields a checksum that
+   must be divisible by 10 for the number to be valid.
+
+The procedure runs in O(n) time and O(1) space where n is the number of
+characters in the input string.
+*/
+
+fun validate_initial_digits(cc: string): bool {
+  return cc[0:2] == "34" ||
+         cc[0:2] == "35" ||
+         cc[0:2] == "37" ||
+         cc[0:1] == "4" ||
+         cc[0:1] == "5" ||
+         cc[0:1] == "6"
+}
+
+fun luhn_validation(cc: string): bool {
+  var sum = 0
+  var double_digit = false
+  var i = len(cc) - 1
+  while i >= 0 {
+    var n = cc[i:i+1] as int
+    if double_digit {
+      n = n * 2
+      if n > 9 {
+        n = n - 9
+      }
+    }
+    sum = sum + n
+    double_digit = !double_digit
+    i = i - 1
+  }
+  return sum % 10 == 0
+}
+
+fun is_digit_string(s: string): bool {
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c < "0" || c > "9" {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun validate_credit_card_number(cc: string): bool {
+  let error_message = cc + " is an invalid credit card number because"
+  if !is_digit_string(cc) {
+    print(error_message + " it has nonnumerical characters.")
+    return false
+  }
+  if !(len(cc) >= 13 && len(cc) <= 16) {
+    print(error_message + " of its length.")
+    return false
+  }
+  if !validate_initial_digits(cc) {
+    print(error_message + " of its first two digits.")
+    return false
+  }
+  if !luhn_validation(cc) {
+    print(error_message + " it fails the Luhn check.")
+    return false
+  }
+  print(cc + " is a valid credit card number.")
+  return true
+}
+
+fun main() {
+  validate_credit_card_number("4111111111111111")
+  validate_credit_card_number("32323")
+}
+
+main()
