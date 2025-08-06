@@ -1,0 +1,46 @@
+/*
+Maximum Subsequence Sum
+
+Problem:
+Given a non-empty list of integers, find the maximum possible sum of any
+non-empty subsequence. A subsequence may skip elements but must preserve the
+original order. If all numbers are negative, the result is the largest (least
+negative) number.
+
+Algorithm:
+Iterate through the list keeping a running best sum. For each element `num`,
+consider three candidates:
+1. The current best sum `ans` (skip `num`).
+2. Extending the best sum with `num` (`ans + num`).
+3. Starting a new subsequence at `num`.
+Update `ans` to the largest of these three values. This dynamic programming
+approach effectively accumulates positive contributions while discarding
+combinations that would decrease the sum. The algorithm runs in O(n) time and
+O(1) extra space.
+*/
+
+fun max_int(a: int, b: int): int {
+  if a >= b {
+    return a
+  } else {
+    return b
+  }
+}
+
+fun max_subsequence_sum(nums: list<int>): int {
+  if len(nums) == 0 {
+    panic("input sequence should not be empty")
+  }
+  var ans = nums[0]
+  var i = 1
+  while i < len(nums) {
+    let num = nums[i]
+    let extended = ans + num
+    ans = max_int(max_int(ans, extended), num)
+    i = i + 1
+  }
+  return ans
+}
+
+print(max_subsequence_sum([1, 2, 3, 4, -2]))
+print(max_subsequence_sum([-2, -3, -1, -4, -6]))
