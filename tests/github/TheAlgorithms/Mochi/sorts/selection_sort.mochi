@@ -1,0 +1,39 @@
+/*
+Selection Sort
+
+Sorts a list of integers in ascending order by repeatedly selecting
+ the smallest remaining element and swapping it into place. For a list
+of length n the algorithm performs n-1 passes; on each pass it scans
+the unsorted portion to find the minimum value, then swaps it with
+the first element of that portion. This results in O(n^2) time
+complexity and O(1) extra space.
+
+Implemented in pure Mochi without FFI or the "any" type so it runs on
+runtime/vm.
+*/
+
+fun selection_sort(arr: list<int>): list<int> {
+  let n = len(arr)
+  var i = 0
+  while i < n - 1 {
+    var min_index = i
+    var k = i + 1
+    while k < n {
+      if arr[k] < arr[min_index] {
+        min_index = k
+      }
+      k = k + 1
+    }
+    if min_index != i {
+      var tmp = arr[i]
+      arr[i] = arr[min_index]
+      arr[min_index] = tmp
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+print(str(selection_sort([0, 5, 3, 2, 2])))
+print(str(selection_sort([])))
+print(str(selection_sort([-2, -5, -45])))
