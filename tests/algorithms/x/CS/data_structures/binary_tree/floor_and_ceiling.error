@@ -1,0 +1,5 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_floor_and_ceiling1060351437/001/Program.cs(131,27): error CS0266: Cannot implicitly convert type 'object' to 'long'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_floor_and_ceiling1060351437/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_floor_and_ceiling1060351437/001/Program.cs(131,40): error CS0266: Cannot implicitly convert type 'object' to 'long'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_binary_tree_floor_and_ceiling1060351437/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
