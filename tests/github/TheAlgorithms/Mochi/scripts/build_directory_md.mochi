@@ -1,0 +1,227 @@
+/*
+Generate Directory Markdown
+
+Replicates TheAlgorithms/Python script build_directory_md.py.
+Given a collection of file paths it prints a hierarchical Markdown
+outline. Directories named "scripts", starting with '.' or '_', or
+containing "venv" are skipped. Files named "__init__.py" are ignored and
+only *.py or *.ipynb files are included. Directory names and file titles
+replace underscores with spaces and are converted to title case. Output
+uses Markdown headers for new directories and bullets for files.
+
+Algorithm:
+1. Filter paths to remove excluded directories and files.
+2. Sort remaining paths lexicographically.
+3. Iterate through paths, printing new directories when the prefix
+   differs from the previous path.
+4. Print each file as a Markdown bullet linking to the file with spaces
+   encoded as %20.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    if len(sep) > 0 && i + len(sep) <= len(s) && substring(s, i, i + len(sep)) == sep {
+      parts = append(parts, cur)
+      cur = ""
+      i = i + len(sep)
+    } else {
+      cur = cur + substring(s, i, i + 1)
+      i = i + 1
+    }
+  }
+  parts = append(parts, cur)
+  return parts
+}
+
+fun join(xs: list<string>, sep: string): string {
+  var res = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 { res = res + sep }
+    res = res + xs[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun repeat(s: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + s
+    i = i + 1
+  }
+  return out
+}
+
+fun replace_char(s: string, old: string, new: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let c = substring(s, i, i + 1)
+    if c == old {
+      out = out + new
+    } else {
+      out = out + c
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun contains(s: string, sub: string): bool {
+  if len(sub) == 0 { return true }
+  var i = 0
+  while i + len(sub) <= len(s) {
+    if substring(s, i, i + len(sub)) == sub { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun file_extension(name: string): string {
+  var i = len(name) - 1
+  while i >= 0 {
+    if substring(name, i, i + 1) == "." {
+      return name[i:]
+    }
+    i = i - 1
+  }
+  return ""
+}
+
+fun remove_extension(name: string): string {
+  var i = len(name) - 1
+  while i >= 0 {
+    if substring(name, i, i + 1) == "." {
+      return name[:i]
+    }
+    i = i - 1
+  }
+  return name
+}
+
+fun title_case(s: string): string {
+  var out = ""
+  var cap = true
+  var i = 0
+  while i < len(s) {
+    let c = substring(s, i, i + 1)
+    if c == " " {
+      out = out + c
+      cap = true
+    } else {
+      if cap {
+        out = out + upper(c)
+        cap = false
+      } else {
+        out = out + lower(c)
+      }
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun count_char(s: string, ch: string): int {
+  var cnt = 0
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch { cnt = cnt + 1 }
+    i = i + 1
+  }
+  return cnt
+}
+
+fun md_prefix(level: int): string {
+  if level == 0 { return "\n##" }
+  return repeat("  ", level) + "*"
+}
+
+fun print_path(old_path: string, new_path: string): string {
+  let old_parts = split(old_path, "/")
+  let new_parts = split(new_path, "/")
+  var i = 0
+  while i < len(new_parts) {
+    if (i >= len(old_parts) || old_parts[i] != new_parts[i]) && new_parts[i] != "" {
+      let title = title_case(replace_char(new_parts[i], "_", " "))
+      print(md_prefix(i) + " " + title)
+    }
+    i = i + 1
+  }
+  return new_path
+}
+
+fun sort_strings(xs: list<string>): list<string> {
+  var arr = xs
+  var i = 0
+  while i < len(arr) {
+    var min_idx = i
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[min_idx] { min_idx = j }
+      j = j + 1
+    }
+    let tmp = arr[i]
+    arr[i] = arr[min_idx]
+    arr[min_idx] = tmp
+    i = i + 1
+  }
+  return arr
+}
+
+fun good_file_paths(paths: list<string>): list<string> {
+  var res: list<string> = []
+  for p in paths {
+    let parts = split(p, "/")
+    var skip = false
+    var k = 0
+    while k < len(parts) - 1 {
+      let part = parts[k]
+      if part == "scripts" || part[0:1] == "." || part[0:1] == "_" || contains(part, "venv") {
+        skip = true
+      }
+      k = k + 1
+    }
+    if skip { continue }
+    let filename = parts[len(parts) - 1]
+    if filename == "__init__.py" { continue }
+    let ext = file_extension(filename)
+    if ext == ".py" || ext == ".ipynb" {
+      res = append(res, p)
+    }
+  }
+  return res
+}
+
+fun print_directory_md(paths: list<string>) {
+  var files = sort_strings(good_file_paths(paths))
+  var old_path = ""
+  var i = 0
+  while i < len(files) {
+    let fp = files[i]
+    let parts = split(fp, "/")
+    let filename = parts[len(parts) - 1]
+    var filepath = ""
+    if len(parts) > 1 { filepath = join(parts[:len(parts)-1], "/") }
+    if filepath != old_path { old_path = print_path(old_path, filepath) }
+    var indent = 0
+    if len(filepath) > 0 { indent = count_char(filepath, "/") + 1 }
+    let url = replace_char(fp, " ", "%20")
+    let name = title_case(replace_char(remove_extension(filename), "_", " "))
+    print(md_prefix(indent) + " [" + name + "](" + url + ")")
+    i = i + 1
+  }
+}
+
+let sample = [
+  "data_structures/linked_list.py",
+  "data_structures/binary_tree.py",
+  "math/number_theory/prime_check.py",
+  "math/number_theory/greatest_common_divisor.ipynb"
+]
+
+print_directory_md(sample)
