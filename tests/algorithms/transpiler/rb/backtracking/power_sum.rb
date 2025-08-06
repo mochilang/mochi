@@ -52,48 +52,39 @@ end
 
 start_mem = _mem()
 start = _now()
-  def minimax(depth, node_index, is_max, scores, height)
-    if depth < 0
-      panic("Depth cannot be less than 0")
+  def int_pow(base, exp)
+    result = 1
+    i = 0
+    while i < exp
+      result = result * base
+      i = _add(i, 1)
     end
-    if scores.length == 0
-      panic("Scores cannot be empty")
-    end
-    if depth == height
-      return scores[node_index]
-    end
-    if is_max
-      left = minimax(_add(depth, 1), node_index * 2, false, scores, height)
-      right = minimax(_add(depth, 1), _add(node_index * 2, 1), false, scores, height)
-      if left > right
-        return left
-      else
-        return right
-      end
-    end
-    left = minimax(_add(depth, 1), node_index * 2, true, scores, height)
-    right = minimax(_add(depth, 1), _add(node_index * 2, 1), true, scores, height)
-    if left < right
-      return left
-    else
-      return right
-    end
+    return result
   end
-  def tree_height(n)
-    h = 0
-    v = n
-    while v > 1
-      v = v / 2
-      h = _add(h, 1)
+  def backtrack(target, exp, current, current_sum)
+    if current_sum == target
+      return 1
     end
-    return h
+    p = int_pow(current, exp)
+    count = 0
+    if _add(current_sum, p) <= target
+      count = _add(count, backtrack(target, exp, _add(current, 1), _add(current_sum, p)))
+    end
+    if p < target
+      count = _add(count, backtrack(target, exp, _add(current, 1), current_sum))
+    end
+    return count
   end
-  def main()
-    scores = [90, 23, 6, 33, 21, 65, 123, 34423]
-    height = tree_height(scores.length)
-    puts(_add("Optimal value : ", (minimax(0, 0, true, scores, height)).to_s))
+  def solve(target, exp)
+    if !(1 <= target && target <= 1000 && 2 <= exp && exp <= 10)
+      puts("Invalid input")
+      return 0
+    end
+    return backtrack(target, exp, 1, 0)
   end
-  main()
+  puts(solve(13, 2))
+  puts(solve(10, 2))
+  puts(solve(10, 3))
 end_time = _now()
 end_mem = _mem()
 result = {"duration_us" => ((end_time - start) / 1000), "memory_bytes" => (end_mem - start_mem), "name" => "main"}

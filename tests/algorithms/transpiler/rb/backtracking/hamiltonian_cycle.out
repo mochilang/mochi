@@ -1,0 +1,4 @@
+tests/github/TheAlgorithms/Mochi/backtracking/hamiltonian_cycle.mochi
+   test case 1                     ... ok (1.0ms)
+   test case 2                     ... ok (1.0ms)
+   test case 3                     ... ok (1.0ms)

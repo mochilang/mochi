@@ -1362,6 +1362,12 @@ func identName(n string) string {
 		}
 		return safeName(name)
 	default:
+		if name == "JSON" {
+			return name
+		}
+		if builtinConsts[name] {
+			return name
+		}
 		return safeName(name)
 	}
 }
@@ -1445,6 +1451,81 @@ type CommentStmt struct{ Text string }
 func (cmt *CommentStmt) emit(e *emitter) {
 	io.WriteString(e.w, "# ")
 	io.WriteString(e.w, cmt.Text)
+}
+
+// TestStmt represents a test block with expectations.
+type TestStmt struct {
+	Name string
+	Body []Stmt
+}
+
+func (t *TestStmt) emit(e *emitter) {
+	io.WriteString(e.w, "$mochi_test_header_printed ||= false")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "unless $mochi_test_header_printed")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "__mochi_rel = __FILE__.split('/tests/algorithms/transpiler/rb')[1]")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "puts('tests/github/TheAlgorithms/Mochi' + __mochi_rel.sub(/\\.rb$/, '.mochi'))")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "$mochi_test_header_printed = true")
+	e.indent--
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "start = _now()")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "ok = true")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "begin")
+	e.indent++
+	for _, st := range t.Body {
+		e.nl()
+		e.writeIndent()
+		st.emit(e)
+	}
+	e.indent--
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "rescue => e")
+	e.indent++
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "ok = false")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "err = e")
+	e.indent--
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "dur = _now() - start")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "time_str = if dur >= 1_000_000 then sprintf('%.1fms', dur/1_000_000.0) else sprintf('%.1fµs', dur/1000.0) end")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "desc = ('   test "+t.Name+"').ljust(35)")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "line = desc + '... ' + (ok ? 'ok' : 'FAIL') + ' (' + time_str + ')'")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "puts(line)")
+	e.nl()
+	e.writeIndent()
+	io.WriteString(e.w, "raise err unless ok")
 }
 
 // BenchStmt represents a benchmark block.
@@ -2865,6 +2946,9 @@ func reorderFuncs(stmts []Stmt) []Stmt {
 		case *BenchStmt:
 			s.Body = reorderFuncs(s.Body)
 			rest = append(rest, s)
+		case *TestStmt:
+			s.Body = reorderFuncs(s.Body)
+			rest = append(rest, s)
 		default:
 			rest = append(rest, st)
 		}
@@ -3131,8 +3215,9 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			body[i] = st2
 		}
-		comment := &CommentStmt{Text: "test " + strings.Trim(st.Test.Name, "\"")}
-		return &BlockStmt{Stmts: append([]Stmt{comment}, body...)}, nil
+		usesNow = true
+		name := strings.Trim(st.Test.Name, "\"")
+		return &TestStmt{Name: name, Body: body}, nil
 	case st.Bench != nil:
 		body := make([]Stmt, len(st.Bench.Body))
 		savedEnv := currentEnv
@@ -4015,6 +4100,11 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("append takes two args")
 			}
 			return &AppendExpr{List: args[0], Elem: args[1]}, nil
+		case "concat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			return &CallExpr{Func: "_add", Args: args}, nil
 		case "substring":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("substring expects 3 args")
@@ -5053,6 +5143,12 @@ func stmtNode(s Stmt) *ast.Node {
 		return n
 	case *ForInStmt:
 		n := &ast.Node{Kind: "for_in", Value: st.Name, Children: []*ast.Node{exprNode(st.Iterable)}}
+		for _, b := range st.Body {
+			n.Children = append(n.Children, stmtNode(b))
+		}
+		return n
+	case *TestStmt:
+		n := &ast.Node{Kind: "test", Value: st.Name}
 		for _, b := range st.Body {
 			n.Children = append(n.Children, stmtNode(b))
 		}

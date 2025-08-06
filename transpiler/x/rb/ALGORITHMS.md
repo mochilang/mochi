@@ -1,28 +1,28 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 10/1077
-Last updated: 2025-08-06 09:34 +0000
+Completed programs: 16/1077
+Last updated: 2025-08-06 16:38 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1ms | 11.9 KB |
+| 1 | backtracking/all_combinations | ✓ | 1ms | 12.6 KB |
 | 2 | backtracking/all_permutations | ✓ | 1ms | 59.0 KB |
 | 3 | backtracking/all_subsequences | ✓ | 1ms | 16.8 KB |
 | 4 | backtracking/coloring | ✓ | 1ms | 11.0 KB |
 | 5 | backtracking/combination_sum | ✓ | 1ms | 12.7 KB |
 | 6 | backtracking/crossword_puzzle_solver | ✓ | 1ms | 14.2 KB |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 2ms | 14.3 KB |
 | 8 | backtracking/knight_tour | ✓ | 1ms | 9.7 KB |
 | 9 | backtracking/match_word_pattern | ✓ | 1ms | 66.5 KB |
 | 10 | backtracking/minimax | ✓ | 1ms | 9.1 KB |
 | 11 | backtracking/n_queens | ✓ | 1ms | 14.0 KB |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 1ms | 18.2 KB |
+| 13 | backtracking/power_sum | ✓ | 1ms | 9.1 KB |
+| 14 | backtracking/rat_in_maze | ✓ | 1ms | 14.1 KB |
+| 15 | backtracking/sudoku | ✓ | 1ms | 81.6 KB |
+| 16 | backtracking/sum_of_subsets | ✓ | 1ms | 12.6 KB |
 | 17 | backtracking/word_break |   |  |  |
 | 18 | backtracking/word_ladder |   |  |  |
 | 19 | backtracking/word_search |   |  |  |
