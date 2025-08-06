@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 22:08 GMT+7
+Last updated: 2025-08-06 22:22 GMT+7
 
-## Algorithms Golden Test Checklist (58/1077)
+## Algorithms Golden Test Checklist (59/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -67,7 +67,7 @@ Last updated: 2025-08-06 22:08 GMT+7
 | 58 | boolean_algebra/xor_gate | ✓ | 1.0µs | 0B |
 | 59 | cellular_automata/conways_game_of_life | ✓ | 1.0µs | 864B |
 | 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
+| 61 | cellular_automata/langtons_ant | ✓ | 1.0µs | 0B |
 | 62 | cellular_automata/nagel_schrekenberg |   |  |  |
 | 63 | cellular_automata/one_dimensional |   |  |  |
 | 64 | cellular_automata/wa_tor |   |  |  |

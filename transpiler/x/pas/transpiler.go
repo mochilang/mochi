@@ -2814,7 +2814,9 @@ func convertBenchBlock(env *types.Env, bench *parser.BenchBlock, varTypes map[st
 		return nil, err
 	}
 	out = append(out, body...)
-	out = append(out, &ExprStmt{Expr: &CallExpr{Name: "Sleep", Args: []Expr{&IntLit{Value: 1}}}})
+	if len(body) == 0 {
+		out = append(out, &ExprStmt{Expr: &CallExpr{Name: "Sleep", Args: []Expr{&IntLit{Value: 1}}}})
+	}
 	out = append(out, &AssignStmt{Name: memDiff, Expr: &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_mem"}, Right: &VarRef{Name: memStart}}})
 	diff := &BinaryExpr{Op: "-", Left: &CallExpr{Name: "_bench_now"}, Right: &VarRef{Name: startName}}
 	div := &BinaryExpr{Op: "div", Left: diff, Right: &IntLit{Value: 1000}}
