@@ -1,0 +1,68 @@
+/*
+Fetch GitHub Info Test
+----------------------
+This program exercises a small function that retrieves the
+authenticated user's information from the GitHub API. The function
+builds HTTP headers using an authorization token and expects a JSON
+response with a login name and numeric id. A mock HTTP GET function is
+used to verify the correct endpoint and headers before returning a
+small response. The code is pure Mochi, avoids the "any" type, and runs
+on the runtime/vm without FFI.
+*/
+
+let AUTHENTICATED_USER_ENDPOINT: string = "https://api.github.com/user"
+
+type GitHubUser = { login: string, id: int }
+
+fun get_header(hs: list<list<string>>, key: string): string {
+  var i = 0
+  while i < len(hs) {
+    let pair = hs[i]
+    if pair[0] == key {
+      return pair[1]
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun mock_response(url: string, headers: list<list<string>>): GitHubUser {
+  if url != AUTHENTICATED_USER_ENDPOINT {
+    panic("wrong url")
+  }
+  let auth = get_header(headers, "Authorization")
+  if len(auth) == 0 {
+    panic("missing Authorization")
+  }
+  if auth[0:6] != "token " {
+    panic("bad token prefix")
+  }
+  let accept = get_header(headers, "Accept")
+  if len(accept) == 0 {
+    panic("missing Accept")
+  }
+  return GitHubUser{ login: "test", id: 1 }
+}
+
+fun fetch_github_info(auth_token: string): GitHubUser {
+  let headers: list<list<string>> = [["Authorization", "token " + auth_token], ["Accept", "application/vnd.github.v3+json"]]
+  return mock_response(AUTHENTICATED_USER_ENDPOINT, headers)
+}
+
+fun test_fetch_github_info() {
+  let result = fetch_github_info("token")
+  if result.login != "test" {
+    panic("login mismatch")
+  }
+  if result.id != 1 {
+    panic("id mismatch")
+  }
+  print(result.login)
+  print(str(result.id))
+}
+
+fun main() {
+  test_fetch_github_info()
+}
+
+main()
