@@ -41,6 +41,17 @@ mochi cheatsheet
 
 It’s a single binary — no dependencies, no setup.
 
+### npx
+
+You can also run Mochi via `npx`, which downloads the prebuilt binary on demand:
+
+```bash
+npx @mochilang/mochi run examples/hello.mochi
+```
+
+If you’re behind a proxy or need a custom mirror, set `HTTPS_PROXY` or
+`MOCHI_BINARY_BASE_URL` before installing so the script can fetch the binary.
+
 ### Docker
 
 Use Docker to run Mochi without installing anything:
