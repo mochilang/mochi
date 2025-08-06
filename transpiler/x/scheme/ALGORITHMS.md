@@ -2,12 +2,12 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 16:38 GMT+7
+Last updated: 2025-08-06 18:35 GMT+7
 
-## Algorithms Golden Test Checklist (11/1077)
+## Algorithms Golden Test Checklist (20/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
+| 1 | backtracking/all_combinations | ✓ | 0s | 12.7 MB |
 | 2 | backtracking/all_permutations | ✓ | 2ms | 12.6 MB |
 | 3 | backtracking/all_subsequences | ✓ | 0s | 13.0 MB |
 | 4 | backtracking/coloring | ✓ | 1ms | 12.6 MB |
@@ -18,16 +18,16 @@ Last updated: 2025-08-06 16:38 GMT+7
 | 9 | backtracking/match_word_pattern | ✓ | 9ms | 13.1 MB |
 | 10 | backtracking/minimax | ✓ | 1ms | 12.6 MB |
 | 11 | backtracking/n_queens | ✓ | 1ms | 13.7 MB |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 76ms | 12.9 MB |
+| 13 | backtracking/power_sum | ✓ | 0s | 12.9 MB |
+| 14 | backtracking/rat_in_maze | ✓ | 1ms | 13.4 MB |
+| 15 | backtracking/sudoku | ✓ | 584ms | 13.5 MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 1ms | 12.9 MB |
+| 17 | backtracking/word_break | ✓ | 1ms | 12.1 MB |
+| 18 | backtracking/word_ladder | ✓ | 83ms | 13.4 MB |
 | 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 3ms | 12.5 MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 1ms | 12.4 MB |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
 | 24 | bit_manipulation/binary_or_operator |   |  |  |

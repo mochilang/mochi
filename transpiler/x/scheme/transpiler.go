@@ -2924,6 +2924,11 @@ func convertCall(target Node, call *parser.CallOp) (Node, error) {
 				return &List{Elems: []Node{Symbol("string-append"), args[0], args[1]}}, nil
 			}
 			return &List{Elems: []Node{Symbol("append"), args[0], &List{Elems: []Node{Symbol("_list"), args[1]}}}}, nil
+		case "concat":
+			if len(args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 args")
+			}
+			return &List{Elems: []Node{Symbol("append"), args[0], args[1]}}, nil
 		case "split":
 			if len(args) != 2 {
 				return nil, fmt.Errorf("split expects 2 args")
