@@ -1,0 +1,205 @@
+/*
+Project Euler Problem 49 - Prime Permutations
+
+Find a 12-digit number formed by concatenating three 4-digit prime numbers
+that (1) are permutations of each other and (2) form an arithmetic sequence.
+
+Algorithm:
+1. Generate all four-digit primes.
+2. For each prime, compute all digit permutations and keep those that are also
+   prime. Candidates with at least three distinct members are stored.
+3. For each candidate set, search triples with equal differences and distinct
+   values; record the concatenation of each valid triple.
+4. Return the largest concatenated value.
+
+Time complexity is roughly O(p * d!) where p is the number of 4-digit primes
+and d = 4 digits, which is feasible (~1 second).
+*/
+
+fun is_prime(number: int): bool {
+  if 1 < number && number < 4 {
+    return true
+  }
+  if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun search(target: int, arr: list<int>): bool {
+  var left = 0
+  var right = len(arr) - 1
+  while left <= right {
+    let middle = (left + right) / 2
+    if arr[middle] == target {
+      return true
+    }
+    if arr[middle] < target {
+      left = middle + 1
+    } else {
+      right = middle - 1
+    }
+  }
+  return false
+}
+
+fun sort_int(xs: list<int>): list<int> {
+  var arr = xs
+  var i = 0
+  while i < len(arr) {
+    var j = i + 1
+    while j < len(arr) {
+      if arr[j] < arr[i] {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun permutations_of_number(n: int): list<int> {
+  let s = str(n)
+  var d: list<int> = []
+  var i = 0
+  while i < len(s) {
+    d = append(d, int(s[i]))
+    i = i + 1
+  }
+  var res: list<int> = []
+  var a = 0
+  while a < len(d) {
+    var b = 0
+    while b < len(d) {
+      if b != a {
+        var c = 0
+        while c < len(d) {
+          if c != a && c != b {
+            var e = 0
+            while e < len(d) {
+              if e != a && e != b && e != c {
+                let val = d[a] * 1000 + d[b] * 100 + d[c] * 10 + d[e]
+                res = append(res, val)
+              }
+              e = e + 1
+            }
+          }
+          c = c + 1
+        }
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return res
+}
+
+fun abs_int(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+fun contains_int(xs: list<int>, v: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == v { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun solution(): int {
+  var prime_list: list<int> = []
+  var n = 1001
+  while n < 10000 {
+    if is_prime(n) {
+      prime_list = append(prime_list, n)
+    }
+    n = n + 2
+  }
+
+  var candidates: list<list<int>> = []
+  var i = 0
+  while i < len(prime_list) {
+    let number = prime_list[i]
+    var tmp: list<int> = []
+    let perms = permutations_of_number(number)
+    var j = 0
+    while j < len(perms) {
+      let prime = perms[j]
+      if prime % 2 != 0 && search(prime, prime_list) {
+        tmp = append(tmp, prime)
+      }
+      j = j + 1
+    }
+    tmp = sort_int(tmp)
+    if len(tmp) >= 3 {
+      candidates = append(candidates, tmp)
+    }
+    i = i + 1
+  }
+
+  var passed: list<list<int>> = []
+  i = 0
+  while i < len(candidates) {
+    let candidate = candidates[i]
+    var found = false
+    var a = 0
+    while a < len(candidate) {
+      var b = a + 1
+      while b < len(candidate) {
+        var c = b + 1
+        while c < len(candidate) {
+          let x = candidate[a]
+          let y = candidate[b]
+          let z = candidate[c]
+          if abs_int(x - y) == abs_int(y - z) && x != y && x != z && y != z {
+            let triple = sort_int([x, y, z])
+            passed = append(passed, triple)
+            found = true
+            break
+          }
+          c = c + 1
+        }
+        if found { break }
+        b = b + 1
+      }
+      if found { break }
+      a = a + 1
+    }
+    i = i + 1
+  }
+
+  var answer_nums: list<int> = []
+  i = 0
+  while i < len(passed) {
+    let seq = passed[i]
+    let val = int(str(seq[0]) + str(seq[1]) + str(seq[2]))
+    if !contains_int(answer_nums, val) {
+      answer_nums = append(answer_nums, val)
+    }
+    i = i + 1
+  }
+
+  var max_val = answer_nums[0]
+  i = 1
+  while i < len(answer_nums) {
+    if answer_nums[i] > max_val {
+      max_val = answer_nums[i]
+    }
+    i = i + 1
+  }
+  return max_val
+}
+
+print(solution())
