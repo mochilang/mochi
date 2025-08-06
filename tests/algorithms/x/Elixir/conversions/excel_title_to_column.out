@@ -1,0 +1,18 @@
+warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │           {found, idx, value} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/excel_title_to_column.exs:56:19: Main.excel_title_to_column/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/excel_title_to_column.exs:72:8: Main.excel_title_to_column/1
+
+1
+2
+28
+26

@@ -1,0 +1,34 @@
+warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │       {count, encoded, i} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:34:8: Main.run_length_encode/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 34 │       {count, encoded, i} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:34:24: Main.run_length_encode/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 80 │           {j, res} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:80:12: Main.run_length_decode/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 91 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/run_length_encoding.exs:91:8: Main.run_length_decode/1
+
+A4B3C2D1A2
+"AAAABBBCCDAA"
+A1
+"A"
+A3D6F3C3A2V4
+"AAADDDDDDFFFCCCAAVVVV"

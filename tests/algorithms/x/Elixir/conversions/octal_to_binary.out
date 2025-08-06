@@ -1,0 +1,30 @@
+warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 38 │           {j, valid} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_binary.exs:38:12: Main.octal_to_binary/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │           {binary_digit, k, value} = try do
+    │                          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_binary.exs:60:26: Main.octal_to_binary/1
+
+    warning: variable "value" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 60 │           {binary_digit, k, value} = try do
+    │                             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_binary.exs:60:29: Main.octal_to_binary/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       {binary_number, i} = try do
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_binary.exs:73:23: Main.octal_to_binary/1
+
+"001111"
+"111"

@@ -1,0 +1,39 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │         {i, result} = try do
+    │          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions_string.exs:26:10: Main.pow/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 47 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions_string.exs:47:8: Main.pow/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 76 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions_string.exs:76:7: Main.add_si_prefix/1
+
+    warning: variable "prefixes" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 60 │       prefixes = nil
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions_string.exs:60:7: Main.add_si_prefix/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 103 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions_string.exs:103:7: Main.add_binary_prefix/1
+
+"10.0 kilo"
+"0.005"
+"64.0 kilo"
+"512.0"

@@ -1,0 +1,13 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 26 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/prefix_conversions.exs:26:8: Main.pow/2
+
+1000.0
+0.001
+1.0
+1024.0
+9.765625e-4
+1.0

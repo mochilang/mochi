@@ -1,0 +1,32 @@
+warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 41 │       arr = List.replace_at(arr, high, tmp)
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/kth_largest_element.exs:41:7: Main.partition/3
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 32 │       {arr, i, j} = try do
+    │                ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/kth_largest_element.exs:32:16: Main.partition/3
+
+    warning: variable "high" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {high, low} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/kth_largest_element.exs:81:8: Main.kth_largest_element/2
+
+    warning: variable "low" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 81 │       {high, low} = try do
+    │              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/kth_largest_element.exs:81:14: Main.kth_largest_element/2
+
+4
+
+
+2

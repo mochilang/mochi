@@ -1,0 +1,36 @@
+run: exit status 1
+    warning: variable "same" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │                   {same} = if Enum.at(item, j) != Enum.at(target, j) do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:54:20: Main.contains_triplet/2
+
+     warning: variable "seen" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │         {output, seen} = Enum.reduce(((i + 1)..(_len(arr) - 1)), {output, seen}, fn j, {output, seen} ->
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:135:18: Main.find_triplets_with_0_sum_hashing/1
+
+warning: Range.new/2 and first..last default to a step of -1 when last < first. Use Range.new(first, last, -1) or first..last//-1, or pass 1 if that was your intention
+  /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:47: Main.contains_triplet/2
+  /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:107: anonymous fn/5 in Main.find_triplets_with_0_sum/1
+  (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce/3
+  /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:101: anonymous fn/5 in Main.find_triplets_with_0_sum/1
+  (elixir 1.18.3) lib/enum.ex:4507: Enum.reduce/3
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Atom
+
+Got value:
+
+    nil
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:230: Enumerable.slice/1
+    (elixir 1.18.3) lib/enum.ex:4579: Enum.slice_forward/4
+    (elixir 1.18.3) lib/enum.ex:479: Enum.at/3
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:54: anonymous fn/3 in Main.contains_triplet/2
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map/2
+    /workspace/mochi/tests/algorithms/x/Elixir/data_structures/arrays/find_triplets_with_0_sum.exs:52: anonymous fn/3 in Main.contains_triplet/2
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map/2

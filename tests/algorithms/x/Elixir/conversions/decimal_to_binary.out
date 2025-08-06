@@ -1,0 +1,15 @@
+warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 27 │       {n, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/decimal_to_binary.exs:27:8: Main.decimal_to_binary_iterative/1
+
+"0b0"
+"0b10"
+"0b111"
+"0b100011"
+"-0b10"
+"0b0"
+"0b101000"
+"-0b101000"

@@ -1,0 +1,26 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │       i = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/speed_conversions.exs:24:7: Main.index_of/2
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 54 │       {i, s} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/speed_conversions.exs:54:8: Main.units_string/1
+
+27.778
+62.137
+53.996
+360.0
+223.694
+194.384
+160.934
+44.704
+86.898
+185.2
+51.444
+115.078

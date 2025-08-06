@@ -1,0 +1,38 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 56 │       {i, res} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lz77.exs:56:8: Main.tokens_to_string/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 116 │       {i, length, offset} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lz77.exs:116:8: Main.find_encoding_token/2
+
+     warning: variable "remaining" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │       {output, remaining, search_buffer} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lz77.exs:151:16: Main.lz77_compress/3
+
+     warning: variable "search_buffer" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │       {output, remaining, search_buffer} = try do
+     │                           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lz77.exs:151:27: Main.lz77_compress/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 176 │         {i, output} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/data_compression/lz77.exs:176:10: Main.lz77_decompress/1
+
+"[(0, 0, a), (0, 0, b), (2, 2, c), (4, 3, a), (2, 2, a)]"
+"[(0, 0, a), (1, 1, c), (3, 4, b), (3, 3, a), (1, 2, c)]"
+"cabracadabrarrarrad"

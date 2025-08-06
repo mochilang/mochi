@@ -1,0 +1,17 @@
+run: exit status 1
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 30 │       {i, p} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/temperature_conversions.exs:30:8: Main.pow10/1
+
+    error: imported Kernel.floor/1 conflicts with local function
+    │
+  3 │   def floor(x) do
+    │       ^
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/temperature_conversions.exs:3:7: Main (module)
+
+** (CompileError) /workspace/mochi/tests/algorithms/x/Elixir/conversions/temperature_conversions.exs: cannot compile module Main (errors have been logged)
+

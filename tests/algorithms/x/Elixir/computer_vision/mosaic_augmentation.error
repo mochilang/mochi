@@ -1,0 +1,127 @@
+run: exit status 1
+    warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 29 │           {c, row} = try do
+    │            ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:29:12: Main.update_image_and_anno/6
+
+     warning: variable "x3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 239 │                     {output_img, x3} = try do
+     │                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:239:34: Main.update_image_and_anno/6
+
+     warning: variable "j3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 272 │                 {j3, new_anno} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:272:18: Main.update_image_and_anno/6
+
+     warning: variable "y3" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 251 │                 {output_img, y3} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:251:30: Main.update_image_and_anno/6
+
+     warning: variable "x2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 185 │                     {output_img, x2} = try do
+     │                                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:185:34: Main.update_image_and_anno/6
+
+     warning: variable "j2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 218 │                 {j2, new_anno} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:218:18: Main.update_image_and_anno/6
+
+     warning: variable "y2" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 197 │                 {output_img, y2} = try do
+     │                              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:197:30: Main.update_image_and_anno/6
+
+     warning: variable "x1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 130 │                   {output_img, x1} = try do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:130:32: Main.update_image_and_anno/6
+
+     warning: variable "j1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │               {j1, new_anno} = try do
+     │                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:163:16: Main.update_image_and_anno/6
+
+     warning: variable "y1" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │               {output_img, y1} = try do
+     │                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:142:28: Main.update_image_and_anno/6
+
+    warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 75 │                 {output_img, x0} = try do
+    │                              ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:75:30: Main.update_image_and_anno/6
+
+     warning: variable "j0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 108 │             {j0, new_anno} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:108:14: Main.update_image_and_anno/6
+
+    warning: variable "y0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 87 │             {output_img, y0} = try do
+    │                          ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:87:26: Main.update_image_and_anno/6
+
+     warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 316 │         {filtered, k} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:316:20: Main.update_image_and_anno/6
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 290 │       {i, new_anno, output_img, path_list} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:290:8: Main.update_image_and_anno/6
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 42 │       {output_img, r} = try do
+    │                    ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:42:20: Main.update_image_and_anno/6
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 356 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:356:7: Main.main/0
+
+** (ArgumentError) argument error
+    :erlang.++(nil, [0])
+    /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:22: anonymous fn/4 in Main.update_image_and_anno/6
+    /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:30: anonymous fn/5 in Main.update_image_and_anno/6
+    /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:43: Main.update_image_and_anno/6
+    /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:340: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/mosaic_augmentation.exs:367: (file)
