@@ -1,0 +1,79 @@
+/*
+Alternative List Arrange
+-----------------------
+Given two lists, produce a single list where elements are taken alternately from
+ each input list. If one list is longer, the remaining elements are appended to
+ the end. This is equivalent to interleaving the lists.
+
+The function below accepts lists of `Item`, a small sum type that can hold either
+ an integer or a string. It avoids using the `any` type and relies only on Mochi
+ built-ins so it can run on the runtime/vm.
+*/
+
+type Item =
+  Int(value: int)
+  | Str(value: string)
+
+fun from_int(x: int): Item { return Int { value: x } }
+fun from_string(s: string): Item { return Str { value: s } }
+
+fun item_to_string(it: Item): string {
+  return match it {
+    Int(v) => str(v)
+    Str(s) => s
+  }
+}
+
+fun alternative_list_arrange(first: list<Item>, second: list<Item>): list<Item> {
+  let len1 = len(first)
+  let len2 = len(second)
+  let abs_len = if len1 > len2 { len1 } else { len2 }
+  var result: list<Item> = []
+  var i = 0
+  while i < abs_len {
+    if i < len1 {
+      result = append(result, first[i])
+    }
+    if i < len2 {
+      result = append(result, second[i])
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun list_to_string(xs: list<Item>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + item_to_string(xs[i])
+    if i < len(xs) - 1 { s = s + ", " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+let example1 = alternative_list_arrange(
+  [from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)],
+  [from_string("A"), from_string("B"), from_string("C")]
+)
+print(list_to_string(example1))
+
+let example2 = alternative_list_arrange(
+  [from_string("A"), from_string("B"), from_string("C")],
+  [from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)]
+)
+print(list_to_string(example2))
+
+let example3 = alternative_list_arrange(
+  [from_string("X"), from_string("Y"), from_string("Z")],
+  [from_int(9), from_int(8), from_int(7), from_int(6)]
+)
+print(list_to_string(example3))
+
+let example4 = alternative_list_arrange(
+  [from_int(1), from_int(2), from_int(3), from_int(4), from_int(5)],
+  [] as list<Item>
+)
+print(list_to_string(example4))
