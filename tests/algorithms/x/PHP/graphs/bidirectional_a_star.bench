@@ -1,0 +1,5 @@
+Fatal error: Uncaught TypeError: Cannot access offset of type array on array in /workspace/mochi/tests/algorithms/x/PHP/graphs/bidirectional_a_star.php:211
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/graphs/bidirectional_a_star.php(310): astar(Array, Array)
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/graphs/bidirectional_a_star.php on line 211

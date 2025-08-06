@@ -2999,8 +2999,10 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 					}
 					args[i] = arg
 				}
-				// Trim trailing spaces to match Mochi interpreter output
-				args[i] = &CallExpr{Func: "rtrim", Args: []Expr{args[i]}}
+				// Trim trailing spaces only for known string expressions to match Mochi output
+				if isStringExpr(args[i]) {
+					args[i] = &CallExpr{Func: "rtrim", Args: []Expr{args[i]}}
+				}
 			}
 		} else if name == "len" {
 			if len(args) == 1 {

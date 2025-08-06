@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function sha1() in /workspace/mochi/tests/algorithms/x/PHP/hashes/sha1.php on line 127

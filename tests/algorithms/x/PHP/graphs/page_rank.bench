@@ -1,0 +1,27 @@
+======= Nodes =======
+{"A":"A","inbound":["C"],"outbound":["B","C"]}
+{"B":"B","inbound":["A"],"outbound":["C"]}
+{"C":"C","inbound":["A","B"],"outbound":["A"]}
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 53
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 53
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 53
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 57
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 57
+
+Warning: Undefined array key "name" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 57
+======= Iteration 1 =======
+
+Warning: Undefined array key "C" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 65
+
+Warning: Undefined array key "C" in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 65
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php:65
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php(101): page_rank(Array, 3, 0.85)
+#1 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/graphs/page_rank.php on line 65
