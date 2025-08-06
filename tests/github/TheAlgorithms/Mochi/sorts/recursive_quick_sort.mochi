@@ -1,0 +1,41 @@
+/*
+Recursive Quick Sort - Sorting
+
+Quick sort is a divide-and-conquer algorithm that sorts a list of numbers.
+The first element is chosen as the pivot. Remaining elements are partitioned
+into those less than or equal to the pivot and those greater than the pivot.
+Each partition is recursively sorted and concatenated with the pivot in
+between, yielding a fully ordered list. This implementation operates on
+lists of integers.
+*/
+
+fun concat(a: list<int>, b: list<int>): list<int> {
+  var result: list<int> = []
+  for x in a { result = append(result, x) }
+  for x in b { result = append(result, x) }
+  return result
+}
+
+fun quick_sort(data: list<int>): list<int> {
+  if len(data) <= 1 { return data }
+  let pivot = data[0]
+  var left: list<int> = []
+  var right: list<int> = []
+  var i = 1
+  while i < len(data) {
+    let e = data[i]
+    if e <= pivot {
+      left = append(left, e)
+    } else {
+      right = append(right, e)
+    }
+    i = i + 1
+  }
+  let sorted_left = quick_sort(left)
+  let sorted_right = quick_sort(right)
+  let left_pivot = append(sorted_left, pivot)
+  return concat(left_pivot, sorted_right)
+}
+
+print(str(quick_sort([2, 1, 0])))
+print(str(quick_sort([3, 5, 2, 4, 1])))
