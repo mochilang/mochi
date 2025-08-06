@@ -1067,7 +1067,7 @@ func (s *StringIndexExpr) emit(w io.Writer) {
 	s.Str.emit(w)
 	io.WriteString(w, ".chars().nth(")
 	s.Index.emit(w)
-	io.WriteString(w, " as usize).unwrap()")
+	io.WriteString(w, " as usize).unwrap().to_string()")
 }
 
 // FieldExpr represents `receiver.field` access.
@@ -1410,6 +1410,15 @@ func (u *LowerExpr) emit(w io.Writer) {
 	io.WriteString(w, "(")
 	u.Value.emit(w)
 	io.WriteString(w, ".to_lowercase())")
+}
+
+// JsonExpr represents a call to the `json` builtin.
+type JsonExpr struct{ Value Expr }
+
+func (j *JsonExpr) emit(w io.Writer) {
+	io.WriteString(w, "println!(\"{:?}\", ")
+	j.Value.emit(w)
+	io.WriteString(w, ");")
 }
 
 // IndexOfExpr represents a call to the `indexOf` builtin.
@@ -3861,7 +3870,7 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 			}
 		}
 	}
-	if ret == "" || strings.HasPrefix(ret, "HashMap") || strings.HasPrefix(ret, "Vec<") {
+	if ret == "" {
 		var out string
 		for _, st := range body {
 			if r, ok := st.(*ReturnStmt); ok && r.Value != nil {
@@ -3876,11 +3885,6 @@ func compileFunStmt(fn *parser.FunStmt) (Stmt, error) {
 		}
 		if out != "" {
 			ret = out
-		}
-		if strings.HasPrefix(ret, "HashMap") || strings.HasPrefix(ret, "Vec<") {
-			if name := findReturnStructSlice(body); name != "" {
-				ret = name
-			}
 		}
 	}
 	if ret == "String" {
@@ -4402,11 +4406,21 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		}
 		if name == "contains" && len(args) == 2 {
 			funReturns[name] = "bool"
+			recv := args[0]
 			arg := args[1]
-			if inferType(arg) == "String" {
+			rt := inferType(recv)
+			if strings.HasPrefix(rt, "Vec<") {
+				arg = &UnaryExpr{Op: "&", Expr: arg}
+			} else if inferType(arg) == "String" {
 				arg = &MethodCallExpr{Receiver: arg, Name: "as_str"}
 			}
-			return &MethodCallExpr{Receiver: args[0], Name: "contains", Args: []Expr{arg}}, nil
+			return &MethodCallExpr{Receiver: recv, Name: "contains", Args: []Expr{arg}}, nil
+		}
+		if name == "concat" && len(args) == 2 {
+			return &MethodCallExpr{Receiver: &ListLit{Elems: []Expr{args[0], args[1]}}, Name: "concat"}, nil
+		}
+		if name == "json" && len(args) == 1 {
+			return &JsonExpr{Value: args[0]}, nil
 		}
 		var paramTypes []string
 		if pts, ok := funParamTypes[name]; ok {
@@ -5423,6 +5437,8 @@ func inferType(e Expr) string {
 			}
 		}
 		return "i64"
+	case *StringIndexExpr:
+		return "String"
 	case *NameRef:
 		if ex.Type != "" {
 			return ex.Type
@@ -5506,6 +5522,8 @@ func inferType(e Expr) string {
 			return "String"
 		case "keys":
 			return "Vec<String>"
+		case "clone":
+			return inferType(ex.Receiver)
 		}
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
@@ -6413,6 +6431,8 @@ func exprNode(e Expr) *ast.Node {
 		n.Children = append(n.Children, exprNode(ex.Str))
 		n.Children = append(n.Children, exprNode(ex.Sep))
 		return n
+	case *JsonExpr:
+		return &ast.Node{Kind: "json", Children: []*ast.Node{exprNode(ex.Value)}}
 	case *IndexOfExpr:
 		n := &ast.Node{Kind: "indexOf"}
 		n.Children = append(n.Children, exprNode(ex.Str))
