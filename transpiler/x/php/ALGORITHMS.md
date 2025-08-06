@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 23:56 GMT+7
+Last updated: 2025-08-07 00:11 GMT+7
 
-## Algorithms Golden Test Checklist (444/1077)
+## Algorithms Golden Test Checklist (445/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -487,7 +487,7 @@ Last updated: 2025-08-06 23:56 GMT+7
 | 478 | knapsack/knapsack | ✓ |  |  |
 | 479 | knapsack/recursive_approach_knapsack | ✓ |  |  |
 | 480 | knapsack/tests/test_greedy_knapsack | ✓ |  |  |
-| 481 | knapsack/tests/test_knapsack |   |  |  |
+| 481 | knapsack/tests/test_knapsack | ✓ | 131µs | 38.8 KB |
 | 482 | linear_algebra/gaussian_elimination |   |  |  |
 | 483 | linear_algebra/jacobi_iteration_method |   |  |  |
 | 484 | linear_algebra/lu_decomposition |   |  |  |
