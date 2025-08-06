@@ -1,0 +1,104 @@
+/*
+Tree Sort
+---------
+Given a list of integers, tree sort builds a binary search tree (BST)
+and outputs the values in ascending order by performing an inorder
+traversal.  Each insert descends the tree comparing the new value to
+node values and links a new node when an empty subtree is reached.
+Inorder traversal visits left subtree, node, then right subtree to
+produce a sorted list.
+
+Algorithm steps:
+1. Start with an empty tree.
+2. For each value in the input list:
+   - Walk from the root until a missing child is found.
+   - Link a new node there, preserving the BST property.
+   - Duplicate values are ignored to keep the tree a set.
+3. Traverse the tree inorder to collect sorted values.
+
+This implementation is pure Mochi code without FFI and avoids the
+"any" type so it runs on runtime/vm.
+*/
+
+type Node {
+  value: int,
+  left: int,
+  right: int,
+}
+
+type TreeState {
+  nodes: list<Node>,
+  root: int,
+}
+
+fun new_node(state: TreeState, value: int): int {
+  state.nodes = append(state.nodes, Node{ value: value, left: (-1), right: (-1) })
+  return len(state.nodes) - 1
+}
+
+fun insert(state: TreeState, value: int) {
+  if state.root == (-1) {
+    state.root = new_node(state, value)
+    return
+  }
+  var current = state.root
+  var nodes = state.nodes
+  while true {
+    var node = nodes[current]
+    if value < node.value {
+      if node.left == (-1) {
+        let idx = new_node(state, value)
+        nodes = state.nodes
+        node.left = idx
+        nodes[current] = node
+        state.nodes = nodes
+        return
+      }
+      current = node.left
+    } else if value > node.value {
+      if node.right == (-1) {
+        let idx = new_node(state, value)
+        nodes = state.nodes
+        node.right = idx
+        nodes[current] = node
+        state.nodes = nodes
+        return
+      }
+      current = node.right
+    } else {
+      return
+    }
+  }
+}
+
+fun inorder(state: TreeState, idx: int): list<int> {
+  if idx == (-1) { return [] }
+  let node = state.nodes[idx]
+  var result = inorder(state, node.left)
+  result = append(result, node.value)
+  let right_part = inorder(state, node.right)
+  var i = 0
+  while i < len(right_part) {
+    result = append(result, right_part[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun tree_sort(arr: list<int>): list<int> {
+  var state = TreeState{ nodes: [], root: (-1) }
+  var i = 0
+  while i < len(arr) {
+    insert(state, arr[i])
+    i = i + 1
+  }
+  if state.root == (-1) { return [] }
+  return inorder(state, state.root)
+}
+
+print(str(tree_sort([])))
+print(str(tree_sort([1])))
+print(str(tree_sort([1, 2])))
+print(str(tree_sort([5, 2, 7])))
+print(str(tree_sort([5, -4, 9, 2, 7])))
+print(str(tree_sort([5, 6, 1, -1, 4, 37, 2, 7])))
