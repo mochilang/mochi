@@ -1,5 +1,5 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/algorithms/x/Kotlin/backtracking/knight_tour.kt:7:59: error: type inference failed. Expected type mismatch: inferred type is MutableList<MutableList<Int>> but MutableList<MutableList<BigInteger>> was expected
+/workspace/mochi/tests/algorithms/x/Kotlin/backtracking/knight_tour.kt:33:59: error: type inference failed. Expected type mismatch: inferred type is MutableList<MutableList<Int>> but MutableList<MutableList<BigInteger>> was expected
     var positions: MutableList<MutableList<BigInteger>> = mutableListOf(mutableListOf(y + 1, x + 2), mutableListOf(y - 1, x + 2), mutableListOf(y + 1, x - 2), mutableListOf(y - 1, x - 2), mutableListOf(y + 2, x + 1), mutableListOf(y + 2, x - 1), mutableListOf(y - 2, x + 1), mutableListOf(y - 2, x - 1))
                                                           ^

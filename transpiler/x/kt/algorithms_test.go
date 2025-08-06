@@ -224,13 +224,15 @@ func updateAlgorithms() {
 		}
 		benchFile := filepath.Join(outDir, name+".bench")
 		if data, err := os.ReadFile(benchFile); err == nil {
-			var r struct {
-				DurationUS  int64 `json:"duration_us"`
-				MemoryBytes int64 `json:"memory_bytes"`
-			}
-			if json.Unmarshal(bytes.TrimSpace(data), &r) == nil {
-				dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
-				mem = formatBytes(r.MemoryBytes)
+			if idx := bytes.LastIndexByte(data, '{'); idx >= 0 {
+				var r struct {
+					DurationUS  int64 `json:"duration_us"`
+					MemoryBytes int64 `json:"memory_bytes"`
+				}
+				if json.Unmarshal(data[idx:], &r) == nil {
+					dur = formatDuration(time.Duration(r.DurationUS) * time.Microsecond)
+					mem = formatBytes(r.MemoryBytes)
+				}
 			}
 		} else if data, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
 			data = bytes.TrimSpace(data)
