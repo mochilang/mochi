@@ -1,0 +1,43 @@
+/*
+Scaled Exponential Linear Unit (SELU) activation function.
+
+Given a list of real numbers, apply the SELU transformation to each element:
+  f(x) = lambda * x                        if x > 0
+         lambda * alpha * (exp(x) - 1)     if x <= 0
+
+The constants alpha ≈ 1.6732 and lambda ≈ 1.0507 ensure the function is
+self-normalizing, keeping the mean and variance of activations close to zero
+and one. This property reduces the need for explicit normalization layers in
+neural networks.
+
+The implementation iterates over the input list and computes the SELU value for
+each item, returning a new list. Time complexity is O(n) with n elements and
+space complexity is also O(n) for the result list.
+*/
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun scaled_exponential_linear_unit(vector: list<float>, alpha: float, lambda_: float): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let y = if x > 0.0 { lambda_ * x } else { lambda_ * alpha * (exp(x) - 1.0) }
+    result = append(result, y)
+    i = i + 1
+  }
+  return result
+}
+
+print(scaled_exponential_linear_unit([1.3, 3.7, 2.4], 1.6732, 1.0507))
+print(scaled_exponential_linear_unit([1.3, 4.7, 8.2], 1.6732, 1.0507))
