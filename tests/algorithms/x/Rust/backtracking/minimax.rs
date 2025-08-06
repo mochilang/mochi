@@ -36,27 +36,48 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn create_all_state(mut increment: i64, mut total: i64, mut level: i64, current: &mut Vec<i64>, mut result: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-    if (level == 0) {
-        return { let mut _v = result.clone(); _v.push(current.clone()); _v }
+    fn minimax(mut depth: i64, mut node_index: i64, mut is_max: bool, mut scores: Vec<i64>, mut height: i64) -> i64 {
+    if (depth < 0) {
+        panic!("Depth cannot be less than 0");
     }
-    let mut i: i64 = increment;
-    while (i <= ((total - level) + 1)) {
-        let mut next_current: Vec<i64> = { let mut _v = current.clone(); _v.push(i); _v };
-        result = create_all_state((i + 1), total, (level - 1), &mut next_current, result.clone());
-        i = (i + 1);
+    if ((scores.len() as i64) == 0) {
+        panic!("Scores cannot be empty");
     }
-    return result
+    if (depth == height) {
+        return scores[node_index as usize]
+    }
+    if is_max {
+        let mut left: i64 = minimax((depth + 1), (node_index * 2), false, scores.clone(), height);
+        let mut right: i64 = minimax((depth + 1), ((node_index * 2) + 1), false, scores.clone(), height);
+        if (left > right) {
+            return left
+        } else {
+            return right
+        }
+    }
+    let mut left: i64 = minimax((depth + 1), (node_index * 2), true, scores.clone(), height);
+    let mut right: i64 = minimax((depth + 1), ((node_index * 2) + 1), true, scores.clone(), height);
+    if (left < right) {
+        return left
+    } else {
+        return right
+    }
 };
-    fn generate_all_combinations(mut n: i64, mut k: i64) -> Vec<Vec<i64>> {
-    if ((k < 0) || (n < 0)) {
-        return vec![]
+    fn tree_height(mut n: i64) -> i64 {
+    let mut h: i64 = 0;
+    let mut v: i64 = n;
+    while (v > 1) {
+        v = (v / 2);
+        h = (h + 1);
     }
-    let mut result: Vec<Vec<i64>> = vec![];
-    return create_all_state(1, n, k, &mut vec![], result.clone())
+    return h
 };
-    println!("{}", format!("{:?}", generate_all_combinations(4, 2)));
-    println!("{}", format!("{:?}", generate_all_combinations(3, 1)));
+    fn mochi_main() {
+    let mut scores: Vec<i64> = vec![90, 23, 6, 33, 21, 65, 123, 34423];
+    let mut height: i64 = tree_height((scores.len() as i64));
+    println!("{}", format!("{}{}", "Optimal value : ", minimax(0, 0, true, scores.clone(), height).to_string()));
+};
+    mochi_main();
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

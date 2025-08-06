@@ -36,27 +36,49 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn create_all_state(mut increment: i64, mut total: i64, mut level: i64, current: &mut Vec<i64>, mut result: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-    if (level == 0) {
-        return { let mut _v = result.clone(); _v.push(current.clone()); _v }
+    fn valid_connection(mut graph: Vec<Vec<i64>>, mut next_ver: i64, mut curr_ind: i64, mut path: Vec<i64>) -> bool {
+    if (graph[path[(curr_ind - 1) as usize] as usize].clone()[next_ver as usize] == 0) {
+        return false
     }
-    let mut i: i64 = increment;
-    while (i <= ((total - level) + 1)) {
-        let mut next_current: Vec<i64> = { let mut _v = current.clone(); _v.push(i); _v };
-        result = create_all_state((i + 1), total, (level - 1), &mut next_current, result.clone());
+    for v in path.iter().cloned() {
+        if (v == next_ver) {
+            return false
+        }
+    }
+    return true
+};
+    fn util_hamilton_cycle(graph: &mut Vec<Vec<i64>>, path: &mut Vec<i64>, mut curr_ind: i64) -> bool {
+    if (curr_ind == (graph.len() as i64)) {
+        return (graph[path[(curr_ind - 1) as usize] as usize].clone()[path[0 as usize] as usize] == 1)
+    }
+    let mut next_ver: i64 = 0;
+    while (next_ver < (graph.len() as i64)) {
+        if valid_connection(graph.clone(), next_ver, curr_ind, path.clone()) {
+            (*path)[curr_ind as usize] = next_ver;
+            if util_hamilton_cycle(graph, path, (curr_ind + 1)) {
+                return true
+            }
+            (*path)[curr_ind as usize] = -1;
+        }
+        next_ver = (next_ver + 1);
+    }
+    return false
+};
+    fn hamilton_cycle(graph: &mut Vec<Vec<i64>>, mut start_index: i64) -> Vec<i64> {
+    let mut path: Vec<i64> = Default::default();
+    let mut i: i64 = 0;
+    while (i < ((graph.len() as i64) + 1)) {
+        path[i as usize] = -1;
         i = (i + 1);
     }
-    return result
-};
-    fn generate_all_combinations(mut n: i64, mut k: i64) -> Vec<Vec<i64>> {
-    if ((k < 0) || (n < 0)) {
-        return vec![]
+    path[0 as usize] = start_index;
+    let mut last: i64 = ((path.len() as i64) - 1);
+    path[last as usize] = start_index;
+    if util_hamilton_cycle(graph, &mut path, 1) {
+        return path
     }
-    let mut result: Vec<Vec<i64>> = vec![];
-    return create_all_state(1, n, k, &mut vec![], result.clone())
+    return vec![]
 };
-    println!("{}", format!("{:?}", generate_all_combinations(4, 2)));
-    println!("{}", format!("{:?}", generate_all_combinations(3, 1)));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

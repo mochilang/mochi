@@ -281,6 +281,17 @@ func (c *CallExpr) emit(w io.Writer) {
 		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
 		return
 	}
+	if c.Func == "panic" {
+		io.WriteString(w, "panic!(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, rustIdent(c.Func))
 	io.WriteString(w, "(")
 	pts, hasPts := funParamTypes[c.Func]
@@ -388,7 +399,13 @@ func (p *PrintExpr) emit(w io.Writer) {
 	} else {
 		fmtStr := p.Fmt
 		if len(p.Args) == 1 {
-			if t := inferType(p.Args[0]); strings.HasPrefix(t, "HashMap<") {
+			if t := inferType(p.Args[0]); strings.HasPrefix(t, "&") {
+				t = strings.TrimPrefix(t, "&mut ")
+				t = strings.TrimPrefix(t, "&")
+				if strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") {
+					fmtStr = "{:?}"
+				}
+			} else if strings.HasPrefix(t, "Vec<") || strings.HasPrefix(t, "HashMap<") {
 				fmtStr = "{:?}"
 			}
 		}
@@ -1967,6 +1984,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
+		if t == "String" {
+			if b.Op == "==" {
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			} else {
+				io.WriteString(w, "!")
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			}
+			return
+		}
 	}
 	if b.Op == "+" {
 		lt := inferType(b.Left)
@@ -2894,9 +2922,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			} else if typ == "Vec<String>" {
 				if ll, ok := e.(*ListLit); ok {
 					for i, el := range ll.Elems {
-						if _, ok := el.(*StringLit); ok {
-							ll.Elems[i] = &StringCastExpr{Expr: el}
-						}
+						ll.Elems[i] = &StringCastExpr{Expr: el}
 					}
 				}
 			}
@@ -5591,6 +5617,8 @@ func rustType(t string) string {
 		// Use String for dynamic values to better support functions
 		// returning mixed types like [string, int].
 		return "String"
+	case "void":
+		return ""
 	case "bool":
 		return "bool"
 	case "string":
