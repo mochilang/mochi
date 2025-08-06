@@ -1,0 +1,72 @@
+/*
+Project Euler Problem 44: Pentagonal Numbers
+
+Pentagonal numbers follow P_n = n(3n-1)/2. We seek two pentagonal numbers
+P_j and P_k such that both their sum and difference are also pentagonal and
+their difference D = |P_k - P_j| is minimal.
+
+Algorithm:
+1. Generate pentagonal numbers P_n for n in [1, limit).
+2. For each pair (P_i, P_j) with j >= i compute:
+   - a = P_i + P_j
+   - b = P_j - P_i
+3. If both a and b are pentagonal (checked via solving the quadratic
+   equation for n), return b as the minimal difference.
+4. If no such pair exists within the limit, return -1.
+
+The check for a pentagonal number uses the inverse of the pentagonal formula:
+  n = (1 + sqrt(1 + 24*x)) / 6
+The number x is pentagonal iff n is an integer.
+
+Time complexity: O(limit^2) to search pairs.
+*/
+
+fun sqrt(x: float): float {
+  if x <= 0.0 { return 0.0 }
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun is_pentagonal(n: int): bool {
+  let root = sqrt(1.0 + 24.0 * (1.0 * n))
+  let val = (1.0 + root) / 6.0
+  let val_int = int(val)
+  return val == (1.0 * val_int)
+}
+
+fun pentagonal(k: int): int {
+  return (k * (3 * k - 1)) / 2
+}
+
+fun solution(limit: int): int {
+  var pentagonal_nums: list<int> = []
+  var i = 1
+  while i < limit {
+    pentagonal_nums = append(pentagonal_nums, pentagonal(i))
+    i = i + 1
+  }
+  var a_idx = 0
+  while a_idx < len(pentagonal_nums) {
+    let pentagonal_i = pentagonal_nums[a_idx]
+    var b_idx = a_idx
+    while b_idx < len(pentagonal_nums) {
+      let pentagonal_j = pentagonal_nums[b_idx]
+      let s = pentagonal_i + pentagonal_j
+      let d = pentagonal_j - pentagonal_i
+      if is_pentagonal(s) && is_pentagonal(d) {
+        return d
+      }
+      b_idx = b_idx + 1
+    }
+    a_idx = a_idx + 1
+  }
+  return -1
+}
+
+let result = solution(5000)
+print("solution() = " + str(result))
