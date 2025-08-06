@@ -1,0 +1,37 @@
+/*
+Compute the speed of sound in a fluid.
+
+The speed of sound c in an elastic medium depends on the medium's
+isentropic bulk modulus K_s (in pascals) and its density p
+(in kilograms per cubic meter) according to:
+
+    c = sqrt(K_s / p)
+
+This implementation validates that both parameters are positive and
+then applies Newton's method to approximate the square root so the
+result can be computed in pure Mochi without external libraries.
+
+Examples:
+- Water at 20°C: K_s = 2.15e9 Pa, density = 998 kg/m^3
+- Mercury at 20°C: K_s = 28.5e9 Pa, density = 13600 kg/m^3
+*/
+
+fun sqrtApprox(x: float): float {
+  if x == 0.0 { return 0.0 }
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun speed_of_sound_in_a_fluid(density: float, bulk_modulus: float): float {
+  if density <= 0.0 { panic("Impossible fluid density") }
+  if bulk_modulus <= 0.0 { panic("Impossible bulk modulus") }
+  return sqrtApprox(bulk_modulus / density)
+}
+
+print(str(speed_of_sound_in_a_fluid(998.0, 2150000000.0)))
+print(str(speed_of_sound_in_a_fluid(13600.0, 28500000000.0)))
