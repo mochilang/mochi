@@ -67,6 +67,10 @@ var reserved = map[string]bool{
 	"xor":    true,
 	"xor_eq": true,
 	"asm":    true,
+	// avoid clashing with C standard library functions
+	"rand":   true,
+	"random": true,
+	"time":   true,
 }
 var currentReturnType string
 var inReturn bool
@@ -1034,22 +1038,20 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+"&")
+					// Pass vectors and maps by value when mutated to permit rvalue arguments
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"&")
+					io.WriteString(w, typ)
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else {
-				if p.ByVal {
-					io.WriteString(w, typ+"&")
-				} else {
-					io.WriteString(w, typ)
-				}
+				// For primitive types pass by value even if mutated to allow rvalue arguments
+				io.WriteString(w, typ)
 			}
 			io.WriteString(w, " ")
 			io.WriteString(w, safeName(p.Name))
@@ -1122,22 +1124,20 @@ func (f *Func) emit(w io.Writer) {
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+"& ")
+					// Pass by value when mutated to allow rvalue arguments
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+"& ")
+					io.WriteString(w, typ+" ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else {
-				if p.ByVal {
-					io.WriteString(w, typ+"& ")
-				} else {
-					io.WriteString(w, typ+" ")
-				}
+				// Primitive types passed by value regardless of mutation
+				io.WriteString(w, typ+" ")
 			}
 		}
 		io.WriteString(w, safeName(p.Name))
@@ -6628,6 +6628,8 @@ func cppType(t string) string {
 		return "std::any"
 	case "string":
 		return "std::string"
+	case "void":
+		return "void"
 	case "bigint":
 		useBigInt = true
 		return "boost::multiprecision::cpp_int"
