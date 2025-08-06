@@ -1,0 +1,143 @@
+/*
+Simplified Data Encryption Standard (S-DES)
+
+S-DES encrypts 8-bit blocks using a 10-bit key over two Feistel rounds.  A
+permutation P10 followed by left shifts and P8 generates two subkeys K1 and K2.
+Encryption applies the initial permutation (IP), then the round function F with
+K1, swaps the halves, applies F with K2, and finally the inverse permutation
+(IP_inv).  Decryption runs the rounds with reversed subkeys (K2 then K1).
+
+The round function expands the right half, xors with the subkey, substitutes
+using S-boxes S0 and S1, permutes with P4 and xors with the left half.
+
+This implementation is written in pure Mochi without FFI or the `any` type so it
+can run on `runtime/vm`.
+*/
+
+fun apply_table(inp: string, table: list<int>): string {
+  var res = ""
+  var i = 0
+  while i < len(table) {
+    var idx = table[i] - 1
+    if idx < 0 {
+      idx = len(inp) - 1
+    }
+    res = res + inp[idx:idx+1]
+    i = i + 1
+  }
+  return res
+}
+
+fun left_shift(data: string): string {
+  return data[1:len(data)] + data[0:1]
+}
+
+fun xor(a: string, b: string): string {
+  var res = ""
+  var i = 0
+  while i < len(a) && i < len(b) {
+    if a[i:i+1] == b[i:i+1] {
+      res = res + "0"
+    } else {
+      res = res + "1"
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun int_to_binary(n: int): string {
+  if n == 0 { return "0" }
+  var res = ""
+  var num = n
+  while num > 0 {
+    res = str(num % 2) + res
+    num = num / 2
+  }
+  return res
+}
+
+fun pad_left(s: string, width: int): string {
+  var res = s
+  while len(res) < width {
+    res = "0" + res
+  }
+  return res
+}
+
+fun bin_to_int(s: string): int {
+  var result = 0
+  var i = 0
+  while i < len(s) {
+    let digit = s[i:i+1] as int
+    result = result * 2 + digit
+    i = i + 1
+  }
+  return result
+}
+
+fun apply_sbox(s: list<list<int>>, data: string): string {
+  let row_bits = data[0:1] + data[len(data)-1:len(data)]
+  let col_bits = data[1:3]
+  let row = bin_to_int(row_bits)
+  let col = bin_to_int(col_bits)
+  let val = s[row][col]
+  let out = int_to_binary(val)
+  return out
+}
+
+let p4_table: list<int> = [2, 4, 3, 1]
+
+fun f(expansion: list<int>, s0: list<list<int>>, s1: list<list<int>>, key: string, message: string): string {
+  let left = message[0:4]
+  let right = message[4:8]
+  var temp = apply_table(right, expansion)
+  temp = xor(temp, key)
+  var left_bin_str = apply_sbox(s0, temp[0:4])
+  var right_bin_str = apply_sbox(s1, temp[4:8])
+  left_bin_str = pad_left(left_bin_str, 2)
+  right_bin_str = pad_left(right_bin_str, 2)
+  temp = apply_table(left_bin_str + right_bin_str, p4_table)
+  temp = xor(left, temp)
+  return temp + right
+}
+
+let key = "1010000010"
+let message = "11010111"
+
+let p8_table: list<int> = [6, 3, 7, 4, 8, 5, 10, 9]
+let p10_table: list<int> = [3, 5, 2, 7, 4, 10, 1, 9, 8, 6]
+let IP: list<int> = [2, 6, 3, 1, 4, 8, 5, 7]
+let IP_inv: list<int> = [4, 1, 3, 5, 7, 2, 8, 6]
+let expansion: list<int> = [4, 1, 2, 3, 2, 3, 4, 1]
+let s0: list<list<int>> = [[1, 0, 3, 2], [3, 2, 1, 0], [0, 2, 1, 3], [3, 1, 3, 2]]
+let s1: list<list<int>> = [[0, 1, 2, 3], [2, 0, 1, 3], [3, 0, 1, 0], [2, 1, 0, 3]]
+
+# key generation
+var temp = apply_table(key, p10_table)
+var left = temp[0:5]
+var right = temp[5:10]
+left = left_shift(left)
+right = left_shift(right)
+let key1 = apply_table(left + right, p8_table)
+left = left_shift(left)
+right = left_shift(right)
+left = left_shift(left)
+right = left_shift(right)
+let key2 = apply_table(left + right, p8_table)
+
+# encryption
+temp = apply_table(message, IP)
+temp = f(expansion, s0, s1, key1, temp)
+temp = temp[4:8] + temp[0:4]
+temp = f(expansion, s0, s1, key2, temp)
+let CT = apply_table(temp, IP_inv)
+print("Cipher text is: " + CT)
+
+# decryption
+temp = apply_table(CT, IP)
+temp = f(expansion, s0, s1, key2, temp)
+temp = temp[4:8] + temp[0:4]
+temp = f(expansion, s0, s1, key1, temp)
+let PT = apply_table(temp, IP_inv)
+print("Plain text after decypting is: " + PT)
