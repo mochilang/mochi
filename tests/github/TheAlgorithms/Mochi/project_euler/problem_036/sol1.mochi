@@ -1,0 +1,59 @@
+/*
+Project Euler Problem 36: Sum of all numbers less than a given limit that are
+palindromic in both base 10 and base 2.
+
+The algorithm iterates from 1 up to n-1. For each number, it converts the
+number to decimal and binary strings, checks if both strings are palindromes
+without leading zeros, and accumulates the sum when both conditions hold.
+Binary conversion is performed manually. Time complexity is O(n log n) due to
+the binary conversion for each number.
+*/
+
+fun is_palindrome_str(s: string): bool {
+  var i = 0
+  var j = len(s) - 1
+  while i < j {
+    if substring(s, i, i + 1) != substring(s, j, j + 1) {
+      return false
+    }
+    i = i + 1
+    j = j - 1
+  }
+  return true
+}
+
+fun to_binary(n: int): string {
+  if n == 0 {
+    return "0"
+  }
+  var res = ""
+  var x = n
+  while x > 0 {
+    res = str(x % 2) + res
+    x = x / 2
+  }
+  return res
+}
+
+fun solution(n: int): int {
+  var total = 0
+  var i = 1
+  while i < n {
+    let dec = str(i)
+    let bin = to_binary(i)
+    if is_palindrome_str(dec) && is_palindrome_str(bin) {
+      total = total + i
+    }
+    i = i + 1
+  }
+  return total
+}
+
+print(solution(1000000))
+print(solution(500000))
+print(solution(100000))
+print(solution(1000))
+print(solution(100))
+print(solution(10))
+print(solution(2))
+print(solution(1))
