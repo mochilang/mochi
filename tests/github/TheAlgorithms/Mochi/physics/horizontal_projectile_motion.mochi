@@ -1,0 +1,98 @@
+/*
+Horizontal Projectile Motion
+----------------------------
+Given an object launched from the ground with an initial velocity v0 at
+an angle alpha (1-90 degrees), basic projectile motion equations can
+predict its trajectory neglecting air resistance.
+
+This program implements three core formulas:
+1. Horizontal distance travelled:
+       d = v0^2 * sin(2*alpha) / g
+2. Maximum height reached:
+       h = v0^2 * sin^2(alpha) / (2*g)
+3. Total time of flight:
+       t = 2*v0 * sin(alpha) / g
+
+Input validation ensures the angle is within 1-90 degrees and velocity is
+non-negative. All trigonometric operations are computed via a 7th-order
+Taylor series approximation of sin(x), allowing execution on the
+runtime/vm without foreign function calls. Results are rounded to two
+decimal places using only basic arithmetic.
+*/
+
+let PI: float = 3.141592653589793
+let TWO_PI: float = 6.283185307179586
+let g: float = 9.80665
+
+fun _mod(x: float, m: float): float {
+  return x - (int(x / m) as float) * m
+}
+
+fun sin(x: float): float {
+  let y = _mod(x + PI, TWO_PI) - PI
+  let y2 = y * y
+  let y3 = y2 * y
+  let y5 = y3 * y2
+  let y7 = y5 * y2
+  return y - y3 / 6.0 + y5 / 120.0 - y7 / 5040.0
+}
+
+fun deg_to_rad(deg: float): float {
+  return deg * PI / 180.0
+}
+
+fun floor(x: float): float {
+  var i = x as int
+  if (i as float) > x { i = i - 1 }
+  return i as float
+}
+
+fun pow10(n: int): float {
+  var result = 1.0
+  var i = 0
+  while i < n {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+fun round(x: float, n: int): float {
+  let m = pow10(n)
+  let y = floor(x * m + 0.5)
+  return y / m
+}
+
+fun check_args(init_velocity: float, angle: float) {
+  if angle > 90.0 || angle < 1.0 {
+    panic("Invalid angle. Range is 1-90 degrees.")
+  }
+  if init_velocity < 0.0 {
+    panic("Invalid velocity. Should be a positive number.")
+  }
+}
+
+fun horizontal_distance(init_velocity: float, angle: float): float {
+  check_args(init_velocity, angle)
+  let radians = deg_to_rad(2.0 * angle)
+  return round((init_velocity * init_velocity * sin(radians)) / g, 2)
+}
+
+fun max_height(init_velocity: float, angle: float): float {
+  check_args(init_velocity, angle)
+  let radians = deg_to_rad(angle)
+  let s = sin(radians)
+  return round((init_velocity * init_velocity * s * s) / (2.0 * g), 2)
+}
+
+fun total_time(init_velocity: float, angle: float): float {
+  check_args(init_velocity, angle)
+  let radians = deg_to_rad(angle)
+  return round((2.0 * init_velocity * sin(radians)) / g, 2)
+}
+
+let v0 = 25.0
+let angle = 20.0
+print(horizontal_distance(v0, angle))
+print(max_height(v0, angle))
+print(total_time(v0, angle))
