@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 23:00 GMT+7
+Last updated: 2025-08-06 23:11 GMT+7
 
-## Algorithms Golden Test Checklist (382/1077)
+## Algorithms Golden Test Checklist (383/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -467,7 +467,7 @@ Last updated: 2025-08-06 23:00 GMT+7
 | 458 | greedy_methods/fractional_knapsack | ✓ | 30.0ms | 58.63KB |
 | 459 | greedy_methods/fractional_knapsack_2 | ✓ | 31.0ms | 82.90KB |
 | 460 | greedy_methods/gas_station | error |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
+| 461 | greedy_methods/minimum_coin_change | ✓ | 40.0ms | 46.14KB |
 | 462 | greedy_methods/minimum_waiting_time |   |  |  |
 | 463 | greedy_methods/optimal_merge_pattern |   |  |  |
 | 464 | greedy_methods/smallest_range |   |  |  |
