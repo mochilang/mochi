@@ -1,0 +1,99 @@
+/*
+Anime Search and Episode Retrieval
+
+The original Python script scrapes the gogoanime website to find anime titles,
+list their episodes, and build streaming links. This Mochi implementation
+reproduces the workflow using static data and string processing so it can run on
+runtime/vm without any foreign interfaces.
+
+Functions:
+- contains_str(s, sub): helper for substring matching.
+- search_scraper(name): case-insensitive search over sample titles (O(n)).
+- search_anime_episode_list(endpoint): returns a list of episode maps for an
+  anime endpoint (O(1) map lookup).
+- get_anime_episode(endpoint): constructs watch and download URLs from an embed
+  path (O(1) string manipulation).
+
+The main routine demonstrates the process with sample inputs.
+*/
+
+let BASE_URL = "https://ww7.gogoanime2.org"
+
+fun contains_str(s: string, sub: string): bool {
+  if len(sub) == 0 { return true }
+  var i = 0
+  while i + len(sub) <= len(s) {
+    if substring(s, i, i + len(sub)) == sub { return true }
+    i = i + 1
+  }
+  return false
+}
+
+let ANIME_DB: list<map<string, string>> = [
+  {"title": "Demon Slayer", "url": "/anime/kimetsu-no-yaiba"},
+  {"title": "Naruto", "url": "/anime/naruto"}
+]
+
+fun search_scraper(anime_name: string): list<map<string, string>> {
+  let term = lower(anime_name)
+  var res: list<map<string, string>> = []
+  var i = 0
+  while i < len(ANIME_DB) {
+    let item = ANIME_DB[i]
+    if contains_str(lower(item["title"]), term) {
+      res = append(res, item)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+let EPISODE_DB: map<string, list<map<string, string>>> = {
+  "/anime/kimetsu-no-yaiba": [
+    {"title": "Episode 1", "url": "/watch/kimetsu-no-yaiba/1"},
+    {"title": "Episode 2", "url": "/watch/kimetsu-no-yaiba/2"}
+  ],
+  "/anime/naruto": [
+    {"title": "Episode 1", "url": "/watch/naruto/1"}
+  ]
+}
+
+fun search_anime_episode_list(endpoint: string): list<map<string, string>> {
+  if endpoint in EPISODE_DB {
+    return EPISODE_DB[endpoint]
+  }
+  var empty: list<map<string, string>> = []
+  return empty
+}
+
+let EPISODE_EMBED: map<string, string> = {
+  "/watch/kimetsu-no-yaiba/1": "/embed/kimetsu-no-yaiba/1",
+  "/watch/kimetsu-no-yaiba/2": "/embed/kimetsu-no-yaiba/2",
+  "/watch/naruto/1": "/embed/naruto/1"
+}
+
+fun to_playlist(embed: string): string {
+  return "/playlist/" + embed[7:] + ".m3u8"
+}
+
+fun get_anime_episode(endpoint: string): list<string> {
+  if endpoint in EPISODE_EMBED {
+    let embed = EPISODE_EMBED[endpoint]
+    let play = BASE_URL + embed
+    let download = BASE_URL + to_playlist(embed)
+    return [play, download]
+  }
+  var empty: list<string> = []
+  return empty
+}
+
+fun main() {
+  let animes = search_scraper("demon")
+  print(animes)
+  let episodes = search_anime_episode_list("/anime/kimetsu-no-yaiba")
+  print(episodes)
+  let links = get_anime_episode("/watch/kimetsu-no-yaiba/1")
+  print(links)
+}
+
+main()
