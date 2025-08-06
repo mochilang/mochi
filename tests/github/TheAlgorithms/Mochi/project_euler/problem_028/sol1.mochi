@@ -1,0 +1,33 @@
+/*
+Project Euler Problem 28: Sum of diagonals in a number spiral.
+Starting with 1 at the center and moving to the right in a clockwise
+spiral, numbers fill an n x n grid. The task is to compute the sum of
+the numbers on both diagonals of this spiral for an odd dimension n.
+
+For each concentric square layer i (starting at 1), the side length is
+2*i + 1. The four corner values of this layer can be derived directly:
+(2*i + 1)^2, (2*i + 1)^2 - 2*i, (2*i + 1)^2 - 4*i, and (2*i + 1)^2 - 6*i.
+Their sum simplifies to 4*(2*i + 1)^2 - 6*(2*i). Summing this for all
+layers and starting with a total of 1 at the center yields the diagonal
+sum. The algorithm iterates through (n + 1)/2 - 1 layers, resulting in
+O(n) time and O(1) extra space.
+*/
+
+fun solution(n: int): int {
+  var total = 1
+  var i = 1
+  let limit = (n + 1) / 2
+  while i < limit {
+    let odd = 2 * i + 1
+    let even = 2 * i
+    total = total + 4 * odd * odd - 6 * even
+    i = i + 1
+  }
+  return total
+}
+
+print(str(solution(1001)))
+print(str(solution(500)))
+print(str(solution(100)))
+print(str(solution(50)))
+print(str(solution(10)))
