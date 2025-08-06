@@ -1,0 +1,65 @@
+/*
+Fibonacci search for sorted lists of integers.
+
+The algorithm divides the array using Fibonacci numbers to locate a target value.
+1. Find the smallest Fibonacci number F_m such that F_m >= n, where n is the length of the array.
+2. Set offset = 0.
+3. While m > 0:
+   a. Compute index i = min(offset + F_{m-1}, n - 1).
+   b. If arr[i] == val, return i.
+   c. If val < arr[i], set m = m - 1.
+   d. If val > arr[i], set offset = offset + F_{m-1} and m = m - 2.
+4. If the value is not found, return -1.
+
+This procedure runs in O(log n) time using O(1) extra space.
+*/
+
+fun fibonacci(k: int): int {
+  if k < 0 { panic("k must be >= 0") }
+  var a = 0
+  var b = 1
+  var i = 0
+  while i < k {
+    let tmp = a + b
+    a = b
+    b = tmp
+    i = i + 1
+  }
+  return a
+}
+
+fun min_int(a: int, b: int): int {
+  if a < b { return a } else { return b }
+}
+
+fun fibonacci_search(arr: list<int>, val: int): int {
+  let n = len(arr)
+  var m = 0
+  while fibonacci(m) < n {
+    m = m + 1
+  }
+  var offset = 0
+  while m > 0 {
+    let i = min_int(offset + fibonacci(m - 1), n - 1)
+    let item = arr[i]
+    if item == val {
+      return i
+    } else if val < item {
+      m = m - 1
+    } else {
+      offset = offset + fibonacci(m - 1)
+      m = m - 2
+    }
+  }
+  return -1
+}
+
+let example1 = [4,5,6,7]
+let example2 = [-18,2]
+let example3 = [0,5,10,15,20,25,30]
+
+print(str(fibonacci_search(example1, 4)))
+print(str(fibonacci_search(example1, -10)))
+print(str(fibonacci_search(example2, -18)))
+print(str(fibonacci_search(example3, 15)))
+print(str(fibonacci_search(example3, 17)))
