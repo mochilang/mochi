@@ -80,6 +80,12 @@ dynamic _fetch(String url) {
 }
 `
 
+const helperJSONPrint = `
+void _json(dynamic v) {
+  print(jsonEncode(v));
+}
+`
+
 // --- Struct tracking for generated classes ---
 type StructField struct {
 	Name string
@@ -107,6 +113,7 @@ var (
 	useSHA256         bool
 	useMD5            bool
 	useFetch          bool
+	useJSONPrint      bool
 	useEnv            bool
 	useSubprocess     bool
 	useSubstrClamp    bool
@@ -1517,7 +1524,8 @@ func (c *CallExpr) emit(w io.Writer) error {
 				return err
 			}
 		}
-		if i < len(paramTypes) && paramTypes[i] == "int" && inferType(a) == "num" {
+		at := inferType(a)
+		if i < len(paramTypes) && paramTypes[i] == "int" && (at == "num" || at == "BigInt") {
 			if _, err := io.WriteString(w, "("); err != nil {
 				return err
 			}
@@ -3749,10 +3757,12 @@ func inferType(e Expr) string {
 				return "num"
 			case "values":
 				return "List<dynamic>"
-			case "append":
+			case "append", "concat":
 				if len(ex.Args) > 0 {
 					return inferType(ex.Args[0])
 				}
+			case "json":
+				return "void"
 			default:
 				if rt, ok := funcReturnTypes[n.Name]; ok {
 					return rt
@@ -3891,6 +3901,34 @@ func inferReturnType(body []Stmt) string {
 	return "void"
 }
 
+func containsReturnNull(body []Stmt) bool {
+	for _, st := range body {
+		switch s := st.(type) {
+		case *ReturnStmt:
+			if n, ok := s.Value.(*Name); ok && n.Name == "null" {
+				return true
+			}
+		case *IfStmt:
+			if containsReturnNull(s.Then) || containsReturnNull(s.Else) {
+				return true
+			}
+		case *WhileStmt:
+			if containsReturnNull(s.Body) {
+				return true
+			}
+		case *ForRangeStmt:
+			if containsReturnNull(s.Body) {
+				return true
+			}
+		case *ForInStmt:
+			if containsReturnNull(s.Body) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func emitExpr(w io.Writer, e Expr) error { return e.emit(w) }
 
 func isBlockStmt(s Stmt) bool {
@@ -4019,9 +4057,14 @@ func walkTypes(s Stmt) {
 				delete(localVarTypes, n)
 			}
 		}
-		if funcReturnTypes[st.Name] == "" {
-			funcReturnTypes[st.Name] = inferReturnType(st.Body)
+		rt := funcReturnTypes[st.Name]
+		if rt == "" {
+			rt = inferReturnType(st.Body)
 		}
+		if containsReturnNull(st.Body) && rt != "void" && rt != "dynamic" && !strings.HasSuffix(rt, "?") {
+			rt += "?"
+		}
+		funcReturnTypes[st.Name] = rt
 	case *BenchStmt:
 		for _, b := range st.Body {
 			walkTypes(b)
@@ -4138,6 +4181,11 @@ func Emit(w io.Writer, p *Program) error {
 	}
 	if useMD5 {
 		if _, err := io.WriteString(w, helperMD5+"\n"); err != nil {
+			return err
+		}
+	}
+	if useJSONPrint {
+		if _, err := io.WriteString(w, helperJSONPrint+"\n"); err != nil {
 			return err
 		}
 	}
@@ -5335,6 +5383,17 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: list, Value: val}, nil
 		}
+		if p.Call.Func == "concat" && len(p.Call.Args) == 2 {
+			left, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			right, err := convertExpr(p.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			return &UnionAllExpr{Left: left, Right: right}, nil
+		}
 		if p.Call.Func == "avg" && len(p.Call.Args) == 1 {
 			list, err := convertExpr(p.Call.Args[0])
 			if err != nil {
@@ -5370,6 +5429,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		if p.Call.Func == "input" && len(p.Call.Args) == 0 {
 			useInput = true
 			return &InputExpr{}, nil
+		}
+		if p.Call.Func == "json" && len(p.Call.Args) == 1 {
+			usesJSON = true
+			useJSONPrint = true
+			arg, err := convertExpr(p.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: &Name{Name: "_json"}, Args: []Expr{arg}}, nil
 		}
 		if p.Call.Func == "values" && len(p.Call.Args) == 1 {
 			mp, err := convertExpr(p.Call.Args[0])
