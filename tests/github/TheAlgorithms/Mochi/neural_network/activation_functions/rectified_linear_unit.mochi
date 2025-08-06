@@ -1,0 +1,32 @@
+/*
+Rectified Linear Unit (ReLU) Activation Function
+------------------------------------------------
+The ReLU function is defined as f(x) = max(0, x) and is widely used in
+neural networks. It outputs the input directly if it is positive;
+otherwise it outputs zero. This simple non-linearity helps networks
+learn complex patterns while remaining computationally efficient.
+
+Algorithm
+~~~~~~~~~
+Iterate through each element of the input vector and append either the
+value itself (when positive) or 0.0 to the result vector. This runs in
+O(n) time for an input vector of length n and uses O(n) additional space
+for the output.
+*/
+
+fun relu(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let v = vector[i]
+    if v > 0.0 {
+      result = append(result, v)
+    } else {
+      result = append(result, 0.0)
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(str(relu([-1.0, 0.0, 5.0])))
