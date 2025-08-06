@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (13/1077) - Last updated 2025-08-06 17:33 +0700:
+Checklist of programs that currently transpile and run (20/1077) - Last updated 2025-08-06 20:15 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -20,18 +20,18 @@ Checklist of programs that currently transpile and run (13/1077) - Last updated 
 | 13 | backtracking/power_sum | ✓ | 488us | 1.5 MB |
 | 14 | backtracking/rat_in_maze | ✓ | 1.02ms | 1.6 MB |
 | 15 | backtracking/sudoku |  |  |  |
-| 16 | backtracking/sum_of_subsets |  |  |  |
-| 17 | backtracking/word_break |  |  |  |
+| 16 | backtracking/sum_of_subsets | ✓ | 528us | 1.5 MB |
+| 17 | backtracking/word_break | ✓ | 328us | 1.5 MB |
 | 18 | backtracking/word_ladder |  |  |  |
 | 19 | backtracking/word_search |  |  |  |
 | 20 | bit_manipulation/binary_and_operator |  |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |  |  |  |
-| 22 | bit_manipulation/binary_count_setbits |  |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |  |  |  |
-| 24 | bit_manipulation/binary_or_operator |  |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 581us | 1.6 MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 450us | 1.4 MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 341us | 1.5 MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 528us | 1.4 MB |
 | 25 | bit_manipulation/binary_shifts |  |  |  |
 | 26 | bit_manipulation/binary_twos_complement |  |  |  |
-| 27 | bit_manipulation/binary_xor_operator |  |  |  |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 401us | 1.4 MB |
 | 28 | bit_manipulation/bitwise_addition_recursive |  |  |  |
 | 29 | bit_manipulation/count_1s_brian_kernighan_method |  |  |  |
 | 30 | bit_manipulation/count_number_of_one_bits |  |  |  |

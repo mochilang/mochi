@@ -1,0 +1,15 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/x/C/bit_manipulation/binary_shifts.c: In function ‘arithmetic_right_shift’:
+/workspace/mochi/tests/algorithms/x/C/bit_manipulation/binary_shifts.c:153:61: error: ‘to_binary_no_prefix_len’ undeclared (first use in this function); did you mean ‘to_binary_no_prefix’?
+  153 |         long long length = (to_binary_no_prefix(-(number)), to_binary_no_prefix_len);
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~~~
+      |                                                             to_binary_no_prefix
+/workspace/mochi/tests/algorithms/x/C/bit_manipulation/binary_shifts.c:153:61: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/algorithms/x/C/bit_manipulation/binary_shifts.c:157:102: warning: passing argument 1 of ‘str_int’ makes integer from pointer without a cast [-Wint-conversion]
+  157 |         binary_number = str_concat(str_concat("1", repeat_char("0", length - bin_repr_len)), str_int(bin_repr));
+      |                                                                                                      ^~~~~~~~
+      |                                                                                                      |
+      |                                                                                                      const char *
+/workspace/mochi/tests/algorithms/x/C/bit_manipulation/binary_shifts.c:20:32: note: expected ‘long long int’ but argument is of type ‘const char *’
+   20 | static char* str_int(long long v) {
+      |                      ~~~~~~~~~~^
