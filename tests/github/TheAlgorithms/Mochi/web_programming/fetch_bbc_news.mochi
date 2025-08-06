@@ -1,0 +1,36 @@
+/*
+Fetch and display top BBC News headlines using the NewsAPI.
+
+The program constructs a request URL using the provided API key and sends an HTTP
+GET request. The JSON response is decoded into a structured type containing a
+list of articles. Each article's title is printed with its index. If the API key
+is invalid or no articles are returned, nothing will be printed.
+
+Time complexity: O(n) where n is the number of articles.
+Space complexity: O(n) for storing the list of articles.
+*/
+
+type Article {
+  title: string
+}
+
+type NewsResponse {
+  articles: list<Article>
+}
+
+fun fetch_bbc_news(api_key: string): unit {
+  let url = "https://newsapi.org/v1/articles?source=bbc-news&sortBy=top&apiKey=" + api_key
+  let resp: NewsResponse = fetch url with { timeout: 10.0 }
+  if len(resp.articles) == 0 {
+    print("No articles found.")
+    return
+  }
+  var i: int = 0
+  while i < len(resp.articles) {
+    let article = resp.articles[i]
+    print(str(i + 1) + ".) " + article.title)
+    i = i + 1
+  }
+}
+
+fetch_bbc_news("test")
