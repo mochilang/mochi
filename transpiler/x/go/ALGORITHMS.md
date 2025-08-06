@@ -1,23 +1,23 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:43 +0700
+Completed programs: 10/1077
+Last updated: 2025-08-06 15:56 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 424.0µs | 2.20KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 669.0µs | 2.14KB |
+| 2 | backtracking/all_permutations | ✓ | 772.0µs | 5.80KB |
+| 3 | backtracking/all_subsequences | ✓ | 870.0µs | 4.78KB |
+| 4 | backtracking/coloring | ✓ | 717.0µs | 3.62KB |
+| 5 | backtracking/combination_sum | ✓ | 1.0ms | 1.88KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 774.0µs | 3.52KB |
 | 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 8 | backtracking/knight_tour | ✓ | 318.0µs | 960B |
+| 9 | backtracking/match_word_pattern | ✓ | 822.0µs | 11.91KB |
+| 10 | backtracking/minimax | ✓ | 798.0µs | 1000B |
+| 11 | backtracking/n_queens | ✓ | 540.0µs | 1.73KB |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
