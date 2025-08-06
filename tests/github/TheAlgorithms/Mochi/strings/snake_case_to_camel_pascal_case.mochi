@@ -1,0 +1,67 @@
+/*
+Convert a snake_case string to camelCase or PascalCase.
+
+Given a string where words are separated by underscores, the function
+`snake_to_camel_case` returns a new string in camelCase format. When the
+`use_pascal` flag is true, the first word is also capitalized to produce
+PascalCase.
+
+Algorithm:
+1. Split the input string on underscores to obtain individual words.
+2. Leave the first word as-is for camelCase or skip it for PascalCase.
+3. Capitalize the first character of the remaining words and append them
+   to the result in order.
+4. Join everything into the final string.
+
+The running time is O(n) where n is the number of characters in the
+input string because each character is processed a constant number of
+times.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun capitalize(word: string): string {
+  if len(word) == 0 { return "" }
+  let first = upper(substring(word, 0, 1))
+  let rest = substring(word, 1, len(word))
+  return first + rest
+}
+
+fun snake_to_camel_case(input_str: string, use_pascal: bool): string {
+  let words = split(input_str, "_")
+  var result = ""
+  var index = 0
+  if !use_pascal {
+    if len(words) > 0 {
+      result = words[0]
+      index = 1
+    }
+  }
+  while index < len(words) {
+    let word = words[index]
+    result = result + capitalize(word)
+    index = index + 1
+  }
+  return result
+}
+
+print(snake_to_camel_case("some_random_string", false))
+print(snake_to_camel_case("some_random_string", true))
+print(snake_to_camel_case("some_random_string_with_numbers_123", false))
+print(snake_to_camel_case("some_random_string_with_numbers_123", true))
