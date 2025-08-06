@@ -114,9 +114,8 @@ def _fetch(url: str, opts: dict[str, Any] | None) -> Any:
 const helperAppend = `
 def _append(lst, v):
     if lst is None:
-        lst = []
-    lst.append(v)
-    return lst
+        return [v]
+    return lst + [v]
 `
 
 var pyKeywords = map[string]bool{
