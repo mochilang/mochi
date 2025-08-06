@@ -1,0 +1,205 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:151:8: Main.pow_int/2
+
+     warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {b, e, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:182:8: Main.mod_pow/3
+
+     warning: variable "e" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 182 │       {b, e, result} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:182:11: Main.mod_pow/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 386 │           {block_int, i} = try do
+     │                       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:386:23: Main.get_blocks_from_text/2
+
+     warning: variable "block_start" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 399 │       {block_ints, block_start} = try do
+     │                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:399:20: Main.get_blocks_from_text/2
+
+     warning: variable "block" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 433 │         {block, block_message, i} = try do
+     │          ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:433:10: Main.get_text_from_blocks/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 433 │         {block, block_message, i} = try do
+     │                                ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:433:32: Main.get_text_from_blocks/3
+
+     warning: variable "block_size" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 460 │   def decrypt_message(blocks, message_length, n, d, block_size) do
+     │                                                     ~~~~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:460:53: Main.decrypt_message/5
+
+     warning: variable "message_length" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 460 │   def decrypt_message(blocks, message_length, n, d, block_size) do
+     │                               ~~~~~~~~~~~~~~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:460:31: Main.decrypt_message/5
+
+    warning: function _slice/3 is unused
+    │
+ 50 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:50:8: Main (module)
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:109:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 31 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:31:8: Main (module)
+
+     warning: function _md5_hex/1 is unused
+     │
+ 135 │   defp _md5_hex(s) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:135:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:34:8: Main (module)
+
+     warning: function _getoutput/1 is unused
+     │
+ 119 │   defp _getoutput(cmd) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:119:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:113:8: Main (module)
+
+     warning: function _fetch/1 is unused
+     │
+ 123 │   defp _fetch(url) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:123:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:116:8: Main (module)
+
+    warning: function _clamp_slice/3 is unused
+    │
+ 43 │   defp _clamp_slice(n, start, stop) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:43:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:70:8: Main (module)
+
+    warning: function _bench_now/0 is unused
+    │
+ 28 │   defp _bench_now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/rsa_cipher.exs:28:8: Main (module)
+
+[2170 1313 745 745 2185 1992 1107 2185 2412 745 1773]
+hello world

@@ -27,6 +27,7 @@ var elixirReserved = map[string]struct{}{
 	"fn":    {},
 	"abs":   {},
 	"end":   {},
+	"do":    {},
 	"node":  {},
 	"div":   {},
 	"rem":   {},

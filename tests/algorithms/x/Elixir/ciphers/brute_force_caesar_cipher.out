@@ -1,0 +1,159 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:152:7: Main.index_of/2
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:109:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 31 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:31:8: Main (module)
+
+     warning: function _md5_hex/1 is unused
+     │
+ 135 │   defp _md5_hex(s) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:135:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:34:8: Main (module)
+
+     warning: function _getoutput/1 is unused
+     │
+ 119 │   defp _getoutput(cmd) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:119:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:113:8: Main (module)
+
+     warning: function _fetch/1 is unused
+     │
+ 123 │   defp _fetch(url) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:123:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:116:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:70:8: Main (module)
+
+    warning: function _bench_now/0 is unused
+    │
+ 28 │   defp _bench_now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/ciphers/brute_force_caesar_cipher.exs:28:8: Main (module)
+
+Decryption using Key #0: TMDETUX PMDVU
+Decryption using Key #1: SLCDSTW OLCUT
+Decryption using Key #2: RKBCRSV NKBTS
+Decryption using Key #3: QJABQRU MJASR
+Decryption using Key #4: PIZAPQT LIZRQ
+Decryption using Key #5: OHYZOPS KHYQP
+Decryption using Key #6: NGXYNOR JGXPO
+Decryption using Key #7: MFWXMNQ IFWON
+Decryption using Key #8: LEVWLMP HEVNM
+Decryption using Key #9: KDUVKLO GDUML
+Decryption using Key #10: JCTUJKN FCTLK
+Decryption using Key #11: IBSTIJM EBSKJ
+Decryption using Key #12: HARSHIL DARJI
+Decryption using Key #13: GZQRGHK CZQIH
+Decryption using Key #14: FYPQFGJ BYPHG
+Decryption using Key #15: EXOPEFI AXOGF
+Decryption using Key #16: DWNODEH ZWNFE
+Decryption using Key #17: CVMNCDG YVMED
+Decryption using Key #18: BULMBCF XULDC
+Decryption using Key #19: ATKLABE WTKCB
+Decryption using Key #20: ZSJKZAD VSJBA
+Decryption using Key #21: YRIJYZC URIAZ
+Decryption using Key #22: XQHIXYB TQHZY
+Decryption using Key #23: WPGHWXA SPGYX
+Decryption using Key #24: VOFGVWZ ROFXW
+Decryption using Key #25: UNEFUVY QNEWV

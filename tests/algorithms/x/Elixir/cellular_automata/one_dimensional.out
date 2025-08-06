@@ -1,0 +1,192 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:15:15: Main._now/0
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {bits_rev, i, rs} = try do
+     │                  ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:153:18: Main.format_ruleset/1
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │       {bits, j} = try do
+     │              ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:170:14: Main.format_ruleset/1
+
+     warning: variable "rs" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 153 │       {bits_rev, i, rs} = try do
+     │                     ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:153:21: Main.format_ruleset/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 199 │       {i, next_generation} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:199:8: Main.new_generation/3
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 223 │       {i, result} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:223:8: Main.cells_to_string/1
+
+    warning: function _slice/3 is unused
+    │
+ 50 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:50:8: Main (module)
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:109:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 31 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:31:8: Main (module)
+
+     warning: function _md5_hex/1 is unused
+     │
+ 135 │   defp _md5_hex(s) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:135:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:34:8: Main (module)
+
+     warning: function _getoutput/1 is unused
+     │
+ 119 │   defp _getoutput(cmd) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:119:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:113:8: Main (module)
+
+     warning: function _fetch/1 is unused
+     │
+ 123 │   defp _fetch(url) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:123:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:116:8: Main (module)
+
+    warning: function _clamp_slice/3 is unused
+    │
+ 43 │   defp _clamp_slice(n, start, stop) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:43:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:70:8: Main (module)
+
+    warning: function _bench_now/0 is unused
+    │
+ 28 │   defp _bench_now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/cellular_automata/one_dimensional.exs:28:8: Main (module)
+
+"...............#..............."
+"..............###.............."
+".............##..#............."
+"............##.####............"
+"...........##..#...#..........."
+"..........##.####.###.........."
+".........##..#....#..#........."
+"........##.####..######........"
+".......##..#...###.....#......."
+"......##.####.##..#...###......"
+".....##..#....#.####.##..#....."
+"....##.####..##.#....#.####...."
+"...##..#...###..##..##.#...#..."
+"..##.####.##..###.###..##.###.."
+".##..#....#.###...#..###..#..#."
+"##.####..##.#..#.#####..#######"
+"#..#...###..####.#....###......"

@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 21:25 GMT+7
+Last updated: 2025-08-06 21:51 GMT+7
 
-## Algorithms Golden Test Checklist (50/1077)
+## Algorithms Golden Test Checklist (89/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -67,59 +67,59 @@ Last updated: 2025-08-06 21:25 GMT+7
 | 58 | boolean_algebra/xor_gate | ✓ | 3.87ms | 12.5 MB |
 | 59 | cellular_automata/conways_game_of_life | ✓ | 8.48ms | 77.9 MB |
 | 60 | cellular_automata/game_of_life | ✓ | 1.55ms | 25.0 MB |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
+| 61 | cellular_automata/langtons_ant | ✓ | 1us | 0 B |
+| 62 | cellular_automata/nagel_schrekenberg | error |  |  |
+| 63 | cellular_automata/one_dimensional | ✓ | 4.81ms | 25.0 MB |
+| 64 | cellular_automata/wa_tor | error |  |  |
+| 65 | ciphers/a1z26 | ✓ | 307us | 24 B |
+| 66 | ciphers/affine_cipher | ✓ | 25.25ms | 12.5 MB |
+| 67 | ciphers/atbash | ✓ | 3.94ms | 12.7 MB |
+| 68 | ciphers/autokey | ✓ | 6.16ms | 25.5 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 20.93ms | 25.0 MB |
+| 70 | ciphers/base16 | ✓ | 13.16ms | 17.3 MB |
+| 71 | ciphers/base32 | error |  |  |
+| 72 | ciphers/base64_cipher | error |  |  |
+| 73 | ciphers/base85 | ✓ |  |  |
+| 74 | ciphers/beaufort_cipher | ✓ |  |  |
+| 75 | ciphers/bifid | error |  |  |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ |  |  |
+| 77 | ciphers/caesar_cipher | ✓ |  |  |
+| 78 | ciphers/cryptomath_module | error |  |  |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ |  |  |
+| 80 | ciphers/deterministic_miller_rabin | ✓ |  |  |
+| 81 | ciphers/diffie | ✓ |  |  |
+| 82 | ciphers/diffie_hellman | ✓ |  |  |
+| 83 | ciphers/elgamal_key_generator | ✓ |  |  |
+| 84 | ciphers/enigma_machine2 | ✓ |  |  |
+| 85 | ciphers/fractionated_morse_cipher | error |  |  |
+| 86 | ciphers/gronsfeld_cipher | error |  |  |
+| 87 | ciphers/hill_cipher | error |  |  |
+| 88 | ciphers/mixed_keyword_cypher | ✓ |  |  |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ |  |  |
+| 90 | ciphers/morse_code | ✓ |  |  |
+| 91 | ciphers/onepad_cipher | ✓ |  |  |
+| 92 | ciphers/permutation_cipher | ✓ |  |  |
+| 93 | ciphers/playfair_cipher | error |  |  |
+| 94 | ciphers/polybius | ✓ |  |  |
+| 95 | ciphers/porta_cipher | ✓ |  |  |
+| 96 | ciphers/rabin_miller | error |  |  |
+| 97 | ciphers/rail_fence_cipher | ✓ |  |  |
+| 98 | ciphers/rot13 | ✓ |  |  |
+| 99 | ciphers/rsa_cipher | ✓ |  |  |
+| 100 | ciphers/rsa_factorization | ✓ |  |  |
+| 101 | ciphers/rsa_key_generator | ✓ |  |  |
+| 102 | ciphers/running_key_cipher | ✓ |  |  |
+| 103 | ciphers/shuffled_shift_cipher | ✓ |  |  |
+| 104 | ciphers/simple_keyword_cypher | error |  |  |
+| 105 | ciphers/simple_substitution_cipher | ✓ |  |  |
+| 106 | ciphers/transposition_cipher | error |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ |  |  |
+| 108 | ciphers/trifid_cipher | ✓ |  |  |
+| 109 | ciphers/vernam_cipher | ✓ |  |  |
+| 110 | ciphers/vigenere_cipher | ✓ |  |  |
+| 111 | ciphers/xor_cipher | ✓ |  |  |
+| 112 | computer_vision/cnn_classification | ✓ |  |  |
+| 113 | computer_vision/flip_augmentation | error |  |  |
 | 114 | computer_vision/haralick_descriptors |   |  |  |
 | 115 | computer_vision/harris_corner |   |  |  |
 | 116 | computer_vision/horn_schunck |   |  |  |
