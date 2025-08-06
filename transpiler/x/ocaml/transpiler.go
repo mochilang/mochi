@@ -2233,14 +2233,27 @@ func (ix *IndexExpr) emitPrint(w io.Writer) {
 	case "string":
 		ix.emit(w)
 	default:
-		if ix.Typ == "float" {
+		switch {
+		case ix.Typ == "float":
 			io.WriteString(w, "Printf.sprintf \"%.15f\" (")
 			ix.emit(w)
 			io.WriteString(w, ")")
-		} else if ix.Typ == "" || ix.Typ == "string" {
+		case ix.Typ == "" || ix.Typ == "string":
 			ix.emit(w)
-		} else {
+		case ix.Typ == "int":
 			io.WriteString(w, "string_of_int (")
+			ix.emit(w)
+			io.WriteString(w, ")")
+		case ix.Typ == "bool":
+			io.WriteString(w, "string_of_bool (")
+			ix.emit(w)
+			io.WriteString(w, ")")
+		case strings.HasPrefix(ix.Typ, "list"):
+			io.WriteString(w, "__show_list (")
+			ix.emit(w)
+			io.WriteString(w, ")")
+		default:
+			io.WriteString(w, "__show (")
 			ix.emit(w)
 			io.WriteString(w, ")")
 		}
