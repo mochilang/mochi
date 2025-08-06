@@ -1,0 +1,89 @@
+/*
+Ternary Search on a Sorted List
+--------------------------------
+This algorithm locates a target value inside a monotonically increasing list by
+recursively or iteratively dividing the search interval into three parts.  Two
+pivots, one_third and two_third, split the range.  Depending on comparisons with
+these pivots, the algorithm discards two thirds of the remaining elements each
+iteration.  When the interval becomes smaller than a chosen precision, a linear
+scan is used instead of further splitting.  Both versions run in O(log3 n) time
+with O(1) extra space and work on integer lists without external FFI.
+*/
+
+let precision: int = 10
+
+fun lin_search(left: int, right: int, array: list<int>, target: int): int {
+  var i: int = left
+  while i < right {
+    if array[i] == target {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ite_ternary_search(array: list<int>, target: int): int {
+  var left: int = 0
+  var right: int = len(array) - 1
+  while left <= right {
+    if right - left < precision {
+      let idx: int = lin_search(left, right + 1, array, target)
+      return idx
+    }
+    let one_third: int = left + (right - left) / 3
+    let two_third: int = right - (right - left) / 3
+
+    if array[one_third] == target {
+      return one_third
+    }
+    if array[two_third] == target {
+      return two_third
+    }
+    if target < array[one_third] {
+      right = one_third - 1
+    } else if array[two_third] < target {
+      left = two_third + 1
+    } else {
+      left = one_third + 1
+      right = two_third - 1
+    }
+  }
+  return -1
+}
+
+fun rec_ternary_search(left: int, right: int, array: list<int>, target: int): int {
+  if left <= right {
+    if right - left < precision {
+      let idx: int = lin_search(left, right + 1, array, target)
+      return idx
+    }
+    let one_third: int = left + (right - left) / 3
+    let two_third: int = right - (right - left) / 3
+
+    if array[one_third] == target {
+      return one_third
+    }
+    if array[two_third] == target {
+      return two_third
+    }
+    if target < array[one_third] {
+      return rec_ternary_search(left, one_third - 1, array, target)
+    }
+    if array[two_third] < target {
+      return rec_ternary_search(two_third + 1, right, array, target)
+    }
+    return rec_ternary_search(one_third + 1, two_third - 1, array, target)
+  }
+  return -1
+}
+
+fun main() {
+  let test_list: list<int> = [0, 1, 2, 8, 13, 17, 19, 32, 42]
+  print(str(ite_ternary_search(test_list, 3)))
+  print(str(ite_ternary_search(test_list, 13)))
+  print(str(rec_ternary_search(0, len(test_list) - 1, test_list, 3)))
+  print(str(rec_ternary_search(0, len(test_list) - 1, test_list, 13)))
+}
+
+main()
