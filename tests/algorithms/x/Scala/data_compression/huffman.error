@@ -1,0 +1,42 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:108: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Huffman]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Huffman <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+  var arr: ArrayBuffer[Any] = nodes
+                              ^
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:110: error: type mismatch;
+ found   : Any
+ required: Main.Huffman
+    val left: Huffman = arr((0.toInt).toInt)
+                           ^
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:111: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Any]
+ required: scala.collection.mutable.ArrayBuffer[Main.Huffman]
+Note: Any >: Main.Huffman, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ >: Main.Huffman`. (SLS 3.2.10)
+    arr = rest(arr)
+               ^
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:113: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Huffman]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Huffman <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+    arr = rest(arr.asInstanceOf[ArrayBuffer[Huffman]])
+              ^
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:116: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Huffman]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Huffman <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+    arr = sort_nodes(arr.asInstanceOf[ArrayBuffer[Huffman]])
+                    ^
+/workspace/mochi/tests/algorithms/x/Scala/data_compression/huffman.scala:150: error: type mismatch;
+ found   : scala.collection.mutable.ArrayBuffer[Main.Huffman]
+ required: scala.collection.mutable.ArrayBuffer[Any]
+Note: Main.Huffman <: Any, but class ArrayBuffer is invariant in type A.
+You may wish to investigate a wildcard type such as `_ <: Any`. (SLS 3.2.10)
+  val leaves: ArrayBuffer[Any] = count_freq(text)
+                                           ^
+6 errors found

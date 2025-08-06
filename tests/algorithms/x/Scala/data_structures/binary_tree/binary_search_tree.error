@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/binary_search_tree.scala:75: error: Any does not take parameters
+  while (current((1.toInt).toInt) != null) {
+                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/binary_search_tree.scala:76: error: Any does not take parameters
+    current = current((1.toInt).toInt)
+                     ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/binary_search_tree.scala:83: error: Any does not take parameters
+  while (current((2.toInt).toInt) != null) {
+                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/binary_search_tree.scala:84: error: Any does not take parameters
+    current = current((2.toInt).toInt)
+                     ^
+four errors found

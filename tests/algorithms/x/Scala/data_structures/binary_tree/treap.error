@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/treap.scala:53: error: value split is not a member of scala.math.BigInt
+    val res = ArrayBuffer(node_lefts((root.toInt).toInt).split(value): _*)
+                                                         ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/treap.scala:57: error: value split is not a member of scala.math.BigInt
+  val res = ArrayBuffer(node_rights((root.toInt).toInt).split(value): _*)
+                                                        ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/treap.scala:79: error: value split is not a member of scala.math.BigInt
+  val res = ArrayBuffer(root.split(value): _*)
+                             ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/treap.scala:84: error: value split is not a member of scala.math.BigInt
+  val res1 = ArrayBuffer(root.split(value - 1): _*)
+                              ^
+four errors found

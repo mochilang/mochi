@@ -1,0 +1,41 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:47: error: Main.Leaf.type does not take parameters
+  return (t match { case Node(l, _, _) => l case _ => Leaf() }).asInstanceOf[Tree]
+                                                          ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:51: error: Main.Leaf.type does not take parameters
+  return (t match { case Node(_, _, r) => r case _ => Leaf() }).asInstanceOf[Tree]
+                                                          ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:69: error: Main.Leaf.type does not take parameters
+val tree1: Node = Node(Node(Node(Leaf(), 4, Leaf()), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+                                     ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:69: error: Main.Leaf.type does not take parameters
+val tree1: Node = Node(Node(Node(Leaf(), 4, Leaf()), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:69: error: Main.Leaf.type does not take parameters
+val tree1: Node = Node(Node(Node(Leaf(), 4, Leaf()), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+                                                            ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:69: error: Main.Leaf.type does not take parameters
+val tree1: Node = Node(Node(Node(Leaf(), 4, Leaf()), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+                                                                             ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:69: error: Main.Leaf.type does not take parameters
+val tree1: Node = Node(Node(Node(Leaf(), 4, Leaf()), 2, Leaf()), 1, Node(Leaf(), 3, Leaf()))
+                                                                                        ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                                ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                                           ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                                                             ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                                                                             ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/merge_two_binary_trees.scala:71: error: Main.Leaf.type does not take parameters
+val tree2: Node = Node(Node(Leaf(), 4, Node(Leaf(), 9, Leaf())), 2, Node(Leaf(), 6, Node(Leaf(), 5, Leaf())))
+                                                                                                        ^
+13 errors found

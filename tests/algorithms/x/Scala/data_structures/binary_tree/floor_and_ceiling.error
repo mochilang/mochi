@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/floor_and_ceiling.scala:43: error: value :+ is not a member of Any
+  result = result :+ node.asInstanceOf[Node].key
+                  ^
+/workspace/mochi/tests/algorithms/x/Scala/data_structures/binary_tree/floor_and_ceiling.scala:44: error: value ++ is not a member of Any
+  result = result ++ inorder(nodes, node.asInstanceOf[Node].right)
+                  ^
+two errors found

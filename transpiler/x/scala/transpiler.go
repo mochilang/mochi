@@ -951,8 +951,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "))")
 		return
 	}
-	c.Fn.emit(w)
-	if f, ok := c.Fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
+	fn := c.Fn
+	if f, ok := fn.(*FieldExpr); ok && f.Name == "join" {
+		fn = &FieldExpr{Receiver: f.Receiver, Name: "mkString"}
+	}
+	fn.emit(w)
+	if f, ok := fn.(*FieldExpr); ok && f.Name == "mkString" && len(c.Args) == 0 {
 		return
 	}
 	fmt.Fprint(w, "(")
@@ -1270,16 +1274,25 @@ func (c *CastExpr) emit(w io.Writer) {
 	}
 	switch c.Type {
 	case "Int", "int":
-		if inferType(c.Value) == "Double" {
+		// Mochi ints are arbitrary precision. Treat casts to int as BigInt
+		// conversions so large values don't overflow Scala Int.
+		needsBigInt = true
+		typ := inferType(c.Value)
+		fmt.Fprint(w, "BigInt(")
+		switch c.Value.(type) {
+		case *Name, *IntLit, *StringLit, *BoolLit, *FloatLit:
+			c.Value.emit(w)
+		default:
 			fmt.Fprint(w, "(")
 			c.Value.emit(w)
-			fmt.Fprint(w, ").toInt")
-		} else {
-			c.Value.emit(w)
-			if inferType(c.Value) != "Int" {
-				fmt.Fprint(w, ".toInt")
-			}
+			fmt.Fprint(w, ")")
 		}
+		if typ == "Any" || typ == "" {
+			fmt.Fprint(w, ".toString.toDouble.toInt")
+		} else if typ != "Int" && typ != "BigInt" && typ != "String" {
+			fmt.Fprint(w, ".toInt")
+		}
+		fmt.Fprint(w, ")")
 		return
 	case "BigInt", "bigint":
 		needsBigInt = true
@@ -1302,13 +1315,11 @@ func (c *CastExpr) emit(w io.Writer) {
 				c.Value.emit(w)
 				fmt.Fprint(w, ")")
 			}
-			if typ == "String" {
-				fmt.Fprint(w, ".charAt(0).toInt")
-			} else if typ == "Any" || typ == "" {
+			if typ == "Any" || typ == "" {
 				// Fallback for unknown types: convert to string, then to Double before Int.
 				// This avoids runtime errors when the value is a floating point like "2.0".
 				fmt.Fprint(w, ".toString.toDouble.toInt")
-			} else if typ != "Int" {
+			} else if typ != "Int" && typ != "BigInt" && typ != "String" {
 				fmt.Fprint(w, ".toInt")
 			}
 			fmt.Fprint(w, ")")
@@ -1954,7 +1965,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useLookupHost = false
 	needsSubprocess = false
 	mapEntryTypes = make(map[string]map[string]string)
-	builtinAliases = map[string]string{}
+	builtinAliases = map[string]string{"Object": "js_object"}
 	localVarTypes = make(map[string]string)
 	fieldStructs = make(map[string]string)
 	varDecls = make(map[string]*VarStmt)
@@ -2847,6 +2858,12 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					expr = &CallExpr{Fn: &Name{Name: "_osEnviron"}, Args: nil}
 					return expr, nil
 				}
+			case "js_object":
+				switch field {
+				case "keys":
+					expr = &FieldExpr{Receiver: args[0], Name: "keys"}
+					return expr, nil
+				}
 			}
 		}
 	}
@@ -3134,7 +3151,8 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 				if !converted {
 					if typ == "int" && inferTypeWithEnv(expr, env) == "Double" {
-						expr = &CastExpr{Value: expr, Type: "Int"}
+						// Casting a float to int should still use BigInt to avoid overflow
+						expr = &CastExpr{Value: expr, Type: "BigInt"}
 						converted = true
 					}
 				}
@@ -3152,6 +3170,10 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 							expr = &CallExpr{Fn: &Name{Name: "_bigrat"}, Args: []Expr{expr}}
 						}
 					} else {
+						if typ == "int" {
+							// Mochi's int maps to BigInt in Scala
+							typ = "BigInt"
+						}
 						expr = &CastExpr{Value: expr, Type: typ}
 					}
 				}
