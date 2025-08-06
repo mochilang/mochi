@@ -1,0 +1,88 @@
+/*
+Project Euler Problem 1: Multiples of 3 and 5
+-------------------------------------------
+Given an upper bound n, compute the sum of all natural numbers below n that
+are divisible by 3 or 5. Numbers divisible by both 3 and 5 should only be
+counted once.
+
+Algorithm:
+1. Generate all multiples of 3 below n.
+2. Generate all multiples of 5 below n.
+3. Combine the two lists while removing duplicates.
+4. Sum every value in the combined list.
+
+This mirrors the reference implementation in TheAlgorithms/Python and avoids
+foreign interfaces so it can run directly on the Mochi VM.
+*/
+
+fun contains(xs: list<int>, value: int): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == value { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun solution(n: int): int {
+  var zmulti: list<int> = []
+  var xmulti: list<int> = []
+  var temp = 1
+  while true {
+    let result = 3 * temp
+    if result < n {
+      zmulti = append(zmulti, result)
+      temp = temp + 1
+    } else {
+      break
+    }
+  }
+  temp = 1
+  while true {
+    let result = 5 * temp
+    if result < n {
+      xmulti = append(xmulti, result)
+      temp = temp + 1
+    } else {
+      break
+    }
+  }
+  var collection: list<int> = []
+  var i = 0
+  while i < len(zmulti) {
+    let v = zmulti[i]
+    if !contains(collection, v) {
+      collection = append(collection, v)
+    }
+    i = i + 1
+  }
+  i = 0
+  while i < len(xmulti) {
+    let v = xmulti[i]
+    if !contains(collection, v) {
+      collection = append(collection, v)
+    }
+    i = i + 1
+  }
+  var total = 0
+  i = 0
+  while i < len(collection) {
+    total = total + collection[i]
+    i = i + 1
+  }
+  return total
+}
+
+fun test_solution() {
+  if solution(3) != 0 { panic("solution(3) failed") }
+  if solution(4) != 3 { panic("solution(4) failed") }
+  if solution(10) != 23 { panic("solution(10) failed") }
+  if solution(600) != 83700 { panic("solution(600) failed") }
+}
+
+fun main() {
+  test_solution()
+  print("solution() = " + str(solution(1000)))
+}
+
+main()
