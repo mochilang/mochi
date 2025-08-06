@@ -1,0 +1,102 @@
+/*
+Bitap Exact String Matching
+
+Searches a text for the first occurrence of a pattern using the Bitap
+(shift-or) algorithm.  Each character of the alphabet is associated
+with a bit mask whose bits are cleared at positions where the
+character appears in the pattern.  While scanning the text the
+algorithm updates a state bit string with bitwise OR and left shifts.
+When the bit corresponding to the pattern length becomes zero a match
+has been found.  The complexity is O(n*m) for text length n and
+pattern length m.
+*/
+
+fun pow2(n: int): int {
+  var res = 1
+  var i = 0
+  while i < n {
+    res = res * 2
+    i = i + 1
+  }
+  return res
+}
+
+fun bit_and(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  while x > 0 || y > 0 {
+    if x % 2 == 1 && y % 2 == 1 { res = res + bit }
+    x = (x / 2) as int
+    y = (y / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun bit_or(a: int, b: int): int {
+  var x = a
+  var y = b
+  var res = 0
+  var bit = 1
+  while x > 0 || y > 0 {
+    if x % 2 == 1 || y % 2 == 1 { res = res + bit }
+    x = (x / 2) as int
+    y = (y / 2) as int
+    bit = bit * 2
+  }
+  return res
+}
+
+fun char_to_index(ch: string): int {
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  var i = 0
+  while i < len(letters) {
+    if letters[i:i+1] == ch { return i }
+    i = i + 1
+  }
+  return 26
+}
+
+fun bitap_string_match(text: string, pattern: string): int {
+  if pattern == "" { return 0 }
+  let m = len(pattern)
+  if m > len(text) { return -1 }
+
+  let limit = pow2(m + 1)
+  let all_ones = limit - 1
+  var pattern_mask: list<int> = []
+  var i = 0
+  while i < 27 {
+    pattern_mask = append(pattern_mask, all_ones)
+    i = i + 1
+  }
+  i = 0
+  while i < m {
+    let ch = pattern[i:i+1]
+    let idx = char_to_index(ch)
+    pattern_mask[idx] = bit_and(pattern_mask[idx], all_ones - pow2(i))
+    i = i + 1
+  }
+  var state = all_ones - 1
+  i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    let idx = char_to_index(ch)
+    state = bit_or(state, pattern_mask[idx])
+    state = (state * 2) % limit
+    if bit_and(state, pow2(m)) == 0 { return i - m + 1 }
+    i = i + 1
+  }
+  return -1
+}
+
+fun main() {
+  print(str(bitap_string_match("abdabababc", "ababc")))
+  print(str(bitap_string_match("abdabababc", "")))
+  print(str(bitap_string_match("abdabababc", "c")))
+  print(str(bitap_string_match("abdabababc", "fofosdfo")))
+}
+
+main()
