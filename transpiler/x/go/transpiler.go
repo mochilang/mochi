@@ -38,6 +38,7 @@ type Program struct {
 	UseSubstr    bool
 	UseSlice     bool
 	UseSplit     bool
+	UseMod       bool
 	UseFloatConv bool
 	UsePadStart  bool
 	UseSHA256    bool
@@ -66,6 +67,7 @@ var (
 	usesSubstr         bool
 	usesSlice          bool
 	usesSplit          bool
+	usesMod            bool
 	usesFloatConv      bool
 	usesPadStart       bool
 	usesSHA256         bool
@@ -2170,6 +2172,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesSubstr = false
 	usesSlice = false
 	usesSplit = false
+	usesMod = false
 	usesFloatConv = false
 	usesPadStart = false
 	usesSHA256 = false
@@ -2228,6 +2231,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseSubstr = usesSubstr
 	gp.UseSlice = usesSlice
 	gp.UseSplit = usesSplit
+	gp.UseMod = usesMod
 	gp.UseFloatConv = usesFloatConv
 	gp.UsePadStart = usesPadStart
 	gp.UseRepeat = usesRepeat
@@ -3313,19 +3317,19 @@ func compileIfStmt(is *parser.IfStmt, env *types.Env) (Stmt, error) {
 			}
 		}
 	}
-	thenStmts, err := compileStmts(is.Then, env)
+	thenStmts, err := compileStmts(is.Then, types.NewEnv(env))
 	if err != nil {
 		return nil, err
 	}
 	var elseStmts []Stmt
 	if is.ElseIf != nil {
-		elseStmt, err := compileIfStmt(is.ElseIf, env)
+		elseStmt, err := compileIfStmt(is.ElseIf, types.NewEnv(env))
 		if err != nil {
 			return nil, err
 		}
 		elseStmts = []Stmt{elseStmt}
 	} else if len(is.Else) > 0 {
-		elseStmts, err = compileStmts(is.Else, env)
+		elseStmts, err = compileStmts(is.Else, types.NewEnv(env))
 		if err != nil {
 			return nil, err
 		}
@@ -4880,6 +4884,9 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 									imports["math"] = "math"
 								}
 								newExpr = &CallExpr{Func: "math.Mod", Args: []Expr{left, right}}
+							} else {
+								usesMod = true
+								newExpr = &CallExpr{Func: "_mod", Args: []Expr{left, right}}
 							}
 						}
 					}
@@ -5748,6 +5755,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 		case "json":
 			usesJSON = true
 			return &JsonExpr{Value: args[0]}, nil
+		case "error":
+			if !types.IsStringType(types.TypeOfExpr(p.Call.Args[0], env)) {
+				usesPrint = true
+				args[0] = &CallExpr{Func: "fmt.Sprint", Args: []Expr{args[0]}}
+			}
+			return &CallExpr{Func: "panic", Args: args}, nil
 		case "net.LookupHost":
 			return &LookupHostExpr{Arg: args[0]}, nil
 		}
@@ -5791,6 +5804,11 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 						if ll, ok := args[i].(*ListLit); ok {
 							if lt, ok2 := mt.(types.ListType); ok2 && ll.ElemType == "any" && len(ll.Elems) == 0 {
 								ll.ElemType = toGoTypeFromType(lt.Elem)
+							}
+						}
+						if ml, ok := args[i].(*MapLit); ok {
+							if mtMap, ok2 := mt.(types.MapType); ok2 {
+								updateMapLitTypes(ml, mtMap)
 							}
 						}
 						if lt, ok := mt.(types.ListType); ok {
@@ -6571,6 +6589,16 @@ func Emit(prog *Program, bench bool) []byte {
 		buf.WriteString("func _input() string {\n")
 		buf.WriteString("    if !_scanner.Scan() { return \"\" }\n")
 		buf.WriteString("    return _scanner.Text()\n")
+		buf.WriteString("}\n\n")
+	}
+	if prog.UseMod {
+		buf.WriteString("func _mod(a, b int) int {\n")
+		buf.WriteString("    if b == 0 { return 0 }\n")
+		buf.WriteString("    r := a % b\n")
+		buf.WriteString("    if (r < 0 && b > 0) || (r > 0 && b < 0) {\n")
+		buf.WriteString("        r += b\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return r\n")
 		buf.WriteString("}\n\n")
 	}
 	if prog.UseSubstr {

@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 71/1077
-Last updated: 2025-08-06 20:53 +0700
+Completed programs: 111/1077
+Last updated: 2025-08-06 21:16 +0700
 
 Checklist:
 
@@ -78,46 +78,46 @@ Checklist:
 | 69 | ciphers/baconian_cipher | ✓ | 1.0ms | 31.17KB |
 | 70 | ciphers/base16 | ✓ | 831.0µs | 2.63KB |
 | 71 | ciphers/base32 | ✓ | 6.0ms | 100.20KB |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
+| 72 | ciphers/base64_cipher | ✓ | 1.0ms | 61.83KB |
+| 73 | ciphers/base85 | ✓ | 983.0µs | 20.54KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 836.0µs | 1.59KB |
+| 75 | ciphers/bifid | ✓ | 677.0µs | 6.65KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 724.0µs | 5.68KB |
+| 77 | ciphers/caesar_cipher | ✓ | 28.0ms | 3.43MB |
+| 78 | ciphers/cryptomath_module | ✓ | 377.0µs | 1016B |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 25.0ms | 3.21MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 393.0µs | 1.26KB |
+| 81 | ciphers/diffie | ✓ | 621.0µs | 2.99KB |
+| 82 | ciphers/diffie_hellman | ✓ | 317.0µs | 984B |
+| 83 | ciphers/elgamal_key_generator | ✓ | 311.0µs | 1.12KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 2.0ms | 100.74KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 1.0ms | 30.33KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 691.0µs | 2.48KB |
+| 87 | ciphers/hill_cipher | ✓ | 1.0ms | 237.55KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 1.0ms | 13.62KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 341.0µs | 1.30KB |
+| 90 | ciphers/morse_code | ✓ | 707.0µs | 17.01KB |
+| 91 | ciphers/onepad_cipher | ✓ | 1.0ms | 135.14KB |
+| 92 | ciphers/permutation_cipher | ✓ | 679.0µs | 2.21KB |
+| 93 | ciphers/playfair_cipher | ✓ | 642.0µs | 3.62KB |
+| 94 | ciphers/polybius | ✓ | 787.0µs | 2.39KB |
+| 95 | ciphers/porta_cipher | ✓ | 863.0µs | 2.70KB |
+| 96 | ciphers/rabin_miller | ✓ | 458.0µs | 1.03KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 711.0µs | 12.34KB |
+| 98 | ciphers/rot13 | ✓ | 1.0ms | 42.43KB |
+| 99 | ciphers/rsa_cipher | ✓ | 416.0µs | 2.03KB |
+| 100 | ciphers/rsa_factorization | ✓ | 931.0µs | 3.23KB |
+| 101 | ciphers/rsa_key_generator | ✓ | 320.0µs | 1.13KB |
+| 102 | ciphers/running_key_cipher | ✓ | 1.0ms | 14.90KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 1.0ms | 64.74KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 1.0ms | 2.59KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 623.0µs | 1.34KB |
+| 106 | ciphers/transposition_cipher | ✓ | 501.0µs | 5.08KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 399.0µs | 1.26KB |
+| 108 | ciphers/trifid_cipher | ✓ | 1.0ms | 22.49KB |
+| 109 | ciphers/vernam_cipher | ✓ | 448.0µs | 1.09KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 1.0ms | 12.34KB |
+| 111 | ciphers/xor_cipher | ✓ | 4.0ms | 795.66KB |
 | 112 | computer_vision/cnn_classification |   |  |  |
 | 113 | computer_vision/flip_augmentation |   |  |  |
 | 114 | computer_vision/haralick_descriptors |   |  |  |
