@@ -127,8 +127,8 @@ func toSnakeCase(s string) string {
 }
 
 func zigIdent(s string) string {
-        var buf strings.Builder
-        for i, r := range s {
+	var buf strings.Builder
+	for i, r := range s {
 		if unicode.IsLetter(r) || r == '_' || (unicode.IsDigit(r) && i > 0) {
 			buf.WriteRune(r)
 		} else if unicode.IsDigit(r) && i == 0 {
@@ -153,41 +153,41 @@ func isIntType(t string) bool {
 }
 
 func valueTag(t string) string {
-        switch t {
-        case "i64":
-                return "Int"
-        case "f64":
-                return "Float"
-        case "[]const u8":
-                return "Str"
-        case "bool":
-                return "Bool"
-       case "[][]i64":
-               return "List"
-       case "[][]const u8":
-               return "StrList"
-        default:
-                return "Int"
-        }
+	switch t {
+	case "i64":
+		return "Int"
+	case "f64":
+		return "Float"
+	case "[]const u8":
+		return "Str"
+	case "bool":
+		return "Bool"
+	case "[][]i64":
+		return "List"
+	case "[][]const u8":
+		return "StrList"
+	default:
+		return "Int"
+	}
 }
 
 func valueAccess(t string) string {
-        switch t {
-        case "i64":
-                return ".Int"
-        case "f64":
-                return ".Float"
-        case "[]const u8":
-                return ".Str"
-        case "bool":
-                return ".Bool"
-       case "[][]i64":
-               return ".List"
-       case "[][]const u8":
-               return ".StrList"
-        default:
-                return ""
-        }
+	switch t {
+	case "i64":
+		return ".Int"
+	case "f64":
+		return ".Float"
+	case "[]const u8":
+		return ".Str"
+	case "bool":
+		return ".Bool"
+	case "[][]i64":
+		return ".List"
+	case "[][]const u8":
+		return ".StrList"
+	default:
+		return ""
+	}
 }
 
 // Program represents a Zig source file with one or more functions.
@@ -797,8 +797,8 @@ func zigTypeFromExpr(e Expr) string {
 		return "[]const u8"
 	case *BoolLit:
 		return "bool"
-       case *NullLit:
-               return "Value"
+	case *NullLit:
+		return "Value"
 	case *FloatLit:
 		return "f64"
 	case *IntLit:
@@ -808,20 +808,20 @@ func zigTypeFromExpr(e Expr) string {
 			return t
 		}
 		return "i64"
-       case *MapLit:
-               if m := e.(*MapLit); m.StructName != "" {
-                       return m.StructName
-               }
-               m := e.(*MapLit)
-               val := m.ValType
-               if val == "" {
-                       val = "i64"
-               }
-               key := m.KeyType
-               if key == "" || key == "[]const u8" {
-                       return fmt.Sprintf("std.StringHashMap(%s)", val)
-               }
-               return fmt.Sprintf("std.AutoHashMap(%s, %s)", key, val)
+	case *MapLit:
+		if m := e.(*MapLit); m.StructName != "" {
+			return m.StructName
+		}
+		m := e.(*MapLit)
+		val := m.ValType
+		if val == "" {
+			val = "i64"
+		}
+		key := m.KeyType
+		if key == "" || key == "[]const u8" {
+			return fmt.Sprintf("std.StringHashMap(%s)", val)
+		}
+		return fmt.Sprintf("std.AutoHashMap(%s, %s)", key, val)
 	case *ListLit:
 		if l := e.(*ListLit); l.ElemType != "" {
 			return "[]" + l.ElemType
@@ -1032,7 +1032,7 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
-       fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
+	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
 		e.Key.emit(w)
@@ -1271,9 +1271,9 @@ func (p *Program) Emit() []byte {
 	}
 	buf.WriteString(header())
 	buf.WriteString("const std = @import(\"std\");\n")
-       if useValue {
-               buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: [][]i64, StrList: [][]const u8, };\n")
-       }
+	if useValue {
+		buf.WriteString("const Value = union(enum) { Null: void, Int: i64, Float: f64, Str: []const u8, Bool: bool, List: [][]i64, StrList: [][]const u8, };\n")
+	}
 	buf.WriteString("\nfn handleError(err: anyerror) noreturn {\n")
 	buf.WriteString("    std.debug.panic(\"{any}\", .{err});\n}\n\n")
 	for _, st := range p.Structs {
@@ -1323,6 +1323,19 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("\nfn _str(v: anytype) []const u8 {\n")
 		buf.WriteString("    if (@TypeOf(v) == f64 or @TypeOf(v) == f32) {\n")
 		buf.WriteString("        return std.fmt.allocPrint(std.heap.page_allocator, \"{d}\", .{v}) catch unreachable;\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    const info = @typeInfo(@TypeOf(v));\n")
+		buf.WriteString("    if (info == .Pointer and info.Pointer.size == .Slice) {\n")
+		buf.WriteString("        var out = std.ArrayList(u8).init(std.heap.page_allocator);\n")
+		buf.WriteString("        defer out.deinit();\n")
+		buf.WriteString("        out.append('[') catch unreachable;\n")
+		buf.WriteString("        for (v, 0..) |e, i| {\n")
+		buf.WriteString("            if (i != 0) { out.append(' ') catch unreachable; }\n")
+		buf.WriteString("            const s = _str(e);\n")
+		buf.WriteString("            out.appendSlice(s) catch unreachable;\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        out.append(']') catch unreachable;\n")
+		buf.WriteString("        return out.toOwnedSlice() catch unreachable;\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    return std.fmt.allocPrint(std.heap.page_allocator, \"{any}\", .{v}) catch unreachable;\n")
 		buf.WriteString("}\n")
@@ -1434,15 +1447,15 @@ func (f *Func) emit(w io.Writer) {
 	if ret == "" {
 		ret = "void"
 	}
-       fmt.Fprintf(w, ") %s {\n", ret)
-       currentReturnType = ret
-       aliasStack = append(aliasStack, f.Aliases)
-       for _, st := range f.Body {
-               st.emit(w, 1)
-       }
-       aliasStack = aliasStack[:len(aliasStack)-1]
-       currentReturnType = ""
-       fmt.Fprintln(w, "}")
+	fmt.Fprintf(w, ") %s {\n", ret)
+	currentReturnType = ret
+	aliasStack = append(aliasStack, f.Aliases)
+	for _, st := range f.Body {
+		st.emit(w, 1)
+	}
+	aliasStack = aliasStack[:len(aliasStack)-1]
+	currentReturnType = ""
+	fmt.Fprintln(w, "}")
 }
 
 func writeIndent(w io.Writer, n int) {
@@ -1545,17 +1558,17 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 				base = base[len("const "):]
 			}
 			fmt.Fprintf(w, "&[_]%s{}", base)
-               } else {
-                       if isIntType(targetType) || strings.HasPrefix(targetType, "f") || targetType == "bool" {
-                               io.WriteString(w, "0")
-                       } else {
-                               io.WriteString(w, "undefined")
-                       }
-               }
-       } else {
-               v.Value.emit(w)
-               if zigTypeFromExpr(v.Value) == "Value" {
-                       io.WriteString(w, valueAccess(targetType))
+		} else {
+			if isIntType(targetType) || strings.HasPrefix(targetType, "f") || targetType == "bool" {
+				io.WriteString(w, "0")
+			} else {
+				io.WriteString(w, "undefined")
+			}
+		}
+	} else {
+		v.Value.emit(w)
+		if zigTypeFromExpr(v.Value) == "Value" {
+			io.WriteString(w, valueAccess(targetType))
 		}
 	}
 	io.WriteString(w, ";")
@@ -1735,22 +1748,22 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 		}
 	}
-       lt := zigTypeFromExpr(b.Left)
-       rt := zigTypeFromExpr(b.Right)
-       if (b.Op == "==" || b.Op == "!=") && lt == "Value" && rt == "Value" {
-               if _, ok := b.Right.(*NullLit); ok {
-                       b.Left.emit(w)
-                       fmt.Fprintf(w, " %s .Null", b.Op)
-                       return
-               }
-               if _, ok := b.Left.(*NullLit); ok {
-                       b.Right.emit(w)
-                       fmt.Fprintf(w, " %s .Null", b.Op)
-                       return
-               }
-       }
-       if lt == "[]const u8" && rt == "[]const u8" {
-               switch b.Op {
+	lt := zigTypeFromExpr(b.Left)
+	rt := zigTypeFromExpr(b.Right)
+	if (b.Op == "==" || b.Op == "!=") && lt == "Value" && rt == "Value" {
+		if _, ok := b.Right.(*NullLit); ok {
+			b.Left.emit(w)
+			fmt.Fprintf(w, " %s .Null", b.Op)
+			return
+		}
+		if _, ok := b.Left.(*NullLit); ok {
+			b.Right.emit(w)
+			fmt.Fprintf(w, " %s .Null", b.Op)
+			return
+		}
+	}
+	if lt == "[]const u8" && rt == "[]const u8" {
+		switch b.Op {
 		case "==", "!=":
 			if b.Op == "==" {
 				io.WriteString(w, "std.mem.eql(u8, ")
@@ -2003,14 +2016,14 @@ func (i *IndexExpr) emit(w io.Writer) {
 func (sli *SliceExpr) emit(w io.Writer) {
 	sli.Target.emit(w)
 	io.WriteString(w, "[")
-       if sli.Start != nil {
-               io.WriteString(w, "@intCast(")
-               sli.Start.emit(w)
-               io.WriteString(w, ")")
-       } else {
-               io.WriteString(w, "0")
-       }
-       io.WriteString(w, "..")
+	if sli.Start != nil {
+		io.WriteString(w, "@intCast(")
+		sli.Start.emit(w)
+		io.WriteString(w, ")")
+	} else {
+		io.WriteString(w, "0")
+	}
+	io.WriteString(w, "..")
 	if sli.End != nil {
 		io.WriteString(w, "@intCast(")
 		sli.End.emit(w)
@@ -2073,11 +2086,11 @@ func (b *BoolLit) emit(w io.Writer) {
 }
 
 func (n *NullLit) emit(w io.Writer) {
-       if useValue {
-               io.WriteString(w, "Value{.Null = {}}");
-       } else {
-               io.WriteString(w, "0")
-       }
+	if useValue {
+		io.WriteString(w, "Value{.Null = {}}")
+	} else {
+		io.WriteString(w, "0")
+	}
 }
 
 func (i *IfStmt) emit(w io.Writer, indent int) {
@@ -2183,16 +2196,16 @@ func (c *ContinueStmt) emit(w io.Writer, indent int) {
 }
 
 func (r *ReturnStmt) emit(w io.Writer, indent int) {
-        writeIndent(w, indent)
-        io.WriteString(w, "return")
-        if r.Value != nil {
-               io.WriteString(w, " ")
-               if list, ok := r.Value.(*ListLit); ok && list.ElemType == "" && strings.HasPrefix(currentReturnType, "[]") {
-                       list.ElemType = currentReturnType[2:]
-               }
-               r.Value.emit(w)
-        }
-        io.WriteString(w, ";\n")
+	writeIndent(w, indent)
+	io.WriteString(w, "return")
+	if r.Value != nil {
+		io.WriteString(w, " ")
+		if list, ok := r.Value.(*ListLit); ok && list.ElemType == "" && strings.HasPrefix(currentReturnType, "[]") {
+			list.ElemType = currentReturnType[2:]
+		}
+		r.Value.emit(w)
+	}
+	io.WriteString(w, ";\n")
 }
 
 func (b *BenchStmt) emit(w io.Writer, indent int) {
@@ -2397,17 +2410,17 @@ func (c *CallExpr) emit(w io.Writer) {
 			if i > 0 {
 				io.WriteString(w, ", ")
 			}
-                       if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
-                               exp := params[i]
-                               if lit, ok := a.(*ListLit); ok && lit.ElemType == "" && exp == "Value" {
-                                       lit.ElemType = "[]i64"
-                               }
-                               at := zigTypeFromExpr(a)
-                               if v, ok := a.(*VarRef); ok {
-                                       if vd, ok2 := varDecls[v.Name]; ok2 && strings.HasPrefix(vd.Type, "[") {
-                                               at = vd.Type
-                                       }
-                               }
+			if params, ok := funcParamTypes[c.Func]; ok && i < len(params) {
+				exp := params[i]
+				if lit, ok := a.(*ListLit); ok && lit.ElemType == "" && exp == "Value" {
+					lit.ElemType = "[]i64"
+				}
+				at := zigTypeFromExpr(a)
+				if v, ok := a.(*VarRef); ok {
+					if vd, ok2 := varDecls[v.Name]; ok2 && strings.HasPrefix(vd.Type, "[") {
+						at = vd.Type
+					}
+				}
 				if exp != at {
 					switch {
 					case at == "Value":
@@ -2904,16 +2917,16 @@ func compilePostfix(pf *parser.PostfixExpr) (Expr, error) {
 				}
 				args[i] = ex
 			}
-                       if fe, ok := expr.(*FieldExpr); ok {
-                               expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
-                               continue
-                       }
-                       if name, ok := exprToString(expr); ok {
-                               expr = &CallExpr{Func: name, Args: args}
-                               continue
-                       }
-                       return nil, fmt.Errorf("unsupported call target")
-               }
+			if fe, ok := expr.(*FieldExpr); ok {
+				expr = &CallExpr{Func: fe.Name, Args: append([]Expr{fe.Target}, args...)}
+				continue
+			}
+			if name, ok := exprToString(expr); ok {
+				expr = &CallExpr{Func: name, Args: args}
+				continue
+			}
+			return nil, fmt.Errorf("unsupported call target")
+		}
 		if op.Field != nil {
 			expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 			continue
@@ -4042,6 +4055,12 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		}
 		vd := &VarDecl{Name: alias, Value: expr}
+		if s.Let.Type != nil {
+			vd.Type = toZigType(s.Let.Type)
+			if funDepth == 0 {
+				varTypes[s.Let.Name] = vd.Type
+			}
+		}
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
 		if lst, ok := expr.(*ListLit); ok {
@@ -4583,45 +4602,45 @@ func compileTypeDecl(td *parser.TypeDecl) error {
 		typeAliases[td.Name] = "std.StringHashMap(i64)"
 		return nil
 	}
-       if len(td.Members) > 0 {
-               fields := []Field{}
-               for _, m := range td.Members {
-                       if m.Field != nil {
-                               fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
-                       } else if m.Method != nil {
-                               fn := m.Method
-                               params := []Param{{Name: "self", Type: td.Name}}
-                               paramTypes := []string{td.Name}
-                               for _, p := range fn.Params {
-                                       ptype := toZigType(p.Type)
-                                       pname := toSnakeCase(p.Name)
-                                       params = append(params, Param{Name: pname, Type: ptype})
-                                       paramTypes = append(paramTypes, ptype)
-                               }
-                               ret := ""
-                               if fn.Return != nil {
-                                       ret = toZigType(fn.Return)
-                               }
-                               body := []Stmt{}
-                               for _, st := range fn.Body {
-                                       s, err := compileStmt(st, nil)
-                                       if err != nil {
-                                               return err
-                                       }
-                                       if s != nil {
-                                               body = append(body, s)
-                                       }
-                               }
-                               f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body, Aliases: map[string]string{}}
-                               funcParamTypes[fn.Name] = paramTypes
-                               varTypes[fn.Name] = fmt.Sprintf("*const fn(%s) %s", strings.Join(paramTypes, ", "), ret)
-                               funcReturns[fn.Name] = ret
-                               extraFuncs = append(extraFuncs, f)
-                       }
-               }
-               structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
-       }
-       return nil
+	if len(td.Members) > 0 {
+		fields := []Field{}
+		for _, m := range td.Members {
+			if m.Field != nil {
+				fields = append(fields, Field{Name: toSnakeCase(m.Field.Name), Type: toZigType(m.Field.Type)})
+			} else if m.Method != nil {
+				fn := m.Method
+				params := []Param{{Name: "self", Type: td.Name}}
+				paramTypes := []string{td.Name}
+				for _, p := range fn.Params {
+					ptype := toZigType(p.Type)
+					pname := toSnakeCase(p.Name)
+					params = append(params, Param{Name: pname, Type: ptype})
+					paramTypes = append(paramTypes, ptype)
+				}
+				ret := ""
+				if fn.Return != nil {
+					ret = toZigType(fn.Return)
+				}
+				body := []Stmt{}
+				for _, st := range fn.Body {
+					s, err := compileStmt(st, nil)
+					if err != nil {
+						return err
+					}
+					if s != nil {
+						body = append(body, s)
+					}
+				}
+				f := &Func{Name: fn.Name, Params: params, ReturnType: ret, Body: body, Aliases: map[string]string{}}
+				funcParamTypes[fn.Name] = paramTypes
+				varTypes[fn.Name] = fmt.Sprintf("*const fn(%s) %s", strings.Join(paramTypes, ", "), ret)
+				funcReturns[fn.Name] = ret
+				extraFuncs = append(extraFuncs, f)
+			}
+		}
+		structDefs[td.Name] = &StructDef{Name: td.Name, Fields: fields}
+	}
+	return nil
 }
 
 func collectVarInfo(p *Program) (map[string]int, map[string]bool) {
