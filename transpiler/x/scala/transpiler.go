@@ -533,6 +533,13 @@ func (s *VarStmt) emit(w io.Writer) {
 		fmt.Fprintf(w, ": %s", typ)
 	}
 	if s.Value != nil {
+		if ll, ok := s.Value.(*ListLit); ok && len(ll.Elems) == 0 && typ != "" {
+			if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
+				elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
+				fmt.Fprintf(w, " = ArrayBuffer[%s]()", elem)
+				return
+			}
+		}
 		fmt.Fprint(w, " = ")
 		s.Value.emit(w)
 	} else if typ != "" {
@@ -3416,14 +3423,24 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 				if elemTyp != "" {
 					if _, ok := args[1].(*ListLit); ok {
 						args[1] = &CastExpr{Value: args[1], Type: elemTyp}
+					} else if elemTyp == "BigInt" {
+						switch v := args[1].(type) {
+						case *IntLit:
+							args[1] = &CastExpr{Value: v, Type: "BigInt"}
+						case *UnaryExpr:
+							if _, ok := v.Expr.(*IntLit); ok {
+								args[1] = &CastExpr{Value: v, Type: "BigInt"}
+							}
+						default:
+							et := inferTypeWithEnv(args[1], env)
+							if et == "" || et == "Any" || et != elemTyp {
+								args[1] = &CastExpr{Value: args[1], Type: elemTyp}
+							}
+						}
 					} else {
 						et := inferTypeWithEnv(args[1], env)
 						if et == "" || et == "Any" || et != elemTyp {
 							args[1] = &CastExpr{Value: args[1], Type: elemTyp}
-						} else if elemTyp == "BigInt" {
-							if _, ok := args[1].(*IntLit); ok {
-								args[1] = &CastExpr{Value: args[1], Type: "BigInt"}
-							}
 						}
 					}
 				}
@@ -5181,7 +5198,11 @@ func defaultExpr(typ string) Expr {
 		return &StringLit{Value: ""}
 	case typ == "Boolean":
 		return &BoolLit{Value: false}
-	case strings.HasPrefix(typ, "ArrayBuffer"):
+	case strings.Contains(typ, "ArrayBuffer"):
+		if idx := strings.Index(typ, "ArrayBuffer["); idx >= 0 {
+			elem := strings.TrimSuffix(typ[idx+len("ArrayBuffer["):], "]")
+			return &CallExpr{Fn: &Name{Name: fmt.Sprintf("ArrayBuffer[%s]", elem)}, Args: nil}
+		}
 		return &CallExpr{Fn: &Name{Name: "ArrayBuffer"}, Args: nil}
 	case strings.HasPrefix(typ, "Map"):
 		return &CallExpr{Fn: &Name{Name: "Map"}, Args: nil}

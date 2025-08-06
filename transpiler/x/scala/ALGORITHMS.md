@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 185/1077
-Last updated: 2025-08-06 22:07 +0700
+Completed programs: 189/1077
+Last updated: 2025-08-06 22:39 +0700
 
 Checklist:
 
@@ -207,10 +207,10 @@ Checklist:
 | 198 | data_structures/binary_tree/symmetric_tree | ✓ | 6µs | 8.7 MB |
 | 199 | data_structures/binary_tree/treap | error |  |  |
 | 200 | data_structures/binary_tree/wavelet_tree | error |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 3µs | 8.7 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 4µs | 8.7 MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 22µs | 8.8 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 8µs | 8.7 MB |
 | 205 | data_structures/hashing/hash_map |   |  |  |
 | 206 | data_structures/hashing/hash_table |   |  |  |
 | 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
