@@ -48,6 +48,8 @@ var usesSubprocess bool
 var useFetch bool
 var fetchStructs map[string]bool
 var useMD5 bool
+var useExists bool
+var useAnyVec bool
 var inStr bool
 var reserved = map[string]bool{
 	"this":   true,
@@ -72,6 +74,7 @@ var reserved = map[string]bool{
 	"rand":   true,
 	"random": true,
 	"time":   true,
+	"delete": true,
 }
 var currentReturnType string
 var inReturn bool
@@ -165,6 +168,8 @@ type Program struct {
 	UseFetch       bool
 	FetchStructs   map[string]bool
 	UseMD5         bool
+	UseExists      bool
+	UseAnyVec      bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -677,6 +682,31 @@ func (p *Program) write(w io.Writer) {
 	}
 	fmt.Fprintln(w)
 	fmt.Fprintln(w)
+	if p.UseExists {
+		fmt.Fprintln(w, "template<typename T>")
+		fmt.Fprintln(w, "static bool _exists(const T& v) {")
+		fmt.Fprintln(w, "    if constexpr (requires { v.empty(); }) return !v.empty();")
+		fmt.Fprintln(w, "    else return false;")
+		fmt.Fprintln(w, "}")
+		fmt.Fprintln(w, "static bool _exists(const std::any& v) {")
+		fmt.Fprintln(w, "    if (v.type() == typeid(std::vector<std::any>)) return !_exists(std::any_cast<const std::vector<std::any>&>(v));")
+		fmt.Fprintln(w, "    if (v.type() == typeid(std::vector<int64_t>)) return !_exists(std::any_cast<const std::vector<int64_t>&>(v));")
+		fmt.Fprintln(w, "    if (v.type() == typeid(std::string)) return !_exists(std::any_cast<const std::string&>(v));")
+		fmt.Fprintln(w, "    return false;")
+		fmt.Fprintln(w, "}")
+	}
+	if p.UseAnyVec {
+		fmt.Fprintln(w, "static std::vector<std::any> any_to_vec_any(const std::any& v) {")
+		fmt.Fprintln(w, "    if (v.type() == typeid(std::vector<std::any>)) return std::any_cast<std::vector<std::any>>(v);")
+		fmt.Fprintln(w, "    if (v.type() == typeid(std::vector<int64_t>)) {")
+		fmt.Fprintln(w, "        const auto& src = std::any_cast<const std::vector<int64_t>&>(v);")
+		fmt.Fprintln(w, "        std::vector<std::any> out; out.reserve(src.size());")
+		fmt.Fprintln(w, "        for (auto &x : src) out.push_back(std::any(x));")
+		fmt.Fprintln(w, "        return out;")
+		fmt.Fprintln(w, "    }")
+		fmt.Fprintln(w, "    return {};")
+		fmt.Fprintln(w, "}")
+	}
 	if p.UseNow {
 		fmt.Fprintln(w, "static int _now() {")
 		fmt.Fprintln(w, "    static long long seed = 0;")
@@ -1959,9 +1989,16 @@ func (c *CastExpr) emit(w io.Writer) {
 		if currentProgram != nil {
 			currentProgram.addInclude("<any>")
 		}
-		fmt.Fprintf(w, "std::any_cast<%s>(", c.Type)
-		c.Value.emit(w)
-		io.WriteString(w, ")")
+		if c.Type == "std::vector<std::any>" {
+			useAnyVec = true
+			io.WriteString(w, "any_to_vec_any(")
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		} else {
+			fmt.Fprintf(w, "std::any_cast<%s>(", c.Type)
+			c.Value.emit(w)
+			io.WriteString(w, ")")
+		}
 		return
 	}
 	if (strings.HasPrefix(valType, "std::unique_ptr<") || strings.HasPrefix(valType, "std::shared_ptr<")) && strings.HasSuffix(c.Type, "*") {
@@ -2566,12 +2603,15 @@ func (sc *SortComp) emit(w io.Writer) {
 }
 
 func (e *ExistsExpr) emit(w io.Writer) {
-	if currentProgram != nil {
-		currentProgram.addInclude("<vector>")
+	if exprType(e.List) == "std::any" {
+		io.WriteString(w, "([&]{ const std::any& __v = ")
+		e.List.emit(w)
+		io.WriteString(w, "; return __v.type() == typeid(std::vector<std::any>) || __v.type() == typeid(std::vector<int64_t>); }())")
+	} else {
+		io.WriteString(w, "_exists(")
+		e.List.emit(w)
+		io.WriteString(w, ")")
 	}
-	io.WriteString(w, "(!")
-	e.List.emit(w)
-	io.WriteString(w, ".empty())")
 }
 
 func (b *BinaryExpr) emit(w io.Writer) {
@@ -3463,6 +3503,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	useJSON = false
 	useBigInt = false
 	useBigRat = false
+	useExists = false
+	useAnyVec = false
 	cp := &Program{Includes: []string{"<iostream>", "<string>"}, ListTypes: map[string]string{}, GlobalTypes: map[string]string{}}
 	currentProgram = cp
 	currentEnv = env
@@ -3951,6 +3993,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseFetch = useFetch
 	cp.FetchStructs = fetchStructs
 	cp.UseMD5 = useMD5
+	cp.UseExists = useExists
+	cp.UseAnyVec = useAnyVec
 	hasMain := false
 	for _, fn := range cp.Functions {
 		if fn.Name == "main" {
@@ -4865,6 +4909,9 @@ func convertPostfix(p *parser.PostfixExpr) (Expr, error) {
 		case op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Generic != nil:
 			typ := cppType(typeRefString(op.Cast.Type))
 			expr = &CastExpr{Value: expr, Type: typ}
+			if typ == "std::vector<std::any>" {
+				useAnyVec = true
+			}
 		default:
 			return nil, fmt.Errorf("unsupported postfix")
 		}
@@ -5369,6 +5416,7 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				if err != nil {
 					return nil, err
 				}
+				useExists = true
 				return &ExistsExpr{List: arg}, nil
 			}
 		case "int":

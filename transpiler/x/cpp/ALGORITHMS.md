@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 142/1077
-Last updated: 2025-08-06 22:01 +0700
+Completed programs: 144/1077
+Last updated: 2025-08-06 22:53 +0700
 
 Checklist:
 
@@ -161,7 +161,7 @@ Checklist:
 | 152 | data_compression/burrows_wheeler | ✓ | 187.0µs | 3.59MB |
 | 153 | data_compression/huffman | ✓ | 344.0µs | 3.54MB |
 | 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 94.0µs | 3.58MB |
 | 156 | data_compression/lz77 |   |  |  |
 | 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
 | 158 | data_compression/run_length_encoding |   |  |  |
@@ -174,7 +174,7 @@ Checklist:
 | 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
 | 166 | data_structures/arrays/permutations |   |  |  |
 | 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
+| 168 | data_structures/arrays/product_sum | ✓ | 126.0µs | 3.65MB |
 | 169 | data_structures/arrays/sparse_table |   |  |  |
 | 170 | data_structures/arrays/sudoku_solver |   |  |  |
 | 171 | data_structures/binary_tree/avl_tree |   |  |  |
