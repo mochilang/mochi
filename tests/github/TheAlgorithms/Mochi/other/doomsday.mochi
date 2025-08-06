@@ -1,0 +1,56 @@
+/*
+Doomsday Algorithm
+------------------
+Given a Gregorian date (year, month, day), the Doomsday algorithm determines
+its day of the week.  For each century a specific "anchor" day is computed.
+Using the year's last two digits, we derive that year's doomsday.  Fixed
+reference days for each month (different on leap years) allow calculating the
+day of the week by simple modular arithmetic.
+
+Steps:
+1. Century anchor: (5 * (century mod 4) + 2) mod 7.
+2. Year doomsday: (year//12 + year%12 + (year%12)//4 + century_anchor) mod 7.
+3. Month anchor: precomputed tables for leap and common years.
+4. Weekday: (doomsday + day - month_anchor) mod 7.
+
+The algorithm runs in constant time and uses only Mochi features without FFI.
+*/
+
+let DOOMSDAY_LEAP: list<int> = [4, 1, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5]
+let DOOMSDAY_NOT_LEAP: list<int> = [3, 7, 7, 4, 2, 6, 4, 1, 5, 3, 7, 5]
+let WEEK_DAY_NAMES: map<int, string> = {
+  0: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+}
+
+fun get_week_day(year: int, month: int, day: int): string {
+  if year < 100 { panic("year should be in YYYY format") }
+  if month < 1 || month > 12 { panic("month should be between 1 to 12") }
+  if day < 1 || day > 31 { panic("day should be between 1 to 31") }
+
+  let century = year / 100
+  let century_anchor = (5 * (century % 4) + 2) % 7
+  let centurian = year % 100
+  let centurian_m = centurian % 12
+  let dooms_day = ((centurian / 12) + centurian_m + (centurian_m / 4) + century_anchor) % 7
+  let day_anchor = if year % 4 != 0 || (centurian == 0 && year % 400 != 0) {
+    DOOMSDAY_NOT_LEAP[month - 1]
+  } else {
+    DOOMSDAY_LEAP[month - 1]
+  }
+  var week_day = (dooms_day + day - day_anchor) % 7
+  if week_day < 0 { week_day = week_day + 7 }
+  return WEEK_DAY_NAMES[week_day]
+}
+
+print(get_week_day(2020, 10, 24))
+print(get_week_day(2017, 10, 24))
+print(get_week_day(2019, 5, 3))
+print(get_week_day(1970, 9, 16))
+print(get_week_day(1870, 8, 13))
+print(get_week_day(2040, 3, 14))
