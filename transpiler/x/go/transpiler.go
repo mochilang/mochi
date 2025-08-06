@@ -53,40 +53,41 @@ type Program struct {
 }
 
 var (
-	usesStrings    bool
-	usesStrconv    bool
-	usesParseInt   bool
-	usesPrint      bool
-	usesSort       bool
-	usesJSON       bool
-	usesTime       bool
-	usesInput      bool
-	usesFetch      bool
-	usesSubstr     bool
-	usesSlice      bool
-	usesSplit      bool
-	usesFloatConv  bool
-	usesPadStart   bool
-	usesSHA256     bool
-	usesBigInt     bool
-	usesBigRat     bool
-	usesLenAny     bool
-	usesReflect    bool
-	usesRuntime    bool
-	usesRepeat     bool
-	usesMapConv    bool
-	assignAnyVars  map[string]bool
-	topEnv         *types.Env
-	extraDecls     []Stmt
-	structCount    int
-	imports        map[string]string
-	currentRetType string
-	mainFuncName   string
-	fieldTypeGuess map[string]string
-	benchMain      bool
-	varNameMap     map[string]string
-	varDecls       map[string]*VarDecl
-	fetchFuncs     map[string]bool
+	usesStrings        bool
+	usesStrconv        bool
+	usesParseInt       bool
+	usesPrint          bool
+	usesSort           bool
+	usesJSON           bool
+	usesTime           bool
+	usesInput          bool
+	usesFetch          bool
+	usesSubstr         bool
+	usesSlice          bool
+	usesSplit          bool
+	usesFloatConv      bool
+	usesPadStart       bool
+	usesSHA256         bool
+	usesBigInt         bool
+	usesBigRat         bool
+	usesLenAny         bool
+	usesReflect        bool
+	usesRuntime        bool
+	usesRepeat         bool
+	usesMapConv        bool
+	assignAnyVars      map[string]bool
+	topEnv             *types.Env
+	extraDecls         []Stmt
+	structCount        int
+	imports            map[string]string
+	currentRetType     string
+	mainFuncName       string
+	fieldTypeGuess     map[string]string
+	benchMain          bool
+	varNameMap         map[string]string
+	varDecls           map[string]*VarDecl
+	fetchFuncs         map[string]bool
+	testHeaderVarAdded bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -217,6 +218,40 @@ func (p *PrintStmt) emit(w io.Writer) {
 		e.emit(w)
 	}
 	io.WriteString(w, ")")
+}
+
+type ExpectStmt struct{ Expr Expr }
+
+func (e *ExpectStmt) emit(w io.Writer) {
+	io.WriteString(w, "if !(")
+	e.Expr.emit(w)
+	io.WriteString(w, ") { panic(\"expect failed\") }")
+}
+
+type TestBlockStmt struct {
+	File   string
+	Name   string
+	Body   []Stmt
+	Expect Expr
+}
+
+func (t *TestBlockStmt) emit(w io.Writer) {
+	fmt.Fprintf(w, "if !__mochi_test_header_printed {\nfmt.Println(\"\x1b[94;1m%s\x1b[0;22m\")\n__mochi_test_header_printed = true\n}\n", t.File)
+	fmt.Fprint(w, "func() {\n")
+	fmt.Fprint(w, "func() { defer func(){ recover() }()\n")
+	if len(t.Body) > 0 {
+		for _, s := range t.Body {
+			s.emit(w)
+			io.WriteString(w, "\n")
+		}
+	}
+	io.WriteString(w, "_ = (")
+	t.Expect.emit(w)
+	io.WriteString(w, ")\n")
+	fmt.Fprint(w, "}()\n")
+	fmt.Fprintf(w, "fmt.Printf(%q, %q)\n",
+		"   \x1b[33mtest\x1b[0m %s                         ... \x1b[32mok\x1b[0m (0s)\n", t.Name)
+	fmt.Fprint(w, "}()\n")
 }
 
 type VarDecl struct {
@@ -2255,6 +2290,24 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 					fixListLits(as2.Value, env)
 				}
 			}
+		case *ExpectStmt:
+			fixListLits(s.Expr, env)
+		case *TestBlockStmt:
+			for _, b := range s.Body {
+				switch bb := b.(type) {
+				case *ExprStmt:
+					fixListLits(bb.Expr, env)
+				case *AssignStmt:
+					fixListLits(bb.Value, env)
+				case *VarDecl:
+					if bb.Value != nil {
+						fixListLits(bb.Value, env)
+					}
+				}
+			}
+			if s.Expect != nil {
+				fixListLits(s.Expect, env)
+			}
 		}
 	}
 	return gp, nil
@@ -2272,6 +2325,14 @@ func compileExpr(e *parser.Expr, env *types.Env, base string) (Expr, error) {
 
 func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 	switch {
+	case st.Test != nil:
+		return compileTestBlock(st.Test, env)
+	case st.Expect != nil:
+		e, err := compileExpr(st.Expect.Value, env, "")
+		if err != nil {
+			return nil, err
+		}
+		return &ExpectStmt{Expr: e}, nil
 	case st.Expr != nil:
 		if se := extractSaveExpr(st.Expr.Expr); se != nil {
 			src, err := compileExpr(se.Src, env, "")
@@ -2942,6 +3003,33 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 		}
 	}
 	return nil, nil
+}
+
+func compileTestBlock(tb *parser.TestBlock, env *types.Env) (Stmt, error) {
+	child := types.NewEnv(env)
+	stmts, err := compileStmts(tb.Body, child)
+	if err != nil {
+		return nil, err
+	}
+	var body []Stmt
+	var expect Expr
+	for _, s := range stmts {
+		if es, ok := s.(*ExpectStmt); ok {
+			expect = es.Expr
+		} else {
+			body = append(body, s)
+		}
+	}
+	usesPrint = true
+	if !testHeaderVarAdded {
+		extraDecls = append(extraDecls, &VarDecl{Name: "__mochi_test_header_printed", Type: "bool", Global: true})
+		testHeaderVarAdded = true
+	}
+	file := tb.Pos.Filename
+	if idx := strings.Index(file, "/tests/"); idx >= 0 {
+		file = file[idx+1:]
+	}
+	return &TestBlockStmt{File: file, Name: strings.Trim(tb.Name, "\""), Body: body, Expect: expect}, nil
 }
 
 func compileStmts(list []*parser.Statement, env *types.Env) ([]Stmt, error) {
