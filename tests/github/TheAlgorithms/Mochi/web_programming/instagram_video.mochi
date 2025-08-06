@@ -1,0 +1,24 @@
+/*
+Problem: Download an Instagram video via the Downloadgram service.
+
+The reference Python implementation performs two HTTP requests:
+1. Combine the service endpoint with the Instagram post URL to create a request URL.
+2. Fetch that URL to obtain the direct video link, then download the video bytes
+   and save them to disk with a timestamped file name.
+
+This Mochi version focuses on the core URL construction step and prints the
+resulting download link. Network access and file operations are omitted so the
+program can run inside the VM without external dependencies.
+*/
+
+let base_url: string = "https://downloadgram.net/wp-json/wppress/video-downloader/video?url="
+
+
+fun download_video(url: string): string {
+  let request_url: string = base_url + url
+  return request_url
+}
+
+let sample_url: string = "https://www.instagram.com/p/Example/"
+let link: string = download_video(sample_url)
+print("Download link:", link)
