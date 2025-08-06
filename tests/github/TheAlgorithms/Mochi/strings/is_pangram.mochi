@@ -1,0 +1,80 @@
+/*
+Check if a string is a pangram, meaning it contains every letter of the
+English alphabet at least once. Three approaches are implemented:
+
+1. is_pangram collects unique letters in a list and checks its size.
+2. is_pangram_faster tracks presence of each alphabet letter with a boolean list.
+3. is_pangram_fastest verifies that each letter from 'a' to 'z' occurs in the string.
+
+All functions are written in pure Mochi without using the `any` type or FFI
+so they can run on the runtime/vm.
+*/
+
+fun is_pangram(input_str: string): bool {
+  var letters: list<string> = []
+  var i = 0
+  while i < len(input_str) {
+    let c = lower(input_str[i])
+    let is_new = !(c in letters)
+    if c != " " && "a" <= c && c <= "z" && is_new {
+      letters = append(letters, c)
+    }
+    i = i + 1
+  }
+  return len(letters) == 26
+}
+
+fun is_pangram_faster(input_str: string): bool {
+  let alphabet = "abcdefghijklmnopqrstuvwxyz"
+  var flag: list<bool> = []
+  var i = 0
+  while i < 26 {
+    flag = append(flag, false)
+    i = i + 1
+  }
+  var j = 0
+  while j < len(input_str) {
+    let c = lower(input_str[j])
+    var k = 0
+    while k < 26 {
+      if alphabet[k] == c {
+        flag[k] = true
+        break
+      }
+      k = k + 1
+    }
+    j = j + 1
+  }
+  var t = 0
+  while t < 26 {
+    if !flag[t] {
+      return false
+    }
+    t = t + 1
+  }
+  return true
+}
+
+fun is_pangram_fastest(input_str: string): bool {
+  let s = lower(input_str)
+  let alphabet = "abcdefghijklmnopqrstuvwxyz"
+  var i = 0
+  while i < len(alphabet) {
+    let letter = alphabet[i]
+    if !(letter in s) {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+let s1 = "The quick brown fox jumps over the lazy dog"
+let s2 = "My name is Unknown"
+
+print(str(is_pangram(s1)))
+print(str(is_pangram(s2)))
+print(str(is_pangram_faster(s1)))
+print(str(is_pangram_faster(s2)))
+print(str(is_pangram_fastest(s1)))
+print(str(is_pangram_fastest(s2)))
