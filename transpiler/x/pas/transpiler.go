@@ -1836,110 +1836,50 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 					}
 				}
 				pr.Vars = append(pr.Vars, vd)
-			case st.Assign != nil:
-				name := sanitize(st.Assign.Name)
-				var ex Expr
-				var err error
-				if isEmptyMapLiteral(st.Assign.Value) {
-					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-						parts := strings.TrimPrefix(t, "specialize TFPGMap<")
-						parts = strings.TrimSuffix(parts, ">")
-						kv := strings.Split(parts, ",")
-						if len(kv) == 2 {
-							keyT := strings.TrimSpace(kv[0])
-							valT := strings.TrimSpace(kv[1])
-							ex = &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", keyT, valT)}
-						}
-					}
-				}
-				if ex == nil {
-					prevMap := expectedMapType
-					expectedMapType = varTypes[name]
-					ex, err = convertExpr(env, st.Assign.Value)
-					expectedMapType = prevMap
-					if err != nil {
-						return nil, err
-					}
-				}
-				if idxExpr, ok := ex.(*IndexExpr); ok && strings.HasPrefix(inferType(idxExpr.Target), "specialize TFPGMap") {
-					idxVar := fmt.Sprintf("%s_idx", name)
-					varTypes[idxVar] = "integer"
-					setVarType(idxVar, "integer")
-					mapName := exprToVarRef(idxExpr.Target)
-					varTypes[name] = "array of integer"
-					setVarType(name, "array of integer")
-					idxAssign := &AssignStmt{Name: idxVar, Expr: &CallExpr{Name: mapName + ".IndexOf", Args: []Expr{idxExpr.Index}}}
-					cond := &BinaryExpr{Op: "<>", Left: &VarRef{Name: idxVar}, Right: &IntLit{Value: -1}, Bool: true}
-					sel := &SelectorExpr{Root: mapName, Tail: []string{"Data"}}
-					thenAssign := &AssignStmt{Name: name, Expr: &IndexExpr{Target: sel, Index: &VarRef{Name: idxVar}}}
-					elseAssign := &AssignStmt{Name: name, Expr: zeroValue(varTypes[name])}
-					pr.Stmts = append(pr.Stmts, idxAssign, &IfStmt{Cond: cond, Then: []Stmt{thenAssign}, Else: []Stmt{elseAssign}})
-					continue
-				}
-				if len(st.Assign.Field) > 0 {
-					target := &SelectorExpr{Root: st.Assign.Name}
-					for _, f := range st.Assign.Field {
-						target.Tail = append(target.Tail, f.Name)
-					}
-					pr.Stmts = append(pr.Stmts, &SetStmt{Target: target, Expr: ex})
-					break
-				}
-				if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-					idx, err := convertExpr(env, st.Assign.Index[0].Start)
-					if err != nil {
-						return nil, err
-					}
-					if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-						pr.Stmts = append(pr.Stmts, &MapAssignStmt{Name: name, Key: idx, Expr: ex, Type: inferType(ex)})
-					} else {
-						pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
-					}
-					break
-				}
-				if len(st.Assign.Index) == 2 &&
-					st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
-					st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
-					len(st.Assign.Field) == 0 {
-					idx1, err := convertExpr(env, st.Assign.Index[0].Start)
-					if err != nil {
-						return nil, err
-					}
-					idx2, err := convertExpr(env, st.Assign.Index[1].Start)
-					if err != nil {
-						return nil, err
-					}
-					pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
-					break
-				}
-				existing, ok := varTypes[name]
-				t := inferType(ex)
-				if t == "" {
-					if tt := types.ExprType(st.Assign.Value, env); tt != nil {
-						t = pasTypeFromType(tt)
-					}
-				}
-				if t != "" && (!ok || existing == "" || existing == "array of integer") {
-					varTypes[name] = t
-					setVarType(name, t)
-				}
-				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
-					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
-						et := inferType(list.Elems[0])
-						if et == "" {
-							_ = currProg.addArrayAlias("Variant")
-							alias := currProg.addArrayAlias("VariantArray")
-							t := "array of " + alias
-							varTypes[name] = t
-							setVarType(name, t)
-						} else {
-							t := "array of " + et
-							varTypes[name] = t
-							setVarType(name, t)
-						}
-					}
-				}
-				pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: ex})
-				continue
+                       case st.Assign != nil:
+                               val, err := convertExpr(env, st.Assign.Value)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               target, err := convertPostfix(env, st.Assign.Target)
+                               if err != nil {
+                                       return nil, err
+                               }
+                               switch t := target.(type) {
+                               case *VarRef:
+                                       name := t.Name
+                                       existing, ok := varTypes[name]
+                                       typ := inferType(val)
+                                       if typ == "" {
+                                               if tt := types.ExprType(st.Assign.Value, env); tt != nil {
+                                                       typ = pasTypeFromType(tt)
+                                               }
+                                       }
+                                       if typ != "" && (!ok || existing == "" || existing == "array of integer") {
+                                               varTypes[name] = typ
+                                               setVarType(name, typ)
+                                       }
+                                       pr.Stmts = append(pr.Stmts, &AssignStmt{Name: name, Expr: val})
+                               case *SelectorExpr:
+                                       pr.Stmts = append(pr.Stmts, &SetStmt{Target: t, Expr: val})
+                               case *IndexExpr:
+                                       if inner, ok := t.Target.(*VarRef); ok {
+                                               name := sanitize(inner.Name)
+                                               pr.Stmts = append(pr.Stmts, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+                                       } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+                                               if base, ok := innerIdx.Target.(*VarRef); ok {
+                                                       name := sanitize(base.Name)
+                                                       pr.Stmts = append(pr.Stmts, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+                                               } else {
+                                                       return nil, fmt.Errorf("unsupported assignment target")
+                                               }
+                                       } else {
+                                               return nil, fmt.Errorf("unsupported assignment target")
+                                       }
+                               default:
+                                       return nil, fmt.Errorf("unsupported assignment target")
+                               }
+                               continue
 			case st.For != nil:
 				start, err := convertExpr(env, st.For.Source)
 				if err != nil {
@@ -2230,102 +2170,44 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 	var out []Stmt
 	for _, st := range body {
 		switch {
-		case st.Assign != nil:
-			name := sanitize(st.Assign.Name)
-			var ex Expr
-			var err error
-			if isEmptyMapLiteral(st.Assign.Value) {
-				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-					parts := strings.TrimPrefix(t, "specialize TFPGMap<")
-					parts = strings.TrimSuffix(parts, ">")
-					kv := strings.Split(parts, ",")
-					if len(kv) == 2 {
-						keyT := strings.TrimSpace(kv[0])
-						valT := strings.TrimSpace(kv[1])
-						ex = &CallExpr{Name: fmt.Sprintf("specialize TFPGMap<%s, %s>.Create", keyT, valT)}
-					}
-				}
-			}
-			if ex == nil {
-				ex, err = convertExpr(env, st.Assign.Value)
-				if err != nil {
-					return nil, err
-				}
-			}
-			if len(st.Assign.Field) > 0 {
-				target := &SelectorExpr{Root: name}
-				for _, f := range st.Assign.Field {
-					target.Tail = append(target.Tail, f.Name)
-				}
-				out = append(out, &SetStmt{Target: target, Expr: ex})
-				break
-			}
-			if len(st.Assign.Index) == 1 && st.Assign.Index[0].Colon == nil && st.Assign.Index[0].Colon2 == nil && len(st.Assign.Field) == 0 {
-				idx, err := convertExpr(env, st.Assign.Index[0].Start)
-				if err != nil {
-					return nil, err
-				}
-				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") {
-					out = append(out, &MapAssignStmt{Name: name, Key: idx, Expr: ex, Type: inferType(ex)})
-				} else {
-					out = append(out, &IndexAssignStmt{Name: name, Index: idx, Expr: ex})
-				}
-				break
-			}
-			if len(st.Assign.Index) == 2 &&
-				st.Assign.Index[0].Colon == nil && st.Assign.Index[1].Colon == nil &&
-				st.Assign.Index[0].Colon2 == nil && st.Assign.Index[1].Colon2 == nil &&
-				len(st.Assign.Field) == 0 {
-				idx1, err := convertExpr(env, st.Assign.Index[0].Start)
-				if err != nil {
-					return nil, err
-				}
-				idx2, err := convertExpr(env, st.Assign.Index[1].Start)
-				if err != nil {
-					return nil, err
-				}
-				out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: idx1, Index2: idx2, Expr: ex})
-				break
-			}
-			if len(st.Assign.Index) > 0 && len(st.Assign.Field) == 0 {
-				if t, ok := varTypes[name]; ok && strings.HasPrefix(t, "specialize TFPGMap") && len(st.Assign.Index) > 1 {
-					idx0, err := convertExpr(env, st.Assign.Index[0].Start)
-					if err != nil {
-						return nil, err
-					}
-					elemType := inferType(ex)
-					arrType := elemType
-					for j := len(st.Assign.Index) - 1; j > 0; j-- {
-						arrType = currProg.addArrayAlias(arrType)
-					}
-					target := Expr(&CastExpr{Expr: &IndexExpr{Target: &VarRef{Name: name}, Index: idx0}, Type: arrType})
-					for _, idx := range st.Assign.Index[1:] {
-						idxExpr, err := convertExpr(env, idx.Start)
-						if err != nil {
-							return nil, err
-						}
-						target = &IndexExpr{Target: target, Index: idxExpr}
-					}
-					out = append(out, &SetStmt{Target: target, Expr: ex})
-					break
-				}
-			}
-			if _, ok := varTypes[name]; !ok {
-				if t := inferType(ex); t != "" {
-					varTypes[name] = t
-					setVarType(name, t)
-				}
-				if call, ok := ex.(*CallExpr); ok && call.Name == "concat" && len(call.Args) == 2 {
-					if list, ok := call.Args[1].(*ListLit); ok && len(list.Elems) == 1 {
-						if et := inferType(list.Elems[0]); et != "" {
-							t := "array of " + et
-							varTypes[name] = t
-							setVarType(name, t)
-						}
-					}
-				}
-			}
-			out = append(out, &AssignStmt{Name: name, Expr: ex})
+               case st.Assign != nil:
+                       val, err := convertExpr(env, st.Assign.Value)
+                       if err != nil {
+                               return nil, err
+                       }
+                       target, err := convertPostfix(env, st.Assign.Target)
+                       if err != nil {
+                               return nil, err
+                       }
+                       switch t := target.(type) {
+                       case *VarRef:
+                               name := t.Name
+                               if _, ok := varTypes[name]; !ok {
+                                       if typ := inferType(val); typ != "" {
+                                               varTypes[name] = typ
+                                               setVarType(name, typ)
+                                       }
+                               }
+                               out = append(out, &AssignStmt{Name: name, Expr: val})
+                       case *SelectorExpr:
+                               out = append(out, &SetStmt{Target: t, Expr: val})
+                       case *IndexExpr:
+                               if inner, ok := t.Target.(*VarRef); ok {
+                                       name := sanitize(inner.Name)
+                                       out = append(out, &IndexAssignStmt{Name: name, Index: t.Index, Expr: val})
+                               } else if innerIdx, ok := t.Target.(*IndexExpr); ok {
+                                       if base, ok := innerIdx.Target.(*VarRef); ok {
+                                               name := sanitize(base.Name)
+                                               out = append(out, &DoubleIndexAssignStmt{Name: name, Index1: innerIdx.Index, Index2: t.Index, Expr: val})
+                                       } else {
+                                               return nil, fmt.Errorf("unsupported assignment target")
+                                       }
+                               } else {
+                                       return nil, fmt.Errorf("unsupported assignment target")
+                               }
+                       default:
+                               return nil, fmt.Errorf("unsupported assignment target")
+                       }
 		case st.Let != nil:
 			name := declareName(st.Let.Name)
 			vd := VarDecl{Name: name}
@@ -2844,29 +2726,29 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	if len(e.Binary.Right) == 0 {
 		return left, nil
 	}
-	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
-		right, err := convertPostfix(env, e.Binary.Right[0].Right)
-		if err != nil {
-			return nil, err
-		}
+       if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "+" {
+               right, err := convertUnary(env, e.Binary.Right[0].Right)
+               if err != nil {
+                       return nil, err
+               }
 		lt := inferType(left)
 		rt := inferType(right)
 		if strings.HasPrefix(lt, "array of ") && strings.HasPrefix(rt, "array of ") {
 			return &CallExpr{Name: "concat", Args: []Expr{left, right}}, nil
 		}
 	}
-	if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
-		right, err := convertPostfix(env, e.Binary.Right[0].Right)
-		if err != nil {
-			return nil, err
-		}
-		tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[0].Right}}}
-		t := types.ExprType(tmp, env)
-		if _, ok := t.(types.ListType); ok {
-			currProg.NeedContains = true
-			return &ContainsExpr{Collection: right, Value: left, Kind: "list"}, nil
-		}
-	}
+       if len(e.Binary.Right) == 1 && e.Binary.Right[0].Op == "in" {
+               right, err := convertUnary(env, e.Binary.Right[0].Right)
+               if err != nil {
+                       return nil, err
+               }
+               tmp := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Right[0].Right}}
+               t := types.ExprType(tmp, env)
+               if _, ok := t.(types.ListType); ok {
+                       currProg.NeedContains = true
+                       return &ContainsExpr{Collection: right, Value: left, Kind: "list"}, nil
+               }
+       }
 
 	prec := func(op string) int {
 		switch op {
@@ -2962,10 +2844,10 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 	}
 
 	for _, op := range e.Binary.Right {
-		right, err := convertPostfix(env, op.Right)
-		if err != nil {
-			return nil, err
-		}
+               right, err := convertUnary(env, op.Right)
+               if err != nil {
+                       return nil, err
+               }
 		for len(ops) > 0 && prec(op.Op) <= prec(ops[len(ops)-1]) {
 			if err := build(); err != nil {
 				return nil, err
