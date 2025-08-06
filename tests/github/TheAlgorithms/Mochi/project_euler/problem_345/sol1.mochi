@@ -1,0 +1,150 @@
+/*
+Project Euler Problem 345: Matrix Sum
+
+Given an n x n matrix of integers, select exactly one element from each row
+and each column to maximize the total sum. This is equivalent to finding the
+maximum weight matching in a bipartite graph. The algorithm implemented here
+uses brute force recursion with memoization. For each row we try every
+available column, recursively solving the subproblem for the remaining rows
+and columns. We cache intermediate results keyed by the current row and the
+set of remaining columns to avoid redundant work.
+*/
+
+fun split(s: string, sep: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == sep {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun remove_index(xs: list<int>, idx: int): list<int> {
+  var out: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx {
+      out = append(out, xs[i])
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun cols_key(cols: list<int>): string {
+  var key = ""
+  var i = 0
+  while i < len(cols) {
+    key = key + str(cols[i]) + ","
+    i = i + 1
+  }
+  return key
+}
+
+var cache: map<string, int> = {}
+
+fun solve(arr: list<list<int>>, row: int, cols: list<int>): int {
+  let cache_id = str(row) + ":" + cols_key(cols)
+  if cache_id in cache {
+    return cache[cache_id]
+  }
+  if row == len(arr) {
+    return 0
+  }
+  var max_sum: int = 0
+  var i = 0
+  while i < len(cols) {
+    let col = cols[i]
+    let new_cols = remove_index(cols, i)
+    let candidate = arr[row][col] + solve(arr, row + 1, new_cols)
+    if candidate > max_sum {
+      max_sum = candidate
+    }
+    i = i + 1
+  }
+  cache[cache_id] = max_sum
+  return max_sum
+}
+
+fun parse_matrix(matrix_str: list<string>): list<list<int>> {
+  var arr: list<list<int>> = []
+  var r = 0
+  while r < len(matrix_str) {
+    let parts = split(matrix_str[r], " ")
+    var row_vals: list<int> = []
+    var c = 0
+    while c < len(parts) {
+      row_vals = append(row_vals, parse_int(parts[c]))
+      c = c + 1
+    }
+    arr = append(arr, row_vals)
+    r = r + 1
+  }
+  return arr
+}
+
+fun parse_int(s: string): int {
+  let digits = "0123456789"
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    var d = 0
+    var j = 0
+    while j < 10 {
+      if digits[j] == s[i] { d = j }
+      j = j + 1
+    }
+    n = n * 10 + d
+    i = i + 1
+  }
+  return n
+}
+
+fun solution(matrix_str: list<string>): int {
+  let arr = parse_matrix(matrix_str)
+  let n = len(arr)
+  var cols: list<int> = []
+  var c = 0
+  while c < n {
+    cols = append(cols, c)
+    c = c + 1
+  }
+  return solve(arr, 0, cols)
+}
+
+let MATRIX_1: list<string> = [
+  "7 53 183 439 863",
+  "497 383 563 79 973",
+  "287 63 343 169 583",
+  "627 343 773 959 943",
+  "767 473 103 699 303"
+]
+
+let MATRIX_2: list<string> = [
+  "7 53 183 439 863 497 383 563 79 973 287 63 343 169 583",
+  "627 343 773 959 943 767 473 103 699 303 957 703 583 639 913",
+  "447 283 463 29 23 487 463 993 119 883 327 493 423 159 743",
+  "217 623 3 399 853 407 103 983 89 463 290 516 212 462 350",
+  "960 376 682 962 300 780 486 502 912 800 250 346 172 812 350",
+  "870 456 192 162 593 473 915 45 989 873 823 965 425 329 803",
+  "973 965 905 919 133 673 665 235 509 613 673 815 165 992 326",
+  "322 148 972 962 286 255 941 541 265 323 925 281 601 95 973",
+  "445 721 11 525 473 65 511 164 138 672 18 428 154 448 848",
+  "414 456 310 312 798 104 566 520 302 248 694 976 430 392 198",
+  "184 829 373 181 631 101 969 613 840 740 778 458 284 760 390",
+  "821 461 843 513 17 901 711 993 293 157 274 94 192 156 574",
+  "34 124 4 878 450 476 712 914 838 669 875 299 823 329 699",
+  "815 559 813 459 522 788 168 586 966 232 308 833 251 631 107",
+  "813 883 451 509 615 77 281 613 459 205 380 274 302 35 805"
+]
+
+print("solution() = " + str(solution(MATRIX_2)))
