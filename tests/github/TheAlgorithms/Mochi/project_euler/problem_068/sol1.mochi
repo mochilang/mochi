@@ -1,0 +1,145 @@
+/*
+Project Euler Problem 68: Magic 5-gon ring
+
+We must arrange the numbers 1..10 around a 5-gon consisting of five outer
+nodes each connected to two inner nodes, forming five lines of three numbers.
+A solution is "magic" when every line sums to the same total and the first
+outer node is the smallest among all outer nodes.  Concatenating the groups
+clockwise yields a 16-digit string; the goal is to find the maximum such
+string.
+
+Algorithm:
+1. Generate candidate permutations of the numbers ensuring larger values are
+   placed after smaller ones, mirroring the Python approach.
+2. For each permutation, build the implied ring by duplicating shared nodes.
+3. Verify the ring is "magic" by checking equal sums and the smallest outer
+   node rule.
+4. Track the largest concatenated string encountered.
+The search explores all permutations via backtracking.  Time complexity is
+O((2n)! / n) for n=5, which is feasible for this small problem.
+*/
+
+fun range_desc(start: int, end: int): list<int> {
+  var res: list<int> = []
+  var i = start
+  while i >= end {
+    res = append(res, i)
+    i = i - 1
+  }
+  return res
+}
+
+fun range_asc(start: int, end: int): list<int> {
+  var res: list<int> = []
+  var i = start
+  while i <= end {
+    res = append(res, i)
+    i = i + 1
+  }
+  return res
+}
+
+fun concat_lists(a: list<int>, b: list<int>): list<int> {
+  var res = a
+  var i = 0
+  while i < len(b) {
+    res = append(res, b[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun swap(xs: list<int>, i: int, j: int): list<int> {
+  var res: list<int> = []
+  var k = 0
+  while k < len(xs) {
+    if k == i {
+      res = append(res, xs[j])
+    } else if k == j {
+      res = append(res, xs[i])
+    } else {
+      res = append(res, xs[k])
+    }
+    k = k + 1
+  }
+  return res
+}
+
+fun generate_gon_ring(gon_side: int, perm: list<int>): list<int> {
+  var result: list<int> = []
+  result = append(result, perm[0])
+  result = append(result, perm[1])
+  result = append(result, perm[2])
+  var extended = append(perm, perm[1])
+  let magic_number = if gon_side < 5 { 1 } else { 2 }
+  var i = 1
+  while i < len(extended) / 3 + magic_number {
+    result = append(result, extended[2 * i + 1])
+    result = append(result, result[3 * i - 1])
+    result = append(result, extended[2 * i + 2])
+    i = i + 1
+  }
+  return result
+}
+
+fun min_outer(numbers: list<int>): int {
+  var min_val = numbers[0]
+  var i = 3
+  while i < len(numbers) {
+    if numbers[i] < min_val {
+      min_val = numbers[i]
+    }
+    i = i + 3
+  }
+  return min_val
+}
+
+fun is_magic_gon(numbers: list<int>): bool {
+  if len(numbers) % 3 != 0 { return false }
+  if min_outer(numbers) != numbers[0] { return false }
+  let total = numbers[0] + numbers[1] + numbers[2]
+  var i = 3
+  while i < len(numbers) {
+    if numbers[i] + numbers[i + 1] + numbers[i + 2] != total {
+      return false
+    }
+    i = i + 3
+  }
+  return true
+}
+
+fun permute_search(nums: list<int>, start: int, gon_side: int, current_max: string): string {
+  if start == len(nums) {
+    let ring = generate_gon_ring(gon_side, nums)
+    if is_magic_gon(ring) {
+      var s = ""
+      var k = 0
+      while k < len(ring) {
+        s = s + str(ring[k])
+        k = k + 1
+      }
+      if s > current_max { return s }
+    }
+    return current_max
+  }
+  var res = current_max
+  var i = start
+  while i < len(nums) {
+    let swapped = swap(nums, start, i)
+    let candidate = permute_search(swapped, start + 1, gon_side, res)
+    if candidate > res { res = candidate }
+    i = i + 1
+  }
+  return res
+}
+
+fun solution(gon_side: int): string {
+  if gon_side < 3 || gon_side > 5 { return "" }
+  let small = range_desc(gon_side + 1, 1)
+  let big = range_asc(gon_side + 2, gon_side * 2)
+  let numbers = concat_lists(small, big)
+  let max_str = permute_search(numbers, 0, gon_side, "")
+  return max_str
+}
+
+print(solution(5))
