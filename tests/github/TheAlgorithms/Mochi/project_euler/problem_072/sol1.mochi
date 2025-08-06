@@ -1,0 +1,54 @@
+/*
+Project Euler Problem 72: Counting fractions.
+
+For each denominator d ≤ limit, count reduced proper fractions n/d where
+0 < n < d and gcd(n, d) = 1.  The count of valid numerators for a given d
+is Euler's totient function φ(d).  Summing φ(d) for d from 2 to limit gives
+the total number of reduced proper fractions.
+
+Algorithm
+---------
+Use a sieve to compute φ(n) for every 0 ≤ n ≤ limit.
+1. Initialise an array phi with phi[i] = i.
+2. For each i from 2 to limit:
+     If phi[i] == i then i is prime.
+     For every multiple j of i, subtract phi[j] / i from phi[j].
+3. Sum phi[2..limit] and return the result.
+
+This runs in O(limit log log limit) time.
+*/
+
+fun solution(limit: int): int {
+  var phi: list<int> = []
+  var i = 0
+  while i <= limit {
+    phi = append(phi, i)
+    i = i + 1
+  }
+  i = 2
+  while i <= limit {
+    if phi[i] == i {
+      var j = i
+      while j <= limit {
+        phi[j] = phi[j] - phi[j] / i
+        j = j + i
+      }
+    }
+    i = i + 1
+  }
+  var total = 0
+  i = 2
+  while i <= limit {
+    total = total + phi[i]
+    i = i + 1
+  }
+  return total
+}
+
+fun main() {
+  // The full problem uses 1,000,000 but this smaller limit keeps the
+  // example runnable within the test environment.
+  print(solution(1000))
+}
+
+main()
