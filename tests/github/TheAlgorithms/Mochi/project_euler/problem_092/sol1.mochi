@@ -1,0 +1,105 @@
+/*
+Project Euler Problem 92: Square Digit Chains
+
+A number chain is formed by repeatedly replacing a number with the sum of the
+squares of its digits. Every chain eventually reaches 1 or 89 and then loops.
+This program counts how many starting numbers below ten million terminate at 89.
+
+Algorithm:
+1. Any number below ten million reduces to at most 7×81 = 567 after one
+   iteration of summing digit squares. We cache chain results for values
+   0..567 (0 treated as ending at 1) so each evaluation terminates quickly.
+2. To avoid iterating over all ten million numbers, we perform a digit dynamic
+   programming count. For each of the 7 digit positions we try digits 0..9 and
+   accumulate the sum of squared digits. Once all digits are processed, we check
+   whether the resulting sum leads to 89.
+3. The DP table memoizes intermediate counts, resulting in only about 4,000
+   states. The final answer subtracts the all-zero number, since the search
+   includes leading zeros.
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var result: list<int> = []
+  var i = 0
+  while i < len {
+    result = append(result, value)
+    i = i + 1
+  }
+  return result
+}
+
+fun make_matrix(rows: int, cols: int, value: int): list<list<int>> {
+  var res: list<list<int>> = []
+  var r = 0
+  while r < rows {
+    res = append(res, make_list(cols, value))
+    r = r + 1
+  }
+  return res
+}
+
+let SQUARES: list<int> = [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+var CACHE: list<int> = []
+var DP: list<list<int>> = []
+
+fun init_cache() {
+  CACHE = make_list(568, 0)
+  CACHE[0] = 1
+  CACHE[1] = 1
+  CACHE[89] = 2
+  DP = make_matrix(568, 8, -1)
+}
+
+fun digit_square_sum(n: int): int {
+  var total = 0
+  var m = n
+  while m > 0 {
+    let d = m % 10
+    total = total + SQUARES[d]
+    m = m / 10
+  }
+  return total
+}
+
+fun chain(n: int): bool {
+  let v = CACHE[n]
+  if v != 0 {
+    return v == 1
+  }
+  let res = chain(digit_square_sum(n))
+  CACHE[n] = if res {1} else {2}
+  return res
+}
+
+fun count_dp(sum: int, digits: int): int {
+  let cached = DP[sum][digits]
+  if cached != (-1) {
+    return cached
+  }
+  if digits == 0 {
+    let res = if !chain(sum) {1} else {0}
+    DP[sum][digits] = res
+    return res
+  }
+  var total = 0
+  var d = 0
+  while d <= 9 {
+    total = total + count_dp(sum + SQUARES[d], digits - 1)
+    d = d + 1
+  }
+  DP[sum][digits] = total
+  return total
+}
+
+fun solution(): int {
+  return count_dp(0, 7) - 1
+}
+
+fun main() {
+  init_cache()
+  let result = solution()
+  print(str(result))
+}
+
+main()
