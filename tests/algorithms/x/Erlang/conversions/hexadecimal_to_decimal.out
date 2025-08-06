@@ -1,0 +1,13 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hexadecimal_to_decimal.erl:166:37: Warning: variable 'Is_negative_3' exported from 'case' (line 145, column 9)
+%  166| {Decimal_number_2, Hex_string, I_2, Is_negative_3, S_4} = Fun_3(Decimal_number, Hex_string, I, Is_negative_3, S_4),
+%     |                                     ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hexadecimal_to_decimal.erl:166:52: Warning: variable 'S_4' exported from 'case' (line 145, column 9)
+%  166| {Decimal_number_2, Hex_string, I_2, Is_negative_3, S_4} = Fun_3(Decimal_number, Hex_string, I, Is_negative_3, S_4),
+%     |                                                    ^
+
+10
+303
+303
+65535
+-255

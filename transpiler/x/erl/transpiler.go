@@ -150,6 +150,11 @@ const helperSafeFmod = `
 mochi_safe_fmod(A, B) ->
     try math:fmod(A, B) catch _:_ -> 0.0 end.
 `
+const helperMod = `
+mochi_mod(A, B) when B =/= 0 ->
+    ((A rem B) + B) rem B;
+mochi_mod(_, _) -> 0.
+`
 const helperBigRat = `
 mochi_gcd(A, B) ->
     A1 = abs(A),
@@ -224,6 +229,7 @@ var useFetch bool
 var useNot bool
 var useSafeArith bool
 var useSafeFmod bool
+var useMod bool
 var mutatedFuncs map[string]int
 var benchMain bool
 
@@ -256,6 +262,7 @@ type Program struct {
 	UseNot          bool
 	UseSafeArith    bool
 	UseSafeFmod     bool
+	UseMod          bool
 }
 
 // context tracks variable aliases to emulate mutable variables.
@@ -1899,13 +1906,22 @@ func (c *CallExpr) emit(w io.Writer) {
 	switch c.Func {
 	case "append":
 		// append(list, elem)
-		io.WriteString(w, "lists:append(")
 		if len(c.Args) == 2 {
+			io.WriteString(w, "lists:append((case ")
 			c.Args[0].emit(w)
-			io.WriteString(w, ", [")
+			io.WriteString(w, " of nil -> []; _ -> ")
+			c.Args[0].emit(w)
+			io.WriteString(w, " end), [")
 			c.Args[1].emit(w)
 			io.WriteString(w, "])")
 		} else {
+			io.WriteString(w, "lists:append(")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
 			io.WriteString(w, ")")
 		}
 		return
@@ -3175,6 +3191,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useNot = false
 	useSafeArith = false
 	useSafeFmod = false
+	useMod = false
 	mutatedFuncs = map[string]int{
 		"topple":       0,
 		"fill":         0,
@@ -3223,6 +3240,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
 	p.UseSafeFmod = useSafeFmod
+	p.UseMod = useMod
 	return p, nil
 }
 
@@ -4423,7 +4441,12 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env, ctx *context) (Expr, er
 						ops = append(ops[:i], ops[i+1:]...)
 						continue
 					}
-					op = "rem"
+					useMod = true
+					exprs[i] = &CallExpr{Func: "mochi_mod", Args: []Expr{l, r}}
+					exprs = append(exprs[:i+1], exprs[i+2:]...)
+					typesList = append(typesList[:i+1], typesList[i+2:]...)
+					ops = append(ops[:i], ops[i+1:]...)
+					continue
 				}
 				if op == "+" {
 					_, leftIsList := typesList[i].(types.ListType)
@@ -6303,6 +6326,10 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseSafeFmod {
 		buf.WriteString(helperSafeFmod)
+		buf.WriteString("\n")
+	}
+	if p.UseMod {
+		buf.WriteString(helperMod)
 		buf.WriteString("\n")
 	}
 	for _, f := range p.Funs {

@@ -1,0 +1,17 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/octal_to_hexadecimal.erl:82:14: Warning: variable 'S_3' exported from 'case' (line 59, column 9)
+%   82| {J_2, Octal, S_3} = Fun(J, Octal, S_3),
+%     |              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/octal_to_hexadecimal.erl:95:30: Warning: variable 'S_3' exported from 'case' (line 59, column 9)
+%   95| {Decimal_2, J_2, K_2, Octal, S_3} = Fun_2(Decimal, J_2, K, Octal, S_3),
+%     |                              ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/octal_to_hexadecimal.erl:112:48: Warning: variable 'S_3' exported from 'case' (line 59, column 9)
+%  112| {Decimal_3, Hex_2, Hex_chars, J_2, K_2, Octal, S_3} = Fun_3(Decimal_2, Hex, Hex_chars, J_2, K_2, Octal, S_3),
+%     |                                                ^
+
+"0x18"
+"0x40"
+"0xA7"
+"0x9D"
+"0x7"

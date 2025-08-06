@@ -1,0 +1,21 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hex_to_bin.erl:187:27: Warning: variable 'Is_negative_3' exported from 'case' (line 166, column 9)
+%  187| {Hex_num, I_2, Int_num_2, Is_negative_3, S_4, Trimmed} = Fun_3(Hex_num, I, Int_num, Is_negative_3, S_4, Trimmed),
+%     |                           ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hex_to_bin.erl:187:42: Warning: variable 'S_4' exported from 'case' (line 166, column 9)
+%  187| {Hex_num, I_2, Int_num_2, Is_negative_3, S_4, Trimmed} = Fun_3(Hex_num, I, Int_num, Is_negative_3, S_4, Trimmed),
+%     |                                          ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hex_to_bin.erl:204:38: Warning: variable 'Is_negative_3' exported from 'case' (line 166, column 9)
+%  204| {Bin_str_4, Hex_num, I_2, Int_num_2, Is_negative_3, N_2, S_4, Trimmed} = Fun_4(Bin_str_3, Hex_num, I_2, Int_num_2, Is_negative_3, N, S_4, Trimmed),
+%     |                                      ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/hex_to_bin.erl:204:58: Warning: variable 'S_4' exported from 'case' (line 166, column 9)
+%  204| {Bin_str_4, Hex_num, I_2, Int_num_2, Is_negative_3, N_2, S_4, Trimmed} = Fun_4(Bin_str_3, Hex_num, I_2, Int_num_2, Is_negative_3, N, S_4, Trimmed),
+%     |                                                          ^
+
+10101100
+100110100100
+100101111
+1111111111111111
+-1111111111111111

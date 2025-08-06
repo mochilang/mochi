@@ -1,0 +1,5 @@
+/workspace/mochi/tests/algorithms/x/Erlang/computer_vision/harris_corner.erl:45:1: Warning: function mochi_safe_div/2 is unused
+%   45| mochi_safe_div(A, B) ->
+%     | ^
+
+[[2, 1], [1, 2], [2, 2], [3, 2], [2, 3]]

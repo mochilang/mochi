@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/decimal_to_hexadecimal.erl:77:18: Warning: variable 'Negative_3' exported from 'case' (line 50, column 9)
+%   77| {Decimal, Hex_2, Negative_3, Num_4} = Fun(Decimal, Hex, Negative_3, Num_3),
+%     |                  ^
+
+"0x5"
+"0xf"
+"0x25"
+"0xff"
+"0x1000"
+"0xf3eba"
+"-0x100"
+"0x0"

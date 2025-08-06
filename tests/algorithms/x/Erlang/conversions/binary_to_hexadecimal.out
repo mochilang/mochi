@@ -1,0 +1,15 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_hexadecimal.erl:164:20: Warning: variable 'Is_negative_3' exported from 'case' (line 142, column 9)
+%  164| {Binary_str, I_10, Is_negative_3, S_5} = Fun_7(Binary_str, I_9, Is_negative_3, S_5),
+%     |                    ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_hexadecimal.erl:164:35: Warning: variable 'S_5' exported from 'case' (line 142, column 9)
+%  164| {Binary_str, I_10, Is_negative_3, S_5} = Fun_7(Binary_str, I_9, Is_negative_3, S_5),
+%     |                                   ^
+
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/binary_to_hexadecimal.erl:182:36: Warning: variable 'Is_negative_3' exported from 'case' (line 142, column 9)
+%  182| {Binary_str, Digits, Groups, I_10, Is_negative_3, J_2, Pad_len, Res_8, S_6} = Fun_8(Binary_str, Digits, Groups, I_10, Is_negative_3, J, Pad_len, Res_7, S_6),
+%     |                                    ^
+
+"0x15f"
+"0x0a"
+"-0x1d"

@@ -1,0 +1,9 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/astronomical_length_scale_conversion.erl:102:2: Warning: variable 'E_3' exported from 'case' (line 87, column 9)
+%  102| {E_3, Exp, I_2, Res_6} = Fun(E_3, Exp, I, Res_5),
+%     |  ^
+
+0.001
+1.0e-6
+1000000000
+1.0e-9
+1000

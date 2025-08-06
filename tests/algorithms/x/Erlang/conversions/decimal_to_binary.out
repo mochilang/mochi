@@ -1,0 +1,12 @@
+/workspace/mochi/tests/algorithms/x/Erlang/conversions/decimal_to_binary.erl:72:7: Warning: variable 'Negative_3' exported from 'case' (line 54, column 9)
+%   72| {N_4, Negative_3, Num, Result_2} = Fun(N_3, Negative_3, Num, Result),
+%     |       ^
+
+"0b0"
+"0b10"
+"0b111"
+"0b100011"
+"-0b10"
+"0b0"
+"0b101000"
+"-0b101000"
