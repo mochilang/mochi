@@ -45,6 +45,7 @@ type Program struct {
 	UseBigInt    bool
 	UseBigRat    bool
 	UseLenAny    bool
+	UseIsListAny bool
 	UseReflect   bool
 	UseRuntime   bool
 	UseRepeat    bool
@@ -74,6 +75,7 @@ var (
 	usesBigInt         bool
 	usesBigRat         bool
 	usesLenAny         bool
+	usesIsListAny      bool
 	usesReflect        bool
 	usesRuntime        bool
 	usesRepeat         bool
@@ -168,6 +170,11 @@ func safeName(name string) string {
 func emitCastAnyToType(w io.Writer, typ, v string) {
 	if strings.HasPrefix(typ, "[]") {
 		elem := typ[2:]
+		if typ == "[]any" {
+			usesReflect = true
+			fmt.Fprintf(w, "func(v any) []any { if v == nil { return nil }; if arr, ok := v.([]any); ok { return arr }; rv := reflect.ValueOf(v); if rv.Kind() != reflect.Slice { return v.([]any) }; n := rv.Len(); out := make([]any, n); for i := 0; i < n; i++ { out[i] = rv.Index(i).Interface() }; return out }(%s)", v)
+			return
+		}
 		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
 		emitCastAnyToType(w, elem, "x")
 		fmt.Fprintf(w, " }; return out }; return v.([]%s) }(%s)", elem, v)
@@ -2102,6 +2109,13 @@ func (a *AssertExpr) emit(w io.Writer) {
 		return
 	}
 	if strings.HasPrefix(a.Type, "[]") {
+		if a.Type == "[]any" {
+			usesReflect = true
+			fmt.Fprint(w, "func(v any) []any { if v == nil { return nil }; if arr, ok := v.([]any); ok { return arr }; rv := reflect.ValueOf(v); if rv.Kind() != reflect.Slice { return v.([]any) }; n := rv.Len(); out := make([]any, n); for i := 0; i < n; i++ { out[i] = rv.Index(i).Interface() }; return out }(")
+			a.Expr.emit(w)
+			fmt.Fprint(w, ")")
+			return
+		}
 		elem := a.Type[2:]
 		fmt.Fprintf(w, "func(v any) []%s { if v == nil { return nil }; if vv, ok := v.([]%s); ok { return vv }; if arr, ok := v.([]any); ok { if len(arr)==0 { return []%s{} }; out := make([]%s, len(arr)); for i, x := range arr { out[i] = ", elem, elem, elem, elem)
 		emitCastAnyToType(w, elem, "x")
@@ -2179,6 +2193,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	usesBigInt = false
 	usesBigRat = false
 	usesLenAny = false
+	usesIsListAny = false
 	usesReflect = false
 	usesRuntime = false
 	usesRepeat = false
@@ -2241,6 +2256,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	gp.UseBigInt = usesBigInt
 	gp.UseBigRat = usesBigRat
 	gp.UseLenAny = usesLenAny
+	gp.UseIsListAny = usesIsListAny
 	gp.UseReflect = usesReflect
 	gp.UseRuntime = usesRuntime
 	gp.Imports = imports
@@ -5356,7 +5372,7 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env, base string) (Expr, 
 						usesBigInt = true
 						expr = &BigIntToIntExpr{Value: expr}
 					case types.AnyType:
-						expr = &IntCastExpr{Expr: expr}
+						expr = &AssertExpr{Expr: expr, Type: "int"}
 					default:
 						if _, ok := expr.(*BigBinaryExpr); ok {
 							usesBigInt = true
@@ -5642,6 +5658,12 @@ func compilePrimary(p *parser.Primary, env *types.Env, base string) (Expr, error
 			usesSort = true
 			return &ValuesExpr{Map: args[0], ValueType: toGoTypeFromType(mt.Value)}, nil
 		case "exists":
+			at := types.TypeOfExpr(p.Call.Args[0], env)
+			if _, ok := at.(types.AnyType); ok {
+				usesIsListAny = true
+				usesReflect = true
+				return &ExistsExpr{Expr: &CallExpr{Func: "_islist", Args: []Expr{args[0]}}}, nil
+			}
 			bexpr := &BinaryExpr{Left: &CallExpr{Func: "len", Args: []Expr{args[0]}}, Op: ">", Right: &IntLit{Value: 0}}
 			return &ExistsExpr{Expr: bexpr}, nil
 		case "contains":
@@ -6667,6 +6689,17 @@ func Emit(prog *Program, bench bool) []byte {
 			buf.WriteString("    return out\n")
 			buf.WriteString("}\n\n")
 		}
+	}
+	if prog.UseIsListAny {
+		buf.WriteString("func _islist(v any) bool {\n")
+		buf.WriteString("    if v == nil { return false }\n")
+		buf.WriteString("    switch v.(type) {\n")
+		buf.WriteString("    case []any, []int, []float64, []string, []bool:\n")
+		buf.WriteString("        return true\n")
+		buf.WriteString("    default:\n")
+		buf.WriteString("        return reflect.ValueOf(v).Kind() == reflect.Slice\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("}\n\n")
 	}
 	if prog.UseLenAny {
 		buf.WriteString("func _len(v any) int {\n")
