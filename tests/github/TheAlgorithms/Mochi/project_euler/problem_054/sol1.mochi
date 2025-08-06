@@ -1,0 +1,237 @@
+/*
+Project Euler Problem 54: Poker Hands
+
+Given a file containing one thousand poker hand deals, each line has
+ten cards separated by spaces. The first five cards belong to Player 1
+and the last five to Player 2. Each card is encoded as <rank><suit>
+where ranks are "2".."9", "T", "J", "Q", "K", "A" and suits are
+"C", "D", "H", "S".
+
+Determine how many hands Player 1 wins. Hands are ranked according to
+standard poker rules from high card up to royal flush. When two hands
+share the same category the ranks of involved cards are compared to
+break ties.
+
+The algorithm loads the dataset, parses each line into two hands and
+evaluates a ranking list for each. Each ranking list starts with the
+hand category followed by relevant ranks for tie breaking.
+Categories are encoded as:
+
+ 9: Royal flush
+ 8: Straight flush
+ 7: Four of a kind
+ 6: Full house
+ 5: Flush
+ 4: Straight
+ 3: Three of a kind
+ 2: Two pairs
+ 1: One pair
+ 0: High card
+
+Hand comparison is performed by lexicographically comparing the ranking
+lists. The program counts the number of deals where Player 1's ranking
+list is greater than Player 2's.
+*/
+
+fun card_value(c: string): int {
+  if c == "2" { return 2 }
+  if c == "3" { return 3 }
+  if c == "4" { return 4 }
+  if c == "5" { return 5 }
+  if c == "6" { return 6 }
+  if c == "7" { return 7 }
+  if c == "8" { return 8 }
+  if c == "9" { return 9 }
+  if c == "T" { return 10 }
+  if c == "J" { return 11 }
+  if c == "Q" { return 12 }
+  if c == "K" { return 13 }
+  if c == "A" { return 14 }
+  return 0
+}
+
+fun sort_desc(xs: list<int>): list<int> {
+  var arr = xs
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      if arr[j] < arr[j + 1] {
+        let tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun filter_not(xs: list<int>, v: int): list<int> {
+  var res: list<int> = []
+  for x in xs {
+    if x != v {
+      res = append(res, x)
+    }
+  }
+  return res
+}
+
+fun hand_rank(hand: list<string>): list<int> {
+  var ranks: list<int> = []
+  var suits: list<string> = []
+  for card in hand {
+    ranks = append(ranks, card_value(card[0]))
+    suits = append(suits, card[1])
+  }
+  ranks = sort_desc(ranks)
+
+  var flush = true
+  var i = 1
+  while i < len(suits) {
+    if suits[i] != suits[0] { flush = false }
+    i = i + 1
+  }
+
+  var straight = true
+  i = 0
+  while i < 4 {
+    if ranks[i] - ranks[i + 1] != 1 { straight = false }
+    i = i + 1
+  }
+  if !straight && ranks[0] == 14 && ranks[1] == 5 && ranks[2] == 4 && ranks[3] == 3 && ranks[4] == 2 {
+    straight = true
+    ranks = [5, 4, 3, 2, 1]
+  }
+
+  var counts: map<int, int> = {}
+  for r in ranks {
+    if r in counts { counts[r] = counts[r] + 1 } else { counts[r] = 1 }
+  }
+  var uniq: list<int> = []
+  for r in ranks {
+    var exists = false
+    for u in uniq { if u == r { exists = true } }
+    if !exists { uniq = append(uniq, r) }
+  }
+  var count_vals: list<list<int>> = []
+  for u in uniq {
+    count_vals = append(count_vals, [counts[u], u])
+  }
+  var n = len(count_vals)
+  var i2 = 0
+  while i2 < n {
+    var j2 = 0
+    while j2 < n - 1 {
+      let a = count_vals[j2]
+      let b = count_vals[j2 + 1]
+      if a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]) {
+        let tmp = count_vals[j2]
+        count_vals[j2] = count_vals[j2 + 1]
+        count_vals[j2 + 1] = tmp
+      }
+      j2 = j2 + 1
+    }
+    i2 = i2 + 1
+  }
+  let c1 = count_vals[0][0]
+  let v1 = count_vals[0][1]
+
+  var rank: list<int> = []
+  if straight && flush {
+    if ranks[0] == 14 {
+      rank = append(rank, 9)
+      rank = append(rank, 14)
+      return rank
+    }
+    rank = append(rank, 8)
+    rank = append(rank, ranks[0])
+    return rank
+  }
+  if c1 == 4 {
+    var kicker = 0
+    for r in ranks { if r != v1 { kicker = r } }
+    rank = append(rank, 7)
+    rank = append(rank, v1)
+    rank = append(rank, kicker)
+    return rank
+  }
+  if c1 == 3 {
+    let c2 = count_vals[1][0]
+    let v2 = count_vals[1][1]
+    if c2 == 2 {
+      rank = append(rank, 6)
+      rank = append(rank, v1)
+      rank = append(rank, v2)
+      return rank
+    }
+    rank = append(rank, 3)
+    rank = append(rank, v1)
+    for r in ranks { if r != v1 { rank = append(rank, r) } }
+    return rank
+  }
+  if c1 == 2 {
+    let c2 = count_vals[1][0]
+    let v2 = count_vals[1][1]
+    if c2 == 2 {
+      var high_pair = v1
+      var low_pair = v2
+      if low_pair > high_pair {
+        let tmp = high_pair
+        high_pair = low_pair
+        low_pair = tmp
+      }
+      var kicker = 0
+      for r in ranks { if r != high_pair && r != low_pair { kicker = r } }
+      rank = append(rank, 2)
+      rank = append(rank, high_pair)
+      rank = append(rank, low_pair)
+      rank = append(rank, kicker)
+      return rank
+    }
+    rank = append(rank, 1)
+    rank = append(rank, v1)
+    for r in ranks { if r != v1 { rank = append(rank, r) } }
+    return rank
+  }
+  if flush {
+    rank = append(rank, 5)
+    for r in ranks { rank = append(rank, r) }
+    return rank
+  }
+  if straight {
+    rank = append(rank, 4)
+    rank = append(rank, ranks[0])
+    return rank
+  }
+  rank = append(rank, 0)
+  for r in ranks { rank = append(rank, r) }
+  return rank
+}
+
+fun compare_hands(h1: list<string>, h2: list<string>): int {
+  let r1 = hand_rank(h1)
+  let r2 = hand_rank(h2)
+  var i = 0
+  while i < len(r1) && i < len(r2) {
+    if r1[i] > r2[i] { return 1 }
+    if r1[i] < r2[i] { return -1 }
+    i = i + 1
+  }
+  return 0
+}
+
+fun solution(): int {
+  let hands = load "tests/github/TheAlgorithms/Python/project_euler/problem_054/poker_hands.txt" as map<string, string> with { header: false, delimiter: " " }
+  var wins = 0
+  for h in hands {
+    let p1 = [h["c0"], h["c1"], h["c2"], h["c3"], h["c4"]]
+    let p2 = [h["c5"], h["c6"], h["c7"], h["c8"], h["c9"]]
+    if compare_hands(p1, p2) == 1 { wins = wins + 1 }
+  }
+  return wins
+}
+
+print(solution())
