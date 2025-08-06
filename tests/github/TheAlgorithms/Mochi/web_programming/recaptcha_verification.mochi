@@ -1,0 +1,86 @@
+/*
+Recaptcha Verification and Login Simulation
+
+This Mochi module is a lightweight adaptation of the Python example from
+TheAlgorithms repository.  It demonstrates the control flow of verifying a
+user's Recaptcha token before allowing a login.
+
+Algorithm overview:
+1. The client submits a username, password, and Recaptcha token via POST.
+2. The server sends these credentials along with a secret key to the
+   Recaptcha verification service.
+3. If the service validates the token and the username/password pair is
+   correct, the user is logged in and redirected; otherwise the login page is
+   rendered again.
+
+For demonstration this implementation mocks the network verification and user
+authentication steps.  It uses strictly typed records and maps without any
+foreign function interfaces.
+*/
+
+type Request {
+  method: string,
+  post: map<string, string>
+}
+
+fun http_post(secret: string, client: string): map<string, bool> {
+  let success = secret == "secretKey" && client == "clientKey"
+  return {"success": success}
+}
+
+fun authenticate(username: string, password: string): bool {
+  return username == "user" && password == "pass"
+}
+
+fun login(_user: string) {
+  // In a real application this would set session data
+}
+
+fun render(page: string): string {
+  return "render:" + page
+}
+
+fun redirect(url: string): string {
+  return "redirect:" + url
+}
+
+fun login_using_recaptcha(request: Request): string {
+  let secret_key = "secretKey"
+  if request.method != "POST" {
+    return render("login.html")
+  }
+  let username = request.post["username"]
+  let password = request.post["password"]
+  let client_key = request.post["g-recaptcha-response"]
+  let response = http_post(secret_key, client_key)
+  if response["success"] {
+    if authenticate(username, password) {
+      login(username)
+      return redirect("/your-webpage")
+    }
+  }
+  return render("login.html")
+}
+
+let get_request = Request { method: "GET", post: {} }
+print(login_using_recaptcha(get_request))
+
+let ok_request = Request {
+  method: "POST",
+  post: {
+    "username": "user",
+    "password": "pass",
+    "g-recaptcha-response": "clientKey"
+  }
+}
+print(login_using_recaptcha(ok_request))
+
+let bad_request = Request {
+  method: "POST",
+  post: {
+    "username": "user",
+    "password": "wrong",
+    "g-recaptcha-response": "clientKey"
+  }
+}
+print(login_using_recaptcha(bad_request))
