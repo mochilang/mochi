@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 31/1077
-Last updated: 2025-08-06 20:36 +0700
+Completed programs: 61/1077
+Last updated: 2025-08-06 20:47 +0700
 
 Checklist:
 
@@ -47,36 +47,36 @@ Checklist:
 | 38 | bit_manipulation/is_power_of_two | ✓ | 2.0µs | 3.45MB |
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 266.0µs | 3.58MB |
 | 40 | bit_manipulation/missing_number | ✓ | 224.0µs | 3.48MB |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 249.0µs | 3.61MB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 199.0µs | 3.58MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 283.0µs | 3.50MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 193.0µs | 3.59MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 439.0µs | 3.65MB |
+| 46 | blockchain/diophantine_equation | ✓ | 275.0µs | 3.46MB |
+| 47 | boolean_algebra/and_gate | ✓ | 155.0µs | 3.64MB |
+| 48 | boolean_algebra/imply_gate | ✓ | 114.0µs | 3.53MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 201.0µs | 3.48MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 126.0µs | 3.51MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 211.0µs | 3.58MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 109.0µs | 3.51MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 312.0µs | 3.60MB |
+| 54 | boolean_algebra/not_gate | ✓ | 168.0µs | 3.62MB |
+| 55 | boolean_algebra/or_gate | ✓ | 182.0µs | 3.54MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 245.0µs | 3.50MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 137.0µs | 3.43MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 263.0µs | 3.54MB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 501.0µs | 3.57MB |
+| 60 | cellular_automata/game_of_life | ✓ | 475.0µs | 3.57MB |
+| 61 | cellular_automata/langtons_ant | ✓ | 1.0µs | 3.47MB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 314.0µs | 3.61MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 1.0ms | 3.71MB |
+| 64 | cellular_automata/wa_tor | ✓ | 1.0ms | 3.66MB |
+| 65 | ciphers/a1z26 | ✓ | 279.0µs | 3.62MB |
+| 66 | ciphers/affine_cipher | ✓ | 1.0ms | 3.44MB |
+| 67 | ciphers/atbash | ✓ | 315.0µs | 3.48MB |
+| 68 | ciphers/autokey | ✓ | 820.0µs | 3.59MB |
+| 69 | ciphers/baconian_cipher | ✓ | 199.0µs | 3.62MB |
+| 70 | ciphers/base16 | ✓ | 282.0µs | 3.49MB |
 | 71 | ciphers/base32 |   |  |  |
 | 72 | ciphers/base64_cipher |   |  |  |
 | 73 | ciphers/base85 |   |  |  |
