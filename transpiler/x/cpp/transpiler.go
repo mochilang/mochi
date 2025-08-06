@@ -1744,7 +1744,20 @@ func (a *AppendExpr) emit(w io.Writer) {
 	io.WriteString(w, "("+cap+"{ auto __tmp = ")
 	a.List.emit(w)
 	io.WriteString(w, "; __tmp.push_back(")
-	if et := valType; et != elemType && elemType != "auto" {
+	if strings.HasPrefix(elemType, "std::shared_ptr<") {
+		if sl, ok := elem.(*StructLit); ok {
+			fmt.Fprintf(w, "std::make_shared<%s>(", sl.Name)
+			for i, f := range sl.Fields {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				f.Value.emit(w)
+			}
+			io.WriteString(w, ")")
+		} else {
+			elem.emit(w)
+		}
+	} else if et := valType; et != elemType && elemType != "auto" {
 		if et == "std::any" {
 			io.WriteString(w, "std::any_cast<"+elemType+">(")
 			elem.emit(w)

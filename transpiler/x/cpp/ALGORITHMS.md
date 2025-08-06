@@ -1,7 +1,7 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 139/1077
-Last updated: 2025-08-06 21:35 +0700
+Completed programs: 142/1077
+Last updated: 2025-08-06 22:01 +0700
 
 Checklist:
 
@@ -157,9 +157,9 @@ Checklist:
 | 148 | conversions/temperature_conversions | ✓ | 439.0µs | 3.83MB |
 | 149 | conversions/time_conversions | ✓ | 327.0µs | 3.72MB |
 | 150 | conversions/volume_conversions | ✓ | 312.0µs | 3.76MB |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
+| 151 | conversions/weight_conversion | ✓ | 400.0µs | 3.66MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 187.0µs | 3.59MB |
+| 153 | data_compression/huffman | ✓ | 344.0µs | 3.54MB |
 | 154 | data_compression/lempel_ziv |   |  |  |
 | 155 | data_compression/lempel_ziv_decompress |   |  |  |
 | 156 | data_compression/lz77 |   |  |  |
