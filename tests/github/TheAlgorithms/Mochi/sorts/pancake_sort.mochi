@@ -1,0 +1,56 @@
+/*
+Pancake Sort Algorithm
+----------------------
+Pancake sort orders a list by repeatedly flipping prefixes.
+At each step the maximum element in the unsorted prefix is moved to
+index 0 via a flip, then flipped to its final position at the end of the
+unsorted section.  With n elements, each iteration reduces the unsorted
+prefix by one, leading to O(n^2) time complexity and O(1) extra space
+when using in-place prefix reversals.
+
+The `main` function demonstrates sorting a sample list.
+*/
+
+fun flip(arr: list<int>, k: int): list<int> {
+  var start = 0
+  var end = k
+  while start < end {
+    let temp = arr[start]
+    arr[start] = arr[end]
+    arr[end] = temp
+    start = start + 1
+    end = end - 1
+  }
+  return arr
+}
+
+fun find_max_index(arr: list<int>, n: int): int {
+  var mi = 0
+  var i = 1
+  while i < n {
+    if arr[i] > arr[mi] {
+      mi = i
+    }
+    i = i + 1
+  }
+  return mi
+}
+
+fun pancake_sort(arr: list<int>): list<int> {
+  var cur = len(arr)
+  while cur > 1 {
+    let mi = find_max_index(arr, cur)
+    arr = flip(arr, mi)
+    arr = flip(arr, cur - 1)
+    cur = cur - 1
+  }
+  return arr
+}
+
+fun main(): void {
+  var data: list<int> = [3, 6, 1, 10, 2]
+  var sorted: list<int> = pancake_sort(data)
+  print(str(sorted))
+}
+
+main()
