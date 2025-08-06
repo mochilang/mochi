@@ -1,0 +1,43 @@
+/*
+Convert a string to all uppercase letters.
+
+The algorithm scans the input text character by character and transforms
+any lowercase ASCII letter ('a'-'z') into its uppercase counterpart.
+Two strings containing the lowercase and uppercase alphabets are used.
+For each character, we search for it in the lowercase string; if found,
+the corresponding uppercase character is appended to the result. Other
+characters remain unchanged. The procedure runs in O(n) time for n
+characters in the input.
+*/
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun upper(word: string): string {
+  let lower_chars = "abcdefghijklmnopqrstuvwxyz"
+  let upper_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  var result = ""
+  var i = 0
+  while i < len(word) {
+    let c = word[i]
+    let idx = index_of(lower_chars, c)
+    if idx >= 0 {
+      result = result + upper_chars[idx:idx+1]
+    } else {
+      result = result + c
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(upper("wow"))
+print(upper("Hello"))
+print(upper("WHAT"))
+print(upper("wh[]32"))
