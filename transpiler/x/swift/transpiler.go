@@ -779,7 +779,7 @@ type ArrayStringExpr struct{ Value Expr }
 func (as *ArrayStringExpr) emit(w io.Writer) {
 	fmt.Fprint(w, "\"[\" + ")
 	as.Value.emit(w)
-	fmt.Fprint(w, ".map{ String(describing: $0) }.joined(separator: \",\") + \"]\"")
+	fmt.Fprint(w, `.map{ String(describing: $0).replacingOccurrences(of: ", ", with: " ") }.joined(separator: " ") + "]"`)
 }
 
 // LenExpr renders a length expression, optionally casting to String first.
@@ -4733,6 +4733,15 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			arg, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
 				return nil, err
+			}
+			if env != nil {
+				t := types.TypeOfExpr(pr.Call.Args[0], env)
+				if types.IsListType(t) {
+					return &ArrayStringExpr{Value: arg}, nil
+				}
+				if types.IsMapType(t) || types.IsStructType(t) {
+					return &MapStringExpr{Value: arg}, nil
+				}
 			}
 			return &CallExpr{Func: "str", Args: []Expr{arg}}, nil
 		}
