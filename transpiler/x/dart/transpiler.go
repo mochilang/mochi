@@ -273,14 +273,16 @@ func emitListConversion(w io.Writer, expr Expr, target string) error {
 				return err
 			}
 		}
-		if _, err := io.WriteString(w, " as List).map((e) => "); err != nil {
+		if _, err := io.WriteString(w, " as List).map((e) => ("); err != nil {
 			return err
 		}
 		if err := emitListConversion(w, &Name{Name: "e"}, elem); err != nil {
 			return err
 		}
-		_, err := io.WriteString(w, ").toList()")
-		return err
+		if _, err := io.WriteString(w, " as "+elem+")).toList()"); err != nil {
+			return err
+		}
+		return nil
 	}
 	if elem == "int" {
 		if _, err := io.WriteString(w, "("); err != nil {
@@ -720,6 +722,13 @@ func (s *AssignStmt) emit(w io.Writer) error {
 		iex.NoBang = true
 		if strings.HasPrefix(strings.TrimSuffix(inferType(iex.Target), "?"), "Map<") {
 			iex.NoSuffix = true
+		}
+		if idxIE, ok := iex.Index.(*IndexExpr); ok {
+			oldIdxBang := idxIE.NoBang
+			oldIdxSuf := idxIE.NoSuffix
+			idxIE.NoBang = true
+			idxIE.NoSuffix = false
+			defer func() { idxIE.NoBang = oldIdxBang; idxIE.NoSuffix = oldIdxSuf }()
 		}
 		if err := iex.emit(w); err != nil {
 			return err
