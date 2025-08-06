@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function sqrt() in /workspace/mochi/tests/algorithms/x/PHP/computer_vision/haralick_descriptors.php on line 30
