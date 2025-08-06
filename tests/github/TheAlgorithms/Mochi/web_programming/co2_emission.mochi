@@ -1,0 +1,59 @@
+/*
+Fetch CO2 emission data from the UK Carbon Intensity API.
+
+This script demonstrates Mochi's built-in HTTP fetch to retrieve JSON
+in a typed manner. It defines data structures reflecting the API
+response and provides two functions:
+
+- fetch_last_half_hour(): returns the actual CO2 intensity for the most
+  recent half-hour period.
+- fetch_from_to(start, end): returns a list of intensity records between
+  the given ISO-formatted dates.
+
+The main routine prints the intensity for each entry in a sample date
+range and then prints the latest intensity reading.
+*/
+
+type Intensity {
+  forecast: int
+  actual: int
+  index: string
+}
+
+type Entry {
+  from: string
+  to: string
+  intensity: Intensity
+}
+
+type Response {
+  data: list<Entry>
+}
+
+let BASE_URL: string = "https://api.carbonintensity.org.uk/intensity"
+
+fun fetch_last_half_hour(): int {
+  let resp: Response = fetch BASE_URL with { timeout: 10.0 }
+  let entry = resp.data[0]
+  return entry.intensity.actual
+}
+
+fun fetch_from_to(start: string, end: string): list<Entry> {
+  let url = BASE_URL + "/" + start + "/" + end
+  let resp: Response = fetch url with { timeout: 10.0 }
+  return resp.data
+}
+
+fun main() {
+  let entries: list<Entry> = fetch_from_to("2020-10-01", "2020-10-03")
+  var i = 0
+  while i < len(entries) {
+    let e = entries[i]
+    print("from", e.from, "to", e.to, ":", e.intensity.actual)
+    i = i + 1
+  }
+  let last = fetch_last_half_hour()
+  print("fetch_last_half_hour() =", last)
+}
+
+main()
