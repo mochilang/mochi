@@ -1,0 +1,125 @@
+/*
+Number Container System maintains a mapping from integers to indices. Each number maps to a sorted list of indices where it occurs.
+Using binary search, indices are inserted or deleted in logarithmic time, while lookups return the smallest index in constant time.
+
+Operations:
+1. binary_search_delete: remove an element from a sorted list using binary search.
+2. binary_search_insert: insert an element into a sorted list at the correct position via binary search.
+3. change: update the mapping for a given index, adjusting both index->number and number->indices maps.
+4. find: retrieve the smallest index for a number or -1 if absent.
+
+Write operations run in O(log n) due to binary search, and reads run in O(1).
+*/
+
+type NumberContainer = {
+  numbermap: map<int, list<int>>,
+  indexmap: map<int, int>,
+}
+
+fun remove_at(xs: list<int>, idx: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun insert_at(xs: list<int>, idx: int, val: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, val)
+    }
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  if idx == len(xs) {
+    res = append(res, val)
+  }
+  return res
+}
+
+fun binary_search_delete(array: list<int>, item: int): list<int> {
+  var low = 0
+  var high = len(array) - 1
+  var arr = array
+  while low <= high {
+    let mid = (low + high) / 2
+    if arr[mid] == item {
+      arr = remove_at(arr, mid)
+      return arr
+    } else if arr[mid] < item {
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+  print("ValueError: Either the item is not in the array or the array was unsorted")
+  return arr
+}
+
+fun binary_search_insert(array: list<int>, index: int): list<int> {
+  var low = 0
+  var high = len(array) - 1
+  var arr = array
+  while low <= high {
+    let mid = (low + high) / 2
+    if arr[mid] == index {
+      arr = insert_at(arr, mid + 1, index)
+      return arr
+    } else if arr[mid] < index {
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+  arr = insert_at(arr, low, index)
+  return arr
+}
+
+fun change(cont: NumberContainer, idx: int, num: int): NumberContainer {
+  var numbermap = cont.numbermap
+  var indexmap = cont.indexmap
+  if idx in indexmap {
+    let old = indexmap[idx]
+    let indexes = numbermap[old]
+    if len(indexes) == 1 {
+      numbermap[old] = []
+    } else {
+      numbermap[old] = binary_search_delete(indexes, idx)
+    }
+  }
+  indexmap[idx] = num
+  if num in numbermap {
+    numbermap[num] = binary_search_insert(numbermap[num], idx)
+  } else {
+    numbermap[num] = [idx]
+  }
+  return NumberContainer{ numbermap: numbermap, indexmap: indexmap }
+}
+
+fun find(cont: NumberContainer, num: int): int {
+  let numbermap = cont.numbermap
+  if num in numbermap {
+    let arr = numbermap[num]
+    if len(arr) > 0 {
+      return arr[0]
+    }
+  }
+  return -1
+}
+
+var nm: map<int, list<int>> = {}
+var im: map<int, int> = {}
+var cont = NumberContainer{ numbermap: nm, indexmap: im }
+print(find(cont, 10))
+cont = change(cont, 0, 10)
+print(find(cont, 10))
+cont = change(cont, 0, 20)
+print(find(cont, 10))
+print(find(cont, 20))
