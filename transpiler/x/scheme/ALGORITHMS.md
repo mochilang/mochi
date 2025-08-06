@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 21:47 GMT+7
+Last updated: 2025-08-06 22:18 GMT+7
 
-## Algorithms Golden Test Checklist (57/1077)
+## Algorithms Golden Test Checklist (89/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -67,38 +67,38 @@ Last updated: 2025-08-06 21:47 GMT+7
 | 58 | boolean_algebra/xor_gate | ✓ | 0s | 12.5 MB |
 | 59 | cellular_automata/conways_game_of_life |   |  |  |
 | 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
+| 61 | cellular_automata/langtons_ant | ✓ |  |  |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 3ms | 13.5 MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 12ms | 13.5 MB |
+| 64 | cellular_automata/wa_tor | ✓ | 35ms | 16.5 MB |
+| 65 | ciphers/a1z26 | ✓ | 0s | 12.8 MB |
+| 66 | ciphers/affine_cipher | ✓ | 83ms | 13.8 MB |
+| 67 | ciphers/atbash | ✓ | 11ms | 12.4 MB |
+| 68 | ciphers/autokey | ✓ | 56ms | 13.9 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 7ms | 13.6 MB |
+| 70 | ciphers/base16 | ✓ | 7ms | 12.6 MB |
+| 71 | ciphers/base32 | ✓ | 78ms | 16.6 MB |
+| 72 | ciphers/base64_cipher | ✓ | 5ms | 13.7 MB |
+| 73 | ciphers/base85 | ✓ | 55ms | 16.6 MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 8ms | 13.2 MB |
+| 75 | ciphers/bifid | ✓ | 30ms | 13.9 MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 35ms | 12.8 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 334ms | 13.1 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 0s | 12.5 MB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 563ms | 13.6 MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 20ms | 13.6 MB |
+| 81 | ciphers/diffie | ✓ | 7ms | 13.1 MB |
+| 82 | ciphers/diffie_hellman | ✓ | 0s | 12.4 MB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 9ms | 13.7 MB |
+| 84 | ciphers/enigma_machine2 | ✓ | 182ms | 16.6 MB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 4ms | 14.1 MB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 34ms | 12.3 MB |
+| 87 | ciphers/hill_cipher | ✓ | 31ms | 16.6 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 11ms | 14.1 MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 1ms | 12.5 MB |
+| 90 | ciphers/morse_code | ✓ | 3ms | 13.8 MB |
+| 91 | ciphers/onepad_cipher | ✓ | 2ms | 12.9 MB |
+| 92 | ciphers/permutation_cipher | ✓ | 0s | 13.4 MB |
 | 93 | ciphers/playfair_cipher |   |  |  |
 | 94 | ciphers/polybius |   |  |  |
 | 95 | ciphers/porta_cipher |   |  |  |
