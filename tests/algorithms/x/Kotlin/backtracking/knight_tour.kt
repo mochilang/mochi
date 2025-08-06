@@ -1,5 +1,7 @@
 import java.math.BigInteger
 
+fun <T> _listSet(lst: MutableList<T>, idx: Int, v: T) { while (lst.size <= idx) lst.add(v); lst[idx] = v }
+
 var _nowSeed = 0L
 var _nowSeeded = false
 fun _now(): Long {
@@ -30,13 +32,13 @@ var board: MutableList<MutableList<Int>> = open_knight_tour(1)
 fun get_valid_pos(position: MutableList<Int>, n: Int): MutableList<MutableList<Int>> {
     var y: Int = position[0]!!
     var x: Int = position[1]!!
-    var positions: MutableList<MutableList<BigInteger>> = mutableListOf(mutableListOf(y + 1, x + 2), mutableListOf(y - 1, x + 2), mutableListOf(y + 1, x - 2), mutableListOf(y - 1, x - 2), mutableListOf(y + 2, x + 1), mutableListOf(y + 2, x - 1), mutableListOf(y - 2, x + 1), mutableListOf(y - 2, x - 1))
+    var positions: MutableList<MutableList<Int>> = mutableListOf(mutableListOf(y + 1, x + 2), mutableListOf(y - 1, x + 2), mutableListOf(y + 1, x - 2), mutableListOf(y - 1, x - 2), mutableListOf(y + 2, x + 1), mutableListOf(y + 2, x - 1), mutableListOf(y - 2, x + 1), mutableListOf(y - 2, x - 1))
     var permissible: MutableList<MutableList<Int>> = mutableListOf<MutableList<Int>>()
     for (idx in 0 until positions.size) {
-        var inner: MutableList<BigInteger> = positions[idx]!!
-        var y_test: BigInteger = inner[0]!!
-        var x_test: BigInteger = inner[1]!!
-        if ((((((y_test.compareTo((0).toBigInteger()) >= 0) && (y_test.compareTo((n).toBigInteger()) < 0) as Boolean)) && (x_test.compareTo((0).toBigInteger()) >= 0) as Boolean)) && (x_test.compareTo((n).toBigInteger()) < 0)) {
+        var inner = positions[idx]!!
+        var y_test = inner[0]!!
+        var x_test = inner[1]!!
+        if ((((((y_test >= 0) && (y_test < n) as Boolean)) && (x_test >= 0) as Boolean)) && (x_test < n)) {
             permissible = run { val _tmp = permissible.toMutableList(); _tmp.add((inner as MutableList<Int>)); _tmp }
         }
     }
@@ -65,11 +67,11 @@ fun open_knight_tour_helper(board: MutableList<MutableList<Int>>, pos: MutableLi
         var y: Int = position[0]!!
         var x: Int = position[1]!!
         if ((((board[y]!!) as MutableList<Int>))[x]!! == 0) {
-            (board[y]!!)[x] = curr + 1
+            _listSet(board[y]!!, x, curr + 1)
             if (((open_knight_tour_helper(board, position, curr + 1)) as Boolean)) {
                 return true
             }
-            (board[y]!!)[x] = 0
+            _listSet(board[y]!!, x, 0)
         }
     }
     return false
@@ -86,11 +88,11 @@ fun open_knight_tour(n: Int): MutableList<MutableList<Int>> {
     }
     for (i in 0 until n) {
         for (j in 0 until n) {
-            (board[i]!!)[j] = 1
+            _listSet(board[i]!!, j, 1)
             if (((open_knight_tour_helper(board, mutableListOf(i, j), 1)) as Boolean)) {
                 return board
             }
-            (board[i]!!)[j] = 0
+            _listSet(board[i]!!, j, 0)
         }
     }
     println("Open Knight Tour cannot be performed on a board of size " + n.toString())
