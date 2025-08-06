@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 193/1077
-Last updated: 2025-08-06 23:08 +0700
+Completed programs: 221/1077
+Last updated: 2025-08-06 23:51 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -225,36 +225,36 @@ Last updated: 2025-08-06 23:08 +0700
 | 216 | data_structures/heap/randomized_heap | ✓ | 416µs | 3.5 MB |
 | 217 | data_structures/kd_tree/build_kdtree | ✓ | 1.758ms | 4.2 MB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 867µs | 3.1 MB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 995µs | 3.5 MB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 1.509ms | 3.7 MB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 846µs | 3.2 MB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 577µs | 3.1 MB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 433µs | 3.2 MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 640µs | 3.3 MB |
 | 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
-| 242 | data_structures/queues/linked_queue |   |  |  |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 497µs | 3.2 MB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 1.311ms | 3.5 MB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 500µs | 3.1 MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 532µs | 2.9 MB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 500µs | 3.3 MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 718µs | 3.1 MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 374µs | 2.9 MB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 329µs | 3.3 MB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 291µs | 3.2 MB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 463µs | 3.2 MB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 539µs | 3.2 MB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 1.26ms | 3.5 MB |
+| 239 | data_structures/queues/circular_queue | ✓ | 654µs | 3.2 MB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 329µs | 3.2 MB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 1.697ms | 3.2 MB |
+| 242 | data_structures/queues/linked_queue | ✓ | 398µs | 3.2 MB |
 | 243 | data_structures/queues/priority_queue_using_list |   |  |  |
-| 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
+| 244 | data_structures/queues/queue_by_list | ✓ | 698µs | 3.4 MB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 578µs | 3.2 MB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 917µs | 3.3 MB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 759µs | 3.4 MB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 510µs | 3.4 MB |
 | 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
 | 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
 | 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |

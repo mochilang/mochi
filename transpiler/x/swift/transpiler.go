@@ -36,6 +36,7 @@ var usesRepeat bool
 var usesRat bool
 var usesSHA256 bool
 var usesAppend bool
+var usesConcat bool
 var usesSet bool
 var usesLen bool
 var usesSplit bool
@@ -81,6 +82,7 @@ type Program struct {
 	UseRat        bool
 	UseSHA256     bool
 	UseAppend     bool
+	UseConcat     bool
 	UseSet        bool
 	UseLen        bool
 	UseSplit      bool
@@ -2047,6 +2049,13 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
+	if p.UseConcat {
+		buf.WriteString("func _concat<T>(_ a: [T], _ b: [T]) -> [T] {\n")
+		buf.WriteString("    var out = a\n")
+		buf.WriteString("    out.append(contentsOf: b)\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
+	}
 	if p.UseSet {
 		buf.WriteString("func _set<T>(_ xs: [T], _ idx: Int, _ v: T) -> [T] {\n")
 		buf.WriteString("    var out = xs\n")
@@ -2258,6 +2267,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	usesRat = false
 	usesSHA256 = false
 	usesAppend = false
+	usesConcat = false
 	usesSet = false
 	usesLen = false
 	usesSplit = false
@@ -2300,6 +2310,7 @@ func Transpile(env *types.Env, prog *parser.Program, benchMain bool) (*Program, 
 	p.UseRat = usesRat
 	p.UseSHA256 = usesSHA256
 	p.UseAppend = usesAppend
+	p.UseConcat = usesConcat
 	p.UseSet = usesSet
 	p.UseLen = usesLen
 	p.UseSplit = usesSplit
@@ -4974,6 +4985,18 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			}
 			usesAppend = true
 			return &CallExpr{Func: "_append", Args: []Expr{left, right}}, nil
+		}
+		if pr.Call.Func == "concat" && len(pr.Call.Args) == 2 {
+			left, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			right, err := convertExpr(env, pr.Call.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			usesConcat = true
+			return &CallExpr{Func: "_concat", Args: []Expr{left, right}}, nil
 		}
 		if pr.Call.Func == "exists" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
