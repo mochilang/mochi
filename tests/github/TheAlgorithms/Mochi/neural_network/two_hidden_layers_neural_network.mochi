@@ -1,0 +1,232 @@
+/*
+Two Hidden Layer Neural Network
+
+This program demonstrates a feedforward neural network with two hidden layers
+trained using a simple backpropagation algorithm. The network has:
+  - 3 input nodes
+  - first hidden layer with 4 neurons
+  - second hidden layer with 3 neurons
+  - single output neuron
+
+Weights are initialized with fixed small values so the program is deterministic
+and runs without foreign interfaces. Training uses stochastic gradient descent
+with a sigmoid activation function. After several iterations the network can
+predict a binary class for 3-bit input vectors.
+
+The implementation is written in pure Mochi and is compatible with runtime/vm.
+*/
+
+type Network = {
+  w1: list<list<float>>,
+  w2: list<list<float>>,
+  w3: list<list<float>>
+}
+
+fun exp_approx(x: float): float {
+  var sum: float = 1.0
+  var term: float = 1.0
+  var i: int = 1
+  while i < 10 {
+    term = term * x / float(i)
+    sum = sum + term
+    i = i + 1
+  }
+  return sum
+}
+
+fun sigmoid(x: float): float {
+  return 1.0 / (1.0 + exp_approx(-x))
+}
+
+fun sigmoid_derivative(x: float): float {
+  return x * (1.0 - x)
+}
+
+fun new_network(): Network {
+  return Network {
+    w1: [
+      [0.1, 0.2, 0.3, 0.4],
+      [0.5, 0.6, 0.7, 0.8],
+      [0.9, 1.0, 1.1, 1.2]
+    ],
+    w2: [
+      [0.1, 0.2, 0.3],
+      [0.4, 0.5, 0.6],
+      [0.7, 0.8, 0.9],
+      [1.0, 1.1, 1.2]
+    ],
+    w3: [
+      [0.1],
+      [0.2],
+      [0.3]
+    ]
+  }
+}
+
+fun feedforward(net: Network, input: list<float>): float {
+  var hidden1: list<float> = []
+  var j: int = 0
+  while j < 4 {
+    var sum1: float = 0.0
+    var i: int = 0
+    while i < 3 {
+      sum1 = sum1 + input[i] * net.w1[i][j]
+      i = i + 1
+    }
+    hidden1 = append(hidden1, sigmoid(sum1))
+    j = j + 1
+  }
+  var hidden2: list<float> = []
+  var k: int = 0
+  while k < 3 {
+    var sum2: float = 0.0
+    var j2: int = 0
+    while j2 < 4 {
+      sum2 = sum2 + hidden1[j2] * net.w2[j2][k]
+      j2 = j2 + 1
+    }
+    hidden2 = append(hidden2, sigmoid(sum2))
+    k = k + 1
+  }
+  var sum3: float = 0.0
+  var k2: int = 0
+  while k2 < 3 {
+    sum3 = sum3 + hidden2[k2] * net.w3[k2][0]
+    k2 = k2 + 1
+  }
+  let out = sigmoid(sum3)
+  return out
+}
+
+fun train(net: Network, inputs: list<list<float>>, outputs: list<float>, iterations: int) {
+  var iter: int = 0
+  while iter < iterations {
+    var s: int = 0
+    while s < len(inputs) {
+      let inp = inputs[s]
+      let target = outputs[s]
+      var hidden1: list<float> = []
+      var j: int = 0
+      while j < 4 {
+        var sum1: float = 0.0
+        var i: int = 0
+        while i < 3 {
+          sum1 = sum1 + inp[i] * net.w1[i][j]
+          i = i + 1
+        }
+        hidden1 = append(hidden1, sigmoid(sum1))
+        j = j + 1
+      }
+      var hidden2: list<float> = []
+      var k: int = 0
+      while k < 3 {
+        var sum2: float = 0.0
+        var j2: int = 0
+        while j2 < 4 {
+          sum2 = sum2 + hidden1[j2] * net.w2[j2][k]
+          j2 = j2 + 1
+        }
+        hidden2 = append(hidden2, sigmoid(sum2))
+        k = k + 1
+      }
+      var sum3: float = 0.0
+      var k3: int = 0
+      while k3 < 3 {
+        sum3 = sum3 + hidden2[k3] * net.w3[k3][0]
+        k3 = k3 + 1
+      }
+      let output = sigmoid(sum3)
+      let error = target - output
+      let delta_output = error * sigmoid_derivative(output)
+      var new_w3: list<list<float>> = []
+      var k4: int = 0
+      while k4 < 3 {
+        var w3row: list<float> = net.w3[k4]
+        w3row[0] = w3row[0] + hidden2[k4] * delta_output
+        new_w3 = append(new_w3, w3row)
+        k4 = k4 + 1
+      }
+      net.w3 = new_w3
+      var delta_hidden2: list<float> = []
+      var k5: int = 0
+      while k5 < 3 {
+        let row = net.w3[k5]
+        let dh2 = row[0] * delta_output * sigmoid_derivative(hidden2[k5])
+        delta_hidden2 = append(delta_hidden2, dh2)
+        k5 = k5 + 1
+      }
+      var new_w2: list<list<float>> = []
+      j = 0
+      while j < 4 {
+        var w2row: list<float> = net.w2[j]
+        var k6: int = 0
+        while k6 < 3 {
+          w2row[k6] = w2row[k6] + hidden1[j] * delta_hidden2[k6]
+          k6 = k6 + 1
+        }
+        new_w2 = append(new_w2, w2row)
+        j = j + 1
+      }
+      net.w2 = new_w2
+      var delta_hidden1: list<float> = []
+      j = 0
+      while j < 4 {
+        var sumdh: float = 0.0
+        var k7: int = 0
+        while k7 < 3 {
+          let row2 = net.w2[j]
+          sumdh = sumdh + row2[k7] * delta_hidden2[k7]
+          k7 = k7 + 1
+        }
+        delta_hidden1 = append(delta_hidden1, sumdh * sigmoid_derivative(hidden1[j]))
+        j = j + 1
+      }
+      var new_w1: list<list<float>> = []
+      var i2: int = 0
+      while i2 < 3 {
+        var w1row: list<float> = net.w1[i2]
+        j = 0
+        while j < 4 {
+          w1row[j] = w1row[j] + inp[i2] * delta_hidden1[j]
+          j = j + 1
+        }
+        new_w1 = append(new_w1, w1row)
+        i2 = i2 + 1
+      }
+      net.w1 = new_w1
+      s = s + 1
+    }
+    iter = iter + 1
+  }
+}
+
+fun predict(net: Network, input: list<float>): int {
+  let out = feedforward(net, input)
+  if out > 0.6 { return 1 }
+  return 0
+}
+
+fun example(): int {
+  let inputs: list<list<float>> = [
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 1.0, 1.0],
+    [1.0, 0.0, 0.0],
+    [1.0, 0.0, 1.0],
+    [1.0, 1.0, 0.0],
+    [1.0, 1.0, 1.0]
+  ]
+  let outputs: list<float> = [0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0]
+  var net = new_network()
+  train(net, inputs, outputs, 10)
+  let result = predict(net, [1.0, 1.0, 1.0])
+  print(str(result))
+  return result
+}
+
+fun main() {
+  example()
+}
+
+main()
