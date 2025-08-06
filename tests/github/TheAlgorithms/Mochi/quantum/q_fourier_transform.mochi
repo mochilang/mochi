@@ -1,0 +1,50 @@
+/*
+Quantum Fourier Transform
+
+This script classically simulates the quantum Fourier transform circuit for
+n qubits that starts in the all-zero state. The transform results in a uniform
+superposition over all 2^n basis states so, when measured, each state appears
+with equal probability. Instead of relying on quantum libraries, the simulation
+generates the ideal count distribution for 10000 measurement shots.
+
+The algorithm verifies the number of qubits is between 1 and 10 and returns a
+map from the measured bitstrings to their expected counts. The map is built by
+enumerating all 2^n states and assigning each state the same count.
+Time complexity is O(2^n) due to enumeration.
+*/
+
+fun to_bits(n: int, width: int): string {
+  var res = ""
+  var num = n
+  var w = width
+  while w > 0 {
+    res = str(num % 2) + res
+    num = num / 2
+    w = w - 1
+  }
+  return res
+}
+
+fun quantum_fourier_transform(number_of_qubits: int): map<string, int> {
+  if number_of_qubits <= 0 { panic("number of qubits must be > 0.") }
+  if number_of_qubits > 10 { panic("number of qubits too large to simulate(>10).") }
+
+  let shots = 10000
+  var states = 1
+  var p = 0
+  while p < number_of_qubits {
+    states = states * 2
+    p = p + 1
+  }
+  let per_state = shots / states
+  let counts: map<string, int> = {}
+
+  var i = 0
+  while i < states {
+    counts[to_bits(i, number_of_qubits)] = per_state
+    i = i + 1
+  }
+  return counts
+}
+
+print("Total count for quantum fourier transform state is: " + str(quantum_fourier_transform(3)))
