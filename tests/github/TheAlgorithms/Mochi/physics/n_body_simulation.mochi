@@ -1,0 +1,120 @@
+/*
+Gravitational N-Body Simulation using Euler integration.
+
+This program mirrors TheAlgorithms/Python `physics/n_body_simulation.py`.
+Each body has position, velocity, and mass. For every time step we sum the
+Newtonian gravitational forces from all other bodies, update each body's
+velocity, then update its position. A softening factor avoids singularities
+when bodies are extremely close. All computations are implemented in pure
+Mochi without external libraries or the `any` type, allowing execution on
+`runtime/vm`.
+*/
+
+type Body {
+  position_x: float,
+  position_y: float,
+  velocity_x: float,
+  velocity_y: float,
+  mass: float
+}
+
+fun make_body(px: float, py: float, vx: float, vy: float, mass: float): Body {
+  return Body { position_x: px, position_y: py, velocity_x: vx, velocity_y: vy, mass: mass }
+}
+
+fun update_velocity(body: Body, force_x: float, force_y: float, delta_time: float): Body {
+  body.velocity_x = body.velocity_x + force_x * delta_time
+  body.velocity_y = body.velocity_y + force_y * delta_time
+  return body
+}
+
+fun update_position(body: Body, delta_time: float): Body {
+  body.position_x = body.position_x + body.velocity_x * delta_time
+  body.position_y = body.position_y + body.velocity_y * delta_time
+  return body
+}
+
+type BodySystem {
+  bodies: list<Body>,
+  gravitation_constant: float,
+  time_factor: float,
+  softening_factor: float
+}
+
+fun make_body_system(bodies: list<Body>, g: float, tf: float, sf: float): BodySystem {
+  return BodySystem { bodies: bodies, gravitation_constant: g, time_factor: tf, softening_factor: sf }
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x / 2.0
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun update_system(system: BodySystem, delta_time: float): BodySystem {
+  var bodies = system.bodies
+  var i = 0
+  while i < len(bodies) {
+    var body1 = bodies[i]
+    var force_x = 0.0
+    var force_y = 0.0
+    var j = 0
+    while j < len(bodies) {
+      if i != j {
+        let body2 = bodies[j]
+        let dif_x = body2.position_x - body1.position_x
+        let dif_y = body2.position_y - body1.position_y
+        let distance_sq = dif_x * dif_x + dif_y * dif_y + system.softening_factor
+        let distance = sqrtApprox(distance_sq)
+        let denom = distance * distance * distance
+        force_x = force_x + system.gravitation_constant * body2.mass * dif_x / denom
+        force_y = force_y + system.gravitation_constant * body2.mass * dif_y / denom
+      }
+      j = j + 1
+    }
+    body1 = update_velocity(body1, force_x, force_y, delta_time * system.time_factor)
+    bodies[i] = body1
+    i = i + 1
+  }
+  i = 0
+  while i < len(bodies) {
+    var body = bodies[i]
+    body = update_position(body, delta_time * system.time_factor)
+    bodies[i] = body
+    i = i + 1
+  }
+  system.bodies = bodies
+  return system
+}
+
+fun main() {
+  let b1 = make_body(0.0, 0.0, 0.0, 0.0, 1.0)
+  let b2 = make_body(10.0, 0.0, 0.0, 0.0, 1.0)
+  var sys1 = make_body_system([b1, b2], 1.0, 1.0, 0.0)
+  sys1 = update_system(sys1, 1.0)
+  let b1_after = sys1.bodies[0]
+  let pos1x = b1_after.position_x
+  let pos1y = b1_after.position_y
+  json({"x": pos1x, "y": pos1y})
+  let vel1x = b1_after.velocity_x
+  let vel1y = b1_after.velocity_y
+  json({"vx": vel1x, "vy": vel1y})
+
+  let b3 = make_body(-10.0, 0.0, 0.0, 0.0, 1.0)
+  let b4 = make_body(10.0, 0.0, 0.0, 0.0, 4.0)
+  var sys2 = make_body_system([b3, b4], 1.0, 10.0, 0.0)
+  sys2 = update_system(sys2, 1.0)
+  let b2_after = sys2.bodies[0]
+  let pos2x = b2_after.position_x
+  let pos2y = b2_after.position_y
+  json({"x": pos2x, "y": pos2y})
+  let vel2x = b2_after.velocity_x
+  let vel2y = b2_after.velocity_y
+  json({"vx": vel2x, "vy": vel2y})
+}
+
+main()
