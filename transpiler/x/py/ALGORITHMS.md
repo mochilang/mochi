@@ -2,31 +2,31 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-06 16:44 GMT+7
+Last updated: 2025-08-06 17:47 GMT+7
 
 ## Algorithms Golden Test Checklist (21/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 38.0µs | 12.81MB |
-| 2 | backtracking/all_permutations | ✓ | 249.0µs | 12.65MB |
-| 3 | backtracking/all_subsequences | ✓ | 47.0µs | 12.35MB |
-| 4 | backtracking/coloring | ✓ | 57.0µs | 12.92MB |
-| 5 | backtracking/combination_sum | ✓ | 45.0µs | 12.61MB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 47.0µs | 13.59MB |
-| 7 | backtracking/hamiltonian_cycle | ✓ | 56.0µs | 14.00MB |
-| 8 | backtracking/knight_tour | ✓ | 22.0µs | 13.43MB |
-| 9 | backtracking/match_word_pattern | ✓ | 210.0µs | 12.71MB |
-| 10 | backtracking/minimax | ✓ | 21.0µs | 12.78MB |
-| 11 | backtracking/n_queens | ✓ | 108.0µs | 12.88MB |
-| 12 | backtracking/n_queens_math | ✓ | 62.0µs | 12.73MB |
-| 13 | backtracking/power_sum | ✓ | 27.0µs | 13.24MB |
-| 14 | backtracking/rat_in_maze | ✓ | 42.0µs | 13.92MB |
-| 15 | backtracking/sudoku | ✓ | 6.0ms | 14.43MB |
-| 16 | backtracking/sum_of_subsets | ✓ | 87.0µs | 12.66MB |
-| 17 | backtracking/word_break | ✓ | 41.0µs | 12.78MB |
-| 18 | backtracking/word_ladder | ✓ | 648.0µs | 13.24MB |
-| 19 | backtracking/word_search | ✓ | 75.0µs | 13.65MB |
-| 20 | bit_manipulation/binary_and_operator | ✓ | 52.0µs | 12.83MB |
+| 1 | backtracking/all_combinations | ✓ | 41.0µs | 12.81MB |
+| 2 | backtracking/all_permutations | ✓ | 235.0µs | 13.00MB |
+| 3 | backtracking/all_subsequences | ✓ | 48.0µs | 12.59MB |
+| 4 | backtracking/coloring | ✓ | 53.0µs | 12.69MB |
+| 5 | backtracking/combination_sum | ✓ | 55.0µs | 12.68MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 91.0µs | 13.66MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 68.0µs | 13.50MB |
+| 8 | backtracking/knight_tour | ✓ | 22.0µs | 13.62MB |
+| 9 | backtracking/match_word_pattern | ✓ | 265.0µs | 13.12MB |
+| 10 | backtracking/minimax | ✓ | 24.0µs | 13.11MB |
+| 11 | backtracking/n_queens | ✓ | 82.0µs | 13.61MB |
+| 12 | backtracking/n_queens_math | ✓ | 69.0µs | 12.46MB |
+| 13 | backtracking/power_sum | ✓ | 46.0µs | 13.04MB |
+| 14 | backtracking/rat_in_maze | ✓ | 73.0µs | 13.23MB |
+| 15 | backtracking/sudoku | ✓ | 7.0ms | 13.86MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 95.0µs | 12.41MB |
+| 17 | backtracking/word_break | ✓ | 38.0µs | 12.69MB |
+| 18 | backtracking/word_ladder | ✓ | 990.0µs | 12.89MB |
+| 19 | backtracking/word_search | ✓ | 68.0µs | 13.53MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 82.0µs | 13.09MB |
 | 21 | bit_manipulation/binary_coded_decimal | ✓ | 122.0µs | 12.87MB |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
