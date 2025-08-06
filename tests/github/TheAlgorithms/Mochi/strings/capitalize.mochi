@@ -1,0 +1,43 @@
+/*
+Capitalizes the first character of a string if it's a lowercase letter.
+
+The algorithm maintains two strings representing the lowercase and uppercase
+ASCII alphabets. It examines the first character of the input, finds its index
+within the lowercase string, and if present, replaces it with the corresponding
+character from the uppercase string. The remainder of the input string is
+appended unchanged. If the string is empty or the first character has no
+uppercase equivalent (e.g. digits or symbols), the original string is returned.
+
+Time complexity is O(n) to search the 26-letter alphabet and O(len(sentence))
+for concatenation, which is effectively constant for ASCII inputs.
+*/
+
+let lowercase = "abcdefghijklmnopqrstuvwxyz"
+let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, c: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == c {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun capitalize(sentence: string): string {
+  if len(sentence) == 0 {
+    return ""
+  }
+  let first = substring(sentence, 0, 1)
+  let idx = index_of(lowercase, first)
+  let capital = if idx >= 0 { substring(uppercase, idx, idx + 1) } else { first }
+  return capital + substring(sentence, 1, len(sentence))
+}
+
+print(capitalize("hello world"))
+print(capitalize("123 hello world"))
+print(capitalize(" hello world"))
+print(capitalize("a"))
+print(capitalize(""))
