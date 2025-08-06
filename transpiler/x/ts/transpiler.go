@@ -3965,17 +3965,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				return nil, fmt.Errorf("lower expects one argument")
 			}
 			return &MethodCallExpr{Target: args[0], Method: "toLowerCase", Args: nil}, nil
-		case "contains":
-			if len(args) != 2 {
-				return nil, fmt.Errorf("contains expects two arguments")
-			}
-			if transpileEnv != nil {
-				if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.MapType); ok {
-					useHas = true
-					return &CallExpr{Func: "_has", Args: []Expr{args[0], args[1]}}, nil
-				}
-			}
-			return &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}, nil
+               case "contains":
+                       if transpileEnv != nil {
+                               if _, ok := transpileEnv.GetFunc("contains"); ok {
+                                       return &CallExpr{Func: "contains", Args: args}, nil
+                               }
+                       }
+                       if len(args) != 2 {
+                               return nil, fmt.Errorf("contains expects two arguments")
+                       }
+                       if transpileEnv != nil {
+                               if _, ok := types.ExprType(p.Call.Args[0], transpileEnv).(types.MapType); ok {
+                                       useHas = true
+                                       return &CallExpr{Func: "_has", Args: []Expr{args[0], args[1]}}, nil
+                               }
+                       }
+                       return &MethodCallExpr{Target: args[0], Method: "includes", Args: []Expr{args[1]}}, nil
 		case "padStart":
 			if len(args) != 3 {
 				return nil, fmt.Errorf("padStart expects three arguments")

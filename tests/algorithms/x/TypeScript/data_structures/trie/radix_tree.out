@@ -1,0 +1,13 @@
+Words: banana,bananas,bandanas,bandana,band,apple,all,beast
+Tree:
+- b
+-- an
+--- ana  (leaf)
+---- s  (leaf)
+--- d  (leaf)
+---- ana  (leaf)
+----- s  (leaf)
+-- east  (leaf)
+- a
+-- pple  (leaf)
+-- ll  (leaf)
