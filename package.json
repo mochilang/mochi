@@ -17,9 +17,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "tar": "^6.2.0",
     "tree-sitter": "^0.22.4",
-    "tree-sitter-ocaml": "^0.24.2",
-    "https-proxy-agent": "^7.0.2"
+    "tree-sitter-ocaml": "^0.24.2"
   }
 }
