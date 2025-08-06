@@ -1,0 +1,27 @@
+/*
+Project Euler Problem 1: Sum of multiples of 3 or 5 below a limit.
+
+For a given upper bound n, this program computes the sum of all natural
+numbers less than n that are divisible by 3 or 5. Rather than iterating
+through each number, it uses arithmetic progression formulas.
+
+The count of multiples of a divisor d below n is (n - 1) / d. The sum of
+those multiples forms an arithmetic sequence with first term d and last
+term d * count. The sum of an arithmetic sequence is count * (first + last) / 2.
+
+We add the sums for divisors 3 and 5 then subtract the sum for 15 to avoid
+double counting numbers divisible by both. This runs in constant time.
+*/
+
+fun sum_of_multiples(n: int): int {
+  var total = 0
+  var terms = (n - 1) / 3
+  total = total + (terms * (6 + (terms - 1) * 3)) / 2
+  terms = (n - 1) / 5
+  total = total + (terms * (10 + (terms - 1) * 5)) / 2
+  terms = (n - 1) / 15
+  total = total - (terms * (30 + (terms - 1) * 15)) / 2
+  return total
+}
+
+print("solution() = " + str(sum_of_multiples(1000)))
