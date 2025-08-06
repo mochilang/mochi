@@ -1,0 +1,12 @@
+exit status 1
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/algorithms/transpiler/FS/bit_manipulation/swap_all_odd_and_even_bits.fs(111,12): error FS0001: The type 'obj' does not support the 'comparison' constraint. For example, it does not support the 'System.IComparable' interface
+
+/workspace/mochi/tests/algorithms/transpiler/FS/bit_manipulation/swap_all_odd_and_even_bits.fs(111,16): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    int    
+
+/workspace/mochi/tests/algorithms/transpiler/FS/bit_manipulation/swap_all_odd_and_even_bits.fs(112,30): error FS0001: The type 'obj' does not support a conversion to the type 'int64'
