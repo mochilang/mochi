@@ -163,6 +163,13 @@ func isIntType(t string) bool {
 	return strings.HasPrefix(t, "i") || strings.HasPrefix(t, "u")
 }
 
+// isStringType reports whether the given Zig type represents a string slice.
+// Zig distinguishes between mutable and immutable slices, so we accept both
+// `[]u8` and `[]const u8` here.
+func isStringType(t string) bool {
+	return t == "[]const u8" || t == "[]u8"
+}
+
 func valueTag(t string) string {
 	switch t {
 	case "i64":
@@ -269,6 +276,7 @@ type ForStmt struct {
 	End      Expr // end of range (exclusive)
 	Iterable Expr // used for foreach loops
 	Body     []Stmt
+	ElemType string // element type when iterating over a slice
 }
 
 // IfExpr represents an if expression returning a value.
@@ -848,6 +856,12 @@ func zigTypeFromExpr(e Expr) string {
 			return t
 		}
 		return "i64"
+	case *CopySliceExpr:
+		ce := e.(*CopySliceExpr)
+		if ce.Elem != "" {
+			return "[]" + ce.Elem
+		}
+		return "[]u8"
 	case *MapLit:
 		if m := e.(*MapLit); m.StructName != "" {
 			return m.StructName
@@ -1026,7 +1040,7 @@ func zigTypeFromExpr(e Expr) string {
 		}
 		if strings.HasPrefix(t, "[]") {
 			if t == "[]const u8" {
-				return t
+				return "u8"
 			}
 			return t[2:]
 		}
@@ -1820,7 +1834,7 @@ func (b *BinaryExpr) emit(w io.Writer) {
 	if b.Op == "+" {
 		lt := zigTypeFromExpr(b.Left)
 		rt := zigTypeFromExpr(b.Right)
-		if lt == "[]const u8" || rt == "[]const u8" {
+		if isStringType(lt) || isStringType(rt) || (strings.HasPrefix(lt, "[]") && strings.HasSuffix(lt, "u8")) || (strings.HasPrefix(rt, "[]") && strings.HasSuffix(rt, "u8")) {
 			useConcat = true
 			io.WriteString(w, "_concat_string(")
 			b.Left.emit(w)
@@ -1850,7 +1864,37 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			return
 		}
 	}
-	if lt == "[]const u8" && rt == "[]const u8" {
+	if b.Op == "==" || b.Op == "!=" {
+		if sl, ok := b.Right.(*StringLit); ok && sl.Value == "" {
+			b.Left.emit(w)
+			if b.Op == "==" {
+				io.WriteString(w, ".len == 0")
+			} else {
+				io.WriteString(w, ".len != 0")
+			}
+			return
+		}
+		if sl, ok := b.Left.(*StringLit); ok && sl.Value == "" {
+			b.Right.emit(w)
+			if b.Op == "==" {
+				io.WriteString(w, ".len == 0")
+			} else {
+				io.WriteString(w, ".len != 0")
+			}
+			return
+		}
+		if sl, ok := b.Left.(*StringLit); ok && len(sl.Value) == 1 && !isStringType(rt) {
+			b.Right.emit(w)
+			fmt.Fprintf(w, " %s '%s'", b.Op, sl.Value)
+			return
+		}
+		if sl, ok := b.Right.(*StringLit); ok && len(sl.Value) == 1 && !isStringType(lt) {
+			b.Left.emit(w)
+			fmt.Fprintf(w, " %s '%s'", b.Op, sl.Value)
+			return
+		}
+	}
+	if isStringType(lt) && isStringType(rt) {
 		switch b.Op {
 		case "==", "!=":
 			if b.Op == "==" {
@@ -2275,8 +2319,20 @@ func (f *ForStmt) emit(w io.Writer, indent int) {
 			io.WriteString(w, " {\n")
 		}
 	}
+	// temporarily register the iteration variable's type so expressions in
+	// the body can perform type-specific operations (e.g., string
+	// comparisons) even after compile-time scopes have been popped.
+	prevT, ok := varTypes[f.Name]
+	if f.ElemType != "" {
+		varTypes[f.Name] = f.ElemType
+	}
 	for _, st := range f.Body {
 		st.emit(w, indent+1)
+	}
+	if ok {
+		varTypes[f.Name] = prevT
+	} else {
+		delete(varTypes, f.Name)
 	}
 	writeIndent(w, indent)
 	io.WriteString(w, "}\n")
@@ -2433,6 +2489,20 @@ func (c *CallExpr) emit(w io.Writer) {
 			io.WriteString(w, "0")
 		}
 	case "contains":
+		// If a user-defined function named 'contains' exists, defer to it
+		// instead of emitting the builtin slice helper.
+		if _, ok := funcReturns["contains"]; ok {
+			io.WriteString(w, resolveAlias(c.Func))
+			io.WriteString(w, "(")
+			for i, a := range c.Args {
+				if i > 0 {
+					io.WriteString(w, ", ")
+				}
+				a.emit(w)
+			}
+			io.WriteString(w, ")")
+			return
+		}
 		if len(c.Args) == 2 {
 			targetType := zigTypeFromExpr(c.Args[0])
 			if strings.HasPrefix(targetType, "std.StringHashMap(") || strings.HasPrefix(targetType, "std.AutoHashMap(") {
@@ -3671,7 +3741,7 @@ func compileForStmt(fs *parser.ForStmt, prog *parser.Program) (Stmt, error) {
 		}
 	}
 	popAliasScope()
-	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body}, nil
+	return &ForStmt{Name: alias, Start: start, End: end, Iterable: iter, Body: body, ElemType: elemType}, nil
 }
 
 func compileBenchStmt(bs *parser.BenchBlock, prog *parser.Program) (Stmt, error) {
@@ -4160,13 +4230,19 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 	case s.Let != nil:
 		var expr Expr
 		var err error
+		mutable := false
 		if s.Let.Value != nil {
 			expr, err = compileExpr(s.Let.Value)
 			if err != nil {
 				return nil, err
 			}
 		} else {
-			expr = &IntLit{Value: 0}
+			if s.Let.Type != nil && toZigType(s.Let.Type) == "[]const u8" {
+				expr = &StringLit{Value: ""}
+			} else {
+				expr = &IntLit{Value: 0}
+			}
+			mutable = true
 		}
 		name := s.Let.Name
 		if funDepth > 0 && globalNames[name] {
@@ -4178,7 +4254,7 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			aliasStack[len(aliasStack)-1][s.Let.Name] = alias
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		}
-		vd := &VarDecl{Name: alias, Value: expr}
+		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
 		if s.Let.Type != nil {
 			vd.Type = toZigType(s.Let.Type)
 			if funDepth == 0 {
@@ -4238,6 +4314,11 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		if typ == "" {
 			typ = zigTypeFromExpr(expr)
 		}
+		// ensure the declaration itself retains the inferred type so
+		// that later emission does not rely on varTypes, which may be
+		// cleared after leaving the compilation scope (affecting
+		// global variables initialized at runtime)
+		vd.Type = typ
 		if funDepth == 0 {
 			varTypes[s.Let.Name] = typ
 		}
