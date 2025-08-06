@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Pascal code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Pascal`.
-Last updated: 2025-08-06 21:07 GMT+7
+Last updated: 2025-08-06 21:45 GMT+7
 
-## Algorithms Golden Test Checklist (13/1077)
+## Algorithms Golden Test Checklist (19/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 2.0µs | 448B |
@@ -16,16 +16,16 @@ Last updated: 2025-08-06 21:07 GMT+7
 | 7 | backtracking/hamiltonian_cycle | ✓ | 1.0µs | 0B |
 | 8 | backtracking/knight_tour | ✓ | 1.0µs | 64B |
 | 9 | backtracking/match_word_pattern | ✓ | 1.0µs | 0B |
-| 10 | backtracking/minimax |   |  |  |
+| 10 | backtracking/minimax | ✓ | 1.0µs | 0B |
 | 11 | backtracking/n_queens | ✓ | 2.0µs | 0B |
-| 12 | backtracking/n_queens_math |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 2.0µs | 0B |
 | 13 | backtracking/power_sum | ✓ | 1.0µs | 0B |
-| 14 | backtracking/rat_in_maze |   |  |  |
+| 14 | backtracking/rat_in_maze | ✓ | 2.0µs | 768B |
 | 15 | backtracking/sudoku | ✓ | 2.0µs | 1.38KB |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
+| 16 | backtracking/sum_of_subsets | ✓ | 2.0µs | 0B |
+| 17 | backtracking/word_break | ✓ | 3.0µs | 1.44KB |
+| 18 | backtracking/word_ladder | ✓ | 2.0µs | 0B |
+| 19 | backtracking/word_search | error |  |  |
 | 20 | bit_manipulation/binary_and_operator |   |  |  |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
