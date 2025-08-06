@@ -36,41 +36,35 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
+    fn binary_or(mut a: i64, mut b: i64) -> String {
+    if ((a < 0) || (b < 0)) {
+        return String::from("ValueError")
+    }
+    let mut res: String = String::from("").clone();
+    let mut x: i64 = a;
+    let mut y: i64 = b;
+    while ((x > 0) || (y > 0)) {
+        let mut bit_a: i64 = (x % 2);
+        let mut bit_b: i64 = (y % 2);
+        if ((bit_a == 1) || (bit_b == 1)) {
+            res = format!("{}{}", "1", res);
+        } else {
+            res = format!("{}{}", "0", res);
+        }
         x = (x / 2);
+        y = (y / 2);
     }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
+    if (res.as_str() == "") {
+        res = String::from("0");
     }
-    return result.clone()
+    return format!("{}{}", "0b", res).clone()
 };
-    fn binary_coded_decimal(mut number: i64) -> String {
-    let mut n: i64 = number;
-    if (n < 0) {
-        n = 0;
-    }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
-    let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
-        i = (i + 1);
-    }
-    return out.clone()
-};
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    println!("{}", binary_or(25, 32));
+    println!("{}", binary_or(37, 50));
+    println!("{}", binary_or(21, 30));
+    println!("{}", binary_or(58, 73));
+    println!("{}", binary_or(0, 255));
+    println!("{}", binary_or(0, 256));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

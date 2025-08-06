@@ -869,6 +869,21 @@ func (i *IndexExpr) emit(w io.Writer) {
 		if strings.HasPrefix(ttype, "&") {
 			ttype = ttype[1:]
 		}
+		if stringVars[t.Name] || ttype == "String" || (!mapVars[t.Name] && !strings.HasPrefix(ttype, "Vec<") && !strings.HasPrefix(ttype, "HashMap")) {
+			if inferType(i) == "i64" {
+				io.WriteString(w, "(")
+				t.emit(w)
+				io.WriteString(w, ".as_bytes()[")
+				i.Index.emit(w)
+				io.WriteString(w, " as usize] - b'0') as i64")
+			} else {
+				t.emit(w)
+				io.WriteString(w, ".chars().nth(")
+				i.Index.emit(w)
+				io.WriteString(w, " as usize).unwrap().to_string()")
+			}
+			return
+		}
 		if mapVars[t.Name] || strings.HasPrefix(ttype, "HashMap") {
 			if lockedMap != "" && lockedMap == t.Name {
 				io.WriteString(w, "_map")
@@ -2916,6 +2931,16 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 				}
 			}
 		}
+		if e == nil && typ != "" {
+			switch typ {
+			case "String":
+				e = &StringLit{Value: ""}
+			case "i64":
+				e = &NumberLit{Value: "0"}
+			case "bool":
+				e = &BoolLit{Value: false}
+			}
+		}
 		if typ != "" {
 			inferred := inferType(e)
 			if typ == "Vec<i64>" && inferred != typ {
@@ -3963,7 +3988,7 @@ func applyIndexOps(base Expr, ops []*parser.IndexOp) (Expr, error) {
 			case *StringLit:
 				base = &StringIndexExpr{Str: b, Index: idx}
 			case *NameRef:
-				if stringVars[b.Name] {
+				if stringVars[b.Name] || inferType(b) == "String" {
 					base = &StringIndexExpr{Str: b, Index: idx}
 				} else {
 					base = &IndexExpr{Target: base, Index: idx}
@@ -5407,6 +5432,9 @@ func inferType(e Expr) string {
 		ct := inferType(ex.Target)
 		if strings.HasPrefix(ct, "&") {
 			ct = ct[1:]
+		}
+		if ct == "String" {
+			return "String"
 		}
 		if strings.HasPrefix(ct, "Vec<") {
 			return strings.TrimSuffix(strings.TrimPrefix(ct, "Vec<"), ">")

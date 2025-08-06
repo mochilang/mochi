@@ -36,41 +36,25 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
-        x = (x / 2);
+    fn index_of_rightmost_set_bit(mut number: i64) -> i64 {
+    if (number < 0) {
+        panic!("Input must be a non-negative integer");
     }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
+    if (number == 0) {
+        return -1
     }
-    return result.clone()
-};
-    fn binary_coded_decimal(mut number: i64) -> String {
     let mut n: i64 = number;
-    if (n < 0) {
-        n = 0;
+    let mut index: i64 = 0;
+    while ((n % 2) == 0) {
+        n = (n / 2);
+        index = (index + 1);
     }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
-    let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
-        i = (i + 1);
-    }
-    return out.clone()
+    return index
 };
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    println!("{}", index_of_rightmost_set_bit(0).to_string());
+    println!("{}", index_of_rightmost_set_bit(5).to_string());
+    println!("{}", index_of_rightmost_set_bit(36).to_string());
+    println!("{}", index_of_rightmost_set_bit(8).to_string());
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

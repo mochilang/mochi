@@ -36,41 +36,52 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn to_binary4(mut n: i64) -> String {
-    let mut result: String = String::from("").clone();
-    let mut x: i64 = n;
-    while (x > 0) {
-        result = format!("{}{}", (x % 2).to_string(), result).to_string();
+    fn bitwise_xor(mut a: i64, mut b: i64) -> i64 {
+    let mut result: i64 = 0;
+    let mut bit: i64 = 1;
+    let mut x: i64 = a;
+    let mut y: i64 = b;
+    while ((x > 0) || (y > 0)) {
+        let mut ax: i64 = (x % 2);
+        let mut by: i64 = (y % 2);
+        if (((ax + by) % 2) == 1) {
+            result = (result + bit);
+        }
         x = (x / 2);
+        y = (y / 2);
+        bit = (bit * 2);
     }
-    while ((result.len() as i64) < 4) {
-        result = format!("{}{}", "0", result);
-    }
-    return result.clone()
+    return result
 };
-    fn binary_coded_decimal(mut number: i64) -> String {
-    let mut n: i64 = number;
-    if (n < 0) {
-        n = 0;
+    fn bitwise_and(mut a: i64, mut b: i64) -> i64 {
+    let mut result: i64 = 0;
+    let mut bit: i64 = 1;
+    let mut x: i64 = a;
+    let mut y: i64 = b;
+    while ((x > 0) && (y > 0)) {
+        if (((x % 2) == 1) && ((y % 2) == 1)) {
+            result = (result + bit);
+        }
+        x = (x / 2);
+        y = (y / 2);
+        bit = (bit * 2);
     }
-    let mut digits = n.to_string();
-    let mut out: String = String::from("0b").clone();
-    let mut i: i64 = 0;
-    while (i < (digits.len() as i64)) {
-        let mut d: i64 = (digits.as_bytes()[i as usize] - b'0') as i64;
-        let mut d_int: i64 = d;
-        out = format!("{}{}", out, to_binary4(d_int));
-        i = (i + 1);
-    }
-    return out.clone()
+    return result
 };
-    println!("{}", binary_coded_decimal(-2));
-    println!("{}", binary_coded_decimal(-1));
-    println!("{}", binary_coded_decimal(0));
-    println!("{}", binary_coded_decimal(3));
-    println!("{}", binary_coded_decimal(2));
-    println!("{}", binary_coded_decimal(12));
-    println!("{}", binary_coded_decimal(987));
+    fn bitwise_addition_recursive(mut number: i64, mut other_number: i64) -> i64 {
+    if ((number < 0) || (other_number < 0)) {
+        panic!("Both arguments MUST be non-negative!");
+    }
+    let mut bitwise_sum: i64 = bitwise_xor(number, other_number);
+    let mut carry: i64 = bitwise_and(number, other_number);
+    if (carry == 0) {
+        return bitwise_sum
+    }
+    return bitwise_addition_recursive(bitwise_sum, (carry * 2))
+};
+    println!("{}", bitwise_addition_recursive(4, 5).to_string());
+    println!("{}", bitwise_addition_recursive(8, 9).to_string());
+    println!("{}", bitwise_addition_recursive(0, 4).to_string());
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();
