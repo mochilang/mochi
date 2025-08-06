@@ -1,0 +1,75 @@
+/*
+Bitonic Sort
+
+This algorithm sorts a list of integers using the bitonic sort algorithm,
+which is suitable for parallel hardware. A bitonic sequence first increases
+and then decreases (or vice versa). To sort an arbitrary sequence, the list
+is recursively divided: the first half is sorted in ascending order and the
+second half in descending order, forming a bitonic sequence. The bitonic
+merge operation then recursively rearranges the sequence into ascending or
+descending order as required. This implementation assumes the list length is
+a power of two and runs in O(n log^2 n) time. It uses only core Mochi
+features so it executes on the runtime/vm without FFI and avoids the `any`
+type.
+*/
+
+fun set_at_int(xs: list<int>, idx: int, value: int): list<int> {
+  var res: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun comp_and_swap(arr: list<int>, i: int, j: int, dir: int): list<int> {
+  var res = arr
+  let xi = arr[i]
+  let xj = arr[j]
+  if (dir == 1 && xi > xj) || (dir == 0 && xi < xj) {
+    res = set_at_int(res, i, xj)
+    res = set_at_int(res, j, xi)
+  }
+  return res
+}
+
+fun bitonic_merge(arr: list<int>, low: int, length: int, dir: int): list<int> {
+  var res = arr
+  if length > 1 {
+    let mid = length / 2
+    var k = low
+    while k < low + mid {
+      res = comp_and_swap(res, k, k + mid, dir)
+      k = k + 1
+    }
+    res = bitonic_merge(res, low, mid, dir)
+    res = bitonic_merge(res, low + mid, mid, dir)
+  }
+  return res
+}
+
+fun bitonic_sort(arr: list<int>, low: int, length: int, dir: int): list<int> {
+  var res = arr
+  if length > 1 {
+    let mid = length / 2
+    res = bitonic_sort(res, low, mid, 1)
+    res = bitonic_sort(res, low + mid, mid, 0)
+    res = bitonic_merge(res, low, length, dir)
+  }
+  return res
+}
+
+fun main() {
+  let data = [12, 34, 92, -23, 0, -121, -167, 145]
+  let asc = bitonic_sort(data, 0, len(data), 1)
+  print(str(asc))
+  let desc = bitonic_merge(asc, 0, len(asc), 0)
+  print(str(desc))
+}
+
+main()
