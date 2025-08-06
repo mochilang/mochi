@@ -1,0 +1,38 @@
+/*
+Project Euler Problem 16: Power digit sum.
+
+Given an integer power, compute the sum of the digits of 2^power.
+The algorithm multiplies 2 by itself power times to obtain the value,
+converts the result to a string, and sums the numeric value of each
+character. This runs in O(power) time for the exponentiation and O(d)
+time for processing the resulting d digits. The implementation uses
+only Mochi integers and strings with no FFI and avoids the "any" type
+so it can execute on runtime/vm.
+*/
+
+fun power_of_two(exp: int): int {
+  var result: int = 1
+  var i: int = 0
+  while i < exp {
+    result = result * 2
+    i = i + 1
+  }
+  return result
+}
+
+fun solution(power: int): int {
+  let num = power_of_two(power)
+  let string_num = str(num)
+  var sum: int = 0
+  var i: int = 0
+  while i < len(string_num) {
+    sum = sum + (string_num[i] as int)
+    i = i + 1
+  }
+  return sum
+}
+
+print(str(solution(1000)))
+print(str(solution(50)))
+print(str(solution(20)))
+print(str(solution(15)))
