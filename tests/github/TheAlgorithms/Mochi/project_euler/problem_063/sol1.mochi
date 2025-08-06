@@ -1,0 +1,50 @@
+/*
+Project Euler Problem 63: Powerful digit counts
+
+Given positive integers, find how many n-digit positive integers are also nth powers.
+Because any base >= 10 raised to power n has more than n digits, bases above 9 cannot qualify.
+Moreover, 9^23 has 22 digits, so powers beyond 22 will never produce an n-digit nth power.
+Algorithm: iterate bases 1..9 and powers 1..21, compute base^power and count whenever the
+number of decimal digits equals the power. Digit count is computed numerically without strings.
+Time Complexity: O(max_base * max_power * log(base^power))
+*/
+
+fun pow(base: int, exponent: int): int {
+  var result = 1
+  var i = 0
+  while i < exponent {
+    result = result * base
+    i = i + 1
+  }
+  return result
+}
+
+fun num_digits(n: int): int {
+  if n == 0 { return 1 }
+  var count = 0
+  var x = n
+  while x > 0 {
+    x = x / 10
+    count = count + 1
+  }
+  return count
+}
+
+fun solution(max_base: int, max_power: int): int {
+  var total = 0
+  var base = 1
+  while base < max_base {
+    var power = 1
+    while power < max_power {
+      let digits = num_digits(pow(base, power))
+      if digits == power {
+        total = total + 1
+      }
+      power = power + 1
+    }
+    base = base + 1
+  }
+  return total
+}
+
+print("solution(10, 22) = " + str(solution(10, 22)))
