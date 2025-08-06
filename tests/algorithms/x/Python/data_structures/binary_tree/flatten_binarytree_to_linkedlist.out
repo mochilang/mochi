@@ -1,0 +1,9 @@
+Flattened Linked List:
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/flatten_binarytree_to_linkedlist.py", line 72, in <module>
+    root = build_tree()
+           ^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/flatten_binarytree_to_linkedlist.py", line 40, in build_tree
+    left_child = _set_index(left_child, root, n2)
+                            ^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'left_child' where it is not associated with a value

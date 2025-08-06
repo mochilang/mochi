@@ -1,0 +1,8 @@
+type: error[T008]: type mismatch: expected int, got Node
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/binary_tree/binary_search_tree_recursive.mochi:106:22
+
+106 |   _reassign_nodes(i, nodes[i].right)
+    |                      ^
+
+help:
+  Change the value to match the expected type.

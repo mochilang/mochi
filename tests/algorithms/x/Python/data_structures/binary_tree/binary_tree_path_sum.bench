@@ -1,0 +1,18 @@
+{
+  "duration_us": 14,
+  "memory_bytes": 13365248,
+  "name": "main"
+}
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/binary_tree_path_sum.py", line 64, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/binary_tree_path_sum.py", line 56, in main
+    print(path_sum(tree1, 8))
+          ^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/binary_tree_path_sum.py", line 46, in path_sum
+    return (0 if node == Empty else (dfs(node, target, 0) + path_sum(node.left, target) + path_sum(node.right, target) if isinstance(node, Node) else None))
+                                     ^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/binary_tree_path_sum.py", line 44, in dfs
+    return (0 if node == Empty else (((1 if current + v == target else 0)) + dfs(node.left, target, current + node.value) + dfs(node.right, target, current + node.value) if isinstance(node, Node) else None))
+                                                      ^
+NameError: name 'v' is not defined

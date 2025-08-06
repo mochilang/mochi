@@ -1,0 +1,17 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 92, in <module>
+    main()
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 84, in main
+    build(1, 0, N - 1)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 36, in build
+    build(left_child(idx), left, mid)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 36, in build
+    build(left_child(idx), left, mid)
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 36, in build
+    build(left_child(idx), left, mid)
+  [Previous line repeated 1 more time]
+  File "/workspace/mochi/tests/algorithms/x/Python/data_structures/binary_tree/segment_tree.py", line 33, in build
+    st = _set_index(st, idx, A[left])
+                    ^^
+UnboundLocalError: cannot access local variable 'st' where it is not associated with a value
