@@ -1,0 +1,54 @@
+/*
+Project Euler Problem 10: Summation of primes
+
+Given a limit n, compute the sum of all prime numbers less than n.
+This implementation uses the classic Sieve of Eratosthenes:
+ 1. Start with a list marking numbers as potential primes.
+ 2. Repeatedly mark multiples of each found prime starting from p^2.
+ 3. Sum the indices that remain unmarked below n.
+The algorithm runs in O(n log log n) time and O(n) space.
+*/
+
+fun isqrt(n: int): int {
+  var r = 0
+  while (r + 1) * (r + 1) <= n {
+    r = r + 1
+  }
+  return r
+}
+
+fun solution(n: int): int {
+  var sieve: list<bool> = []
+  var i = 0
+  while i <= n {
+    sieve = append(sieve, false)
+    i = i + 1
+  }
+  sieve[0] = true
+  sieve[1] = true
+
+  let limit = isqrt(n)
+  var p = 2
+  while p <= limit {
+    if !sieve[p] {
+      var j = p * p
+      while j <= n {
+        sieve[j] = true
+        j = j + p
+      }
+    }
+    p = p + 1
+  }
+
+  var sum = 0
+  var k = 2
+  while k < n {
+    if !sieve[k] {
+      sum = sum + k
+    }
+    k = k + 1
+  }
+  return sum
+}
+
+print(str(solution(20000)))
