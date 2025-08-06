@@ -1,0 +1,41 @@
+/*
+Project Euler Problem 3: Largest Prime Factor
+--------------------------------------------
+Given a positive integer n, determine its largest prime factor.
+
+Algorithm:
+1. Begin with divisor i = 2 and a copy of n named num.
+2. While i * i <= num:
+   - Repeatedly divide num by i while divisible, recording i as the current
+     largest prime factor.
+   - Increment i to test the next potential factor.
+3. After the loop, if num is greater than 1 it is itself prime and becomes
+   the largest prime factor.
+4. The function returns this largest prime factor.
+
+The main entry prints the largest prime factor of 600851475143.
+*/
+
+fun largest_prime_factor(n: int): int {
+  if n <= 0 { panic("Parameter n must be greater than or equal to one.") }
+  var num = n
+  var prime = 1
+  var i = 2
+  while i * i <= num {
+    while num % i == 0 {
+      prime = i
+      num = num / i
+    }
+    i = i + 1
+  }
+  if num > 1 {
+    prime = num
+  }
+  return prime
+}
+
+fun main() {
+  print(str(largest_prime_factor(600851475143)))
+}
+
+main()
