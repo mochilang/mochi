@@ -2181,16 +2181,25 @@ type FormatList struct{ List Expr }
 func (f *FormatList) emit(e *emitter) {
 	io.WriteString(e.w, `((x = `)
 	f.List.emit(e)
-	io.WriteString(e.w, `); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.respond_to?(:to_h) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s)`)
+	io.WriteString(e.w, `); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(String) then '\'' + x + '\'' elsif x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "'#{k}': #{v.is_a?(String) ? '\'' + v + '\'' : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(', ') + "]") : x.to_s)`)
 }
 
-// FormatBool renders a boolean as "True" or "False" for printing.
+// FormatListBare renders a list like "[a b]" without quoting strings.
+type FormatListBare struct{ List Expr }
+
+func (f *FormatListBare) emit(e *emitter) {
+	io.WriteString(e.w, `((x = `)
+	f.List.emit(e)
+	io.WriteString(e.w, `); x.is_a?(Array) ? ("[" + x.map{ |x| if x.is_a?(Hash) then '{' + x.to_h.map{ |k,v| "#{k}: #{v.is_a?(String) ? v : v.to_s}" }.join(', ') + '}' else x.to_s end }.join(' ') + "]") : x.to_s)`)
+}
+
+// FormatBool renders a boolean as "true" or "false" for printing.
 type FormatBool struct{ Value Expr }
 
 func (f *FormatBool) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	f.Value.emit(e)
-	io.WriteString(e.w, " ? 'True' : 'False')")
+	io.WriteString(e.w, " ? 'true' : 'false')")
 }
 
 // SaveJSONLExpr writes a list of records to stdout as JSON lines.
@@ -3979,6 +3988,9 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		case "str":
 			if len(args) != 1 {
 				return nil, fmt.Errorf("str takes one arg")
+			}
+			if _, ok := types.ExprType(p.Call.Args[0], currentEnv).(types.ListType); ok {
+				return &FormatListBare{List: args[0]}, nil
 			}
 			return &CastExpr{Value: args[0], Type: "string"}, nil
 		case "values":
