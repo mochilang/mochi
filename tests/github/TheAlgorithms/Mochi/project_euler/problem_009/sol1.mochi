@@ -1,0 +1,49 @@
+/*
+Project Euler Problem 9: Special Pythagorean Triplet
+----------------------------------------------------
+Finds the product a*b*c of the unique Pythagorean triplet
+(a < b < c) for which a + b + c = 1000 and a^2 + b^2 = c^2.
+
+Two approaches are implemented:
+1. solution      – Brute force search using three nested loops.
+2. solution_fast – Optimized search computing c = 1000 - a - b,
+                   reducing the loop count to two.
+Both return the product a*b*c or -1 if no such triplet exists.
+*/
+
+fun solution(): int {
+  var a = 0
+  while a < 300 {
+    var b = a + 1
+    while b < 400 {
+      var c = b + 1
+      while c < 500 {
+        if a + b + c == 1000 && a * a + b * b == c * c {
+          return a * b * c
+        }
+        c = c + 1
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return -1
+}
+
+fun solution_fast(): int {
+  var a = 0
+  while a < 300 {
+    var b = 0
+    while b < 400 {
+      let c = 1000 - a - b
+      if a < b && b < c && a * a + b * b == c * c {
+        return a * b * c
+      }
+      b = b + 1
+    }
+    a = a + 1
+  }
+  return -1
+}
+
+print(str(solution_fast()))
