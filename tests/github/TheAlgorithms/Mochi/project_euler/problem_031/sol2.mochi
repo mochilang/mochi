@@ -1,0 +1,47 @@
+/*
+Coin Sums (Project Euler Problem 31)
+
+Given the British coin denominations 1p, 2p, 5p, 10p, 20p, 50p,
+£1 (100p) and £2 (200p), compute how many different ways a target
+amount of pence can be formed using any number of coins.
+
+The algorithm uses dynamic programming in a bottom-up fashion.
+We maintain a list `ways` where `ways[i]` represents the number
+of ways to form `i` pence.  Starting with `ways[0] = 1`, for each
+coin value we iterate from the coin up to the target and accumulate
+new combinations: `ways[i] += ways[i - coin]`.
+
+Time Complexity: O(C * N) where C is the number of coin types and N is the target amount.
+Space Complexity: O(N)
+*/
+
+fun make_list(len: int, value: int): list<int> {
+  var arr: list<int> = []
+  var i = 0
+  while i < len {
+    arr = append(arr, value)
+    i = i + 1
+  }
+  return arr
+}
+
+fun coin_sums(pence: int): int {
+  let coins = [1, 2, 5, 10, 20, 50, 100, 200]
+  var ways = make_list(pence + 1, 0)
+  ways[0] = 1
+  var ci = 0
+  while ci < len(coins) {
+    let coin = coins[ci]
+    var i = coin
+    while i <= pence {
+      ways[i] = ways[i] + ways[i - coin]
+      i = i + 1
+    }
+    ci = ci + 1
+  }
+  return ways[pence]
+}
+
+print(str(coin_sums(200)))
+print(str(coin_sums(50)))
+print(str(coin_sums(10)))
