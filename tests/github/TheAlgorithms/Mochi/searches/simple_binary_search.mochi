@@ -1,0 +1,43 @@
+/*
+Binary search in a sorted list of integers.
+
+The algorithm compares the target with the middle element of the current
+interval. If they are equal the search succeeds. If the target is smaller,
+search continues on the left half; otherwise on the right half. Each step
+halves the search space, giving O(log n) time and O(1) space.
+*/
+
+fun binary_search(arr: list<int>, item: int): bool {
+  var low = 0
+  var high = len(arr) - 1
+  while low <= high {
+    let mid = (low + high) / 2
+    let val = arr[mid]
+    if val == item {
+      return true
+    }
+    if item < val {
+      high = mid - 1
+    } else {
+      low = mid + 1
+    }
+  }
+  return false
+}
+
+var arr1: list<int> = [0, 1, 2, 8, 13, 17, 19, 32, 42]
+print(binary_search(arr1, 3))
+print(binary_search(arr1, 13))
+
+var arr2: list<int> = [4, 4, 5, 6, 7]
+print(binary_search(arr2, 4))
+print(binary_search(arr2, -10))
+
+var arr3: list<int> = [-18, 2]
+print(binary_search(arr3, -18))
+
+var arr4: list<int> = [5]
+print(binary_search(arr4, 5))
+
+var arr5: list<int> = []
+print(binary_search(arr5, 1))
