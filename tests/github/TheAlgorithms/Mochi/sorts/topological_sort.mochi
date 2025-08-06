@@ -1,0 +1,66 @@
+/*
+Topological sorting of a directed acyclic graph using depth-first search.
+
+The graph used in this example is:
+    a
+   / \
+  b   c
+ / \
+d   e
+
+Edges:
+  a -> c, b
+  b -> d, e
+  c ->
+  d ->
+  e ->
+
+We perform a recursive DFS starting from a chosen vertex. When a node's
+neighbors have all been visited, the node is appended to the result list.
+If some vertices remain unvisited after completing the traversal from the
+starting vertex, we select the next unvisited vertex and continue. The
+reverse order of completion yields a valid topological ordering of all
+vertices.
+*/
+
+let edges: map<string, list<string>> = {
+  "a": ["c", "b"],
+  "b": ["d", "e"],
+  "c": [],
+  "d": [],
+  "e": [],
+}
+
+let vertices: list<string> = ["a", "b", "c", "d", "e"]
+
+fun topological_sort(start: string, visited: map<string, bool>, sort: list<string>): list<string> {
+  visited[start] = true
+  let neighbors = edges[start]
+  var i = 0
+  while i < len(neighbors) {
+    let neighbor = neighbors[i]
+    if !(neighbor in visited) {
+      sort = topological_sort(neighbor, visited, sort)
+    }
+    i = i + 1
+  }
+  sort = append(sort, start)
+  if len(visited) != len(vertices) {
+    var j = 0
+    while j < len(vertices) {
+      let v = vertices[j]
+      if !(v in visited) {
+        sort = topological_sort(v, visited, sort)
+      }
+      j = j + 1
+    }
+  }
+  return sort
+}
+
+fun main() {
+  let result = topological_sort("a", {}, [])
+  print(str(result))
+}
+
+main()
