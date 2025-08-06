@@ -1452,6 +1452,18 @@ type UnaryExpr struct {
 }
 
 func (u *UnaryExpr) emit(w io.Writer) {
+	// Add parentheses when the operand is a binary expression to
+	// preserve the original precedence of the source program. Without
+	// this, expressions like `!(a > b)` would be emitted as `!a > b`,
+	// which Scala parses as `(!a) > b` and causes compilation errors
+	// for non-boolean operands.
+	if _, ok := u.Expr.(*BinaryExpr); ok {
+		fmt.Fprint(w, u.Op)
+		fmt.Fprint(w, "(")
+		u.Expr.emit(w)
+		fmt.Fprint(w, ")")
+		return
+	}
 	fmt.Fprint(w, u.Op)
 	u.Expr.emit(w)
 }
