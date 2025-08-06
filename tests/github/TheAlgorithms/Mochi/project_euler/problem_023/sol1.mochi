@@ -1,0 +1,76 @@
+/*
+Project Euler Problem 23: Non-abundant sums.
+Given an upper limit, compute the sum of all positive integers that cannot be written
+as the sum of two abundant numbers.
+
+Algorithm:
+1. Compute the sum of proper divisors for each number up to `limit` using a
+   modified sieve: for each divisor pair (i, k) accumulate i+k into the multiple.
+2. Mark numbers with divisor sum greater than themselves as abundant.
+3. For each n up to `limit`, check whether n can be expressed as a sum of two
+   previously found abundants using a boolean lookup. If not, add n to result.
+
+This runs in roughly O(limit * A) time where A is the count of abundant numbers.
+*/
+
+fun int_sqrt(n: int): int {
+  var x = 1
+  while (x + 1) * (x + 1) <= n {
+    x = x + 1
+  }
+  return x
+}
+
+fun solution(limit: int): int {
+  var sum_divs: list<int> = []
+  var i = 0
+  while i <= limit {
+    sum_divs = append(sum_divs, 1)
+    i = i + 1
+  }
+  let sqrt_limit = int_sqrt(limit)
+  i = 2
+  while i <= sqrt_limit {
+    sum_divs[i * i] = sum_divs[i * i] + i
+    var k = i + 1
+    while k <= limit / i {
+      sum_divs[k * i] = sum_divs[k * i] + k + i
+      k = k + 1
+    }
+    i = i + 1
+  }
+  var is_abundant: list<bool> = []
+  i = 0
+  while i <= limit {
+    is_abundant = append(is_abundant, false)
+    i = i + 1
+  }
+  var abundants: list<int> = []
+  var res = 0
+  var n = 1
+  while n <= limit {
+    if sum_divs[n] > n {
+      abundants = append(abundants, n)
+      is_abundant[n] = true
+    }
+    var has_pair = false
+    var j = 0
+    while j < len(abundants) {
+      let a = abundants[j]
+      if a > n { break }
+      let b = n - a
+      if b <= limit && is_abundant[b] {
+        has_pair = true
+        break
+      }
+      j = j + 1
+    }
+    if !has_pair {
+      res = res + n
+    }
+    n = n + 1
+  }
+  return res
+}
+
+print(str(solution(28123)))
