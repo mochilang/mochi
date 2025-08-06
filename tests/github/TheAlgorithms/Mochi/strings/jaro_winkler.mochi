@@ -1,0 +1,100 @@
+/*
+Jaro-Winkler Similarity
+-----------------------
+The Jaro-Winkler metric measures similarity between two strings based on:
+1. Matching characters within a search window of half the shorter length.
+2. The number of transpositions between the matched characters.
+3. A common prefix bonus up to four characters.
+
+This implementation builds boolean match arrays for both strings to find
+matching characters and then counts transpositions. The final similarity
+score is the Jaro distance adjusted by the prefix bonus. The score ranges
+from 0.0 (no similarity) to 1.0 (identical strings).
+*/
+
+fun min_int(a: int, b: int): int { if a < b { return a } else { return b } }
+fun max_int(a: int, b: int): int { if a > b { return a } else { return b } }
+
+fun repeat_bool(n: int, value: bool): list<bool> {
+  var res: list<bool> = []
+  var i = 0
+  while i < n {
+    res = append(res, value)
+    i = i + 1
+  }
+  return res
+}
+
+fun set_bool(xs: list<bool>, idx: int, value: bool): list<bool> {
+  var res: list<bool> = []
+  var i = 0
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun jaro_winkler(s1: string, s2: string): float {
+  let len1 = len(s1)
+  let len2 = len(s2)
+  let limit = min_int(len1, len2) / 2
+  var match1 = repeat_bool(len1, false)
+  var match2 = repeat_bool(len2, false)
+  var matches = 0
+  var i = 0
+  while i < len1 {
+    let start = max_int(0, i - limit)
+    let end = min_int(i + limit + 1, len2)
+    var j = start
+    while j < end {
+      if !match2[j] && substring(s1, i, i + 1) == substring(s2, j, j + 1) {
+        match1 = set_bool(match1, i, true)
+        match2 = set_bool(match2, j, true)
+        matches = matches + 1
+        break
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  if matches == 0 {
+    return 0.0
+  }
+  var transpositions = 0
+  var k = 0
+  i = 0
+  while i < len1 {
+    if match1[i] {
+      while !match2[k] { k = k + 1 }
+      if substring(s1, i, i + 1) != substring(s2, k, k + 1) {
+        transpositions = transpositions + 1
+      }
+      k = k + 1
+    }
+    i = i + 1
+  }
+  let m = matches as float
+  let jaro = (
+    (m / (len1 as float)) +
+    (m / (len2 as float)) +
+    ((m - (transpositions as float) / 2.0) / m)
+  ) / 3.0
+  var prefix_len = 0
+  i = 0
+  while i < 4 && i < len1 && i < len2 {
+    if substring(s1, i, i + 1) == substring(s2, i, i + 1) {
+      prefix_len = prefix_len + 1
+    } else {
+      break
+    }
+    i = i + 1
+  }
+  return jaro + 0.1 * (prefix_len as float) * (1.0 - jaro)
+}
+
+print(str(jaro_winkler("hello", "world")))
