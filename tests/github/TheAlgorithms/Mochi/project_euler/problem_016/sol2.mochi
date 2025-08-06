@@ -1,0 +1,42 @@
+/*
+Project Euler Problem 16 - Power Digit Sum
+-----------------------------------------
+Given an integer power p, compute the sum of the decimal digits of 2^p.
+Instead of using big integers or converting to strings, we simulate base-10
+doubling. Starting with a digit list containing [1], we repeatedly double
+the number p times, propagating carries across digits. The final list
+stores 2^p in little-endian order; summing its elements yields the digit
+sum.
+*/
+
+fun solution(power: int): int {
+  var digits: list<int> = []
+  digits = append(digits, 1)
+  var i: int = 0
+  while i < power {
+    var carry: int = 0
+    var j: int = 0
+    while j < len(digits) {
+      let v: int = digits[j] * 2 + carry
+      digits[j] = v % 10
+      carry = v / 10
+      j = j + 1
+    }
+    if carry > 0 {
+      digits = append(digits, carry)
+    }
+    i = i + 1
+  }
+  var sum: int = 0
+  var k: int = 0
+  while k < len(digits) {
+    sum = sum + digits[k]
+    k = k + 1
+  }
+  return sum
+}
+
+print(str(solution(1000)))
+print(str(solution(50)))
+print(str(solution(20)))
+print(str(solution(15)))
