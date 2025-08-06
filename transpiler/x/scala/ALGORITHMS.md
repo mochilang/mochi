@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 189/1077
-Last updated: 2025-08-06 22:39 +0700
+Completed programs: 196/1077
+Last updated: 2025-08-06 23:37 +0700
 
 Checklist:
 
@@ -211,13 +211,13 @@ Checklist:
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 4µs | 8.7 MB |
 | 203 | data_structures/hashing/bloom_filter | ✓ | 22µs | 8.8 MB |
 | 204 | data_structures/hashing/double_hash | ✓ | 8µs | 8.7 MB |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
+| 205 | data_structures/hashing/hash_map | ✓ | 8µs | 3.5 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 8µs | 3.5 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 10µs | 3.5 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 2µs | 3.5 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 3µs | 3.5 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 9µs | 3.5 MB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 16µs | 3.5 MB |
 | 212 | data_structures/heap/heap |   |  |  |
 | 213 | data_structures/heap/heap_generic |   |  |  |
 | 214 | data_structures/heap/max_heap |   |  |  |
