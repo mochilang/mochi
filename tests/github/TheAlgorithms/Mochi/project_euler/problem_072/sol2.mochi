@@ -1,0 +1,53 @@
+/*
+Project Euler Problem 72: Counting fractions
+
+Given a positive integer limit, count how many reduced proper fractions
+n/d exist for d ≤ limit. A reduced proper fraction has numerator and
+denominator coprime (gcd(n, d) = 1) and n < d. The count equals the sum
+of Euler's totient function φ(d) for d = 2…limit.
+
+Algorithm:
+- Initialize an array phi where phi[i] = i for 0 ≤ i ≤ limit.
+- For each number n from 2 to limit:
+    - If phi[n] == n then n is prime.
+    - For each multiple k of n up to limit:
+        - Update phi[k] using phi[k] -= phi[k] / n.
+- The answer is the sum of phi[2..limit].
+
+This sieve-based totient computation runs in O(limit log log limit)
+using only integer arithmetic and pure Mochi code.
+*/
+
+fun solution(limit: int): int {
+  var phi: list<int> = []
+  var i = 0
+  while i <= limit {
+    phi = append(phi, i)
+    i = i + 1
+  }
+  var n = 2
+  while n <= limit {
+    if phi[n] == n {
+      var k = n
+      while k <= limit {
+        phi[k] = phi[k] - phi[k] / n
+        k = k + n
+      }
+    }
+    n = n + 1
+  }
+  var total = 0
+  var m = 2
+  while m <= limit {
+    total = total + phi[m]
+    m = m + 1
+  }
+  return total
+}
+
+fun main() {
+  print(solution(8))
+  print(solution(1000))
+}
+
+main()
