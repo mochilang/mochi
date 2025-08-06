@@ -1,0 +1,39 @@
+/*
+Project Euler Problem 31: Coin Sums
+
+Given the British coin denominations 1, 2, 5, 10, 20, 50, 100, and 200 pence, determine
+how many distinct combinations of coins can produce a total of N pence. The solution uses
+bottom-up dynamic programming: we maintain an array `number_of_ways` where each index `i`
+stores the number of ways to make `i` pence. Starting with `number_of_ways[0] = 1`, we iterate
+through each coin and update the table so that for every coin value `c` and amount `i ≥ c`, we
+add the number of ways to make `i - c` to `i`. This approach counts combinations rather than
+permutations because each coin is processed sequentially. The algorithm runs in O(N * C) time
+with O(N) space, where C is the number of coin types.
+*/
+
+fun solution(pence: int): int {
+  let coins: list<int> = [1, 2, 5, 10, 20, 50, 100, 200]
+  var number_of_ways: list<int> = []
+  var i = 0
+  while i <= pence {
+    number_of_ways = append(number_of_ways, 0)
+    i = i + 1
+  }
+  number_of_ways[0] = 1
+  var c = 0
+  while c < len(coins) {
+    let coin = coins[c]
+    var amount = coin
+    while amount <= pence {
+      number_of_ways[amount] = number_of_ways[amount] + number_of_ways[amount - coin]
+      amount = amount + 1
+    }
+    c = c + 1
+  }
+  return number_of_ways[pence]
+}
+
+print(str(solution(500)))
+print(str(solution(200)))
+print(str(solution(50)))
+print(str(solution(10)))
