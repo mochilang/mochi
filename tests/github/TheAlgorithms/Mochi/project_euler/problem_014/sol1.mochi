@@ -1,0 +1,58 @@
+/*
+Project Euler Problem 14: Longest Collatz sequence.
+
+Given a positive integer n, find the starting number below n that generates the
+longest Collatz chain. For any number m:
+  - if m is even, next = m / 2
+  - if m is odd,  next = 3 * m + 1
+The sequence always ends at 1.
+
+Algorithm:
+Iterate every starting value from 2 up to n - 1. For each, repeatedly apply the
+Collatz rule until reaching a number whose chain length has been computed.
+Memoize known chain lengths in a list to avoid recomputation. Track the starting
+value that produces the longest chain seen so far. The algorithm runs in roughly
+O(n log n) time.
+*/
+
+fun solution(n: int): int {
+  var counters: list<int>
+  var i: int = 0
+  while i <= n {
+    counters = append(counters, 0)
+    i = i + 1
+  }
+  counters[1] = 1
+  var largest_number: int = 1
+  var pre_counter: int = 1
+  var start: int = 2
+  while start < n {
+    var number: int = start
+    var counter: int = 0
+    while true {
+      if number < len(counters) && counters[number] != 0 {
+        counter = counter + counters[number]
+        break
+      }
+      if number % 2 == 0 {
+        number = number / 2
+      } else {
+        number = 3 * number + 1
+      }
+      counter = counter + 1
+    }
+    if start < len(counters) && counters[start] == 0 {
+      counters[start] = counter
+    }
+    if counter > pre_counter {
+      largest_number = start
+      pre_counter = counter
+    }
+    start = start + 1
+  }
+  return largest_number
+}
+
+let input_str: string = input()
+let n: int = int(input_str)
+print(str(solution(n)))
