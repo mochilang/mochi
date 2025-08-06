@@ -1,0 +1,31 @@
+/*
+Project Euler Problem 6: Sum square difference
+
+Given a positive integer n, compute the difference between the square of the sum
+of the first n natural numbers and the sum of their squares. For example, when
+n = 10, the sum of squares is 385 and the square of the sum is 3025, yielding a
+difference of 2640.
+
+This implementation iteratively accumulates the running sum and sum of squares
+in O(n) time using only basic integer operations, keeping the code in pure
+Mochi without FFI so it runs on the runtime/vm. The function returns the
+resulting difference and the main entry prints the value for n = 100.
+*/
+
+fun solution(n: int): int {
+  var sum_of_squares = 0
+  var sum_of_ints = 0
+  var i = 1
+  while i <= n {
+    sum_of_squares = sum_of_squares + i * i
+    sum_of_ints = sum_of_ints + i
+    i = i + 1
+  }
+  return sum_of_ints * sum_of_ints - sum_of_squares
+}
+
+fun main() {
+  print(str(solution(100)))
+}
+
+main()
