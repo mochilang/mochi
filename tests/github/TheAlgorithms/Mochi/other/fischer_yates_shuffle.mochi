@@ -1,0 +1,59 @@
+/*
+Generate a random permutation of a sequence using the Fisher-Yates shuffle.
+
+For a list with n elements the algorithm performs n swaps.  On each
+iteration two random indices within the list bounds are chosen and the
+elements at those positions are exchanged.  Using randomly selected pairs
+multiple times results in a shuffled order.  A simple linear congruential
+generator (LCG) provides deterministic pseudo-random numbers so the program
+remains pure Mochi and yields reproducible output.
+
+Time complexity: O(n) since the loop runs once per element.
+*/
+
+var seed = 1
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed / 65536
+}
+
+fun randint(a: int, b: int): int {
+  let r = rand()
+  return a + r % (b - a + 1)
+}
+
+fun fisher_yates_shuffle_int(data: list<int>): list<int> {
+  var res = data
+  var i = 0
+  while i < len(res) {
+    let a = randint(0, len(res) - 1)
+    let b = randint(0, len(res) - 1)
+    let temp = res[a]
+    res[a] = res[b]
+    res[b] = temp
+    i = i + 1
+  }
+  return res
+}
+
+fun fisher_yates_shuffle_str(data: list<string>): list<string> {
+  var res = data
+  var i = 0
+  while i < len(res) {
+    let a = randint(0, len(res) - 1)
+    let b = randint(0, len(res) - 1)
+    let temp = res[a]
+    res[a] = res[b]
+    res[b] = temp
+    i = i + 1
+  }
+  return res
+}
+
+let integers = [0, 1, 2, 3, 4, 5, 6, 7]
+let strings = ["python", "says", "hello", "!"]
+
+print("Fisher-Yates Shuffle:")
+print("List " + str(integers) + " " + str(strings))
+print("FY Shuffle " + str(fisher_yates_shuffle_int(integers)) + " " + str(fisher_yates_shuffle_str(strings)))
