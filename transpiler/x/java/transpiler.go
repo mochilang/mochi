@@ -42,6 +42,8 @@ var needEnviron bool
 var needMem bool
 var needPadStart bool
 var needRepeat bool
+var needMin bool
+var needMax bool
 var needFetch bool
 var fetchStructs map[string]bool
 var needSHA256 bool
@@ -5253,6 +5255,16 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
+		if name == "min" && len(args) == 1 {
+			needMin = true
+			funcRet["_min"] = "int"
+			return &CallExpr{Func: "_min", Args: args}, nil
+		}
+		if name == "max" && len(args) == 1 {
+			needMax = true
+			funcRet["_max"] = "int"
+			return &CallExpr{Func: "_max", Args: args}, nil
+		}
 		if name == "concat" && len(args) == 2 {
 			needConcat = true
 			return &CallExpr{Func: "concat", Args: args}, nil
@@ -6444,6 +6456,20 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        StringBuilder sb = new StringBuilder();\n")
 		buf.WriteString("        for (int i = 0; i < n; i++) sb.append(s);\n")
 		buf.WriteString("        return sb.toString();\n")
+		buf.WriteString("    }\n")
+	}
+	if needMin {
+		buf.WriteString("\n    static int _min(int[] a) {\n")
+		buf.WriteString("        int m = a[0];\n")
+		buf.WriteString("        for (int i = 1; i < a.length; i++) if (a[i] < m) m = a[i];\n")
+		buf.WriteString("        return m;\n")
+		buf.WriteString("    }\n")
+	}
+	if needMax {
+		buf.WriteString("\n    static int _max(int[] a) {\n")
+		buf.WriteString("        int m = a[0];\n")
+		buf.WriteString("        for (int i = 1; i < a.length; i++) if (a[i] > m) m = a[i];\n")
+		buf.WriteString("        return m;\n")
 		buf.WriteString("    }\n")
 	}
 	if needSHA256 {
