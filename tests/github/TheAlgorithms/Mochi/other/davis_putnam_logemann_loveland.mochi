@@ -1,0 +1,192 @@
+/*
+Davis-Putnam-Logemann-Loveland (DPLL) algorithm for solving the
+satisfiability of propositional formulas in conjunctive normal form.
+
+A formula is a set of clauses and each clause is a set of literals.
+Literals are represented as strings like "A1" or "A1'" for the
+complement.  The algorithm recursively assigns truth values to symbols
+and uses two heuristics:
+  - Pure symbol: a variable appearing with only one polarity can be
+    assigned in a way that makes all containing clauses true.
+  - Unit clause: if all literals but one in a clause are false, the
+    remaining literal must be true.
+
+This implementation represents truth values as integers where 1 is true,
+0 is false and -1 is unassigned.  Maps are used to store the current
+assignment of literals in clauses and in the global model.
+*/
+
+type Clause {
+  literals: map<string, int>,
+  names: list<string>,
+}
+
+fun new_clause(lits: list<string>): Clause {
+  var m: map<string, int> = {}
+  var names: list<string> = []
+  var i = 0
+  while i < len(lits) {
+    let lit = lits[i]
+    m[lit] = 0 - 1
+    names = append(names, lit)
+    i = i + 1
+  }
+  return Clause { literals: m, names: names }
+}
+
+fun assign_clause(c: Clause, model: map<string, int>): Clause {
+  var lits = c.literals
+  var i = 0
+  while i < len(c.names) {
+    let lit = c.names[i]
+    let symbol = substring(lit, 0, 2)
+    if symbol in model {
+      var value = model[symbol]
+      if substring(lit, len(lit) - 1, len(lit)) == "'" && value != 0 - 1 {
+        value = 1 - value
+      }
+      lits[lit] = value
+    }
+    i = i + 1
+  }
+  c.literals = lits
+  return c
+}
+
+type EvalResult { value: int, clause: Clause }
+
+  fun evaluate_clause(c: Clause, model: map<string, int>): EvalResult {
+    var i = 0
+    while i < len(c.names) {
+      let lit = c.names[i]
+      let sym = if substring(lit, len(lit) - 1, len(lit)) == "'" {
+        substring(lit, 0, 2)
+      } else {
+        lit + "'"
+      }
+      if sym in c.literals {
+        return EvalResult { value: 1, clause: c }
+      }
+      i = i + 1
+    }
+    c = assign_clause(c, model)
+    i = 0
+    while i < len(c.names) {
+      let lit = c.names[i]
+      let value = c.literals[lit]
+      if value == 1 { return EvalResult { value: 1, clause: c } }
+      if value == 0 - 1 { return EvalResult { value: 0 - 1, clause: c } }
+      i = i + 1
+    }
+    var any_true = 0
+    i = 0
+    while i < len(c.names) {
+      let lit = c.names[i]
+      if c.literals[lit] == 1 {
+        any_true = 1
+      }
+      i = i + 1
+    }
+    return EvalResult { value: any_true, clause: c }
+  }
+
+type Formula { clauses: list<Clause> }
+
+fun new_formula(cs: list<Clause>): Formula {
+  return Formula { clauses: cs }
+}
+
+
+
+type DPLLResult { sat: bool, model: map<string, int> }
+
+fun remove_symbol(symbols: list<string>, s: string): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(symbols) {
+    if symbols[i] != s {
+      res = append(res, symbols[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun dpll_algorithm(clauses: list<Clause>, symbols: list<string>, model: map<string, int>): DPLLResult {
+  var all_true = true
+  var i = 0
+  while i < len(clauses) {
+    let ev = evaluate_clause(clauses[i], model)
+    clauses[i] = ev.clause
+    if ev.value == 0 {
+      return DPLLResult { sat: false, model: {} }
+    } else if ev.value == 0 - 1 {
+      all_true = false
+    }
+    i = i + 1
+  }
+  if all_true {
+    return DPLLResult { sat: true, model: model }
+  }
+
+    let p = symbols[0]
+    let rest = remove_symbol(symbols, p)
+    var tmp1 = model
+    var tmp2 = model
+    tmp1[p] = 1
+  tmp2[p] = 0
+  let res1 = dpll_algorithm(clauses, rest, tmp1)
+  if res1.sat {
+    return res1
+  }
+  return dpll_algorithm(clauses, rest, tmp2)
+}
+
+fun str_clause(c: Clause): string {
+  var line = "{"
+  var first = true
+  var i = 0
+  while i < len(c.names) {
+    let lit = c.names[i]
+    if first {
+      first = false
+    } else {
+      line = line + " , "
+    }
+    line = line + lit
+    i = i + 1
+  }
+  line = line + "}"
+  return line
+}
+
+fun str_formula(f: Formula): string {
+  var line = "{"
+  var i = 0
+  while i < len(f.clauses) {
+    line = line + str_clause(f.clauses[i])
+    if i < len(f.clauses) - 1 {
+      line = line + " , "
+    }
+    i = i + 1
+  }
+  line = line + "}"
+  return line
+}
+
+
+let clause1 = new_clause(["A4", "A3", "A5'", "A1", "A3'"])
+let clause2 = new_clause(["A4"])
+let formula = new_formula([clause1, clause2])
+
+  let formula_str = str_formula(formula)
+  let clauses = [clause1, clause2]
+  let symbols = ["A4", "A3", "A5", "A1"]
+  var model: map<string, int> = {}
+  let result = dpll_algorithm(clauses, symbols, model)
+
+  if result.sat {
+    print("The formula " + formula_str + " is satisfiable.")
+  } else {
+    print("The formula " + formula_str + " is not satisfiable.")
+  }
