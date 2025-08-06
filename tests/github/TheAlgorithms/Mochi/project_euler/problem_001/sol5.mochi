@@ -1,0 +1,25 @@
+/*
+  Solve Project Euler problem 1: find the sum of all natural numbers below a
+  given limit that are multiples of 3 or 5.  Starting from zero, we iterate
+  through each integer less than n and accumulate those divisible by 3 or 5.
+  This straightforward approach runs in O(n) time and uses constant extra
+  space.  It is written entirely in Mochi so it executes on the runtime/vm
+  without any foreign function interfaces.
+*/
+
+fun solution(n: int): int {
+  var total = 0
+  var i = 0
+  while i < n {
+    if i % 3 == 0 || i % 5 == 0 {
+      total = total + i
+    }
+    i = i + 1
+  }
+  return total
+}
+
+print(str(solution(3)))
+print(str(solution(4)))
+print(str(solution(10)))
+print(str(solution(600)))
