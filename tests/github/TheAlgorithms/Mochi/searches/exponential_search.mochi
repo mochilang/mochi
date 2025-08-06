@@ -1,0 +1,53 @@
+/*
+Exponential Search on a Sorted List
+----------------------------------
+Given an ascending sorted list and a target integer, exponential search
+locates the index of the target in O(log i) time where *i* is the index
+of the target. The algorithm first checks the initial element then
+repeatedly doubles a bound until the bound is beyond the target. A
+binary search is then performed within the narrowed range.
+
+The implementation below is pure Mochi and performs all operations
+without any foreign interfaces so it can execute on the runtime/vm.
+It also validates that the input list is sorted.
+*/
+
+fun is_sorted(xs: list<int>): bool {
+  var i = 1
+  while i < len(xs) {
+    if xs[i - 1] > xs[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun exponential_search(arr: list<int>, item: int): int {
+  if !is_sorted(arr) { panic("sorted_collection must be sorted in ascending order") }
+  if len(arr) == 0 { return -1 }
+  if arr[0] == item { return 0 }
+  var bound = 1
+  while bound < len(arr) && arr[bound] < item {
+    bound = bound * 2
+  }
+  var left = bound / 2
+  var right = bound
+  if right >= len(arr) { right = len(arr) - 1 }
+  while left <= right {
+    let mid = left + (right - left) / 2
+    if arr[mid] == item { return mid }
+    if arr[mid] > item {
+      right = mid - 1
+    } else {
+      left = mid + 1
+    }
+  }
+  return -1
+}
+
+test "exponential search" {
+  let arr = [0, 5, 7, 10, 15]
+  expect exponential_search(arr, 0) == 0
+  expect exponential_search(arr, 15) == 4
+  expect exponential_search(arr, 5) == 1
+  expect exponential_search(arr, 6) == (0 - 1)
+}
