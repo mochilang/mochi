@@ -1,0 +1,36 @@
+/*
+Stooge Sort is a recursive sorting algorithm with notoriously poor performance.
+It sorts a list by comparing the first and last elements and recursively
+sorting overlapping 2/3-length prefixes and suffixes.
+
+Algorithm:
+1. If the first element is greater than the last, swap them.
+2. If the segment has more than two elements:
+   a. Recursively sort the initial 2/3 of the list.
+   b. Recursively sort the final 2/3 of the list.
+   c. Recursively sort the initial 2/3 again.
+
+Time Complexity: approximately O(n^(2.7)), making it mostly educational.
+*/
+
+fun stooge(arr: list<int>, i: int, h: int): void {
+  if i >= h { return }
+  if arr[i] > arr[h] {
+    let tmp = arr[i]
+    arr[i] = arr[h]
+    arr[h] = tmp
+  }
+  if h - i + 1 > 2 {
+    let t = ((h - i + 1) / 3) as int
+    stooge(arr, i, h - t)
+    stooge(arr, i + t, h)
+    stooge(arr, i, h - t)
+  }
+}
+
+fun stooge_sort(arr: list<int>): list<int> {
+  stooge(arr, 0, len(arr) - 1)
+  return arr
+}
+
+print(str(stooge_sort([18, 0, -7, -1, 2, 2])))
