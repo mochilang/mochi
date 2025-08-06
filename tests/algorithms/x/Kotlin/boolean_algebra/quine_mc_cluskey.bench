@@ -1,0 +1,5 @@
+Prime Implicants are:
+[101, X]
+Essential Prime Implicants are:
+[101]
+{"duration_us":25311, "memory_bytes":116712, "name":"main"}

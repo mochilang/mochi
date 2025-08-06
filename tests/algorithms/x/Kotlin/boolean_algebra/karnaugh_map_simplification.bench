@@ -1,0 +1,5 @@
+[0, 1]
+[1, 1]
+Simplified Expression:
+A'B + A + A
+{"duration_us":11621, "memory_bytes":135704, "name":"main"}

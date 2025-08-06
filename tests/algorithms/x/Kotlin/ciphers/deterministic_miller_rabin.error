@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/ciphers/deterministic_miller_rabin.kt:36:36: error: type mismatch: inferred type is MutableList<Any?> but MutableList<Int> was expected
+    var bounds: MutableList<Int> = mutableListOf<Any?>((2047 as Any?), (1373653 as Any?), (25326001 as Any?), (3215031751L as Any?), (2152302898747L as Any?), (3474749660383L as Any?), (341550071728321L as Any?), (limit as Any?))
+                                   ^
