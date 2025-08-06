@@ -1,0 +1,52 @@
+/*
+Project Euler Problem 52 - Permuted Multiples
+
+Find the smallest positive integer x such that 2x, 3x, 4x, 5x and 6x contain
+exactly the same digits as x. The search proceeds by counting the occurrences
+of each decimal digit in a number and comparing these counts between x and its
+multiples. The first integer where all multiples up to 6x share identical digit
+counts is returned.
+*/
+
+fun digits_count(n: int): list<int> {
+  var counts: list<int> = []
+  var i = 0
+  while i < 10 {
+    counts = append(counts, 0)
+    i = i + 1
+  }
+  var x = n
+  if x == 0 { counts[0] = counts[0] + 1 }
+  while x > 0 {
+    let d = x % 10
+    counts[d] = counts[d] + 1
+    x = x / 10
+  }
+  return counts
+}
+
+fun equal_lists(a: list<int>, b: list<int>): bool {
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun solution(): int {
+  var i = 1
+  while true {
+    let c = digits_count(i)
+    if equal_lists(c, digits_count(2 * i)) &&
+       equal_lists(c, digits_count(3 * i)) &&
+       equal_lists(c, digits_count(4 * i)) &&
+       equal_lists(c, digits_count(5 * i)) &&
+       equal_lists(c, digits_count(6 * i)) {
+      return i
+    }
+    i = i + 1
+  }
+}
+
+print(str(solution()))
