@@ -1,0 +1,59 @@
+/*
+Guess a number within a given range using binary search.
+
+Starting with lower and higher bounds and the target value, the algorithm
+repeatedly checks the midpoint of the current interval. If the midpoint is
+less than the target, the lower bound is updated; if it is greater, the
+higher bound is updated. Each guess is stored in a list until the target is
+found. The procedure prints the discovered number along with the sequence of
+midpoints visited. This is essentially binary search and runs in
+O(log(higher - lower)) time.
+*/
+
+fun get_avg(number_1: int, number_2: int): int {
+  return (number_1 + number_2) / 2
+}
+
+fun guess_the_number(lower: int, higher: int, to_guess: int): list<int> {
+  if lower > higher {
+    panic("argument value for lower and higher must be(lower > higher)")
+  }
+  if !(lower < to_guess && to_guess < higher) {
+    panic("guess value must be within the range of lower and higher value")
+  }
+
+  fun answer(number: int): string {
+    if number > to_guess {
+      return "high"
+    } else if number < to_guess {
+      return "low"
+    } else {
+      return "same"
+    }
+  }
+
+  print("started...")
+
+  var last_lowest = lower
+  var last_highest = higher
+  var last_numbers: list<int> = []
+  while true {
+    let number = get_avg(last_lowest, last_highest)
+    last_numbers = append(last_numbers, number)
+    let resp = answer(number)
+    if resp == "low" {
+      last_lowest = number
+    } else if resp == "high" {
+      last_highest = number
+    } else {
+      break
+    }
+  }
+  print("guess the number : " + str(last_numbers[len(last_numbers) - 1]))
+  print("details : " + str(last_numbers))
+  return last_numbers
+}
+
+# sample runs
+guess_the_number(10, 1000, 17)
+guess_the_number(-10000, 10000, 7)
