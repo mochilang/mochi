@@ -74,6 +74,8 @@ func sanitizeName(name string) string {
 		return "upper_"
 	case "slice":
 		return "slice_"
+	case "quotient":
+		return "quotient_"
 	default:
 		return name
 	}
