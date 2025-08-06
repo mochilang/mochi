@@ -1,0 +1,114 @@
+/*
+String case conversion utilities.
+
+This program provides functions to convert an input text into several naming
+conventions: PascalCase, camelCase, snake_case, and kebab-case. The algorithm
+first removes characters that are neither alphanumeric nor spaces and splits
+the remaining text into words. Depending on the target case, the words are then
+concatenated with specific capitalization rules or joined with separators.
+*/
+
+fun split_words(s: string): list<string> {
+  var words: list<string> = []
+  var current: string = ""
+  for ch in s {
+    if ch == " " {
+      if current != "" {
+        words = append(words, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+  }
+  if current != "" {
+    words = append(words, current)
+  }
+  return words
+}
+
+fun is_alnum(c: string): bool {
+  return c in "0123456789" ||
+         c in "abcdefghijklmnopqrstuvwxyz" ||
+         c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" ||
+         c == " "
+}
+
+fun split_input(text: string): list<list<string>> {
+  var result: list<list<string>> = []
+  var current: string = ""
+  for ch in text {
+    if is_alnum(ch) {
+      current = current + ch
+    } else {
+      if current != "" {
+        result = append(result, split_words(current))
+        current = ""
+      }
+    }
+  }
+  if current != "" {
+    result = append(result, split_words(current))
+  }
+  return result
+}
+
+fun capitalize(word: string): string {
+  if len(word) == 0 { return "" }
+  if len(word) == 1 { return upper(word) }
+  return upper(word[0:1]) + lower(word[1:])
+}
+
+fun to_simple_case(text: string): string {
+  let parts = split_input(text)
+  var res: string = ""
+  for sub in parts {
+    for w in sub {
+      res = res + capitalize(w)
+    }
+  }
+  return res
+}
+
+fun to_complex_case(text: string, upper_flag: bool, sep: string): string {
+  let parts = split_input(text)
+  var res: string = ""
+  for sub in parts {
+    var first: bool = true
+    for w in sub {
+      var word = if upper_flag { upper(w) } else { lower(w) }
+      if first {
+        res = res + word
+        first = false
+      } else {
+        res = res + sep + word
+      }
+    }
+  }
+  return res
+}
+
+fun to_pascal_case(text: string): string {
+  return to_simple_case(text)
+}
+
+fun to_camel_case(text: string): string {
+  let s = to_simple_case(text)
+  if len(s) == 0 { return "" }
+  return lower(s[0:1]) + s[1:]
+}
+
+fun to_snake_case(text: string, upper_flag: bool): string {
+  return to_complex_case(text, upper_flag, "_")
+}
+
+fun to_kebab_case(text: string, upper_flag: bool): string {
+  return to_complex_case(text, upper_flag, "-")
+}
+
+print(to_pascal_case("one two 31235three4four"))
+print(to_camel_case("one two 31235three4four"))
+print(to_snake_case("one two 31235three4four", true))
+print(to_snake_case("one two 31235three4four", false))
+print(to_kebab_case("one two 31235three4four", true))
+print(to_kebab_case("one two 31235three4four", false))
