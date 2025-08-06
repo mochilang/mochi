@@ -1,0 +1,73 @@
+/*
+Project Euler Problem 3 - Largest Prime Factor
+
+Given a positive integer n, find its largest prime factor.
+The algorithm mirrors the Python implementation using trial division:
+
+1. A helper function `is_prime` determines if a number is prime.
+   It uses the observation that all primes greater than 3 are of the form
+   6k ± 1. We test divisibility by numbers up to the square root of the
+   candidate using increments of 6.
+
+2. `solution` reduces the input by dividing out factors of 2, then iterates
+   over odd candidates. For each divisor found, it checks if the
+   complementary factor or the divisor itself is prime, updating the
+   maximum prime factor accordingly.
+
+The main function prints the largest prime factor of 600851475143.
+*/
+
+fun is_prime(number: int): bool {
+  if number > 1 && number < 4 {
+    return true
+  }
+  if number < 2 || number % 2 == 0 || number % 3 == 0 {
+    return false
+  }
+  var i = 5
+  while i * i <= number {
+    if number % i == 0 || number % (i + 2) == 0 {
+      return false
+    }
+    i = i + 6
+  }
+  return true
+}
+
+fun solution(n: int): int {
+  var num = n
+  if num <= 0 {
+    print("Parameter n must be greater than or equal to one.")
+    return 0
+  }
+  if is_prime(num) {
+    return num
+  }
+  while num % 2 == 0 {
+    num = num / 2
+    if is_prime(num) {
+      return num
+    }
+  }
+  var max_number = 1
+  var i = 3
+  while i * i <= num {
+    if num % i == 0 {
+      if is_prime(num / i) {
+        max_number = num / i
+        break
+      } else if is_prime(i) {
+        max_number = i
+      }
+    }
+    i = i + 2
+  }
+  return max_number
+}
+
+fun main() {
+  let result = solution(600851475143)
+  print("solution() = " + str(result))
+}
+
+main()
