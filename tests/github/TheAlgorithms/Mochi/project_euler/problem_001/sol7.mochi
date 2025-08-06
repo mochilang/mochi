@@ -1,0 +1,28 @@
+/*
+Project Euler Problem 1 - Multiples of 3 and 5
+---------------------------------------------
+Given a positive integer n, compute the sum of all natural numbers below n
+that are divisible by 3 or 5.
+
+Algorithm:
+1. Initialize result to 0.
+2. Loop i from 0 up to but not including n.
+3. If i is divisible by 3 or 5, add i to result.
+4. Return result.
+
+Time complexity: O(n) with constant O(1) space.
+*/
+
+fun solution(n: int): int {
+  var result: int = 0
+  var i: int = 0
+  while i < n {
+    if i % 3 == 0 || i % 5 == 0 {
+      result = result + i
+    }
+    i = i + 1
+  }
+  return result
+}
+
+print(str(solution(1000)))
