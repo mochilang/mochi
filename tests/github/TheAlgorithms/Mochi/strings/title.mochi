@@ -1,0 +1,93 @@
+/*
+Title Case Conversion for Words and Sentences
+
+This module provides two functions:
+
+1. `to_title_case(word)` converts a single ASCII word so that the first
+   letter is uppercase (if alphabetic) and the remaining letters are
+   lowercase. It scans the first character against the lowercase alphabet
+   and substitutes the corresponding uppercase letter. The rest of the
+   characters are scanned against the uppercase alphabet and replaced with
+   lowercase equivalents when found. Non-alphabetic characters are left
+   unchanged. The algorithm runs in O(n) time for a word of length n.
+
+2. `sentence_to_title_case(sentence)` splits a sentence into words separated
+   by spaces, applies `to_title_case` to each, and rejoins them with single
+   spaces. Splitting and joining each take linear time, so the overall
+   complexity is O(m) for a sentence of length m.
+*/
+
+let lower = "abcdefghijklmnopqrstuvwxyz"
+let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+fun index_of(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun to_title_case(word: string): string {
+  if len(word) == 0 { return "" }
+  let first = word[0:1]
+  let idx = index_of(lower, first)
+  var result = if idx >= 0 { upper[idx:idx+1] } else { first }
+  var i = 1
+  while i < len(word) {
+    let ch = word[i:i+1]
+    let uidx = index_of(upper, ch)
+    if uidx >= 0 {
+      result = result + lower[uidx:uidx+1]
+    } else {
+      result = result + ch
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun split_words(s: string): list<string> {
+  var words: list<string> = []
+  var current: string = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i]
+    if ch == " " {
+      if len(current) > 0 {
+        words = append(words, current)
+        current = ""
+      }
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  if len(current) > 0 {
+    words = append(words, current)
+  }
+  return words
+}
+
+fun sentence_to_title_case(sentence: string): string {
+  let words = split_words(sentence)
+  var res: string = ""
+  var i = 0
+  while i < len(words) {
+    res = res + to_title_case(words[i])
+    if i + 1 < len(words) { res = res + " " }
+    i = i + 1
+  }
+  return res
+}
+
+print(to_title_case("Aakash"))
+print(to_title_case("aakash"))
+print(to_title_case("AAKASH"))
+print(to_title_case("aAkAsH"))
+print(sentence_to_title_case("Aakash Giri"))
+print(sentence_to_title_case("aakash giri"))
+print(sentence_to_title_case("AAKASH GIRI"))
+print(sentence_to_title_case("aAkAsH gIrI"))
+
