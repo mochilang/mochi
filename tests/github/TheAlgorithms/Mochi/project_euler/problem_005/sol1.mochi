@@ -1,0 +1,50 @@
+/*
+Project Euler Problem 5: Smallest Multiple.
+
+Find the smallest positive integer evenly divisible by all numbers from 1
+through n. The Python reference uses a brute-force search. This Mochi
+implementation instead computes the least common multiple (LCM) iteratively
+using the greatest common divisor (GCD) which is significantly more efficient
+and produces the same results.
+
+Algorithm:
+1. Validate that n is at least 1.
+2. Starting with result = 1, iteratively update result = lcm(result, i) for
+each i from 2 to n.
+3. The final result is the smallest multiple divisible by the entire range.
+
+Both GCD (via the Euclidean algorithm) and LCM run in O(log n) time for each
+step, resulting in an overall complexity of roughly O(n log n).
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  if x < 0 { return -x }
+  return x
+}
+
+fun lcm(a: int, b: int): int {
+  return a / gcd(a, b) * b
+}
+
+fun solution(n: int): int {
+  if n <= 0 { panic("Parameter n must be greater than or equal to one.") }
+  var result = 1
+  var i = 2
+  while i <= n {
+    result = lcm(result, i)
+    i = i + 1
+  }
+  return result
+}
+
+print(solution(10))
+print(solution(15))
+print(solution(22))
+print(solution(20))
