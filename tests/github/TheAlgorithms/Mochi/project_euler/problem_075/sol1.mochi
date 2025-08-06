@@ -1,0 +1,63 @@
+/*
+Project Euler Problem 75: Singular Integer Right Triangles.
+
+Find the number of wire lengths L \u2264 1,500,000 that can form exactly one
+integer-sided right triangle.  Using Euclid's formula, primitive
+Pythagorean triples are generated with:
+    a = m^2 - n^2
+    b = 2mn
+    c = m^2 + n^2
+yielding a perimeter p = a + b + c = 2m(m+n).
+All multiples of a primitive perimeter also form valid triples.
+We iterate over coprime m > n of opposite parity, accumulate the
+frequency of each perimeter up to the limit, and count those that
+occur exactly once.
+
+Time complexity is roughly O(limit log limit).
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun solution(limit: int): int {
+  var frequencies: map<int, int> = {}
+  var m = 2
+  while 2 * m * (m + 1) <= limit {
+    var n = (m % 2) + 1
+    while n < m {
+      if gcd(m, n) > 1 {
+        n = n + 2
+        continue
+      }
+      let primitive_perimeter = 2 * m * (m + n)
+      var perimeter = primitive_perimeter
+      while perimeter <= limit {
+        if !(perimeter in frequencies) {
+          frequencies[perimeter] = 0
+        }
+        frequencies[perimeter] = frequencies[perimeter] + 1
+        perimeter = perimeter + primitive_perimeter
+      }
+      n = n + 2
+    }
+    m = m + 1
+  }
+  var count = 0
+  for p in frequencies {
+    if frequencies[p] == 1 {
+      count = count + 1
+    }
+  }
+  return count
+}
+
+let result = solution(1500000)
+print("solution() = " + str(result))
