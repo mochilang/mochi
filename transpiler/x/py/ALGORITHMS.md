@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Python code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Python`.
-Last updated: 2025-08-06 16:30 GMT+7
+Last updated: 2025-08-06 16:44 GMT+7
 
-## Algorithms Golden Test Checklist (11/1077)
+## Algorithms Golden Test Checklist (21/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 38.0µs | 12.81MB |
@@ -18,16 +18,16 @@ Last updated: 2025-08-06 16:30 GMT+7
 | 9 | backtracking/match_word_pattern | ✓ | 210.0µs | 12.71MB |
 | 10 | backtracking/minimax | ✓ | 21.0µs | 12.78MB |
 | 11 | backtracking/n_queens | ✓ | 108.0µs | 12.88MB |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
+| 12 | backtracking/n_queens_math | ✓ | 62.0µs | 12.73MB |
+| 13 | backtracking/power_sum | ✓ | 27.0µs | 13.24MB |
+| 14 | backtracking/rat_in_maze | ✓ | 42.0µs | 13.92MB |
+| 15 | backtracking/sudoku | ✓ | 6.0ms | 14.43MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 87.0µs | 12.66MB |
+| 17 | backtracking/word_break | ✓ | 41.0µs | 12.78MB |
+| 18 | backtracking/word_ladder | ✓ | 648.0µs | 13.24MB |
+| 19 | backtracking/word_search | ✓ | 75.0µs | 13.65MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 52.0µs | 12.83MB |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 122.0µs | 12.87MB |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
 | 24 | bit_manipulation/binary_or_operator |   |  |  |
