@@ -1,0 +1,89 @@
+/*
+Mish Activation Function
+------------------------
+Implements the Mish activation used in neural networks.
+For each input x, Mish is defined as:
+
+  mish(x) = x * tanh(softplus(x))
+          = x * tanh(ln(1 + e^x))
+
+This implementation works element‑wise on a list of floats. It provides
+approximations for exponential and natural logarithm using simple series
+to remain compatible with the runtime/vm (no FFI).
+*/
+
+fun exp_approx(x: float): float {
+  var neg = false
+  var y = x
+  if x < 0.0 {
+    neg = true
+    y = -x
+  }
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 30 {
+    term = term * y / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  if neg { return 1.0 / sum }
+  return sum
+}
+
+fun ln_series(x: float): float {
+  let t = (x - 1.0) / (x + 1.0)
+  var term = t
+  var acc = 0.0
+  var n = 1
+  while n <= 19 {
+    acc = acc + term / (n as float)
+    term = term * t * t
+    n = n + 2
+  }
+  return 2.0 * acc
+}
+
+fun ln(x: float): float {
+  var y = x
+  var k = 0
+  while y >= 10.0 {
+    y = y / 10.0
+    k = k + 1
+  }
+  while y < 1.0 {
+    y = y * 10.0
+    k = k - 1
+  }
+  return ln_series(y) + (k as float) * ln_series(10.0)
+}
+
+fun softplus(x: float): float {
+  return ln(1.0 + exp_approx(x))
+}
+
+fun tanh_approx(x: float): float {
+  return (2.0 / (1.0 + exp_approx(-2.0 * x))) - 1.0
+}
+
+fun mish(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let sp = softplus(x)
+    let y = x * tanh_approx(sp)
+    result = append(result, y)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let v1: list<float> = [2.3, 0.6, -2.0, -3.8]
+  let v2: list<float> = [-9.2, -0.3, 0.45, -4.56]
+  print(str(mish(v1)))
+  print(str(mish(v2)))
+}
+
+main()
