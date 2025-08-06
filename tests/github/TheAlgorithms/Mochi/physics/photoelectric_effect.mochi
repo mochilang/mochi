@@ -1,0 +1,47 @@
+/*
+Compute the maximum kinetic energy of electrons emitted in the photoelectric effect.
+Einstein explained that light arrives in packets of energy (photons) with energy h * f
+where h is Planck's constant and f is the frequency of the light.  When a photon hits
+an electron bound in a material, the electron is ejected only if the photon supplies
+more energy than the material's work function W.  The surplus becomes the electron's
+kinetic energy:
+
+    K_max = h * f - W
+
+Inputs are the frequency of the radiation and the material's work function, both in
+either joules or electron-volts.  Negative results mean no electron is emitted, so the
+function clamps the energy to zero.  The algorithm runs in O(1) time using simple
+arithmetic and avoids any foreign interfaces so it can execute on runtime/vm.
+*/
+
+fun pow10(exp: int): float {
+  var result = 1.0
+  var i = 0
+  while i < exp {
+    result = result * 10.0
+    i = i + 1
+  }
+  return result
+}
+
+let PLANCK_CONSTANT_JS: float = 6.6261 / pow10(34)
+let PLANCK_CONSTANT_EVS: float = 4.1357 / pow10(15)
+
+fun maximum_kinetic_energy(frequency: float, work_function: float, in_ev: bool): float {
+  if frequency < 0.0 {
+    panic("Frequency can't be negative.")
+  }
+  let energy = if in_ev {
+    PLANCK_CONSTANT_EVS * frequency - work_function
+  } else {
+    PLANCK_CONSTANT_JS * frequency - work_function
+  }
+  if energy > 0.0 {
+    return energy
+  }
+  return 0.0
+}
+
+print(str(maximum_kinetic_energy(1000000.0, 2.0, false)))
+print(str(maximum_kinetic_energy(1000000.0, 2.0, true)))
+print(str(maximum_kinetic_energy(10000000000000000.0, 2.0, true)))
