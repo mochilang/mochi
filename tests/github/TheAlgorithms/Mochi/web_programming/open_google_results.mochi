@@ -1,0 +1,59 @@
+/*
+Simulate Opening the First Google Search Result
+-----------------------------------------------
+This example mirrors a Python script that searches Google and opens the
+first result. Because Mochi's runtime lacks HTTP and browser libraries,
+we instead demonstrate the core string-processing algorithm:
+  1. Build a search URL from a query by joining words with "%20".
+  2. Given HTML from the results page, locate the first `<a href="...">` tag.
+  3. Extract and return the URL from that tag.
+
+The substring search is implemented manually to avoid using the `any` type
+or foreign interfaces. Complexity is O(n*m) where n is the HTML length and
+m is the pattern length.
+*/
+
+fun index_of_substr(s: string, pat: string): int {
+  if len(pat) == 0 { return 0 }
+  var i = 0
+  while i <= len(s) - len(pat) {
+    var j = 0
+    while j < len(pat) {
+      if s[i + j] != pat[j] { break }
+      j = j + 1
+    }
+    if j == len(pat) { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun first_link(html: string): string {
+  let a_idx = index_of_substr(html, "<a")
+  if a_idx < 0 { return "" }
+  let href_pat = "href=\""
+  let href_idx_rel = index_of_substr(html[a_idx:], href_pat)
+  if href_idx_rel < 0 { return "" }
+  let start = a_idx + href_idx_rel + len(href_pat)
+  var end = start
+  while end < len(html) {
+    if html[end] == "\"" { break }
+    end = end + 1
+  }
+  return html[start:end]
+}
+
+let query_words: list<string> = ["mochi", "language"]
+var query = ""
+var i = 0
+while i < len(query_words) {
+  if i > 0 { query = query + "%20" }
+  query = query + query_words[i]
+  i = i + 1
+}
+let url = "https://www.google.com/search?q=" + query + "&num=100"
+print("Googling.....")
+let sample_html = "<div><a href=\"https://example.com\">Example</a></div>" +
+                  "<div><a href=\"https://another.com\">Another</a></div>"
+let link = first_link(sample_html)
+if len(link) > 0 { print(link) }
