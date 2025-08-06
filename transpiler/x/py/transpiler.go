@@ -854,6 +854,8 @@ func (b *BinaryExpr) emit(w io.Writer) error {
 				op = "//"
 			} else if isIntLike(inferPyType(b.Left, currentEnv)) && isIntLike(inferPyType(b.Right, currentEnv)) {
 				op = "//"
+			} else if !isFloatLike(inferPyType(b.Left, currentEnv)) && !isFloatLike(inferPyType(b.Right, currentEnv)) {
+				op = "//"
 			}
 		}
 		switch op {
@@ -1164,62 +1166,62 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
-       case *IndexAssignStmt:
-               if name, ok := st.Target.(*Name); ok {
-                       useSet := false
-                       if currentEnv != nil {
-                               if t, err := currentEnv.GetVar(name.Name); err == nil {
-                                       if _, ok := t.(types.ListType); ok {
-                                               useSet = true
-                                       }
-                               }
-                       }
-                       if useSet {
-                               if _, err := io.WriteString(w, indent+safeName(name.Name)+" = _set_index("); err != nil {
-                                       return err
-                               }
-                               if err := emitExpr(w, st.Target); err != nil {
-                                       return err
-                               }
-                               if _, err := io.WriteString(w, ", "); err != nil {
-                                       return err
-                               }
-                               if err := emitExpr(w, st.Index); err != nil {
-                                       return err
-                               }
-                               if _, err := io.WriteString(w, ", "); err != nil {
-                                       return err
-                               }
-                               if err := emitExpr(w, st.Value); err != nil {
-                                       return err
-                               }
-                               if _, err := io.WriteString(w, ")\n"); err != nil {
-                                       return err
-                               }
-                               usesSetIndex = true
-                               return nil
-                       }
-               }
-               if _, err := io.WriteString(w, indent); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Target); err != nil {
-                       return err
-               }
-               if _, err := io.WriteString(w, "["); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Index); err != nil {
-                       return err
-               }
-               if _, err := io.WriteString(w, "] = "); err != nil {
-                       return err
-               }
-               if err := emitExpr(w, st.Value); err != nil {
-                       return err
-               }
-               _, err := io.WriteString(w, "\n")
-               return err
+	case *IndexAssignStmt:
+		if name, ok := st.Target.(*Name); ok {
+			useSet := false
+			if currentEnv != nil {
+				if t, err := currentEnv.GetVar(name.Name); err == nil {
+					if _, ok := t.(types.ListType); ok {
+						useSet = true
+					}
+				}
+			}
+			if useSet {
+				if _, err := io.WriteString(w, indent+safeName(name.Name)+" = _set_index("); err != nil {
+					return err
+				}
+				if err := emitExpr(w, st.Target); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+				if err := emitExpr(w, st.Index); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ", "); err != nil {
+					return err
+				}
+				if err := emitExpr(w, st.Value); err != nil {
+					return err
+				}
+				if _, err := io.WriteString(w, ")\n"); err != nil {
+					return err
+				}
+				usesSetIndex = true
+				return nil
+			}
+		}
+		if _, err := io.WriteString(w, indent); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Target); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "["); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Index); err != nil {
+			return err
+		}
+		if _, err := io.WriteString(w, "] = "); err != nil {
+			return err
+		}
+		if err := emitExpr(w, st.Value); err != nil {
+			return err
+		}
+		_, err := io.WriteString(w, "\n")
+		return err
 	case *FuncDef:
 		if _, err := io.WriteString(w, indent+"def "+safeName(st.Name)+"("); err != nil {
 			return err
@@ -2001,6 +2003,9 @@ func inferPyType(e Expr, env *types.Env) types.Type {
 			return types.AnyType{}
 		case "/":
 			if isNumeric(lt) && isNumeric(rt) {
+				if isIntLike(lt) && isIntLike(rt) {
+					return types.IntType{}
+				}
 				return types.FloatType{}
 			}
 			return types.AnyType{}
@@ -2923,14 +2928,14 @@ func Emit(w io.Writer, p *Program, bench bool) error {
 	if needDC || (currentImports != nil && currentImports["dataclasses"]) {
 		imports = append(imports, "from __future__ import annotations")
 		imports = append(imports, "from dataclasses import dataclass")
-               typing := "List, Dict"
-               if usesCallable {
-                       typing += ", Callable"
-               }
-               if usesFetch {
-                       typing += ", Any"
-               }
-               imports = append(imports, "from typing import "+typing)
+		typing := "List, Dict"
+		if usesCallable {
+			typing += ", Callable"
+		}
+		if usesFetch {
+			typing += ", Any"
+		}
+		imports = append(imports, "from typing import "+typing)
 	}
 	sort.Strings(imports)
 	for _, line := range imports {
