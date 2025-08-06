@@ -1,0 +1,41 @@
+/*
+Sentinel Linear Search scans a sequence for a target value by appending
+that target as a sentinel at the end of the list.  The loop then checks
+only the value at the current index without verifying bounds on each
+iteration because the sentinel guarantees termination.  After the loop
+the sentinel is removed and the index of the first occurrence is
+returned.  If the target is absent the index equals the original length
+and -1 is returned.
+
+Time complexity:  O(n) where n is the length of the sequence.
+Space complexity: O(1) additional space.
+*/
+
+fun remove_last(xs: list<int>): list<int> {
+  var res: list<int> = []
+  var i: int = 0
+  while i < len(xs) - 1 {
+    res = append(res, xs[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun sentinel_linear_search(sequence: list<int>, target: int): int {
+  var seq: list<int> = sequence
+  seq = append(seq, target)
+  var index: int = 0
+  while seq[index] != target {
+    index = index + 1
+  }
+  seq = remove_last(seq)
+  if index == len(seq) {
+    return -1
+  }
+  return index
+}
+
+print(str(sentinel_linear_search([0, 5, 7, 10, 15], 0)))
+print(str(sentinel_linear_search([0, 5, 7, 10, 15], 15)))
+print(str(sentinel_linear_search([0, 5, 7, 10, 15], 5)))
+print(str(sentinel_linear_search([0, 5, 7, 10, 15], 6)))
