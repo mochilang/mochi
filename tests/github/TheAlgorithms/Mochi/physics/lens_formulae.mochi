@@ -1,0 +1,44 @@
+/*
+Solve optics problems using the thin lens formula, which relates the
+object distance (u), image distance (v), and lens focal length (f) by
+1/f = 1/v + 1/u.
+
+This module provides three helpers:
+1. focal_length_of_lens(u, v) - rearranges the lens formula to compute f
+   when given object and image distances.
+2. object_distance(f, v) - solves for the object distance given focal length and
+   image distance.
+3. image_distance(f, u) - solves for the image distance given focal length and
+   object distance.
+
+Each function rejects zero distances, mirroring the sign convention used in
+optics.  All computations run in constant time and space.
+*/
+
+fun focal_length_of_lens(object_distance_from_lens: float, image_distance_from_lens: float): float {
+  if object_distance_from_lens == 0.0 || image_distance_from_lens == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / image_distance_from_lens) - (1.0 / object_distance_from_lens))
+}
+
+fun object_distance(focal_length_of_lens: float, image_distance_from_lens: float): float {
+  if image_distance_from_lens == 0.0 || focal_length_of_lens == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / image_distance_from_lens) - (1.0 / focal_length_of_lens))
+}
+
+fun image_distance(focal_length_of_lens: float, object_distance_from_lens: float): float {
+  if object_distance_from_lens == 0.0 || focal_length_of_lens == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / object_distance_from_lens) + (1.0 / focal_length_of_lens))
+}
+
+print(str(focal_length_of_lens(10.0, 4.0)))
+print(str(focal_length_of_lens(2.7, 5.8)))
+print(str(object_distance(10.0, 40.0)))
+print(str(object_distance(6.2, 1.5)))
+print(str(image_distance(50.0, 40.0)))
+print(str(image_distance(5.3, 7.9)))
