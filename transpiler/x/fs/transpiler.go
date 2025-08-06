@@ -58,6 +58,7 @@ type Program struct {
 	UseDictAdd     bool
 	UseSafeIndex   bool
 	UseStr         bool
+	UseRepr        bool
 }
 
 // varTypes holds the inferred type for each variable defined during
@@ -90,6 +91,7 @@ var (
 	letPtrs        map[string][]*LetStmt
 	usesSafeIndex  bool
 	usesStr        bool
+	usesRepr       bool
 )
 
 // SetBenchMain configures whether the generated main function is wrapped in a
@@ -166,7 +168,17 @@ const helperIndex = `let _idx (arr:'a array) (i:int) : 'a =
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
-    s.Replace("[|", "[").Replace("|]", "]").Replace("; ", " ").Replace(";", "")`
+    s.Replace("[|", "[")
+     .Replace("|]", "]")
+     .Replace("; ", " ")
+     .Replace(";", "")
+     .Replace("\"", "")`
+
+const helperRepr = `let _repr v =
+    let s = sprintf "%A" v
+    s.Replace("[|", "[")
+     .Replace("|]", "]")
+     .Replace("; ", ", ")`
 
 func writeIndent(w io.Writer) {
 	for i := 0; i < indentLevel; i++ {
@@ -290,6 +302,8 @@ func fsTypeFromString(s string) string {
 		return "bigint"
 	case "any":
 		return "obj"
+	case "void":
+		return "unit"
 	default:
 		if strings.HasPrefix(s, "list<") && strings.HasSuffix(s, ">") {
 			elem := strings.TrimSuffix(strings.TrimPrefix(s, "list<"), ">")
@@ -1392,19 +1406,30 @@ type IndexAssignStmt struct {
 }
 
 func (s *IndexAssignStmt) emit(w io.Writer) {
-	if idx, ok := s.Target.(*IndexExpr); ok {
-		if id, ok2 := idx.Target.(*IdentExpr); ok2 {
-			t := inferType(idx.Target)
-			if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
-				writeIndent(w)
-				name := fsIdent(id.Name)
-				io.WriteString(w, name)
+	target := s.Target
+	indices := []Expr{}
+	for {
+		if idx, ok := target.(*IndexExpr); ok {
+			indices = append([]Expr{idx.Index}, indices...)
+			target = idx.Target
+		} else {
+			break
+		}
+	}
+	if id, ok := target.(*IdentExpr); ok {
+		t := inferType(id)
+		if strings.Contains(t, "array") || t == "" || strings.HasPrefix(t, "System.Collections.Generic.IDictionary<") {
+			writeIndent(w)
+			name := fsIdent(id.Name)
+			io.WriteString(w, name)
+			for _, ix := range indices {
 				io.WriteString(w, ".[")
-				idx.Index.emit(w)
-				io.WriteString(w, "] <- ")
-				s.Value.emit(w)
-				return
+				ix.emit(w)
+				io.WriteString(w, "]")
 			}
+			io.WriteString(w, " <- ")
+			s.Value.emit(w)
+			return
 		}
 	}
 	writeIndent(w)
@@ -2918,6 +2943,10 @@ func Emit(prog *Program) []byte {
 		buf.WriteString(helperStr)
 		buf.WriteString("\n")
 	}
+	if prog.UseRepr {
+		buf.WriteString(helperRepr)
+		buf.WriteString("\n")
+	}
 	for _, a := range prog.Aliases {
 		fmt.Fprintf(&buf, "type %s = %s\n", fsIdent(a.Name), a.Type)
 	}
@@ -3017,6 +3046,8 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	usesSHA256 = false
 	usesDictAdd = false
 	usesSafeIndex = false
+	usesStr = false
+	usesRepr = false
 	currentReturn = ""
 	funcDepth = 0
 	p := &Program{}
@@ -3083,6 +3114,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	p.UseDictAdd = usesDictAdd
 	p.UseSafeIndex = usesSafeIndex
 	p.UseStr = usesStr
+	p.UseRepr = usesRepr
 	return p, nil
 }
 
@@ -3948,22 +3980,22 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 		switch p.Call.Func {
 		case "print":
 			if len(args) == 1 {
-				switch inferType(args[0]) {
+				t := inferType(args[0])
+				switch t {
 				case "bool":
-					b := &IfExpr{Cond: args[0], Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{b}}, nil
+					return &CallExpr{Func: "printfn \"%b\"", Args: []Expr{args[0]}}, nil
 				case "int":
 					return &CallExpr{Func: "printfn \"%d\"", Args: []Expr{args[0]}}, nil
 				case "float":
 					return &CallExpr{Func: "printfn \"%g\"", Args: []Expr{args[0]}}, nil
-				case "array":
-					mapped := &CallExpr{Func: "Array.map string", Args: []Expr{args[0]}}
-					concat := &CallExpr{Func: "String.concat \" \"", Args: []Expr{&CallExpr{Func: "Array.toList", Args: []Expr{mapped}}}}
-					wrapped := &BinaryExpr{Left: &BinaryExpr{Left: &StringLit{Value: "["}, Op: "+", Right: concat}, Op: "+", Right: &StringLit{Value: "]"}}
-					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
 				case "string":
 					return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{args[0]}}, nil
 				default:
+					if strings.HasSuffix(t, " array") {
+						usesRepr = true
+						wrapped := &CallExpr{Func: "_repr", Args: []Expr{args[0]}}
+						return &CallExpr{Func: "printfn \"%s\"", Args: []Expr{wrapped}}, nil
+					}
 					return &CallExpr{Func: "printfn \"%A\"", Args: []Expr{args[0]}}, nil
 				}
 			}
@@ -4071,6 +4103,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				fn = "Array.sum"
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
+		case "panic":
+			return &CallExpr{Func: "failwith", Args: args}, nil
 		case "avg":
 			fn := "Seq.averageBy float"
 			if len(args) == 1 && inferType(args[0]) == "array" {

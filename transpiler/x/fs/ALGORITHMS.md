@@ -1,23 +1,23 @@
 # F# Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 10/1077
+Last updated: 2025-08-06 16:21 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 571.223ms | 65.9 KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 571.223ms | 55.3 KB |
+| 2 | backtracking/all_permutations | ✓ | 571.223ms | 55.5 KB |
+| 3 | backtracking/all_subsequences | ✓ | 571.223ms | 67.6 KB |
+| 4 | backtracking/coloring | ✓ | 571.223ms | 58.4 KB |
+| 5 | backtracking/combination_sum | ✓ | 571.223ms | 59.4 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 571.223ms | 55.5 KB |
 | 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
+| 8 | backtracking/knight_tour | ✓ | 571.223ms | 32.2 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 571.223ms | 39.1 KB |
+| 10 | backtracking/minimax | ✓ | 571.223ms | 54.8 KB |
+| 11 | backtracking/n_queens | ✓ | 571.223ms | 62.8 KB |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
