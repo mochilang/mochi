@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-06 21:51 GMT+7
+Last updated: 2025-08-06 22:07 GMT+7
 
-## Algorithms Golden Test Checklist (82/1077)
+## Algorithms Golden Test Checklist (83/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 121µs | 2.1 MB |
@@ -92,7 +92,7 @@ Last updated: 2025-08-06 21:51 GMT+7
 | 83 | ciphers/elgamal_key_generator | ✓ | 70µs | 2.0 MB |
 | 84 | ciphers/enigma_machine2 | ✓ | 1.274ms | 2.2 MB |
 | 85 | ciphers/fractionated_morse_cipher | error |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 290µs | 2.1 MB |
 | 87 | ciphers/hill_cipher |   |  |  |
 | 88 | ciphers/mixed_keyword_cypher |   |  |  |
 | 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
