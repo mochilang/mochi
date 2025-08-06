@@ -1,0 +1,102 @@
+/*
+Palindrome Detection in Strings
+
+This module implements four strategies to test whether a given string reads
+identically forward and backward:
+1. is_palindrome: Uses two indices that move toward the center comparing
+   mirrored characters. The loop exits early on mismatch. O(n) time, O(1) space.
+2. is_palindrome_traversal: Traverses only the first half of the string and
+   compares each character with its counterpart from the other end. O(n) time,
+   O(1) space.
+3. is_palindrome_recursive: Recursively compares the first and last characters
+   and reduces the problem size by stripping them off each call. O(n) time,
+   O(n) recursion depth.
+4. is_palindrome_slice: Creates a reversed copy of the string and checks for
+   equality. O(n) time and space for the temporary copy.
+
+Each function accepts a string and returns true if it is a palindrome.
+The program validates the algorithms against several examples and prints the
+expected result for each test case.
+*/
+
+type Case { text: string, expected: bool }
+
+fun reverse(s: string): string {
+  var res: string = ""
+  var i: int = len(s) - 1
+  while i >= 0 {
+    res = res + s[i]
+    i = i - 1
+  }
+  return res
+}
+
+fun is_palindrome(s: string): bool {
+  var start_i: int = 0
+  var end_i: int = len(s) - 1
+  while start_i < end_i {
+    if s[start_i] == s[end_i] {
+      start_i = start_i + 1
+      end_i = end_i - 1
+    } else {
+      return false
+    }
+  }
+  return true
+}
+
+fun is_palindrome_traversal(s: string): bool {
+  let end: int = len(s) / 2
+  let n: int = len(s)
+  var i: int = 0
+  while i < end {
+    if s[i] != s[n - i - 1] {
+      return false
+    }
+    i = i + 1
+  }
+  return true
+}
+
+fun is_palindrome_recursive(s: string): bool {
+  if len(s) <= 1 {
+    return true
+  }
+  if s[0] == s[len(s) - 1] {
+    return is_palindrome_recursive(s[1:len(s)-1])
+  }
+  return false
+}
+
+fun is_palindrome_slice(s: string): bool {
+  return s == reverse(s)
+}
+
+let test_data: list<Case> = [
+  Case{ text: "MALAYALAM", expected: true },
+  Case{ text: "String", expected: false },
+  Case{ text: "rotor", expected: true },
+  Case{ text: "level", expected: true },
+  Case{ text: "A", expected: true },
+  Case{ text: "BB", expected: true },
+  Case{ text: "ABC", expected: false },
+  Case{ text: "amanaplanacanalpanama", expected: true }
+]
+
+fun main() {
+  for t in test_data {
+    let s: string = t.text
+    let expected: bool = t.expected
+    let r1: bool = is_palindrome(s)
+    let r2: bool = is_palindrome_traversal(s)
+    let r3: bool = is_palindrome_recursive(s)
+    let r4: bool = is_palindrome_slice(s)
+    if r1 != expected || r2 != expected || r3 != expected || r4 != expected {
+      panic("algorithm mismatch")
+    }
+    print(s + " " + str(expected))
+  }
+  print("a man a plan a canal panama")
+}
+
+main()
