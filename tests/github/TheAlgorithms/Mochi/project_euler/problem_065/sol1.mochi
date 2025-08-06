@@ -1,0 +1,45 @@
+/*
+Project Euler Problem 65: Convergents of e
+
+The continued fraction representation of e has the repeating pattern
+[2; 1, 2, 1, 1, 4, 1, 1, 6, 1, ...]. Each numerator of the convergents
+follows the recurrence:
+
+n_i = m_i * n_(i-1) + n_(i-2)
+
+where m_i is the i-th term of the continued fraction, with starting
+values n_0 = 1 and n_1 = 2. This program iteratively computes the
+numerator for the nth convergent and returns the sum of its digits.
+*/
+
+fun sum_digits(num: int): int {
+  var n = num
+  var digit_sum = 0
+  while n > 0 {
+    digit_sum = digit_sum + n % 10
+    n = n / 10
+  }
+  return digit_sum
+}
+
+fun solution(max_n: int): int {
+  var pre_numerator = 1
+  var cur_numerator = 2
+  var i = 2
+  while i <= max_n {
+    let temp = pre_numerator
+    var e_cont = 1
+    if i % 3 == 0 {
+      e_cont = 2 * i / 3
+    }
+    pre_numerator = cur_numerator
+    cur_numerator = e_cont * pre_numerator + temp
+    i = i + 1
+  }
+  return sum_digits(cur_numerator)
+}
+
+print(solution(9))
+print(solution(10))
+print(solution(50))
+print(solution(100))
