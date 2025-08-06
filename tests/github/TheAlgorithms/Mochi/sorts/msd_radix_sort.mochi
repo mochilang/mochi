@@ -1,0 +1,105 @@
+/*
+Most Significant Digit (MSD) Radix Sort
+--------------------------------------
+This algorithm sorts non-negative integers by examining their binary
+representation from the most significant bit to the least significant bit.
+At each recursion level numbers are partitioned into two groups based on
+the current bit: those with a 0 and those with a 1.  The algorithm then
+recursively sorts each group on the next bit.  This implementation also
+provides a wrapper for an in-place variant, which returns the sorted list
+since Mochi lists are immutable.
+
+Algorithm outline:
+1. Determine the number of bits of the largest element.
+2. Recursively partition numbers by the bit at the current position.
+3. Concatenate the results of the recursive calls.
+
+Both versions run in O(n * k) time for n numbers with k bits and require all
+numbers to be non-negative.
+*/
+
+fun get_bit_length(n: int): int {
+  if n == 0 { return 1 }
+  var length = 0
+  var num = n
+  while num > 0 {
+    length = length + 1
+    num = num / 2
+  }
+  return length
+}
+
+fun max_bit_length(nums: list<int>): int {
+  var i = 0
+  var max_len = 0
+  while i < len(nums) {
+    let l = get_bit_length(nums[i])
+    if l > max_len { max_len = l }
+    i = i + 1
+  }
+  return max_len
+}
+
+fun get_bit(num: int, pos: int): int {
+  var n = num
+  var i = 0
+  while i < pos {
+    n = n / 2
+    i = i + 1
+  }
+  return n % 2
+}
+
+fun _msd_radix_sort(nums: list<int>, bit_position: int): list<int> {
+  if bit_position == 0 || len(nums) <= 1 { return nums }
+  var zeros: list<int> = []
+  var ones: list<int> = []
+  var i = 0
+  while i < len(nums) {
+    let num = nums[i]
+    if get_bit(num, bit_position - 1) == 1 {
+      ones = append(ones, num)
+    } else {
+      zeros = append(zeros, num)
+    }
+    i = i + 1
+  }
+  zeros = _msd_radix_sort(zeros, bit_position - 1)
+  ones = _msd_radix_sort(ones, bit_position - 1)
+  var res: list<int> = zeros
+  i = 0
+  while i < len(ones) {
+    res = append(res, ones[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun msd_radix_sort(nums: list<int>): list<int> {
+  if len(nums) == 0 { return [] }
+  var i = 0
+  while i < len(nums) {
+    if nums[i] < 0 { panic("All numbers must be positive") }
+    i = i + 1
+  }
+  let bits = max_bit_length(nums)
+  let result: list<int> = _msd_radix_sort(nums, bits)
+  return result
+}
+
+fun msd_radix_sort_inplace(nums: list<int>): list<int> {
+  return msd_radix_sort(nums)
+}
+
+var ex1: list<int> = [40, 12, 1, 100, 4]
+var sorted1: list<int> = msd_radix_sort(ex1)
+print(str(sorted1))
+var ex2: list<int> = []
+var sorted2: list<int> = msd_radix_sort(ex2)
+print(str(sorted2))
+var ex3: list<int> = [123, 345, 123, 80]
+var sorted3: list<int> = msd_radix_sort(ex3)
+print(str(sorted3))
+var ex4: list<int> = [1209, 834598, 1, 540402, 45]
+var sorted4: list<int> = msd_radix_sort(ex4)
+print(str(sorted4))
