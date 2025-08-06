@@ -85,6 +85,9 @@ func isGlobalVar(name string) bool {
 var loopCounter int
 var breakStack [][]string
 
+// usedHelpers tracks which helper functions are required for the current program.
+var usedHelpers map[string]bool
+
 func pushBreakVars(vars []string) {
 	breakStack = append(breakStack, vars)
 }
@@ -1805,6 +1808,7 @@ func (c *CastExpr) emit(w io.Writer) {
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
 	case "bigrat":
+		usedHelpers["bigrat"] = true
 		io.WriteString(w, "_bigrat(")
 		c.Expr.emit(w)
 		io.WriteString(w, ")")
@@ -1832,19 +1836,43 @@ func Emit(p *Program, benchMain bool) []byte {
 	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
-	buf.WriteString(nowHelper(1))
-	buf.WriteString(benchNowHelper(1))
-	buf.WriteString(memHelper(1))
-	buf.WriteString(lookupHostHelper(1))
-	buf.WriteString(sliceHelper(1))
-	buf.WriteString(lenHelper(1))
-	buf.WriteString(bigRatHelper(1))
-	buf.WriteString(sha256Helper(1))
-	buf.WriteString(getenvHelper(1))
-	buf.WriteString(environHelper(1))
-	buf.WriteString(getoutputHelper(1))
-	buf.WriteString(fetchHelper(1))
-	buf.WriteString(md5Helper(1))
+	if usedHelpers["now"] {
+		buf.WriteString(nowHelper(1))
+	}
+	if benchMain {
+		buf.WriteString(benchNowHelper(1))
+		buf.WriteString(memHelper(1))
+	}
+	if usedHelpers["lookup_host"] {
+		buf.WriteString(lookupHostHelper(1))
+	}
+	if usedHelpers["slice"] {
+		buf.WriteString(sliceHelper(1))
+	}
+	if usedHelpers["len"] {
+		buf.WriteString(lenHelper(1))
+	}
+	if usedHelpers["bigrat"] {
+		buf.WriteString(bigRatHelper(1))
+	}
+	if usedHelpers["sha256"] {
+		buf.WriteString(sha256Helper(1))
+	}
+	if usedHelpers["getenv"] {
+		buf.WriteString(getenvHelper(1))
+	}
+	if usedHelpers["environ"] {
+		buf.WriteString(environHelper(1))
+	}
+	if usedHelpers["getoutput"] {
+		buf.WriteString(getoutputHelper(1))
+	}
+	if usedHelpers["fetch"] {
+		buf.WriteString(fetchHelper(1))
+	}
+	if usedHelpers["md5"] {
+		buf.WriteString(md5Helper(1))
+	}
 	var globals []Stmt
 	var funcs []Stmt
 	var main []Stmt
@@ -1961,6 +1989,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	globalVars = make(map[string]struct{})
 	methodFuncs = make(map[string]struct{})
 	definedFuncs = make(map[string]struct{})
+	usedHelpers = make(map[string]bool)
 	moduleMode = false
 	for _, st := range prog.Statements {
 		if st.Import != nil && st.Import.Lang != nil {
@@ -2060,6 +2089,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						for i, n := range names {
 							var v Expr
 							if n == "title" {
+								usedHelpers["fetch"] = true
 								v = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
 							} else {
 								switch stt.Fields[n].(type) {
@@ -2075,9 +2105,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						}
 						val = &MapLit{Items: items}
 					} else {
+						usedHelpers["fetch"] = true
 						val = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
 					}
 				} else {
+					usedHelpers["fetch"] = true
 					val = &CallExpr{Func: "_fetch", Args: []Expr{urlExpr}}
 				}
 			} else {
@@ -3266,6 +3298,7 @@ func compileUnary(u *parser.Unary, env *types.Env) (Expr, error) {
 		if op == "-" {
 			part := &parser.Unary{Value: u.Value, Ops: u.Ops[:i+1]}
 			if _, ok := types.TypeOfUnary(part, env).(types.BigRatType); ok {
+				usedHelpers["bigrat"] = true
 				expr = &CallExpr{Func: "_bigrat_neg", Args: []Expr{expr}}
 				continue
 			}
@@ -3337,6 +3370,7 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 					if (opName == "+" || opName == "-" || opName == "*" || opName == "/") &&
 						(isBigRat(typesSlice[i]) || isBigRat(typesSlice[i+1])) {
 						fn := map[string]string{"+": "_bigrat_add", "-": "_bigrat_sub", "*": "_bigrat_mul", "/": "_bigrat_div"}[opName]
+						usedHelpers["bigrat"] = true
 						expr = &CallExpr{Func: fn, Args: []Expr{operands[i], operands[i+1]}}
 						typesSlice[i] = types.BigRatType{}
 					} else {
@@ -3437,9 +3471,11 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 		}
 		if alias == "os" {
 			if (method == "Getenv" || method == "GetEnv") && len(args) == 1 {
+				usedHelpers["getenv"] = true
 				return &CallExpr{Func: "_getenv", Args: args}, nil
 			}
 			if method == "Environ" && len(args) == 0 {
+				usedHelpers["environ"] = true
 				return &CallExpr{Func: "_environ", Args: nil}, nil
 			}
 		}
@@ -3465,10 +3501,12 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 					return &MapLit{Items: items}, nil
 				}
 				if method == "MD5Hex" && len(args) == 1 {
+					usedHelpers["md5"] = true
 					return &CallExpr{Func: "_md5_hex", Args: args}, nil
 				}
 			case "go_net":
 				if method == "LookupHost" && len(args) == 1 {
+					usedHelpers["lookup_host"] = true
 					return &CallExpr{Func: "_lookup_host", Args: args}, nil
 				}
 			case "python_math":
@@ -3484,6 +3522,8 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				}
 			case "python_subprocess":
 				if method == "getoutput" && len(args) == 1 {
+					usedHelpers["getoutput"] = true
+					usedHelpers["getoutput"] = true
 					return &CallExpr{Func: "_getoutput", Args: args}, nil
 				}
 			}
@@ -3621,16 +3661,20 @@ func compilePostfix(pf *parser.PostfixExpr, env *types.Env) (Expr, error) {
 				diff = &BinaryExpr{Left: left, Op: "-", Right: right}
 			} else {
 				lengthCall := &CallExpr{Func: "_len", Args: []Expr{base}}
+				usedHelpers["len"] = true
 				diff = &BinaryExpr{Left: lengthCall, Op: "-", Right: start}
 			}
 			switch tt := typ.(type) {
 			case types.StringType:
+				usedHelpers["slice"] = true
 				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = types.StringType{}
 			case types.ListType:
+				usedHelpers["slice"] = true
 				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = tt.Elem
 			default:
+				usedHelpers["slice"] = true
 				expr = &CallExpr{Func: "_slice", Args: []Expr{base, start, diff}}
 				typ = types.AnyType{}
 			}
@@ -3842,6 +3886,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "len":
 			name = "_len"
+			usedHelpers["len"] = true
 			if len(args) == 1 {
 				if idx, ok := args[0].(*IndexExpr); ok && idx.UseMapSyntax {
 					valT := types.TypeOfExpr(p.Call.Args[0], env)
@@ -3911,6 +3956,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "now":
 			if len(args) == 0 {
+				usedHelpers["now"] = true
 				return &CallExpr{Func: "_now", Args: nil}, nil
 			}
 		case "input":
@@ -3933,6 +3979,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 		case "substring", "substr", "slice":
 			if len(args) == 3 {
 				diff := &BinaryExpr{Left: args[2], Op: "-", Right: &GroupExpr{Expr: args[1]}}
+				usedHelpers["slice"] = true
 				return &CallExpr{Func: "_slice", Args: []Expr{args[0], args[1], diff}}, nil
 			}
 		case "padStart":
@@ -3985,6 +4032,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 			}
 		case "sha256":
 			if len(args) == 1 {
+				usedHelpers["sha256"] = true
 				return &CallExpr{Func: "_sha256", Args: []Expr{args[0]}}, nil
 			}
 		case "json":
@@ -4046,6 +4094,7 @@ func compilePrimary(p *parser.Primary, env *types.Env) (Expr, error) {
 				}
 			case "go_net":
 				if p.Selector.Tail[0] == "LookupHost" {
+					usedHelpers["lookup_host"] = true
 					return &VarRef{Name: "_lookup_host"}, nil
 				}
 			case "python_math":

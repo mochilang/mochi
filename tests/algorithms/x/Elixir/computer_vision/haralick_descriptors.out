@@ -1,0 +1,57 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 33 │       {guess, i} = try do
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:33:15: Main.sqrt/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │       {k, result, term} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:96:8: Main.ln/1
+
+    warning: variable "term" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 96 │       {k, result, term} = try do
+    │                   ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:96:19: Main.ln/1
+
+     warning: variable "j" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 128 │         {row} = Enum.reduce((0..(size - 1)), {row}, fn j, {row} ->
+     │                                                        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:128:56: Main.matrix_concurrency/2
+
+     warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 126 │       {matrix} = Enum.reduce((0..(size - 1)), {matrix}, fn i, {matrix} ->
+     │                                                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:126:60: Main.matrix_concurrency/2
+
+     warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 212 │           {contrast, correlation, dissimilarity, energy, entropy, homogeneity, inverse_difference, j, maximum_prob} = try do
+     │                                                                                                    ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:212:100: Main.haralick_descriptors/1
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 224 │       {contrast, correlation, dissimilarity, energy, entropy, homogeneity, i, inverse_difference, maximum_prob} = try do
+     │                                                                            ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/computer_vision/haralick_descriptors.exs:224:76: Main.haralick_descriptors/1
+
+1.0
+0.0
+1.0
+1.0
+1.0
+0.5
+0.5
+0.0
