@@ -1,24 +1,24 @@
 # C++ Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 11/1077
+Last updated: 2025-08-06 16:31 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:------:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 276.0µs | 3.61MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 258.0µs | 3.74MB |
+| 2 | backtracking/all_permutations | ✓ | 591.0µs | 3.67MB |
+| 3 | backtracking/all_subsequences | ✓ | 212.0µs | 3.56MB |
+| 4 | backtracking/coloring | ✓ | 165.0µs | 3.47MB |
+| 5 | backtracking/combination_sum | ✓ | 248.0µs | 3.54MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 140.0µs | 3.44MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 2.0µs | 3.43MB |
+| 8 | backtracking/knight_tour | ✓ | 131.0µs | 3.54MB |
 | 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
+| 10 | backtracking/minimax | ✓ | 228.0µs | 3.58MB |
+| 11 | backtracking/n_queens | ✓ | 290.0µs | 3.46MB |
+| 12 | backtracking/n_queens_math | ✓ | 220.0µs | 3.56MB |
 | 13 | backtracking/power_sum |   |  |  |
 | 14 | backtracking/rat_in_maze |   |  |  |
 | 15 | backtracking/sudoku |   |  |  |

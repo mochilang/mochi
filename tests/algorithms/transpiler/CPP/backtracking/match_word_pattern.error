@@ -1,0 +1,27 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp:79:183: warning: multi-character character constant [-Wmultichar]
+   79 |     else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }
+      |                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp: In function ‘std::string get_value(const std::vector<std::__cxx11::basic_string<char> >&, const std::vector<std::__cxx11::basic_string<char> >&, std::string)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp:125:38: error: call of overloaded ‘any_cast<std::string>(std::nullptr_t)’ is ambiguous
+  125 |     return std::any_cast<std::string>(nullptr);
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+In file included from /workspace/mochi/tests/algorithms/transpiler/CPP/backtracking/match_word_pattern.cpp:9:
+/usr/include/c++/13/any:461:23: note: candidate: ‘_ValueType std::any_cast(const any&) [with _ValueType = __cxx11::basic_string<char>]’
+  461 |     inline _ValueType any_cast(const any& __any)
+      |                       ^~~~~~~~
+/usr/include/c++/13/any:501:23: note: candidate: ‘_ValueType std::any_cast(any&&) [with _ValueType = __cxx11::basic_string<char>]’
+  501 |     inline _ValueType any_cast(any&& __any)
+      |                       ^~~~~~~~
+/usr/include/c++/13/any:554:30: note: candidate: ‘const _ValueType* std::any_cast(const any*) [with _ValueType = __cxx11::basic_string<char>]’
+  554 |     inline const _ValueType* any_cast(const any* __any) noexcept
+      |                              ^~~~~~~~
+/usr/include/c++/13/any:563:24: note: candidate: ‘_ValueType* std::any_cast(any*) [with _ValueType = __cxx11::basic_string<char>]’
+  563 |     inline _ValueType* any_cast(any* __any) noexcept
+      |                        ^~~~~~~~

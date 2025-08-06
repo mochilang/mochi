@@ -47,6 +47,9 @@ var usesSubprocess bool
 var useFetch bool
 var fetchStructs map[string]bool
 var useMD5 bool
+var inStr bool
+var funcParamMut map[string][]bool
+var useConcat bool
 var reserved = map[string]bool{
 	"this":   true,
 	"new":    true,
@@ -158,6 +161,7 @@ type Program struct {
 	UseFetch       bool
 	FetchStructs   map[string]bool
 	UseMD5         bool
+	UseConcat      bool
 }
 
 func (p *Program) addInclude(inc string) {
@@ -833,17 +837,20 @@ func (p *Program) write(w io.Writer) {
 		fmt.Fprintln(w, "    return out;")
 		fmt.Fprintln(w, "}")
 	}
+	if p.UseConcat {
+		fmt.Fprintln(w, "template <typename T> static T _concat(T a, const T& b){ a.insert(a.end(), b.begin(), b.end()); return a; }")
+	}
 	if usesAny {
 		fmt.Fprintln(w, "static void any_to_stream(std::ostream& os, const std::any& val) {")
 		fmt.Fprintln(w, "    if(val.type() == typeid(int)) os << std::any_cast<int>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(int64_t)) os << std::any_cast<int64_t>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(double)) os << std::any_cast<double>(val);")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(bool)) os << (std::any_cast<bool>(val) ? \"true\" : \"false\");")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << std::any_cast<std::string>(val);")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::string)) os << '\"' << std::any_cast<std::string>(val) << '\"';")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<int64_t>)) { const auto& v = std::any_cast<const std::vector<int64_t>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << v[i]; } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::vector<int64_t>>)) { const auto& vv = std::any_cast<const std::vector<std::vector<int64_t>>&>(val); os << '['; for(size_t i=0;i<vv.size();++i){ if(i>0) os << ' '; const auto& v = vv[i]; os << '['; for(size_t j=0;j<v.size();++j){ if(j>0) os << ' '; os << v[j]; } os << ']'; } os << ']'; }")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << v[i]; } os << ']'; }")
-		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; any_to_stream(os, v[i]); } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::string>)) { const auto& v = std::any_cast<const std::vector<std::string>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ' '; os << '\"' << v[i] << '\"'; } os << ']'; }")
+		fmt.Fprintln(w, "    else if(val.type() == typeid(std::vector<std::any>)) { const auto& v = std::any_cast<const std::vector<std::any>&>(val); os << '['; for(size_t i=0;i<v.size();++i){ if(i>0) os << ', '; any_to_stream(os, v[i]); } os << ']'; }")
 		fmt.Fprintln(w, "    else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }")
 		fmt.Fprintln(w, "    else os << \"<any>\";")
 		fmt.Fprintln(w, "}")
@@ -1033,13 +1040,13 @@ func (p *Program) write(w io.Writer) {
 			typ := p.Type
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ)
+					io.WriteString(w, typ+"&")
 				} else {
 					io.WriteString(w, "const "+typ+"&")
 				}
@@ -1117,13 +1124,13 @@ func (f *Func) emit(w io.Writer) {
 		} else {
 			if strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") {
 				if p.ByVal {
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
 			} else if isStructType(typ) {
 				if p.ByVal {
-					io.WriteString(w, typ+" ")
+					io.WriteString(w, typ+"& ")
 				} else {
 					io.WriteString(w, "const "+typ+"& ")
 				}
@@ -1184,13 +1191,27 @@ func emitToStream(w io.Writer, stream string, e Expr, indent int) {
 		io.WriteString(w, ind+"{")
 		io.WriteString(w, " auto __tmp = ")
 		e.emit(w)
-		io.WriteString(w, "; "+stream+" << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) "+stream+" << ' '; ")
+		sep := "' '"
+		if !inStr {
+			sep = "\", \""
+		}
+		fmt.Fprintf(w, "; %s << \"[\"; for(size_t i=0;i<__tmp.size();++i){ if(i>0) %s << %s; ", stream, stream, sep)
 		if strings.HasPrefix(elem, "std::vector<") || strings.HasPrefix(elem, "std::map<") || strings.HasPrefix(elem, "std::optional<") {
 			io.WriteString(w, "{ std::ostringstream __ss; ")
 			emitToStream(w, "__ss", &IndexExpr{Target: &VarRef{Name: "__tmp"}, Index: &VarRef{Name: "i"}}, indent)
 			io.WriteString(w, " "+stream+" << __ss.str(); }")
 		} else if elem == "std::any" {
-			io.WriteString(w, "any_to_stream("+stream+", __tmp[i])")
+			if inStr {
+				io.WriteString(w, "if(__tmp[i].type()==typeid(std::string)) "+stream+" << std::any_cast<std::string>(__tmp[i]); else any_to_stream("+stream+", __tmp[i])")
+			} else {
+				io.WriteString(w, "any_to_stream("+stream+", __tmp[i])")
+			}
+		} else if elem == "std::string" {
+			if inStr {
+				io.WriteString(w, stream+" << __tmp[i]")
+			} else {
+				io.WriteString(w, stream+" << '\"' << __tmp[i] << '\"'")
+			}
 		} else {
 			io.WriteString(w, stream+" << __tmp[i]")
 		}
@@ -1748,7 +1769,10 @@ func (s *StrExpr) emit(w io.Writer) {
 		typ := exprType(s.Value)
 		switch {
 		case strings.HasPrefix(typ, "std::vector<") || strings.HasPrefix(typ, "std::map<") || strings.HasPrefix(typ, "std::optional<"):
+			prevInStr := inStr
+			inStr = true
 			emitToStream(w, "ss", s.Value, 0)
+			inStr = prevInStr
 		case typ == "std::any" || typ == "auto":
 			io.WriteString(w, "any_to_stream(ss, ")
 			s.Value.emit(w)
@@ -3892,6 +3916,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	cp.UseBigRat = useBigRat
 	cp.UseRepeat = useRepeat
 	cp.UseSplit = useSplit
+	cp.UseConcat = useConcat
 	cp.UseBenchNow = benchMain
 	cp.UsePanic = usesPanic
 	cp.UseSubprocess = usesSubprocess
@@ -4935,6 +4960,14 @@ func convertFun(fn *parser.FunStmt) (*Func, error) {
 		inFunction = prev
 		params = append(params, Param{Name: p.Name, Type: typ, ByVal: mutatedParams[p.Name]})
 	}
+	if funcParamMut == nil {
+		funcParamMut = map[string][]bool{}
+	}
+	muts := make([]bool, len(fn.Params))
+	for i, p := range fn.Params {
+		muts[i] = mutatedParams[p.Name]
+	}
+	funcParamMut[fn.Name] = muts
 	defer func() { currentReturnType = prevRet }()
 	paramNames = nil
 	mutatedParams = nil
@@ -5396,6 +5429,20 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 				currentProgram.addInclude("<iostream>")
 			}
 			return &PrintExpr{Values: args}, nil
+		case "concat":
+			if len(p.Call.Args) != 2 {
+				return nil, fmt.Errorf("concat expects 2 arguments")
+			}
+			var args []Expr
+			for _, a := range p.Call.Args {
+				ce, err := convertExpr(a)
+				if err != nil {
+					return nil, err
+				}
+				args = append(args, ce)
+			}
+			useConcat = true
+			return &CallExpr{Name: "_concat", Args: args}, nil
 		}
 		var args []Expr
 		for _, a := range p.Call.Args {
@@ -5421,6 +5468,15 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 						at := exprType(arg)
 						if at != ptyp && ptyp != "auto" {
 							args[i] = &CastExpr{Value: arg, Type: ptyp}
+						}
+						if paramNames != nil {
+							if muts, okm := funcParamMut[p.Call.Func]; okm {
+								if i < len(muts) && muts[i] {
+									if vr, okv := arg.(*VarRef); okv && paramNames[vr.Name] {
+										mutatedParams[vr.Name] = true
+									}
+								}
+							}
 						}
 					}
 				}
