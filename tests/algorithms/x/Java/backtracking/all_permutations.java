@@ -44,7 +44,7 @@ public class Main {
 
     static void generate_all_permutations(Object[] sequence) {
         boolean[] used = ((boolean[])(repeat_bool(sequence.length)));
-        create_state_space_tree(((Object[])(sequence)), ((Object[])(((Object[])(new Object[]{})))), 0, ((boolean[])(used)));
+        create_state_space_tree(((Object[])(sequence)), ((Object[])(new Object[]{})), 0, ((boolean[])(used)));
     }
     public static void main(String[] args) {
         sequence = new Object[]{3, 1, 2, 4};

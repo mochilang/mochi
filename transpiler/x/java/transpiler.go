@@ -36,6 +36,7 @@ var needInput bool
 var needNow bool
 var needAppendBool bool
 var needAppendObj bool
+var needConcat bool
 var needNetLookupHost bool
 var needEnviron bool
 var needMem bool
@@ -52,6 +53,7 @@ var needArrGetD bool
 var needArrGetB bool
 var needArrGetO bool
 var needP bool
+var needJSON bool
 var needBigRat bool
 var needModPow2 bool
 var needCastInt2D bool
@@ -402,19 +404,19 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		}
 		return
 	}
-        if typ == "Object[]" {
-                if ll, ok := e.(*ListLit); ok {
-                        // Force list literals to use Object[] directly instead of
-                        // emitting a primitive array and casting, which would not
-                        // compile.
-                        saved := ll.ElemType
-                        ll.ElemType = "Object"
-                        ll.emit(w)
-                        ll.ElemType = saved
-                        return
-                }
-        }
-        if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
+	if typ == "Object[]" {
+		if ll, ok := e.(*ListLit); ok {
+			// Force list literals to use Object[] directly instead of
+			// emitting a primitive array and casting, which would not
+			// compile.
+			saved := ll.ElemType
+			ll.ElemType = "Object"
+			ll.emit(w)
+			ll.ElemType = saved
+			return
+		}
+	}
+	if typ == "int" || typ == "double" || typ == "float" || typ == "float64" {
 		it := inferType(e)
 		if typ == "int" && it == "java.math.BigInteger" {
 			fmt.Fprint(w, "((java.math.BigInteger)(")
@@ -511,6 +513,13 @@ func emitCastExpr(w io.Writer, e Expr, typ string) {
 		return
 	}
 	if strings.HasSuffix(jt, "[]") {
+		if ll, ok := e.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+			saved := ll.ElemType
+			ll.ElemType = strings.TrimSuffix(jt, "[]")
+			ll.emit(w)
+			ll.ElemType = saved
+			return
+		}
 		fmt.Fprintf(w, "((%s)(", jt)
 		e.emit(w)
 		fmt.Fprint(w, "))")
@@ -1601,23 +1610,23 @@ func (s *VarStmt) emit(w io.Writer, indent string) {
 		}
 		return
 	}
-        fmt.Fprint(w, jt+" "+sanitize(s.Name))
-        if s.Expr != nil {
-                fmt.Fprint(w, " = ")
-                emitCastExpr(w, s.Expr, jt)
-        } else {
-                // Ensure locals have an initial value so Java does not complain
-                // about "variable might not have been initialized". For array
-                // types, allocate an empty array of the appropriate dimension.
-                if strings.HasSuffix(jt, "[]") {
-                        dims := strings.Count(jt, "[]")
-                        base := strings.TrimSuffix(jt, strings.Repeat("[]", dims))
-                        fmt.Fprintf(w, " = new %s[0]%s", base, strings.Repeat("[]", dims-1))
-                } else {
-                        fmt.Fprint(w, " = "+defaultValue(jt))
-                }
-        }
-        fmt.Fprint(w, ";\n")
+	fmt.Fprint(w, jt+" "+sanitize(s.Name))
+	if s.Expr != nil {
+		fmt.Fprint(w, " = ")
+		emitCastExpr(w, s.Expr, jt)
+	} else {
+		// Ensure locals have an initial value so Java does not complain
+		// about "variable might not have been initialized". For array
+		// types, allocate an empty array of the appropriate dimension.
+		if strings.HasSuffix(jt, "[]") {
+			dims := strings.Count(jt, "[]")
+			base := strings.TrimSuffix(jt, strings.Repeat("[]", dims))
+			fmt.Fprintf(w, " = new %s[0]%s", base, strings.Repeat("[]", dims-1))
+		} else {
+			fmt.Fprint(w, " = "+defaultValue(jt))
+		}
+	}
+	fmt.Fprint(w, ";\n")
 	if varDecls != nil {
 		varDecls[s.Name] = s
 	}
@@ -1973,14 +1982,14 @@ func (l *ListLit) emit(w io.Writer) {
 			arrType = jt
 		}
 	}
-        // When the element type is explicitly declared as Object (e.g. list<any>)
-        // we should keep the array as Object[] even if all literal elements share
-        // the same primitive type. The previous implementation would inspect the
-        // literal values and narrow the array type which produced code such as
-        // `new int[]{...}` cast to Object[], leading to `int[] cannot be converted
-        // to Object[]` compilation errors. Only attempt to refine the type when
-        // the element type was not explicitly provided.
-        if arrType == "Object" && l.ElemType == "" {
+	// When the element type is explicitly declared as Object (e.g. list<any>)
+	// we should keep the array as Object[] even if all literal elements share
+	// the same primitive type. The previous implementation would inspect the
+	// literal values and narrow the array type which produced code such as
+	// `new int[]{...}` cast to Object[], leading to `int[] cannot be converted
+	// to Object[]` compilation errors. Only attempt to refine the type when
+	// the element type was not explicitly provided.
+	if arrType == "Object" && l.ElemType == "" {
 		t := ""
 		same := true
 		for _, el := range l.Elems {
@@ -2698,6 +2707,15 @@ func (c *FloatCastExpr) emit(w io.Writer) {
 
 func (c *CastExpr) emit(w io.Writer) {
 	jt := javaType(c.Type)
+	if strings.HasSuffix(jt, "[]") {
+		if ll, ok := c.Value.(*ListLit); ok && len(ll.Elems) == 0 && ll.ElemType == "" {
+			saved := ll.ElemType
+			ll.ElemType = strings.TrimSuffix(jt, "[]")
+			ll.emit(w)
+			ll.ElemType = saved
+			return
+		}
+	}
 	if jt == "int[][]" {
 		needCastInt2D = true
 		fmt.Fprint(w, "_castInt2D(")
@@ -5235,6 +5253,14 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &AppendExpr{List: args[0], Value: args[1], ElemType: et}, nil
 		}
+		if name == "concat" && len(args) == 2 {
+			needConcat = true
+			return &CallExpr{Func: "concat", Args: args}, nil
+		}
+		if name == "json" && len(args) == 1 {
+			needJSON = true
+			return &CallExpr{Func: "json", Args: args}, nil
+		}
 		if name == "str" && len(args) == 1 {
 			needP = true
 			arg := args[0]
@@ -6378,6 +6404,13 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        return out;\n")
 		buf.WriteString("    }\n")
 	}
+	if needConcat {
+		buf.WriteString("\n    static <T> T[] concat(T[] a, T[] b) {\n")
+		buf.WriteString("        T[] out = java.util.Arrays.copyOf(a, a.length + b.length);\n")
+		buf.WriteString("        System.arraycopy(b, 0, out, a.length, b.length);\n")
+		buf.WriteString("        return out;\n")
+		buf.WriteString("    }\n")
+	}
 	if needNetLookupHost {
 		buf.WriteString("\n    static Object[] _netLookupHost(String host) {\n")
 		buf.WriteString("        try {\n")
@@ -6533,6 +6566,57 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        int start = s.offsetByCodePoints(0, i);\n")
 		buf.WriteString("        int end = s.offsetByCodePoints(0, j);\n")
 		buf.WriteString("        return s.substring(start, end);\n")
+		buf.WriteString("    }\n")
+	}
+	if needJSON {
+		buf.WriteString("\n    static void json(Object v) {\n")
+		buf.WriteString("        System.out.println(_json(v));\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("\n    static String _json(Object v) {\n")
+		buf.WriteString("        if (v == null) return \"null\";\n")
+		buf.WriteString("        if (v instanceof String) {\n")
+		buf.WriteString("            String s = (String)v;\n")
+		buf.WriteString(`            s = s.replace("\\", "\\\\").replace("\"", "\\\"");` + "\n")
+		buf.WriteString("            return \"\\\"\" + s + \"\\\"\";\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof Number || v instanceof Boolean) {\n")
+		buf.WriteString("            return String.valueOf(v);\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof int[]) {\n")
+		buf.WriteString("            int[] a = (int[]) v;\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("            sb.append(\"[\");\n")
+		buf.WriteString("            for (int i = 0; i < a.length; i++) { if (i > 0) sb.append(\",\"); sb.append(a[i]); }\n")
+		buf.WriteString("            sb.append(\"]\");\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof double[]) {\n")
+		buf.WriteString("            double[] a = (double[]) v;\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("            sb.append(\"[\");\n")
+		buf.WriteString("            for (int i = 0; i < a.length; i++) { if (i > 0) sb.append(\",\"); sb.append(a[i]); }\n")
+		buf.WriteString("            sb.append(\"]\");\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v instanceof boolean[]) {\n")
+		buf.WriteString("            boolean[] a = (boolean[]) v;\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("            sb.append(\"[\");\n")
+		buf.WriteString("            for (int i = 0; i < a.length; i++) { if (i > 0) sb.append(\",\"); sb.append(a[i]); }\n")
+		buf.WriteString("            sb.append(\"]\");\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        if (v.getClass().isArray()) {\n")
+		buf.WriteString("            Object[] a = (Object[]) v;\n")
+		buf.WriteString("            StringBuilder sb = new StringBuilder();\n")
+		buf.WriteString("            sb.append(\"[\");\n")
+		buf.WriteString("            for (int i = 0; i < a.length; i++) { if (i > 0) sb.append(\",\"); sb.append(_json(a[i])); }\n")
+		buf.WriteString("            sb.append(\"]\");\n")
+		buf.WriteString("            return sb.toString();\n")
+		buf.WriteString("        }\n")
+		buf.WriteString("        String s = String.valueOf(v);\n")
+		buf.WriteString(`        s = s.replace("\\", "\\\\").replace("\"", "\\\"");` + "\n")
+		buf.WriteString("        return \"\\\"\" + s + \"\\\"\";\n")
 		buf.WriteString("    }\n")
 	}
 	if needP {
