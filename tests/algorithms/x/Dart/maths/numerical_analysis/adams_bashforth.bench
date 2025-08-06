@@ -1,0 +1,8 @@
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      adams_bashforth_step2 (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/adams_bashforth.dart:88:38)
+#1      y2 (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/adams_bashforth.dart:196:19)
+#2      y2 (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/adams_bashforth.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/adams_bashforth.dart:207:24)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

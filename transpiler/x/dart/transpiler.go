@@ -2691,7 +2691,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "int" && valType == "num" {
+	if c.Type == "int" && (valType == "num" || valType == "double") {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -2713,7 +2713,7 @@ func (c *CastExpr) emit(w io.Writer) error {
 		return err
 	}
 
-	if c.Type == "num" && valType == "int" {
+	if (c.Type == "num" || c.Type == "double") && valType == "int" {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
 		}
@@ -2741,8 +2741,8 @@ func (c *CastExpr) emit(w io.Writer) error {
 	case "int":
 		_, err := io.WriteString(w, " as int")
 		return err
-	case "num":
-		_, err := io.WriteString(w, " as num")
+	case "num", "double":
+		_, err := io.WriteString(w, " as "+c.Type)
 		return err
 	case "String":
 		_, err := io.WriteString(w, " as String")

@@ -1,0 +1,11 @@
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      round_float (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:85:13)
+#1      is_zero_vector (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:90:10)
+#2      are_collinear (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:97:10)
+#3      test_are_collinear (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:104:8)
+#4      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:114:3)
+#5      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:132:3)
+#6      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/points_are_collinear_3d.dart:142:16)
+#7      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#8      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

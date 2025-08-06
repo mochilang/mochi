@@ -1,0 +1,11 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      ln (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:47:30)
+#1      powf (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:71:32)
+#2      integrand (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:75:10)
+#3      gamma_iterative (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:87:21)
+#4      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:115:9)
+#5      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:121:3)
+#6      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/gamma.dart:124:16)
+#7      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#8      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,0 +1,11 @@
+run: exit status 255
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      ceil_int (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:17:13)
+#1      explicit_euler (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:25:11)
+#2      test_explicit_euler (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:52:21)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:60:3)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:67:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/euler_method.dart:70:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

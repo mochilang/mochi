@@ -1,0 +1,10 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      dodecahedron_surface_area (file:///workspace/mochi/tests/algorithms/x/Dart/maths/dodecahedron.dart:42:19)
+#1      test_dodecahedron (file:///workspace/mochi/tests/algorithms/x/Dart/maths/dodecahedron.dart:56:21)
+#2      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/dodecahedron.dart:71:3)
+#3      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/dodecahedron.dart:77:3)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/dodecahedron.dart:80:16)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

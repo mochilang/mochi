@@ -1,0 +1,10 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      nth_root (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:60:25)
+#1      minkowski_distance (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:84:10)
+#2      test_minkowski (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:88:15)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:97:3)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:108:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/minkowski_distance.dart:118:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

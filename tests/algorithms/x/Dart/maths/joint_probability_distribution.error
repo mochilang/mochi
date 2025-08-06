@@ -1,0 +1,15 @@
+run: exit status 255
+1,-2=0.21
+1,5=0.35
+1,8=0.13999999999999999
+2,-2=0.09
+2,5=0.15
+2,8=0.06
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      expectation (file:///workspace/mochi/tests/algorithms/x/Dart/maths/joint_probability_distribution.dart:39:32)
+#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/joint_probability_distribution.dart:109:15)
+#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/joint_probability_distribution.dart:124:3)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/joint_probability_distribution.dart:127:16)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/matrix/matrix_equalization.dart:63:5: Error: Method not found: 'error'.
+    error("Step size must be positive and non-zero.");
+    ^^^^^

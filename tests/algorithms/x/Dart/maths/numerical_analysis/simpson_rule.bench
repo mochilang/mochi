@@ -1,0 +1,8 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      simpson_rule (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/simpson_rule.dart:59:31)
+#1      result (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/simpson_rule.dart:74:17)
+#2      result (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/simpson_rule.dart)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/simpson_rule.dart:82:10)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

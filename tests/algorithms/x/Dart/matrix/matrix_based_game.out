@@ -1,0 +1,8 @@
+Unhandled exception:
+Exception: Move is out of bounds for a matrix.
+#0      validate_moves (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/matrix_based_game.dart:128:5)
+#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/matrix_based_game.dart:298:3)
+#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/matrix_based_game.dart:304:3)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/matrix_based_game.dart:307:16)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
