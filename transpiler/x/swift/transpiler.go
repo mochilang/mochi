@@ -2880,6 +2880,9 @@ func convertStmt(env *types.Env, st *parser.Statement) (Stmt, error) {
 				if ft, ok := stt.Fields[f.Name]; ok {
 					cur = ft
 				}
+				if ie, ok := lhs.(*IndexExpr); ok && !ie.Force {
+					ie.Force = true
+				}
 				lhs = &FieldExpr{Target: lhs, Name: f.Name}
 			} else {
 				lhs = &IndexExpr{Base: lhs, Index: &LitExpr{Value: f.Name, IsString: true}, Force: true}
@@ -4332,6 +4335,9 @@ func convertPostfix(env *types.Env, p *parser.PostfixExpr) (Expr, error) {
 					}
 				}
 			} else {
+				if ie, ok := expr.(*IndexExpr); ok && !ie.Force {
+					ie.Force = true
+				}
 				expr = &FieldExpr{Target: expr, Name: op.Field.Name}
 			}
 			continue
@@ -5031,8 +5037,11 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			if err != nil {
 				return nil, err
 			}
-			usesKeys = true
-			return &CallExpr{Func: "_keys", Args: []Expr{arg}}, nil
+			if env != nil && types.IsMapType(types.TypeOfExpr(pr.Call.Args[0], env)) {
+				usesKeys = true
+				return &CallExpr{Func: "_keys", Args: []Expr{arg}}, nil
+			}
+			return &CallExpr{Func: "keys", Args: []Expr{arg}}, nil
 		}
 		if pr.Call.Func == "padStart" && len(pr.Call.Args) == 3 {
 			a0, err := convertExpr(env, pr.Call.Args[0])
@@ -5445,7 +5454,12 @@ func toSwiftType(t *parser.TypeRef) string {
 	if t.Generic != nil {
 		switch t.Generic.Name {
 		case "list":
-			return "[" + toSwiftType(t.Generic.Args[0]) + "]"
+			elem := toSwiftType(t.Generic.Args[0])
+			suf := "?"
+			if strings.HasSuffix(elem, "]") {
+				suf = ""
+			}
+			return "[" + elem + suf + "]"
 		case "map":
 			key := toSwiftType(t.Generic.Args[0])
 			if key == "Any?" || key == "Any" {
@@ -5559,7 +5573,12 @@ func swiftTypeOf(t types.Type) string {
 	case types.AnyType:
 		return "Any?"
 	case types.ListType:
-		return "[" + swiftTypeOf(tt.Elem) + "]"
+		elem := swiftTypeOf(tt.Elem)
+		suf := "?"
+		if strings.HasSuffix(elem, "]") {
+			suf = ""
+		}
+		return "[" + elem + suf + "]"
 	case types.MapType:
 		key := swiftTypeOf(tt.Key)
 		if key == "Any?" || key == "Any" {

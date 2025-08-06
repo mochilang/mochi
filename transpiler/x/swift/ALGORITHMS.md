@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 178/1077
-Last updated: 2025-08-06 22:30 +0700
+Completed programs: 193/1077
+Last updated: 2025-08-06 23:08 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -209,21 +209,21 @@ Last updated: 2025-08-06 22:30 +0700
 | 200 | data_structures/binary_tree/wavelet_tree | ✓ | 432µs | 3.2 MB |
 | 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 481µs | 3.2 MB |
 | 202 | data_structures/disjoint_set/disjoint_set | ✓ | 380µs | 3.3 MB |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 44.474ms | 3.3 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 411µs | 3.2 MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 241µs | 3.3 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 706µs | 3.1 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 1.135ms | 4.0 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 283µs | 3.0 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 312µs | 3.1 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 335µs | 3.2 MB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 219µs | 3.3 MB |
+| 212 | data_structures/heap/heap | ✓ |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 723µs | 3.2 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 425µs | 3.2 MB |
+| 215 | data_structures/heap/min_heap | ✓ | 272µs | 3.3 MB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 416µs | 3.5 MB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 1.758ms | 4.2 MB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
 | 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
 | 220 | data_structures/kd_tree/kd_node |   |  |  |
