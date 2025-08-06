@@ -1164,52 +1164,62 @@ func emitStmtIndent(w io.Writer, s Stmt, indent string) error {
 		}
 		_, err := io.WriteString(w, "\n")
 		return err
-	case *IndexAssignStmt:
-		if name, ok := st.Target.(*Name); ok {
-			if _, err := io.WriteString(w, indent+safeName(name.Name)+" = _set_index("); err != nil {
-				return err
-			}
-			if err := emitExpr(w, st.Target); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ", "); err != nil {
-				return err
-			}
-			if err := emitExpr(w, st.Index); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ", "); err != nil {
-				return err
-			}
-			if err := emitExpr(w, st.Value); err != nil {
-				return err
-			}
-			if _, err := io.WriteString(w, ")\n"); err != nil {
-				return err
-			}
-			usesSetIndex = true
-			return nil
-		}
-		if _, err := io.WriteString(w, indent); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Target); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, "["); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Index); err != nil {
-			return err
-		}
-		if _, err := io.WriteString(w, "] = "); err != nil {
-			return err
-		}
-		if err := emitExpr(w, st.Value); err != nil {
-			return err
-		}
-		_, err := io.WriteString(w, "\n")
-		return err
+       case *IndexAssignStmt:
+               if name, ok := st.Target.(*Name); ok {
+                       useSet := false
+                       if currentEnv != nil {
+                               if t, err := currentEnv.GetVar(name.Name); err == nil {
+                                       if _, ok := t.(types.ListType); ok {
+                                               useSet = true
+                                       }
+                               }
+                       }
+                       if useSet {
+                               if _, err := io.WriteString(w, indent+safeName(name.Name)+" = _set_index("); err != nil {
+                                       return err
+                               }
+                               if err := emitExpr(w, st.Target); err != nil {
+                                       return err
+                               }
+                               if _, err := io.WriteString(w, ", "); err != nil {
+                                       return err
+                               }
+                               if err := emitExpr(w, st.Index); err != nil {
+                                       return err
+                               }
+                               if _, err := io.WriteString(w, ", "); err != nil {
+                                       return err
+                               }
+                               if err := emitExpr(w, st.Value); err != nil {
+                                       return err
+                               }
+                               if _, err := io.WriteString(w, ")\n"); err != nil {
+                                       return err
+                               }
+                               usesSetIndex = true
+                               return nil
+                       }
+               }
+               if _, err := io.WriteString(w, indent); err != nil {
+                       return err
+               }
+               if err := emitExpr(w, st.Target); err != nil {
+                       return err
+               }
+               if _, err := io.WriteString(w, "["); err != nil {
+                       return err
+               }
+               if err := emitExpr(w, st.Index); err != nil {
+                       return err
+               }
+               if _, err := io.WriteString(w, "] = "); err != nil {
+                       return err
+               }
+               if err := emitExpr(w, st.Value); err != nil {
+                       return err
+               }
+               _, err := io.WriteString(w, "\n")
+               return err
 	case *FuncDef:
 		if _, err := io.WriteString(w, indent+"def "+safeName(st.Name)+"("); err != nil {
 			return err
