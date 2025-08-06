@@ -1,0 +1,89 @@
+/*
+Mirror Formula for Spherical Mirrors
+-----------------------------------
+Given an object distance (u) and image distance (v), the focal length (f) of a
+spherical mirror is determined by the mirror equation:
+
+    1/f = 1/v + 1/u
+
+This module provides three utility functions that solve this relationship for
+any one of the three quantities when the other two are known. Distances follow
+the sign convention used in geometrical optics: objects are placed to the left
+of the mirror, measurements in the direction of the incident ray are positive
+and opposite directions are negative, all measured from the pole of the mirror.
+Inputs must be non‑zero; otherwise the functions panic.
+*/
+
+fun abs_float(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun isclose(a: float, b: float, tolerance: float): bool {
+  return abs_float(a - b) < tolerance
+}
+
+fun focal_length(distance_of_object: float, distance_of_image: float): float {
+  if distance_of_object == 0.0 || distance_of_image == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / distance_of_object) + (1.0 / distance_of_image))
+}
+
+fun object_distance(focal_length: float, distance_of_image: float): float {
+  if distance_of_image == 0.0 || focal_length == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / focal_length) - (1.0 / distance_of_image))
+}
+
+fun image_distance(focal_length: float, distance_of_object: float): float {
+  if distance_of_object == 0.0 || focal_length == 0.0 {
+    panic("Invalid inputs. Enter non zero values with respect to the sign convention.")
+  }
+  return 1.0 / ((1.0 / focal_length) - (1.0 / distance_of_object))
+}
+
+fun test_focal_length() {
+  let f1 = focal_length(10.0, 20.0)
+  if !isclose(f1, 6.66666666666666, 0.00000001) {
+    panic("focal_length test1 failed")
+  }
+  let f2 = focal_length(9.5, 6.7)
+  if !isclose(f2, 3.929012346, 0.00000001) {
+    panic("focal_length test2 failed")
+  }
+}
+
+fun test_object_distance() {
+  let u1 = object_distance(30.0, 20.0)
+  if !isclose(u1, -60.0, 0.00000001) {
+    panic("object_distance test1 failed")
+  }
+  let u2 = object_distance(10.5, 11.7)
+  if !isclose(u2, 102.375, 0.00000001) {
+    panic("object_distance test2 failed")
+  }
+}
+
+fun test_image_distance() {
+  let v1 = image_distance(10.0, 40.0)
+  if !isclose(v1, 13.33333333, 0.00000001) {
+    panic("image_distance test1 failed")
+  }
+  let v2 = image_distance(1.5, 6.7)
+  if !isclose(v2, 1.932692308, 0.00000001) {
+    panic("image_distance test2 failed")
+  }
+}
+
+fun main() {
+  test_focal_length()
+  test_object_distance()
+  test_image_distance()
+  print(str(focal_length(10.0, 20.0)))
+  print(str(object_distance(30.0, 20.0)))
+  print(str(image_distance(10.0, 40.0)))
+}
+
+main()
