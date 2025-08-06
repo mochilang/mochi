@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 162/1077
-Last updated: 2025-08-06 22:05 +0700
+Completed programs: 163/1077
+Last updated: 2025-08-06 22:38 +0700
 
 Checklist:
 
@@ -177,7 +177,7 @@ Checklist:
 | 168 | data_structures/arrays/product_sum | ✓ | 568.0µs | 1.23KB |
 | 169 | data_structures/arrays/sparse_table | ✓ | 713.0µs | 2.27KB |
 | 170 | data_structures/arrays/sudoku_solver | ✓ | 1.0ms | 38.34KB |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 267.0µs | 1.81KB |
 | 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
 | 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |

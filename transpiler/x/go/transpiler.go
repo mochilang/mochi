@@ -745,9 +745,18 @@ func updateMapLitTypes(ml *MapLit, t types.Type) {
 	case types.MapType:
 		ml.KeyType = toGoTypeFromType(mt.Key)
 		ml.ValueType = toGoTypeFromType(mt.Value)
-		for _, v := range ml.Values {
+		for i, v := range ml.Values {
 			if inner, ok := v.(*MapLit); ok {
 				updateMapLitTypes(inner, mt.Value)
+			} else {
+				if (types.IsIntType(mt.Value) || types.IsInt64Type(mt.Value)) && isBigIntExpr(v) {
+					ml.Values[i] = &BigIntToIntExpr{Value: v}
+				}
+			}
+		}
+		for i, k := range ml.Keys {
+			if (types.IsIntType(mt.Key) || types.IsInt64Type(mt.Key)) && isBigIntExpr(k) {
+				ml.Keys[i] = &BigIntToIntExpr{Value: k}
 			}
 		}
 	case types.StructType:
@@ -4350,6 +4359,9 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		}
 	}
 	fixListLits(val, env)
+	if currentRetType != "" {
+		applyType(val, toTypeFromGoType(currentRetType))
+	}
 	if ll, ok := val.(*ListLit); ok && ll.ElemType == "any" && strings.HasPrefix(currentRetType, "[]") && currentRetType != "[]any" {
 		ll.ElemType = strings.TrimPrefix(currentRetType, "[]")
 	}
