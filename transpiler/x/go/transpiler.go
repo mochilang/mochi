@@ -1309,7 +1309,7 @@ func (ls *ListStringExpr) emit(w io.Writer) {
 	usesStrings = true
 	io.WriteString(w, "func() string { b, _ := json.Marshal(")
 	ls.List.emit(w)
-	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "}, {", "},{"); s = strings.ReplaceAll(s, "\"", "'"); return s }()`)
+	io.WriteString(w, `); s := string(b); s = strings.ReplaceAll(s, ":", ": "); s = strings.ReplaceAll(s, ",", ", "); s = strings.ReplaceAll(s, "}, {", "},{"); return s }()`)
 }
 
 // StringJoinExpr joins a list of strings with spaces.
@@ -2297,15 +2297,11 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					return nil, err
 				}
 				t := types.TypeOfExpr(a, env)
-				switch tt := t.(type) {
+				switch t.(type) {
 				case types.ListType:
 					needStrings = true
-					if _, ok2 := tt.Elem.(types.StringType); ok2 {
-						ex = &StringJoinExpr{List: ex}
-					} else {
-						usesJSON = true
-						ex = &ListStringExpr{List: ex}
-					}
+					usesJSON = true
+					ex = &ListStringExpr{List: ex}
 				case types.StructType:
 					needStrings = true
 					usesJSON = true
@@ -2313,12 +2309,7 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				case types.FloatType:
 					ex = &FloatStringExpr{Value: ex}
 				case types.BoolType:
-					switch ex.(type) {
-					case *ContainsExpr, *ExistsExpr, *VarRef, *BoolLit:
-						// keep boolean text
-					default:
-						ex = &BoolIntExpr{Expr: ex}
-					}
+					// keep boolean value as is
 				}
 				args[i] = ex
 			}
@@ -4178,9 +4169,25 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	if currentRetType == "" {
-		if _, ok := val.(*NullLit); ok {
-			return &ReturnStmt{}, nil
+	fromNull := false
+	if nl, ok := val.(*NullLit); ok {
+		fromNull = true
+		switch currentRetType {
+		case "string":
+			val = &StringLit{Value: ""}
+		case "int", "int64":
+			val = &IntLit{Value: 0}
+		case "float64":
+			val = &FloatLit{Value: 0}
+		case "bool":
+			val = &BoolLit{Value: false}
+		case "", "any":
+			val = nl
+			if currentRetType == "" {
+				return &ReturnStmt{}, nil
+			}
+		default:
+			val = nl
 		}
 	}
 	fixListLits(val, env)
@@ -4194,6 +4201,9 @@ func compileReturnStmt(rs *parser.ReturnStmt, env *types.Env) (Stmt, error) {
 		exprType := toGoTypeFromType(types.ExprType(rs.Value, env))
 		if exprType == "" {
 			exprType = "any"
+		}
+		if fromNull {
+			exprType = ret
 		}
 		if ret != "any" && exprType != ret {
 			if exprType == "*big.Int" && (ret == "int" || ret == "int64") {
@@ -4549,6 +4559,16 @@ func compileBinary(b *parser.BinaryExpr, env *types.Env, base string) (Expr, err
 							}
 							if _, ok := right.(*NullLit); ok {
 								rNull = true
+							}
+							if lNull && !rNull {
+								if _, ok := typesList[i+1].(types.StringType); ok {
+									left = &StringLit{Value: ""}
+								}
+							}
+							if rNull && !lNull {
+								if _, ok := typesList[i].(types.StringType); ok {
+									right = &StringLit{Value: ""}
+								}
 							}
 							if !(ops[i].Op == "==" || ops[i].Op == "!=") || (!lNull && !rNull) {
 								if _, ok := typesList[i].(types.AnyType); ok {
