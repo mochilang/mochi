@@ -1,0 +1,165 @@
+warning: variable "seed" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │               seed = v
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:14:15: Main._now/0
+
+    warning: variable "seeded" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 15 │               seeded = true
+    │               ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:15:15: Main._now/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 152 │       {x, y} = try do
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:152:11: Main.gcd/2
+
+     warning: variable "sols" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │           sols = (sols ++ [[x, y]])
+     │           ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:208:11: Main.diophantine_all_soln/4
+
+     warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 215 │       i = try do
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:215:7: Main.diophantine_all_soln/4
+
+    warning: function _slice/3 is unused
+    │
+ 50 │   defp _slice(base, start, len) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:50:8: Main (module)
+
+     warning: function _sha256/1 is unused
+     │
+ 109 │   defp _sha256(bs) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:109:8: Main (module)
+
+    warning: function _mem/0 is unused
+    │
+ 31 │   defp _mem() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:31:8: Main (module)
+
+     warning: function _md5_hex/1 is unused
+     │
+ 135 │   defp _md5_hex(s) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:135:8: Main (module)
+
+    warning: function _lookup_host/1 is unused
+    │
+ 34 │   defp _lookup_host(host) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:34:8: Main (module)
+
+     warning: function _getoutput/1 is unused
+     │
+ 119 │   defp _getoutput(cmd) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:119:8: Main (module)
+
+     warning: function _getenv/1 is unused
+     │
+ 113 │   defp _getenv(name) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:113:8: Main (module)
+
+     warning: function _fetch/1 is unused
+     │
+ 123 │   defp _fetch(url) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:123:8: Main (module)
+
+     warning: function _environ/0 is unused
+     │
+ 116 │   defp _environ() do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:116:8: Main (module)
+
+    warning: function _clamp_slice/3 is unused
+    │
+ 43 │   defp _clamp_slice(n, start, stop) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:43:8: Main (module)
+
+    warning: function _bigrat_sub/2 is unused
+    │
+ 90 │   defp _bigrat_sub(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:90:8: Main (module)
+
+     warning: function _bigrat_neg/1 is unused
+     │
+ 105 │   defp _bigrat_neg(a) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:105:8: Main (module)
+
+    warning: function _bigrat_mul/2 is unused
+    │
+ 95 │   defp _bigrat_mul(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:95:8: Main (module)
+
+     warning: function _bigrat_div/2 is unused
+     │
+ 100 │   defp _bigrat_div(a, b) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:100:8: Main (module)
+
+    warning: function _bigrat_add/2 is unused
+    │
+ 85 │   defp _bigrat_add(a, b) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:85:8: Main (module)
+
+    warning: function _bigrat/2 is unused
+    │
+ 73 │   defp _bigrat(n, d) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:73:8: Main (module)
+
+    warning: function _bigrat/1 is unused
+    │
+ 70 │   defp _bigrat(v) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:70:8: Main (module)
+
+    warning: function _bench_now/0 is unused
+    │
+ 28 │   defp _bench_now() do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/blockchain/diophantine_equation.exs:28:8: Main (module)
+
+[-7 14]
+[9, -12]
+[2, -1, 2]
+[1, -2, 3]
