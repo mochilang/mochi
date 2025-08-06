@@ -1,0 +1,67 @@
+/*
+Checks whether a string is an isogram (no repeated letters).
+
+An isogram is a word or phrase without a repeating letter. The algorithm
+verifies that the input consists solely of alphabetic characters, converting
+letters to lowercase to ensure case-insensitive comparison. It tracks the
+characters seen so far in a string and for each new character checks whether it
+has already been encountered. If a duplicate is found the function returns
+false; otherwise it returns true after processing all letters. The complexity
+is O(n^2) in the worst case due to repeated membership checks, and O(n) space
+for the collected characters.
+*/
+
+fun index_of(s: string, ch: string): int {
+  var i: int = 0
+  while i < len(s) {
+    if s[i] == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx: int = index_of(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = index_of(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  return -1
+}
+
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  return "?"
+}
+
+fun to_lower_char(c: string): string {
+  let code: int = ord(c)
+  if code >= 65 && code <= 90 { return chr(code + 32) }
+  return c
+}
+
+fun is_alpha(c: string): bool {
+  let code: int = ord(c)
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122)
+}
+
+fun is_isogram(s: string): bool {
+  var seen: string = ""
+  var i: int = 0
+  while i < len(s) {
+    let ch: string = s[i]
+    if !is_alpha(ch) { panic("String must only contain alphabetic characters.") }
+    let lower: string = to_lower_char(ch)
+    if index_of(seen, lower) >= 0 { return false }
+    seen = seen + lower
+    i = i + 1
+  }
+  return true
+}
+
+print(str(is_isogram("Uncopyrightable")))
+print(str(is_isogram("allowance")))
