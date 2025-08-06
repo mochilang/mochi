@@ -1099,6 +1099,13 @@ func exprIsInt(e Expr, env *types.Env) bool {
 	return false
 }
 
+func isBoolExpr(e Expr) bool {
+	if n, ok := e.(*Name); ok {
+		return n.Name == "#t" || n.Name == "#f"
+	}
+	return false
+}
+
 // heuristicInt returns true if the expression appears to represent an
 // integer value based purely on its syntax. It does not consult the
 // type environment so it can make a best-effort guess for local
@@ -2276,31 +2283,33 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			continue
 		}
 		currLeft := exprs[len(exprs)-1]
-		if (op == "==" || op == "!=") && (types.IsStringType(leftType) || types.IsStringPostfix(part.Right, env)) {
-			if op == "==" {
-				op = "string=?"
-			} else {
-				op = "string!="
-			}
-			leftIsStr := types.IsStringType(leftType)
-			rightIsStr := types.IsStringPostfix(part.Right, env)
-			if leftIsStr && !rightIsStr {
-				if n, ok := right.(*Name); ok {
-					if n.Name == "#t" {
-						right = &StringLit{Value: "true"}
-					} else if n.Name == "#f" {
-						right = &StringLit{Value: "false"}
+		if op == "==" || op == "!=" {
+			if (types.IsStringType(leftType) || types.IsStringPostfix(part.Right, env)) && !isBoolExpr(currLeft) && !isBoolExpr(right) {
+				if op == "==" {
+					op = "string=?"
+				} else {
+					op = "string!="
+				}
+				leftIsStr := types.IsStringType(leftType)
+				rightIsStr := types.IsStringPostfix(part.Right, env)
+				if leftIsStr && !rightIsStr {
+					if n, ok := right.(*Name); ok {
+						if n.Name == "#t" {
+							right = &StringLit{Value: "true"}
+						} else if n.Name == "#f" {
+							right = &StringLit{Value: "false"}
+						}
 					}
 				}
-			}
-			if rightIsStr && !leftIsStr {
-				if n, ok := currLeft.(*Name); ok {
-					if n.Name == "#t" {
-						currLeft = &StringLit{Value: "true"}
-					} else if n.Name == "#f" {
-						currLeft = &StringLit{Value: "false"}
+				if rightIsStr && !leftIsStr {
+					if n, ok := currLeft.(*Name); ok {
+						if n.Name == "#t" {
+							currLeft = &StringLit{Value: "true"}
+						} else if n.Name == "#f" {
+							currLeft = &StringLit{Value: "false"}
+						}
+						exprs[len(exprs)-1] = currLeft
 					}
-					exprs[len(exprs)-1] = currLeft
 				}
 			}
 		}
