@@ -1,0 +1,41 @@
+/*
+Project Euler Problem 4: Largest palindrome made from the product of two 3-digit numbers.
+
+A palindromic number reads identically forward and backward. This program
+searches for the largest palindrome less than a given limit that is the product
+of two 3-digit integers. The algorithm iterates downward from 999 to 100 for
+both multiplicands, computes their product, and checks whether it is a palindrome
+by reversing its digits. Whenever a larger palindrome under the limit is found,
+that value is stored. The search space is 900x900 and thus runs in O(n^2)
+with n = 900.
+*/
+
+fun is_palindrome(num: int): bool {
+  if num < 0 { return false }
+  var n = num
+  var rev = 0
+  while n > 0 {
+    rev = rev * 10 + (n % 10)
+    n = n / 10
+  }
+  return rev == num
+}
+
+fun solution(limit: int): int {
+  var answer = 0
+  var i = 999
+  while i >= 100 {
+    var j = 999
+    while j >= 100 {
+      let product = i * j
+      if product < limit && is_palindrome(product) && product > answer {
+        answer = product
+      }
+      j = j - 1
+    }
+    i = i - 1
+  }
+  return answer
+}
+
+print(str(solution(998001)))
