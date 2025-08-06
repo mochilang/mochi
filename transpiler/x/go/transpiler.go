@@ -706,8 +706,6 @@ func updateListLitType(ll *ListLit, t types.Type) {
 	}
 	if ll.ElemType == "" || ll.ElemType == "any" {
 		ll.ElemType = target
-	} else if target == "any" {
-		ll.ElemType = "any"
 	}
 	for _, el := range ll.Elems {
 		switch inner := el.(type) {
