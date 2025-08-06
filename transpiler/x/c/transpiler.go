@@ -997,7 +997,7 @@ func (d *DeclStmt) emit(w io.Writer, indent int) {
 			d.Value.emitExpr(w)
 			io.WriteString(w, ";\n")
 			writeIndent(w, indent)
-			if strings.Contains(base, "char") {
+			if base == "char" || base == "const char" {
 				fmt.Fprintf(w, "size_t %s_len = %s ? strlen(%s) : 0;\n", d.Name, d.Name, d.Name)
 			} else {
 				fmt.Fprintf(w, "size_t %s_len = %s_len;\n", d.Name, call.Func)
@@ -3746,12 +3746,20 @@ func Transpile(env *types.Env, prog *parser.Program) (*Program, error) {
 				funcAliases[name] = "user_bigrat"
 				name = "user_bigrat"
 			}
+			if name == "rand" { // avoid conflict with stdlib
+				funcAliases[name] = "user_rand"
+				name = "user_rand"
+			}
+			if name == "random" { // avoid conflict with stdlib
+				funcAliases[name] = "user_random"
+				name = "user_random"
+			}
 			fun, err := compileFunction(env, name, fnExpr)
 			if err != nil {
 				return nil, err
 			}
 			ret := fun.Return
-			if ret == "const char*" {
+			if ret == "const char*" || strings.Contains(ret, "[]") {
 				funcReturnTypes[name] = ret
 			} else {
 				funcReturnTypes[name] = strings.ReplaceAll(ret, "*", "[]")

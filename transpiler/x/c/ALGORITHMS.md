@@ -2,7 +2,7 @@
 
 This directory stores C code generated from Mochi programs in `tests/github/TheAlgorithms/Mochi`. Each file is compiled and executed during tests. Successful runs keep the generated `.c` source along with a matching `.out` file. Failures are recorded in `.error` files when tests run with `-update`.
 
-Checklist of programs that currently transpile and run (36/1077) - Last updated 2025-08-06 21:53 +0700:
+Checklist of programs that currently transpile and run (56/1077) - Last updated 2025-08-06 22:21 +0700:
 | Index | Name | Status | Duration | Memory |
 | ---: | --- | :---: | ---: | ---: |
 | 1 | backtracking/all_combinations | ✓ | 269us | 1.4 MB |
@@ -46,27 +46,27 @@ Checklist of programs that currently transpile and run (36/1077) - Last updated 
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 267us | 1.6 MB |
 | 40 | bit_manipulation/missing_number | ✓ | 149us | 1.4 MB |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 252us | 1.4 MB |
-| 42 | bit_manipulation/power_of_4 |  |  |  |
-| 43 | bit_manipulation/reverse_bits |  |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |  |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |  |  |  |
-| 46 | blockchain/diophantine_equation |  |  |  |
-| 47 | boolean_algebra/and_gate |  |  |  |
-| 48 | boolean_algebra/imply_gate |  |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |  |  |  |
-| 50 | boolean_algebra/multiplexer |  |  |  |
-| 51 | boolean_algebra/nand_gate |  |  |  |
-| 52 | boolean_algebra/nimply_gate |  |  |  |
-| 53 | boolean_algebra/nor_gate |  |  |  |
-| 54 | boolean_algebra/not_gate |  |  |  |
-| 55 | boolean_algebra/or_gate |  |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |  |  |  |
-| 57 | boolean_algebra/xnor_gate |  |  |  |
-| 58 | boolean_algebra/xor_gate |  |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 281us | 1.6 MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 469us | 1.5 MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 235us | 1.5 MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 264us | 1.4 MB |
+| 46 | blockchain/diophantine_equation | ✓ | 391us | 1.6 MB |
+| 47 | boolean_algebra/and_gate | ✓ | 262us | 1.6 MB |
+| 48 | boolean_algebra/imply_gate | ✓ | 371us | 1.5 MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 397us | 1.5 MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 184us | 1.6 MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 260us | 1.4 MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 195us | 1.4 MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 297us | 1.5 MB |
+| 54 | boolean_algebra/not_gate | ✓ | 446us | 1.6 MB |
+| 55 | boolean_algebra/or_gate | ✓ | 274us | 1.5 MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 251us | 1.4 MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 599us | 1.5 MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 237us | 1.6 MB |
 | 59 | cellular_automata/conways_game_of_life |  |  |  |
-| 60 | cellular_automata/game_of_life |  |  |  |
-| 61 | cellular_automata/langtons_ant |  |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |  |  |  |
+| 60 | cellular_automata/game_of_life | ✓ | 278us | 1.5 MB |
+| 61 | cellular_automata/langtons_ant | ✓ |  |  |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 206us | 1.4 MB |
 | 63 | cellular_automata/one_dimensional |  |  |  |
 | 64 | cellular_automata/wa_tor |  |  |  |
 | 65 | ciphers/a1z26 |  |  |  |
