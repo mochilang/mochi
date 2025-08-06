@@ -1,0 +1,30 @@
+/*
+Computes the Reynolds number to characterize fluid flow in a pipe.
+
+The Reynolds number is the ratio of inertial to viscous forces:
+
+  R = (density * velocity * diameter) / viscosity
+
+where density is in kg/m^3, velocity in m/s, diameter in meters,
+and viscosity in Ns/m^2.  If R is below ~2000 the flow is laminar,
+while values above ~2200 indicate turbulent flow.  This program
+validates that density, diameter and viscosity are positive and
+returns the Reynolds number using the absolute value of velocity.
+It is implemented purely in Mochi so it can run on the runtime/vm
+without any foreign function interfaces.
+*/
+
+fun fabs(x: float): float {
+  if x < 0.0 { return -x } else { return x }
+}
+
+fun reynolds_number(density: float, velocity: float, diameter: float, viscosity: float): float {
+  if density <= 0.0 || diameter <= 0.0 || viscosity <= 0.0 {
+    panic("please ensure that density, diameter and viscosity are positive")
+  }
+  return (density * fabs(velocity) * diameter) / viscosity
+}
+
+print(reynolds_number(900.0, 2.5, 0.05, 0.4))
+print(reynolds_number(450.0, 3.86, 0.078, 0.23))
+print(reynolds_number(234.0, -4.5, 0.3, 0.44))
