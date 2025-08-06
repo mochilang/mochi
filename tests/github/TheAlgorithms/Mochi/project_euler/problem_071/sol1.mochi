@@ -1,0 +1,35 @@
+/*
+Project Euler Problem 71: Ordered Fractions
+
+Given a target fraction numerator/denominator and a limit on the
+maximum denominator, find the numerator of the reduced proper fraction
+that lies immediately to the left of the target when all reduced
+fractions with denominators up to the limit are ordered. For each
+possible denominator, the algorithm computes the greatest numerator that
+keeps the fraction below the target. Fractions are compared using cross
+multiplication to avoid floating point errors. The approach runs in
+O(limit) time and uses only pure Mochi constructs.
+*/
+
+fun solution(numerator: int, denominator: int, limit: int): int {
+  var maxNumerator: int = 0
+  var maxDenominator: int = 1
+  var currentDenominator: int = 1
+  while currentDenominator <= limit {
+    var currentNumerator: int = currentDenominator * numerator / denominator
+    if currentDenominator % denominator == 0 {
+      currentNumerator = currentNumerator - 1
+    }
+    if currentNumerator * maxDenominator > currentDenominator * maxNumerator {
+      maxNumerator = currentNumerator
+      maxDenominator = currentDenominator
+    }
+    currentDenominator = currentDenominator + 1
+  }
+  return maxNumerator
+}
+
+print(str(solution(3, 7, 1000000)))
+print(str(solution(3, 7, 8)))
+print(str(solution(6, 7, 60)))
+
