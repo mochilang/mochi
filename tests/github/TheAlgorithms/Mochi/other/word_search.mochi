@@ -1,0 +1,163 @@
+/*
+Word Search Puzzle Generator
+---------------------------
+
+Given a list of words and board dimensions, place each word into a grid
+in one of eight compass directions (N, NE, E, SE, S, SW, W, NW). The
+placement routine tries every cell in random order until the word fits
+within bounds and does not overwrite existing letters. After inserting
+all words the empty cells are filled with random lowercase letters for
+visualization.
+
+The implementation uses a simple linear congruential generator for
+deterministic pseudo-random numbers, ensuring the program can run on
+runtime/vm without any foreign functions. All data structures use
+explicit types and avoid the `any` type.
+*/
+
+type WordSearch {
+  words: list<string>,
+  width: int,
+  height: int,
+  board: list<list<string>>
+}
+
+var seed = 123456789
+
+fun rand(): int {
+  seed = (seed * 1103515245 + 12345) % 2147483648
+  return seed
+}
+
+fun rand_range(max: int): int {
+  return rand() % max
+}
+
+fun shuffle(list_int: list<int>): list<int> {
+  var i = len(list_int) - 1
+  while i > 0 {
+    let j = rand_range(i + 1)
+    let tmp = list_int[i]
+    list_int[i] = list_int[j]
+    list_int[j] = tmp
+    i = i - 1
+  }
+  return list_int
+}
+
+fun rand_letter(): string {
+  let letters = "abcdefghijklmnopqrstuvwxyz"
+  let i = rand_range(26)
+  return letters[i:i+1]
+}
+
+fun make_word_search(words: list<string>, width: int, height: int): WordSearch {
+  var board: list<list<string>> = []
+  var r = 0
+  while r < height {
+    var row: list<string> = []
+    var c = 0
+    while c < width {
+      row = append(row, "")
+      c = c + 1
+    }
+    board = append(board, row)
+    r = r + 1
+  }
+  return WordSearch { words: words, width: width, height: height, board: board }
+}
+
+fun insert_dir(ws: WordSearch, word: string, dr: int, dc: int, rows: list<int>, cols: list<int>): bool {
+  let word_len = len(word)
+  var ri = 0
+  while ri < len(rows) {
+    let row = rows[ri]
+    var ci = 0
+    while ci < len(cols) {
+      let col = cols[ci]
+      let end_r = row + dr * (word_len - 1)
+      let end_c = col + dc * (word_len - 1)
+      if end_r < 0 || end_r >= ws.height || end_c < 0 || end_c >= ws.width {
+        ci = ci + 1
+        continue
+      }
+      var k = 0
+      var ok = true
+      while k < word_len {
+        let rr = row + dr * k
+        let cc = col + dc * k
+        if ws.board[rr][cc] != "" {
+          ok = false
+          break
+        }
+        k = k + 1
+      }
+      if ok {
+        k = 0
+        while k < word_len {
+          let rr2 = row + dr * k
+          let cc2 = col + dc * k
+          var row_list = ws.board[rr2]
+          row_list[cc2] = word[k:k+1]
+          k = k + 1
+        }
+        return true
+      }
+      ci = ci + 1
+    }
+    ri = ri + 1
+  }
+  return false
+}
+
+fun generate_board(ws: WordSearch) {
+  let dirs_r = [-1, -1, 0, 1, 1, 1, 0, -1]
+  let dirs_c = [0, 1, 1, 1, 0, -1, -1, -1]
+  var i = 0
+  while i < len(ws.words) {
+    let word = ws.words[i]
+    var rows: list<int> = []
+    var r = 0
+    while r < ws.height { rows = append(rows, r); r = r + 1 }
+    var cols: list<int> = []
+    var c = 0
+    while c < ws.width { cols = append(cols, c); c = c + 1 }
+    rows = shuffle(rows)
+    cols = shuffle(cols)
+    let d = rand_range(8)
+    insert_dir(ws, word, dirs_r[d], dirs_c[d], rows, cols)
+    i = i + 1
+  }
+}
+
+fun visualise(ws: WordSearch, add_fake_chars: bool): string {
+  var result = ""
+  var r = 0
+  while r < ws.height {
+    var c = 0
+    while c < ws.width {
+      var ch = ws.board[r][c]
+      if ch == "" {
+        if add_fake_chars {
+          ch = rand_letter()
+        } else {
+          ch = "#"
+        }
+      }
+      result = result + ch + " "
+      c = c + 1
+    }
+    result = result + "\n"
+    r = r + 1
+  }
+  return result
+}
+
+fun main() {
+  let words = ["cat", "dog", "snake", "fish"]
+  var ws = make_word_search(words, 10, 10)
+  generate_board(ws)
+  print(visualise(ws, true))
+}
+
+main()
