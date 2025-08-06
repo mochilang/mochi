@@ -1,0 +1,49 @@
+/*
+Edit Distance (Naive Recursive)
+------------------------------
+Given two strings, compute the minimum number of single-character
+operations required to transform the source string into the target.
+Allowed operations are:
+  1. Insertion of a character
+  2. Deletion of a character
+  3. Substitution of one character for another
+
+This implementation uses a straightforward recursion matching the
+corresponding Python solution.  It compares the final characters of
+the strings and recursively explores the three possibilities.  The
+cost of each operation is assumed to be 1.
+
+Time Complexity: O(3^n) in the worst case because all possibilities
+are explored without memoization.  Suitable only for short strings.
+Space Complexity: O(n) for the recursion depth.
+*/
+
+fun min3(a: int, b: int, c: int): int {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+fun edit_distance(source: string, target: string): int {
+  if len(source) == 0 {
+    return len(target)
+  }
+  if len(target) == 0 {
+    return len(source)
+  }
+  let last_source = substring(source, len(source) - 1, len(source))
+  let last_target = substring(target, len(target) - 1, len(target))
+  let delta = if last_source == last_target { 0 } else { 1 }
+  let delete_cost = edit_distance(substring(source, 0, len(source) - 1), target) + 1
+  let insert_cost = edit_distance(source, substring(target, 0, len(target) - 1)) + 1
+  let replace_cost = edit_distance(substring(source, 0, len(source) - 1), substring(target, 0, len(target) - 1)) + delta
+  return min3(delete_cost, insert_cost, replace_cost)
+}
+
+fun main() {
+  let result = edit_distance("ATCGCTG", "TAGCTAA")
+  print(str(result))
+}
+
+main()
