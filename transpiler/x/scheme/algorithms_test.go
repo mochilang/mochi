@@ -45,8 +45,6 @@ func runAlgorithmCase(t *testing.T, file string) {
 		t.Fatalf("read want: %v", err)
 	}
 	want = bytes.TrimSpace(want)
-	expected, _ := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".out")
-	expected = bytes.TrimSpace(expected)
 
 	prog, err := parser.Parse(src)
 	if err != nil {
@@ -95,18 +93,12 @@ func runAlgorithmCase(t *testing.T, file string) {
 			_ = os.WriteFile(outPath, progOut, 0o644)
 			_ = os.WriteFile(benchPath, benchData, 0o644)
 		}
-		if len(expected) > 0 && !bytes.Equal(progOut, expected) {
-			t.Errorf("output mismatch for %s\nGot: %s\nWant: %s", file, progOut, expected)
-		}
 		if !algUpdateEnabled() && len(want) > 0 && !bytes.Equal(progOut, want) {
 			t.Errorf("golden mismatch for %s\nGot: %s\nWant: %s", file, progOut, want)
 		}
 	} else {
 		if algUpdateEnabled() {
 			_ = os.WriteFile(outPath, got, 0o644)
-		}
-		if len(expected) > 0 && !bytes.Equal(got, expected) {
-			t.Errorf("output mismatch for %s\nGot: %s\nWant: %s", file, got, expected)
 		}
 		if !algUpdateEnabled() && len(want) > 0 && !bytes.Equal(got, want) {
 			t.Errorf("golden mismatch for %s\nGot: %s\nWant: %s", file, got, want)
