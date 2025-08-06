@@ -1,0 +1,295 @@
+exit status 1
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:150:45: warning: forced cast of '[Double?]' to same type has no effect
+148 |         var i: Int = 1
+149 |         while (i < n) {
+150 |             var key: [Double?] = (points[i] as! [Double?])
+    |                                             `- warning: forced cast of '[Double?]' to same type has no effect
+151 |             var j: Int = (i &- 1)
+152 |             while ((j >= 0) && (Double(points[j][axis]) > Double(key[axis]))) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:152:40: warning: expression implicitly coerced from 'Double?' to 'Any'
+150 |             var key: [Double?] = (points[i] as! [Double?])
+151 |             var j: Int = (i &- 1)
+152 |             while ((j >= 0) && (Double(points[j][axis]) > Double(key[axis]))) {
+    |                                        |        |- note: provide a default value to avoid this warning
+    |                                        |        |- note: force-unwrap the value to avoid this warning
+    |                                        |        `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                        `- warning: expression implicitly coerced from 'Double?' to 'Any'
+153 |                 points = _set(points, (j &+ 1), (points[j] as! [Double?]))
+154 |                 j = Int((j &- 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:152:66: warning: expression implicitly coerced from 'Double?' to 'Any'
+150 |             var key: [Double?] = (points[i] as! [Double?])
+151 |             var j: Int = (i &- 1)
+152 |             while ((j >= 0) && (Double(points[j][axis]) > Double(key[axis]))) {
+    |                                                                  |  |- note: provide a default value to avoid this warning
+    |                                                                  |  |- note: force-unwrap the value to avoid this warning
+    |                                                                  |  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                                  `- warning: expression implicitly coerced from 'Double?' to 'Any'
+153 |                 points = _set(points, (j &+ 1), (points[j] as! [Double?]))
+154 |                 j = Int((j &- 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:153:60: warning: forced cast of '[Double?]' to same type has no effect
+151 |             var j: Int = (i &- 1)
+152 |             while ((j >= 0) && (Double(points[j][axis]) > Double(key[axis]))) {
+153 |                 points = _set(points, (j &+ 1), (points[j] as! [Double?]))
+    |                                                            `- warning: forced cast of '[Double?]' to same type has no effect
+154 |                 j = Int((j &- 1))
+155 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:156:50: warning: forced cast of '[Double?]' to same type has no effect
+154 |                 j = Int((j &- 1))
+155 |             }
+156 |             points = _set(points, (j &+ 1), (key as! [Double?]))
+    |                                                  `- warning: forced cast of '[Double?]' to same type has no effect
+157 |             i = Int((i &+ 1))
+158 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:165:41: warning: forced cast of '[Double?]' to same type has no effect
+163 |         var i: Int = start
+164 |         while (i < end) {
+165 |             res = (_append(res, (arr[i] as! [Double?])) as! [[Double?]])
+    |                                         `- warning: forced cast of '[Double?]' to same type has no effect
+166 |             i = Int((i &+ 1))
+167 |         }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:173:46: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+171 |         var i: Int = 0
+172 |         while (i < Int(((nodes).count))) {
+173 |             if (String(describing: (nodes[i] as! Node).left) != String(describing: (0 &- 1))
+    |                                              `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+174 |             ) {
+175 |                 nodes[i]!.left = Int(((nodes[i] as! Node).left + offset))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:175:49: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+173 |             if (String(describing: (nodes[i] as! Node).left) != String(describing: (0 &- 1))
+174 |             ) {
+175 |                 nodes[i]!.left = Int(((nodes[i] as! Node).left + offset))
+    |                                                 `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+176 |             }
+177 |             if (String(describing: (nodes[i] as! Node).right) != String(describing: (0 &- 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:177:46: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+175 |                 nodes[i]!.left = Int(((nodes[i] as! Node).left + offset))
+176 |             }
+177 |             if (String(describing: (nodes[i] as! Node).right) != String(describing: (0 &- 1))
+    |                                              `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+178 |             ) {
+179 |                 nodes[i]!.right = Int(((nodes[i] as! Node).right + offset))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:179:50: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+177 |             if (String(describing: (nodes[i] as! Node).right) != String(describing: (0 &- 1))
+178 |             ) {
+179 |                 nodes[i]!.right = Int(((nodes[i] as! Node).right + offset))
+    |                                                  `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+180 |             }
+181 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:189:34: warning: forced cast of '[Double?]' to same type has no effect
+187 |             return BuildResult(index: (0 &- 1), nodes: [])
+188 |         }
+189 |         let k = Int((((points[0] as! [Double?])).count))
+    |                                  `- warning: forced cast of '[Double?]' to same type has no effect
+190 |         let axis = ((depth % k + k) % k)
+191 |         points = (sort_points(&points, axis) as! [[Double?]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:191:46: warning: forced cast of '[[Double?]]' to same type has no effect
+189 |         let k = Int((((points[0] as! [Double?])).count))
+190 |         let axis = ((depth % k + k) % k)
+191 |         points = (sort_points(&points, axis) as! [[Double?]])
+    |                                              `- warning: forced cast of '[[Double?]]' to same type has no effect
+192 |         let median = (Int(((points).count)) / 2)
+193 |         var left_points: [[Double?]] = (sublist((points as! [[Double?]]), 0, median) as! [[Double?]])
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:193:57: warning: forced cast of '[[Double?]]' to same type has no effect
+191 |         points = (sort_points(&points, axis) as! [[Double?]])
+192 |         let median = (Int(((points).count)) / 2)
+193 |         var left_points: [[Double?]] = (sublist((points as! [[Double?]]), 0, median) as! [[Double?]])
+    |                                                         `- warning: forced cast of '[[Double?]]' to same type has no effect
+194 |         var right_points: [[Double?]] = (sublist((points as! [[Double?]]), (median &+ 1), Int(((points).count))) as! [[Double?]])
+195 |         let left_res = build_kdtree(&left_points, (depth &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:193:86: warning: forced cast of '[[Double?]]' to same type has no effect
+191 |         points = (sort_points(&points, axis) as! [[Double?]])
+192 |         let median = (Int(((points).count)) / 2)
+193 |         var left_points: [[Double?]] = (sublist((points as! [[Double?]]), 0, median) as! [[Double?]])
+    |                                                                                      `- warning: forced cast of '[[Double?]]' to same type has no effect
+194 |         var right_points: [[Double?]] = (sublist((points as! [[Double?]]), (median &+ 1), Int(((points).count))) as! [[Double?]])
+195 |         let left_res = build_kdtree(&left_points, (depth &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:194:58: warning: forced cast of '[[Double?]]' to same type has no effect
+192 |         let median = (Int(((points).count)) / 2)
+193 |         var left_points: [[Double?]] = (sublist((points as! [[Double?]]), 0, median) as! [[Double?]])
+194 |         var right_points: [[Double?]] = (sublist((points as! [[Double?]]), (median &+ 1), Int(((points).count))) as! [[Double?]])
+    |                                                          `- warning: forced cast of '[[Double?]]' to same type has no effect
+195 |         let left_res = build_kdtree(&left_points, (depth &+ 1))
+196 |         var right_res = build_kdtree(&right_points, (depth &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:194:114: warning: forced cast of '[[Double?]]' to same type has no effect
+192 |         let median = (Int(((points).count)) / 2)
+193 |         var left_points: [[Double?]] = (sublist((points as! [[Double?]]), 0, median) as! [[Double?]])
+194 |         var right_points: [[Double?]] = (sublist((points as! [[Double?]]), (median &+ 1), Int(((points).count))) as! [[Double?]])
+    |                                                                                                                  `- warning: forced cast of '[[Double?]]' to same type has no effect
+195 |         let left_res = build_kdtree(&left_points, (depth &+ 1))
+196 |         var right_res = build_kdtree(&right_points, (depth &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:198:77: warning: forced cast of '[Node?]' to same type has no effect
+196 |         var right_res = build_kdtree(&right_points, (depth &+ 1))
+197 |         let offset = (Int(((left_res.nodes).count)) &+ 1)
+198 |         let shifted_right: [Node?] = (shift_nodes(&right_res.nodes, offset) as! [Node?])
+    |                                                                             `- warning: forced cast of '[Node?]' to same type has no effect
+199 |         var nodes: [Node?] = left_res.nodes
+200 |         let left_index = left_res.index
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:202:61: warning: forced cast of '[Double?]' to same type has no effect
+200 |         let left_index = left_res.index
+201 |         let right_index = Int(((right_res.index == (0 &- 1)) ? (0 &- 1) : (right_res.index &+ offset)))
+202 |         nodes = (_append(nodes, Node(point: (points[median] as! [Double?]), left: left_index, right: right_index)) as! [Node?])
+    |                                                             `- warning: forced cast of '[Double?]' to same type has no effect
+203 |         nodes = ((concat((nodes as! [Any??]), shifted_right) as! [Any??]) as! [Node?])
+204 |         let root_index = Int(((left_res.nodes).count))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:203:19: error: cannot find 'concat' in scope
+201 |         let right_index = Int(((right_res.index == (0 &- 1)) ? (0 &- 1) : (right_res.index &+ offset)))
+202 |         nodes = (_append(nodes, Node(point: (points[median] as! [Double?]), left: left_index, right: right_index)) as! [Node?])
+203 |         nodes = ((concat((nodes as! [Any??]), shifted_right) as! [Any??]) as! [Node?])
+    |                   `- error: cannot find 'concat' in scope
+204 |         let root_index = Int(((left_res.nodes).count))
+205 |         return BuildResult(index: root_index, nodes: nodes)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:203:33: warning: forced cast from '[Node?]' to '[Any??]' always succeeds; did you mean to use 'as'?
+201 |         let right_index = Int(((right_res.index == (0 &- 1)) ? (0 &- 1) : (right_res.index &+ offset)))
+202 |         nodes = (_append(nodes, Node(point: (points[median] as! [Double?]), left: left_index, right: right_index)) as! [Node?])
+203 |         nodes = ((concat((nodes as! [Any??]), shifted_right) as! [Any??]) as! [Node?])
+    |                                 `- warning: forced cast from '[Node?]' to '[Any??]' always succeeds; did you mean to use 'as'?
+204 |         let root_index = Int(((left_res.nodes).count))
+205 |         return BuildResult(index: root_index, nodes: nodes)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:211:32: warning: expression implicitly coerced from 'Double?' to 'Any'
+209 |         var i: Int = 0
+210 |         while (i < Int(((a).count))) {
+211 |             let diff = (Double(a[i]) - Double(b[i]))
+    |                                ||- note: provide a default value to avoid this warning
+    |                                ||- note: force-unwrap the value to avoid this warning
+    |                                |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                `- warning: expression implicitly coerced from 'Double?' to 'Any'
+212 |             sum = Double((sum + (diff * diff)))
+213 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:211:47: warning: expression implicitly coerced from 'Double?' to 'Any'
+209 |         var i: Int = 0
+210 |         while (i < Int(((a).count))) {
+211 |             let diff = (Double(a[i]) - Double(b[i]))
+    |                                               ||- note: provide a default value to avoid this warning
+    |                                               ||- note: force-unwrap the value to avoid this warning
+    |                                               |`- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                               `- warning: expression implicitly coerced from 'Double?' to 'Any'
+212 |             sum = Double((sum + (diff * diff)))
+213 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:223:33: warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+221 |         var i: Int = 0
+222 |         while (i < Int(((tree).count))) {
+223 |             let node = (tree[i] as! Node)
+    |                                 `- warning: forced cast from 'Node?' to 'Node' only unwraps optionals; did you mean to use '!'?
+224 |             let dist = Double(square_distance((query_point as! [Double?]), (node.point as! [Double?])))
+225 |             visited = Int((visited &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:224:60: warning: forced cast of '[Double?]' to same type has no effect
+222 |         while (i < Int(((tree).count))) {
+223 |             let node = (tree[i] as! Node)
+224 |             let dist = Double(square_distance((query_point as! [Double?]), (node.point as! [Double?])))
+    |                                                            `- warning: forced cast of '[Double?]' to same type has no effect
+225 |             visited = Int((visited &+ 1))
+226 |             if ((visited == 1) || (dist < nearest_dist)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:224:88: warning: forced cast of '[Double?]' to same type has no effect
+222 |         while (i < Int(((tree).count))) {
+223 |             let node = (tree[i] as! Node)
+224 |             let dist = Double(square_distance((query_point as! [Double?]), (node.point as! [Double?])))
+    |                                                                                        `- warning: forced cast of '[Double?]' to same type has no effect
+225 |             visited = Int((visited &+ 1))
+226 |             if ((visited == 1) || (dist < nearest_dist)) {
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:227:45: warning: forced cast of '[Double?]' to same type has no effect
+225 |             visited = Int((visited &+ 1))
+226 |             if ((visited == 1) || (dist < nearest_dist)) {
+227 |                 nearest_point = (node.point as! [Double?])
+    |                                             `- warning: forced cast of '[Double?]' to same type has no effect
+228 |                 nearest_dist = Double(dist)
+229 |             }
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:238:59: warning: forced cast of 'String' to same type has no effect
+236 |         var i: Int = 0
+237 |         while (i < Int(((arr).count))) {
+238 |             s = ((s + String(describing: Double(arr[i]))) as! String)
+    |                                                           `- warning: forced cast of 'String' to same type has no effect
+239 |             if (i < (Int(((arr).count)) &- 1)) {
+240 |                 s = ((s + ", ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:238:49: warning: expression implicitly coerced from 'Double?' to 'Any'
+236 |         var i: Int = 0
+237 |         while (i < Int(((arr).count))) {
+238 |             s = ((s + String(describing: Double(arr[i]))) as! String)
+    |                                                 |  |- note: provide a default value to avoid this warning
+    |                                                 |  |- note: force-unwrap the value to avoid this warning
+    |                                                 |  `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+    |                                                 `- warning: expression implicitly coerced from 'Double?' to 'Any'
+239 |             if (i < (Int(((arr).count)) &- 1)) {
+240 |                 s = ((s + ", ") as! String)
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:240:33: warning: forced cast of 'String' to same type has no effect
+238 |             s = ((s + String(describing: Double(arr[i]))) as! String)
+239 |             if (i < (Int(((arr).count)) &- 1)) {
+240 |                 s = ((s + ", ") as! String)
+    |                                 `- warning: forced cast of 'String' to same type has no effect
+241 |             }
+242 |             i = Int((i &+ 1))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:250:97: warning: forced cast of '[[Double?]]' to same type has no effect
+248 |         let cube_size = 10.0
+249 |         let num_dimensions = 10
+250 |         var pts: [[Double?]] = (hypercube_points(num_points, Double(cube_size), num_dimensions) as! [[Double?]])
+    |                                                                                                 `- warning: forced cast of '[[Double?]]' to same type has no effect
+251 |         let build = build_kdtree(&pts, 0)
+252 |         let root = build.index
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:260:50: warning: forced cast of '[Node?]' to same type has no effect
+258 |             i = Int((i &+ 1))
+259 |         }
+260 |         let res = nearest_neighbour_search((tree as! [Node?]), root, (query as! [Double?]))
+    |                                                  `- warning: forced cast of '[Node?]' to same type has no effect
+261 |         print(_p(("Query point: " + String(describing: list_to_string((query as! [Double?]))))))
+262 |         print(_p(("Nearest point: " + String(describing: list_to_string((res.point as! [Double?]))))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:260:77: warning: forced cast of '[Double?]' to same type has no effect
+258 |             i = Int((i &+ 1))
+259 |         }
+260 |         let res = nearest_neighbour_search((tree as! [Node?]), root, (query as! [Double?]))
+    |                                                                             `- warning: forced cast of '[Double?]' to same type has no effect
+261 |         print(_p(("Query point: " + String(describing: list_to_string((query as! [Double?]))))))
+262 |         print(_p(("Nearest point: " + String(describing: list_to_string((res.point as! [Double?]))))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:261:78: warning: forced cast of '[Double?]' to same type has no effect
+259 |         }
+260 |         let res = nearest_neighbour_search((tree as! [Node?]), root, (query as! [Double?]))
+261 |         print(_p(("Query point: " + String(describing: list_to_string((query as! [Double?]))))))
+    |                                                                              `- warning: forced cast of '[Double?]' to same type has no effect
+262 |         print(_p(("Nearest point: " + String(describing: list_to_string((res.point as! [Double?]))))))
+263 |         print(_p(("Distance: " + String(describing: res.dist))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:262:84: warning: forced cast of '[Double?]' to same type has no effect
+260 |         let res = nearest_neighbour_search((tree as! [Node?]), root, (query as! [Double?]))
+261 |         print(_p(("Query point: " + String(describing: list_to_string((query as! [Double?]))))))
+262 |         print(_p(("Nearest point: " + String(describing: list_to_string((res.point as! [Double?]))))))
+    |                                                                                    `- warning: forced cast of '[Double?]' to same type has no effect
+263 |         print(_p(("Distance: " + String(describing: res.dist))))
+264 |         print(_p(("Nodes visited: " + String(describing: res.visited))))
+
+/tmp/TestSwiftTranspiler_Algorithms_Golden218_data_structures_kd_tree_example_example_usage3048125901/001/main.swift:266:5: warning: using '_' to ignore the result of a Void-returning function is redundant
+264 |         print(_p(("Nodes visited: " + String(describing: res.visited))))
+265 |     }
+266 |     _ = main()
+    |     `- warning: using '_' to ignore the result of a Void-returning function is redundant
+267 |     let _benchEnd = _now()
+268 |     let _benchMemEnd = _mem()
