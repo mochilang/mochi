@@ -1,0 +1,77 @@
+/*
+Check Anagrams
+
+Two strings are anagrams if they contain the same letters with the same
+frequency, ignoring case and spaces. This implementation normalizes the input
+strings by converting to lowercase and stripping all spaces. It then uses a
+map<string, int> to count character occurrences: increment for the first string
+and decrement for the second. If the two strings are anagrams, the count for
+every character will end at zero.
+
+The algorithm runs in O(n) time and O(k) space where n is the length of the
+strings and k is the number of distinct characters.
+*/
+
+fun strip_and_remove_spaces(s: string): string {
+  var start = 0
+  var end = len(s) - 1
+  while start < len(s) && s[start] == " " {
+    start = start + 1
+  }
+  while end >= start && s[end] == " " {
+    end = end - 1
+  }
+  var res = ""
+  var i = start
+  while i <= end {
+    let ch = s[i]
+    if ch != " " {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun check_anagrams(a: string, b: string): bool {
+  var s1 = lower(a)
+  var s2 = lower(b)
+  s1 = strip_and_remove_spaces(s1)
+  s2 = strip_and_remove_spaces(s2)
+  if len(s1) != len(s2) {
+    return false
+  }
+  var count: map<string, int> = {}
+  var i = 0
+  while i < len(s1) {
+    let c1 = s1[i]
+    let c2 = s2[i]
+    if c1 in count {
+      count[c1] = count[c1] + 1
+    } else {
+      count[c1] = 1
+    }
+    if c2 in count {
+      count[c2] = count[c2] - 1
+    } else {
+      count[c2] = -1
+    }
+    i = i + 1
+  }
+  for ch in count {
+    if count[ch] != 0 {
+      return false
+    }
+  }
+  return true
+}
+
+fun print_bool(b: bool) {
+  if b { print("true") } else { print("false") }
+}
+
+print_bool(check_anagrams("Silent", "Listen"))
+print_bool(check_anagrams("This is a string", "Is this a string"))
+print_bool(check_anagrams("This is    a      string", "Is     this a string"))
+print_bool(check_anagrams("There", "Their"))
+
