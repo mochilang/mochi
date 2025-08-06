@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 16:09 GMT+7
+Last updated: 2025-08-06 20:37 GMT+7
 
-## Algorithms Golden Test Checklist (10/1077)
+## Algorithms Golden Test Checklist (30/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -27,26 +27,26 @@ Last updated: 2025-08-06 16:09 GMT+7
 | 18 | backtracking/word_ladder |   |  |  |
 | 19 | backtracking/word_search |   |  |  |
 | 20 | bit_manipulation/binary_and_operator |   |  |  |
-| 21 | bit_manipulation/binary_coded_decimal |   |  |  |
-| 22 | bit_manipulation/binary_count_setbits |   |  |  |
-| 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
-| 24 | bit_manipulation/binary_or_operator |   |  |  |
-| 25 | bit_manipulation/binary_shifts |   |  |  |
-| 26 | bit_manipulation/binary_twos_complement |   |  |  |
-| 27 | bit_manipulation/binary_xor_operator |   |  |  |
-| 28 | bit_manipulation/bitwise_addition_recursive |   |  |  |
-| 29 | bit_manipulation/count_1s_brian_kernighan_method |   |  |  |
-| 30 | bit_manipulation/count_number_of_one_bits |   |  |  |
-| 31 | bit_manipulation/excess_3_code |   |  |  |
-| 32 | bit_manipulation/find_previous_power_of_two |   |  |  |
-| 33 | bit_manipulation/find_unique_number |   |  |  |
-| 34 | bit_manipulation/gray_code_sequence |   |  |  |
-| 35 | bit_manipulation/highest_set_bit |   |  |  |
-| 36 | bit_manipulation/index_of_rightmost_set_bit |   |  |  |
-| 37 | bit_manipulation/is_even |   |  |  |
-| 38 | bit_manipulation/is_power_of_two |   |  |  |
-| 39 | bit_manipulation/largest_pow_of_two_le_num |   |  |  |
-| 40 | bit_manipulation/missing_number |   |  |  |
+| 21 | bit_manipulation/binary_coded_decimal | ✓ | 3.58ms | 25.7 MB |
+| 22 | bit_manipulation/binary_count_setbits | ✓ | 3.24ms | 17.3 MB |
+| 23 | bit_manipulation/binary_count_trailing_zeros | ✓ | 3.53ms | 17.3 MB |
+| 24 | bit_manipulation/binary_or_operator | ✓ | 2.85ms | 12.5 MB |
+| 25 | bit_manipulation/binary_shifts | ✓ | 3.76ms | 17.4 MB |
+| 26 | bit_manipulation/binary_twos_complement | ✓ | 3.15ms | 25.0 MB |
+| 27 | bit_manipulation/binary_xor_operator | ✓ | 5.94ms | 7.7 MB |
+| 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 3.55ms | 12.5 MB |
+| 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 2.91ms | 12.5 MB |
+| 30 | bit_manipulation/count_number_of_one_bits | ✓ | 5.43ms | 12.5 MB |
+| 31 | bit_manipulation/excess_3_code | ✓ | 3.46ms | 12.5 MB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 304us | 12.9 MB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 3.25ms | 12.5 MB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 3.48ms | 17.6 MB |
+| 35 | bit_manipulation/highest_set_bit | ✓ | 2.80ms | 12.5 MB |
+| 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 3.46ms | 17.3 MB |
+| 37 | bit_manipulation/is_even | ✓ | 314us | 17.3 MB |
+| 38 | bit_manipulation/is_power_of_two | ✓ | 1us | 0 B |
+| 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 4.79ms | 17.3 MB |
+| 40 | bit_manipulation/missing_number | ✓ | 3.64ms | 0 B |
 | 41 | bit_manipulation/numbers_different_signs |   |  |  |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |

@@ -31,6 +31,10 @@ var elixirReserved = map[string]struct{}{
 	"div":   {},
 	"rem":   {},
 	"quote": {},
+	"and":   {},
+	"or":    {},
+	"not":   {},
+	"when":  {},
 }
 
 func sanitizeIdent(name string) string {
