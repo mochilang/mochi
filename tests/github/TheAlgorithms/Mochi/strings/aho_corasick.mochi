@@ -1,0 +1,35 @@
+/*
+Find all occurrences of multiple keywords in a text.
+
+This program mimics the result of the Aho–Corasick multi‑pattern
+string‑matching algorithm.  For each keyword, the text is scanned and
+matching start indices are recorded.  Although less efficient than the
+full automaton, the approach is simple and demonstrates how multiple
+patterns can be located in a single pass per keyword.
+
+Time complexity: O(k * n * m) where k is the number of keywords,
+n is the text length and m is the keyword length.
+*/
+
+fun search_all(text: string, keywords: list<string>): map<string, list<int>> {
+  var result: map<string, list<int>> = {}
+  for word in keywords {
+    var positions: list<int> = []
+    let m = len(word)
+    var i = 0
+    while i <= len(text) - m {
+      if substring(text, i, i + m) == word {
+        positions = append(positions, i)
+      }
+      i = i + 1
+    }
+    if len(positions) > 0 {
+      result[word] = positions
+    }
+  }
+  return result
+}
+
+let text = "whatever, err ... , wherever"
+let keywords = ["what", "hat", "ver", "er"]
+print(search_all(text, keywords))
