@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Dart code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Dart`.
-Last updated: 2025-08-06 20:31 GMT+7
+Last updated: 2025-08-06 20:52 GMT+7
 
-## Algorithms Golden Test Checklist (40/1077)
+## Algorithms Golden Test Checklist (42/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 11.624ms | 3.5 MB |
@@ -47,7 +47,7 @@ Last updated: 2025-08-06 20:31 GMT+7
 | 38 | bit_manipulation/is_power_of_two | ✓ | 27.816ms | 11.3 MB |
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 12.774ms | 2.5 MB |
 | 40 | bit_manipulation/missing_number | ✓ | 28.83ms | 9.7 MB |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 11.647ms | 1.0 MB |
 | 42 | bit_manipulation/power_of_4 |   |  |  |
 | 43 | bit_manipulation/reverse_bits |   |  |  |
 | 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
@@ -66,7 +66,7 @@ Last updated: 2025-08-06 20:31 GMT+7
 | 57 | boolean_algebra/xnor_gate |   |  |  |
 | 58 | boolean_algebra/xor_gate |   |  |  |
 | 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
+| 60 | cellular_automata/game_of_life | ✓ | 16.978ms | 896.0 KB |
 | 61 | cellular_automata/langtons_ant |   |  |  |
 | 62 | cellular_automata/nagel_schrekenberg |   |  |  |
 | 63 | cellular_automata/one_dimensional |   |  |  |

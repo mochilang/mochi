@@ -250,6 +250,17 @@ func emitWithBigIntCast(w io.Writer, e Expr, from, to string) error {
 func emitListConversion(w io.Writer, expr Expr, target string) error {
 	elem := strings.TrimSuffix(strings.TrimPrefix(target, "List<"), ">")
 	exprType := inferType(expr)
+	if exprType == target {
+		if err := expr.emit(w); err != nil {
+			return err
+		}
+		if strings.HasSuffix(exprType, "?") && !strings.HasSuffix(target, "?") {
+			if _, err := io.WriteString(w, "!"); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	if strings.HasPrefix(elem, "List<") {
 		if _, err := io.WriteString(w, "("); err != nil {
 			return err
