@@ -1,0 +1,16 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/mirror_binary_tree.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/mirror_binary_tree.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/mirror_binary_tree.cpp: In function ‘std::vector<long int> inorder(const Tree&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/mirror_binary_tree.cpp:162:19: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  162 |     return concat(concat(left_vals, std::vector<int64_t>{tree.values[idx]}), right_vals);
+      |                   ^~~~~~
+      |                   wcsncat
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/mirror_binary_tree.cpp:162:12: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  162 |     return concat(concat(left_vals, std::vector<int64_t>{tree.values[idx]}), right_vals);
+      |            ^~~~~~
+      |            wcsncat

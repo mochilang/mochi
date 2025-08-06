@@ -1,0 +1,18 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp:80:215: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp:80:251: warning: multi-character character constant [-Wmultichar]
+   80 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp: In function ‘std::vector<long int> inorder(const std::vector<Node>&, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp:143:14: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  143 |     result = concat(result, inorder(nodes, node.right));
+      |              ^~~~~~
+      |              wcsncat
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp: In function ‘std::vector<long int> floor_ceiling(const std::vector<Node>&, int64_t, int64_t)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/floor_and_ceiling.cpp:166:17: error: could not convert ‘std::vector<std::any>(std::initializer_list<std::any>{((const std::any*)(& const std::any [2]{std::any(floor_val), std::any(ceiling_val)})), 2}, std::allocator<std::any>())’ from ‘vector<std::any>’ to ‘vector<long int>’
+  166 |     return std::vector<std::any>{floor_val, ceiling_val};
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                 |
+      |                 vector<std::any>

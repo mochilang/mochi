@@ -1,0 +1,10 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/number_of_possible_binary_trees.cpp:83:215: warning: multi-character character constant [-Wmultichar]
+   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/number_of_possible_binary_trees.cpp:83:251: warning: multi-character character constant [-Wmultichar]
+   83 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/number_of_possible_binary_trees.cpp:120:27: error: non-local lambda expression cannot have a capture-default
+  120 | std::string input_str = ([&]{ std::string __line; std::getline(std::cin, __line); return __line; }());
+      |                           ^

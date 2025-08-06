@@ -1,0 +1,172 @@
+compile: exit status 1
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:81:215: warning: multi-character character constant [-Wmultichar]
+   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                       ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:81:251: warning: multi-character character constant [-Wmultichar]
+   81 |     else if(val.type() == typeid(std::map<std::string, std::any>)) { const auto& m = std::any_cast<const std::map<std::string, std::any>&>(val); os << '{'; bool first=true; for(const auto& p : m){ if(!first) os << ', '; first=false; os << p.first << ': '; any_to_stream(os, p.second); } os << '}'; }
+      |                                                                                                                                                                                                                                                           ^~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:124: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  157 | std::shared_ptr<Tree> tree1 = std::make_shared<Node>(Node{.left = Node{.left = Leaf{}, .value = int64_t(4), .right = Leaf{}}, .value = int64_t(2), .right = Leaf{}}, int64_t(1), Node{.left = Leaf{}, .value = int64_t(3), .right = Leaf{}});
+      |                                                                                                                            ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:124: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:163: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  157 | std::shared_ptr<Tree> tree1 = std::make_shared<Node>(Node{.left = Node{.left = Leaf{}, .value = int64_t(4), .right = Leaf{}}, .value = int64_t(2), .right = Leaf{}}, int64_t(1), Node{.left = Leaf{}, .value = int64_t(3), .right = Leaf{}});
+      |                                                                                                                                                                   ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:163: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:235: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  157 | std::shared_ptr<Tree> tree1 = std::make_shared<Node>(Node{.left = Node{.left = Leaf{}, .value = int64_t(4), .right = Leaf{}}, .value = int64_t(2), .right = Leaf{}}, int64_t(1), Node{.left = Leaf{}, .value = int64_t(3), .right = Leaf{}});
+      |                                                                                                                                                                                                                                           ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:157:235: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:162: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  158 | std::shared_ptr<Tree> tree2 = std::make_shared<Node>(Node{.left = Leaf{}, .value = int64_t(4), .right = Node{.left = Leaf{}, .value = int64_t(9), .right = Leaf{}}}, int64_t(2), Node{.left = Leaf{}, .value = int64_t(6), .right = Node{.left = Leaf{}, .value = int64_t(5), .right = Leaf{}}});
+      |                                                                                                                                                                  ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:162: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:163: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  158 | std::shared_ptr<Tree> tree2 = std::make_shared<Node>(Node{.left = Leaf{}, .value = int64_t(4), .right = Node{.left = Leaf{}, .value = int64_t(9), .right = Leaf{}}}, int64_t(2), Node{.left = Leaf{}, .value = int64_t(6), .right = Node{.left = Leaf{}, .value = int64_t(5), .right = Leaf{}}});
+      |                                                                                                                                                                   ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:163: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:286: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  158 | std::shared_ptr<Tree> tree2 = std::make_shared<Node>(Node{.left = Leaf{}, .value = int64_t(4), .right = Node{.left = Leaf{}, .value = int64_t(9), .right = Leaf{}}}, int64_t(2), Node{.left = Leaf{}, .value = int64_t(6), .right = Node{.left = Leaf{}, .value = int64_t(5), .right = Leaf{}}});
+      |                                                                                                                                                                                                                                                                                              ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:286: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:287: error: designated initializers cannot be used with a non-aggregate type ‘Node’
+  158 | std::shared_ptr<Tree> tree2 = std::make_shared<Node>(Node{.left = Leaf{}, .value = int64_t(4), .right = Node{.left = Leaf{}, .value = int64_t(9), .right = Leaf{}}}, int64_t(2), Node{.left = Leaf{}, .value = int64_t(6), .right = Node{.left = Leaf{}, .value = int64_t(5), .right = Leaf{}}});
+      |                                                                                                                                                                                                                                                                                               ^
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:158:287: error: no matching function for call to ‘Node::Node(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:182:38: error: inconsistent types ‘Tree*’ and ‘std::shared_ptr<Node>’ deduced for lambda return type
+  182 |         return std::make_shared<Node>(merge_two_binary_trees(l1, l2), (v1 + v2), merge_two_binary_trees(r1, r2));
+      |                ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:182:38: error: cannot convert ‘std::make_shared(_Args&& ...) [with _Tp = Node; _Args = {shared_ptr<Tree>, long int, shared_ptr<Tree>}; _NonArray<_Tp> = Node]((((long int)v1) + v2), merge_two_binary_trees(Tree*, Tree*)(r2))’ from type ‘std::shared_ptr<Node>’ to type ‘Tree*’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:184:12: error: inconsistent types ‘Tree*’ and ‘std::nullptr_t’ deduced for lambda return type
+  184 |     return nullptr;
+      |            ^~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:187:12: error: inconsistent types ‘Tree*’ and ‘std::nullptr_t’ deduced for lambda return type
+  187 |     return nullptr;
+      |            ^~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In function ‘std::shared_ptr<Tree> merge_two_binary_trees(Tree*, Tree*)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:188:2: error: could not convert ‘<lambda closure object>merge_two_binary_trees(Tree*, Tree*)::<lambda()>{t1, t2}.merge_two_binary_trees(Tree*, Tree*)::<lambda()>()’ from ‘Tree*’ to ‘std::shared_ptr<Tree>’
+  162 |     return ([=]{
+      |            ~~~~~
+  163 |     const Leaf* __leaf = dynamic_cast<const Leaf*>(t1);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  164 |     if (__leaf) {
+      |     ~~~~~~~~~~~~~
+  165 |         return t2;
+      |         ~~~~~~~~~~
+  166 |     }
+      |     ~
+  167 |     const Node* __node = dynamic_cast<const Node*>(t1);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  168 |     if (__node) {
+      |     ~~~~~~~~~~~~~
+  169 |         Tree* l1 = __node->left.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  170 |         int64_t v1 = __node->value;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  171 |         Tree* r1 = __node->right.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  172 |         return ([=]{
+      |         ~~~~~~~~~~~~
+  173 |     const Leaf* __leaf = dynamic_cast<const Leaf*>(t2);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  174 |     if (__leaf) {
+      |     ~~~~~~~~~~~~~
+  175 |         return t1;
+      |         ~~~~~~~~~~
+  176 |     }
+      |     ~
+  177 |     const Node* __node = dynamic_cast<const Node*>(t2);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  178 |     if (__node) {
+      |     ~~~~~~~~~~~~~
+  179 |         Tree* l2 = __node->left.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  180 |         int64_t v2 = __node->value;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  181 |         Tree* r2 = __node->right.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  182 |         return std::make_shared<Node>(merge_two_binary_trees(l1, l2), (v1 + v2), merge_two_binary_trees(r1, r2));
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  183 |     }
+      |     ~
+  184 |     return nullptr;
+      |     ~~~~~~~~~~~~~~~
+  185 | }());
+      | ~~~~~
+  186 |     }
+      |     ~
+  187 |     return nullptr;
+      |     ~~~~~~~~~~~~~~~
+  188 | }());
+      | ~^~~
+      |  |
+      |  Tree*
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:209:34: error: inconsistent types ‘Tree*’ and ‘std::shared_ptr<Leaf>’ deduced for lambda return type
+  209 |     return std::make_shared<Leaf>();
+      |            ~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:209:34: error: cannot convert ‘std::make_shared(_Args&& ...) [with _Tp = Leaf; _Args = {}; _NonArray<_Tp> = Leaf]()’ from type ‘std::shared_ptr<Leaf>’ to type ‘Tree*’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:210:12: error: inconsistent types ‘Tree*’ and ‘std::nullptr_t’ deduced for lambda return type
+  210 |     return nullptr;
+      |            ^~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In function ‘std::shared_ptr<Tree> get_left(Tree*)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:211:2: error: could not convert ‘<lambda closure object>get_left(Tree*)::<lambda()>{t}.get_left(Tree*)::<lambda()>()’ from ‘Tree*’ to ‘std::shared_ptr<Tree>’
+  203 |     return ([=]{
+      |            ~~~~~
+  204 |     const Node* __node = dynamic_cast<const Node*>(t);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |     if (__node) {
+      |     ~~~~~~~~~~~~~
+  206 |         Tree* l = __node->left.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |         return l;
+      |         ~~~~~~~~~
+  208 |     }
+      |     ~
+  209 |     return std::make_shared<Leaf>();
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  210 |     return nullptr;
+      |     ~~~~~~~~~~~~~~~
+  211 | }());
+      | ~^~~
+      |  |
+      |  Tree*
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In lambda function:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:221:34: error: inconsistent types ‘Tree*’ and ‘std::shared_ptr<Leaf>’ deduced for lambda return type
+  221 |     return std::make_shared<Leaf>();
+      |            ~~~~~~~~~~~~~~~~~~~~~~^~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:221:34: error: cannot convert ‘std::make_shared(_Args&& ...) [with _Tp = Leaf; _Args = {}; _NonArray<_Tp> = Leaf]()’ from type ‘std::shared_ptr<Leaf>’ to type ‘Tree*’
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:222:12: error: inconsistent types ‘Tree*’ and ‘std::nullptr_t’ deduced for lambda return type
+  222 |     return nullptr;
+      |            ^~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In function ‘std::shared_ptr<Tree> get_right(Tree*)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:223:2: error: could not convert ‘<lambda closure object>get_right(Tree*)::<lambda()>{t}.get_right(Tree*)::<lambda()>()’ from ‘Tree*’ to ‘std::shared_ptr<Tree>’
+  215 |     return ([=]{
+      |            ~~~~~
+  216 |     const Node* __node = dynamic_cast<const Node*>(t);
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  217 |     if (__node) {
+      |     ~~~~~~~~~~~~~
+  218 |         Tree* r = __node->right.get();
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  219 |         return r;
+      |         ~~~~~~~~~
+  220 |     }
+      |     ~
+  221 |     return std::make_shared<Leaf>();
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  222 |     return nullptr;
+      |     ~~~~~~~~~~~~~~~
+  223 | }());
+      | ~^~~
+      |  |
+      |  Tree*
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp: In function ‘auto print_preorder(Tree*)’:
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:245:23: error: use of ‘auto print_preorder(Tree*)’ before deduction of ‘auto’
+  245 |         print_preorder(l.get());
+      |         ~~~~~~~~~~~~~~^~~~~~~~~
+/workspace/mochi/tests/algorithms/transpiler/CPP/data_structures/binary_tree/merge_two_binary_trees.cpp:246:23: error: use of ‘auto print_preorder(Tree*)’ before deduction of ‘auto’
+  246 |         print_preorder(r.get());
+      |         ~~~~~~~~~~~~~~^~~~~~~~~
