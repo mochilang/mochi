@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-06 09:10 UTC
+Last updated: 2025-08-06 09:36 UTC
 
 ## Algorithms Golden Test Checklist (20/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1.054ms | 22.6 KB |
-| 2 | backtracking/all_permutations | ✓ | 3.255ms | 147.1 KB |
-| 3 | backtracking/all_subsequences | ✓ | 2.065ms | 61.2 KB |
-| 4 | backtracking/coloring | ✓ | 1.081ms | 22.2 KB |
-| 5 | backtracking/combination_sum | ✓ | 831µs | 23.9 KB |
-| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.268ms | 539.1 KB |
+| 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
+| 2 | backtracking/all_permutations | ✓ | 2.614ms | 147.1 KB |
+| 3 | backtracking/all_subsequences | ✓ | 2.741ms | 74.1 KB |
+| 4 | backtracking/coloring | ✓ | 712µs | 22.2 KB |
+| 5 | backtracking/combination_sum | ✓ | 742µs | 23.9 KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.833ms | 283.0 KB |
 | 7 | backtracking/hamiltonian_cycle | ✓ | 8µs | 3.3 KB |
-| 8 | backtracking/knight_tour | ✓ | 860µs | 16.1 KB |
-| 9 | backtracking/match_word_pattern | ✓ | 2.051ms | 105.9 KB |
-| 10 | backtracking/minimax | ✓ | 1.533ms | 272.1 KB |
+| 8 | backtracking/knight_tour | ✓ | 585µs | 16.1 KB |
+| 9 | backtracking/match_word_pattern | ✓ | 2.106ms | 105.9 KB |
+| 10 | backtracking/minimax | ✓ | 999µs | 272.1 KB |
 | 11 | backtracking/n_queens | ✓ | 1.707ms | 560.5 KB |
 | 12 | backtracking/n_queens_math | ✓ | 1.418ms | 571.6 KB |
 | 13 | backtracking/power_sum | ✓ | 833µs | 20.3 KB |

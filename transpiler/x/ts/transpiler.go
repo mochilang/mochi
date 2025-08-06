@@ -1863,14 +1863,16 @@ func (iw *indentWriter) WriteByte(c byte) error {
 }
 
 func Emit(p *Program) []byte {
-	var b bytes.Buffer
-	b.Write(meta.Header("//"))
-	b.WriteByte('\n')
-	iw := &indentWriter{w: &b, indent: "  "}
-	for _, s := range p.Stmts {
-		emitStmt(iw, s, 0)
-	}
-	return b.Bytes()
+        var b bytes.Buffer
+        if os.Getenv("MOCHI_NO_HEADER") == "" {
+                b.Write(meta.Header("//"))
+                b.WriteByte('\n')
+        }
+        iw := &indentWriter{w: &b, indent: "  "}
+        for _, s := range p.Stmts {
+                emitStmt(iw, s, 0)
+        }
+        return b.Bytes()
 }
 
 func emitStmt(w *indentWriter, s Stmt, level int) {
