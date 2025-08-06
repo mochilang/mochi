@@ -1,0 +1,198 @@
+/*
+Banker's Algorithm for Deadlock Avoidance
+
+This program simulates the Banker's algorithm used in operating systems
+to avoid deadlocks. Each process declares a maximum claim for each resource
+type. The system tracks current allocations and available resources. The
+algorithm repeatedly searches for a process whose remaining needs can be
+satisfied with the available resources. When such a process is found, it is
+considered to execute and release its allocation, increasing the pool of
+available resources. If every process can finish, the system is in a safe
+state; otherwise the system is unsafe.
+
+This example uses predefined claim vectors and resource tables. The program
+prints the resource tables, then shows the order in which processes can safely
+execute along with the available resources after each step.
+*/
+
+type State {
+  claim: list<int>,
+  alloc: list<list<int>>,
+  max: list<list<int>>
+}
+
+fun processes_resource_summation(alloc: list<list<int>>): list<int> {
+  let resources = len(alloc[0])
+  var sums: list<int> = []
+  var i = 0
+  while i < resources {
+    var total = 0
+    var j = 0
+    while j < len(alloc) {
+      total = total + alloc[j][i]
+      j = j + 1
+    }
+    sums = append(sums, total)
+    i = i + 1
+  }
+  return sums
+}
+
+fun available_resources(claim: list<int>, alloc_sum: list<int>): list<int> {
+  var avail: list<int> = []
+  var i = 0
+  while i < len(claim) {
+    avail = append(avail, claim[i] - alloc_sum[i])
+    i = i + 1
+  }
+  return avail
+}
+
+fun need(max: list<list<int>>, alloc: list<list<int>>): list<list<int>> {
+  var needs: list<list<int>> = []
+  var i = 0
+  while i < len(max) {
+    var row: list<int> = []
+    var j = 0
+    while j < len(max[0]) {
+      row = append(row, max[i][j] - alloc[i][j])
+      j = j + 1
+    }
+    needs = append(needs, row)
+    i = i + 1
+  }
+  return needs
+}
+
+fun pretty_print(claim: list<int>, alloc: list<list<int>>, max: list<list<int>>): void {
+  print("         Allocated Resource Table")
+  var i = 0
+  while i < len(alloc) {
+    var row = alloc[i]
+    var line = "P" + str(i + 1) + "       "
+    var j = 0
+    while j < len(row) {
+      line = line + str(row[j])
+      if j < len(row) - 1 {
+        line = line + "        "
+      }
+      j = j + 1
+    }
+    print(line)
+    print("")
+    i = i + 1
+  }
+  print("         System Resource Table")
+  i = 0
+  while i < len(max) {
+    var row = max[i]
+    var line = "P" + str(i + 1) + "       "
+    var j = 0
+    while j < len(row) {
+      line = line + str(row[j])
+      if j < len(row) - 1 {
+        line = line + "        "
+      }
+      j = j + 1
+    }
+    print(line)
+    print("")
+    i = i + 1
+  }
+  var usage = ""
+  i = 0
+  while i < len(claim) {
+    if i > 0 { usage = usage + " " }
+    usage = usage + str(claim[i])
+    i = i + 1
+  }
+  var alloc_sum = processes_resource_summation(alloc)
+  var avail = available_resources(claim, alloc_sum)
+  var avail_str = ""
+  i = 0
+  while i < len(avail) {
+    if i > 0 { avail_str = avail_str + " " }
+    avail_str = avail_str + str(avail[i])
+    i = i + 1
+  }
+  print("Current Usage by Active Processes: " + usage)
+  print("Initial Available Resources:       " + avail_str)
+}
+
+fun bankers_algorithm(claim: list<int>, alloc: list<list<int>>, max: list<list<int>>): void {
+  var need_list = need(max, alloc)
+  var alloc_sum = processes_resource_summation(alloc)
+  var avail = available_resources(claim, alloc_sum)
+  print("__________________________________________________")
+  print("")
+  var finished: list<bool> = []
+  var i = 0
+  while i < len(need_list) {
+    finished = append(finished, false)
+    i = i + 1
+  }
+  var remaining = len(need_list)
+  while remaining > 0 {
+    var safe = false
+    var p = 0
+    while p < len(need_list) {
+      if !finished[p] {
+        var exec = true
+        var r = 0
+        while r < len(avail) {
+          if need_list[p][r] > avail[r] {
+            exec = false
+            break
+          }
+          r = r + 1
+        }
+        if exec {
+          safe = true
+          print("Process " + str(p + 1) + " is executing.")
+          r = 0
+          while r < len(avail) {
+            avail[r] = avail[r] + alloc[p][r]
+            r = r + 1
+          }
+          var avail_str = ""
+          r = 0
+          while r < len(avail) {
+            if r > 0 { avail_str = avail_str + " " }
+            avail_str = avail_str + str(avail[r])
+            r = r + 1
+          }
+          print("Updated available resource stack for processes: " + avail_str)
+          print("The process is in a safe state.")
+          print("")
+          finished[p] = true
+          remaining = remaining - 1
+        }
+      }
+      p = p + 1
+    }
+    if !safe {
+      print("System in unsafe state. Aborting...")
+      print("")
+      break
+    }
+  }
+}
+
+var claim_vector: list<int> = [8, 5, 9, 7]
+var allocated_resources_table: list<list<int>> = [
+  [2, 0, 1, 1],
+  [0, 1, 2, 1],
+  [4, 0, 0, 3],
+  [0, 2, 1, 0],
+  [1, 0, 3, 0]
+]
+var maximum_claim_table: list<list<int>> = [
+  [3, 2, 1, 4],
+  [0, 2, 5, 2],
+  [5, 1, 0, 5],
+  [1, 5, 3, 0],
+  [3, 0, 3, 3]
+]
+
+pretty_print(claim_vector, allocated_resources_table, maximum_claim_table)
+bankers_algorithm(claim_vector, allocated_resources_table, maximum_claim_table)
