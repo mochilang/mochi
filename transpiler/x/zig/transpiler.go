@@ -1108,6 +1108,10 @@ func (m *MapLit) emit(w io.Writer) {
 	if keyType != "[]const u8" {
 		mapType = fmt.Sprintf("std.AutoHashMap(%s, %s)", keyType, valType)
 	}
+	if len(m.Entries) == 0 {
+		fmt.Fprintf(w, "%s.init(std.heap.page_allocator)", mapType)
+		return
+	}
 	fmt.Fprintf(w, "blk: { var m = %s.init(std.heap.page_allocator);", mapType)
 	for _, e := range m.Entries {
 		io.WriteString(w, " m.put(")
@@ -1540,8 +1544,20 @@ func (f *Func) emit(w io.Writer) {
 	fmt.Fprintf(w, ") %s {\n", ret)
 	currentReturnType = ret
 	aliasStack = append(aliasStack, f.Aliases)
+	backup := map[string]string{}
+	for _, p := range f.Params {
+		backup[p.Name] = varTypes[p.Name]
+		varTypes[p.Name] = p.Type
+	}
 	for _, st := range f.Body {
 		st.emit(w, 1)
+	}
+	for k, v := range backup {
+		if v == "" {
+			delete(varTypes, k)
+		} else {
+			varTypes[k] = v
+		}
 	}
 	aliasStack = aliasStack[:len(aliasStack)-1]
 	currentReturnType = ""
@@ -1623,7 +1639,7 @@ func (s *PrintStmt) emit(w io.Writer, indent int) {
 
 func (v *VarDecl) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
-	mut := v.Mutable && varMut[v.Name]
+	mut := v.Mutable || varMut[v.Name]
 	targetType := v.Type
 	if targetType == "" {
 		if t, ok := varTypes[v.Name]; ok && t != "" {
@@ -1698,6 +1714,13 @@ func (v *VarDecl) emit(w io.Writer, indent int) {
 func (a *AssignStmt) emit(w io.Writer, indent int) {
 	writeIndent(w, indent)
 	fmt.Fprintf(w, "%s = ", a.Name)
+	if ll, ok := a.Value.(*ListLit); ok && ll.ElemType == "" {
+		if vt, ok2 := varTypes[a.Name]; ok2 && strings.HasPrefix(vt, "[]") {
+			ll.ElemType = vt[2:]
+		} else if vd, ok2 := varDecls[a.Name]; ok2 && strings.HasPrefix(vd.Type, "[]") {
+			ll.ElemType = vd.Type[2:]
+		}
+	}
 	a.Value.emit(w)
 	if zigTypeFromExpr(a.Value) == "Value" {
 		if suf := valueAccess(varTypes[a.Name]); suf != "" {
@@ -2076,11 +2099,24 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			b.Left.emit(w)
 			io.WriteString(w, ") != null")
 		} else {
-			io.WriteString(w, "std.mem.indexOfScalar(i64, ")
-			b.Right.emit(w)
-			io.WriteString(w, ", ")
-			b.Left.emit(w)
-			io.WriteString(w, ") != null")
+			elem := "i64"
+			if rt := zigTypeFromExpr(b.Right); strings.HasPrefix(rt, "[]") {
+				elem = rt[2:]
+			}
+			if elem == "[]const u8" || elem == "[]u8" {
+				tmp := uniqueName("v")
+				io.WriteString(w, "blk: { var _found = false; for (")
+				b.Right.emit(w)
+				fmt.Fprintf(w, ") |%s| { if (std.mem.eql(u8, %s, ", tmp, tmp)
+				b.Left.emit(w)
+				fmt.Fprintf(w, ")) { _found = true; break; } } break :blk _found; }")
+			} else {
+				fmt.Fprintf(w, "std.mem.indexOfScalar(%s, ", elem)
+				b.Right.emit(w)
+				io.WriteString(w, ", ")
+				b.Left.emit(w)
+				io.WriteString(w, ") != null")
+			}
 		}
 		return
 	}
@@ -2212,11 +2248,8 @@ func (i *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, ").?")
 		return
 	}
-	t := i.ElemType
-	if t == "" {
-		t = zigTypeFromExpr(i.Target)
-	}
-	if t == "[]const u8" {
+	targetType := zigTypeFromExpr(i.Target)
+	if isStringType(targetType) || (i.ElemType == "[]const u8" && !strings.HasPrefix(targetType, "[]")) {
 		i.Target.emit(w)
 		io.WriteString(w, "[@as(usize, @intCast(")
 		i.Index.emit(w)

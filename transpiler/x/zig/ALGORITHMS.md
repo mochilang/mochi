@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 23:15 +0700
+Last updated: 2025-08-06 23:41 +0700
 
-## Program Checklist (56/1077)
+## Program Checklist (63/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -109,14 +109,14 @@ Last updated: 2025-08-06 23:15 +0700
 | 100 | ciphers/rsa_factorization |   |  |  |
 | 101 | ciphers/rsa_key_generator | ✓ | 563µs | 256.0 KB |
 | 102 | ciphers/running_key_cipher | ✓ | 1.993ms | 640.0 KB |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
+| 103 | ciphers/shuffled_shift_cipher |   | 9.688ms | 1.5 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 2.183ms | 512.0 KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 1.205ms | 384.0 KB |
+| 106 | ciphers/transposition_cipher | ✓ | 821µs | 384.0 KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 958µs | 256.0 KB |
+| 108 | ciphers/trifid_cipher | ✓ | 8.972ms | 2.1 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 787µs | 256.0 KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 1.953ms | 640.0 KB |
 | 111 | ciphers/xor_cipher |   |  |  |
 | 112 | computer_vision/cnn_classification |   |  |  |
 | 113 | computer_vision/flip_augmentation |   |  |  |
