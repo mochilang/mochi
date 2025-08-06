@@ -1,13 +1,13 @@
 # Ruby Algorithms Transpiler Output
 
-Completed programs: 213/1077
-Last updated: 2025-08-06 21:22 +0700
+Completed programs: 310/1077
+Last updated: 2025-08-06 21:43 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 1ms | 14.0 KB |
+| 1 | backtracking/all_combinations | ✓ | 1ms | 11.9 KB |
 | 2 | backtracking/all_permutations | ✓ | 1ms | 59.0 KB |
 | 3 | backtracking/all_subsequences | ✓ | 1ms | 16.8 KB |
 | 4 | backtracking/coloring | ✓ | 1ms | 11.0 KB |
@@ -221,106 +221,106 @@ Checklist:
 | 212 | data_structures/heap/heap | ✓ | 1ms | 20.2 KB |
 | 213 | data_structures/heap/heap_generic | ✓ | 1ms | 20.0 KB |
 | 214 | data_structures/heap/max_heap | ✓ | 1ms | 10.2 KB |
-| 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
-| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 215 | data_structures/heap/min_heap | ✓ | 1ms | 17.6 KB |
+| 216 | data_structures/heap/randomized_heap | ✓ | 1ms | 13.7 KB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 1ms | 17.8 KB |
+| 218 | data_structures/kd_tree/example/example_usage | ✓ | 1ms | 1.4 MB |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 1ms | 10.6 KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 1ms | 11.1 KB |
 | 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
-| 242 | data_structures/queues/linked_queue |   |  |  |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
-| 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
-| 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
-| 247 | data_structures/stacks/balanced_parentheses |   |  |  |
-| 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
-| 249 | data_structures/stacks/infix_to_postfix_conversion |   |  |  |
-| 250 | data_structures/stacks/infix_to_prefix_conversion |   |  |  |
-| 251 | data_structures/stacks/largest_rectangle_histogram |   |  |  |
-| 252 | data_structures/stacks/lexicographical_numbers |   |  |  |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 1ms | 12.0 KB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 1ms | 19.2 KB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 1ms | 15.9 KB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 1ms | 17.6 KB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 1ms | 25.2 KB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 1ms | 12.0 KB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 1ms | 16.3 KB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 1ms | 12.5 KB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 1ms | 9.3 KB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 1ms | 15.7 KB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 1ms | 14.8 KB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 1ms | 13.3 KB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 1ms | 12.7 KB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 1ms | 11.0 KB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 1ms | 18.8 KB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 1ms | 14.2 KB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 1ms | 13.4 KB |
+| 239 | data_structures/queues/circular_queue | ✓ | 1ms | 13.4 KB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 1ms | 13.5 KB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 1ms | 16.0 KB |
+| 242 | data_structures/queues/linked_queue | ✓ | 1ms | 13.7 KB |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 1ms | 29.7 KB |
+| 244 | data_structures/queues/queue_by_list | ✓ | 1ms | 16.3 KB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 1ms | 14.4 KB |
+| 246 | data_structures/queues/queue_on_pseudo_stack | ✓ | 1ms | 18.6 KB |
+| 247 | data_structures/stacks/balanced_parentheses | ✓ | 1ms | 14.2 KB |
+| 248 | data_structures/stacks/dijkstras_two_stack_algorithm | ✓ | 1ms | 24.2 KB |
+| 249 | data_structures/stacks/infix_to_postfix_conversion | ✓ | 1ms | 22.6 KB |
+| 250 | data_structures/stacks/infix_to_prefix_conversion | ✓ | 1ms | 37.3 KB |
+| 251 | data_structures/stacks/largest_rectangle_histogram | ✓ | 1ms | 10.7 KB |
+| 252 | data_structures/stacks/lexicographical_numbers | ✓ | 1ms | 35.2 KB |
 | 253 | data_structures/stacks/next_greater_element |   |  |  |
-| 254 | data_structures/stacks/postfix_evaluation |   |  |  |
-| 255 | data_structures/stacks/prefix_evaluation |   |  |  |
-| 256 | data_structures/stacks/stack |   |  |  |
-| 257 | data_structures/stacks/stack_using_two_queues |   |  |  |
-| 258 | data_structures/stacks/stack_with_doubly_linked_list |   |  |  |
-| 259 | data_structures/stacks/stack_with_singly_linked_list |   |  |  |
-| 260 | data_structures/stacks/stock_span_problem |   |  |  |
-| 261 | data_structures/suffix_tree/example/example_usage |   |  |  |
-| 262 | data_structures/suffix_tree/suffix_tree |   |  |  |
-| 263 | data_structures/suffix_tree/suffix_tree_node |   |  |  |
-| 264 | data_structures/suffix_tree/tests/test_suffix_tree |   |  |  |
-| 265 | data_structures/trie/radix_tree |   |  |  |
-| 266 | data_structures/trie/trie |   |  |  |
-| 267 | digital_image_processing/change_brightness |   |  |  |
-| 268 | digital_image_processing/change_contrast |   |  |  |
-| 269 | digital_image_processing/convert_to_negative |   |  |  |
-| 270 | digital_image_processing/dithering/burkes |   |  |  |
-| 271 | digital_image_processing/edge_detection/canny |   |  |  |
-| 272 | digital_image_processing/filters/bilateral_filter |   |  |  |
-| 273 | digital_image_processing/filters/convolve |   |  |  |
-| 274 | digital_image_processing/filters/gabor_filter |   |  |  |
-| 275 | digital_image_processing/filters/gaussian_filter |   |  |  |
-| 276 | digital_image_processing/filters/laplacian_filter |   |  |  |
-| 277 | digital_image_processing/filters/local_binary_pattern |   |  |  |
-| 278 | digital_image_processing/filters/median_filter |   |  |  |
-| 279 | digital_image_processing/filters/sobel_filter |   |  |  |
-| 280 | digital_image_processing/histogram_equalization/histogram_stretch |   |  |  |
-| 281 | digital_image_processing/index_calculation |   |  |  |
-| 282 | digital_image_processing/morphological_operations/dilation_operation |   |  |  |
-| 283 | digital_image_processing/morphological_operations/erosion_operation |   |  |  |
-| 284 | digital_image_processing/resize/resize |   |  |  |
-| 285 | digital_image_processing/rotation/rotation |   |  |  |
-| 286 | digital_image_processing/sepia |   |  |  |
-| 287 | digital_image_processing/test_digital_image_processing |   |  |  |
+| 254 | data_structures/stacks/postfix_evaluation | ✓ | 1ms | 18.6 KB |
+| 255 | data_structures/stacks/prefix_evaluation | ✓ | 1ms | 22.8 KB |
+| 256 | data_structures/stacks/stack | ✓ | 1ms | 12.0 KB |
+| 257 | data_structures/stacks/stack_using_two_queues | ✓ | 1ms | 11.9 KB |
+| 258 | data_structures/stacks/stack_with_doubly_linked_list | ✓ | 1ms | 19.1 KB |
+| 259 | data_structures/stacks/stack_with_singly_linked_list | ✓ | 1ms | 16.2 KB |
+| 260 | data_structures/stacks/stock_span_problem | ✓ | 1ms | 9.9 KB |
+| 261 | data_structures/suffix_tree/example/example_usage | ✓ | 1ms | 14.9 KB |
+| 262 | data_structures/suffix_tree/suffix_tree | ✓ | 1ms | 28.4 KB |
+| 263 | data_structures/suffix_tree/suffix_tree_node | ✓ | 1ms | 11.4 KB |
+| 264 | data_structures/suffix_tree/tests/test_suffix_tree | ✓ | 1ms | 13.8 KB |
+| 265 | data_structures/trie/radix_tree | ✓ | 1ms | 34.9 KB |
+| 266 | data_structures/trie/trie | ✓ | 1ms | 28.7 KB |
+| 267 | digital_image_processing/change_brightness | ✓ | 1ms | 10.6 KB |
+| 268 | digital_image_processing/change_contrast | ✓ | 1ms | 12.3 KB |
+| 269 | digital_image_processing/convert_to_negative | ✓ | 1ms | 10.9 KB |
+| 270 | digital_image_processing/dithering/burkes | ✓ | 1ms | 14.6 KB |
+| 271 | digital_image_processing/edge_detection/canny | ✓ | 1ms | 63.5 KB |
+| 272 | digital_image_processing/filters/bilateral_filter | ✓ | 1ms | 18.7 KB |
+| 273 | digital_image_processing/filters/convolve | ✓ | 1ms | 21.2 KB |
+| 274 | digital_image_processing/filters/gabor_filter | ✓ | 1ms | 30.8 KB |
+| 275 | digital_image_processing/filters/gaussian_filter | ✓ | 1ms | 13.4 KB |
+| 276 | digital_image_processing/filters/laplacian_filter | ✓ | 1ms | 15.1 KB |
+| 277 | digital_image_processing/filters/local_binary_pattern | ✓ | 1ms | 15.8 KB |
+| 278 | digital_image_processing/filters/median_filter | ✓ | 1ms | 14.2 KB |
+| 279 | digital_image_processing/filters/sobel_filter | ✓ | 1ms | 35.6 KB |
+| 280 | digital_image_processing/histogram_equalization/histogram_stretch | ✓ | 1ms | 14.8 KB |
+| 281 | digital_image_processing/index_calculation | ✓ | 1ms | 9.9 KB |
+| 282 | digital_image_processing/morphological_operations/dilation_operation | ✓ | 1ms | 14.0 KB |
+| 283 | digital_image_processing/morphological_operations/erosion_operation | ✓ | 1ms | 12.6 KB |
+| 284 | digital_image_processing/resize/resize | ✓ | 1ms | 15.1 KB |
+| 285 | digital_image_processing/rotation/rotation | ✓ | 1ms | 11.8 KB |
+| 286 | digital_image_processing/sepia | ✓ | 1ms | 11.1 KB |
+| 287 | digital_image_processing/test_digital_image_processing | ✓ | 1ms | 23.1 KB |
 | 288 | divide_and_conquer/closest_pair_of_points |   |  |  |
-| 289 | divide_and_conquer/convex_hull |   |  |  |
-| 290 | divide_and_conquer/heaps_algorithm |   |  |  |
-| 291 | divide_and_conquer/heaps_algorithm_iterative |   |  |  |
-| 292 | divide_and_conquer/inversions |   |  |  |
-| 293 | divide_and_conquer/kth_order_statistic |   |  |  |
-| 294 | divide_and_conquer/max_difference_pair |   |  |  |
-| 295 | divide_and_conquer/max_subarray |   |  |  |
-| 296 | divide_and_conquer/mergesort |   |  |  |
-| 297 | divide_and_conquer/peak |   |  |  |
-| 298 | divide_and_conquer/power |   |  |  |
-| 299 | divide_and_conquer/strassen_matrix_multiplication |   |  |  |
-| 300 | docs/conf |   |  |  |
-| 301 | dynamic_programming/abbreviation |   |  |  |
-| 302 | dynamic_programming/all_construct |   |  |  |
-| 303 | dynamic_programming/bitmask |   |  |  |
-| 304 | dynamic_programming/catalan_numbers |   |  |  |
-| 305 | dynamic_programming/climbing_stairs |   |  |  |
-| 306 | dynamic_programming/combination_sum_iv |   |  |  |
-| 307 | dynamic_programming/edit_distance |   |  |  |
-| 308 | dynamic_programming/factorial |   |  |  |
-| 309 | dynamic_programming/fast_fibonacci |   |  |  |
-| 310 | dynamic_programming/fibonacci |   |  |  |
-| 311 | dynamic_programming/fizz_buzz |   |  |  |
-| 312 | dynamic_programming/floyd_warshall |   |  |  |
-| 313 | dynamic_programming/integer_partition |   |  |  |
-| 314 | dynamic_programming/iterating_through_submasks |   |  |  |
+| 289 | divide_and_conquer/convex_hull | ✓ | 1ms | 7.3 KB |
+| 290 | divide_and_conquer/heaps_algorithm | ✓ | 1ms | 11.2 KB |
+| 291 | divide_and_conquer/heaps_algorithm_iterative | ✓ | 1ms | 11.1 KB |
+| 292 | divide_and_conquer/inversions | ✓ | 1ms | 22.6 KB |
+| 293 | divide_and_conquer/kth_order_statistic | ✓ | 1ms | 10.6 KB |
+| 294 | divide_and_conquer/max_difference_pair | ✓ | 1ms | 9.9 KB |
+| 295 | divide_and_conquer/max_subarray | ✓ | 1ms | 21.7 KB |
+| 296 | divide_and_conquer/mergesort | ✓ | 1ms | 13.3 KB |
+| 297 | divide_and_conquer/peak | ✓ | 1ms | 9.1 KB |
+| 298 | divide_and_conquer/power | ✓ | 1ms | 9.0 KB |
+| 299 | divide_and_conquer/strassen_matrix_multiplication | ✓ | 1ms | 493.6 KB |
+| 300 | docs/conf | ✓ | 1ms | 13.6 KB |
+| 301 | dynamic_programming/abbreviation | ✓ | 1ms | 29.6 KB |
+| 302 | dynamic_programming/all_construct | ✓ | 1ms | 38.9 KB |
+| 303 | dynamic_programming/bitmask | ✓ | 1ms | 9.2 KB |
+| 304 | dynamic_programming/catalan_numbers | ✓ | 1ms | 9.9 KB |
+| 305 | dynamic_programming/climbing_stairs | ✓ | 1ms | 8.9 KB |
+| 306 | dynamic_programming/combination_sum_iv | ✓ | 1ms | 9.6 KB |
+| 307 | dynamic_programming/edit_distance | ✓ | 1ms | 34.9 KB |
+| 308 | dynamic_programming/factorial | ✓ | 1ms | 10.2 KB |
+| 309 | dynamic_programming/fast_fibonacci | ✓ | 1ms | 20.5 KB |
+| 310 | dynamic_programming/fibonacci | ✓ | 1ms | 13.8 KB |
+| 311 | dynamic_programming/fizz_buzz | ✓ | 1ms | 13.4 KB |
+| 312 | dynamic_programming/floyd_warshall | ✓ | 1ms | 12.0 KB |
+| 313 | dynamic_programming/integer_partition | ✓ | 1ms | 118.1 KB |
+| 314 | dynamic_programming/iterating_through_submasks | ✓ | 1ms | 11.0 KB |
 | 315 | dynamic_programming/k_means_clustering_tensorflow |   |  |  |
 | 316 | dynamic_programming/knapsack |   |  |  |
 | 317 | dynamic_programming/largest_divisible_subset |   |  |  |

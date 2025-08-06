@@ -1,0 +1,2 @@
+[#<struct KDNode point=[7.0 2.0] left=1 right=4> #<struct KDNode point=[5.0 4.0] left=2 right=3> #<struct KDNode point=[2.0 3.0] left=-1 right=-1> #<struct KDNode point=[4.0 7.0] left=-1 right=-1> #<struct KDNode point=[9.0 6.0] left=5 right=-1> #<struct KDNode point=[8.0 1.0] left=-1 right=-1>]
+0
