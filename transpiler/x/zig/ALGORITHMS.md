@@ -2,7 +2,7 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 21:31 +0700
+Last updated: 2025-08-06 21:56 +0700
 
 ## Program Checklist (48/1077)
 | Index | Name | Status | Duration | Memory |
@@ -37,10 +37,10 @@ Last updated: 2025-08-06 21:31 +0700
 | 28 | bit_manipulation/bitwise_addition_recursive | ✓ | 707µs | 128.0 KB |
 | 29 | bit_manipulation/count_1s_brian_kernighan_method | ✓ | 597µs | 256.0 KB |
 | 30 | bit_manipulation/count_number_of_one_bits | ✓ | 910µs | 256.0 KB |
-| 31 | bit_manipulation/excess_3_code | ✓ | 801µs | 256.0 KB |
-| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.332ms | 256.0 KB |
-| 33 | bit_manipulation/find_unique_number | ✓ | 704µs | 256.0 KB |
-| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.24ms | 384.0 KB |
+| 31 | bit_manipulation/excess_3_code |   | 801µs | 256.0 KB |
+| 32 | bit_manipulation/find_previous_power_of_two | ✓ | 1.449ms | 384.0 KB |
+| 33 | bit_manipulation/find_unique_number | ✓ | 703µs | 256.0 KB |
+| 34 | bit_manipulation/gray_code_sequence | ✓ | 1.663ms | 384.0 KB |
 | 35 | bit_manipulation/highest_set_bit | ✓ | 499µs | 256.0 KB |
 | 36 | bit_manipulation/index_of_rightmost_set_bit | ✓ | 670µs | 256.0 KB |
 | 37 | bit_manipulation/is_even | ✓ | 737µs | 256.0 KB |
@@ -55,7 +55,7 @@ Last updated: 2025-08-06 21:31 +0700
 | 46 | blockchain/diophantine_equation | ✓ | 1.623ms | 384.0 KB |
 | 47 | boolean_algebra/and_gate | ✓ | 827µs | 256.0 KB |
 | 48 | boolean_algebra/imply_gate | ✓ | 558µs | 384.0 KB |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 1.073ms | 256.0 KB |
 | 50 | boolean_algebra/multiplexer |   |  |  |
 | 51 | boolean_algebra/nand_gate |   |  |  |
 | 52 | boolean_algebra/nimply_gate |   |  |  |
