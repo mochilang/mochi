@@ -1,0 +1,50 @@
+/*
+Project Euler Problem 12 - Highly Divisible Triangular Number
+
+The nth triangular number is the sum of the first n natural numbers and can
+be generated incrementally.  Problem 12 asks for the first triangular number
+that has more than 500 positive divisors.  To solve this, the program
+sequentially builds triangular numbers by adding consecutive integers and
+counts their divisors using prime factorization.
+
+Function `count_divisors` performs trial division on a copy of the input.
+For each factor i it determines the multiplicity of i in the factorization
+and multiplies the running divisor count by (multiplicity + 1).
+If a leftover factor greater than 1 remains, it contributes an extra factor
+of 2.  The search increases the index until a triangular number with more
+than 500 divisors is found.
+*/
+
+fun count_divisors(n: int): int {
+  var m = n
+  var n_divisors = 1
+  var i = 2
+  while i * i <= m {
+    var multiplicity = 0
+    while m % i == 0 {
+      m = m / i
+      multiplicity = multiplicity + 1
+    }
+    n_divisors = n_divisors * (multiplicity + 1)
+    i = i + 1
+  }
+  if m > 1 {
+    n_divisors = n_divisors * 2
+  }
+  return n_divisors
+}
+
+fun solution(): int {
+  var t_num = 1
+  var i = 1
+  while true {
+    i = i + 1
+    t_num = t_num + i
+    if count_divisors(t_num) > 500 {
+      break
+    }
+  }
+  return t_num
+}
+
+print(str(solution()))
