@@ -1,0 +1,33 @@
+/*
+Odd-Even Transposition Sort implemented sequentially.
+
+This algorithm sorts a list by repeatedly performing two phases of adjacent swaps.
+The first phase compares elements at odd-even index pairs (1st with 2nd, 3rd with 4th, ...),
+while the second phase compares even-odd pairs (2nd with 3rd, 4th with 5th, ...).
+Each phase swaps out-of-order pairs. After n phases for a list of length n,
+the list becomes sorted. Although the algorithm is known for its parallel nature,
+this implementation executes sequentially. Time complexity is O(n^2) and space
+complexity is O(1).
+*/
+
+fun odd_even_transposition(arr: list<float>): list<float> {
+  let n = len(arr)
+  var pass = 0
+  while pass < n {
+    var i = pass % 2
+    while i < n - 1 {
+      if arr[i + 1] < arr[i] {
+        let tmp = arr[i]
+        arr[i] = arr[i + 1]
+        arr[i + 1] = tmp
+      }
+      i = i + 2
+    }
+    pass = pass + 1
+  }
+  return arr
+}
+
+print(str(odd_even_transposition([5.0, 4.0, 3.0, 2.0, 1.0])))
+print(str(odd_even_transposition([13.0, 11.0, 18.0, 0.0, -1.0])))
+print(str(odd_even_transposition([-0.1, 1.1, 0.1, -2.9])))
