@@ -28,11 +28,17 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static string _fmt(object v) {
         if (v is Array a) {
             var parts = new List<string>();
             foreach (var x in a) parts.Add(_fmt(x));
-            return "[" + string.Join(" ", parts) + "]";
+            return "[" + string.Join(", ", parts) + "]";
         }
         if (v is System.Collections.IDictionary d) {
             var keys = new List<string>();
@@ -40,13 +46,14 @@ class Program {
             keys.Sort();
             var parts = new List<string>();
             foreach (var k in keys) parts.Add(k + ":" + _fmt(d[k]));
-            return "map[" + string.Join(" ", parts) + "]";
+            return "map[" + string.Join(", ", parts) + "]";
         }
         if (v is System.Collections.IEnumerable e && !(v is string)) {
             var parts = new List<string>();
             foreach (var x in e) parts.Add(_fmt(x));
-            return string.Join(" ", parts);
+            return string.Join(", ", parts);
         }
+        if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
         if (v is bool b) return b ? "true" : "false";
         return Convert.ToString(v);
     }
@@ -56,35 +63,31 @@ class Program {
             foreach (var x in a) parts.Add(_fmt(x));
             return string.Join(" ", parts);
         }
+        if (v is string s) return s;
         return _fmt(v);
     }
-    public static long[][] create_all_state(long increment_0, long total_1, long level_2, long[] current_3, long[][] result_4) {
-        if ((level_2 == 0)) {
-            return (Enumerable.ToArray(Enumerable.Append(result_4, current_3)));
+    static object[] seq_5 = new object[]{1, 2, 3};
+    public static void create_state_space_tree(object[] sequence_0, object[] current_1, long index_2) {
+        if ((index_2 == sequence_0.Length)) {
+            Console.WriteLine(Program._fmtTop(current_1));
+            return;
         };
-        long i_5 = increment_0;
-        while ((i_5 <= ((total_1 - level_2) + 1))) {
-            long[] next_current_6 = (Enumerable.ToArray(Enumerable.Append(current_3, i_5)));
-            result_4 = Program.create_all_state((i_5 + 1), total_1, (level_2 - 1), next_current_6, result_4);
-            i_5 = (i_5 + 1);
-        };
-        return result_4;
+        Program.create_state_space_tree(Enumerable.ToArray(sequence_0.Cast<object>()), Enumerable.ToArray(current_1.Cast<object>()), (index_2 + 1));
+        object[] with_elem_3 = (Enumerable.ToArray(Enumerable.Append(Enumerable.ToArray(current_1.Cast<object>()), (object)((dynamic)sequence_0)[index_2])));
+        Program.create_state_space_tree(Enumerable.ToArray(sequence_0.Cast<object>()), Enumerable.ToArray(with_elem_3.Cast<object>()), (index_2 + 1));
     }
 
-    public static long[][] generate_all_combinations(long n_7, long k_8) {
-        if (((k_8 < 0) || (n_7 < 0))) {
-            return new long[][]{};
-        };
-        long[][] result_9 = new long[][]{};
-        return Program.create_all_state(1, n_7, k_8, new long[]{}, result_9);
+    public static void generate_all_subsequences(object[] sequence_4) {
+        Program.create_state_space_tree(Enumerable.ToArray(sequence_4.Cast<object>()), Enumerable.ToArray((new object[]{} as object[]) ?? new object[]{}.Cast<object>()), 0);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(4, 2))));
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(3, 1))));
+            Program.generate_all_subsequences(Enumerable.ToArray(seq_5.Cast<object>()));
+            object[] seq2_6 = new object[]{"A", "B", "C"};
+            Program.generate_all_subsequences(Enumerable.ToArray(seq2_6.Cast<object>()));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

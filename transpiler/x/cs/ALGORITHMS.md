@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated C# code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/CS`.
-Last updated: 2025-08-06 16:08 GMT+7
+Last updated: 2025-08-06 16:41 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 4.0ms | 21.06KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 3.0ms | 21.14KB |
+| 2 | backtracking/all_permutations | ✓ | 15.0ms | 1.20MB |
+| 3 | backtracking/all_subsequences | ✓ | 20.0ms | 1.15MB |
+| 4 | backtracking/coloring | ✓ | 3.0ms | 18.46KB |
+| 5 | backtracking/combination_sum | ✓ | 4.0ms | 21.04KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 3.0ms | 14.38KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 1.0µs | 43.75KB |
+| 8 | backtracking/knight_tour | ✓ | 3.0ms | 16.62KB |
+| 9 | backtracking/match_word_pattern | ✓ | 3.0ms | 56.11KB |
+| 10 | backtracking/minimax | ✓ | 3.0ms | 16.56KB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |
