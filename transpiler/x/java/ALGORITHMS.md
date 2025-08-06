@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 20:41 GMT+7
+Last updated: 2025-08-06 20:58 GMT+7
 
-## Algorithms Golden Test Checklist (40/1077)
+## Algorithms Golden Test Checklist (70/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -47,36 +47,36 @@ Last updated: 2025-08-06 20:41 GMT+7
 | 38 | bit_manipulation/is_power_of_two | ✓ | 21.0ms | 0B |
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 23.0ms | 664B |
 | 40 | bit_manipulation/missing_number | ✓ | 24.0ms | 448B |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 17.0ms | 664B |
+| 42 | bit_manipulation/power_of_4 | ✓ | 18.0ms | 768B |
+| 43 | bit_manipulation/reverse_bits | ✓ | 24.0ms | 33.03KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 17.0ms | 880B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 42.0ms | 90.09KB |
+| 46 | blockchain/diophantine_equation | ✓ | 15.0ms | 912B |
+| 47 | boolean_algebra/and_gate | ✓ | 16.0ms | 448B |
+| 48 | boolean_algebra/imply_gate | ✓ | 30.0ms | 448B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 41.0ms | 94.70KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 17.0ms | 448B |
+| 51 | boolean_algebra/nand_gate | ✓ | 17.0ms | 448B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 19.0ms | 448B |
+| 53 | boolean_algebra/nor_gate | ✓ | 49.0ms | 104.85KB |
+| 54 | boolean_algebra/not_gate | ✓ | 16.0ms | 448B |
+| 55 | boolean_algebra/or_gate | ✓ | 33.0ms | 49.90KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 36.0ms | 59.00KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 17.0ms | 448B |
+| 58 | boolean_algebra/xor_gate | ✓ | 21.0ms | 552B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 34.0ms | 47.03KB |
+| 60 | cellular_automata/game_of_life | ✓ | 29.0ms | 39.07KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 16.0ms | 0B |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 32.0ms | 46.35KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 38.0ms | 56.59KB |
+| 64 | cellular_automata/wa_tor | ✓ | 70.0ms | 56.02KB |
+| 65 | ciphers/a1z26 | ✓ | 24.0ms | 5.12KB |
+| 66 | ciphers/affine_cipher | ✓ | 45.0ms | 34.09KB |
+| 67 | ciphers/atbash | ✓ | 39.0ms | 33.44KB |
+| 68 | ciphers/autokey | ✓ | 58.0ms | 34.12KB |
+| 69 | ciphers/baconian_cipher | ✓ | 33.0ms | 61.77KB |
+| 70 | ciphers/base16 | ✓ | 48.0ms | 102.43KB |
 | 71 | ciphers/base32 |   |  |  |
 | 72 | ciphers/base64_cipher |   |  |  |
 | 73 | ciphers/base85 |   |  |  |
