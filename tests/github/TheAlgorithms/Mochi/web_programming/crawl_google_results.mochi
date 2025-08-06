@@ -1,0 +1,84 @@
+/*
+Parse mock Google search HTML to extract top result links.
+
+This program demonstrates simple HTML parsing without external
+libraries. It scans a string containing simplified Google search
+results and extracts the first five anchor tags with the CSS class
+"eZt8xd", which is used by Google to mark result links. For each
+matched anchor tag, the program captures its href attribute and the
+visible text. If the link text equals "Maps", the original href is
+printed; otherwise the href is prefixed with "https://google.com".
+
+Algorithm steps:
+1. Search the HTML string for occurrences of '<a class="eZt8xd"'.
+2. For each occurrence, locate the surrounding href and inner text.
+3. Store extracted href/text pairs in a list.
+4. Print the number of collected links and each resolved URL,
+   handling the special "Maps" case.
+
+The implementation uses only basic string operations and avoids the
+"any" type, keeping the solution fully in pure Mochi.
+*/
+
+fun index_of_from(s: string, sub: string, start: int): int {
+  var i = start
+  let max = len(s) - len(sub)
+  while i <= max {
+    if s[i:i+len(sub)] == sub { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun extract_links(html: string): list<map<string, string>> {
+  var res: list<map<string, string>> = []
+  var i = 0
+  while true {
+    let tag_start = index_of_from(html, "<a class=\"eZt8xd\"", i)
+    if tag_start == (-1) {
+      break
+    }
+    let href_start = index_of_from(html, "href=\"", tag_start)
+    if href_start == (-1) {
+      break
+    }
+    href_start = href_start + len("href=\"")
+    let href_end = index_of_from(html, "\"", href_start)
+    if href_end == (-1) {
+      break
+    }
+    let href = html[href_start:href_end]
+    let text_start = index_of_from(html, ">", href_end) + 1
+    let text_end = index_of_from(html, "</a>", text_start)
+    if text_end == (-1) {
+      break
+    }
+    let text = html[text_start:text_end]
+    let link: map<string, string> = {"href": href, "text": text}
+    res = append(res, link)
+    i = text_end + len("</a>")
+  }
+  return res
+}
+
+fun main() {
+  let html = "<div><a class=\"eZt8xd\" href=\"/url?q=http://example1.com\">Example1</a>" +
+             "<a class=\"eZt8xd\" href=\"/maps\">Maps</a>" +
+             "<a class=\"eZt8xd\" href=\"/url?q=http://example2.com\">Example2</a></div>"
+  let links = extract_links(html)
+  print(str(len(links)))
+  var i = 0
+  while i < len(links) && i < 5 {
+    let link = links[i]
+    let href = link["href"]
+    let text = link["text"]
+    if text == "Maps" {
+      print(href)
+    } else {
+      print("https://google.com" + href)
+    }
+    i = i + 1
+  }
+}
+
+main()
