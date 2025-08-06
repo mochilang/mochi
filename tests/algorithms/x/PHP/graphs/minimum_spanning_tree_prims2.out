@@ -1,0 +1,10 @@
+Warning: Undefined array key "node" in /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php on line 46
+
+Warning: Undefined array key "" in /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php on line 57
+
+Fatal error: Uncaught TypeError: array_keys(): Argument #1 ($array) must be of type array, null given in /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php:57
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php(57): array_keys(NULL)
+#1 /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php(122): prims_algo(Array)
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/graphs/minimum_spanning_tree_prims2.php on line 57

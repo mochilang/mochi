@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated PHP code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/PHP`.
-Last updated: 2025-08-06 23:11 GMT+7
+Last updated: 2025-08-06 23:56 GMT+7
 
-## Algorithms Golden Test Checklist (328/1077)
+## Algorithms Golden Test Checklist (444/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 117µs | 38.8 KB |
@@ -355,138 +355,138 @@ Last updated: 2025-08-06 23:11 GMT+7
 | 346 | dynamic_programming/tribonacci | ✓ | 69µs | 38.4 KB |
 | 347 | dynamic_programming/viterbi | ✓ | 111µs | 39.8 KB |
 | 348 | dynamic_programming/wildcard_matching | ✓ | 129µs | 39.9 KB |
-| 349 | dynamic_programming/word_break |   |  |  |
-| 350 | electronics/apparent_power |   |  |  |
-| 351 | electronics/builtin_voltage |   |  |  |
-| 352 | electronics/capacitor_equivalence |   |  |  |
-| 353 | electronics/carrier_concentration |   |  |  |
-| 354 | electronics/charging_capacitor |   |  |  |
-| 355 | electronics/charging_inductor |   |  |  |
-| 356 | electronics/circular_convolution |   |  |  |
-| 357 | electronics/coulombs_law |   |  |  |
-| 358 | electronics/electric_conductivity |   |  |  |
-| 359 | electronics/electric_power |   |  |  |
-| 360 | electronics/electrical_impedance |   |  |  |
-| 361 | electronics/ic_555_timer |   |  |  |
-| 362 | electronics/ind_reactance |   |  |  |
-| 363 | electronics/ohms_law |   |  |  |
-| 364 | electronics/real_and_reactive_power |   |  |  |
-| 365 | electronics/resistor_color_code |   |  |  |
-| 366 | electronics/resistor_equivalence |   |  |  |
-| 367 | electronics/resonant_frequency |   |  |  |
-| 368 | electronics/wheatstone_bridge |   |  |  |
-| 369 | file_transfer/receive_file |   |  |  |
-| 370 | file_transfer/send_file |   |  |  |
-| 371 | file_transfer/tests/test_send_file |   |  |  |
-| 372 | financial/equated_monthly_installments |   |  |  |
-| 373 | financial/exponential_moving_average |   |  |  |
-| 374 | financial/interest |   |  |  |
-| 375 | financial/present_value |   |  |  |
-| 376 | financial/price_plus_tax |   |  |  |
-| 377 | financial/simple_moving_average |   |  |  |
-| 378 | financial/straight_line_depreciation |   |  |  |
-| 379 | financial/time_and_half_pay |   |  |  |
-| 380 | fractals/julia_sets |   |  |  |
-| 381 | fractals/koch_snowflake |   |  |  |
-| 382 | fractals/mandelbrot |   |  |  |
-| 383 | fractals/sierpinski_triangle |   |  |  |
-| 384 | fractals/vicsek |   |  |  |
-| 385 | fuzzy_logic/fuzzy_operations |   |  |  |
-| 386 | genetic_algorithm/basic_string |   |  |  |
-| 387 | geodesy/haversine_distance |   |  |  |
-| 388 | geodesy/lamberts_ellipsoidal_distance |   |  |  |
-| 389 | geometry/geometry |   |  |  |
-| 390 | graphics/bezier_curve |   |  |  |
-| 391 | graphics/butterfly_pattern |   |  |  |
-| 392 | graphics/digital_differential_analyzer_line |   |  |  |
-| 393 | graphics/vector3_for_2d_rendering |   |  |  |
-| 394 | graphs/a_star |   |  |  |
-| 395 | graphs/ant_colony_optimization_algorithms |   |  |  |
-| 396 | graphs/articulation_points |   |  |  |
-| 397 | graphs/basic_graphs |   |  |  |
-| 398 | graphs/bellman_ford |   |  |  |
-| 399 | graphs/bi_directional_dijkstra |   |  |  |
-| 400 | graphs/bidirectional_a_star |   |  |  |
-| 401 | graphs/bidirectional_breadth_first_search |   |  |  |
-| 402 | graphs/bidirectional_search |   |  |  |
-| 403 | graphs/boruvka |   |  |  |
-| 404 | graphs/breadth_first_search |   |  |  |
-| 405 | graphs/breadth_first_search_2 |   |  |  |
-| 406 | graphs/breadth_first_search_shortest_path |   |  |  |
-| 407 | graphs/breadth_first_search_shortest_path_2 |   |  |  |
-| 408 | graphs/breadth_first_search_zero_one_shortest_path |   |  |  |
-| 409 | graphs/check_bipatrite |   |  |  |
-| 410 | graphs/check_cycle |   |  |  |
-| 411 | graphs/connected_components |   |  |  |
-| 412 | graphs/deep_clone_graph |   |  |  |
-| 413 | graphs/depth_first_search |   |  |  |
-| 414 | graphs/depth_first_search_2 |   |  |  |
-| 415 | graphs/dijkstra |   |  |  |
-| 416 | graphs/dijkstra_2 |   |  |  |
-| 417 | graphs/dijkstra_algorithm |   |  |  |
-| 418 | graphs/dijkstra_alternate |   |  |  |
-| 419 | graphs/dijkstra_binary_grid |   |  |  |
-| 420 | graphs/dinic |   |  |  |
-| 421 | graphs/directed_and_undirected_weighted_graph |   |  |  |
-| 422 | graphs/edmonds_karp_multiple_source_and_sink |   |  |  |
-| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph |   |  |  |
-| 424 | graphs/even_tree |   |  |  |
-| 425 | graphs/finding_bridges |   |  |  |
-| 426 | graphs/frequent_pattern_graph_miner |   |  |  |
-| 427 | graphs/g_topological_sort |   |  |  |
-| 428 | graphs/gale_shapley_bigraph |   |  |  |
-| 429 | graphs/graph_adjacency_list |   |  |  |
-| 430 | graphs/graph_adjacency_matrix |   |  |  |
-| 431 | graphs/graph_list |   |  |  |
-| 432 | graphs/graphs_floyd_warshall |   |  |  |
-| 433 | graphs/greedy_best_first |   |  |  |
-| 434 | graphs/greedy_min_vertex_cover |   |  |  |
-| 435 | graphs/kahns_algorithm_long |   |  |  |
-| 436 | graphs/kahns_algorithm_topo |   |  |  |
-| 437 | graphs/karger |   |  |  |
-| 438 | graphs/lanczos_eigenvectors |   |  |  |
-| 439 | graphs/markov_chain |   |  |  |
-| 440 | graphs/matching_min_vertex_cover |   |  |  |
-| 441 | graphs/minimum_path_sum |   |  |  |
-| 442 | graphs/minimum_spanning_tree_boruvka |   |  |  |
-| 443 | graphs/minimum_spanning_tree_kruskal |   |  |  |
-| 444 | graphs/minimum_spanning_tree_kruskal2 |   |  |  |
-| 445 | graphs/minimum_spanning_tree_prims |   |  |  |
-| 446 | graphs/minimum_spanning_tree_prims2 |   |  |  |
-| 447 | graphs/multi_heuristic_astar |   |  |  |
-| 448 | graphs/page_rank |   |  |  |
-| 449 | graphs/prim |   |  |  |
-| 450 | graphs/random_graph_generator |   |  |  |
-| 451 | graphs/scc_kosaraju |   |  |  |
-| 452 | graphs/strongly_connected_components |   |  |  |
-| 453 | graphs/tarjans_scc |   |  |  |
-| 454 | graphs/tests/test_min_spanning_tree_kruskal |   |  |  |
-| 455 | graphs/tests/test_min_spanning_tree_prim |   |  |  |
-| 456 | greedy_methods/best_time_to_buy_and_sell_stock |   |  |  |
-| 457 | greedy_methods/fractional_cover_problem |   |  |  |
-| 458 | greedy_methods/fractional_knapsack |   |  |  |
-| 459 | greedy_methods/fractional_knapsack_2 |   |  |  |
-| 460 | greedy_methods/gas_station |   |  |  |
-| 461 | greedy_methods/minimum_coin_change |   |  |  |
-| 462 | greedy_methods/minimum_waiting_time |   |  |  |
-| 463 | greedy_methods/optimal_merge_pattern |   |  |  |
-| 464 | greedy_methods/smallest_range |   |  |  |
-| 465 | hashes/adler32 |   |  |  |
-| 466 | hashes/chaos_machine |   |  |  |
-| 467 | hashes/djb2 |   |  |  |
-| 468 | hashes/elf |   |  |  |
-| 469 | hashes/enigma_machine |   |  |  |
-| 470 | hashes/fletcher16 |   |  |  |
-| 471 | hashes/hamming_code |   |  |  |
-| 472 | hashes/luhn |   |  |  |
-| 473 | hashes/md5 |   |  |  |
-| 474 | hashes/sdbm |   |  |  |
-| 475 | hashes/sha1 |   |  |  |
-| 476 | hashes/sha256 |   |  |  |
-| 477 | knapsack/greedy_knapsack |   |  |  |
-| 478 | knapsack/knapsack |   |  |  |
-| 479 | knapsack/recursive_approach_knapsack |   |  |  |
-| 480 | knapsack/tests/test_greedy_knapsack |   |  |  |
+| 349 | dynamic_programming/word_break | ✓ | 147µs | 39.8 KB |
+| 350 | electronics/apparent_power | ✓ | 1µs | 35.9 KB |
+| 351 | electronics/builtin_voltage | ✓ | 61µs | 39.2 KB |
+| 352 | electronics/capacitor_equivalence | ✓ | 82µs | 36.3 KB |
+| 353 | electronics/carrier_concentration | ✓ | 111µs | 35.8 KB |
+| 354 | electronics/charging_capacitor | ✓ | 76µs | 35.1 KB |
+| 355 | electronics/charging_inductor | ✓ | 111µs | 35.0 KB |
+| 356 | electronics/circular_convolution | ✓ | 266µs | 35.4 KB |
+| 357 | electronics/coulombs_law | ✓ | 168µs | 39.2 KB |
+| 358 | electronics/electric_conductivity | ✓ | 189µs | 35.6 KB |
+| 359 | electronics/electric_power | error |  |  |
+| 360 | electronics/electrical_impedance | ✓ | 144µs | 36.3 KB |
+| 361 | electronics/ic_555_timer | ✓ | 63µs | 38.2 KB |
+| 362 | electronics/ind_reactance | ✓ | 91µs | 36.3 KB |
+| 363 | electronics/ohms_law | ✓ | 87µs | 39.0 KB |
+| 364 | electronics/real_and_reactive_power | error |  |  |
+| 365 | electronics/resistor_color_code | ✓ | 2µs | 72.7 KB |
+| 366 | electronics/resistor_equivalence | ✓ | 75µs | 36.4 KB |
+| 367 | electronics/resonant_frequency | ✓ | 62µs | 39.1 KB |
+| 368 | electronics/wheatstone_bridge | ✓ | 82µs | 38.2 KB |
+| 369 | file_transfer/receive_file | ✓ | 122µs | 35.8 KB |
+| 370 | file_transfer/send_file | ✓ | 68µs | 35.3 KB |
+| 371 | file_transfer/tests/test_send_file | error |  |  |
+| 372 | financial/equated_monthly_installments | ✓ | 59µs | 38.8 KB |
+| 373 | financial/exponential_moving_average | ✓ | 154µs | 39.5 KB |
+| 374 | financial/interest | ✓ | 96µs | 40.4 KB |
+| 375 | financial/present_value | ✓ | 76µs | 39.1 KB |
+| 376 | financial/price_plus_tax | ✓ | 54µs | 38.7 KB |
+| 377 | financial/simple_moving_average | ✓ | 131µs | 39.1 KB |
+| 378 | financial/straight_line_depreciation | ✓ | 156µs | 35.6 KB |
+| 379 | financial/time_and_half_pay | ✓ | 59µs | 36.3 KB |
+| 380 | fractals/julia_sets | ✓ | 1.139ms | 37.3 KB |
+| 381 | fractals/koch_snowflake | error |  |  |
+| 382 | fractals/mandelbrot | ✓ | 372µs | 40.2 KB |
+| 383 | fractals/sierpinski_triangle | ✓ | 112µs | 38.5 KB |
+| 384 | fractals/vicsek | ✓ | 117µs | 35.5 KB |
+| 385 | fuzzy_logic/fuzzy_operations | ✓ | 132µs | 37.8 KB |
+| 386 | genetic_algorithm/basic_string | ✓ | 146µs | 35.3 KB |
+| 387 | geodesy/haversine_distance | ✓ | 107µs | 39.8 KB |
+| 388 | geodesy/lamberts_ellipsoidal_distance | ✓ | 106µs | 34.8 KB |
+| 389 | geometry/geometry | ✓ | 139µs | 39.1 KB |
+| 390 | graphics/bezier_curve | ✓ | 176µs | 39.1 KB |
+| 391 | graphics/butterfly_pattern | ✓ | 124µs | 39.4 KB |
+| 392 | graphics/digital_differential_analyzer_line | ✓ | 135µs | 37.7 KB |
+| 393 | graphics/vector3_for_2d_rendering | ✓ | 144µs | 39.5 KB |
+| 394 | graphs/a_star | ✓ | 213µs | 79.9 KB |
+| 395 | graphs/ant_colony_optimization_algorithms | ✓ | 9.918ms | 73.3 KB |
+| 396 | graphs/articulation_points | ✓ | 146µs | 35.6 KB |
+| 397 | graphs/basic_graphs | ✓ | 238µs | 102.7 KB |
+| 398 | graphs/bellman_ford | ✓ | 195µs | 40.0 KB |
+| 399 | graphs/bi_directional_dijkstra | ✓ | 122µs | 72.7 KB |
+| 400 | graphs/bidirectional_a_star | error |  |  |
+| 401 | graphs/bidirectional_breadth_first_search | ✓ | 384µs | 73.9 KB |
+| 402 | graphs/bidirectional_search | ✓ | 242µs | 70.8 KB |
+| 403 | graphs/boruvka | error |  |  |
+| 404 | graphs/breadth_first_search | ✓ | 143µs | 36.0 KB |
+| 405 | graphs/breadth_first_search_2 | ✓ | 177µs | 38.7 KB |
+| 406 | graphs/breadth_first_search_shortest_path | ✓ | 108µs | 38.9 KB |
+| 407 | graphs/breadth_first_search_shortest_path_2 | ✓ | 1µs | 36.9 KB |
+| 408 | graphs/breadth_first_search_zero_one_shortest_path | ✓ | 257µs | 37.5 KB |
+| 409 | graphs/check_bipatrite | ✓ | 107µs | 39.6 KB |
+| 410 | graphs/check_cycle | ✓ | 111µs | 39.8 KB |
+| 411 | graphs/connected_components | ✓ | 159µs | 38.9 KB |
+| 412 | graphs/deep_clone_graph | error |  |  |
+| 413 | graphs/depth_first_search | ✓ | 131µs | 38.7 KB |
+| 414 | graphs/depth_first_search_2 | ✓ | 180µs | 36.5 KB |
+| 415 | graphs/dijkstra | ✓ | 265µs | 56.9 KB |
+| 416 | graphs/dijkstra_2 | ✓ | 127µs | 38.5 KB |
+| 417 | graphs/dijkstra_algorithm | ✓ | 111µs | 35.4 KB |
+| 418 | graphs/dijkstra_alternate | ✓ | 119µs | 35.1 KB |
+| 419 | graphs/dijkstra_binary_grid | ✓ | 205µs | 39.9 KB |
+| 420 | graphs/dinic | ✓ | 347µs | 68.3 KB |
+| 421 | graphs/directed_and_undirected_weighted_graph | ✓ | 243µs | 142.0 KB |
+| 422 | graphs/edmonds_karp_multiple_source_and_sink | error |  |  |
+| 423 | graphs/eulerian_path_and_circuit_for_undirected_graph | ✓ | 256µs | 40.0 KB |
+| 424 | graphs/even_tree | ✓ | 128µs | 34.5 KB |
+| 425 | graphs/finding_bridges | error |  |  |
+| 426 | graphs/frequent_pattern_graph_miner | error |  |  |
+| 427 | graphs/g_topological_sort | ✓ | 173µs | 36.6 KB |
+| 428 | graphs/gale_shapley_bigraph | ✓ | 234µs | 40.1 KB |
+| 429 | graphs/graph_adjacency_list | ✓ | 375µs | 69.2 KB |
+| 430 | graphs/graph_adjacency_matrix | ✓ | 178µs | 70.2 KB |
+| 431 | graphs/graph_list | ✓ | 165µs | 36.5 KB |
+| 432 | graphs/graphs_floyd_warshall | ✓ | 146µs | 38.8 KB |
+| 433 | graphs/greedy_best_first | ✓ | 616µs | 68.5 KB |
+| 434 | graphs/greedy_min_vertex_cover | ✓ | 208µs | 38.6 KB |
+| 435 | graphs/kahns_algorithm_long | ✓ | 140µs | 39.1 KB |
+| 436 | graphs/kahns_algorithm_topo | ✓ | 130µs | 35.5 KB |
+| 437 | graphs/karger | ✓ | 311µs | 83.9 KB |
+| 438 | graphs/lanczos_eigenvectors | ✓ | 193µs | 106.2 KB |
+| 439 | graphs/markov_chain | ✓ | 1.602ms | 36.6 KB |
+| 440 | graphs/matching_min_vertex_cover | ✓ | 153µs | 39.7 KB |
+| 441 | graphs/minimum_path_sum | ✓ | 114µs | 38.9 KB |
+| 442 | graphs/minimum_spanning_tree_boruvka | ✓ | 115µs | 37.4 KB |
+| 443 | graphs/minimum_spanning_tree_kruskal | ✓ | 133µs | 39.2 KB |
+| 444 | graphs/minimum_spanning_tree_kruskal2 | ✓ | 213µs | 38.7 KB |
+| 445 | graphs/minimum_spanning_tree_prims | ✓ | 174µs | 40.0 KB |
+| 446 | graphs/minimum_spanning_tree_prims2 | error |  |  |
+| 447 | graphs/multi_heuristic_astar | ✓ | 257µs | 107.7 KB |
+| 448 | graphs/page_rank | error |  |  |
+| 449 | graphs/prim | ✓ | 202µs | 73.1 KB |
+| 450 | graphs/random_graph_generator | ✓ | 156µs | 34.9 KB |
+| 451 | graphs/scc_kosaraju | ✓ | 122µs | 36.6 KB |
+| 452 | graphs/strongly_connected_components | ✓ | 239µs | 36.6 KB |
+| 453 | graphs/tarjans_scc | error |  |  |
+| 454 | graphs/tests/test_min_spanning_tree_kruskal | ✓ | 222µs | 35.1 KB |
+| 455 | graphs/tests/test_min_spanning_tree_prim | ✓ | 340µs | 40.6 KB |
+| 456 | greedy_methods/best_time_to_buy_and_sell_stock | ✓ | 89µs | 38.2 KB |
+| 457 | greedy_methods/fractional_cover_problem | ✓ | 180µs | 35.8 KB |
+| 458 | greedy_methods/fractional_knapsack | ✓ | 117µs | 40.2 KB |
+| 459 | greedy_methods/fractional_knapsack_2 | ✓ | 118µs | 38.8 KB |
+| 460 | greedy_methods/gas_station | ✓ | 151µs | 39.0 KB |
+| 461 | greedy_methods/minimum_coin_change | ✓ |  |  |
+| 462 | greedy_methods/minimum_waiting_time | error |  |  |
+| 463 | greedy_methods/optimal_merge_pattern | ✓ |  |  |
+| 464 | greedy_methods/smallest_range | ✓ |  |  |
+| 465 | hashes/adler32 | ✓ |  |  |
+| 466 | hashes/chaos_machine | error |  |  |
+| 467 | hashes/djb2 | ✓ |  |  |
+| 468 | hashes/elf | ✓ |  |  |
+| 469 | hashes/enigma_machine | ✓ |  |  |
+| 470 | hashes/fletcher16 | ✓ |  |  |
+| 471 | hashes/hamming_code | ✓ |  |  |
+| 472 | hashes/luhn | ✓ |  |  |
+| 473 | hashes/md5 | ✓ |  |  |
+| 474 | hashes/sdbm | ✓ |  |  |
+| 475 | hashes/sha1 | error |  |  |
+| 476 | hashes/sha256 | ✓ |  |  |
+| 477 | knapsack/greedy_knapsack | ✓ |  |  |
+| 478 | knapsack/knapsack | ✓ |  |  |
+| 479 | knapsack/recursive_approach_knapsack | ✓ |  |  |
+| 480 | knapsack/tests/test_greedy_knapsack | ✓ |  |  |
 | 481 | knapsack/tests/test_knapsack |   |  |  |
 | 482 | linear_algebra/gaussian_elimination |   |  |  |
 | 483 | linear_algebra/jacobi_iteration_method |   |  |  |

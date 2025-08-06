@@ -1,0 +1,10 @@
+Deprecated: Implicit conversion from float 26.870057685088806 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/graphs/multi_heuristic_astar.php on line 123
+
+Deprecated: Implicit conversion from float 26.870057685088806 to int loses precision in /workspace/mochi/tests/algorithms/x/PHP/graphs/multi_heuristic_astar.php on line 123
+
+Warning: Undefined array key "pri" in /workspace/mochi/tests/algorithms/x/PHP/graphs/multi_heuristic_astar.php on line 133
+
+Warning: Undefined array key "pri" in /workspace/mochi/tests/algorithms/x/PHP/graphs/multi_heuristic_astar.php on line 133
+
+Warning: Undefined array key "pri" in /workspace/mochi/tests/algorithms/x/PHP/graphs/multi_heuristic_astar.php on line 133
+No path found to goal

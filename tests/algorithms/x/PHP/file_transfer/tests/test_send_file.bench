@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function socket_bind() in /workspace/mochi/tests/algorithms/x/PHP/file_transfer/tests/test_send_file.php on line 41

@@ -1,0 +1,3 @@
+run: exit status 255
+
+Fatal error: Cannot redeclare function reset() in /workspace/mochi/tests/algorithms/x/PHP/hashes/chaos_machine.php on line 25

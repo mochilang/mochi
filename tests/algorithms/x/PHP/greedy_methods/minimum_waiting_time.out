@@ -1,0 +1,4 @@
+Fatal error: Uncaught Error: minimum_waiting_time(): Argument #1 ($queries) could not be passed by reference in /workspace/mochi/tests/algorithms/x/PHP/greedy_methods/minimum_waiting_time.php:31
+Stack trace:
+#0 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/greedy_methods/minimum_waiting_time.php on line 31

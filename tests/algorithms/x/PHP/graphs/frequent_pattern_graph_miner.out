@@ -1,0 +1,8 @@
+Warning: Undefined variable $toi in /workspace/mochi/tests/algorithms/x/PHP/graphs/frequent_pattern_graph_miner.php on line 99
+
+Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/algorithms/x/PHP/graphs/frequent_pattern_graph_miner.php:99
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/graphs/frequent_pattern_graph_miner.php(361): get_frequency_table(Array)
+#1 /workspace/mochi/tests/algorithms/x/PHP/graphs/frequent_pattern_graph_miner.php(370): main()
+#2 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/graphs/frequent_pattern_graph_miner.php on line 99

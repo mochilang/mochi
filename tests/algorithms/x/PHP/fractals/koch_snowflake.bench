@@ -1,0 +1,1 @@
+Fatal error: Cannot redeclare function sin() in /workspace/mochi/tests/algorithms/x/PHP/fractals/koch_snowflake.php on line 46

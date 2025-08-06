@@ -1,0 +1,22 @@
+Text input in binary is '010011010110010101110011011100110110000101100111011001010000000000000000'
+
+Warning: Undefined array key 4 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 5 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 6 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+Data converted ----------> 1101100111010110001010111001101011001101100001011001110110010100000000000000
+
+Warning: Undefined array key 4 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 5 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 6 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+Data receive ------------> 010011010110010101110011011100110110000101100111011001010000000000000 -- Data integrity: True
+
+Warning: Undefined array key 4 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 5 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+
+Warning: Undefined array key 6 in /workspace/mochi/tests/algorithms/x/PHP/hashes/hamming_code.php on line 194
+Data receive (error) ----> 010011010110010101110011011100110110000101100111011001010000000000000 -- Data integrity: False
