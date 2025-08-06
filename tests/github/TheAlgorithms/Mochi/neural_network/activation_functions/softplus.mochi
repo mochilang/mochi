@@ -1,0 +1,63 @@
+/*
+Softplus Activation Function
+----------------------------
+The Softplus function is a smooth approximation of the Rectified Linear Unit (ReLU)
+used in neural networks. It is defined as
+
+    f(x) = ln(1 + e^x)
+
+and applied element-wise to a vector. This implementation provides pure Mochi
+approximations for the natural logarithm and exponential functions so it can run
+on runtime/vm without FFI. For each input value x it computes log(1 + exp(x)).
+*/
+
+fun ln(x: float): float {
+  if x <= 0.0 { panic("ln domain error") }
+  let y = (x - 1.0) / (x + 1.0)
+  let y2 = y * y
+  var term = y
+  var sum = 0.0
+  var k = 0
+  while k < 10 {
+    let denom = (2 * k + 1) as float
+    sum = sum + term / denom
+    term = term * y2
+    k = k + 1
+  }
+  return 2.0 * sum
+}
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / (n as float)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun softplus(vector: list<float>): list<float> {
+  var result: list<float> = []
+  var i = 0
+  while i < len(vector) {
+    let x = vector[i]
+    let value = ln(1.0 + exp(x))
+    result = append(result, value)
+    i = i + 1
+  }
+  return result
+}
+
+fun main() {
+  let v1: list<float> = [2.3, 0.6, -2.0, -3.8]
+  let v2: list<float> = [-9.2, -0.3, 0.45, -4.56]
+  let r1 = softplus(v1)
+  let r2 = softplus(v2)
+  print(r1)
+  print(r2)
+}
+
+main()
