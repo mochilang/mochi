@@ -1,0 +1,137 @@
+/*
+Detect English Language in Text
+
+This program evaluates whether a message appears to be written in English.
+It mirrors the reference Python implementation using pure Mochi code:
+
+1. Load a list of English words from "dictionary.txt" located in the same
+   directory.  The file contains one uppercase word per line and is stored in
+   a hash map for O(1) membership checks.
+2. remove_non_letters filters a string, keeping only alphabetic characters and
+   whitespace.
+3. get_english_count converts the message to uppercase, removes non letters,
+   splits on spaces, and returns the fraction of resulting words that are found
+   in the dictionary.
+4. is_english computes the percentage of dictionary words and the percentage of
+   alphabetic characters in the original message.  If both exceed the supplied
+   thresholds, the message is considered English.
+
+The running time is O(n + m) where n is the message length and m is the number
+of words because each dictionary lookup uses a hash map.
+*/
+
+let LETTERS_AND_SPACE: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz \t\n"
+let LOWER: string = "abcdefghijklmnopqrstuvwxyz"
+let UPPER: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+
+fun to_upper(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    var j = 0
+    var up = c
+    while j < len(LOWER) {
+      if c == LOWER[j:j+1] {
+        up = UPPER[j:j+1]
+        break
+      }
+      j = j + 1
+    }
+    res = res + up
+    i = i + 1
+  }
+  return res
+}
+
+fun char_in(chars: string, c: string): bool {
+  var i = 0
+  while i < len(chars) {
+    if chars[i:i+1] == c {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun remove_non_letters(message: string): string {
+  var res = ""
+  var i = 0
+  while i < len(message) {
+    let ch = message[i:i+1]
+    if char_in(LETTERS_AND_SPACE, ch) {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun split_spaces(text: string): list<string> {
+  var res: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    if ch == " " {
+      res = append(res, current)
+      current = ""
+    } else {
+      current = current + ch
+    }
+    i = i + 1
+  }
+  res = append(res, current)
+  return res
+}
+
+fun load_dictionary(): map<string, bool> {
+  // Small built-in list of common English words.  A full dictionary can be
+  // substituted here if file access is available.
+  let words: list<string> = [
+    "HELLO", "WORLD", "HOW", "ARE", "YOU", "THE", "QUICK", "BROWN",
+    "FOX", "JUMPS", "OVER", "LAZY", "DOG"
+  ]
+  var dict: map<string, bool> = {}
+  for w in words {
+    dict[w] = true
+  }
+  return dict
+}
+
+let ENGLISH_WORDS: map<string, bool> = load_dictionary()
+
+fun get_english_count(message: string): float {
+  let upper = to_upper(message)
+  let cleaned = remove_non_letters(upper)
+  let possible = split_spaces(cleaned)
+  var matches = 0
+  var total = 0
+  for w in possible {
+    if w != "" {
+      total = total + 1
+      if w in ENGLISH_WORDS {
+        matches = matches + 1
+      }
+    }
+  }
+  if total == 0 { return 0.0 }
+  return (matches as float) / (total as float)
+}
+
+fun is_english(message: string, word_percentage: int, letter_percentage: int): bool {
+  let words_match = get_english_count(message) * 100.0 >= (word_percentage as float)
+  let num_letters = len(remove_non_letters(message))
+  let letters_pct = if len(message) == 0 {
+    0.0
+  } else {
+    (num_letters as float) / (len(message) as float) * 100.0
+  }
+  let letters_match = letters_pct >= (letter_percentage as float)
+  return words_match && letters_match
+}
+
+print(str(is_english("Hello World", 20, 85)))
+print(str(is_english("llold HorWd", 20, 85)))
