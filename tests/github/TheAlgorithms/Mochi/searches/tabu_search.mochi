@@ -1,0 +1,172 @@
+/*
+Tabu Search for the Travelling Salesman Problem (TSP)
+
+This program implements a basic version of the Tabu Search heuristic for the
+symmetric Travelling Salesman Problem.  The TSP asks for the shortest possible
+route that visits each city exactly once and returns to the origin city.  Tabu
+Search explores the solution space by iteratively moving to the best neighbour
+solution while avoiding recently visited solutions through a "tabu list".
+
+Algorithm outline:
+1. Generate an initial solution using the nearest neighbour heuristic.
+2. At each iteration produce the neighbourhood of the current tour by swapping
+   two cities (1-1 exchange).
+3. Select the best neighbour that is not present in the tabu list.  Update the
+   tabu list with the performed swap, discarding the oldest entry when it
+   exceeds a predefined size.
+4. Track the best solution found during the search.
+
+The example graph used here matches the Python reference implementation from
+TheAlgorithms repository.  Running the program prints the best tour discovered
+and its total distance.
+*/
+
+type Solution {
+  path: list<string>
+  cost: int
+}
+
+type Swap {
+  a: string
+  b: string
+}
+
+fun path_cost(path: list<string>, graph: map<string, map<string, int>>): int {
+  var total = 0
+  var i = 0
+  while i < len(path) - 1 {
+    let u = path[i]
+    let v = path[i + 1]
+    total = total + graph[u][v]
+    i = i + 1
+  }
+  return total
+}
+
+fun generate_first_solution(graph: map<string, map<string, int>>, start: string): Solution {
+  var path: list<string> = []
+  var visiting = start
+  var total = 0
+  while len(path) < len(graph) {
+    path = append(path, visiting)
+    var best_node = ""
+    var best_cost = 1000000
+    for n in graph[visiting] {
+      if !(n in path) && graph[visiting][n] < best_cost {
+        best_cost = graph[visiting][n]
+        best_node = n
+      }
+    }
+    if best_node == "" {
+      break
+    }
+    total = total + best_cost
+    visiting = best_node
+  }
+  path = append(path, start)
+  total = total + graph[visiting][start]
+  return Solution { path: path, cost: total }
+}
+
+fun copy_path(path: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(path) {
+    res = append(res, path[i])
+    i = i + 1
+  }
+  return res
+}
+
+fun find_neighborhood(sol: Solution, graph: map<string, map<string, int>>): list<Solution> {
+  var neighbors: list<Solution> = []
+  var i = 1
+  while i < len(sol.path) - 1 {
+    var j = 1
+    while j < len(sol.path) - 1 {
+      if i != j {
+        var new_path = copy_path(sol.path)
+        let tmp = new_path[i]
+        new_path[i] = new_path[j]
+        new_path[j] = tmp
+        let cost = path_cost(new_path, graph)
+        neighbors = append(neighbors, Solution { path: new_path, cost: cost })
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return neighbors
+}
+
+fun find_swap(a: list<string>, b: list<string>): Swap {
+  var i = 0
+  while i < len(a) {
+    if a[i] != b[i] {
+      return Swap { a: a[i], b: b[i] }
+    }
+    i = i + 1
+  }
+  return Swap { a: "", b: "" }
+}
+
+fun tabu_search(first: Solution, graph: map<string, map<string, int>>, iters: int, size: int): Solution {
+  var solution = first
+  var best = first
+  var tabu: list<Swap> = []
+  var count = 0
+  while count < iters {
+    let neighborhood = find_neighborhood(solution, graph)
+    if len(neighborhood) == 0 {
+      break
+    }
+    var best_neighbor = neighborhood[0]
+    var best_move = find_swap(solution.path, best_neighbor.path)
+    var i = 1
+    while i < len(neighborhood) {
+      let cand = neighborhood[i]
+      let move = find_swap(solution.path, cand.path)
+      var forbidden = false
+      var t = 0
+      while t < len(tabu) {
+        if (tabu[t].a == move.a && tabu[t].b == move.b) || (tabu[t].a == move.b && tabu[t].b == move.a) {
+          forbidden = true
+        }
+        t = t + 1
+      }
+      if forbidden == false && cand.cost < best_neighbor.cost {
+        best_neighbor = cand
+        best_move = move
+      }
+      i = i + 1
+    }
+    solution = best_neighbor
+    tabu = append(tabu, best_move)
+    if len(tabu) > size {
+      var new_tab: list<Swap> = []
+      var j = 1
+      while j < len(tabu) {
+        new_tab = append(new_tab, tabu[j])
+        j = j + 1
+      }
+      tabu = new_tab
+    }
+    if solution.cost < best.cost {
+      best = solution
+    }
+    count = count + 1
+  }
+  return best
+}
+
+let graph: map<string, map<string, int>> = {
+  "a": {"b": 20, "c": 18, "d": 22, "e": 26},
+  "b": {"a": 20, "c": 10, "d": 11, "e": 12},
+  "c": {"a": 18, "b": 10, "d": 23, "e": 24},
+  "d": {"a": 22, "b": 11, "c": 23, "e": 40},
+  "e": {"a": 26, "b": 12, "c": 24, "d": 40}
+}
+let first = generate_first_solution(graph, "a")
+let best = tabu_search(first, graph, 4, 3)
+print(str(best.path))
+print(str(best.cost))
