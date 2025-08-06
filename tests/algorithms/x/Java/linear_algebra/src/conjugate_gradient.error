@@ -1,0 +1,12 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden486_conjugate_gradient3928737231/001/Main.java:119: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(x_1, 0)));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden486_conjugate_gradient3928737231/001/Main.java:120: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(x_1, 1)));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden486_conjugate_gradient3928737231/001/Main.java:121: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(x_1, 2)));
+                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

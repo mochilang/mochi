@@ -1,0 +1,5 @@
+run: exit status 1
+Exception in thread "main" java.lang.RuntimeException: add failed
+	at Main.test_polynomial(Main.java:184)
+	at Main.main(Main.java:208)
+	at Main.main(Main.java:217)

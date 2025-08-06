@@ -1,0 +1,68 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:4: error: <identifier> expected
+        java.util.Map<String,Integer> double;
+                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:4: error: <identifier> expected
+        java.util.Map<String,Integer> double;
+                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:11: error: '.class' expected
+            return String.format("{'single': %s, 'double': %s}", String.valueOf(single), String.valueOf(double));
+                                                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:104: error: <identifier> expected
+        for (String seq : counts.double.keySet()) {
+                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:104: error: class expected
+        for (String seq : counts.double.keySet()) {
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:104: error: ';' expected
+        for (String seq : counts.double.keySet()) {
+                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:105: error: <identifier> expected
+            total2 = total2 + (int)(((int)(counts.double).getOrDefault(seq, 0)));
+                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:105: error: '.class' expected
+            total2 = total2 + (int)(((int)(counts.double).getOrDefault(seq, 0)));
+                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:105: error: ';' expected
+            total2 = total2 + (int)(((int)(counts.double).getOrDefault(seq, 0)));
+                                                                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:115: error: <identifier> expected
+                if (((Boolean)(counts.double.containsKey(seq_1)))) {
+                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:115: error: class expected
+                if (((Boolean)(counts.double.containsKey(seq_1)))) {
+                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:115: error: ';' expected
+                if (((Boolean)(counts.double.containsKey(seq_1)))) {
+                                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:115: error: not a statement
+                if (((Boolean)(counts.double.containsKey(seq_1)))) {
+                                                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:115: error: ';' expected
+                if (((Boolean)(counts.double.containsKey(seq_1)))) {
+                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: <identifier> expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: '.class' expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: ';' expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: not a statement
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: ';' expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: not a statement
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                                    ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: ';' expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden558_entropy3156299448/001/Main.java:116: error: ';' expected
+                    double prob_1 = (((double)(counts.double).getOrDefault(seq_1, 0))) / (((Number)(total2)).doubleValue());
+                                                                                                                          ^
+22 errors

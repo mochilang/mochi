@@ -1,0 +1,20 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden503_run257550031/001/Main.java:156: error: method appendObj in class Main cannot be applied to given types;
+            X = appendObj(X, new double[]{1.0, train_dt[i_8], train_mtch[i_8]});
+                ^
+  required: T[],T
+  found:    Object,double[]
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden503_run257550031/001/Main.java:169: error: method appendObj in class Main cannot be applied to given types;
+            X_1 = appendObj(X_1, new double[]{1.0, train_user[i_9 - 1], train_match[i_9]});
+                  ^
+  required: T[],T
+  found:    Object,double[]
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+2 errors

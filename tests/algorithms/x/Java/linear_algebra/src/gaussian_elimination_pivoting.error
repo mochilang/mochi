@@ -1,0 +1,8 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden487_gaussian_elimination_pivoting4201392799/001/Main.java:39: error: unreachable statement
+            return new double[]{};
+            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden487_gaussian_elimination_pivoting4201392799/001/Main.java:54: error: unreachable statement
+                return new double[]{};
+                ^
+2 errors

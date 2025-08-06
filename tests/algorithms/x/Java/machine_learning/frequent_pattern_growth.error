@@ -1,0 +1,8 @@
+type: error[T005]: parameter `name` is missing a type
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/machine_learning/frequent_pattern_growth.mochi:15:1
+
+ 15 | fun make_node(name, count, parent) {
+    | ^
+
+help:
+  Add a type like `x: int` to this parameter.

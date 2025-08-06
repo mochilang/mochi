@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at java.base/java.lang.Math.floorMod(Math.java:1583)
+	at Main.djb2(Main.java:41)
+	at Main.main(Main.java:47)

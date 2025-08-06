@@ -1,0 +1,6 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden641_qr_decomposition1882411800/001/Main.java:186: error: incompatible types: double[] cannot be converted to Object[]
+                line = line + _p(_geto(mat[i_6], j_5));
+                                          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error
