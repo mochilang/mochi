@@ -1,0 +1,40 @@
+/*
+Simple Binary Search
+--------------------
+This program implements a recursive binary search on a sorted list of
+integers. The function divides the list in half each step, comparing the
+middle element to the target value and recursing into the appropriate
+sub‑range. It returns true when the target exists in the list and false
+otherwise. The algorithm runs in O(log n) time and uses only Mochi
+primitives so it can execute on the runtime/vm without foreign
+interfaces or use of the `any` type.
+*/
+
+fun binary_search_range(a_list: list<int>, item: int, start: int, end: int): bool {
+  if start >= end {
+    return false
+  }
+  let midpoint: int = (start + end) / 2
+  let midval: int = a_list[midpoint]
+  if midval == item {
+    return true
+  }
+  if item < midval {
+    return binary_search_range(a_list, item, start, midpoint)
+  }
+  return binary_search_range(a_list, item, midpoint + 1, end)
+}
+
+fun binary_search(a_list: list<int>, item: int): bool {
+  return binary_search_range(a_list, item, 0, len(a_list))
+}
+
+print(str(binary_search([0, 1, 2, 8, 13, 17, 19, 32, 42], 3)))
+print(str(binary_search([0, 1, 2, 8, 13, 17, 19, 32, 42], 13)))
+print(str(binary_search([4, 4, 5, 6, 7], 4)))
+print(str(binary_search([4, 4, 5, 6, 7], -10)))
+print(str(binary_search([-18, 2], -18)))
+print(str(binary_search([5], 5)))
+print(str(binary_search([], 1)))
+print(str(binary_search([0, 10, 20, 30, 40], 20)))
+print(str(binary_search([0, 10, 20, 30, 40], 25)))
