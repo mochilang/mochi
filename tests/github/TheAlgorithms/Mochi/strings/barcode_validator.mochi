@@ -1,0 +1,90 @@
+/*
+Barcode Validator for EAN-13
+---------------------------
+This program verifies EAN-13 barcodes and computes their check digits.
+The last digit of an EAN-13 code is a check digit derived from the
+preceding twelve digits using alternating weights of 1 and 3 working
+from right to left. To compute it, exclude the existing last digit,
+then multiply each remaining digit by 3 or 1 alternately, sum the
+results and take `(10 - sum % 10) % 10`.
+
+Functions:
+- get_check_digit(barcode: int): computes the proper check digit for a
+  numeric barcode.
+- is_valid(barcode: int): verifies that a barcode has 13 digits and a
+  correct check digit.
+- get_barcode(barcode: string): converts a string to a non-negative
+  integer barcode, rejecting alphabetic characters and negative values.
+
+The implementation avoids the `any` type and FFI so it can run on
+runtime/vm.
+*/
+
+fun has_alpha(s: string): bool {
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if (c >= "a" && c <= "z") || (c >= "A" && c <= "Z") {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun parse_decimal(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    if c < "0" || c > "9" {
+      panic("Non-digit character encountered")
+    }
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun get_barcode(barcode: string): int {
+  if has_alpha(barcode) {
+    panic("Barcode '" + barcode + "' has alphabetic characters.")
+  }
+  if len(barcode) > 0 && barcode[0] == "-" {
+    panic("The entered barcode has a negative value. Try again.")
+  }
+  return parse_decimal(barcode)
+}
+
+fun get_check_digit(barcode: int): int {
+  var num = barcode / 10
+  var s = 0
+  var position = 0
+  while num != 0 {
+    let mult = if position % 2 == 0 { 3 } else { 1 }
+    s = s + mult * (num % 10)
+    num = num / 10
+    position = position + 1
+  }
+  return (10 - (s % 10)) % 10
+}
+
+fun is_valid(barcode: int): bool {
+  return len(str(barcode)) == 13 && get_check_digit(barcode) == barcode % 10
+}
+
+print(str(get_check_digit(8718452538119)))
+print(str(get_check_digit(87184523)))
+print(str(get_check_digit(87193425381086)))
+var res: list<int> = []
+var x = 0
+while x < 100 {
+  res = append(res, get_check_digit(x))
+  x = x + 10
+}
+print(res)
+print(str(is_valid(8718452538119)))
+print(str(is_valid(87184525)))
+print(str(is_valid(87193425381089)))
+print(str(is_valid(0)))
+print(str(get_barcode("8718452538119")))
