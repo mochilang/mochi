@@ -1,0 +1,50 @@
+/*
+Linear Congruential Generator (LCG)
+
+This program implements a simple pseudorandom number generator based on the
+linear congruential method.  A sequence of integers is produced by the
+recurrence
+
+    X_{n+1} = (a * X_n + c) mod m
+
+where:
+  - `a` is the multiplier
+  - `c` is the increment
+  - `m` is the modulus (maximum exclusive value)
+  - `X_0` is the initial seed
+
+Each call to `next_number` updates the internal seed and returns the next
+value in the sequence.  The smallest possible value is 0 and the largest is
+`m - 1`.
+
+Generating each number takes constant time and uses constant additional
+space.
+*/
+
+type LCG {
+  multiplier: int
+  increment: int
+  modulo: int
+  seed: int
+}
+
+fun make_lcg(multiplier: int, increment: int, modulo: int, seed: int): LCG {
+  return LCG {
+    multiplier: multiplier,
+    increment: increment,
+    modulo: modulo,
+    seed: seed
+  }
+}
+
+fun next_number(lcg: LCG): int {
+  lcg.seed = (lcg.multiplier * lcg.seed + lcg.increment) % lcg.modulo
+  return lcg.seed
+}
+
+var lcg = make_lcg(1664525, 1013904223, 4294967296, now())
+var i = 0
+while i < 5 {
+  print(str(next_number(lcg)))
+  i = i + 1
+}
