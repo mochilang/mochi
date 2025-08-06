@@ -847,6 +847,12 @@ func (i *IfExpr) emit(w io.Writer) {
 func (b *BinaryExpr) isBool() bool { return b.Bool }
 
 func (b *BinaryExpr) emit(w io.Writer) {
+	if v, ok := b.Left.(*VarRef); ok && v.Name == "nil" && inferType(b.Right) == "string" {
+		b.Left = &StringLit{Value: ""}
+	}
+	if v, ok := b.Right.(*VarRef); ok && v.Name == "nil" && inferType(b.Left) == "string" {
+		b.Right = &StringLit{Value: ""}
+	}
 	if b.Op == "+" {
 		_, leftList := b.Left.(*ListLit)
 		_, rightList := b.Right.(*ListLit)
@@ -2666,6 +2672,9 @@ func convertBody(env *types.Env, body []*parser.Statement, varTypes map[string]s
 				if err != nil {
 					return nil, err
 				}
+				if v, ok := ex.(*VarRef); ok && v.Name == "nil" {
+					ex = &StringLit{Value: ""}
+				}
 				if rec, ok := ex.(*RecordLit); ok {
 					var args []Expr
 					for _, f := range rec.Fields {
@@ -2863,6 +2872,12 @@ func convertExpr(env *types.Env, e *parser.Expr) (Expr, error) {
 			be = &BinaryExpr{Op: "in", Left: left, Right: right, Bool: true}
 		default:
 			return fmt.Errorf("unsupported op")
+		}
+		if v, ok := be.Left.(*VarRef); ok && v.Name == "nil" && inferType(be.Right) == "string" {
+			be.Left = &StringLit{Value: ""}
+		}
+		if v, ok := be.Right.(*VarRef); ok && v.Name == "nil" && inferType(be.Left) == "string" {
+			be.Right = &StringLit{Value: ""}
 		}
 		exprs = append(exprs, be)
 		return nil
