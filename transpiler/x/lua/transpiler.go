@@ -193,6 +193,20 @@ local function _indexOf(s, ch)
 end
 `
 
+const helperExists = `
+local function _exists(v)
+  if type(v) == 'table' then
+    if v.items ~= nil then return #v.items > 0 end
+    if v[1] ~= nil or #v > 0 then return #v > 0 end
+    return next(v) ~= nil
+  elseif type(v) == 'string' then
+    return #v > 0
+  else
+    return false
+  end
+end
+`
+
 const helperParseIntStr = `
 local function _parseIntStr(str)
   if type(str) == 'table' then
@@ -714,11 +728,11 @@ func (c *CallExpr) emit(w io.Writer) {
 		}
 		io.WriteString(w, ")")
 	case "exists":
-		io.WriteString(w, "(#(")
+		io.WriteString(w, "_exists(")
 		if len(c.Args) > 0 {
 			c.Args[0].emit(w)
 		}
-		io.WriteString(w, ") > 0)")
+		io.WriteString(w, ")")
 	case "contains":
 		if len(c.Args) > 0 && isMapExpr(c.Args[0]) {
 			io.WriteString(w, "(function(m, k)\n  return m[k] ~= nil\nend)(")
@@ -1306,6 +1320,17 @@ func (ix *IndexExpr) emit(w io.Writer) {
 		io.WriteString(w, " + 1)")
 		io.WriteString(w, ")")
 	case "list", "list_elem":
+		// Heuristic: if the index expression is not numeric, assume
+		// this is a map access and emit direct indexing without the
+		// list offset. This handles expressions like map[key] where the
+		// map was misclassified as a list.
+		if !isIntExpr(ix.Index) && !isFloatExpr(ix.Index) {
+			ix.Target.emit(w)
+			io.WriteString(w, "[")
+			ix.Index.emit(w)
+			io.WriteString(w, "]")
+			return
+		}
 		ix.Target.emit(w)
 		io.WriteString(w, "[")
 		ix.Index.emit(w)
@@ -1340,11 +1365,20 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, "]")
 				return
 			}
-			// Fallback: assume numeric indexing uses list semantics
-			ix.Target.emit(w)
-			io.WriteString(w, "[")
-			ix.Index.emit(w)
-			io.WriteString(w, " + 1]")
+			// Fallback: decide based on the index expression. If it
+			// looks numeric, treat as a list; otherwise emit a map
+			// lookup without the +1 offset.
+			if isIntExpr(ix.Index) || isFloatExpr(ix.Index) {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				io.WriteString(w, " + 1]")
+			} else {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				io.WriteString(w, "]")
+			}
 			return
 		}
 		if _, ok := exprType(ix.Target).(types.ListType); ok {
@@ -2603,6 +2637,8 @@ func collectHelpers(p *Program) map[string]bool {
 				used["getoutput"] = true
 			case "indexOf":
 				used["indexOf"] = true
+			case "exists":
+				used["exists"] = true
 			case "split":
 				used["split"] = true
 			case "substring":
@@ -2810,6 +2846,9 @@ func Emit(p *Program) []byte {
 	}
 	if used["environ"] {
 		b.WriteString(helperEnviron)
+	}
+	if used["exists"] {
+		b.WriteString(helperExists)
 	}
 	if used["parseIntStr"] {
 		b.WriteString(helperParseIntStr)

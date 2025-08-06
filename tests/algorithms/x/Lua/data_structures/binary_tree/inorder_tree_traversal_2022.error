@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...a_structures/binary_tree/inorder_tree_traversal_2022.lua:66: attempt to index a nil value (local 'node')
+stack traceback:
+	...a_structures/binary_tree/inorder_tree_traversal_2022.lua:66: in function 'insert'
+	...a_structures/binary_tree/inorder_tree_traversal_2022.lua:129: in function 'make_tree'
+	...a_structures/binary_tree/inorder_tree_traversal_2022.lua:136: in function 'main'
+	...a_structures/binary_tree/inorder_tree_traversal_2022.lua:184: in main chunk
+	[C]: in ?

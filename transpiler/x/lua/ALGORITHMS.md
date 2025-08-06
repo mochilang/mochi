@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Lua code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Lua`.
-Last updated: 2025-08-06 21:35 GMT+7
+Last updated: 2025-08-06 22:04 GMT+7
 
-## Algorithms Golden Test Checklist (119/1077)
+## Algorithms Golden Test Checklist (209/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 216µs | 912 B |
@@ -127,106 +127,106 @@ Last updated: 2025-08-06 21:35 GMT+7
 | 118 | computer_vision/mean_threshold | ✓ | 102µs | 1.3 KB |
 | 119 | computer_vision/mosaic_augmentation | ✓ | 12.064ms | 2.1 KB |
 | 120 | computer_vision/pooling_functions | ✓ | 138µs | 992 B |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
-| 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
-| 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
-| 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
-| 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
-| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
-| 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
-| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
-| 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
-| 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 178µs | 2.2 KB |
+| 122 | conversions/binary_to_decimal | ✓ | 118µs | 968 B |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 101µs | 1.0 KB |
+| 124 | conversions/binary_to_octal | ✓ | 108µs | 808 B |
+| 125 | conversions/convert_number_to_words | ✓ | 154µs | 2.6 KB |
+| 126 | conversions/decimal_to_any | ✓ | 30µs | 960 B |
+| 127 | conversions/decimal_to_binary | ✓ | 82µs | 1.1 KB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 28µs | 352 B |
+| 129 | conversions/decimal_to_octal | ✓ | 87µs | 776 B |
+| 130 | conversions/energy_conversions | ✓ | 62µs | 744 B |
+| 131 | conversions/excel_title_to_column | ✓ | 96µs | 2.9 KB |
+| 132 | conversions/hex_to_bin | ✓ | 132µs | 1.0 KB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 125µs | 1.1 KB |
+| 134 | conversions/ipv4_conversion | ✓ | 268µs | 1.0 KB |
+| 135 | conversions/length_conversion | ✓ | 104µs | 1.1 KB |
+| 136 | conversions/molecular_chemistry | ✓ | 51µs | 904 B |
+| 137 | conversions/octal_to_binary | ✓ | 102µs | 808 B |
+| 138 | conversions/octal_to_decimal | ✓ | 131µs | 1.1 KB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 59µs | 992 B |
+| 140 | conversions/prefix_conversions | ✓ | 159µs | 2.6 KB |
+| 141 | conversions/prefix_conversions_string | ✓ | 84µs | 4.3 KB |
+| 142 | conversions/pressure_conversions | ✓ | 74µs | 1.5 KB |
+| 143 | conversions/rectangular_to_polar | ✓ | 121µs | 1.2 KB |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 107µs | 848 B |
+| 145 | conversions/rgb_hsv_conversion | ✓ | 135µs | 1.2 KB |
+| 146 | conversions/roman_numerals | ✓ | 2µs | 640 B |
+| 147 | conversions/speed_conversions | ✓ | 125µs | 1.3 KB |
+| 148 | conversions/temperature_conversions | ✓ | 71µs | 1.5 KB |
+| 149 | conversions/time_conversions | ✓ | 83µs | 2.2 KB |
+| 150 | conversions/volume_conversions | ✓ | 96µs | 1.6 KB |
+| 151 | conversions/weight_conversion | ✓ | 49µs | 1.4 KB |
+| 152 | data_compression/burrows_wheeler | ✓ | 196µs | 1.2 KB |
+| 153 | data_compression/huffman | ✓ | 316µs | 1.4 KB |
+| 154 | data_compression/lempel_ziv | ✓ | 194µs | 1016 B |
+| 155 | data_compression/lempel_ziv_decompress | ✓ | 102µs | 1.0 KB |
+| 156 | data_compression/lz77 | ✓ | 276µs | 5.9 KB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1µs | 176 B |
+| 158 | data_compression/run_length_encoding | ✓ | 164µs | 947 B |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 99µs | 1.4 KB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 460µs | 960 B |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 140µs | 848 B |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 109µs | 1.3 KB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 182µs | 912 B |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 28µs | 808 B |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 60µs | 808 B |
+| 166 | data_structures/arrays/permutations | ✓ | 406µs | 1.2 KB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 181µs | 1.3 KB |
+| 168 | data_structures/arrays/product_sum | ✓ | 92µs | 1.5 KB |
+| 169 | data_structures/arrays/sparse_table | ✓ | 154µs | 1.9 KB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 995µs | 15.8 KB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 81µs | 2.6 KB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 152µs | 3.0 KB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 158µs | 1.3 KB |
+| 174 | data_structures/binary_tree/binary_search_tree_recursive | error |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 118µs | 1016 B |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 95µs | 1.3 KB |
+| 177 | data_structures/binary_tree/binary_tree_path_sum | ✓ | 175µs | 1.2 KB |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 161µs | 1.6 KB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 142µs | 3.1 KB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 158µs | 2.6 KB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 122µs | 1.8 KB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 136µs | 2.2 KB |
+| 183 | data_structures/binary_tree/inorder_tree_traversal_2022 | error |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 174µs | 2.2 KB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 2µs | 144 B |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 507µs | 8.9 KB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 467µs | 1.0 KB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 398.674ms | 159.8 KB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | error |  |  |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 110µs | 3.8 KB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 268µs | 1.2 KB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 105µs | 2.2 KB |
+| 193 | data_structures/binary_tree/number_of_possible_binary_trees | ✓ | 112µs | 216 B |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 125µs | 1.3 KB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 247µs | 3.9 KB |
+| 196 | data_structures/binary_tree/segment_tree_other | error |  |  |
+| 197 | data_structures/binary_tree/serialize_deserialize_binary_tree | ✓ | 145µs | 1.5 KB |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 131µs | 2.6 KB |
+| 199 | data_structures/binary_tree/treap | error |  |  |
+| 200 | data_structures/binary_tree/wavelet_tree | error |  |  |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | error |  |  |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 193µs | 1.9 KB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 14.079ms | 1.5 KB |
+| 204 | data_structures/hashing/double_hash | ✓ | 96µs | 1.1 KB |
+| 205 | data_structures/hashing/hash_map | ✓ | 126µs | 2.6 KB |
+| 206 | data_structures/hashing/hash_table | ✓ | 79µs | 1.4 KB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 116µs | 1.3 KB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 93µs | 136 B |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 42µs | 1.6 KB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 304µs | 1.2 KB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 123µs | 1.2 KB |
+| 212 | data_structures/heap/heap | ✓ | 112µs | 1.5 KB |
+| 213 | data_structures/heap/heap_generic | error |  |  |
+| 214 | data_structures/heap/max_heap | ✓ | 90µs | 1.2 KB |
+| 215 | data_structures/heap/min_heap | error |  |  |
+| 216 | data_structures/heap/randomized_heap | ✓ | 119µs | 2.8 KB |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 284µs | 2.8 KB |
+| 218 | data_structures/kd_tree/example/example_usage | error |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 110µs | 1.3 KB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 70µs | 1.5 KB |
 | 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
 | 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
 | 223 | data_structures/linked_list/circular_linked_list |   |  |  |

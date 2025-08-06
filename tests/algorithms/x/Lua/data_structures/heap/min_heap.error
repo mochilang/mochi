@@ -1,0 +1,8 @@
+run: exit status 1
+lua: ...tests/algorithms/x/Lua/data_structures/heap/min_heap.lua:130: attempt to add a 'string' with a 'number'
+stack traceback:
+	[C]: in metamethod 'add'
+	...tests/algorithms/x/Lua/data_structures/heap/min_heap.lua:130: in function 'sift_down'
+	...tests/algorithms/x/Lua/data_structures/heap/min_heap.lua:203: in function 'new_min_heap'
+	...tests/algorithms/x/Lua/data_structures/heap/min_heap.lua:341: in main chunk
+	[C]: in ?

@@ -1,0 +1,17 @@
+run: exit status 1
+lua: .../x/Lua/data_structures/kd_tree/example/example_usage.lua:129: attempt to index a number value (field '?')
+stack traceback:
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:129: in function 'shift_nodes'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:229: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:210: in function 'build_kdtree'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:372: in function 'main'
+	.../x/Lua/data_structures/kd_tree/example/example_usage.lua:568: in main chunk
+	[C]: in ?

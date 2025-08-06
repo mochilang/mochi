@@ -1,0 +1,2 @@
+Binary tree: [2 3] [4 5] [6 7]
+Binary tree mirror: {'3': [6 7], '2': [4 5]}
