@@ -1,0 +1,39 @@
+/*
+Double linear search using recursion.
+
+Given a list of integers and a target key, the algorithm checks
+both ends of the list simultaneously. If either end matches the key,
+its index is returned. Otherwise the search continues recursively
+with the next inner pair of elements. If the indices cross, the key is
+absent and -1 is returned.
+
+Time complexity: O(n) because each recursive call examines two
+elements. Space complexity: O(n) due to the recursion depth in the
+worst case. Implemented in pure Mochi for compatibility with runtime/vm.
+*/
+
+fun search(list_data: list<int>, key: int, left: int, right: int): int {
+  var r = right
+  if r == 0 {
+    r = len(list_data) - 1
+  }
+  if left > r {
+    return -1
+  } else if list_data[left] == key {
+    return left
+  } else if list_data[r] == key {
+    return r
+  } else {
+    return search(list_data, key, left + 1, r - 1)
+  }
+}
+
+fun main(): void {
+  print(search([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5, 0, 0))
+  print(search([1, 2, 4, 5, 3], 4, 0, 0))
+  print(search([1, 2, 4, 5, 3], 6, 0, 0))
+  print(search([5], 5, 0, 0))
+  print(search([], 1, 0, 0))
+}
+
+main()
