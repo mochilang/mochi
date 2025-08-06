@@ -1,0 +1,46 @@
+/*
+Compute one missing quantity among shear stress, tangential force,
+and cross-sectional area using the relation:
+
+  stress = tangential_force / area
+
+Exactly two of the parameters must be provided (non-zero) and the
+remaining one set to 0. The algorithm validates the inputs and
+returns a Result struct indicating which quantity was computed and
+its value. Runtime is O(1) with basic arithmetic.
+*/
+
+type Result { name: string, value: float }
+
+fun shear_stress(stress: float, tangential_force: float, area: float): Result {
+  var zeros = 0
+  if stress == 0.0 { zeros = zeros + 1 }
+  if tangential_force == 0.0 { zeros = zeros + 1 }
+  if area == 0.0 { zeros = zeros + 1 }
+  if zeros != 1 {
+    panic("You cannot supply more or less than 2 values")
+  } else if stress < 0.0 {
+    panic("Stress cannot be negative")
+  } else if tangential_force < 0.0 {
+    panic("Tangential Force cannot be negative")
+  } else if area < 0.0 {
+    panic("Area cannot be negative")
+  } else if stress == 0.0 {
+    return Result{ name: "stress", value: tangential_force / area }
+  } else if tangential_force == 0.0 {
+    return Result{ name: "tangential_force", value: stress * area }
+  } else {
+    return Result{ name: "area", value: tangential_force / stress }
+  }
+}
+
+fun str_result(r: Result): string {
+  return "Result(name='" + r.name + "', value=" + str(r.value) + ")"
+}
+
+let r1 = shear_stress(25.0, 100.0, 0.0)
+print(str_result(r1))
+let r2 = shear_stress(0.0, 1600.0, 200.0)
+print(str_result(r2))
+let r3 = shear_stress(1000.0, 0.0, 1200.0)
+print(str_result(r3))
