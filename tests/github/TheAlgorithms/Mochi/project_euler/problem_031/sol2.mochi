@@ -1,0 +1,54 @@
+/*
+Coin Sum Combinations (Project Euler Problem 31)
+-----------------------------------------------
+Given the coin denominations used in the United Kingdom: 1, 2, 5, 10, 20,
+50, 100 and 200 pence, count how many distinct ways there are to make a
+target amount of pence. The order of coins does not matter.
+
+We use a dynamic programming approach. Create a table `ways` where
+`ways[i]` stores the number of ways to form `i` pence. Initialize
+`ways[0] = 1` since there is exactly one way to make zero pence: choose no
+coins. For each coin value `c`, update the table for all amounts `i >= c`
+by adding the number of ways to make `i - c` pence. After processing all
+coins, `ways[target]` holds the total number of combinations.
+
+Time Complexity: O(n * m) where `n` is the target amount and `m` is the
+number of coin denominations.
+Space Complexity: O(n)
+*/
+
+fun solution(pence: int): int {
+  let coins: list<int> = [1, 2, 5, 10, 20, 50, 100, 200]
+  var ways: list<int> = []
+  var i = 0
+  while i <= pence {
+    ways = append(ways, 0)
+    i = i + 1
+  }
+  ways[0] = 1
+  var idx = 0
+  while idx < len(coins) {
+    let coin = coins[idx]
+    var amount = coin
+    while amount <= pence {
+      ways[amount] = ways[amount] + ways[amount - coin]
+      amount = amount + 1
+    }
+    idx = idx + 1
+  }
+  return ways[pence]
+}
+
+fun test_solution() {
+  if solution(500) != 6295434 { panic("solution 500 failed") }
+  if solution(200) != 73682 { panic("solution 200 failed") }
+  if solution(50) != 451 { panic("solution 50 failed") }
+  if solution(10) != 11 { panic("solution 10 failed") }
+}
+
+fun main() {
+  test_solution()
+  print(solution(200))
+}
+
+main()
