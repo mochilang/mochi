@@ -1,0 +1,66 @@
+/*
+Merge Sort Algorithm
+
+This implementation sorts a list of integers using the classic merge sort
+technique. Merge sort is a stable, divide-and-conquer algorithm that works as
+follows:
+
+1. If the list has zero or one element, it is already sorted.
+2. Split the list into two halves and recursively sort each half.
+3. Merge the two sorted halves by repeatedly selecting the smaller front element
+   from either half and appending it to the result.
+
+The merge step runs in O(n) time and requires auxiliary space proportional to
+the number of elements being merged. The overall algorithm performs O(n log n)
+comparisons for a list of n elements.
+*/
+
+fun subarray(xs: list<int>, start: int, end: int): list<int> {
+  var result: list<int> = []
+  var i = start
+  while i < end {
+    result = append(result, xs[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun merge(left: list<int>, right: list<int>): list<int> {
+  var result: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i] <= right[j] {
+      result = append(result, left[i])
+      i = i + 1
+    } else {
+      result = append(result, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    result = append(result, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    result = append(result, right[j])
+    j = j + 1
+  }
+  return result
+}
+
+fun merge_sort(collection: list<int>): list<int> {
+  if len(collection) <= 1 {
+    return collection
+  }
+  let mid_index = len(collection) / 2
+  let left = subarray(collection, 0, mid_index)
+  let right = subarray(collection, mid_index, len(collection))
+  let sorted_left = merge_sort(left)
+  let sorted_right = merge_sort(right)
+  return merge(sorted_left, sorted_right)
+}
+
+print(str(merge_sort([0, 5, 3, 2, 2])))
+print(str(merge_sort([])))
+print(str(merge_sort([-2, -5, -45])))
