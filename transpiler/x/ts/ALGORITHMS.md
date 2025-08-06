@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated TypeScript code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/TypeScript`.
-Last updated: 2025-08-06 10:47 UTC
+Last updated: 2025-08-06 12:20 UTC
 
-## Algorithms Golden Test Checklist (40/1077)
+## Algorithms Golden Test Checklist (60/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 645µs | 22.6 KB |
@@ -47,26 +47,26 @@ Last updated: 2025-08-06 10:47 UTC
 | 38 | bit_manipulation/is_power_of_two | ✓ | 11µs | 3.3 KB |
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 3.092ms | 290.3 KB |
 | 40 | bit_manipulation/missing_number | ✓ | 830µs | 15.7 KB |
-| 41 | bit_manipulation/numbers_different_signs |   |  |  |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
+| 41 | bit_manipulation/numbers_different_signs | ✓ | 583µs | 30.3 KB |
+| 42 | bit_manipulation/power_of_4 | ✓ | 596µs | 25.1 KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 1.548ms | 45.7 KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 707µs | 26.3 KB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 4.229ms | 374.1 KB |
+| 46 | blockchain/diophantine_equation | ✓ | 926µs | 39.4 KB |
+| 47 | boolean_algebra/and_gate | ✓ | 770µs | 28.1 KB |
+| 48 | boolean_algebra/imply_gate | ✓ | 610µs | 22.0 KB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 651µs | 24.3 KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 655µs | 22.1 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 535µs | 22.0 KB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 569µs | 22.0 KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 1.011ms | 30.5 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 665µs | 16.8 KB |
+| 55 | boolean_algebra/or_gate | ✓ | 615µs | 22.3 KB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 2.224ms | 38.6 KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 683µs | 22.0 KB |
+| 58 | boolean_algebra/xor_gate | ✓ | 817µs | 22.0 KB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 1.558ms | 46.9 KB |
+| 60 | cellular_automata/game_of_life | ✓ | 2.956ms | 119.8 KB |
 | 61 | cellular_automata/langtons_ant |   |  |  |
 | 62 | cellular_automata/nagel_schrekenberg |   |  |  |
 | 63 | cellular_automata/one_dimensional |   |  |  |
