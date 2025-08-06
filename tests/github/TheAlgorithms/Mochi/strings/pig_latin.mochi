@@ -1,0 +1,62 @@
+/*
+Pig Latin word transformation
+
+This program converts an English word to its Pig Latin form.  If the word
+starts with a vowel (a, e, i, o, u) we simply append "way" to the end of the
+word.  Otherwise the initial consonant cluster (all letters up to the first
+vowel) is moved to the end followed by "ay".
+
+The algorithm steps are:
+1. Trim leading and trailing whitespace.  If the result is empty return an
+   empty string.
+2. Convert the word to lowercase to make vowel checks simpler.
+3. If the first character is a vowel return word + "way".
+4. Otherwise scan for the first vowel position i and build the result as
+   word[i:] + word[:i] + "ay".
+
+Time complexity is O(n) where n is the length of the word because at most
+one pass over the characters is required.  Space complexity is O(1) beyond
+the input string.
+*/
+
+let VOWELS = "aeiou"
+
+fun strip(s: string): string {
+  var start = 0
+  var end = len(s)
+  while start < end && substring(s, start, start + 1) == " " {
+    start = start + 1
+  }
+  while end > start && substring(s, end - 1, end) == " " {
+    end = end - 1
+  }
+  return substring(s, start, end)
+}
+
+fun is_vowel(c: string): bool {
+  var i = 0
+  while i < len(VOWELS) {
+    if c == substring(VOWELS, i, i + 1) { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun pig_latin(word: string): string {
+  let trimmed = strip(word)
+  if len(trimmed) == 0 { return "" }
+  let w = lower(trimmed)
+  let first = substring(w, 0, 1)
+  if is_vowel(first) { return w + "way" }
+  var i = 0
+  while i < len(w) {
+    let ch = substring(w, i, i + 1)
+    if is_vowel(ch) { break }
+    i = i + 1
+  }
+  return substring(w, i, len(w)) + substring(w, 0, i) + "ay"
+}
+
+print("pig_latin('friends') = " + pig_latin("friends"))
+print("pig_latin('smile') = " + pig_latin("smile"))
+print("pig_latin('eat') = " + pig_latin("eat"))
