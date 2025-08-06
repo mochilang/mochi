@@ -1,0 +1,47 @@
+/*
+Project Euler Problem 73: Counting fractions in a range
+
+For denominators up to a given limit max_d, count the number of reduced proper
+fractions n/d such that 1/3 < n/d < 1/2. A fraction is reduced when gcd(n, d) = 1.
+
+Algorithm:
+- Iterate over each denominator d from 0 to max_d.
+- For each d, numerators n start at floor(d/3) + 1 and go up to floor((d - 1)/2).
+- Increment the count whenever gcd(n, d) is 1.
+This is a straightforward brute force search using the Euclidean algorithm for
+GCD. Time complexity is roughly O(max_d^2).
+*/
+
+fun gcd(a: int, b: int): int {
+  var x = a
+  var y = b
+  while y != 0 {
+    let temp = x % y
+    x = y
+    y = temp
+  }
+  return x
+}
+
+fun solution(max_d: int): int {
+  var fractions_number = 0
+  var d = 0
+  while d <= max_d {
+    var n = d / 3 + 1
+    let half = (d + 1) / 2
+    while n < half {
+      if gcd(n, d) == 1 {
+        fractions_number = fractions_number + 1
+      }
+      n = n + 1
+    }
+    d = d + 1
+  }
+  return fractions_number
+}
+
+fun main(): void {
+  print(solution(12000))
+}
+
+main()
