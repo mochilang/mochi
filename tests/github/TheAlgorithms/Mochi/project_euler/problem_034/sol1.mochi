@@ -1,0 +1,38 @@
+/*
+Project Euler Problem 34: Digit Factorials
+-----------------------------------------
+Find the sum of all numbers that are equal to the sum of the factorial of their digits.
+The algorithm precomputes factorials for digits 0-9 and checks each number up to
+7 * 9! + 1, since 9! * 7 is the maximum possible sum for a 7-digit number.
+For every integer i in this range, the factorials of its digits are summed via
+modulo and division. If the sum equals i, it is added to the total.
+This brute-force search runs in O(n * d) time where n is the search range and d
+is the number of digits per candidate.
+*/
+
+let DIGIT_FACTORIALS: list<int> = [1,1,2,6,24,120,720,5040,40320,362880]
+
+fun sum_of_digit_factorial(n: int): int {
+  if n == 0 { return DIGIT_FACTORIALS[0] }
+  var total = 0
+  var num = n
+  while num > 0 {
+    let digit = num % 10
+    total = total + DIGIT_FACTORIALS[digit]
+    num = num / 10
+  }
+  return total
+}
+
+fun solution(): int {
+  let limit = 7 * DIGIT_FACTORIALS[9] + 1
+  var total = 0
+  var i = 3
+  while i < limit {
+    if sum_of_digit_factorial(i) == i { total = total + i }
+    i = i + 1
+  }
+  return total
+}
+
+print(str(solution()))
