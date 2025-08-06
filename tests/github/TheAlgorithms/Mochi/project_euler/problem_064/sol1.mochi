@@ -1,0 +1,63 @@
+/*
+Project Euler Problem 64: Odd period square roots
+
+All square roots of non-square integers have periodic continued fraction expansions.
+For each integer n up to a limit, we find the period of the continued fraction of
+√n. Using the recurrence with variables m, d and a0, we iterate until the sequence
+repeats. Counting the numbers with an odd period yields the answer.
+
+Algorithm:
+- intSqrt computes floor(sqrt(n)) using integer arithmetic (Newton's method).
+- continuousFractionPeriod applies the standard recurrence to count the period.
+- solution iterates 2..n, skips perfect squares and counts odd periods.
+*/
+
+fun intSqrt(n: int): int {
+    if n == 0 {
+        return 0
+    }
+    var x: int = n
+    var y: int = (x + 1) / 2
+    while y < x {
+        x = y
+        y = (x + n / x) / 2
+    }
+    return x
+}
+
+fun continuousFractionPeriod(n: int): int {
+    var m: int = 0
+    var d: int = 1
+    let a0: int = intSqrt(n)
+    var a: int = a0
+    var period: int = 0
+    while a != 2 * a0 {
+        m = d * a - m
+        d = (n - m * m) / d
+        a = (a0 + m) / d
+        period = period + 1
+    }
+    return period
+}
+
+fun solution(n: int): int {
+    var count: int = 0
+    for i in 2 .. (n + 1) {
+        let r: int = intSqrt(i)
+        if r * r != i {
+            let p: int = continuousFractionPeriod(i)
+            if p % 2 == 1 {
+                count = count + 1
+            }
+        }
+    }
+    return count
+}
+
+fun main() {
+    let nStr: string = input()
+    let n: int = int(nStr)
+    print(solution(n))
+}
+
+main()
