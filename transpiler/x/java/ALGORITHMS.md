@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Java code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Java`.
-Last updated: 2025-08-06 20:58 GMT+7
+Last updated: 2025-08-06 21:32 GMT+7
 
-## Algorithms Golden Test Checklist (70/1077)
+## Algorithms Golden Test Checklist (110/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 40.0ms | 46.14KB |
@@ -77,46 +77,46 @@ Last updated: 2025-08-06 20:58 GMT+7
 | 68 | ciphers/autokey | ✓ | 58.0ms | 34.12KB |
 | 69 | ciphers/baconian_cipher | ✓ | 33.0ms | 61.77KB |
 | 70 | ciphers/base16 | ✓ | 48.0ms | 102.43KB |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
-| 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
+| 71 | ciphers/base32 | ✓ | 30.0ms | 34.63KB |
+| 72 | ciphers/base64_cipher | ✓ | 35.0ms | 56.31KB |
+| 73 | ciphers/base85 | ✓ | 33.0ms | 40.15KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 30.0ms | 39.79KB |
+| 75 | ciphers/bifid | ✓ | 34.0ms | 53.52KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 49.0ms | 78.66KB |
+| 77 | ciphers/caesar_cipher | ✓ | 54.0ms | 51.50KB |
+| 78 | ciphers/cryptomath_module | ✓ | 17.0ms | 768B |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 70.0ms | 101.11KB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 20.0ms | 768B |
+| 81 | ciphers/diffie | ✓ | 32.0ms | 54.45KB |
+| 82 | ciphers/diffie_hellman | ✓ | 26.0ms | 32.98KB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 53.0ms | 100.16KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 44.0ms | 58.11KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 41.0ms | 64.34KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 32.0ms | 33.73KB |
+| 87 | ciphers/hill_cipher | ✓ | 39.0ms | 53.93KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 56.0ms | 106.26KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 42.0ms | 88.39KB |
+| 90 | ciphers/morse_code | ✓ | 33.0ms | 58.66KB |
+| 91 | ciphers/onepad_cipher | ✓ | 35.0ms | 52.12KB |
+| 92 | ciphers/permutation_cipher | ✓ | 37.0ms | 56.85KB |
+| 93 | ciphers/playfair_cipher | ✓ | 34.0ms | 57.68KB |
+| 94 | ciphers/polybius | ✓ | 41.0ms | 90.95KB |
+| 95 | ciphers/porta_cipher | ✓ | 28.0ms | 34.21KB |
+| 96 | ciphers/rabin_miller | ✓ | 43.0ms | 58.93KB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 39.0ms | 55.19KB |
+| 98 | ciphers/rot13 | ✓ | 31.0ms | 33.52KB |
+| 99 | ciphers/rsa_cipher | ✓ | 34.0ms | 52.21KB |
+| 100 | ciphers/rsa_factorization | ✓ | 14.0ms | 600B |
+| 101 | ciphers/rsa_key_generator | ✓ | 35.0ms | 78.77KB |
+| 102 | ciphers/running_key_cipher | ✓ | 24.0ms | 33.59KB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 34.0ms | 61.03KB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 35.0ms | 53.59KB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 23.0ms | 33.48KB |
+| 106 | ciphers/transposition_cipher | ✓ | 28.0ms | 37.70KB |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 35.0ms | 51.07KB |
+| 108 | ciphers/trifid_cipher | ✓ | 54.0ms | 105.21KB |
+| 109 | ciphers/vernam_cipher | ✓ | 26.0ms | 38.88KB |
+| 110 | ciphers/vigenere_cipher | ✓ | 26.0ms | 34.10KB |
 | 111 | ciphers/xor_cipher |   |  |  |
 | 112 | computer_vision/cnn_classification |   |  |  |
 | 113 | computer_vision/flip_augmentation |   |  |  |
