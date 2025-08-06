@@ -1,0 +1,149 @@
+/*
+Merge-Insertion Sort (Ford-Johnson Algorithm)
+
+Given a list of integers, the algorithm first groups numbers into ordered pairs.
+It recursively sorts the pairs by their first elements using a merge sort on
+these pairs. The first elements form an initial sorted sequence and the
+remaining elements are inserted using binary search starting from positions
+that avoid redundant comparisons. An optional last odd item is also inserted.
+The algorithm runs in O(n log n) time and uses O(n) additional space.
+*/
+
+fun binary_search_insertion_from(sorted_list: list<int>, item: int, start: int): list<int> {
+  var left = start
+  var right = len(sorted_list) - 1
+  while left <= right {
+    let middle = (left + right) / 2
+    if left == right {
+      if sorted_list[middle] < item {
+        left = middle + 1
+      }
+      break
+    } else if sorted_list[middle] < item {
+      left = middle + 1
+    } else {
+      right = middle - 1
+    }
+  }
+  var result: list<int> = []
+  var i = 0
+  while i < left {
+    result = append(result, sorted_list[i])
+    i = i + 1
+  }
+  result = append(result, item)
+  while i < len(sorted_list) {
+    result = append(result, sorted_list[i])
+    i = i + 1
+  }
+  return result
+}
+
+fun binary_search_insertion(sorted_list: list<int>, item: int): list<int> {
+  return binary_search_insertion_from(sorted_list, item, 0)
+}
+
+fun merge(left: list<list<int>>, right: list<list<int>>): list<list<int>> {
+  var result: list<list<int>> = []
+  var i = 0
+  var j = 0
+  while i < len(left) && j < len(right) {
+    if left[i][0] < right[j][0] {
+      result = append(result, left[i])
+      i = i + 1
+    } else {
+      result = append(result, right[j])
+      j = j + 1
+    }
+  }
+  while i < len(left) {
+    result = append(result, left[i])
+    i = i + 1
+  }
+  while j < len(right) {
+    result = append(result, right[j])
+    j = j + 1
+  }
+  return result
+}
+
+fun sortlist_2d(list_2d: list<list<int>>): list<list<int>> {
+  let length = len(list_2d)
+  if length <= 1 {
+    return list_2d
+  }
+  let middle = length / 2
+  var left: list<list<int>> = []
+  var i = 0
+  while i < middle {
+    left = append(left, list_2d[i])
+    i = i + 1
+  }
+  var right: list<list<int>> = []
+  var j = middle
+  while j < length {
+    right = append(right, list_2d[j])
+    j = j + 1
+  }
+  return merge(sortlist_2d(left), sortlist_2d(right))
+}
+
+fun merge_insertion_sort(collection: list<int>): list<int> {
+  if len(collection) <= 1 {
+    return collection
+  }
+  var two_paired_list: list<list<int>> = []
+  var has_last_odd_item = false
+  var i = 0
+  while i < len(collection) {
+    if i == len(collection) - 1 {
+      has_last_odd_item = true
+    } else {
+      let a = collection[i]
+      let b = collection[i + 1]
+      if a < b {
+        two_paired_list = append(two_paired_list, [a, b])
+      } else {
+        two_paired_list = append(two_paired_list, [b, a])
+      }
+    }
+    i = i + 2
+  }
+  var sorted_list_2d = sortlist_2d(two_paired_list)
+  var result: list<int> = []
+  i = 0
+  while i < len(sorted_list_2d) {
+    result = append(result, sorted_list_2d[i][0])
+    i = i + 1
+  }
+  result = append(result, sorted_list_2d[len(sorted_list_2d) - 1][1])
+  if has_last_odd_item {
+    result = binary_search_insertion(result, collection[len(collection) - 1])
+  }
+  var inserted_before = false
+  var idx = 0
+  while idx < len(sorted_list_2d) - 1 {
+    if has_last_odd_item && result[idx] == collection[len(collection) - 1] {
+      inserted_before = true
+    }
+    let pivot = sorted_list_2d[idx][1]
+    if inserted_before {
+      result = binary_search_insertion_from(result, pivot, idx + 2)
+    } else {
+      result = binary_search_insertion_from(result, pivot, idx + 1)
+    }
+    idx = idx + 1
+  }
+  return result
+}
+
+fun main() {
+  let example1: list<int> = [0, 5, 3, 2, 2]
+  let example2: list<int> = [99]
+  let example3: list<int> = [-2, -5, -45]
+  print(str(merge_insertion_sort(example1)))
+  print(str(merge_insertion_sort(example2)))
+  print(str(merge_insertion_sort(example3)))
+}
+
+main()
