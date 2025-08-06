@@ -1,0 +1,112 @@
+/*
+Bubble Sort
+-----------
+Sort a list by repeatedly stepping through the list and swapping adjacent
+items when they are out of order.  This file provides both iterative and
+recursive versions of bubble sort.
+
+The iterative algorithm performs passes over the list, bubbling the largest
+unsorted element to the end of the list on each pass.  It stops early if a
+pass makes no swaps.  The worst‑case time complexity is O(n^2) and it uses
+O(1) extra space.
+
+The recursive algorithm performs a single pass of adjacent swaps then
+recursively sorts again if any swaps occurred.  It has the same O(n^2)
+time complexity and uses O(n) space for the call stack.
+
+Both functions mutate the provided list and return it sorted in ascending
+order.  The implementation is pure Mochi without foreign interfaces or the
+"any" type so it can execute on the runtime/vm.
+*/
+
+fun bubble_sort_iterative(collection: list<int>): list<int> {
+  var n = len(collection)
+  while n > 0 {
+    var swapped = false
+    var j = 0
+    while j < n - 1 {
+      if collection[j] > collection[j + 1] {
+        let temp = collection[j]
+        collection[j] = collection[j + 1]
+        collection[j + 1] = temp
+        swapped = true
+      }
+      j = j + 1
+    }
+    if !swapped {
+      break
+    }
+    n = n - 1
+  }
+  return collection
+}
+
+fun bubble_sort_recursive(collection: list<int>): list<int> {
+  var n = len(collection)
+  var swapped = false
+  var i = 0
+  while i < n - 1 {
+    if collection[i] > collection[i + 1] {
+      let temp = collection[i]
+      collection[i] = collection[i + 1]
+      collection[i + 1] = temp
+      swapped = true
+    }
+    i = i + 1
+  }
+  if swapped {
+    return bubble_sort_recursive(collection)
+  }
+  return collection
+}
+
+fun copy_list(xs: list<int>): list<int> {
+  var out: list<int> = []
+  var i = 0
+  while i < len(xs) {
+    out = append(out, xs[i])
+    i = i + 1
+  }
+  return out
+}
+
+fun list_eq(a: list<int>, b: list<int>): bool {
+  if len(a) != len(b) {
+    return false
+  }
+  var k = 0
+  while k < len(a) {
+    if a[k] != b[k] {
+      return false
+    }
+    k = k + 1
+  }
+  return true
+}
+
+fun test_bubble_sort() {
+  let example: list<int> = [0, 5, 2, 3, 2]
+  let expected: list<int> = [0, 2, 2, 3, 5]
+  if !list_eq(bubble_sort_iterative(copy_list(example)), expected) {
+    panic("iterative failed")
+  }
+  if !list_eq(bubble_sort_recursive(copy_list(example)), expected) {
+    panic("recursive failed")
+  }
+  let empty: list<int> = []
+  if len(bubble_sort_iterative(copy_list(empty))) != 0 {
+    panic("empty iterative failed")
+  }
+  if len(bubble_sort_recursive(copy_list(empty))) != 0 {
+    panic("empty recursive failed")
+  }
+}
+
+fun main() {
+  test_bubble_sort()
+  let arr: list<int> = [5, 1, 4, 2, 8]
+  print(str(bubble_sort_iterative(copy_list(arr))))
+  print(str(bubble_sort_recursive(copy_list(arr))))
+}
+
+main()
