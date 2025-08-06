@@ -28,6 +28,12 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static string _fmt(object v) {
         if (v is Array a) {
             var parts = new List<string>();
@@ -58,33 +64,59 @@ class Program {
         }
         return _fmt(v);
     }
-    public static long[][] create_all_state(long increment_0, long total_1, long level_2, long[] current_3, long[][] result_4) {
-        if ((level_2 == 0)) {
-            return (Enumerable.ToArray(Enumerable.Append(result_4, current_3)));
+    static object[] sequence_17 = new object[]{3, 1, 2, 4};
+    public static bool[] repeat_bool(long times_0) {
+        bool[] res_1 = new bool[]{};
+        long i_2 = 0;
+        while ((i_2 < times_0)) {
+            res_1 = (Enumerable.ToArray(Enumerable.Append(res_1, false)));
+            i_2 = (i_2 + 1);
         };
-        long i_5 = increment_0;
-        while ((i_5 <= ((total_1 - level_2) + 1))) {
-            long[] next_current_6 = (Enumerable.ToArray(Enumerable.Append(current_3, i_5)));
-            result_4 = Program.create_all_state((i_5 + 1), total_1, (level_2 - 1), next_current_6, result_4);
-            i_5 = (i_5 + 1);
-        };
-        return result_4;
+        return res_1;
     }
 
-    public static long[][] generate_all_combinations(long n_7, long k_8) {
-        if (((k_8 < 0) || (n_7 < 0))) {
-            return new long[][]{};
+    public static bool[] set_bool(bool[] xs_3, long idx_4, bool value_5) {
+        bool[] res_6 = new bool[]{};
+        long i_7 = 0;
+        while ((i_7 < xs_3.Length)) {
+            if ((i_7 == idx_4)) {
+                res_6 = (Enumerable.ToArray(Enumerable.Append(res_6, value_5)));
+            } else {
+                res_6 = (Enumerable.ToArray(Enumerable.Append(res_6, xs_3[(int)(i_7)])));
+            }
+            i_7 = (i_7 + 1);
         };
-        long[][] result_9 = new long[][]{};
-        return Program.create_all_state(1, n_7, k_8, new long[]{}, result_9);
+        return res_6;
+    }
+
+    public static void create_state_space_tree(object[] sequence_8, object[] current_9, long index_10, bool[] used_11) {
+        if ((index_10 == sequence_8.Length)) {
+            Console.WriteLine(Program._fmtTop(_fmt(current_9)));
+            return;
+        };
+        long i_12 = 0;
+        while ((i_12 < sequence_8.Length)) {
+            if ((!used_11[(int)(i_12)])) {
+                object[] next_current_13 = (Enumerable.ToArray(Enumerable.Append(Enumerable.ToArray(current_9.Cast<object>()), (object)((dynamic)sequence_8)[i_12])));
+                bool[] next_used_14 = Program.set_bool(used_11, i_12, true);
+                Program.create_state_space_tree(Enumerable.ToArray(sequence_8.Cast<object>()), Enumerable.ToArray(next_current_13.Cast<object>()), (index_10 + 1), next_used_14);
+            }
+            i_12 = (i_12 + 1);
+        };
+    }
+
+    public static void generate_all_permutations(object[] sequence_15) {
+        bool[] used_16 = Program.repeat_bool(sequence_15.Length);
+        Program.create_state_space_tree(Enumerable.ToArray(sequence_15.Cast<object>()), Enumerable.ToArray((new object[]{} as object[]) ?? new object[]{}.Cast<object>()), 0, used_16);
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(4, 2))));
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(3, 1))));
+            Program.generate_all_permutations(Enumerable.ToArray(sequence_17.Cast<object>()));
+            object[] sequence_2_18 = new object[]{"A", "B", "C"};
+            Program.generate_all_permutations(Enumerable.ToArray(sequence_2_18.Cast<object>()));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

@@ -28,11 +28,17 @@ class Program {
     static long _mem() {
         return GC.GetTotalAllocatedBytes(true);
     }
+    static long _len(object v) {
+        if (v is Array a) return a.Length;
+        if (v is string s) return s.Length;
+        if (v is System.Collections.ICollection c) return c.Count;
+        return Convert.ToString(v).Length;
+    }
     static string _fmt(object v) {
         if (v is Array a) {
             var parts = new List<string>();
             foreach (var x in a) parts.Add(_fmt(x));
-            return "[" + string.Join(" ", parts) + "]";
+            return "[" + string.Join(", ", parts) + "]";
         }
         if (v is System.Collections.IDictionary d) {
             var keys = new List<string>();
@@ -40,13 +46,14 @@ class Program {
             keys.Sort();
             var parts = new List<string>();
             foreach (var k in keys) parts.Add(k + ":" + _fmt(d[k]));
-            return "map[" + string.Join(" ", parts) + "]";
+            return "map[" + string.Join(", ", parts) + "]";
         }
         if (v is System.Collections.IEnumerable e && !(v is string)) {
             var parts = new List<string>();
             foreach (var x in e) parts.Add(_fmt(x));
-            return string.Join(" ", parts);
+            return string.Join(", ", parts);
         }
+        if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
         if (v is bool b) return b ? "true" : "false";
         return Convert.ToString(v);
     }
@@ -56,35 +63,59 @@ class Program {
             foreach (var x in a) parts.Add(_fmt(x));
             return string.Join(" ", parts);
         }
+        if (v is string s) return s;
         return _fmt(v);
     }
-    public static long[][] create_all_state(long increment_0, long total_1, long level_2, long[] current_3, long[][] result_4) {
-        if ((level_2 == 0)) {
-            return (Enumerable.ToArray(Enumerable.Append(result_4, current_3)));
+    static long[][] graph_13 = new long[][]{new long[]{0, 1, 0, 0, 0}, new long[]{1, 0, 1, 0, 1}, new long[]{0, 1, 0, 1, 0}, new long[]{0, 1, 1, 0, 0}, new long[]{0, 1, 0, 0, 0}};
+    public static bool valid_coloring(long[] neighbours_0, long[] colored_vertices_1, long color_2) {
+        long i_3 = 0;
+        while ((i_3 < neighbours_0.Length)) {
+            if (((neighbours_0[(int)(i_3)] == 1) && (colored_vertices_1[(int)(i_3)] == color_2))) {
+                return false;
+            }
+            i_3 = (i_3 + 1);
         };
-        long i_5 = increment_0;
-        while ((i_5 <= ((total_1 - level_2) + 1))) {
-            long[] next_current_6 = (Enumerable.ToArray(Enumerable.Append(current_3, i_5)));
-            result_4 = Program.create_all_state((i_5 + 1), total_1, (level_2 - 1), next_current_6, result_4);
-            i_5 = (i_5 + 1);
-        };
-        return result_4;
+        return true;
     }
 
-    public static long[][] generate_all_combinations(long n_7, long k_8) {
-        if (((k_8 < 0) || (n_7 < 0))) {
-            return new long[][]{};
+    public static bool util_color(long[][] graph_4, long max_colors_5, long[] colored_vertices_6, long index_7) {
+        if ((index_7 == graph_4.Length)) {
+            return true;
         };
-        long[][] result_9 = new long[][]{};
-        return Program.create_all_state(1, n_7, k_8, new long[]{}, result_9);
+        long c_8 = 0;
+        while ((c_8 < max_colors_5)) {
+            if (Program.valid_coloring(graph_4[(int)(index_7)], colored_vertices_6, c_8)) {
+                colored_vertices_6[index_7] = c_8;
+                if (Program.util_color(graph_4, max_colors_5, colored_vertices_6, (index_7 + 1))) {
+                    return true;
+                }
+                colored_vertices_6[index_7] = -1;
+            }
+            c_8 = (c_8 + 1);
+        };
+        return false;
+    }
+
+    public static long[] color(long[][] graph_9, long max_colors_10) {
+        long[] colored_vertices_11 = new long[]{};
+        long i_12 = 0;
+        while ((i_12 < graph_9.Length)) {
+            colored_vertices_11 = (Enumerable.ToArray(Enumerable.Append(colored_vertices_11, -1)));
+            i_12 = (i_12 + 1);
+        };
+        if (Program.util_color(graph_9, max_colors_10, colored_vertices_11, 0)) {
+            return colored_vertices_11;
+        };
+        return new long[]{};
     }
 
     static void Main() {
         {
             var __memStart = _mem();
             var __start = _now();
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(4, 2))));
-            Console.WriteLine(Program._fmtTop(_fmt(Program.generate_all_combinations(3, 1))));
+            Console.WriteLine(Program._fmtTop(Program.color(graph_13, 3)));
+            Console.WriteLine(Program._fmtTop("\n"));
+            Console.WriteLine(Program._fmtTop(Program.color(graph_13, 2).Length));
             var __end = _now();
             var __memEnd = _mem();
             var __dur = (__end - __start);

@@ -100,6 +100,7 @@ var varAliases map[string]string
 var aliasCounter int
 var usesFmt bool
 var usesRepeat bool
+var usesSubstr bool
 var usesLen bool
 var envTypes map[string]types.Type
 
@@ -1455,6 +1456,8 @@ func csType(t *parser.TypeRef) string {
 			usesBigRat = true
 			usesBigInt = true
 			return "BigRat"
+		case "void":
+			return "void"
 		}
 		if st, ok := structTypes[*t.Simple]; ok {
 			return st.Name
@@ -2284,7 +2287,7 @@ func (s *StrExpr) emit(w io.Writer) {
 	if isStringExpr(s.Arg) {
 		s.Arg.emit(w)
 	} else {
-		fmt.Fprint(w, "_fmt(")
+		fmt.Fprint(w, "_fmtStr(")
 		s.Arg.emit(w)
 		fmt.Fprint(w, ")")
 	}
@@ -2340,14 +2343,13 @@ type SubstringExpr struct {
 }
 
 func (s *SubstringExpr) emit(w io.Writer) {
+	fmt.Fprint(w, "_substr(")
 	s.Str.emit(w)
-	fmt.Fprint(w, ".Substring((int)(")
+	fmt.Fprint(w, ", ")
 	s.Start.emit(w)
-	fmt.Fprint(w, "), (int)(")
+	fmt.Fprint(w, ", ")
 	s.End.emit(w)
-	fmt.Fprint(w, " - ")
-	s.Start.emit(w)
-	fmt.Fprint(w, "))")
+	fmt.Fprint(w, ")")
 }
 
 type ValuesExpr struct{ Map Expr }
@@ -2404,6 +2406,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesMem = false
 	usesFmt = false
 	usesRepeat = false
+	usesSubstr = false
 	usesLen = false
 	usesBigInt = false
 	usesBigRat = false
@@ -2630,6 +2633,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				end = &LenExpr{Arg: expr}
 			}
 			if isStringExpr(expr) {
+				usesSubstr = true
 				expr = &SubstringExpr{Str: expr, Start: start, End: end}
 			} else {
 				usesLinq = true
@@ -3231,10 +3235,13 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 			}
 		}
 		retType := csType(s.Fun.Return)
-		currentReturnType = retType
-		currentReturnVoid = s.Fun.Return == nil
+		currentReturnType = ""
+		if retType != "void" && retType != "" {
+			currentReturnType = retType
+		}
+		currentReturnVoid = s.Fun.Return == nil || retType == "void"
 		// record return and parameter types for local functions so callers can infer them
-		funRets[s.Fun.Name] = retType
+		funRets[s.Fun.Name] = currentReturnType
 		funParams[s.Fun.Name] = append([]string{}, ptypes...)
 		var body []Stmt
 		if prog != nil && blockDepth > 0 {
@@ -3299,7 +3306,7 @@ func compileStmt(prog *Program, s *parser.Statement) (Stmt, error) {
 		if currentReturnType != "" {
 			retType = currentReturnType
 		}
-		if s.Fun.Return == nil {
+		if s.Fun.Return == nil || retType == "void" {
 			retType = ""
 		}
 		var res Stmt
@@ -3854,10 +3861,6 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			name = "Console.WriteLine"
 			if len(args) == 1 {
 				arg := args[0]
-				if isBoolExpr(arg) {
-					inner := &IfExpr{Cond: arg, Then: &IntLit{Value: 1}, Else: &IntLit{Value: 0}}
-					return &CallExpr{Func: name, Args: []Expr{inner}}, nil
-				}
 				if _, ok := arg.(*MapLit); ok {
 					usesJson = true
 					inner := &CallExpr{Func: "JsonSerializer.Serialize", Args: []Expr{arg}}
@@ -4854,12 +4857,20 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("\t\treturn string.Concat(Enumerable.Repeat(s, (int)n));\n")
 		buf.WriteString("\t}\n")
 	}
+	buf.WriteString("\tstatic string _substr(string s, long start, long end) {\n")
+	buf.WriteString("\t\tif (start < 0) start = 0;\n")
+	buf.WriteString("\t\tif (end < 0) end = 0;\n")
+	buf.WriteString("\t\tif (start > s.Length) start = s.Length;\n")
+	buf.WriteString("\t\tif (end > s.Length) end = s.Length;\n")
+	buf.WriteString("\t\tif (start > end) start = end;\n")
+	buf.WriteString("\t\treturn s.Substring((int)start, (int)(end - start));\n")
+	buf.WriteString("\t}\n")
 	if usesFmt {
 		buf.WriteString(`static string _fmt(object v) {
 if (v is Array a) {
 var parts = new List<string>();
 foreach (var x in a) parts.Add(_fmt(x));
-return "[" + string.Join(" ", parts) + "]";
+return "[" + string.Join(", ", parts) + "]";
 }
 if (v is System.Collections.IDictionary d) {
 var keys = new List<string>();
@@ -4867,13 +4878,38 @@ foreach (var k in d.Keys) keys.Add(k.ToString());
 keys.Sort();
 var parts = new List<string>();
 foreach (var k in keys) parts.Add(k + ":" + _fmt(d[k]));
-return "map[" + string.Join(" ", parts) + "]";
+return "map[" + string.Join(", ", parts) + "]";
 }
 if (v is System.Collections.IEnumerable e && !(v is string)) {
 var parts = new List<string>();
 foreach (var x in e) parts.Add(_fmt(x));
+return string.Join(", ", parts);
+}
+if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
+if (v is bool b) return b ? "true" : "false";
+return Convert.ToString(v);
+}
+`)
+		buf.WriteString(`static string _fmtStr(object v) {
+if (v is Array a) {
+var parts = new List<string>();
+foreach (var x in a) parts.Add(_fmtStr(x));
+return "[" + string.Join(" ", parts) + "]";
+}
+if (v is System.Collections.IDictionary d) {
+var keys = new List<string>();
+foreach (var k in d.Keys) keys.Add(k.ToString());
+keys.Sort();
+var parts = new List<string>();
+foreach (var k in keys) parts.Add(k + ":" + _fmtStr(d[k]));
+return "map[" + string.Join(" ", parts) + "]";
+}
+if (v is System.Collections.IEnumerable e && !(v is string)) {
+var parts = new List<string>();
+foreach (var x in e) parts.Add(_fmtStr(x));
 return string.Join(" ", parts);
 }
+if (v is string s) return "\"" + s.Replace("\"", "\\\"") + "\"";
 if (v is bool b) return b ? "true" : "false";
 return Convert.ToString(v);
 }
@@ -4884,6 +4920,7 @@ if (v is Array a && a.Length > 0 && a.GetValue(0) is Array) {
     foreach (var x in a) parts.Add(_fmt(x));
     return string.Join(" ", parts);
 }
+if (v is string s) return s;
 return _fmt(v);
 }
 `)
