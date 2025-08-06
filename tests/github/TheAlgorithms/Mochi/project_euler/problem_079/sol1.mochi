@@ -1,0 +1,122 @@
+/*
+Project Euler Problem 79 - Passcode derivation
+
+Given multiple successful login attempts each containing three ordered
+digits, determine the shortest possible secret passcode that satisfies all
+orderings.  For every permutation of the unique digits present in the
+attempts we check whether each triple appears in the same relative order.
+The first permutation that satisfies all constraints is the passcode.
+
+This implementation performs the search purely in Mochi using lists and
+recursion without any FFI or usage of the `any` type.
+*/
+
+fun parse_int(s: string): int {
+  var value = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i]
+    value = value * 10 + (c as int)
+    i = i + 1
+  }
+  return value
+}
+
+fun join(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    s = s + xs[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun contains(xs: list<string>, c: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == c { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun index_of(xs: list<string>, c: string): int {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == c { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun remove_at(xs: list<string>, idx: int): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) {
+    if i != idx { res = append(res, xs[i]) }
+    i = i + 1
+  }
+  return res
+}
+
+fun unique_chars(logins: list<string>): list<string> {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(logins) {
+    let login = logins[i]
+    var j = 0
+    while j < len(login) {
+      let c = login[j]
+      if !contains(chars, c) {
+        chars = append(chars, c)
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return chars
+}
+
+fun satisfies(permutation: list<string>, logins: list<string>): bool {
+  var i = 0
+  while i < len(logins) {
+    let login = logins[i]
+    let i0 = index_of(permutation, login[0])
+    let i1 = index_of(permutation, login[1])
+    let i2 = index_of(permutation, login[2])
+    if !(i0 < i1 && i1 < i2) { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun search(chars: list<string>, current: list<string>, logins: list<string>): string {
+  if len(chars) == 0 {
+    if satisfies(current, logins) { return join(current) }
+    return ""
+  }
+  var i = 0
+  while i < len(chars) {
+    let c = chars[i]
+    let rest = remove_at(chars, i)
+    let next = append(current, c)
+    let res = search(rest, next, logins)
+    if res != "" { return res }
+    i = i + 1
+  }
+  return ""
+}
+
+fun find_secret_passcode(logins: list<string>): int {
+  let chars = unique_chars(logins)
+  let s = search(chars, [], logins)
+  if s == "" { return -1 }
+  return parse_int(s)
+}
+
+let logins1: list<string> = ["135", "259", "235", "189", "690", "168", "120", "136", "289", "589", "160", "165", "580", "369", "250", "280"]
+print(str(find_secret_passcode(logins1)))
+
+let logins2: list<string> = ["426", "281", "061", "819", "268", "406", "420", "428", "209", "689", "019", "421", "469", "261", "681", "201"]
+print(str(find_secret_passcode(logins2)))
