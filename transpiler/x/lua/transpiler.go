@@ -1330,6 +1330,16 @@ func (ix *IndexExpr) emit(w io.Writer) {
 				io.WriteString(w, ")")
 				return
 			}
+			if mt, ok := exprType(ix.Target).(types.MapType); ok {
+				ix.Target.emit(w)
+				io.WriteString(w, "[")
+				ix.Index.emit(w)
+				if _, ok := mt.Key.(types.IntType); ok {
+					io.WriteString(w, " + 1")
+				}
+				io.WriteString(w, "]")
+				return
+			}
 			// Fallback: assume numeric indexing uses list semantics
 			ix.Target.emit(w)
 			io.WriteString(w, "[")
@@ -1359,9 +1369,12 @@ func (ix *IndexExpr) emit(w io.Writer) {
 			ix.Target.emit(w)
 			io.WriteString(w, "[")
 			ix.Index.emit(w)
-			// assume numeric indexing when index isn't a string literal
-			if _, ok := ix.Index.(*StringLit); ok {
-				io.WriteString(w, "]")
+			if mt, ok := exprType(ix.Target).(types.MapType); ok {
+				if _, ok := mt.Key.(types.IntType); ok {
+					io.WriteString(w, " + 1]")
+				} else {
+					io.WriteString(w, "]")
+				}
 			} else {
 				io.WriteString(w, " + 1]")
 			}
