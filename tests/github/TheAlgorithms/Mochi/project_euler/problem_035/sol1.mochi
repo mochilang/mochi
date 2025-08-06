@@ -1,0 +1,96 @@
+/*
+Project Euler Problem 35 - Circular Primes
+
+A circular prime is a prime number that remains prime under all rotations of its digits.
+For example, 197 generates the rotations 197, 971, and 719 which are all prime.
+
+Algorithm:
+1. Build a sieve of Eratosthenes marking primes up to the given limit.
+2. For each odd number without an even digit, generate all rotations of its digits.
+3. Use the sieve to verify that every rotation is also prime.
+4. Count the numbers that satisfy the circular prime property.
+
+The constant `LIMIT` controls the search range.  It is set to 10,000 here to
+keep the runtime short, but increasing it to 1,000,000 reproduces the original
+Project Euler problem.
+*/
+
+let LIMIT = 10000
+var sieve: list<bool> = []
+var i = 0
+while i <= LIMIT {
+  sieve = append(sieve, true)
+  i = i + 1
+}
+
+var p = 2
+while p * p <= LIMIT {
+  if sieve[p] {
+    var j = p * p
+    while j <= LIMIT {
+      sieve[j] = false
+      j = j + p
+    }
+  }
+  p = p + 1
+}
+
+fun is_prime(n: int): bool {
+  return sieve[n]
+}
+
+fun contains_an_even_digit(n: int): bool {
+  let s = str(n)
+  var idx = 0
+  while idx < len(s) {
+    let c = s[idx]
+    if c == "0" || c == "2" || c == "4" || c == "6" || c == "8" {
+      return true
+    }
+    idx = idx + 1
+  }
+  return false
+}
+
+fun parse_int(s: string): int {
+  var value = 0
+  var k = 0
+  while k < len(s) {
+    let ch = s[k]
+    value = value * 10 + (ch as int)
+    k = k + 1
+  }
+  return value
+}
+
+fun find_circular_primes(limit: int): list<int> {
+  var result: list<int> = [2]
+  var num = 3
+  while num <= limit {
+    if is_prime(num) && (contains_an_even_digit(num) == false) {
+      let s = str(num)
+      var all_prime = true
+      var j = 0
+      while j < len(s) {
+        let rotated_str = substring(s, j, len(s)) + substring(s, 0, j)
+        let rotated = parse_int(rotated_str)
+        if !is_prime(rotated) {
+          all_prime = false
+          break
+        }
+        j = j + 1
+      }
+      if all_prime {
+        result = append(result, num)
+      }
+    }
+    num = num + 2
+  }
+  return result
+}
+
+fun solution(): int {
+  return len(find_circular_primes(LIMIT))
+}
+
+print("len(find_circular_primes()) = " + str(solution()))
