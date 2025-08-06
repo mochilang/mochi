@@ -1,7 +1,7 @@
 # Go Algorithms Transpiler Output
 
-Completed programs: 41/1077
-Last updated: 2025-08-06 20:30 +0700
+Completed programs: 71/1077
+Last updated: 2025-08-06 20:53 +0700
 
 Checklist:
 
@@ -48,36 +48,36 @@ Checklist:
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 436.0µs | 1.05KB |
 | 40 | bit_manipulation/missing_number | ✓ | 312.0µs | 936B |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 504.0µs | 1.05KB |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 343.0µs | 1.02KB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 739.0µs | 4.66KB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 485.0µs | 1016B |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 529.0µs | 2.95KB |
+| 46 | blockchain/diophantine_equation | ✓ | 848.0µs | 2.19KB |
+| 47 | boolean_algebra/and_gate | ✓ | 783.0µs | 936B |
+| 48 | boolean_algebra/imply_gate | ✓ | 531.0µs | 936B |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 677.0µs | 1.25KB |
+| 50 | boolean_algebra/multiplexer | ✓ | 550.0µs | 936B |
+| 51 | boolean_algebra/nand_gate | ✓ | 487.0µs | 936B |
+| 52 | boolean_algebra/nimply_gate | ✓ | 547.0µs | 936B |
+| 53 | boolean_algebra/nor_gate | ✓ | 737.0µs | 2.07KB |
+| 54 | boolean_algebra/not_gate | ✓ | 376.0µs | 936B |
+| 55 | boolean_algebra/or_gate | ✓ | 474.0µs | 936B |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 518.0µs | 1.71KB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 804.0µs | 936B |
+| 58 | boolean_algebra/xor_gate | ✓ | 737.0µs | 936B |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 2.0ms | 13.20KB |
+| 60 | cellular_automata/game_of_life | ✓ | 789.0µs | 3.54KB |
+| 61 | cellular_automata/langtons_ant | ✓ | 462.0µs | 1.44KB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 23.0ms | 3.48KB |
+| 63 | cellular_automata/one_dimensional | ✓ | 850.0µs | 20.73KB |
+| 64 | cellular_automata/wa_tor | ✓ | 6.0ms | 23.55KB |
+| 65 | ciphers/a1z26 | ✓ | 1.0ms | 5.00KB |
+| 66 | ciphers/affine_cipher | ✓ | 24.0ms | 3.24MB |
+| 67 | ciphers/atbash | ✓ | 585.0µs | 1.26KB |
+| 68 | ciphers/autokey | ✓ | 1.0ms | 13.22KB |
+| 69 | ciphers/baconian_cipher | ✓ | 1.0ms | 31.17KB |
+| 70 | ciphers/base16 | ✓ | 831.0µs | 2.63KB |
+| 71 | ciphers/base32 | ✓ | 6.0ms | 100.20KB |
 | 72 | ciphers/base64_cipher |   |  |  |
 | 73 | ciphers/base85 |   |  |  |
 | 74 | ciphers/beaufort_cipher |   |  |  |

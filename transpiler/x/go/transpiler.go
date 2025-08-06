@@ -136,6 +136,33 @@ func toGoFieldName(name string) string {
 	return n
 }
 
+var goKeywords = map[string]struct{}{
+	"break": {}, "case": {}, "chan": {}, "const": {}, "continue": {},
+	"default": {}, "defer": {}, "else": {}, "fallthrough": {},
+	"for": {}, "func": {}, "go": {}, "goto": {}, "if": {},
+	"import": {}, "interface": {}, "map": {}, "package": {},
+	"range": {}, "return": {}, "select": {}, "struct": {},
+	"switch": {}, "type": {}, "var": {},
+}
+
+var goStdPackages = map[string]struct{}{
+	"fmt": {}, "time": {}, "json": {}, "os": {}, "strconv": {},
+	"runtime": {}, "strings": {}, "math": {},
+}
+
+func safeName(name string) string {
+	if _, ok := goKeywords[name]; ok {
+		return name + "_"
+	}
+	if _, ok := goStdPackages[name]; ok {
+		return name + "_"
+	}
+	if _, ok := imports[name]; ok {
+		return name + "_"
+	}
+	return name
+}
+
 func emitCastAnyToType(w io.Writer, typ, v string) {
 	if strings.HasPrefix(typ, "[]") {
 		elem := typ[2:]
@@ -2569,10 +2596,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 				}
 			}
 			global := env == topEnv
-			name := st.Let.Name
+			origName := st.Let.Name
+			name := origName
 			if global && name == "init" {
-				varNameMap[name] = "_init"
 				name = "_init"
+			}
+			name = safeName(name)
+			if name != origName {
+				varNameMap[origName] = name
 			}
 			if global {
 				switch e.(type) {
@@ -2745,10 +2776,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 					global = false
 				}
 			}
-			name := st.Var.Name
+			origName := st.Var.Name
+			name := origName
 			if global && name == "init" {
-				varNameMap[name] = "_init"
 				name = "_init"
+			}
+			name = safeName(name)
+			if name != origName {
+				varNameMap[origName] = name
 			}
 			vd := &VarDecl{Name: name, Type: typ, Value: e, Global: global}
 			varDecls[st.Var.Name] = vd
@@ -2761,10 +2796,14 @@ func compileStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 			}
 			return vd, nil
 		}
-		name := st.Var.Name
+		origName := st.Var.Name
+		name := origName
 		if env == topEnv && name == "init" {
-			varNameMap[name] = "_init"
 			name = "_init"
+		}
+		name = safeName(name)
+		if name != origName {
+			varNameMap[origName] = name
 		}
 		return &VarDecl{Name: name, Type: typ, Global: env == topEnv}, nil
 	case st.Type != nil:
@@ -4344,6 +4383,9 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		} else {
 			child.SetVar(p.Name, types.AnyType{}, true)
 		}
+		if rn := safeName(p.Name); rn != p.Name {
+			varNameMap[p.Name] = rn
+		}
 	}
 	prevRet := currentRetType
 	retHint := toGoType(fn.Return, env)
@@ -4378,7 +4420,11 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 				typ = toGoTypeFromType(t)
 			}
 		}
-		params[i] = ParamDecl{Name: p.Name, Type: typ}
+		pname := p.Name
+		if rn, ok := varNameMap[p.Name]; ok {
+			pname = rn
+		}
+		params[i] = ParamDecl{Name: pname, Type: typ}
 	}
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
@@ -4427,7 +4473,8 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 		assign := &AssignStmt{Name: fn.Name, Value: lit}
 		return &StmtList{List: []Stmt{decl, assign}}, nil
 	}
-	name := fn.Name
+	origName := fn.Name
+	name := origName
 	if name == "main" {
 		mainFuncName = "mochiMain"
 		name = mainFuncName
@@ -4435,11 +4482,12 @@ func compileFunStmt(fn *parser.FunStmt, env *types.Env) (Stmt, error) {
 	if name == "fmt" {
 		name = "fmt_"
 	}
+	name = safeName(name)
 	if _, ok := imports[name]; ok {
 		name = name + "_fn"
 	}
-	if name != fn.Name {
-		varNameMap[fn.Name] = name
+	if name != origName {
+		varNameMap[origName] = name
 	}
 	return &FuncDecl{Name: name, Params: params, Return: ret, Body: body}, nil
 }
@@ -4453,6 +4501,9 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 			child.SetVar(p.Name, t, true)
 		} else {
 			child.SetVar(p.Name, types.AnyType{}, true)
+		}
+		if rn := safeName(p.Name); rn != p.Name {
+			varNameMap[p.Name] = rn
 		}
 	}
 	prevRet := currentRetType
@@ -4495,7 +4546,11 @@ func compileFunExpr(fn *parser.FunExpr, env *types.Env) (Expr, error) {
 				typ = toGoTypeFromType(t)
 			}
 		}
-		params[i] = ParamDecl{Name: p.Name, Type: typ}
+		pname := p.Name
+		if rn, ok := varNameMap[p.Name]; ok {
+			pname = rn
+		}
+		params[i] = ParamDecl{Name: pname, Type: typ}
 	}
 	ret := toGoType(fn.Return, env)
 	if ret == "" && fn.Return != nil {
