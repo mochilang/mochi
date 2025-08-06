@@ -1,0 +1,24 @@
+/*
+Retrieve geographic location information for a given IPv4 or IPv6 address.
+
+Algorithm:
+1. Build the ipinfo.io request URL using the provided IP address.
+2. Fetch the JSON response using `fetch` with a timeout.
+3. The response is decoded into a map keyed by field names.
+4. If the map contains `city`, `region`, and `country`, join them into a
+   location string.
+5. Otherwise report that location data was not found.
+*/
+
+fun get_ip_geolocation(ip_address: string): string {
+  let url = "https://ipinfo.io/" + ip_address + "/json"
+  let data: map<string, string> = fetch url with { timeout: 10.0 }
+  if "city" in data && "region" in data && "country" in data {
+    return "Location: " + data["city"] + ", " + data["region"] + ", " + data["country"]
+  }
+  return "Location data not found."
+}
+
+let ip_address: string = input()
+let location = get_ip_geolocation(ip_address)
+print(location)
