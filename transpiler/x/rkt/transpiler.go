@@ -76,6 +76,8 @@ func sanitizeName(name string) string {
 		return "slice_"
 	case "quotient":
 		return "quotient_"
+	case "panic":
+		return "panic_"
 	default:
 		return name
 	}
@@ -1111,19 +1113,27 @@ func isBoolExpr(e Expr) bool {
 }
 
 // heuristicInt returns true if the expression appears to represent an
-// integer value based purely on its syntax. It does not consult the
-// type environment so it can make a best-effort guess for local
-// variables that are not present in env.
-func heuristicInt(e Expr) bool {
+// integer value using best-effort heuristics. Unlike exprIsInt it may
+// inspect the provided environment for variable types when available so
+// that names with float types are not mistaken for integers.
+func heuristicInt(e Expr, env *types.Env) bool {
 	switch v := e.(type) {
 	case *IntLit:
 		return true
 	case *Name:
-		return true
+		if env != nil {
+			if t, err := env.GetVar(v.Name); err == nil {
+				if types.IsIntType(t) || types.IsInt64Type(t) || types.IsBigIntType(t) {
+					return true
+				}
+				return false
+			}
+		}
+		return false
 	case *BinaryExpr:
 		switch v.Op {
 		case "quotient", "modulo", "+", "-", "*":
-			return heuristicInt(v.Left) && heuristicInt(v.Right)
+			return heuristicInt(v.Left, env) && heuristicInt(v.Right, env)
 		}
 	}
 	return false
@@ -1404,6 +1414,7 @@ func header() string {
 	hdr += "(define (num r) (numerator r))\n"
 	hdr += "(define (denom r) (denominator r))\n"
 	hdr += "(define (panic msg) (error msg))\n"
+	hdr += "(define Object (hash \"keys\" (lambda (self m) (let ([lst (hash-keys m)]) (hash \"join\" (lambda (s sep) (string-join lst sep)))))))\n"
 	// Provide a minimal stdout object with a write method so that programs
 	// using `stdout.write` for output can run without additional setup.
 	hdr += "(define stdout (hash \"write\" (lambda (s) (display s))))\n"
@@ -1732,6 +1743,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 						}
 					}
 				}
+				if _, ok := t.(types.AnyType); ok && st.Let.Value != nil {
+					if types.IsStringExpr(st.Let.Value, env) {
+						t = types.StringType{}
+					}
+				}
 			}
 			env.SetVar(st.Let.Name, t, true)
 		}
@@ -1760,6 +1776,11 @@ func convertStmt(st *parser.Statement, env *types.Env) (Stmt, error) {
 								t = fn.Return
 							}
 						}
+					}
+				}
+				if _, ok := t.(types.AnyType); ok && st.Var.Value != nil {
+					if types.IsStringExpr(st.Var.Value, env) {
+						t = types.StringType{}
 					}
 				}
 			}
@@ -2396,14 +2417,14 @@ func convertBinary(b *parser.BinaryExpr, env *types.Env) (Expr, error) {
 			op = "or"
 		}
 		if op == "/" {
-			ltInt := exprIsInt(currLeft, env) || heuristicInt(currLeft)
+			ltInt := exprIsInt(currLeft, env) || heuristicInt(currLeft, env)
 			rt := types.TypeOfPostfix(part.Right, env)
 			rtInt := types.IsIntType(rt) || types.IsInt64Type(rt) || types.IsBigIntType(rt)
 			if types.IsFloatType(leftType) || types.IsFloatType(rt) {
 				op = "/"
 			} else if lt := leftType; (types.IsIntType(lt) || types.IsInt64Type(lt) || types.IsBigIntType(lt)) && rtInt {
 				op = "quotient"
-			} else if ltInt && (rtInt || heuristicInt(right)) {
+			} else if ltInt && (rtInt || heuristicInt(right, env)) {
 				op = "quotient"
 			} else {
 				lt := leftType
@@ -3041,7 +3062,7 @@ func convertCall(c *parser.CallExpr, env *types.Env) (Expr, error) {
 		}
 	case "exists":
 		if len(args) == 1 {
-			return &CallExpr{Func: "not", Args: []Expr{&CallExpr{Func: "null?", Args: args}}}, nil
+			return &CallExpr{Func: "list?", Args: args}, nil
 		}
 	case "keys":
 		if len(args) == 1 {

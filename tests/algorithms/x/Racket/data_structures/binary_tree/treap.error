@@ -1,0 +1,12 @@
+run: exit status 1
+string-split: contract violation
+  expected: (or/c string? regexp?)
+  given: 1
+  context...:
+   /usr/share/racket/collects/racket/private/more-scheme.rkt:377:2: hash-ref!
+   /usr/share/racket/collects/racket/string.rkt:162:0: string-split
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/treap.rkt:121:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/treap.rkt:145:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/treap.rkt:169:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/treap.rkt:168:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/treap.rkt"

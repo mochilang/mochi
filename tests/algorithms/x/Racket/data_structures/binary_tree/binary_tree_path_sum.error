@@ -1,0 +1,5 @@
+run: exit status 1
+/workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/binary_tree_path_sum.rkt:80:154: Empty: unbound identifier
+  in: Empty
+  location...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/binary_tree_path_sum.rkt:80:154
