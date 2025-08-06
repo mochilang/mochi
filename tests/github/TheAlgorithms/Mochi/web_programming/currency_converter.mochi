@@ -1,0 +1,51 @@
+/*
+Currency Converter Using Static Rates
+-------------------------------------
+This program mimics the Python script from TheAlgorithms/Python which converts
+between currencies using the Amdoren Currency API. Since network access and FFI
+are not used, the Mochi version relies on a fixed table of exchange rates
+relative to USD.
+
+Algorithm:
+1. Define an array of Rate records (currency code and rate to USD).
+2. Function rate_of(code): linear search to return the rate for the given code.
+3. Function convert_currency(from_: string, to: string, amount: float): convert
+   amount to USD then to target currency. Returns result as float.
+4. Example usage at bottom converts 10 USD to INR and prints the converted amount.
+
+The complexity of lookups is O(n) with n number of currencies, but with a small
+constant set it is acceptable. Implemented without `any` type and without FFI
+to remain compatible with runtime/vm.
+*/
+
+type Rate { code: string, rate: float }
+
+let rates: list<Rate> = [
+  Rate { code: "USD", rate: 1.0 },
+  Rate { code: "EUR", rate: 0.9 },
+  Rate { code: "INR", rate: 83.0 },
+  Rate { code: "JPY", rate: 156.0 },
+  Rate { code: "GBP", rate: 0.78 }
+]
+
+fun rate_of(code: string): float {
+  for r in rates {
+    if r.code == code {
+      return r.rate
+    }
+  }
+  return 0.0
+}
+
+fun convert_currency(from_: string, to: string, amount: float): float {
+  let from_rate = rate_of(from_)
+  let to_rate = rate_of(to)
+  if from_rate == 0.0 || to_rate == 0.0 {
+    return 0.0
+  }
+  let usd = amount / from_rate
+  return usd * to_rate
+}
+
+let result = convert_currency("USD", "INR", 10.0)
+print(str(result))
