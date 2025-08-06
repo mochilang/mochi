@@ -1,32 +1,32 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 20/1077
+Last updated: 2025-08-06 18:11 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 6µs | 8.7 MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
-| 15 | backtracking/sudoku |   |  |  |
-| 16 | backtracking/sum_of_subsets |   |  |  |
-| 17 | backtracking/word_break |   |  |  |
-| 18 | backtracking/word_ladder |   |  |  |
-| 19 | backtracking/word_search |   |  |  |
-| 20 | bit_manipulation/binary_and_operator |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 7µs | 8.7 MB |
+| 2 | backtracking/all_permutations | ✓ | 13µs | 8.7 MB |
+| 3 | backtracking/all_subsequences | ✓ | 6µs | 8.7 MB |
+| 4 | backtracking/coloring | ✓ | 11µs | 8.7 MB |
+| 5 | backtracking/combination_sum | ✓ | 9µs | 8.7 MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 14µs | 8.7 MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ |  |  |
+| 8 | backtracking/knight_tour | ✓ | 4µs | 8.7 MB |
+| 9 | backtracking/match_word_pattern | ✓ | 14µs | 8.7 MB |
+| 10 | backtracking/minimax | ✓ | 6µs | 8.7 MB |
+| 11 | backtracking/n_queens | ✓ | 9µs | 8.7 MB |
+| 12 | backtracking/n_queens_math | ✓ | 23µs | 8.7 MB |
+| 13 | backtracking/power_sum | ✓ | 6µs | 8.7 MB |
+| 14 | backtracking/rat_in_maze | ✓ | 10µs | 8.7 MB |
+| 15 | backtracking/sudoku | ✓ | 83µs | 8.7 MB |
+| 16 | backtracking/sum_of_subsets | ✓ | 11µs | 8.7 MB |
+| 17 | backtracking/word_break | ✓ | 7µs | 8.7 MB |
+| 18 | backtracking/word_ladder | ✓ | 19µs | 8.7 MB |
+| 19 | backtracking/word_search | ✓ | 13µs | 8.7 MB |
+| 20 | bit_manipulation/binary_and_operator | ✓ | 11µs | 8.8 MB |
 | 21 | bit_manipulation/binary_coded_decimal |   |  |  |
 | 22 | bit_manipulation/binary_count_setbits |   |  |  |
 | 23 | bit_manipulation/binary_count_trailing_zeros |   |  |  |
