@@ -1,26 +1,26 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 1/1077
-Last updated: 2025-08-06 15:56 +0700
+Completed programs: 13/1077
+Last updated: 2025-08-06 16:21 +0700
 
 Checklist:
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 259.0µs | 3.41KB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 228.0µs | 3.41KB |
+| 2 | backtracking/all_permutations | ✓ | 848.0µs | 45.37KB |
+| 3 | backtracking/all_subsequences | ✓ | 296.0µs | 6.55KB |
+| 4 | backtracking/coloring | ✓ | 235.0µs | 6.92KB |
+| 5 | backtracking/combination_sum | ✓ | 180.0µs | 3.63KB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 1.0ms | 176.77KB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 2.0µs | 208B |
+| 8 | backtracking/knight_tour | ✓ | 139.0µs | 272B |
 | 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
-| 11 | backtracking/n_queens |   |  |  |
-| 12 | backtracking/n_queens_math |   |  |  |
-| 13 | backtracking/power_sum |   |  |  |
-| 14 | backtracking/rat_in_maze |   |  |  |
+| 10 | backtracking/minimax | ✓ | 186.0µs | 448B |
+| 11 | backtracking/n_queens | ✓ | 294.0µs | 18.67KB |
+| 12 | backtracking/n_queens_math | ✓ | 268.0µs | 8.89KB |
+| 13 | backtracking/power_sum | ✓ | 179.0µs | 256B |
+| 14 | backtracking/rat_in_maze | ✓ | 235.0µs | 12.31KB |
 | 15 | backtracking/sudoku |   |  |  |
 | 16 | backtracking/sum_of_subsets |   |  |  |
 | 17 | backtracking/word_break |   |  |  |
