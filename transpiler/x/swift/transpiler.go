@@ -128,11 +128,12 @@ type ForRangeStmt struct {
 
 // ForEachStmt represents iteration over a collection.
 type ForEachStmt struct {
-	Name    string
-	Expr    Expr
-	Body    []Stmt
-	CastMap bool
-	Keys    bool
+	Name     string
+	Expr     Expr
+	Body     []Stmt
+	CastMap  bool
+	Keys     bool
+	AsString bool
 }
 
 type BreakStmt struct{}
@@ -1761,6 +1762,9 @@ func (fe *ForEachStmt) emit(w io.Writer) {
 			fmt.Fprint(w, ".keys.sorted()")
 		}
 		fmt.Fprint(w, " {\n")
+		if fe.AsString {
+			fmt.Fprintf(w, "let %s = String(%s)\n", esc(fe.Name), esc(fe.Name))
+		}
 	}
 	for _, st := range fe.Body {
 		st.emit(w)
@@ -2028,6 +2032,11 @@ func (p *Program) Emit() []byte {
 		buf.WriteString("        out.append(contentsOf: Array(repeating: v, count: idx - out.count + 1))\n")
 		buf.WriteString("        out[idx] = v\n")
 		buf.WriteString("    }\n")
+		buf.WriteString("    return out\n")
+		buf.WriteString("}\n")
+		buf.WriteString("func _set<K: Hashable, V>(_ xs: [K: V], _ key: K, _ v: V) -> [K: V] {\n")
+		buf.WriteString("    var out = xs\n")
+		buf.WriteString("    out[key] = v\n")
 		buf.WriteString("    return out\n")
 		buf.WriteString("}\n")
 	}
@@ -3131,6 +3140,7 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	}
 	castMap := false
 	keysOnly := false
+	asString := false
 	if child != nil {
 		if t := types.TypeOfExpr(fs.Source, env); t != nil {
 			switch tt := t.(type) {
@@ -3146,6 +3156,9 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 			case types.MapType:
 				keysOnly = true
 				child.SetVar(fs.Name, tt.Key, true)
+			case types.StringType:
+				asString = true
+				child.SetVar(fs.Name, types.StringType{}, true)
 			}
 		}
 	}
@@ -3153,7 +3166,7 @@ func convertForStmt(env *types.Env, fs *parser.ForStmt) (Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap, Keys: keysOnly}, nil
+	return &ForEachStmt{Name: fs.Name, Expr: expr, Body: body, CastMap: castMap, Keys: keysOnly, AsString: asString}, nil
 }
 
 func convertSaveStmt(env *types.Env, se *parser.SaveExpr) (Stmt, error) {
@@ -4899,6 +4912,13 @@ func convertPrimary(env *types.Env, pr *parser.Primary) (Expr, error) {
 			return &CallExpr{Func: "_repeat", Args: []Expr{a0, a1}}, nil
 		}
 		if pr.Call.Func == "panic" && len(pr.Call.Args) == 1 {
+			arg, err := convertExpr(env, pr.Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			return &CallExpr{Func: "fatalError", Args: []Expr{arg}}, nil
+		}
+		if pr.Call.Func == "error" && len(pr.Call.Args) == 1 {
 			arg, err := convertExpr(env, pr.Call.Args[0])
 			if err != nil {
 				return nil, err

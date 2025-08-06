@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 40/1077
-Last updated: 2025-08-06 20:34 +0700
+Completed programs: 79/1077
+Last updated: 2025-08-06 20:48 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -48,45 +48,45 @@ Last updated: 2025-08-06 20:34 +0700
 | 39 | bit_manipulation/largest_pow_of_two_le_num | ✓ | 286µs | 3.2 MB |
 | 40 | bit_manipulation/missing_number | ✓ | 479µs | 3.2 MB |
 | 41 | bit_manipulation/numbers_different_signs | ✓ | 270µs | 3.2 MB |
-| 42 | bit_manipulation/power_of_4 |   |  |  |
-| 43 | bit_manipulation/reverse_bits |   |  |  |
-| 44 | bit_manipulation/single_bit_manipulation_operations |   |  |  |
-| 45 | bit_manipulation/swap_all_odd_and_even_bits |   |  |  |
-| 46 | blockchain/diophantine_equation |   |  |  |
-| 47 | boolean_algebra/and_gate |   |  |  |
-| 48 | boolean_algebra/imply_gate |   |  |  |
-| 49 | boolean_algebra/karnaugh_map_simplification |   |  |  |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
-| 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
-| 57 | boolean_algebra/xnor_gate |   |  |  |
-| 58 | boolean_algebra/xor_gate |   |  |  |
-| 59 | cellular_automata/conways_game_of_life |   |  |  |
-| 60 | cellular_automata/game_of_life |   |  |  |
-| 61 | cellular_automata/langtons_ant |   |  |  |
-| 62 | cellular_automata/nagel_schrekenberg |   |  |  |
-| 63 | cellular_automata/one_dimensional |   |  |  |
-| 64 | cellular_automata/wa_tor |   |  |  |
-| 65 | ciphers/a1z26 |   |  |  |
-| 66 | ciphers/affine_cipher |   |  |  |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
+| 42 | bit_manipulation/power_of_4 | ✓ | 224µs | 2.9 MB |
+| 43 | bit_manipulation/reverse_bits | ✓ | 256µs | 3.4 MB |
+| 44 | bit_manipulation/single_bit_manipulation_operations | ✓ | 224µs | 3.1 MB |
+| 45 | bit_manipulation/swap_all_odd_and_even_bits | ✓ | 299µs | 3.3 MB |
+| 46 | blockchain/diophantine_equation | ✓ | 789µs | 3.6 MB |
+| 47 | boolean_algebra/and_gate | ✓ | 338µs | 3.2 MB |
+| 48 | boolean_algebra/imply_gate | ✓ | 356µs | 2.9 MB |
+| 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 243µs | 3.2 MB |
+| 50 | boolean_algebra/multiplexer | ✓ | 447µs | 3.2 MB |
+| 51 | boolean_algebra/nand_gate | ✓ | 295µs | 3.2 MB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 424µs | 3.3 MB |
+| 53 | boolean_algebra/nor_gate | ✓ | 363µs | 3.2 MB |
+| 54 | boolean_algebra/not_gate | ✓ | 315µs | 3.2 MB |
+| 55 | boolean_algebra/or_gate | ✓ | 398µs | 2.9 MB |
+| 56 | boolean_algebra/quine_mc_cluskey | ✓ | 891µs | 3.5 MB |
+| 57 | boolean_algebra/xnor_gate | ✓ | 301µs | 3.2 MB |
+| 58 | boolean_algebra/xor_gate | ✓ | 278µs | 3.2 MB |
+| 59 | cellular_automata/conways_game_of_life | ✓ | 867µs | 3.2 MB |
+| 60 | cellular_automata/game_of_life | ✓ | 369µs | 3.2 MB |
+| 61 | cellular_automata/langtons_ant | ✓ | 156µs | 2.9 MB |
+| 62 | cellular_automata/nagel_schrekenberg | ✓ | 1.752ms | 3.7 MB |
+| 63 | cellular_automata/one_dimensional | ✓ | 508µs | 3.1 MB |
+| 64 | cellular_automata/wa_tor | ✓ | 1.208ms | 3.2 MB |
+| 65 | ciphers/a1z26 | ✓ | 318µs | 3.1 MB |
+| 66 | ciphers/affine_cipher | ✓ | 20.887ms | 3.4 MB |
+| 67 | ciphers/atbash | ✓ | 864µs | 2.9 MB |
+| 68 | ciphers/autokey | ✓ | 2.835ms | 3.2 MB |
+| 69 | ciphers/baconian_cipher | ✓ | 891µs | 3.5 MB |
+| 70 | ciphers/base16 | ✓ | 1.482ms | 3.6 MB |
+| 71 | ciphers/base32 | ✓ | 3.177ms | 3.0 MB |
+| 72 | ciphers/base64_cipher | ✓ | 1.464ms | 3.4 MB |
+| 73 | ciphers/base85 | ✓ | 1.398ms | 3.6 MB |
+| 74 | ciphers/beaufort_cipher | ✓ | 719µs | 3.1 MB |
+| 75 | ciphers/bifid | ✓ | 1.16ms | 3.1 MB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 6.274ms | 3.1 MB |
+| 77 | ciphers/caesar_cipher | ✓ | 85.438ms | 3.2 MB |
+| 78 | ciphers/cryptomath_module | ✓ | 219µs | 3.2 MB |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 88.557ms | 3.3 MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 265µs | 3.1 MB |
 | 81 | ciphers/diffie |   |  |  |
 | 82 | ciphers/diffie_hellman |   |  |  |
 | 83 | ciphers/elgamal_key_generator |   |  |  |
