@@ -1,0 +1,9 @@
+run: exit status 1
+lua: ...rithms/x/Lua/data_structures/suffix_tree/suffix_tree.lua:101: attempt to add a 'string' with a 'number'
+stack traceback:
+	[C]: in metamethod 'add'
+	...rithms/x/Lua/data_structures/suffix_tree/suffix_tree.lua:101: in function 'add_suffix'
+	...rithms/x/Lua/data_structures/suffix_tree/suffix_tree.lua:150: in function 'build_suffix_tree'
+	...rithms/x/Lua/data_structures/suffix_tree/suffix_tree.lua:162: in function 'new_suffix_tree'
+	...rithms/x/Lua/data_structures/suffix_tree/suffix_tree.lua:197: in main chunk
+	[C]: in ?

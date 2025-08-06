@@ -1,0 +1,9 @@
+run: exit status 1
+lua: ...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:157: attempt to index a nil value (local 'node')
+stack traceback:
+	...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:157: in function 'insert'
+	...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:231: in function 'insert'
+	...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:151: in function 'insert_many'
+	...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:489: in function 'main'
+	...sts/algorithms/x/Lua/data_structures/trie/radix_tree.lua:670: in main chunk
+	[C]: in ?

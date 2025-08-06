@@ -1,0 +1,7 @@
+run: exit status 1
+lua: ...ms/x/Lua/data_structures/stacks/balanced_parentheses.lua:141: attempt to call a table value (upvalue 'pairs')
+stack traceback:
+	...ms/x/Lua/data_structures/stacks/balanced_parentheses.lua:141: in function <...ms/x/Lua/data_structures/stacks/balanced_parentheses.lua:136>
+	...ms/x/Lua/data_structures/stacks/balanced_parentheses.lua:136: in function 'balanced_parentheses'
+	...ms/x/Lua/data_structures/stacks/balanced_parentheses.lua:173: in main chunk
+	[C]: in ?
