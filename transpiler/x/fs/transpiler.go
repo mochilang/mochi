@@ -180,15 +180,21 @@ const helperArraySet = `let _arrset (arr:'a array) (i:int) (v:'a) : 'a array =
     a.[i] <- v
     a`
 
-const helperJSON = `let json (arr:int array array) =
-    printf "[\n"
-    for i in 0 .. arr.Length - 1 do
-        let line = String.concat ", " (Array.map string arr.[i] |> Array.toList)
-        if i < arr.Length - 1 then
-            printfn "  [%s]," line
-        else
-            printfn "  [%s]" line
-    printfn "]"`
+const helperJSON = `let json (arr:obj) =
+    match arr with
+    | :? (int array array) as a2 ->
+        printf "[\n"
+        for i in 0 .. a2.Length - 1 do
+            let line = String.concat ", " (Array.map string a2.[i] |> Array.toList)
+            if i < a2.Length - 1 then
+                printfn "  [%s]," line
+            else
+                printfn "  [%s]" line
+        printfn "]"
+    | :? (int array) as a1 ->
+        let line = String.concat ", " (Array.map string a1 |> Array.toList)
+        printfn "[%s]" line
+    | _ -> ()`
 
 const helperStr = `let rec _str v =
     let s = sprintf "%A" v
@@ -3589,6 +3595,35 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 				}
 				return &AssignStmt{Name: name, Expr: e}, nil
 			}
+		} else if tgt != nil {
+			// Support assignments to indexed expressions, e.g., m[k] = v
+			e, err := convertExpr(st.Assign.Value)
+			if err != nil {
+				return nil, err
+			}
+			texpr, err := convertPostfix(tgt)
+			if err != nil {
+				return nil, err
+			}
+			// mark root identifier as mutated
+			tmp := texpr
+			for {
+				switch t := tmp.(type) {
+				case *IndexExpr:
+					tmp = t.Target
+				case *FieldExpr:
+					tmp = t.Target
+				case *IdentExpr:
+					mutatedVars[t.Name] = true
+					tmp = nil
+				default:
+					tmp = nil
+				}
+				if tmp == nil {
+					break
+				}
+			}
+			return &IndexAssignStmt{Target: texpr, Value: e}, nil
 		}
 		return nil, fmt.Errorf("unsupported assignment")
 	case st.Return != nil:
@@ -3748,7 +3783,11 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			elemType = "int"
 		} else {
 			elemType = elemTypeOf(start)
-			if elemType == "string" {
+			srcT := inferType(start)
+			if strings.HasPrefix(srcT, "System.Collections.Generic.IDictionary<") {
+				start = &FieldExpr{Target: start, Name: "Keys"}
+				elemType = mapKeyType(srcT)
+			} else if elemType == "string" {
 				start = &CallExpr{Func: "Seq.map string", Args: []Expr{start}}
 			}
 		}
@@ -4125,6 +4164,8 @@ func convertPrimary(p *parser.Primary) (Expr, error) {
 			}
 			return &CallExpr{Func: fn, Args: args}, nil
 		case "panic":
+			return &CallExpr{Func: "failwith", Args: args}, nil
+		case "error":
 			return &CallExpr{Func: "failwith", Args: args}, nil
 		case "avg":
 			fn := "Seq.averageBy float"
