@@ -1,0 +1,206 @@
+/*
+Implementation of an LRU (Least Recently Used) cache.
+
+The cache stores integer keys and values with a fixed capacity. When the
+capacity is exceeded, the least recently used item is evicted. To achieve
+constant time operations, the cache combines a doubly linked list and a map:
+
+- The doubly linked list keeps track of usage order. New or recently accessed
+  nodes are moved to the end (near the tail sentinel). The head sentinel's next
+  node is the least recently used item.
+- The map provides O(1) access from keys to node indices in the list.
+
+Each list node stores its key, value and links to previous and next nodes by
+index. Two sentinel nodes (head and tail) simplify edge operations. `put`
+adds or updates a value and moves the node to the end. `get` retrieves a value
+if present and moves the accessed node to the end. On cache overflow, the node
+after the head sentinel is removed and its key deleted from the map.
+
+The program demonstrates the cache with a sequence of operations similar to the
+example from TheAlgorithms/Python repository.
+*/
+
+type Node {
+  key: int,
+  value: int,
+  prev: int,
+  next: int,
+}
+
+type DoubleLinkedList {
+  nodes: list<Node>,
+  head: int,
+  tail: int,
+}
+
+fun new_list(): DoubleLinkedList {
+  var nodes: list<Node> = []
+  let head = Node { key: 0, value: 0, prev: 0 - 1, next: 1 }
+  let tail = Node { key: 0, value: 0, prev: 0, next: 0 - 1 }
+  nodes = append(nodes, head)
+  nodes = append(nodes, tail)
+  return DoubleLinkedList { nodes: nodes, head: 0, tail: 1 }
+}
+
+fun dll_add(lst: DoubleLinkedList, idx: int): DoubleLinkedList {
+  var nodes = lst.nodes
+  let tail_idx = lst.tail
+  var tail_node = nodes[tail_idx]
+  let prev_idx = tail_node.prev
+  var node = nodes[idx]
+  node.prev = prev_idx
+  node.next = tail_idx
+  nodes[idx] = node
+  var prev_node = nodes[prev_idx]
+  prev_node.next = idx
+  nodes[prev_idx] = prev_node
+  tail_node.prev = idx
+  nodes[tail_idx] = tail_node
+  lst.nodes = nodes
+  return lst
+}
+
+fun dll_remove(lst: DoubleLinkedList, idx: int): DoubleLinkedList {
+  var nodes = lst.nodes
+  var node = nodes[idx]
+  let prev_idx = node.prev
+  let next_idx = node.next
+  if prev_idx == 0 - 1 || next_idx == 0 - 1 {
+    return lst
+  }
+  var prev_node = nodes[prev_idx]
+  prev_node.next = next_idx
+  nodes[prev_idx] = prev_node
+  var next_node = nodes[next_idx]
+  next_node.prev = prev_idx
+  nodes[next_idx] = next_node
+  node.prev = 0 - 1
+  node.next = 0 - 1
+  nodes[idx] = node
+  lst.nodes = nodes
+  return lst
+}
+
+
+type LRUCache {
+  list: DoubleLinkedList,
+  capacity: int,
+  num_keys: int,
+  hits: int,
+  misses: int,
+  cache: map<string, int>,
+}
+
+type GetResult {
+  cache: LRUCache,
+  value: int,
+  ok: bool,
+}
+
+fun new_cache(cap: int): LRUCache {
+  var empty_map: map<string, int> = {}
+  return LRUCache {
+    list: new_list(),
+    capacity: cap,
+    num_keys: 0,
+    hits: 0,
+    misses: 0,
+    cache: empty_map,
+  }
+}
+
+fun lru_get(c: LRUCache, key: int): GetResult {
+  var cache = c
+  let key_str = str(key)
+  if key_str in cache.cache {
+    let idx = cache.cache[key_str]
+    if idx != 0 - 1 {
+      cache.hits = cache.hits + 1
+      let node = cache.list.nodes[idx]
+      let value = node.value
+      cache.list = dll_remove(cache.list, idx)
+      cache.list = dll_add(cache.list, idx)
+      return GetResult { cache: cache, value: value, ok: true }
+    }
+  }
+  cache.misses = cache.misses + 1
+  return GetResult { cache: cache, value: 0, ok: false }
+}
+
+fun lru_put(c: LRUCache, key: int, value: int): LRUCache {
+  var cache = c
+  let key_str = str(key)
+    if !(key_str in cache.cache) {
+      if cache.num_keys >= cache.capacity {
+      let head_node = cache.list.nodes[cache.list.head]
+      let first_idx = head_node.next
+      let first_node = cache.list.nodes[first_idx]
+      let old_key = first_node.key
+      cache.list = dll_remove(cache.list, first_idx)
+      var mdel = cache.cache
+      mdel[str(old_key)] = 0 - 1
+      cache.cache = mdel
+      cache.num_keys = cache.num_keys - 1
+      }
+    var nodes = cache.list.nodes
+    let new_node = Node { key: key, value: value, prev: 0 - 1, next: 0 - 1 }
+    nodes = append(nodes, new_node)
+    let idx = len(nodes) - 1
+    cache.list.nodes = nodes
+    cache.list = dll_add(cache.list, idx)
+    var m = cache.cache
+    m[key_str] = idx
+    cache.cache = m
+    cache.num_keys = cache.num_keys + 1
+  } else {
+    var m = cache.cache
+    let idx = m[key_str]
+    var nodes = cache.list.nodes
+    var node = nodes[idx]
+    node.value = value
+    nodes[idx] = node
+    cache.list.nodes = nodes
+    cache.list = dll_remove(cache.list, idx)
+    cache.list = dll_add(cache.list, idx)
+    cache.cache = m
+  }
+  return cache
+}
+
+fun cache_info(cache: LRUCache): string {
+  return "CacheInfo(hits=" + str(cache.hits) + ", misses=" + str(cache.misses) + ", capacity=" + str(cache.capacity) + ", current size=" + str(cache.num_keys) + ")"
+}
+
+fun print_result(res: GetResult) {
+  if res.ok {
+    print(str(res.value))
+  } else {
+    print("None")
+  }
+}
+
+fun main() {
+  var cache = new_cache(2)
+  cache = lru_put(cache, 1, 1)
+  cache = lru_put(cache, 2, 2)
+  var r1 = lru_get(cache, 1)
+  cache = r1.cache
+  print_result(r1)
+  cache = lru_put(cache, 3, 3)
+  var r2 = lru_get(cache, 2)
+  cache = r2.cache
+  print_result(r2)
+  cache = lru_put(cache, 4, 4)
+  var r3 = lru_get(cache, 1)
+  cache = r3.cache
+  print_result(r3)
+  var r4 = lru_get(cache, 3)
+  cache = r4.cache
+  print_result(r4)
+  var r5 = lru_get(cache, 4)
+  cache = r5.cache
+  print_result(r5)
+  print(cache_info(cache))
+}
+
+main()
