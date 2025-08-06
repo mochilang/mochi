@@ -194,6 +194,21 @@ mochi_repeat(S, N) when is_list(S) ->
 mochi_repeat(_, _) -> [].
 `
 
+const helperStr = `
+-compile({nowarn_unused_function, mochi_str/1}).
+mochi_str(V) ->
+    S = lists:flatten(io_lib:format("~p", [V])),
+    S1 = string:replace(S, ",", " ", all),
+    string:replace(S1, "\"", "", all).
+`
+
+const helperRepr = `
+-compile({nowarn_unused_function, mochi_repr/1}).
+mochi_repr(V) ->
+    S = lists:flatten(io_lib:format("~p", [V])),
+    string:replace(S, ",", ", ", all).
+`
+
 var useNow bool
 var useLookupHost bool
 var useToInt bool
@@ -204,6 +219,7 @@ var useIndexOf bool
 var useParseIntStr bool
 var useBigRat bool
 var useRepeat bool
+var useStr bool
 var useFetch bool
 var useNot bool
 var useSafeArith bool
@@ -235,6 +251,7 @@ type Program struct {
 	UseParseIntStr  bool
 	UseBigRat       bool
 	UseRepeat       bool
+	UseStr          bool
 	UseFetch        bool
 	UseNot          bool
 	UseSafeArith    bool
@@ -1986,14 +2003,12 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	case "str":
-		io.WriteString(w, "lists:flatten(io_lib:format(\"~p\", [")
-		for i, a := range c.Args {
-			if i > 0 {
-				io.WriteString(w, ", ")
-			}
-			a.emit(w)
+		useStr = true
+		io.WriteString(w, "mochi_str(")
+		if len(c.Args) > 0 {
+			c.Args[0].emit(w)
 		}
-		io.WriteString(w, "]))")
+		io.WriteString(w, ")")
 		return
 	case "sum":
 		io.WriteString(w, "lists:sum(")
@@ -3138,6 +3153,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	useParseIntStr = false
 	useBigRat = false
 	useRepeat = false
+	useStr = false
 	useFetch = false
 	useNot = false
 	useSafeArith = false
@@ -3185,6 +3201,7 @@ func Transpile(prog *parser.Program, env *types.Env, bench bool) (*Program, erro
 	p.UseParseIntStr = useParseIntStr
 	p.UseBigRat = useBigRat
 	p.UseRepeat = useRepeat
+	p.UseStr = true
 	p.UseFetch = useFetch
 	p.UseNot = useNot
 	p.UseSafeArith = useSafeArith
@@ -4629,6 +4646,9 @@ func convertPostfix(pf *parser.PostfixExpr, env *types.Env, ctx *context) (Expr,
 			}
 			if nr, ok := expr.(*NameRef); ok {
 				ce := &CallExpr{Func: nr.Name, Args: args}
+				if nr.Name == "str" {
+					useStr = true
+				}
 				if t, err := env.GetVar(ce.Func); err == nil {
 					if ft, ok := t.(types.FuncType); ok {
 						if _, ok := ft.Return.(types.StringType); ok {
@@ -5007,17 +5027,18 @@ func convertPrimary(p *parser.Primary, env *types.Env, ctx *context) (Expr, erro
 			ce.Args = append(ce.Args, ae)
 		}
 		if ce.Func == "print" {
-			parts := make([]string, len(ce.Args))
+			fmtParts := make([]string, len(ce.Args))
+			args := make([]Expr, len(ce.Args))
 			for i, a := range ce.Args {
-				if isStringExpr(a) {
-					parts[i] = "~ts"
+				fmtParts[i] = "~ts"
+				if call, ok := a.(*CallExpr); ok && call.Func == "str" {
+					args[i] = &CallExpr{Func: "mochi_str", Args: call.Args}
 				} else {
-					parts[i] = "~p"
+					args[i] = &CallExpr{Func: "mochi_repr", Args: []Expr{a}}
 				}
 			}
-			fmtStr := strings.Join(parts, " ") + "~n"
-			args := []Expr{&StringLit{Value: fmtStr}, &ListLit{Elems: ce.Args}}
-			ce = &CallExpr{Func: "io:format", Args: args}
+			fmtStr := strings.Join(fmtParts, " ") + "~n"
+			ce = &CallExpr{Func: "io:format", Args: []Expr{&StringLit{Value: fmtStr}, &ListLit{Elems: args}}}
 			return ce, nil
 		}
 		if fn, ok := env.GetFunc(p.Call.Func); ok && len(p.Call.Args) < len(fn.Params) {
@@ -6224,6 +6245,12 @@ func (p *Program) Emit() []byte {
 	}
 	if p.UseRepeat {
 		buf.WriteString(helperRepeat)
+		buf.WriteString("\n")
+	}
+	if p.UseStr {
+		buf.WriteString(helperStr)
+		buf.WriteString("\n")
+		buf.WriteString(helperRepr)
 		buf.WriteString("\n")
 	}
 	if p.UseFetch {
