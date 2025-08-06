@@ -1,0 +1,140 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:24: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+    return List<dynamic>?>.from(null);
+                       ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:25: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+    return List<dynamic>?>.from(null);
+                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:26: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+    return List<dynamic>?>.from(null);
+                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:27: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+    return List<dynamic>?>.from(null);
+                          ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:38: Error: Expected ':' before this.
+    return List<dynamic>?>.from(null);
+                                     ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:38: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+    return List<dynamic>?>.from(null);
+                                     ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:24: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+    return List<dynamic>?>.from(node[2]);
+                       ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:25: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+    return List<dynamic>?>.from(node[2]);
+                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:26: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+    return List<dynamic>?>.from(node[2]);
+                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:27: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+    return List<dynamic>?>.from(node[2]);
+                          ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:41: Error: Expected ':' before this.
+    return List<dynamic>?>.from(node[2]);
+                                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:41: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+    return List<dynamic>?>.from(node[2]);
+                                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:24: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+    return List<dynamic>?>.from(node[1]);
+                       ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:25: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+    return List<dynamic>?>.from(node[1]);
+                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:26: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+    return List<dynamic>?>.from(node[1]);
+                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:27: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+    return List<dynamic>?>.from(node[1]);
+                          ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:41: Error: Expected ':' before this.
+    return List<dynamic>?>.from(node[1]);
+                                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:41: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+    return List<dynamic>?>.from(node[1]);
+                                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:22: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+  return List<dynamic>?>.from(node);
+                     ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:23: Error: Expected an identifier, but got '?'.
+Try inserting an identifier before '?'.
+  return List<dynamic>?>.from(node);
+                      ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:24: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  return List<dynamic>?>.from(node);
+                       ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:25: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+  return List<dynamic>?>.from(node);
+                        ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:36: Error: Expected ':' before this.
+  return List<dynamic>?>.from(node);
+                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:36: Error: Expected an identifier, but got ';'.
+Try inserting an identifier before ';'.
+  return List<dynamic>?>.from(node);
+                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:74:16: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+    return List<dynamic>?>.from(null);
+               ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:83:16: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+    return List<dynamic>?>.from(node[2]);
+               ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:86:16: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+    return List<dynamic>?>.from(node[1]);
+               ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:93:14: Error: The operator '<' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '<' operator.
+  return List<dynamic>?>.from(node);
+             ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:100:19: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+    root = insert(root, v);
+                  ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:102:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  print((inorder(root, <int>[])).toString());
+                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:103:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  print(search(root, 6));
+               ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:104:16: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  print(search(root, 20));
+               ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:105:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  print(find_min(root));
+                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:106:18: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  print(find_max(root));
+                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/binary_search_tree.dart:107:36: Error: The argument type 'List<dynamic>?' can't be assigned to the parameter type 'List<dynamic>' because 'List<dynamic>?' is nullable and 'List<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+  root = List<dynamic>.from(delete(root, 6)!);
+                                   ^

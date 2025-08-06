@@ -1,0 +1,3 @@
+../../../tests/algorithms/x/Dart/ciphers/cryptomath_module.dart:52:5: Error: Method not found: 'error'.
+    error("mod inverse of " + (a).toString() + " and " + (m).toString() + " does not exist");
+    ^^^^^

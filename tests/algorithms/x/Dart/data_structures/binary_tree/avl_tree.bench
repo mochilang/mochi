@@ -1,0 +1,26 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:42:51: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  Map<String, int> node = {"data": value, "left": NIL, "right": NIL, "height": 1};
+                                                  ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:42:65: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  Map<String, int> node = {"data": value, "left": NIL, "right": NIL, "height": 1};
+                                                                ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:100:31: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (value < nodes[nodes[i]["left"]]["data"]!) {
+                              ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:109:31: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (value < nodes[nodes[i]["right"]]["data"]!) {
+                              ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:157:34: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (get_height(nodes[nodes[i]["right"]]["right"]!) > get_height(nodes[nodes[i]["right"]]["left"]!)) {
+                                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:157:83: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (get_height(nodes[nodes[i]["right"]]["right"]!) > get_height(nodes[nodes[i]["right"]]["left"]!)) {
+                                                                                  ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:164:34: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (get_height(nodes[nodes[i]["left"]]["left"]!) > get_height(nodes[nodes[i]["left"]]["right"]!)) {
+                                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/avl_tree.dart:164:81: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    if (get_height(nodes[nodes[i]["left"]]["left"]!) > get_height(nodes[nodes[i]["left"]]["right"]!)) {
+                                                                                ^

@@ -1,0 +1,24 @@
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:53: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                    ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:61: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                            ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:66: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                                 ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:84: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                                                   ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:92: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                                                           ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/diff_views_of_binary_tree.dart:32:97: Error: A value of type 'BigInt' can't be assigned to a variable of type 'int'.
+ - 'BigInt' is from 'dart:core'.
+  return Tree(values: [3, 9, 20, 15, 7], lefts: [1, NIL, 3, NIL, NIL], rights: [2, NIL, 4, NIL, NIL], root: 0);
+                                                                                                ^

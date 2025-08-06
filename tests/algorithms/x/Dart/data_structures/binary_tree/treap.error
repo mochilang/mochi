@@ -1,0 +1,25 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:43:30: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+    return SplitResult(left: NIL, right: NIL);
+                             ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:43:42: Error: The argument type 'BigInt' can't be assigned to the parameter type 'int'.
+ - 'BigInt' is from 'dart:core'.
+    return SplitResult(left: NIL, right: NIL);
+                                         ^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:46:36: Error: The method 'split' isn't defined for the class 'int'.
+Try correcting the name to the name of an existing method, or defining a method named 'split'.
+    dynamic res = node_lefts[root].split(value);
+                                   ^^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:50:35: Error: The method 'split' isn't defined for the class 'int'.
+Try correcting the name to the name of an existing method, or defining a method named 'split'.
+  dynamic res = node_rights[root].split(value);
+                                  ^^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:72:22: Error: The method 'split' isn't defined for the class 'int'.
+Try correcting the name to the name of an existing method, or defining a method named 'split'.
+  dynamic res = root.split(value);
+                     ^^^^^
+../../../tests/algorithms/x/Dart/data_structures/binary_tree/treap.dart:77:23: Error: The method 'split' isn't defined for the class 'int'.
+Try correcting the name to the name of an existing method, or defining a method named 'split'.
+  dynamic res1 = root.split(value - 1);
+                      ^^^^^
