@@ -1,0 +1,60 @@
+/*
+Circle Sort
+-----------
+Circle sort is an in-place recursive sorting algorithm that compares
+pairs of elements positioned symmetrically from the ends of the list.
+Elements are swapped if out of order, then the process recurses on the
+first and second halves.  Repeating these "circle" passes until no swaps
+occur yields a sorted list.
+
+Time Complexity: O(n log n) on average, O(n^2) worst case.
+Space Complexity: O(log n) recursion depth.
+*/
+
+fun circle_sort_util(collection: list<int>, low: int, high: int): bool {
+  var swapped = false
+  if low == high {
+    return swapped
+  }
+  var left = low
+  var right = high
+  while left < right {
+    if collection[left] > collection[right] {
+      let tmp = collection[left]
+      collection[left] = collection[right]
+      collection[right] = tmp
+      swapped = true
+    }
+    left = left + 1
+    right = right - 1
+  }
+  if left == right && collection[left] > collection[right + 1] {
+    let tmp2 = collection[left]
+    collection[left] = collection[right + 1]
+    collection[right + 1] = tmp2
+    swapped = true
+  }
+  let mid = low + (high - low) / 2
+  let left_swap = circle_sort_util(collection, low, mid)
+  let right_swap = circle_sort_util(collection, mid + 1, high)
+  if swapped || left_swap || right_swap {
+    return true
+  } else {
+    return false
+  }
+}
+
+fun circle_sort(collection: list<int>): list<int> {
+  if len(collection) < 2 {
+    return collection
+  }
+  var is_not_sorted = true
+  while is_not_sorted {
+    is_not_sorted = circle_sort_util(collection, 0, len(collection) - 1)
+  }
+  return collection
+}
+
+print(str(circle_sort([0, 5, 3, 2, 2])))
+print(str(circle_sort([])))
+print(str(circle_sort([-2, 5, 0, -45])))
