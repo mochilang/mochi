@@ -1,0 +1,87 @@
+/*
+Problem 39 - Integer Right Triangles
+
+Given a bound on the perimeter p of a right angled triangle with integer side
+lengths (a, b, c) where a^2 + b^2 = c^2, count how many distinct Pythagorean
+triplets produce each perimeter.  Enumerating all integer pairs (a, b) up to the
+maximum perimeter and checking whether the hypotenuse is integral yields all
+triplets.  The perimeter with the highest number of solutions for p ≤ 1000 is
+then returned.
+
+The algorithm runs in O(p^2 log p) time where p is the maximum perimeter since it
+inspects each pair (a, b) once and uses binary search for integer square roots.
+Space complexity is O(p) to store counts for each perimeter.
+*/
+
+fun int_sqrt(n: int): int {
+  var low: int = 0
+  var high: int = n
+  while low <= high {
+    let mid = (low + high) / 2
+    let sq = mid * mid
+    if sq == n {
+      return mid
+    }
+    if sq < n {
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+  return high
+}
+
+fun pythagorean_triple(max_perimeter: int): map<int, int> {
+  var triplets: map<int, int> = {}
+  var base: int = 1
+  while base <= max_perimeter {
+    var perpendicular: int = base
+    while perpendicular <= max_perimeter {
+      let hyp_sq = base * base + perpendicular * perpendicular
+      let hyp = int_sqrt(hyp_sq)
+      if hyp * hyp == hyp_sq {
+        let perimeter = base + perpendicular + hyp
+        if perimeter <= max_perimeter {
+          if perimeter in triplets {
+            triplets[perimeter] = triplets[perimeter] + 1
+          } else {
+            triplets[perimeter] = 1
+          }
+        }
+      }
+      perpendicular = perpendicular + 1
+    }
+    base = base + 1
+  }
+  return triplets
+}
+
+fun max_perimeter(counts: map<int, int>): int {
+  var best_p = 0
+  var max_count = 0
+  for p in counts {
+    let count = counts[p]
+    if (count > max_count) || ((count == max_count) && (p > best_p)) {
+      max_count = count
+      best_p = p
+    }
+  }
+  return best_p
+}
+
+fun solution(n: int): int {
+  let triplets = pythagorean_triple(n)
+  return max_perimeter(triplets)
+}
+
+fun main() {
+  let s200 = max_perimeter(pythagorean_triple(200))
+  let s100 = max_perimeter(pythagorean_triple(100))
+  print(str(s100))
+  print(str(s200))
+  let best = max_perimeter(pythagorean_triple(1000))
+  print(str(best))
+  print("Perimeter " + str(best) + " has maximum solutions")
+}
+
+main()
