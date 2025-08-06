@@ -1,0 +1,16 @@
+Warning: Undefined array key 3 in /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php on line 78
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php on line 79
+
+Warning: Trying to access array offset on null in /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php on line 86
+
+Fatal error: Uncaught TypeError: array_keys(): Argument #1 ($array) must be of type array, null given in /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php:149
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(149): array_keys(NULL)
+#1 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(87): has_key(NULL, 'd')
+#2 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(113): insert(Array, 3, 'danas')
+#3 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(73): insert(Array, 0, 'bandanas')
+#4 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(279): insert_many(Array, Array)
+#5 /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php(284): main()
+#6 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/data_structures/trie/radix_tree.php on line 149

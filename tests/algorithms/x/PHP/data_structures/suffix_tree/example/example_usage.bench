@@ -1,0 +1,7 @@
+Fatal error: Uncaught TypeError: array_slice(): Argument #1 ($array) must be of type array, string given in /workspace/mochi/tests/algorithms/x/PHP/data_structures/suffix_tree/example/example_usage.php:55
+Stack trace:
+#0 /workspace/mochi/tests/algorithms/x/PHP/data_structures/suffix_tree/example/example_usage.php(55): array_slice('monkey banana', 0, 3)
+#1 /workspace/mochi/tests/algorithms/x/PHP/data_structures/suffix_tree/example/example_usage.php(69): search(Array, 'ana')
+#2 /workspace/mochi/tests/algorithms/x/PHP/data_structures/suffix_tree/example/example_usage.php(74): main()
+#3 {main}
+  thrown in /workspace/mochi/tests/algorithms/x/PHP/data_structures/suffix_tree/example/example_usage.php on line 55
