@@ -1,0 +1,5 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:63:14: invalid operation: value > node[0] (operator > not defined on interface)
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:192:24: cannot use append(left_acc, node[0].(int)) (value of type []int) as []any value in variable declaration
+../../../tests/algorithms/transpiler/Go/data_structures/binary_tree/binary_search_tree.go:309:14: invalid operation: value > node[0] (operator > not defined on interface)
