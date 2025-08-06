@@ -198,15 +198,15 @@ const helperStr = `
 -compile({nowarn_unused_function, mochi_str/1}).
 mochi_str(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
-    S1 = string:replace(S, ",", " ", all),
-    string:replace(S1, "\"", "", all).
+    S1 = lists:flatten(string:replace(S, ",", " ", all)),
+    lists:flatten(string:replace(S1, "\"", "", all)).
 `
 
 const helperRepr = `
 -compile({nowarn_unused_function, mochi_repr/1}).
 mochi_repr(V) ->
     S = lists:flatten(io_lib:format("~p", [V])),
-    string:replace(S, ",", ", ", all).
+    lists:flatten(string:replace(S, ",", ", ", all)).
 `
 
 var useNow bool
