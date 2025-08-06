@@ -1,0 +1,53 @@
+/*
+Bead Sort
+---------
+
+Bead sort, also known as gravity sort, simulates beads sliding on parallel rods
+under gravity to produce a sorted sequence.  The algorithm works only for lists
+of non‑negative integers.  For each pass through the list, adjacent rods are
+compared and beads are allowed to "fall" from a higher rod to a lower rod.  After
+repeating this process for the length of the list, the beads settle into a sorted
+order.
+
+Algorithm steps:
+1. Verify that all input values are non‑negative integers.
+2. Repeat for each element in the list:
+   a. Iterate through adjacent pairs of rods.
+   b. If the upper rod has more beads than the lower, transfer the difference
+      downward.
+3. Return the list which is now sorted in ascending order.
+
+The time complexity is O(n^2) in the number of items.
+*/
+
+fun bead_sort(sequence: list<int>): list<int> {
+  let n = len(sequence)
+  var i = 0
+  while i < n {
+    if sequence[i] < 0 {
+      panic("Sequence must be list of non-negative integers")
+    }
+    i = i + 1
+  }
+  var pass = 0
+  while pass < n {
+    var j = 0
+    while j < n - 1 {
+      let upper = sequence[j]
+      let lower = sequence[j + 1]
+      if upper > lower {
+        let diff = upper - lower
+        sequence[j] = upper - diff
+        sequence[j + 1] = lower + diff
+      }
+      j = j + 1
+    }
+    pass = pass + 1
+  }
+  return sequence
+}
+
+print(str(bead_sort([6, 11, 12, 4, 1, 5])))
+print(str(bead_sort([9, 8, 7, 6, 5, 4, 3, 2, 1])))
+print(str(bead_sort([5, 0, 4, 3])))
+print(str(bead_sort([8, 2, 1])))
