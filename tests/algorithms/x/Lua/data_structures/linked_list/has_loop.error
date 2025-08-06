@@ -1,0 +1,8 @@
+run: exit status 1
+false
+lua: ...lgorithms/x/Lua/data_structures/linked_list/has_loop.lua:42: attempt to index a number value (local 'fast_node2')
+stack traceback:
+	...lgorithms/x/Lua/data_structures/linked_list/has_loop.lua:42: in function 'has_loop'
+	...lgorithms/x/Lua/data_structures/linked_list/has_loop.lua:148: in function 'main'
+	...lgorithms/x/Lua/data_structures/linked_list/has_loop.lua:286: in main chunk
+	[C]: in ?

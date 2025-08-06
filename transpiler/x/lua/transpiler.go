@@ -671,18 +671,34 @@ func (c *CallExpr) emit(w io.Writer) {
 			c.Args[0].emit(w)
 		}
 		io.WriteString(w, ")")
-	case "min":
-		io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v < m then\n      m = v\n    end\n  end\n  return m\nend)(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		}
-		io.WriteString(w, ")")
-	case "max":
-		io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v > m then\n      m = v\n    end\n  end\n  return m\nend)(")
-		if len(c.Args) > 0 {
-			c.Args[0].emit(w)
-		}
-		io.WriteString(w, ")")
+       case "min":
+               if len(c.Args) == 2 {
+                       io.WriteString(w, "math.min(")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, ", ")
+                       c.Args[1].emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v < m then\n      m = v\n    end\n  end\n  return m\nend)(")
+                       if len(c.Args) > 0 {
+                               c.Args[0].emit(w)
+                       }
+                       io.WriteString(w, ")")
+               }
+       case "max":
+               if len(c.Args) == 2 {
+                       io.WriteString(w, "math.max(")
+                       c.Args[0].emit(w)
+                       io.WriteString(w, ", ")
+                       c.Args[1].emit(w)
+                       io.WriteString(w, ")")
+               } else {
+                       io.WriteString(w, "(function(lst)\n  local m = nil\n  for _, v in ipairs(lst) do\n    if m == nil or v > m then\n      m = v\n    end\n  end\n  return m\nend)(")
+                       if len(c.Args) > 0 {
+                               c.Args[0].emit(w)
+                       }
+                       io.WriteString(w, ")")
+               }
 	case "values":
 		io.WriteString(w, "(function(m)\n  local keys = {}\n  for k in pairs(m) do\n    if k ~= '__name' and k ~= '__order' then table.insert(keys, k) end\n  end\n  table.sort(keys, function(a,b) return a<b end)\n  local res = {}\n  for _, k in ipairs(keys) do\n    table.insert(res, m[k])\n  end\n  return res\nend)(")
 		if len(c.Args) > 0 {
