@@ -1,0 +1,13 @@
+exit status 1
+panic: interface conversion: interface {} is float64, not int
+
+goroutine 1 [running]:
+main.round_to_int(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/conversions/molecular_chemistry.go:36
+main.molarity_to_normality(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/conversions/molecular_chemistry.go:42
+main.main.func1()
+	/workspace/mochi/tests/algorithms/transpiler/Go/conversions/molecular_chemistry.go:63 +0x57
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/conversions/molecular_chemistry.go:77 +0xf
+exit status 2

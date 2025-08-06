@@ -1,0 +1,3 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/data_compression/huffman.go:68:9: invalid operation: func() int {…}() (value of type int) is not an interface

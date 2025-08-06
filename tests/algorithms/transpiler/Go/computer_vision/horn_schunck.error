@@ -1,0 +1,17 @@
+exit status 1
+panic: interface conversion: interface {} is float64, not int
+
+goroutine 1 [running]:
+main.round_int(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:36
+main.warp({0xc000130800?, 0x2, 0x0?}, {0xc00003a150, 0x2, 0x0?}, {0x0?, 0x0?, 0x0?})
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:76 +0x131
+main.horn_schunck({0xc000130800, 0x2, 0x2}, {0xc0001307d0, 0x2, 0x2}, 0x14, 0x3fb999999999999a)
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:164 +0x705
+main.mochiMain()
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:926 +0x1ce
+main.main.func1(...)
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:1087
+main.main()
+	/workspace/mochi/tests/algorithms/transpiler/Go/computer_vision/horn_schunck.go:1094 +0x92
+exit status 2

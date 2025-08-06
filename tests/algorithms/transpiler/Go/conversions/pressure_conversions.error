@@ -1,0 +1,4 @@
+exit status 1
+# command-line-arguments
+../../../tests/algorithms/transpiler/Go/conversions/pressure_conversions.go:44:20: undefined: Object
+../../../tests/algorithms/transpiler/Go/conversions/pressure_conversions.go:49:20: undefined: Object
