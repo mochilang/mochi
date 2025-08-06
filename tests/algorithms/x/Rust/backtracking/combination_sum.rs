@@ -36,27 +36,28 @@ fn _mem() -> i64 {
 }
 fn main() {
         let _start: i64 = _now();
-    fn create_all_state(mut increment: i64, mut total: i64, mut level: i64, current: &mut Vec<i64>, mut result: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
-    if (level == 0) {
-        return { let mut _v = result.clone(); _v.push(current.clone()); _v }
+    fn backtrack(candidates: &mut Vec<i64>, mut start: i64, mut target: i64, path: &mut Vec<i64>, mut result: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+    if (target == 0) {
+        return { let mut _v = result.clone(); _v.push(path.clone()); _v }
     }
-    let mut i: i64 = increment;
-    while (i <= ((total - level) + 1)) {
-        let mut next_current: Vec<i64> = { let mut _v = current.clone(); _v.push(i); _v };
-        result = create_all_state((i + 1), total, (level - 1), &mut next_current, result.clone());
+    let mut i: i64 = start;
+    while (i < (candidates.len() as i64)) {
+        let mut value: i64 = candidates[i as usize];
+        if (value <= target) {
+            let mut new_path: Vec<i64> = { let mut _v = path.clone(); _v.push(value); _v };
+            result = backtrack(candidates, i, (target - value), &mut new_path, result.clone());
+        }
         i = (i + 1);
     }
     return result
 };
-    fn generate_all_combinations(mut n: i64, mut k: i64) -> Vec<Vec<i64>> {
-    if ((k < 0) || (n < 0)) {
-        return vec![]
-    }
+    fn combination_sum(candidates: &mut Vec<i64>, mut target: i64) -> Vec<Vec<i64>> {
+    let mut path: Vec<i64> = vec![];
     let mut result: Vec<Vec<i64>> = vec![];
-    return create_all_state(1, n, k, &mut vec![], result.clone())
+    return backtrack(candidates, 0, target, &mut path, result.clone())
 };
-    println!("{}", format!("{:?}", generate_all_combinations(4, 2)));
-    println!("{}", format!("{:?}", generate_all_combinations(3, 1)));
+    println!("{}", format!("{:?}", combination_sum(&mut vec![2, 3, 5], 8)));
+    println!("{}", format!("{:?}", combination_sum(&mut vec![2, 3, 6, 7], 7)));
     let _end: i64 = _now();
     let duration_us: i64 = ((_end - _start) / 1000);
     let memory_bytes: i64 = _mem();

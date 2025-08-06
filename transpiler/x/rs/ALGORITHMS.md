@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated Rust code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Rust`.
-Last updated: 2025-08-06 16:09 GMT+7
+Last updated: 2025-08-06 16:39 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 53µs | 2.0 MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 77µs | 2.0 MB |
+| 2 | backtracking/all_permutations | ✓ | 112µs | 2.1 MB |
+| 3 | backtracking/all_subsequences | ✓ | 71µs | 2.2 MB |
+| 4 | backtracking/coloring | ✓ | 41µs | 2.1 MB |
+| 5 | backtracking/combination_sum | ✓ | 72µs | 2.1 MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 81µs | 2.0 MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ |  | 2.0 MB |
+| 8 | backtracking/knight_tour | ✓ | 24µs | 1.8 MB |
+| 9 | backtracking/match_word_pattern | ✓ | 174µs | 2.0 MB |
+| 10 | backtracking/minimax | ✓ | 52µs | 2.1 MB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |

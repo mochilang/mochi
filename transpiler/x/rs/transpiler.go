@@ -281,6 +281,17 @@ func (c *CallExpr) emit(w io.Writer) {
 		(&PadStartExpr{Str: c.Args[0], Width: c.Args[1], Pad: c.Args[2]}).emit(w)
 		return
 	}
+	if c.Func == "panic" {
+		io.WriteString(w, "panic!(")
+		for i, a := range c.Args {
+			if i > 0 {
+				io.WriteString(w, ", ")
+			}
+			a.emit(w)
+		}
+		io.WriteString(w, ")")
+		return
+	}
 	io.WriteString(w, rustIdent(c.Func))
 	io.WriteString(w, "(")
 	pts, hasPts := funParamTypes[c.Func]
@@ -388,7 +399,14 @@ func (p *PrintExpr) emit(w io.Writer) {
 	} else {
 		fmtStr := p.Fmt
 		if len(p.Args) == 1 {
-			if t := inferType(p.Args[0]); strings.HasPrefix(t, "HashMap<") {
+			t := inferType(p.Args[0])
+			if strings.HasPrefix(t, "&") {
+				t = strings.TrimPrefix(t, "&")
+				if strings.HasPrefix(t, "mut ") {
+					t = strings.TrimPrefix(t, "mut ")
+				}
+			}
+			if strings.HasPrefix(t, "HashMap<") || strings.HasPrefix(t, "Vec<") {
 				fmtStr = "{:?}"
 			}
 		}
@@ -1957,6 +1975,17 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
+		if t == "String" {
+			if b.Op == "==" {
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			} else {
+				io.WriteString(w, "!")
+				expr.emit(w)
+				io.WriteString(w, ".is_empty()")
+			}
+			return
+		}
 		if strings.HasPrefix(t, "Option<") {
 			if b.Op == "==" {
 				expr.emit(w)
@@ -2894,7 +2923,7 @@ func compileStmt(stmt *parser.Statement) (Stmt, error) {
 			} else if typ == "Vec<String>" {
 				if ll, ok := e.(*ListLit); ok {
 					for i, el := range ll.Elems {
-						if _, ok := el.(*StringLit); ok {
+						if _, ok := el.(*StringLit); ok || inferType(el) != "String" {
 							ll.Elems[i] = &StringCastExpr{Expr: el}
 						}
 					}
@@ -5595,6 +5624,8 @@ func rustType(t string) string {
 		return "bool"
 	case "string":
 		return "String"
+	case "void":
+		return "()"
 	}
 	if _, ok := structTypes[t]; ok {
 		return t
