@@ -1,0 +1,75 @@
+/*
+Extract the citation count from a Google Scholar result page.
+
+The Python version downloads the HTML page for a given article using the
+provided query parameters and then uses BeautifulSoup to locate the citation
+link.  This Mochi translation avoids external libraries and network access by
+searching a sample HTML snippet for the text "Cited by N" and returning the
+number N.
+
+Algorithm:
+1. Search the HTML string for the marker "Cited by ".
+2. Starting after the marker, collect consecutive digit characters.
+3. The collected digits represent the citation count.
+
+This approach demonstrates basic string scanning and therefore does not
+require any `any` typed values or foreign function interfaces.
+*/
+
+let DIGITS = "0123456789"
+
+fun is_digit(ch: string): bool {
+  var i = 0
+  while i < len(DIGITS) {
+    if DIGITS[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun find_substring(haystack: string, needle: string): int {
+  var i = 0
+  while i <= len(haystack) - len(needle) {
+    var j = 0
+    while j < len(needle) {
+      if haystack[i + j] != needle[j] { break }
+      j = j + 1
+    }
+    if j == len(needle) { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun extract_citation(html: string): string {
+  let marker = "Cited by "
+  let idx = find_substring(html, marker)
+  if idx < 0 { return "" }
+  var pos = idx + len(marker)
+  var result = ""
+  while pos < len(html) {
+    let ch = html[pos]
+    if !is_digit(ch) { break }
+    result = result + ch
+    pos = pos + 1
+  }
+  return result
+}
+
+fun get_citation(base_url: string, params: map<string,string>): string {
+  // Sample HTML representing a Google Scholar result.
+  let html = "<div class=\"gs_ri\"><div class=\"gs_fl\"><a>Cited by 123</a></div></div>"
+  return extract_citation(html)
+}
+
+if __name__ == "__main__" {
+  let params: map<string,string> = {
+    "title": "Precisely geometry controlled microsupercapacitors for ultrahigh areal capacitance, volumetric capacitance, and energy density",
+    "journal": "Chem. Mater.",
+    "volume": "30",
+    "pages": "3979-3990",
+    "year": "2018",
+    "hl": "en",
+  }
+  print(get_citation("https://scholar.google.com/scholar_lookup", params))
+}
