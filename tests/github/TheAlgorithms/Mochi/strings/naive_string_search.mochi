@@ -1,0 +1,30 @@
+/*
+Naive string search algorithm: scans the text from each index and compares
+the pattern character by character. When all characters match, the starting
+index is recorded. This brute-force approach runs in O(n*m) time where n is
+the text length and m is the pattern length.
+*/
+
+fun naive_string_search(text: string, pattern: string): list<int> {
+  let pat_len = len(pattern)
+  var positions: list<int> = []
+  var i = 0
+  while i <= len(text) - pat_len {
+    var match_found = true
+    var j = 0
+    while j < pat_len {
+      if text[i + j] != pattern[j] {
+        match_found = false
+        break
+      }
+      j = j + 1
+    }
+    if match_found {
+      positions = append(positions, i)
+    }
+    i = i + 1
+  }
+  return positions
+}
+
+print(naive_string_search("ABAAABCDBBABCDDEBCABC", "ABC"))
