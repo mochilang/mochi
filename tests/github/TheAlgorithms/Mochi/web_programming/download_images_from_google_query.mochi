@@ -1,0 +1,86 @@
+/*
+Downloading images from a Google query
+
+This program emulates the behavior of the Python algorithm from
+TheAlgorithms repository which fetches image results for a query from
+Google and saves them to disk. Due to the lack of networking and HTML
+parsing libraries in the pure Mochi runtime, this implementation works
+with a small sample of HTML returned by a search request. The program:
+
+1. Defines a static HTML snippet that contains several image URLs.
+2. Extracts all direct links to JPG images by scanning for occurrences
+   of "https://" followed by characters up to the ".jpg" suffix.
+3. Limits the number of images to at most 50 and to the requested maximum.
+4. Prints messages for the images that would be downloaded.
+
+No external libraries or FFI are used and all types are explicit.
+*/
+
+fun replace_spaces(s: string): string {
+  var res = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " {
+      res = res + "_"
+    } else {
+      res = res + ch
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun extract_image_urls(html: string): list<string> {
+  var urls: list<string> = []
+  var i = 0
+  while i < len(html) {
+    if i + 8 <= len(html) && html[i:i+8] == "https://" {
+      var j = i
+      while j < len(html) && !(j + 4 <= len(html) && html[j:j+4] == ".jpg") {
+        j = j + 1
+      }
+      if j + 4 <= len(html) {
+        let url = html[i:j+4]
+        urls = append(urls, url)
+        i = j + 4
+      } else {
+        i = j
+      }
+    } else {
+      i = i + 1
+    }
+  }
+  return urls
+}
+
+fun download_images_from_google_query(query: string, max_images: int): int {
+  var limit = max_images
+  if limit > 50 {
+    limit = 50
+  }
+  let sample_html =
+    "<img src='https://example.com/a.jpg'>" +
+    "<img src='https://example.com/b.jpg'>" +
+    "<img src='https://example.com/c.jpg'>" +
+    "<img src='https://example.com/d.jpg'>" +
+    "<img src='https://example.com/e.jpg'>"
+  let urls = extract_image_urls(sample_html)
+  var count = 0
+  let path_name = "query_" + replace_spaces(query)
+  var i = 0
+  while i < len(urls) && i < limit {
+    let url = urls[i]
+    print("Downloading", url, "to", path_name, "image", i)
+    count = count + 1
+    i = i + 1
+  }
+  return count
+}
+
+fun main() {
+  let c = download_images_from_google_query("dhaka", 5)
+  print(c, "images were downloaded.")
+}
+
+main()
