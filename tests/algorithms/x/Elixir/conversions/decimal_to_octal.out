@@ -1,0 +1,26 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │       {i, result} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/decimal_to_octal.exs:16:8: Main.int_pow/2
+
+    warning: variable "counter" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {counter, octal, value} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/decimal_to_octal.exs:46:8: Main.decimal_to_octal/1
+
+    warning: variable "value" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │       {counter, octal, value} = try do
+    │                        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/decimal_to_octal.exs:46:24: Main.decimal_to_octal/1
+
+"0o2"
+"0o10"
+"0o101"
+"0o330"
+"0o1000"

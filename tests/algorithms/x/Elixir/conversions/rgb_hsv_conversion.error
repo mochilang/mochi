@@ -1,0 +1,46 @@
+run: exit status 1
+    warning: variable "blue" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 84 │       blue = 0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:84:7: Main.hsv_to_rgb/3
+
+    warning: variable "green" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 83 │       green = 0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:83:7: Main.hsv_to_rgb/3
+
+    warning: variable "red" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 82 │       red = 0
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:82:7: Main.hsv_to_rgb/3
+
+     warning: variable "hue" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 154 │       hue = nil
+     │       ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:154:7: Main.rgb_to_hsv/3
+
+[64 128 128]
+** (ArgumentError) cannot convert the given list to a string.
+
+To be converted to a string, a list must either be empty or only
+contain the following elements:
+
+  * strings
+  * integers representing Unicode code points
+  * a list containing one of these three elements
+
+Please check the given list or call inspect/1 to get the list representation, got:
+
+[180.0, 0.5, 0.5019607843137255]
+
+    (elixir 1.18.3) lib/list.ex:1124: List.to_string/1
+    /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:194: Main.main/0
+    /workspace/mochi/tests/algorithms/x/Elixir/conversions/rgb_hsv_conversion.exs:198: (file)

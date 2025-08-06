@@ -1,0 +1,15 @@
+warning: variable "num" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │       {hex, num} = try do
+    │             ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/decimal_to_hexadecimal.exs:31:13: Main.decimal_to_hexadecimal/1
+
+"0x5"
+"0xf"
+"0x25"
+"0xff"
+"0x1000"
+"0xf3eba"
+"-0x100"
+"0x0"

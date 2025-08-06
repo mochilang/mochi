@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Elixir code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Elixir`.
-Last updated: 2025-08-06 22:36 GMT+7
+Last updated: 2025-08-06 23:19 GMT+7
 
-## Algorithms Golden Test Checklist (91/1077)
+## Algorithms Golden Test Checklist (136/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 5.99ms | 17.3 MB |
@@ -122,57 +122,57 @@ Last updated: 2025-08-06 22:36 GMT+7
 | 113 | computer_vision/flip_augmentation | error |  |  |
 | 114 | computer_vision/haralick_descriptors | ✓ | 5.31ms | 32.7 MB |
 | 115 | computer_vision/harris_corner | ✓ | 5.13ms | 25.0 MB |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
-| 122 | conversions/binary_to_decimal |   |  |  |
-| 123 | conversions/binary_to_hexadecimal |   |  |  |
-| 124 | conversions/binary_to_octal |   |  |  |
-| 125 | conversions/convert_number_to_words |   |  |  |
-| 126 | conversions/decimal_to_any |   |  |  |
-| 127 | conversions/decimal_to_binary |   |  |  |
-| 128 | conversions/decimal_to_hexadecimal |   |  |  |
-| 129 | conversions/decimal_to_octal |   |  |  |
-| 130 | conversions/energy_conversions |   |  |  |
-| 131 | conversions/excel_title_to_column |   |  |  |
-| 132 | conversions/hex_to_bin |   |  |  |
-| 133 | conversions/hexadecimal_to_decimal |   |  |  |
-| 134 | conversions/ipv4_conversion |   |  |  |
-| 135 | conversions/length_conversion |   |  |  |
-| 136 | conversions/molecular_chemistry |   |  |  |
-| 137 | conversions/octal_to_binary |   |  |  |
-| 138 | conversions/octal_to_decimal |   |  |  |
-| 139 | conversions/octal_to_hexadecimal |   |  |  |
-| 140 | conversions/prefix_conversions |   |  |  |
-| 141 | conversions/prefix_conversions_string |   |  |  |
-| 142 | conversions/pressure_conversions |   |  |  |
-| 143 | conversions/rectangular_to_polar |   |  |  |
-| 144 | conversions/rgb_cmyk_conversion |   |  |  |
-| 145 | conversions/rgb_hsv_conversion |   |  |  |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
-| 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
+| 116 | computer_vision/horn_schunck | ✓ | 9.60ms | 25.0 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 8.79ms | 12.5 MB |
+| 118 | computer_vision/mean_threshold | ✓ | 9.35ms | 12.5 MB |
+| 119 | computer_vision/mosaic_augmentation | error |  |  |
+| 120 | computer_vision/pooling_functions | ✓ | 730us | 12.5 MB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 18.87ms | 25.4 MB |
+| 122 | conversions/binary_to_decimal | ✓ | 6.97ms | 25.0 MB |
+| 123 | conversions/binary_to_hexadecimal | ✓ | 7.84ms | 17.6 MB |
+| 124 | conversions/binary_to_octal | ✓ | 8.40ms | 17.4 MB |
+| 125 | conversions/convert_number_to_words | ✓ | 6.94ms | 17.3 MB |
+| 126 | conversions/decimal_to_any | ✓ | 7.21ms | 25.0 MB |
+| 127 | conversions/decimal_to_binary | ✓ | 7.72ms | 25.0 MB |
+| 128 | conversions/decimal_to_hexadecimal | ✓ | 6.27ms | 32.7 MB |
+| 129 | conversions/decimal_to_octal | ✓ | 7.12ms | 25.0 MB |
+| 130 | conversions/energy_conversions | ✓ | 5.58ms | 25.0 MB |
+| 131 | conversions/excel_title_to_column | ✓ | 7.46ms | 9.5 MB |
+| 132 | conversions/hex_to_bin | ✓ | 7.07ms | 17.4 MB |
+| 133 | conversions/hexadecimal_to_decimal | ✓ | 7.86ms | 17.3 MB |
+| 134 | conversions/ipv4_conversion | ✓ | 8.33ms | 12.5 MB |
+| 135 | conversions/length_conversion | ✓ | 21.12ms | 9.7 MB |
+| 136 | conversions/molecular_chemistry | ✓ | 6.03ms | 32.7 MB |
+| 137 | conversions/octal_to_binary | ✓ | 6.31ms | 25.4 MB |
+| 138 | conversions/octal_to_decimal | ✓ | 7.46ms | 7.7 MB |
+| 139 | conversions/octal_to_hexadecimal | ✓ | 7.07ms | 17.3 MB |
+| 140 | conversions/prefix_conversions | ✓ | 18.56ms | 17.7 MB |
+| 141 | conversions/prefix_conversions_string | ✓ | 13.81ms | 25.1 MB |
+| 142 | conversions/pressure_conversions | ✓ |  |  |
+| 143 | conversions/rectangular_to_polar | error |  |  |
+| 144 | conversions/rgb_cmyk_conversion | ✓ | 9.88ms | 25.1 MB |
+| 145 | conversions/rgb_hsv_conversion | error |  |  |
+| 146 | conversions/roman_numerals | ✓ | 1us | 0 B |
+| 147 | conversions/speed_conversions | ✓ | 7.22ms | 25.4 MB |
+| 148 | conversions/temperature_conversions | error |  |  |
+| 149 | conversions/time_conversions | ✓ | 17.59ms | 17.4 MB |
+| 150 | conversions/volume_conversions | ✓ | 6.12ms | 17.4 MB |
+| 151 | conversions/weight_conversion | ✓ | 9.95ms | 12.5 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 8.57ms | 12.5 MB |
+| 153 | data_compression/huffman | ✓ | 6.79ms | 9.5 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 8.91ms | 25.2 MB |
 | 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
+| 156 | data_compression/lz77 | ✓ | 8.27ms | 9.5 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 1us | 0 B |
+| 158 | data_compression/run_length_encoding | ✓ | 9.73ms | 25.4 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 7.19ms | 17.3 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | error |  |  |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 7.93ms | 25.0 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 6.89ms | 25.0 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 9.13ms | 17.3 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 6.67ms | 25.0 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 7.05ms | 12.5 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 9.74ms | 25.0 MB |
 | 167 | data_structures/arrays/prefix_sum |   |  |  |
 | 168 | data_structures/arrays/product_sum |   |  |  |
 | 169 | data_structures/arrays/sparse_table |   |  |  |

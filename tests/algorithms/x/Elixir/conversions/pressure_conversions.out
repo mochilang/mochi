@@ -1,0 +1,15 @@
+405300.0
+1.4401981999999998e-4
+0.986923
+0.029999991892499998
+290.074434314
+206.85984
+0.0334211
+0.019336718261000002
+    warning: Object.keys/1 is undefined (module Object is not available or is yet to be defined). Make sure the module name is correct and has been specified in full (or that an alias has been defined)
+    │
+  6 │         keys = Object.keys(Process.get(:pressure_conversion))
+    │                       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/pressure_conversions.exs:6:23: Main.pressure_conversion/3
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/pressure_conversions.exs:10:23: Main.pressure_conversion/3

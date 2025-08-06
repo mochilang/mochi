@@ -39,6 +39,21 @@ var elixirReserved = map[string]struct{}{
 	"after": {},
 }
 
+var kernelReserved = map[string]int{
+	"floor": 1,
+}
+
+func kernelImportExcepts() []string {
+	var ex []string
+	for name, ar := range definedFuncs {
+		if kar, ok := kernelReserved[name]; ok && kar == ar {
+			ex = append(ex, fmt.Sprintf("%s: %d", name, ar))
+		}
+	}
+	sort.Strings(ex)
+	return ex
+}
+
 func sanitizeIdent(name string) string {
 	if _, ok := elixirReserved[name]; ok {
 		return name + "_"
@@ -74,8 +89,8 @@ var globalVars map[string]struct{}
 // methodFuncs tracks names of struct methods for implicit self calls.
 var methodFuncs map[string]struct{}
 
-// definedFuncs tracks names of top-level functions.
-var definedFuncs map[string]struct{}
+// definedFuncs maps top-level function names to their arity.
+var definedFuncs map[string]int
 
 func isGlobalVar(name string) bool {
 	_, ok := globalVars[name]
@@ -1836,6 +1851,11 @@ func Emit(p *Program, benchMain bool) []byte {
 	}
 	moduleMode = true
 	buf.WriteString("defmodule Main do\n")
+	if ex := kernelImportExcepts(); len(ex) > 0 {
+		buf.WriteString("  import Kernel, except: [")
+		buf.WriteString(strings.Join(ex, ", "))
+		buf.WriteString("]\n")
+	}
 	if usedHelpers["now"] {
 		buf.WriteString(nowHelper(1))
 	}
@@ -1988,7 +2008,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 	builtinAliases = make(map[string]string)
 	globalVars = make(map[string]struct{})
 	methodFuncs = make(map[string]struct{})
-	definedFuncs = make(map[string]struct{})
+	definedFuncs = make(map[string]int)
 	usedHelpers = make(map[string]bool)
 	moduleMode = false
 	for _, st := range prog.Statements {
@@ -2024,7 +2044,7 @@ func Transpile(prog *parser.Program, env *types.Env) (*Program, error) {
 		}
 		if st.Fun != nil {
 			moduleMode = true
-			definedFuncs[sanitizeFuncName(st.Fun.Name)] = struct{}{}
+			definedFuncs[sanitizeFuncName(st.Fun.Name)] = len(st.Fun.Params)
 		}
 		if st.Let != nil {
 			globalVars[st.Let.Name] = struct{}{}

@@ -1,0 +1,26 @@
+warning: variable "decimal" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 94 │       {decimal, hex} = try do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_hexadecimal.exs:94:8: Main.octal_to_hex/1
+
+    warning: variable "j" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │       j = try do
+    │       ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_hexadecimal.exs:55:7: Main.octal_to_hex/1
+
+    warning: variable "k" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 73 │       {decimal, k} = try do
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/octal_to_hexadecimal.exs:73:17: Main.octal_to_hex/1
+
+"0x18"
+"0x40"
+"0xA7"
+"0x9D"
+"0x7"

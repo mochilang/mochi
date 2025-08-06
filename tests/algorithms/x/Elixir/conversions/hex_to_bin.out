@@ -1,0 +1,19 @@
+warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 157 │       {i, int_num} = try do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/hex_to_bin.exs:157:8: Main.hex_to_bin/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 180 │       {bin_str, n} = try do
+     │                 ~
+     │
+     └─ /workspace/mochi/tests/algorithms/x/Elixir/conversions/hex_to_bin.exs:180:17: Main.hex_to_bin/1
+
+10101100
+100110100100
+100101111
+1111111111111111
+-1111111111111111
