@@ -2,8 +2,8 @@
 
 Generated Swift code for algorithms in `tests/github/TheAlgorithms/Mochi`. Outputs are stored in `tests/algorithms/transpiler/Swift`. Errors are captured in `.error` files.
 
-Completed programs: 79/1077
-Last updated: 2025-08-06 20:48 +0700
+Completed programs: 119/1077
+Last updated: 2025-08-06 21:14 +0700
 
 | Index | Name | Status | Duration | Memory |
 |------:|------|--------|---------:|-------:|
@@ -87,47 +87,47 @@ Last updated: 2025-08-06 20:48 +0700
 | 78 | ciphers/cryptomath_module | ✓ | 219µs | 3.2 MB |
 | 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 88.557ms | 3.3 MB |
 | 80 | ciphers/deterministic_miller_rabin | ✓ | 265µs | 3.1 MB |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
-| 101 | ciphers/rsa_key_generator |   |  |  |
-| 102 | ciphers/running_key_cipher |   |  |  |
-| 103 | ciphers/shuffled_shift_cipher |   |  |  |
-| 104 | ciphers/simple_keyword_cypher |   |  |  |
-| 105 | ciphers/simple_substitution_cipher |   |  |  |
+| 81 | ciphers/diffie | ✓ | 440µs | 3.2 MB |
+| 82 | ciphers/diffie_hellman | ✓ | 230µs | 3.2 MB |
+| 83 | ciphers/elgamal_key_generator | ✓ | 346µs | 3.1 MB |
+| 84 | ciphers/enigma_machine2 | ✓ | 16.543ms | 2.9 MB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 962µs | 3.5 MB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 2.899ms | 3.5 MB |
+| 87 | ciphers/hill_cipher | ✓ | 2.529ms | 3.3 MB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 807µs | 3.3 MB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 428µs | 2.9 MB |
+| 90 | ciphers/morse_code | ✓ | 551µs | 3.2 MB |
+| 91 | ciphers/onepad_cipher | ✓ | 1.877ms | 3.3 MB |
+| 92 | ciphers/permutation_cipher | ✓ | 844µs | 3.5 MB |
+| 93 | ciphers/playfair_cipher | ✓ | 663µs | 3.6 MB |
+| 94 | ciphers/polybius | ✓ | 443µs | 3.2 MB |
+| 95 | ciphers/porta_cipher | ✓ | 1.058ms | 3.1 MB |
+| 96 | ciphers/rabin_miller | ✓ | 1.885ms | 3.5 MB |
+| 97 | ciphers/rail_fence_cipher | ✓ | 665µs | 3.2 MB |
+| 98 | ciphers/rot13 | ✓ | 5.473ms | 3.2 MB |
+| 99 | ciphers/rsa_cipher | ✓ | 776µs | 3.7 MB |
+| 100 | ciphers/rsa_factorization | ✓ | 370µs | 3.2 MB |
+| 101 | ciphers/rsa_key_generator | ✓ | 274µs | 3.2 MB |
+| 102 | ciphers/running_key_cipher | ✓ | 786µs | 3.4 MB |
+| 103 | ciphers/shuffled_shift_cipher | ✓ | 1.73ms | 3.1 MB |
+| 104 | ciphers/simple_keyword_cypher | ✓ | 1.235ms | 3.2 MB |
+| 105 | ciphers/simple_substitution_cipher | ✓ | 1.179ms | 3.1 MB |
 | 106 | ciphers/transposition_cipher |   |  |  |
-| 107 | ciphers/transposition_cipher_encrypt_decrypt_file |   |  |  |
-| 108 | ciphers/trifid_cipher |   |  |  |
-| 109 | ciphers/vernam_cipher |   |  |  |
-| 110 | ciphers/vigenere_cipher |   |  |  |
-| 111 | ciphers/xor_cipher |   |  |  |
-| 112 | computer_vision/cnn_classification |   |  |  |
-| 113 | computer_vision/flip_augmentation |   |  |  |
-| 114 | computer_vision/haralick_descriptors |   |  |  |
-| 115 | computer_vision/harris_corner |   |  |  |
-| 116 | computer_vision/horn_schunck |   |  |  |
-| 117 | computer_vision/intensity_based_segmentation |   |  |  |
-| 118 | computer_vision/mean_threshold |   |  |  |
-| 119 | computer_vision/mosaic_augmentation |   |  |  |
-| 120 | computer_vision/pooling_functions |   |  |  |
-| 121 | conversions/astronomical_length_scale_conversion |   |  |  |
+| 107 | ciphers/transposition_cipher_encrypt_decrypt_file | ✓ | 222µs | 3.0 MB |
+| 108 | ciphers/trifid_cipher | ✓ | 1.576ms | 3.0 MB |
+| 109 | ciphers/vernam_cipher | ✓ | 430µs | 3.5 MB |
+| 110 | ciphers/vigenere_cipher | ✓ | 3.187ms | 3.2 MB |
+| 111 | ciphers/xor_cipher | ✓ | 5.993ms | 3.4 MB |
+| 112 | computer_vision/cnn_classification | ✓ | 419µs | 3.4 MB |
+| 113 | computer_vision/flip_augmentation | ✓ | 1.43ms | 4.0 MB |
+| 114 | computer_vision/haralick_descriptors | ✓ | 348µs | 3.3 MB |
+| 115 | computer_vision/harris_corner | ✓ | 588µs | 3.3 MB |
+| 116 | computer_vision/horn_schunck | ✓ | 830µs | 3.4 MB |
+| 117 | computer_vision/intensity_based_segmentation | ✓ | 627µs | 3.1 MB |
+| 118 | computer_vision/mean_threshold | ✓ | 435µs | 3.3 MB |
+| 119 | computer_vision/mosaic_augmentation | ✓ | 2.557ms | 3.5 MB |
+| 120 | computer_vision/pooling_functions | ✓ | 327µs | 3.2 MB |
+| 121 | conversions/astronomical_length_scale_conversion | ✓ | 388µs | 3.3 MB |
 | 122 | conversions/binary_to_decimal |   |  |  |
 | 123 | conversions/binary_to_hexadecimal |   |  |  |
 | 124 | conversions/binary_to_octal |   |  |  |
