@@ -1,0 +1,48 @@
+/*
+Sort a list in ascending order using the Cocktail Shaker Sort algorithm.
+This algorithm is a bidirectional variation of bubble sort:
+1. Traverse the list left to right swapping adjacent out-of-order items.
+2. Move the end pointer left and traverse right to left swapping as needed.
+3. Move the start pointer right and repeat until no swaps occur.
+It runs in O(n^2) time with O(1) additional space for n items.
+*/
+
+fun cocktail_shaker_sort(arr: list<int>): list<int> {
+  var start = 0
+  var end = len(arr) - 1
+  while start < end {
+    var swapped = false
+
+    var i = start
+    while i < end {
+      if arr[i] > arr[i + 1] {
+        let temp = arr[i]
+        arr[i] = arr[i + 1]
+        arr[i + 1] = temp
+        swapped = true
+      }
+      i = i + 1
+    }
+    if !swapped { break }
+
+    end = end - 1
+
+    i = end
+    while i > start {
+      if arr[i] < arr[i - 1] {
+        let temp2 = arr[i]
+        arr[i] = arr[i - 1]
+        arr[i - 1] = temp2
+        swapped = true
+      }
+      i = i - 1
+    }
+    if !swapped { break }
+    start = start + 1
+  }
+  return arr
+}
+
+print(str(cocktail_shaker_sort([4, 5, 2, 1, 2])))
+print(str(cocktail_shaker_sort([-4, 5, 0, 1, 2, 11])))
+print(str(cocktail_shaker_sort([1, 2, 3, 4, 5])))
