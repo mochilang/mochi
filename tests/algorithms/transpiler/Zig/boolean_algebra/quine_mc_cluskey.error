@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/algorithms/transpiler/Zig/boolean_algebra/quine_mc_cluskey.zig:15:16: error: operator != not allowed for type '[]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/boolean_algebra/quine_mc_cluskey.zig:223:104: error: operator == not allowed for type '[]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/boolean_algebra/quine_mc_cluskey.zig:115:16: error: operator != not allowed for type '[]const u8'
+/workspace/mochi/tests/algorithms/transpiler/Zig/boolean_algebra/quine_mc_cluskey.zig:32:42: error: operator == not allowed for type '[]const u8'

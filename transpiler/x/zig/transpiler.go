@@ -1892,6 +1892,38 @@ func (b *BinaryExpr) emit(w io.Writer) {
 			}
 			return
 		}
+		leftType := lt
+		rightType := rt
+		if !isStringType(leftType) {
+			if vr, ok := b.Left.(*VarRef); ok {
+				if vd, ok2 := varDecls[vr.Name]; ok2 {
+					if strings.HasPrefix(vd.Type, "[]") && strings.HasSuffix(vd.Type, "u8") {
+						leftType = vd.Type
+					}
+				}
+			}
+		}
+		if !isStringType(rightType) {
+			if vr, ok := b.Right.(*VarRef); ok {
+				if vd, ok2 := varDecls[vr.Name]; ok2 {
+					if strings.HasPrefix(vd.Type, "[]") && strings.HasSuffix(vd.Type, "u8") {
+						rightType = vd.Type
+					}
+				}
+			}
+		}
+		if isStringType(leftType) || isStringType(rightType) {
+			if b.Op == "==" {
+				io.WriteString(w, "std.mem.eql(u8, ")
+			} else {
+				io.WriteString(w, "!std.mem.eql(u8, ")
+			}
+			b.Left.emit(w)
+			io.WriteString(w, ", ")
+			b.Right.emit(w)
+			io.WriteString(w, ")")
+			return
+		}
 		if sl, ok := b.Left.(*StringLit); ok && len(sl.Value) == 1 && !isStringType(rt) {
 			b.Right.emit(w)
 			fmt.Fprintf(w, " %s '%s'", b.Op, sl.Value)
@@ -4118,6 +4150,7 @@ func compileFunStmt(fn *parser.FunStmt, prog *parser.Program) (*Func, error) {
 		names[i] = aliasName
 		varTypes[aliasName] = typ
 		varTypes[name] = typ
+		namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], aliasName, name)
 		paramTypes[i] = typ
 		if strings.HasPrefix(typ, "std.StringHashMap(") || strings.HasPrefix(typ, "std.AutoHashMap(") {
 			mapVars[aliasName] = true
@@ -4266,10 +4299,10 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
 		if s.Let.Type != nil {
 			vd.Type = toZigType(s.Let.Type)
-			if funDepth == 0 {
-				varTypes[s.Let.Name] = vd.Type
-			}
+		} else {
+			vd.Type = zigTypeFromExpr(expr)
 		}
+		varTypes[s.Let.Name] = vd.Type
 		varDecls[s.Let.Name] = vd
 		varDecls[alias] = vd
 		if lst, ok := expr.(*ListLit); ok {
@@ -4376,14 +4409,14 @@ func compileStmt(s *parser.Statement, prog *parser.Program) (Stmt, error) {
 			namesStack[len(namesStack)-1] = append(namesStack[len(namesStack)-1], name)
 		}
 		vd := &VarDecl{Name: alias, Value: expr, Mutable: mutable}
-		varDecls[s.Var.Name] = vd
-		varDecls[alias] = vd
 		if s.Var.Type != nil {
 			vd.Type = toZigType(s.Var.Type)
-			if funDepth == 0 {
-				varTypes[s.Var.Name] = vd.Type
-			}
+		} else {
+			vd.Type = zigTypeFromExpr(expr)
 		}
+		varTypes[s.Var.Name] = vd.Type
+		varDecls[s.Var.Name] = vd
+		varDecls[alias] = vd
 		if lst, ok := expr.(*ListLit); ok {
 			if funDepth <= 1 && inferListStruct(s.Var.Name, lst) != "" {
 				vd.Type = fmt.Sprintf("[%d]%s", len(lst.Elems), lst.ElemType)

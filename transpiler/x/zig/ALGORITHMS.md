@@ -2,9 +2,9 @@
 
 Generated Zig code for Algorithms tasks lives under `tests/algorithms/transpiler/Zig`.
 
-Last updated: 2025-08-06 21:56 +0700
+Last updated: 2025-08-06 22:23 +0700
 
-## Program Checklist (48/1077)
+## Program Checklist (54/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 1.114ms | 512.0 KB |
@@ -56,12 +56,12 @@ Last updated: 2025-08-06 21:56 +0700
 | 47 | boolean_algebra/and_gate | ✓ | 827µs | 256.0 KB |
 | 48 | boolean_algebra/imply_gate | ✓ | 558µs | 384.0 KB |
 | 49 | boolean_algebra/karnaugh_map_simplification | ✓ | 1.073ms | 256.0 KB |
-| 50 | boolean_algebra/multiplexer |   |  |  |
-| 51 | boolean_algebra/nand_gate |   |  |  |
-| 52 | boolean_algebra/nimply_gate |   |  |  |
-| 53 | boolean_algebra/nor_gate |   |  |  |
-| 54 | boolean_algebra/not_gate |   |  |  |
-| 55 | boolean_algebra/or_gate |   |  |  |
+| 50 | boolean_algebra/multiplexer | ✓ | 461µs | 384.0 KB |
+| 51 | boolean_algebra/nand_gate | ✓ | 566µs | 256.0 KB |
+| 52 | boolean_algebra/nimply_gate | ✓ | 670µs | 256.0 KB |
+| 53 | boolean_algebra/nor_gate | ✓ | 4.566ms | 768.0 KB |
+| 54 | boolean_algebra/not_gate | ✓ | 415µs | 256.0 KB |
+| 55 | boolean_algebra/or_gate | ✓ | 686µs | 256.0 KB |
 | 56 | boolean_algebra/quine_mc_cluskey |   |  |  |
 | 57 | boolean_algebra/xnor_gate |   |  |  |
 | 58 | boolean_algebra/xor_gate |   |  |  |
