@@ -1,0 +1,127 @@
+/*
+Bucket Sort implementation for lists of floating-point numbers.
+
+The algorithm divides the input range into a fixed number of buckets that
+cover the interval from the minimum to the maximum element. Each input value
+is placed into its corresponding bucket based on its distance from the minimum
+value.  After distribution, every bucket is sorted individually using insertion
+sort and all buckets are concatenated to obtain the final sorted list.
+
+Let n be the number of items and k the number of buckets. Distribution across
+buckets runs in O(n) time.  Sorting the buckets requires O((n^2)/k) in the
+worst case when using insertion sort, yielding an overall complexity of
+O(n + (n^2)/k).
+*/
+
+fun int_to_float(x: int): float {
+  return x * 1.0
+}
+
+fun floor_int(x: float): int {
+  var i = 0
+  while int_to_float(i + 1) <= x {
+    i = i + 1
+  }
+  return i
+}
+
+fun set_at_float(xs: list<float>, idx: int, value: float): list<float> {
+  var i = 0
+  var res: list<float> = []
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun set_at_list_float(xs: list<list<float>>, idx: int, value: list<float>): list<list<float>> {
+  var i = 0
+  var res: list<list<float>> = []
+  while i < len(xs) {
+    if i == idx {
+      res = append(res, value)
+    } else {
+      res = append(res, xs[i])
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun sort_float(xs: list<float>): list<float> {
+  var res = xs
+  var i = 1
+  while i < len(res) {
+    let key = res[i]
+    var j = i - 1
+    while j >= 0 && res[j] > key {
+      res = set_at_float(res, j + 1, res[j])
+      j = j - 1
+    }
+    res = set_at_float(res, j + 1, key)
+    i = i + 1
+  }
+  return res
+}
+
+fun bucket_sort_with_count(xs: list<float>, bucket_count: int): list<float> {
+  if len(xs) == 0 || bucket_count <= 0 {
+    return []
+  }
+  var min_value = xs[0]
+  var max_value = xs[0]
+  var i = 1
+  while i < len(xs) {
+    if xs[i] < min_value { min_value = xs[i] }
+    if xs[i] > max_value { max_value = xs[i] }
+    i = i + 1
+  }
+  if max_value == min_value {
+    return xs
+  }
+  let bucket_size = (max_value - min_value) / int_to_float(bucket_count)
+  var buckets: list<list<float>> = []
+  i = 0
+  while i < bucket_count {
+    buckets = append(buckets, [])
+    i = i + 1
+  }
+  i = 0
+  while i < len(xs) {
+    let val = xs[i]
+    var idx = floor_int((val - min_value) / bucket_size)
+    if idx < 0 { idx = 0 }
+    if idx >= bucket_count { idx = bucket_count - 1 }
+    var bucket = buckets[idx]
+    bucket = append(bucket, val)
+    buckets = set_at_list_float(buckets, idx, bucket)
+    i = i + 1
+  }
+  var result: list<float> = []
+  i = 0
+  while i < len(buckets) {
+    let sorted_bucket = sort_float(buckets[i])
+    var j = 0
+    while j < len(sorted_bucket) {
+      result = append(result, sorted_bucket[j])
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return result
+}
+
+fun bucket_sort(xs: list<float>): list<float> {
+  return bucket_sort_with_count(xs, 10)
+}
+
+print(str(bucket_sort([-1.0, 2.0, -5.0, 0.0])))
+print(str(bucket_sort([9.0, 8.0, 7.0, 6.0, -12.0])))
+print(str(bucket_sort([0.4, 1.2, 0.1, 0.2, -0.9])))
+print(str(bucket_sort([])))
+print(str(bucket_sort([-10000000000.0, 10000000000.0])))
