@@ -1,0 +1,8 @@
+/workspace/mochi/tests/algorithms/transpiler/rb/data_structures/queues/queue_by_list.rb:114: warning: already initialized constant Queue
+0
+Queue((10 20 30 40))
+10
+Queue((20 30 40))
+Queue((40 20 30))
+40
+Queue((40 20 30))

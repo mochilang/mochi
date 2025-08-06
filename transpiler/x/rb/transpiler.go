@@ -1268,6 +1268,18 @@ func safeName(n string) string {
 	if reserved[n] {
 		return n + "_"
 	}
+	if strings.HasPrefix(n, "_") && len(n) > 1 {
+		allDigits := true
+		for _, r := range n[1:] {
+			if r < '0' || r > '9' {
+				allDigits = false
+				break
+			}
+		}
+		if allDigits {
+			return "unused" + n[1:]
+		}
+	}
 	if n == "Array" || n == "Hash" {
 		return n
 	}
@@ -1845,8 +1857,9 @@ func (f *ForRangeStmt) emit(e *emitter) {
 	io.WriteString(e.w, "...")
 	f.End.emit(e)
 	io.WriteString(e.w, ").each do |")
-	pushScope(f.Name)
-	io.WriteString(e.w, f.Name)
+	name := safeName(f.Name)
+	pushScope(name)
+	io.WriteString(e.w, name)
 	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
@@ -1894,8 +1907,9 @@ func (f *ForInStmt) emit(e *emitter) {
 	} else {
 		io.WriteString(e.w, iterVar+".each do |")
 	}
-	pushScope(f.Name)
-	io.WriteString(e.w, f.Name)
+	name := safeName(f.Name)
+	pushScope(name)
+	io.WriteString(e.w, name)
 	io.WriteString(e.w, "|")
 	e.nl()
 	e.indent++
@@ -2298,9 +2312,9 @@ func (m *MethodCallExpr) emit(e *emitter) {
 func (a *AppendExpr) emit(e *emitter) {
 	io.WriteString(e.w, "(")
 	a.List.emit(e)
-	io.WriteString(e.w, " << ")
+	io.WriteString(e.w, " << (")
 	a.Elem.emit(e)
-	io.WriteString(e.w, ")")
+	io.WriteString(e.w, "))")
 }
 
 func (s *SliceExpr) emit(e *emitter) {
@@ -3117,12 +3131,30 @@ func convertStmt(st *parser.Statement) (Stmt, error) {
 			}
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
+		if len(st.Assign.Index) >= 1 && len(st.Assign.Field) >= 1 {
+			target := Expr(&Ident{Name: identName(st.Assign.Name)})
+			for _, ix := range st.Assign.Index {
+				if ix.Colon != nil || ix.Colon2 != nil {
+					return nil, fmt.Errorf("unsupported assignment")
+				}
+				idx, err := convertExpr(ix.Start)
+				if err != nil {
+					return nil, err
+				}
+				target = &IndexExpr{Target: target, Index: idx}
+			}
+			for i := 0; i < len(st.Assign.Field)-1; i++ {
+				target = &IndexExpr{Target: target, Index: &StringLit{Value: fieldName(st.Assign.Field[i].Name)}}
+			}
+			idx := &StringLit{Value: fieldName(st.Assign.Field[len(st.Assign.Field)-1].Name)}
+			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
+		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) >= 1 {
 			target := Expr(&Ident{Name: identName(st.Assign.Name)})
 			for i := 0; i < len(st.Assign.Field)-1; i++ {
-				target = &IndexExpr{Target: target, Index: &StringLit{Value: st.Assign.Field[i].Name}}
+				target = &IndexExpr{Target: target, Index: &StringLit{Value: fieldName(st.Assign.Field[i].Name)}}
 			}
-			idx := &StringLit{Value: st.Assign.Field[len(st.Assign.Field)-1].Name}
+			idx := &StringLit{Value: fieldName(st.Assign.Field[len(st.Assign.Field)-1].Name)}
 			return &IndexAssignStmt{Target: target, Index: idx, Value: v}, nil
 		}
 		if len(st.Assign.Index) == 0 && len(st.Assign.Field) == 0 {
@@ -3465,7 +3497,7 @@ func convertFor(f *parser.ForStmt) (Stmt, error) {
 		child.SetVar(f.Name, elemType, true)
 		currentEnv = child
 	}
-	addVar(f.Name)
+	addVar(safeName(f.Name))
 	body := make([]Stmt, len(f.Body))
 	for i, s := range f.Body {
 		st, err := convertStmt(s)

@@ -1,0 +1,7 @@
+/workspace/mochi/tests/algorithms/transpiler/rb/data_structures/queues/queue_on_pseudo_stack.rb:141: warning: already initialized constant Queue
+<1 2 3>
+1
+<2 3>
+2
+<2 3>
+2
