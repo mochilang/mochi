@@ -1,0 +1,62 @@
+/*
+Calculate altitude from atmospheric pressure using the barometric formula.
+
+This program mirrors TheAlgorithms/Python implementation.  Given a
+pressure `P` in pascals and assuming sea‑level reference pressure `p0`
+= 101325 Pa, the altitude `H` in meters is approximated by:
+
+    H = 44330 * (1 - (P/p0)^(1/5.5255))
+
+The function validates the input so pressures greater than sea‑level or
+negative pressures cause a panic.  Exponentiation with a fractional
+power is implemented via a series based natural logarithm and
+exponential to avoid foreign function interfaces.  All arithmetic uses
+floats and the algorithm runs in constant time.
+*/
+
+fun to_float(x: int): float {
+  return x * 1.0
+}
+
+fun ln(x: float): float {
+  if x <= 0.0 { panic("ln domain error") }
+  let y = (x - 1.0) / (x + 1.0)
+  let y2 = y * y
+  var term = y
+  var sum = 0.0
+  var k = 0
+  while k < 10 {
+    let denom = to_float(2 * k + 1)
+    sum = sum + term / denom
+    term = term * y2
+    k = k + 1
+  }
+  return 2.0 * sum
+}
+
+fun exp(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n < 20 {
+    term = term * x / to_float(n)
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun pow_float(base: float, exponent: float): float {
+  return exp(exponent * ln(base))
+}
+
+fun get_altitude_at_pressure(pressure: float): float {
+  if pressure > 101325.0 { panic("Value Higher than Pressure at Sea Level !") }
+  if pressure < 0.0 { panic("Atmospheric Pressure can not be negative !") }
+  let ratio = pressure / 101325.0
+  return 44330.0 * (1.0 - pow_float(ratio, 1.0 / 5.5255))
+}
+
+print(str(get_altitude_at_pressure(100000.0)))
+print(str(get_altitude_at_pressure(101325.0)))
+print(str(get_altitude_at_pressure(80000.0)))
