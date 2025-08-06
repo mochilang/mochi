@@ -1,0 +1,69 @@
+/*
+Strip leading and trailing characters from a string.
+
+This algorithm replicates Python's str.strip function. Given a string and a
+set of characters, it removes from both the start and end of the string any
+characters that appear in that set. If no character set is provided,
+whitespace characters (space, tab, newline, carriage return) are removed.
+
+Algorithm:
+1. Initialize two indices, start at the beginning and end at the length of the
+   string.
+2. Move start forward while its character is in the removal set.
+3. Move end backward while the character before end is in the removal set.
+4. Build and return the substring between start and end.
+
+The procedure runs in O(n) time where n is the length of the string.
+*/
+
+fun contains(chars: string, ch: string): bool {
+  var i = 0
+  while i < len(chars) {
+    if chars[i] == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun substring(s: string, start: int, end: int): string {
+  var res = ""
+  var i = start
+  while i < end {
+    res = res + s[i]
+    i = i + 1
+  }
+  return res
+}
+
+fun strip_chars(user_string: string, characters: string): string {
+  var start = 0
+  var end = len(user_string)
+  while start < end && contains(characters, user_string[start]) {
+    start = start + 1
+  }
+  while end > start && contains(characters, user_string[end - 1]) {
+    end = end - 1
+  }
+  return substring(user_string, start, end)
+}
+
+fun strip(user_string: string): string {
+  return strip_chars(user_string, " \t\n\r")
+}
+
+fun test_strip() {
+  if strip("   hello   ") != "hello" { panic("test1 failed") }
+  if strip_chars("...world...", ".") != "world" { panic("test2 failed") }
+  if strip_chars("123hello123", "123") != "hello" { panic("test3 failed") }
+  if strip("") != "" { panic("test4 failed") }
+}
+
+fun main() {
+  test_strip()
+  print(strip("   hello   "))
+  print(strip_chars("...world...", "."))
+  print(strip_chars("123hello123", "123"))
+  print(strip(""))
+}
+
+main()
