@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Scheme code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Scheme`.
-Last updated: 2025-08-06 23:29 GMT+7
+Last updated: 2025-08-07 00:16 GMT+7
 
-## Algorithms Golden Test Checklist (140/1077)
+## Algorithms Golden Test Checklist (219/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 0s | 12.4 MB |
@@ -118,15 +118,15 @@ Last updated: 2025-08-06 23:29 GMT+7
 | 109 | ciphers/vernam_cipher | ✓ | 2ms | 13.3 MB |
 | 110 | ciphers/vigenere_cipher | ✓ | 34ms | 13.5 MB |
 | 111 | ciphers/xor_cipher | ✓ | 24ms | 13.5 MB |
-| 112 | computer_vision/cnn_classification | ✓ | 4ms | 14.5 MB |
-| 113 | computer_vision/flip_augmentation | ✓ | 3ms | 13.7 MB |
-| 114 | computer_vision/haralick_descriptors | ✓ | 3ms | 13.7 MB |
-| 115 | computer_vision/harris_corner | ✓ | 1ms | 14.5 MB |
-| 116 | computer_vision/horn_schunck | ✓ | 43ms | 16.6 MB |
-| 117 | computer_vision/intensity_based_segmentation | ✓ | 0s | 12.6 MB |
-| 118 | computer_vision/mean_threshold | ✓ | 1ms | 12.6 MB |
-| 119 | computer_vision/mosaic_augmentation | ✓ | 123ms | 16.7 MB |
-| 120 | computer_vision/pooling_functions | ✓ | 3ms | 13.9 MB |
+| 112 | computer_vision/cnn_classification |   |  |  |
+| 113 | computer_vision/flip_augmentation |   |  |  |
+| 114 | computer_vision/haralick_descriptors |   |  |  |
+| 115 | computer_vision/harris_corner |   |  |  |
+| 116 | computer_vision/horn_schunck |   |  |  |
+| 117 | computer_vision/intensity_based_segmentation |   |  |  |
+| 118 | computer_vision/mean_threshold |   |  |  |
+| 119 | computer_vision/mosaic_augmentation |   |  |  |
+| 120 | computer_vision/pooling_functions |   |  |  |
 | 121 | conversions/astronomical_length_scale_conversion | ✓ | 4ms | 13.7 MB |
 | 122 | conversions/binary_to_decimal | ✓ | 1ms | 13.4 MB |
 | 123 | conversions/binary_to_hexadecimal | ✓ | 2ms | 13.5 MB |
@@ -152,106 +152,106 @@ Last updated: 2025-08-06 23:29 GMT+7
 | 143 | conversions/rectangular_to_polar |   |  |  |
 | 144 | conversions/rgb_cmyk_conversion | ✓ | 1ms | 13.3 MB |
 | 145 | conversions/rgb_hsv_conversion | ✓ | 1ms | 14.2 MB |
-| 146 | conversions/roman_numerals |   |  |  |
-| 147 | conversions/speed_conversions |   |  |  |
+| 146 | conversions/roman_numerals | ✓ | 0s | 13.3 MB |
+| 147 | conversions/speed_conversions | ✓ | 2ms | 13.1 MB |
 | 148 | conversions/temperature_conversions |   |  |  |
-| 149 | conversions/time_conversions |   |  |  |
-| 150 | conversions/volume_conversions |   |  |  |
-| 151 | conversions/weight_conversion |   |  |  |
-| 152 | data_compression/burrows_wheeler |   |  |  |
-| 153 | data_compression/huffman |   |  |  |
-| 154 | data_compression/lempel_ziv |   |  |  |
+| 149 | conversions/time_conversions | ✓ | 2ms | 12.5 MB |
+| 150 | conversions/volume_conversions | ✓ | 1ms | 12.9 MB |
+| 151 | conversions/weight_conversion | ✓ | 1ms | 12.4 MB |
+| 152 | data_compression/burrows_wheeler | ✓ | 2ms | 13.4 MB |
+| 153 | data_compression/huffman | ✓ | 6ms | 13.6 MB |
+| 154 | data_compression/lempel_ziv | ✓ | 2ms | 12.6 MB |
 | 155 | data_compression/lempel_ziv_decompress |   |  |  |
-| 156 | data_compression/lz77 |   |  |  |
-| 157 | data_compression/peak_signal_to_noise_ratio |   |  |  |
-| 158 | data_compression/run_length_encoding |   |  |  |
-| 159 | data_structures/arrays/equilibrium_index_in_array |   |  |  |
-| 160 | data_structures/arrays/find_triplets_with_0_sum |   |  |  |
-| 161 | data_structures/arrays/index_2d_array_in_1d |   |  |  |
-| 162 | data_structures/arrays/kth_largest_element |   |  |  |
-| 163 | data_structures/arrays/median_two_array |   |  |  |
-| 164 | data_structures/arrays/monotonic_array |   |  |  |
-| 165 | data_structures/arrays/pairs_with_given_sum |   |  |  |
-| 166 | data_structures/arrays/permutations |   |  |  |
-| 167 | data_structures/arrays/prefix_sum |   |  |  |
+| 156 | data_compression/lz77 | ✓ | 1ms | 13.7 MB |
+| 157 | data_compression/peak_signal_to_noise_ratio | ✓ | 0s | 12.8 MB |
+| 158 | data_compression/run_length_encoding | ✓ | 1ms | 12.5 MB |
+| 159 | data_structures/arrays/equilibrium_index_in_array | ✓ | 0s | 12.3 MB |
+| 160 | data_structures/arrays/find_triplets_with_0_sum | ✓ | 3ms | 13.8 MB |
+| 161 | data_structures/arrays/index_2d_array_in_1d | ✓ | 1ms | 12.7 MB |
+| 162 | data_structures/arrays/kth_largest_element | ✓ | 1ms | 12.1 MB |
+| 163 | data_structures/arrays/median_two_array | ✓ | 1ms | 12.9 MB |
+| 164 | data_structures/arrays/monotonic_array | ✓ | 0s | 12.8 MB |
+| 165 | data_structures/arrays/pairs_with_given_sum | ✓ | 1ms | 12.3 MB |
+| 166 | data_structures/arrays/permutations | ✓ | 1ms | 13.2 MB |
+| 167 | data_structures/arrays/prefix_sum | ✓ | 1ms | 12.9 MB |
 | 168 | data_structures/arrays/product_sum |   |  |  |
-| 169 | data_structures/arrays/sparse_table |   |  |  |
-| 170 | data_structures/arrays/sudoku_solver |   |  |  |
-| 171 | data_structures/binary_tree/avl_tree |   |  |  |
-| 172 | data_structures/binary_tree/basic_binary_tree |   |  |  |
-| 173 | data_structures/binary_tree/binary_search_tree |   |  |  |
+| 169 | data_structures/arrays/sparse_table | ✓ | 2ms | 13.5 MB |
+| 170 | data_structures/arrays/sudoku_solver | ✓ | 143ms | 13.5 MB |
+| 171 | data_structures/binary_tree/avl_tree | ✓ | 1ms | 14.1 MB |
+| 172 | data_structures/binary_tree/basic_binary_tree | ✓ | 2ms | 13.6 MB |
+| 173 | data_structures/binary_tree/binary_search_tree | ✓ | 2ms | 13.3 MB |
 | 174 | data_structures/binary_tree/binary_search_tree_recursive |   |  |  |
-| 175 | data_structures/binary_tree/binary_tree_mirror |   |  |  |
-| 176 | data_structures/binary_tree/binary_tree_node_sum |   |  |  |
+| 175 | data_structures/binary_tree/binary_tree_mirror | ✓ | 2ms | 12.7 MB |
+| 176 | data_structures/binary_tree/binary_tree_node_sum | ✓ | 0s | 12.1 MB |
 | 177 | data_structures/binary_tree/binary_tree_path_sum |   |  |  |
-| 178 | data_structures/binary_tree/diff_views_of_binary_tree |   |  |  |
-| 179 | data_structures/binary_tree/distribute_coins |   |  |  |
-| 180 | data_structures/binary_tree/fenwick_tree |   |  |  |
-| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist |   |  |  |
-| 182 | data_structures/binary_tree/floor_and_ceiling |   |  |  |
+| 178 | data_structures/binary_tree/diff_views_of_binary_tree | ✓ | 3ms | 14.0 MB |
+| 179 | data_structures/binary_tree/distribute_coins | ✓ | 1ms | 13.1 MB |
+| 180 | data_structures/binary_tree/fenwick_tree | ✓ | 4ms | 14.0 MB |
+| 181 | data_structures/binary_tree/flatten_binarytree_to_linkedlist | ✓ | 0s | 12.4 MB |
+| 182 | data_structures/binary_tree/floor_and_ceiling | ✓ | 1ms | 12.3 MB |
 | 183 | data_structures/binary_tree/inorder_tree_traversal_2022 |   |  |  |
-| 184 | data_structures/binary_tree/is_sorted |   |  |  |
-| 185 | data_structures/binary_tree/is_sum_tree |   |  |  |
-| 186 | data_structures/binary_tree/lazy_segment_tree |   |  |  |
-| 187 | data_structures/binary_tree/lowest_common_ancestor |   |  |  |
-| 188 | data_structures/binary_tree/maximum_fenwick_tree |   |  |  |
-| 189 | data_structures/binary_tree/maximum_sum_bst |   |  |  |
-| 190 | data_structures/binary_tree/merge_two_binary_trees |   |  |  |
-| 191 | data_structures/binary_tree/mirror_binary_tree |   |  |  |
-| 192 | data_structures/binary_tree/non_recursive_segment_tree |   |  |  |
+| 184 | data_structures/binary_tree/is_sorted | ✓ | 0s | 12.7 MB |
+| 185 | data_structures/binary_tree/is_sum_tree | ✓ | 0s | 13.4 MB |
+| 186 | data_structures/binary_tree/lazy_segment_tree | ✓ | 2ms | 14.1 MB |
+| 187 | data_structures/binary_tree/lowest_common_ancestor | ✓ | 5ms | 13.7 MB |
+| 188 | data_structures/binary_tree/maximum_fenwick_tree | ✓ | 10.909s | 12.4 MB |
+| 189 | data_structures/binary_tree/maximum_sum_bst | ✓ | 1ms | 13.6 MB |
+| 190 | data_structures/binary_tree/merge_two_binary_trees | ✓ | 2ms | 12.8 MB |
+| 191 | data_structures/binary_tree/mirror_binary_tree | ✓ | 2ms | 13.3 MB |
+| 192 | data_structures/binary_tree/non_recursive_segment_tree | ✓ | 2ms | 13.5 MB |
 | 193 | data_structures/binary_tree/number_of_possible_binary_trees |   |  |  |
-| 194 | data_structures/binary_tree/red_black_tree |   |  |  |
-| 195 | data_structures/binary_tree/segment_tree |   |  |  |
-| 196 | data_structures/binary_tree/segment_tree_other |   |  |  |
+| 194 | data_structures/binary_tree/red_black_tree | ✓ | 1ms | 16.7 MB |
+| 195 | data_structures/binary_tree/segment_tree | ✓ | 1ms | 14.0 MB |
+| 196 | data_structures/binary_tree/segment_tree_other | ✓ | 3ms | 13.5 MB |
 | 197 | data_structures/binary_tree/serialize_deserialize_binary_tree |   |  |  |
-| 198 | data_structures/binary_tree/symmetric_tree |   |  |  |
-| 199 | data_structures/binary_tree/treap |   |  |  |
-| 200 | data_structures/binary_tree/wavelet_tree |   |  |  |
-| 201 | data_structures/disjoint_set/alternate_disjoint_set |   |  |  |
-| 202 | data_structures/disjoint_set/disjoint_set |   |  |  |
-| 203 | data_structures/hashing/bloom_filter |   |  |  |
-| 204 | data_structures/hashing/double_hash |   |  |  |
-| 205 | data_structures/hashing/hash_map |   |  |  |
-| 206 | data_structures/hashing/hash_table |   |  |  |
-| 207 | data_structures/hashing/hash_table_with_linked_list |   |  |  |
-| 208 | data_structures/hashing/number_theory/prime_numbers |   |  |  |
-| 209 | data_structures/hashing/quadratic_probing |   |  |  |
-| 210 | data_structures/hashing/tests/test_hash_map |   |  |  |
-| 211 | data_structures/heap/binomial_heap |   |  |  |
-| 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
+| 198 | data_structures/binary_tree/symmetric_tree | ✓ | 0s | 12.8 MB |
+| 199 | data_structures/binary_tree/treap | ✓ | 2ms | 13.4 MB |
+| 200 | data_structures/binary_tree/wavelet_tree | ✓ | 1ms | 14.0 MB |
+| 201 | data_structures/disjoint_set/alternate_disjoint_set | ✓ | 1ms | 13.6 MB |
+| 202 | data_structures/disjoint_set/disjoint_set | ✓ | 2ms | 13.4 MB |
+| 203 | data_structures/hashing/bloom_filter | ✓ | 232ms | 16.5 MB |
+| 204 | data_structures/hashing/double_hash | ✓ | 1ms | 13.2 MB |
+| 205 | data_structures/hashing/hash_map | ✓ | 2ms | 13.8 MB |
+| 206 | data_structures/hashing/hash_table | ✓ | 2ms | 13.3 MB |
+| 207 | data_structures/hashing/hash_table_with_linked_list | ✓ | 1ms | 13.4 MB |
+| 208 | data_structures/hashing/number_theory/prime_numbers | ✓ | 0s | 13.2 MB |
+| 209 | data_structures/hashing/quadratic_probing | ✓ | 4ms | 13.5 MB |
+| 210 | data_structures/hashing/tests/test_hash_map | ✓ | 1ms | 13.7 MB |
+| 211 | data_structures/heap/binomial_heap | ✓ | 0s | 13.3 MB |
+| 212 | data_structures/heap/heap | ✓ |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 2ms | 14.5 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 0s | 13.2 MB |
 | 215 | data_structures/heap/min_heap |   |  |  |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
-| 217 | data_structures/kd_tree/build_kdtree |   |  |  |
+| 217 | data_structures/kd_tree/build_kdtree | ✓ | 2ms | 12.7 MB |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
-| 219 | data_structures/kd_tree/example/hypercube_points |   |  |  |
-| 220 | data_structures/kd_tree/kd_node |   |  |  |
-| 221 | data_structures/kd_tree/nearest_neighbour_search |   |  |  |
-| 222 | data_structures/kd_tree/tests/test_kdtree |   |  |  |
-| 223 | data_structures/linked_list/circular_linked_list |   |  |  |
-| 224 | data_structures/linked_list/deque_doubly |   |  |  |
-| 225 | data_structures/linked_list/doubly_linked_list |   |  |  |
-| 226 | data_structures/linked_list/doubly_linked_list_two |   |  |  |
-| 227 | data_structures/linked_list/floyds_cycle_detection |   |  |  |
-| 228 | data_structures/linked_list/from_sequence |   |  |  |
-| 229 | data_structures/linked_list/has_loop |   |  |  |
-| 230 | data_structures/linked_list/is_palindrome |   |  |  |
-| 231 | data_structures/linked_list/merge_two_lists |   |  |  |
-| 232 | data_structures/linked_list/middle_element_of_linked_list |   |  |  |
-| 233 | data_structures/linked_list/print_reverse |   |  |  |
-| 234 | data_structures/linked_list/reverse_k_group |   |  |  |
-| 235 | data_structures/linked_list/rotate_to_the_right |   |  |  |
-| 236 | data_structures/linked_list/singly_linked_list |   |  |  |
-| 237 | data_structures/linked_list/skip_list |   |  |  |
-| 238 | data_structures/linked_list/swap_nodes |   |  |  |
-| 239 | data_structures/queues/circular_queue |   |  |  |
-| 240 | data_structures/queues/circular_queue_linked_list |   |  |  |
-| 241 | data_structures/queues/double_ended_queue |   |  |  |
+| 219 | data_structures/kd_tree/example/hypercube_points | ✓ | 0s | 12.9 MB |
+| 220 | data_structures/kd_tree/kd_node | ✓ | 0s | 12.8 MB |
+| 221 | data_structures/kd_tree/nearest_neighbour_search | ✓ | 1ms | 13.4 MB |
+| 222 | data_structures/kd_tree/tests/test_kdtree | ✓ | 1ms | 13.6 MB |
+| 223 | data_structures/linked_list/circular_linked_list | ✓ | 2ms | 13.4 MB |
+| 224 | data_structures/linked_list/deque_doubly | ✓ | 1ms | 13.5 MB |
+| 225 | data_structures/linked_list/doubly_linked_list | ✓ | 4ms | 13.4 MB |
+| 226 | data_structures/linked_list/doubly_linked_list_two | ✓ | 4ms | 14.6 MB |
+| 227 | data_structures/linked_list/floyds_cycle_detection | ✓ | 1ms | 12.3 MB |
+| 228 | data_structures/linked_list/from_sequence | ✓ | 1ms | 12.6 MB |
+| 229 | data_structures/linked_list/has_loop | ✓ | 1ms | 12.7 MB |
+| 230 | data_structures/linked_list/is_palindrome | ✓ | 0s | 12.9 MB |
+| 231 | data_structures/linked_list/merge_two_lists | ✓ | 1ms | 13.2 MB |
+| 232 | data_structures/linked_list/middle_element_of_linked_list | ✓ | 1ms | 12.5 MB |
+| 233 | data_structures/linked_list/print_reverse | ✓ | 0s | 12.8 MB |
+| 234 | data_structures/linked_list/reverse_k_group | ✓ | 1ms | 12.9 MB |
+| 235 | data_structures/linked_list/rotate_to_the_right | ✓ | 1ms | 12.7 MB |
+| 236 | data_structures/linked_list/singly_linked_list | ✓ | 2ms | 13.9 MB |
+| 237 | data_structures/linked_list/skip_list | ✓ | 2ms | 14.4 MB |
+| 238 | data_structures/linked_list/swap_nodes | ✓ | 1ms | 12.7 MB |
+| 239 | data_structures/queues/circular_queue | ✓ | 0s | 12.7 MB |
+| 240 | data_structures/queues/circular_queue_linked_list | ✓ | 0s | 13.0 MB |
+| 241 | data_structures/queues/double_ended_queue | ✓ | 0s | 13.5 MB |
 | 242 | data_structures/queues/linked_queue |   |  |  |
-| 243 | data_structures/queues/priority_queue_using_list |   |  |  |
-| 244 | data_structures/queues/queue_by_list |   |  |  |
-| 245 | data_structures/queues/queue_by_two_stacks |   |  |  |
+| 243 | data_structures/queues/priority_queue_using_list | ✓ | 4ms | 14.4 MB |
+| 244 | data_structures/queues/queue_by_list | ✓ | 1ms | 13.2 MB |
+| 245 | data_structures/queues/queue_by_two_stacks | ✓ | 3ms | 13.2 MB |
 | 246 | data_structures/queues/queue_on_pseudo_stack |   |  |  |
 | 247 | data_structures/stacks/balanced_parentheses |   |  |  |
 | 248 | data_structures/stacks/dijkstras_two_stack_algorithm |   |  |  |
