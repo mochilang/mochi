@@ -1,0 +1,113 @@
+/*
+Orbital Transfer Work
+---------------------
+This module computes the work required to move an object between two circular
+orbits around a massive body. The work equals the change in total mechanical
+energy:
+    W = (G * M * m / 2) * (1/r_initial - 1/r_final)
+where G is the gravitational constant, M is the mass of the central body,
+m is the orbiting object's mass, and r_initial and r_final are orbital radii.
+The function validates radii are positive and returns the result as a string in
+scientific notation with three decimal places.
+Time complexity: O(1), space complexity: O(1).
+*/
+
+fun pow10(n: int): float {
+  var p = 1.0
+  if n >= 0 {
+    var i = 0
+    while i < n {
+      p = p * 10.0
+      i = i + 1
+    }
+  } else {
+    var i = 0
+    while i > n {
+      p = p / 10.0
+      i = i - 1
+    }
+  }
+  return p
+}
+
+fun floor(x: float): float {
+  let i = x as int
+  let f = i as float
+  if f > x {
+    return (i - 1) as float
+  }
+  return f
+}
+
+fun format_scientific_3(x: float): string {
+  if x == 0.0 {
+    return "0.000e+00"
+  }
+  var sign = ""
+  var num = x
+  if num < 0.0 {
+    sign = "-"
+    num = -num
+  }
+  var exp = 0
+  while num >= 10.0 {
+    num = num / 10.0
+    exp = exp + 1
+  }
+  while num < 1.0 {
+    num = num * 10.0
+    exp = exp - 1
+  }
+  let temp = floor(num * 1000.0 + 0.5)
+  var scaled = temp as int
+  if scaled == 10000 {
+    scaled = 1000
+    exp = exp + 1
+  }
+  let int_part = scaled / 1000
+  var frac_part = scaled % 1000
+  var frac_str = str(frac_part)
+  while len(frac_str) < 3 {
+    frac_str = "0" + frac_str
+  }
+  let mantissa = str(int_part) + "." + frac_str
+  var exp_sign = "+"
+  var exp_abs = exp
+  if exp < 0 {
+    exp_sign = "-"
+    exp_abs = -exp
+  }
+  var exp_str = str(exp_abs)
+  if exp_abs < 10 {
+    exp_str = "0" + exp_str
+  }
+  return sign + mantissa + "e" + exp_sign + exp_str
+}
+
+fun orbital_transfer_work(mass_central: float, mass_object: float, r_initial: float, r_final: float): string {
+  let G = 6.67430 * pow10(-11)
+  if r_initial <= 0.0 || r_final <= 0.0 {
+    panic("Orbital radii must be greater than zero.")
+  }
+  let work = (G * mass_central * mass_object / 2.0) * (1.0 / r_initial - 1.0 / r_final)
+  return format_scientific_3(work)
+}
+
+fun test_orbital_transfer_work() {
+  if orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6)) != "2.811e+09" {
+    panic("case1 failed")
+  }
+  if orbital_transfer_work(5.972 * pow10(24), 500.0, 7.0 * pow10(6), 6.371 * pow10(6)) != "-1.405e+09" {
+    panic("case2 failed")
+  }
+  if orbital_transfer_work(1.989 * pow10(30), 1000.0, 1.5 * pow10(11), 2.28 * pow10(11)) != "1.514e+11" {
+    panic("case3 failed")
+  }
+}
+
+fun main() {
+  test_orbital_transfer_work()
+  print(orbital_transfer_work(5.972 * pow10(24), 1000.0, 6.371 * pow10(6), 7.0 * pow10(6)))
+}
+
+main()
