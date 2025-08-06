@@ -1,0 +1,79 @@
+/*
+Manacher's algorithm finds the longest palindromic substring of a given string
+in linear time. The input string is transformed by inserting a separator
+character between every pair of characters so that both even and odd length
+palindromes can be handled uniformly. For each position in the transformed
+string the algorithm expands around the centre using previously computed
+palindrome lengths to skip redundant comparisons. It tracks the current right
+most palindrome and uses symmetry to initialise expansions. The maximal length
+and start position are updated when longer palindromes are found and finally
+the separators are removed from the resulting substring.
+*/
+
+fun palindromic_string(input_string: string): string {
+  var max_length = 0
+  var new_input_string: string = ""
+  var output_string: string = ""
+
+  let n = len(input_string)
+  var i = 0
+  while i < n - 1 {
+    new_input_string = new_input_string + substring(input_string, i, i + 1) + "|"
+    i = i + 1
+  }
+  new_input_string = new_input_string + substring(input_string, n - 1, n)
+
+  var left = 0
+  var right = 0
+  var length: list<int> = []
+  i = 0
+  let m = len(new_input_string)
+  while i < m {
+    length = append(length, 1)
+    i = i + 1
+  }
+
+  var start = 0
+  var j = 0
+  while j < m {
+    var k = 1
+    if j <= right {
+      let mirror = left + right - j
+      k = length[mirror] / 2
+      let diff = right - j + 1
+      if diff < k { k = diff }
+      if k < 1 { k = 1 }
+    }
+    while j - k >= 0 && j + k < m && substring(new_input_string, j + k, j + k + 1) == substring(new_input_string, j - k, j - k + 1) {
+      k = k + 1
+    }
+    length[j] = 2 * k - 1
+    if j + k - 1 > right {
+      left = j - k + 1
+      right = j + k - 1
+    }
+    if length[j] > max_length {
+      max_length = length[j]
+      start = j
+    }
+    j = j + 1
+  }
+
+  let s = substring(new_input_string, start - max_length / 2, start + max_length / 2 + 1)
+  var idx = 0
+  while idx < len(s) {
+    let ch = substring(s, idx, idx + 1)
+    if ch != "|" {
+      output_string = output_string + ch
+    }
+    idx = idx + 1
+  }
+  return output_string
+}
+
+fun main() {
+  print(palindromic_string("abbbaba"))
+  print(palindromic_string("ababa"))
+}
+
+main()
