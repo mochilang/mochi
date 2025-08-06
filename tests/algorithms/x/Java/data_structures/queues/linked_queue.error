@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden242_linked_queue2160017085/001/Main.java:95: error: incompatible types: Object[] cannot be converted to Node[]
+q.nodes = new Object[]{};
+          ^
+1 error

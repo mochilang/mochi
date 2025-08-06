@@ -1,0 +1,40 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:52: error: cannot find symbol
+    static unit print_preorder(Tree t) {
+           ^
+  symbol:   class unit
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:7: error: constructor Leaf() is already defined in class Leaf
+        Leaf() {}
+        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                                      ^
+  symbol:   variable v1
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                                                                  ^
+  symbol:   variable v2
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                   ^
+  symbol:   variable l1
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                       ^
+  symbol:   variable l2
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                                                                                                          ^
+  symbol:   variable r1
+  location: class Main
+/tmp/TestJavaTranspiler_Algorithms_Golden190_merge_two_binary_trees76037088/001/Main.java:33: error: cannot find symbol
+        return t1 instanceof Leaf ? t2 : t2 instanceof Leaf ? t1 : new Node(merge_two_binary_trees(l1, l2), ((Number)(v1)).intValue() + ((Number)(v2)).intValue(), merge_two_binary_trees(r1, r2));
+                                                                                                                                                                                              ^
+  symbol:   variable r2
+  location: class Main
+8 errors

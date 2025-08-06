@@ -1,0 +1,22 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden184_is_sorted1274438633/001/Main.java:29: error: method concat in class Main cannot be applied to given types;
+            res = ((double[])(concat(res, inorder(tree, left_idx))));
+                              ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden184_is_sorted1274438633/001/Main.java:34: error: method concat in class Main cannot be applied to given types;
+            res = ((double[])(concat(res, inorder(tree, right_idx))));
+                              ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+2 errors

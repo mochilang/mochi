@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/kd_tree/nearest_neighbour_search.mochi:42:15: unexpected token "-" (expected PostfixExpr)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/kd_tree/nearest_neighbour_search.mochi:42:15
+
+ 42 |   if index == -1 {
+    |               ^
+
+help:
+  Parse error occurred. Check syntax near this location.

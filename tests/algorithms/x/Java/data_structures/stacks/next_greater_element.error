@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/stacks/next_greater_element.mochi:18:5: unexpected token "expect" (expected <ident> (":" TypeRef)? ("=" Expr)?)
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/stacks/next_greater_element.mochi:18:5
+
+ 18 | let expect = [-5.0, 0.0, 5.0, 5.1, 11.0, 13.0, 21.0, -1.0, 4.0, -1.0, -10.0, -5.0, -1.0, 0.0, -1.0]
+    |     ^
+
+help:
+  Parse error occurred. Check syntax near this location.

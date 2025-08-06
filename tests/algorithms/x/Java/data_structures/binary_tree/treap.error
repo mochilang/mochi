@@ -1,0 +1,33 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:40: error: int cannot be dereferenced
+            SplitResult res = node_lefts[root].split(java.util.regex.Pattern.quote(value));
+                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:40: error: incompatible types: int cannot be converted to String
+            SplitResult res = node_lefts[root].split(java.util.regex.Pattern.quote(value));
+                                                                                   ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:44: error: int cannot be dereferenced
+        SplitResult res_1 = node_rights[root].split(java.util.regex.Pattern.quote(value));
+                                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:44: error: incompatible types: int cannot be converted to String
+        SplitResult res_1 = node_rights[root].split(java.util.regex.Pattern.quote(value));
+                                                                                  ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:66: error: int cannot be dereferenced
+        SplitResult res_2 = root.split(java.util.regex.Pattern.quote(value));
+                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:66: error: incompatible types: int cannot be converted to String
+        SplitResult res_2 = root.split(java.util.regex.Pattern.quote(value));
+                                                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:71: error: int cannot be dereferenced
+        SplitResult res1 = root.split(java.util.regex.Pattern.quote(value - 1));
+                               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:71: error: incompatible types: int cannot be converted to String
+        SplitResult res1 = root.split(java.util.regex.Pattern.quote(value - 1));
+                                                                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:72: error: int cannot be dereferenced
+        SplitResult res2 = res1.right.split(java.util.regex.Pattern.quote(value));
+                                     ^
+/tmp/TestJavaTranspiler_Algorithms_Golden199_treap3940744655/001/Main.java:72: error: incompatible types: int cannot be converted to String
+        SplitResult res2 = res1.right.split(java.util.regex.Pattern.quote(value));
+                                                                          ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+10 errors

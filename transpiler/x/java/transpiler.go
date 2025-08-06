@@ -44,6 +44,8 @@ var needPadStart bool
 var needRepeat bool
 var needMin bool
 var needMax bool
+var needExists bool
+var needToObjectArray bool
 var needFetch bool
 var fetchStructs map[string]bool
 var needSHA256 bool
@@ -2751,6 +2753,11 @@ func (c *CastExpr) emit(w io.Writer) {
 		fmt.Fprint(w, "_castInt2D(")
 		c.Value.emit(w)
 		fmt.Fprint(w, ")")
+	} else if jt == "Object[]" {
+		needToObjectArray = true
+		fmt.Fprint(w, "_toObjectArray(")
+		c.Value.emit(w)
+		fmt.Fprint(w, ")")
 	} else if jt == "java.math.BigInteger" {
 		if inferType(c.Value) == "bigint" {
 			c.Value.emit(w)
@@ -5276,6 +5283,10 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 		if name == "keys" && len(args) == 1 {
 			return &KeysExpr{Map: args[0]}, nil
 		}
+		if name == "exists" && len(args) == 1 {
+			needExists = true
+			return &CallExpr{Func: "_exists", Args: args}, nil
+		}
 		if name == "contains" && len(args) == 2 {
 			if isMapExpr(args[0]) || strings.Contains(inferType(args[0]), "Map") {
 				return &MethodCallExpr{Target: args[0], Name: "containsKey", Args: []Expr{args[1]}}, nil
@@ -6489,6 +6500,23 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        StringBuilder sb = new StringBuilder();\n")
 		buf.WriteString("        for (int i = 0; i < n; i++) sb.append(s);\n")
 		buf.WriteString("        return sb.toString();\n")
+		buf.WriteString("    }\n")
+	}
+	if needExists {
+		buf.WriteString("\n    static boolean _exists(Object v) {\n")
+		buf.WriteString("        if (v == null) return false;\n")
+		buf.WriteString("        if (v instanceof java.util.List<?>) return true;\n")
+		buf.WriteString("        return v.getClass().isArray();\n")
+		buf.WriteString("    }\n")
+	}
+	if needToObjectArray {
+		buf.WriteString("\n    static Object[] _toObjectArray(Object v) {\n")
+		buf.WriteString("        if (v instanceof Object[]) return (Object[]) v;\n")
+		buf.WriteString("        if (v instanceof int[]) return java.util.Arrays.stream((int[]) v).boxed().toArray();\n")
+		buf.WriteString("        if (v instanceof double[]) return java.util.Arrays.stream((double[]) v).boxed().toArray();\n")
+		buf.WriteString("        if (v instanceof long[]) return java.util.Arrays.stream((long[]) v).boxed().toArray();\n")
+		buf.WriteString("        if (v instanceof boolean[]) { boolean[] a = (boolean[]) v; Object[] out = new Object[a.length]; for (int i = 0; i < a.length; i++) out[i] = a[i]; return out; }\n")
+		buf.WriteString("        return (Object[]) v;\n")
 		buf.WriteString("    }\n")
 	}
 	if needMin {

@@ -1,0 +1,41 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:4: error: incompatible types: <null> cannot be converted to int
+        return new int[]{value, null, null};
+                                ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:4: error: incompatible types: <null> cannot be converted to int
+        return new int[]{value, null, null};
+                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:4: error: incompatible types: int[] cannot be converted to Object[]
+        return new int[]{value, null, null};
+               ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:37: error: incompatible types: int[] cannot be converted to Object[]
+        Object[] with_node = ((Object[])(java.util.stream.IntStream.concat(java.util.Arrays.stream(left_acc), java.util.stream.IntStream.of(((Number)(node[0])).intValue())).toArray()));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:38: error: incompatible types: Object[] cannot be converted to int[]
+        return inorder(((Object[])(node[2])), ((int[])(with_node)));
+                                                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:43: error: array required, but Object found
+        while (!(current[1] == null)) {
+                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:44: error: array required, but Object found
+            current = current[1];
+                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:46: error: array required, but Object found
+        return current[0];
+                      ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:51: error: array required, but Object found
+        while (!(current_1[2] == null)) {
+                          ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:52: error: array required, but Object found
+            current_1 = current_1[2];
+                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:54: error: array required, but Object found
+        return current_1[0];
+                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:67: error: incompatible types: Object cannot be converted to Object[]
+                return node[2];
+                           ^
+/tmp/TestJavaTranspiler_Algorithms_Golden173_binary_search_tree1872977653/001/Main.java:70: error: incompatible types: Object cannot be converted to Object[]
+                return node[1];
+                           ^
+13 errors

@@ -1,0 +1,27 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:37: error: bad operand types for binary operator '=='
+            if (!(table.values[i_1] == null)) {
+                                    ^
+  first type:  int
+  second type: <null>
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:48: error: bad operand types for binary operator '=='
+        while (!(table.values[new_key] == null) && table.values[new_key] != key) {
+                                       ^
+  first type:  int
+  second type: <null>
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:61: error: bad operand types for binary operator '=='
+        if ((vals_1[key] == null)) {
+                         ^
+  first type:  int
+  second type: <null>
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:68: error: bad operand types for binary operator '=='
+            if (new_key_1 < vals_1.length && (vals_1[new_key_1] == null)) {
+                                                                ^
+  first type:  int
+  second type: <null>
+/tmp/TestJavaTranspiler_Algorithms_Golden209_quadratic_probing3953285501/001/Main.java:104: error: bad operand types for binary operator '=='
+            if (!(v == null)) {
+                    ^
+  first type:  int
+  second type: <null>
+5 errors
