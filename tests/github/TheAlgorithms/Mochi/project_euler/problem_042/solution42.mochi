@@ -1,0 +1,82 @@
+/*
+Count Triangle Words
+
+Problem: A word's value is obtained by converting each letter to its position in the alphabet (A=1, B=2, ... Z=26) and summing the values. If the total is a triangular number t_n = n(n+1)/2, the word is called a triangle word. Given a list of English words (one line, comma separated and wrapped in quotes), determine how many are triangle words.
+
+Algorithm:
+1. Precompute the first 100 triangular numbers to cover all possible word values in the dataset.
+2. Read the words from "words.txt" located in the same directory.
+3. Parse the single-line file into a list of bare words by removing quotes and splitting on commas.
+4. For each word, compute its value using ASCII codes via `ord` and subtracting 64 so that 'A' -> 1.
+5. Count how many word values appear in the triangular number list.
+The approach runs in O(W*L) time where W is the number of words and L the average word length.
+*/
+
+fun triangular_numbers(limit: int): list<int> {
+  var res: list<int> = []
+  var n = 1
+  while n <= limit {
+    res = append(res, (n * (n + 1)) / 2)
+    n = n + 1
+  }
+  return res
+}
+
+fun parse_words(text: string): list<string> {
+  var words: list<string> = []
+  var current = ""
+  var i = 0
+  while i < len(text) {
+    let c = text[i:i+1]
+    if c == "," {
+      words = append(words, current)
+      current = ""
+    } else if c == """" {
+      // skip quotes
+    } else if c == "\r" || c == "\n" {
+      // ignore newline characters
+    } else {
+      current = current + c
+    }
+    i = i + 1
+  }
+  if len(current) > 0 {
+    words = append(words, current)
+  }
+  return words
+}
+
+fun word_value(word: string): int {
+  var total = 0
+  var i = 0
+  while i < len(word) {
+    total = total + ord(word[i:i+1]) - 64
+    i = i + 1
+  }
+  return total
+}
+
+fun contains(xs: list<int>, target: int): bool {
+  for x in xs {
+    if x == target {
+      return true
+    }
+  }
+  return false
+}
+
+fun solution(): int {
+  let text = read_file("words.txt")
+  let words = parse_words(text)
+  let tri = triangular_numbers(100)
+  var count = 0
+  for w in words {
+    let v = word_value(w)
+    if contains(tri, v) {
+      count = count + 1
+    }
+  }
+  return count
+}
+
+print(str(solution()))
