@@ -1,0 +1,47 @@
+/*
+Archimedes' Principle - Buoyant Force
+------------------------------------
+This program calculates the buoyant force exerted on an object that is
+completely or partially submerged in a fluid. According to
+Archimedes' principle, the upward buoyant force on an object is equal
+to the weight of the fluid displaced by the object. The formula is:
+
+    F_b = rho * V * g
+
+where
+  rho  : density of the fluid (kg/m^3)
+  V    : volume of the displaced fluid (m^3)
+  g    : acceleration due to gravity (m/s^2)
+
+The function validates input parameters, rejecting non-positive density
+or volume and negative gravity, and returns the computed buoyant force.
+*/
+
+let G = 9.80665
+
+fun archimedes_principle(fluid_density: float, volume: float, gravity: float): float {
+  if fluid_density <= 0.0 {
+    panic("Impossible fluid density")
+  }
+  if volume <= 0.0 {
+    panic("Impossible object volume")
+  }
+  if gravity < 0.0 {
+    panic("Impossible gravity")
+  }
+  return fluid_density * volume * gravity
+}
+
+fun archimedes_principle_default(fluid_density: float, volume: float): float {
+  let res = archimedes_principle(fluid_density, volume, G)
+  return res
+}
+
+test "archimedes principle" {
+  expect archimedes_principle(500.0, 4.0, 9.8) == 19600.0
+  expect archimedes_principle(997.0, 0.5, 9.8) == 4885.3
+  let r = archimedes_principle_default(997.0, 0.7)
+  let expected = archimedes_principle(997.0, 0.7, G)
+  expect r == expected
+  expect archimedes_principle(997.0, 0.7, 0.0) == 0.0
+}
