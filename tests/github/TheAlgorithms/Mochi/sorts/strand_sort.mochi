@@ -1,0 +1,86 @@
+/*
+Strand sort orders a list by repeatedly extracting a monotonically increasing
+(or decreasing) subsequence (a "strand") from the remaining items and merging it
+into an output list.  Each pass scans the unsorted elements, appending elements
+that continue the strand and collecting the rest for later passes.  The strand
+is then merged with the partial result using a two-pointer merge similar to
+merge sort.  The process continues until all elements have been moved to the
+result.
+
+For n elements the algorithm runs in O(n^2) time in the worst case because each
+pass may scan most remaining elements.  It uses O(n) additional space to store
+intermediate strands and the output list.
+*/
+
+fun merge(xs: list<int>, ys: list<int>, reverse: bool): list<int> {
+  var result: list<int> = []
+  var i = 0
+  var j = 0
+  while i < len(xs) && j < len(ys) {
+    if reverse {
+      if xs[i] > ys[j] {
+        result = append(result, xs[i])
+        i = i + 1
+      } else {
+        result = append(result, ys[j])
+        j = j + 1
+      }
+    } else {
+      if xs[i] < ys[j] {
+        result = append(result, xs[i])
+        i = i + 1
+      } else {
+        result = append(result, ys[j])
+        j = j + 1
+      }
+    }
+  }
+  while i < len(xs) {
+    result = append(result, xs[i])
+    i = i + 1
+  }
+  while j < len(ys) {
+    result = append(result, ys[j])
+    j = j + 1
+  }
+  return result
+}
+
+fun strand_sort_rec(arr: list<int>, reverse: bool, solution: list<int>): list<int> {
+  if len(arr) == 0 {
+    return solution
+  }
+  var sublist: list<int> = []
+  var remaining: list<int> = []
+  sublist = append(sublist, arr[0])
+  var last = arr[0]
+  var k = 1
+  while k < len(arr) {
+    let item = arr[k]
+    if reverse {
+      if item < last {
+        sublist = append(sublist, item)
+        last = item
+      } else {
+        remaining = append(remaining, item)
+      }
+    } else {
+      if item > last {
+        sublist = append(sublist, item)
+        last = item
+      } else {
+        remaining = append(remaining, item)
+      }
+    }
+    k = k + 1
+  }
+  solution = merge(solution, sublist, reverse)
+  return strand_sort_rec(remaining, reverse, solution)
+}
+
+fun strand_sort(arr: list<int>, reverse: bool): list<int> {
+  return strand_sort_rec(arr, reverse, [])
+}
+
+print(str(strand_sort([4, 3, 5, 1, 2], false)))
+print(str(strand_sort([4, 3, 5, 1, 2], true)))
