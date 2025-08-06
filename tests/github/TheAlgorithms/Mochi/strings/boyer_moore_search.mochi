@@ -1,0 +1,66 @@
+/*
+Boyer-Moore String Search (Bad Character Heuristic)
+--------------------------------------------------
+Given a text and a pattern, locate all occurrences of the pattern in the
+text.  Starting from the end of the pattern, characters are compared
+backwards.  Upon a mismatch, the "bad character" rule shifts the pattern
+so that the mismatched text character aligns with its last occurrence in
+the pattern; if the character does not appear in the pattern, the pattern
+moves past the mismatch entirely.  This allows potential jumps larger
+than one position, achieving sublinear performance on average.
+*/
+
+fun match_in_pattern(pat: string, ch: string): int {
+  var i = len(pat) - 1
+  while i >= 0 {
+    if substring(pat, i, i + 1) == ch {
+      return i
+    }
+    i = i - 1
+  }
+  return -1
+}
+
+fun mismatch_in_text(text: string, pat: string, current_pos: int): int {
+  var i = len(pat) - 1
+  while i >= 0 {
+    if substring(pat, i, i + 1) != substring(text, current_pos + i, current_pos + i + 1) {
+      return current_pos + i
+    }
+    i = i - 1
+  }
+  return -1
+}
+
+fun bad_character_heuristic(text: string, pat: string): list<int> {
+  let textLen = len(text)
+  let patLen = len(pat)
+  var positions: list<int> = []
+  var i = 0
+  while i <= textLen - patLen {
+    let mismatch_index = mismatch_in_text(text, pat, i)
+    if mismatch_index == -1 {
+      positions = append(positions, i)
+      i = i + 1
+    } else {
+      let ch = substring(text, mismatch_index, mismatch_index + 1)
+      let match_index = match_in_pattern(pat, ch)
+      if match_index == -1 {
+        i = mismatch_index + 1
+      } else {
+        i = mismatch_index - match_index
+      }
+    }
+  }
+  return positions
+}
+
+test "boyer moore basic" {
+  let positions = bad_character_heuristic("ABAABA", "AB")
+  expect positions == [0, 3]
+}
+
+test "boyer moore example" {
+  let positions = bad_character_heuristic("THIS IS A TEST TEXT", "TEST")
+  expect positions == [10]
+}
