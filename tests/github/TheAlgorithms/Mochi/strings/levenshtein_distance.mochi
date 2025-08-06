@@ -1,0 +1,106 @@
+/*
+Levenshtein Distance
+--------------------
+Compute the minimum number of single-character edits required to change one
+string into another. Allowed edits are insertions, deletions, and substitutions.
+This implementation uses dynamic programming to build the cost of transforming
+prefixes of the first word into prefixes of the second word.
+
+Two versions are provided:
+1. `levenshtein_distance` builds a new row for each character of the first word.
+2. `levenshtein_distance_optimized` reuses a row and updates values in place,
+   reducing allocations.
+
+Both run in O(m * n) time where m and n are the lengths of the two strings.
+The first version uses O(n) additional space and the optimized version also
+uses O(n) space but avoids repeated list construction.
+*/
+
+fun range_list(n: int): list<int> {
+  var lst: list<int> = []
+  var i = 0
+  while i < n {
+    lst = append(lst, i)
+    i = i + 1
+  }
+  return lst
+}
+
+fun min3(a: int, b: int, c: int): int {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+fun levenshtein_distance(first_word: string, second_word: string): int {
+  if len(first_word) < len(second_word) {
+    return levenshtein_distance(second_word, first_word)
+  }
+  if len(second_word) == 0 {
+    return len(first_word)
+  }
+  var previous_row: list<int> = range_list(len(second_word) + 1)
+  var i = 0
+  while i < len(first_word) {
+    let c1 = first_word[i]
+    var current_row: list<int> = []
+    current_row = append(current_row, i + 1)
+    var j = 0
+    while j < len(second_word) {
+      let c2 = second_word[j]
+      let insertions = previous_row[j + 1] + 1
+      let deletions = current_row[j] + 1
+      let substitutions = previous_row[j] + (if c1 == c2 { 0 } else { 1 })
+      let min_val = min3(insertions, deletions, substitutions)
+      current_row = append(current_row, min_val)
+      j = j + 1
+    }
+    previous_row = current_row
+    i = i + 1
+  }
+  return previous_row[len(previous_row) - 1]
+}
+
+fun levenshtein_distance_optimized(first_word: string, second_word: string): int {
+  if len(first_word) < len(second_word) {
+    return levenshtein_distance_optimized(second_word, first_word)
+  }
+  if len(second_word) == 0 {
+    return len(first_word)
+  }
+  var previous_row: list<int> = range_list(len(second_word) + 1)
+  var i = 0
+  while i < len(first_word) {
+    let c1 = first_word[i]
+    var current_row: list<int> = []
+    current_row = append(current_row, i + 1)
+    var k = 0
+    while k < len(second_word) {
+      current_row = append(current_row, 0)
+      k = k + 1
+    }
+    var j = 0
+    while j < len(second_word) {
+      let c2 = second_word[j]
+      let insertions = previous_row[j + 1] + 1
+      let deletions = current_row[j] + 1
+      let substitutions = previous_row[j] + (if c1 == c2 { 0 } else { 1 })
+      let min_val = min3(insertions, deletions, substitutions)
+      current_row[j + 1] = min_val
+      j = j + 1
+    }
+    previous_row = current_row
+    i = i + 1
+  }
+  return previous_row[len(previous_row) - 1]
+}
+
+fun main() {
+  let a = "kitten"
+  let b = "sitting"
+  print(str(levenshtein_distance(a, b)))
+  print(str(levenshtein_distance_optimized(a, b)))
+}
+
+main()
