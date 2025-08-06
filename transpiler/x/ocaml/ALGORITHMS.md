@@ -1,7 +1,7 @@
 # OCaml Algorithms Transpiler Output
 
-Completed programs: 65/1077
-Last updated: 2025-08-06 21:17 +0700
+Completed programs: 92/1077
+Last updated: 2025-08-06 21:55 +0700
 
 Checklist:
 
@@ -73,34 +73,34 @@ Checklist:
 | 64 | cellular_automata/wa_tor | ✓ | 4.0ms | 699.11KB |
 | 65 | ciphers/a1z26 | ✓ | 96.0µs | 408B |
 | 66 | ciphers/affine_cipher | ✓ | 1.0ms | 144.69KB |
-| 67 | ciphers/atbash |   |  |  |
-| 68 | ciphers/autokey |   |  |  |
-| 69 | ciphers/baconian_cipher |   |  |  |
-| 70 | ciphers/base16 |   |  |  |
-| 71 | ciphers/base32 |   |  |  |
-| 72 | ciphers/base64_cipher |   |  |  |
-| 73 | ciphers/base85 |   |  |  |
-| 74 | ciphers/beaufort_cipher |   |  |  |
-| 75 | ciphers/bifid |   |  |  |
-| 76 | ciphers/brute_force_caesar_cipher |   |  |  |
-| 77 | ciphers/caesar_cipher |   |  |  |
-| 78 | ciphers/cryptomath_module |   |  |  |
-| 79 | ciphers/decrypt_caesar_with_chi_squared |   |  |  |
-| 80 | ciphers/deterministic_miller_rabin |   |  |  |
-| 81 | ciphers/diffie |   |  |  |
-| 82 | ciphers/diffie_hellman |   |  |  |
-| 83 | ciphers/elgamal_key_generator |   |  |  |
-| 84 | ciphers/enigma_machine2 |   |  |  |
-| 85 | ciphers/fractionated_morse_cipher |   |  |  |
-| 86 | ciphers/gronsfeld_cipher |   |  |  |
-| 87 | ciphers/hill_cipher |   |  |  |
-| 88 | ciphers/mixed_keyword_cypher |   |  |  |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
+| 67 | ciphers/atbash | ✓ | 176.0µs | 15.85KB |
+| 68 | ciphers/autokey | ✓ | 752.0µs | 79.45KB |
+| 69 | ciphers/baconian_cipher | ✓ | 70.0µs | 5.98KB |
+| 70 | ciphers/base16 | ✓ | 222.0µs | 13.86KB |
+| 71 | ciphers/base32 | ✓ | 838.0µs | 101.04KB |
+| 72 | ciphers/base64_cipher | ✓ | 199.0µs | 9.18KB |
+| 73 | ciphers/base85 | ✓ | 361.0µs | 24.43KB |
+| 74 | ciphers/beaufort_cipher | ✓ | 109.0µs | 13.20KB |
+| 75 | ciphers/bifid | ✓ | 622.0µs | 103.18KB |
+| 76 | ciphers/brute_force_caesar_cipher | ✓ | 1.0ms | 105.34KB |
+| 77 | ciphers/caesar_cipher | ✓ | 7.0ms | 935.74KB |
+| 78 | ciphers/cryptomath_module | ✓ | 82.0µs | 272B |
+| 79 | ciphers/decrypt_caesar_with_chi_squared | ✓ | 32.0ms | 2.01MB |
+| 80 | ciphers/deterministic_miller_rabin | ✓ | 114.0µs | 5.34KB |
+| 81 | ciphers/diffie | ✓ | 440.0µs | 25.48KB |
+| 82 | ciphers/diffie_hellman | ✓ | 14.0µs | 272B |
+| 83 | ciphers/elgamal_key_generator | ✓ | 100.0µs | 2.41KB |
+| 84 | ciphers/enigma_machine2 | ✓ | 3.0ms | 331.74KB |
+| 85 | ciphers/fractionated_morse_cipher | ✓ | 332.0µs | 46.70KB |
+| 86 | ciphers/gronsfeld_cipher | ✓ | 418.0µs | 55.30KB |
+| 87 | ciphers/hill_cipher | ✓ | 448.0µs | 70.91KB |
+| 88 | ciphers/mixed_keyword_cypher | ✓ | 464.0µs | 67.78KB |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 36.0µs | 3.74KB |
+| 90 | ciphers/morse_code | ✓ | 940.0µs | 27.87KB |
 | 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
+| 92 | ciphers/permutation_cipher | ✓ | 212.0µs | 18.30KB |
+| 93 | ciphers/playfair_cipher | ✓ | 548.0µs | 46.70KB |
+| 94 | ciphers/polybius | ✓ | 328.0µs | 25.71KB |
 | 95 | ciphers/porta_cipher |   |  |  |
 | 96 | ciphers/rabin_miller |   |  |  |
 | 97 | ciphers/rail_fence_cipher |   |  |  |

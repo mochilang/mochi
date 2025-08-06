@@ -1007,6 +1007,7 @@ func (f *FunStmt) emitWith(w io.Writer, prefix string) {
 		io.WriteString(w, "(Obj.magic 0)")
 	}
 	io.WriteString(w, " in\n")
+	prevRetTyp := currentRetTyp
 	currentRetTyp = f.RetTyp
 	// Function parameters that are mutated are already passed as OCaml
 	// references. Earlier versions of the transpiler created local copies
@@ -1031,7 +1032,7 @@ func (f *FunStmt) emitWith(w io.Writer, prefix string) {
 		io.WriteString(w, "    !__ret\n")
 	}
 	io.WriteString(w, "  with Return -> !__ret)")
-	currentRetTyp = ""
+	currentRetTyp = prevRetTyp
 	if f.Local {
 		io.WriteString(w, " in\n")
 	} else {
@@ -3518,6 +3519,11 @@ func transpileStmt(st *parser.Statement, env *types.Env, vars map[string]VarInfo
 		if expr == nil {
 			expr = defaultValueExpr(typ)
 		}
+		if typ == "" {
+			if t, err := env.GetVar(st.Let.Name); err == nil {
+				typ = typeString(t)
+			}
+		}
 		if typ != "" && valTyp != "" && typ != valTyp {
 			if typ == "bigint" && valTyp == "int" {
 				expr = &CastExpr{Expr: expr, Type: "int_to_big"}
@@ -4673,8 +4679,8 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				expr = &MapIndexExpr{Map: expr, Key: key, Typ: ft, Dyn: dyn, KeyTyp: "string"}
 				typ = ft
 			} else {
-				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "int", Dyn: dyn, KeyTyp: "string"}
-				typ = "int"
+				expr = &MapIndexExpr{Map: expr, Key: key, Typ: "", Dyn: true, KeyTyp: "string"}
+				typ = ""
 			}
 			i++
 		case op.Index != nil && op.Index.Colon == nil && op.Index.Colon2 == nil && op.Index.End == nil && op.Index.Step == nil:
@@ -4687,9 +4693,13 @@ func convertPostfix(p *parser.PostfixExpr, env *types.Env, vars map[string]VarIn
 				if ft, ok := mapFieldType(typ, sl.Value); ok {
 					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: ft, Dyn: dyn, KeyTyp: "string"}
 					typ = ft
+				} else if strings.HasPrefix(typ, "map-") {
+					valTyp := strings.TrimPrefix(typ, "map-")
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: valTyp, Dyn: dyn, KeyTyp: "string"}
+					typ = valTyp
 				} else {
-					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "int", Dyn: dyn, KeyTyp: "string"}
-					typ = "int"
+					expr = &MapIndexExpr{Map: expr, Key: idxExpr, Typ: "", Dyn: true, KeyTyp: "string"}
+					typ = ""
 				}
 			} else if strings.HasPrefix(typ, "map-") {
 				valTyp := strings.TrimPrefix(typ, "map-")
@@ -5857,7 +5867,7 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		}
 		return &CastExpr{Expr: arg, Type: castType}, "float", nil
 	}
-	if c.Func == "panic" && len(c.Args) == 1 {
+	if (c.Func == "panic" || c.Func == "error") && len(c.Args) == 1 {
 		arg, typ, err := convertExpr(c.Args[0], env, vars)
 		if err != nil {
 			return nil, "", err

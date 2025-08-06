@@ -1,0 +1,6 @@
+exit status 2
+File "/workspace/mochi/tests/algorithms/x/OCaml/ciphers/porta_cipher.ml", line 182, characters 23-33:
+182 |   __ret := (Obj.magic (String.sub List.nth (table) (0) (col) ((col + 1) - col)) : string); raise Return
+                             ^^^^^^^^^^
+Error: This function has type string -> int -> int -> string
+       It is applied to too many arguments; maybe you forgot a `;'.
