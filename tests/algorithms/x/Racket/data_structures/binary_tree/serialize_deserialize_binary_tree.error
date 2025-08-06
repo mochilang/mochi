@@ -1,0 +1,14 @@
+run: exit status 1
+hash-ref: contract violation
+  expected: hash?
+  given: 1
+  argument position: 1st
+  other arguments...:
+   "tag"
+  context...:
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/serialize_deserialize_binary_tree.rkt:121:2
+   [repeats 1 more time]
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/serialize_deserialize_binary_tree.rkt:154:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/serialize_deserialize_binary_tree.rkt:165:2
+   /workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/serialize_deserialize_binary_tree.rkt:164:0
+   body of "/workspace/mochi/tests/algorithms/x/Racket/data_structures/binary_tree/serialize_deserialize_binary_tree.rkt"
