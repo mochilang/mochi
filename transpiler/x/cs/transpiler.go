@@ -102,6 +102,7 @@ var usesFmt bool
 var usesRepeat bool
 var usesSubstr bool
 var usesLen bool
+var usesMod bool
 var envTypes map[string]types.Type
 
 func isNullExpr(e Expr) bool {
@@ -535,6 +536,15 @@ func (f *Function) emit(w io.Writer) {
 		st.emit(w)
 		fmt.Fprint(w, ";\n")
 	}
+	needRet := ret != "void"
+	if len(f.Body) > 0 {
+		if _, ok := f.Body[len(f.Body)-1].(*ReturnStmt); ok {
+			needRet = false
+		}
+	}
+	if needRet {
+		fmt.Fprintf(w, "    return default(%s);\n", ret)
+	}
 	fmt.Fprint(w, "}\n")
 	for name, t := range saved {
 		if t == "" {
@@ -683,6 +693,15 @@ func (b *BinaryExpr) emit(w io.Writer) {
 		} else {
 			lt := typeOfExpr(b.Left)
 			rt := typeOfExpr(b.Right)
+			if b.Op == "%" {
+				usesMod = true
+				fmt.Fprint(w, "_mod(")
+				b.Left.emit(w)
+				fmt.Fprint(w, ", ")
+				b.Right.emit(w)
+				fmt.Fprint(w, ")")
+				return
+			}
 			if b.Op == "+" && lt == "string" && strings.HasSuffix(rt, "[]") {
 				fmt.Fprint(w, "(")
 				b.Left.emit(w)
@@ -2284,9 +2303,6 @@ type AppendExpr struct {
 
 func (a *AppendExpr) emit(w io.Writer) {
 	usesLinq = true
-	fmt.Fprint(w, "(Enumerable.ToArray(Enumerable.Append(")
-	a.List.emit(w)
-	fmt.Fprint(w, ", ")
 	t := typeOfExpr(a.List)
 	if t == "" || strings.HasSuffix(t, "object[]") {
 		if vr, ok := a.List.(*VarRef); ok {
@@ -2295,7 +2311,21 @@ func (a *AppendExpr) emit(w io.Writer) {
 			}
 		}
 	}
-	a.Item.emit(w)
+	elem := "object"
+	if strings.HasSuffix(t, "[]") {
+		elem = strings.TrimSuffix(t, "[]")
+	} else if et := typeOfExpr(a.Item); et != "" && et != "object" {
+		elem = et
+	}
+	fmt.Fprintf(w, "(Enumerable.ToArray(Enumerable.Append<%s>(", elem)
+	a.List.emit(w)
+	fmt.Fprint(w, ", ")
+	if typeOfExpr(a.Item) == "object" && elem != "object" {
+		fmt.Fprintf(w, "(%s)", elem)
+		a.Item.emit(w)
+	} else {
+		a.Item.emit(w)
+	}
 	fmt.Fprint(w, ")))")
 }
 
@@ -2406,15 +2436,11 @@ func valueType(e Expr) string {
 type ExistsExpr struct{ Arg Expr }
 
 func (e *ExistsExpr) emit(w io.Writer) {
-	if mc, ok := e.Arg.(*MethodCallExpr); ok && mc.Name == "ToArray" {
-		fmt.Fprint(w, "(")
-		mc.Target.emit(w)
-		fmt.Fprint(w, ".Any())")
-		return
-	}
 	fmt.Fprint(w, "(")
 	e.Arg.emit(w)
-	fmt.Fprint(w, ".Any())")
+	fmt.Fprint(w, " is System.Collections.IEnumerable && !(")
+	e.Arg.emit(w)
+	fmt.Fprint(w, " is string))")
 }
 
 // Transpile converts a Mochi AST to a simple C# AST.
@@ -2440,6 +2466,7 @@ func Transpile(p *parser.Program, env *types.Env) (*Program, error) {
 	usesRepeat = false
 	usesSubstr = false
 	usesLen = false
+	usesMod = false
 	usesBigInt = false
 	usesBigRat = false
 	globalDecls = make(map[string]*Global)
@@ -2567,6 +2594,9 @@ func compileExpr(e *parser.Expr) (Expr, error) {
 			usesLinq = true
 			fallthrough
 		default:
+			if op == "%" {
+				usesMod = true
+			}
 			return &BinaryExpr{Op: op, Left: left, Right: right}
 		}
 	}
@@ -2683,7 +2713,14 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 				args[i] = ex
 			}
 			if fe, ok := expr.(*FieldExpr); ok {
-				if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == "stdout" && fe.Name == "write" && len(args) == 1 {
+				if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == "Object" && fe.Name == "keys" {
+					if len(args) != 1 {
+						return nil, fmt.Errorf("unsupported method call")
+					}
+					usesLinq = true
+					code := fmt.Sprintf("((System.Collections.IDictionary)%s).Keys.Cast<string>()", exprString(args[0]))
+					expr = &RawExpr{Code: code, Type: "string[]"}
+				} else if vr, ok2 := fe.Target.(*VarRef); ok2 && vr.Name == "stdout" && fe.Name == "write" && len(args) == 1 {
 					expr = &CallExpr{Func: "Console.Write", Args: args}
 				} else if fe.Name == "contains" {
 					if len(args) != 1 {
@@ -2715,6 +2752,12 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 							tgt = &CallExpr{Func: "Convert.ToString", Args: []Expr{tgt}}
 						}
 						expr = &MethodCallExpr{Target: tgt, Name: "PadLeft", Args: []Expr{args[0], ch}}
+					} else {
+						return nil, fmt.Errorf("unsupported method call")
+					}
+				} else if fe.Name == "join" {
+					if len(args) == 1 {
+						expr = &CallExpr{Func: "string.Join", Args: []Expr{args[0], fe.Target}}
 					} else {
 						return nil, fmt.Errorf("unsupported method call")
 					}
@@ -4046,6 +4089,12 @@ func compilePrimary(p *parser.Primary) (Expr, error) {
 			if len(args) == 2 {
 				return &MethodCallExpr{Target: args[0], Name: "Split", Args: []Expr{args[1]}}, nil
 			}
+		case "Object.keys":
+			if len(args) == 1 {
+				usesLinq = true
+				code := fmt.Sprintf("((System.Collections.IDictionary)%s).Keys.Cast<string>()", exprString(args[0]))
+				return &RawExpr{Code: code, Type: "string[]"}, nil
+			}
 		case "pow":
 			if len(args) == 2 {
 				code := fmt.Sprintf("(long)Math.Pow(%s, %s)", exprString(args[0]), exprString(args[1]))
@@ -4912,6 +4961,14 @@ func Emit(prog *Program) []byte {
 	if usesRepeat {
 		buf.WriteString("\tstatic string repeat(string s, long n) {\n")
 		buf.WriteString("\t\treturn string.Concat(Enumerable.Repeat(s, (int)n));\n")
+		buf.WriteString("\t}\n")
+	}
+	if usesMod {
+		buf.WriteString("\tstatic long _mod(long a, long b) {\n")
+		buf.WriteString("\t\tif (b == 0) return 0;\n")
+		buf.WriteString("\t\tvar r = a % b;\n")
+		buf.WriteString("\t\tif ((r < 0 && b > 0) || (r > 0 && b < 0)) r += b;\n")
+		buf.WriteString("\t\treturn r;\n")
 		buf.WriteString("\t}\n")
 	}
 	buf.WriteString("\tstatic string _substr(string s, long start, long end) {\n")
