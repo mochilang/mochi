@@ -1,7 +1,7 @@
 # Scala Algorithms Transpiler Output
 
-Completed programs: 196/1077
-Last updated: 2025-08-06 23:37 +0700
+Completed programs: 199/1077
+Last updated: 2025-08-06 23:53 +0700
 
 Checklist:
 
@@ -219,9 +219,9 @@ Checklist:
 | 210 | data_structures/hashing/tests/test_hash_map | ✓ | 9µs | 3.5 MB |
 | 211 | data_structures/heap/binomial_heap | ✓ | 16µs | 3.5 MB |
 | 212 | data_structures/heap/heap |   |  |  |
-| 213 | data_structures/heap/heap_generic |   |  |  |
-| 214 | data_structures/heap/max_heap |   |  |  |
-| 215 | data_structures/heap/min_heap |   |  |  |
+| 213 | data_structures/heap/heap_generic | ✓ | 10µs | 3.5 MB |
+| 214 | data_structures/heap/max_heap | ✓ | 7µs | 3.5 MB |
+| 215 | data_structures/heap/min_heap | ✓ | 6µs | 3.5 MB |
 | 216 | data_structures/heap/randomized_heap |   |  |  |
 | 217 | data_structures/kd_tree/build_kdtree |   |  |  |
 | 218 | data_structures/kd_tree/example/example_usage |   |  |  |
