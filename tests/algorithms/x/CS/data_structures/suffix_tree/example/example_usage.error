@@ -1,0 +1,4 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2051698070/001/Program.cs(119,18): error CS0019: Operator '==' cannot be applied to operands of type 'char[]' and 'string' [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_suffix_tree_example_example_usage2051698070/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

@@ -1,0 +1,6 @@
+exit status 1
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/Program.cs(111,19): error CS0266: Cannot implicitly convert type 'object[]' to 'Node[]'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/Program.cs(112,20): error CS0266: Cannot implicitly convert type 'object[]' to 'Node[]'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/app.csproj]
+/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/Program.cs(117,24): error CS0266: Cannot implicitly convert type 'object[]' to 'Node[]'. An explicit conversion exists (are you missing a cast?) [/tmp/TestCSTranspiler_Algorithms_Golden001_data_structures_linked_list_from_sequence3423683478/001/app.csproj]
+
+The build failed. Fix the build errors and run again.

@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected RadixNode, got string
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/trie/radix_tree.mochi:85:18
+
+ 85 |   child.prefix = res.rem_prefix
+    |                  ^
+
+help:
+  Change the value to match the expected type.

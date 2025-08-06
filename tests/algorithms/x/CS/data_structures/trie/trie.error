@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected Node, got bool
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/trie/trie.mochi:58:18
+
+ 58 |   node.is_leaf = true
+    |                  ^
+
+help:
+  Change the value to match the expected type.

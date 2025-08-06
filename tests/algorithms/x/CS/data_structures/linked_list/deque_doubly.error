@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected Node, got int
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/linked_list/deque_doubly.mochi:61:20
+
+ 61 |   pred_node.next = new_idx
+    |                    ^
+
+help:
+  Change the value to match the expected type.

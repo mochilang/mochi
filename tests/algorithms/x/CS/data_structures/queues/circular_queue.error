@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected CircularQueue, got [int]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/queues/circular_queue.mochi:44:12
+
+ 44 |   q.data = arr
+    |            ^
+
+help:
+  Change the value to match the expected type.

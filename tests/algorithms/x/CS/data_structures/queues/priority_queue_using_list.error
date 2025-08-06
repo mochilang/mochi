@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected FixedPriorityQueue, got [[int]]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/queues/priority_queue_using_list.mochi:43:16
+
+ 43 |   fpq.queues = qs
+    |                ^
+
+help:
+  Change the value to match the expected type.

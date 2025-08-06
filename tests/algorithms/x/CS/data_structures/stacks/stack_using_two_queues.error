@@ -1,0 +1,8 @@
+error[T008]: type mismatch: expected StackWithQueues, got [any]
+  --> /workspace/mochi/tests/github/TheAlgorithms/Mochi/data_structures/stacks/stack_using_two_queues.mochi:26:18
+
+ 26 |   s.temp_queue = append(s.temp_queue, item)
+    |                  ^
+
+help:
+  Change the value to match the expected type.
