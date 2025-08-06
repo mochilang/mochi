@@ -1,0 +1,127 @@
+/*
+Quick sort variants using three-way and Lomuto partition schemes.
+
+quick_sort_3partition arranges elements less than, equal to, and greater than the pivot
+in a single pass using the Dutch National Flag algorithm, then recursively sorts the
+two outer partitions. This approach performs well when the array contains duplicate
+values.
+
+quick_sort_lomuto_partition uses the classic Lomuto partition scheme that places the
+pivot at the end of the range and partitions the list into elements less than the pivot
+and those greater. It recursively sorts the resulting subarrays.
+
+three_way_radix_quicksort is a functional variant that constructs new lists for elements
+less than, equal to, and greater than the first element (pivot) and recursively sorts the
+less-than and greater-than lists. Lists are concatenated to produce the final sorted list.
+
+All functions operate on lists of integers. Average time complexity for these quick sort
+algorithms is O(n log n).
+*/
+fun quick_sort_3partition(arr: list<int>, left: int, right: int): list<int> {
+  if right <= left { return arr }
+  var a = left
+  var i = left
+  var b = right
+  let pivot = arr[left]
+  while i <= b {
+    if arr[i] < pivot {
+      let temp = arr[a]
+      arr[a] = arr[i]
+      arr[i] = temp
+      a = a + 1
+      i = i + 1
+    } else if arr[i] > pivot {
+      let temp = arr[b]
+      arr[b] = arr[i]
+      arr[i] = temp
+      b = b - 1
+    } else {
+      i = i + 1
+    }
+  }
+  arr = quick_sort_3partition(arr, left, a - 1)
+  arr = quick_sort_3partition(arr, b + 1, right)
+  return arr
+}
+
+fun quick_sort_lomuto_partition(arr: list<int>, left: int, right: int): list<int> {
+  if left < right {
+    let pivot_index = lomuto_partition(arr, left, right)
+    arr = quick_sort_lomuto_partition(arr, left, pivot_index - 1)
+    arr = quick_sort_lomuto_partition(arr, pivot_index + 1, right)
+  }
+  return arr
+}
+
+fun lomuto_partition(arr: list<int>, left: int, right: int): int {
+  let pivot = arr[right]
+  var store_index = left
+  var i = left
+  while i < right {
+    if arr[i] < pivot {
+      let temp = arr[store_index]
+      arr[store_index] = arr[i]
+      arr[i] = temp
+      store_index = store_index + 1
+    }
+    i = i + 1
+  }
+  let temp = arr[right]
+  arr[right] = arr[store_index]
+  arr[store_index] = temp
+  return store_index
+}
+
+fun three_way_radix_quicksort(arr: list<int>): list<int> {
+  if len(arr) <= 1 { return arr }
+  let pivot = arr[0]
+  var less: list<int> = []
+  var equal: list<int> = []
+  var greater: list<int> = []
+  var i = 0
+  while i < len(arr) {
+    let val = arr[i]
+    if val < pivot {
+      less = append(less, val)
+    } else if val > pivot {
+      greater = append(greater, val)
+    } else {
+      equal = append(equal, val)
+    }
+    i = i + 1
+  }
+  let sorted_less = three_way_radix_quicksort(less)
+  let sorted_greater = three_way_radix_quicksort(greater)
+  var result = concat(sorted_less, equal)
+  result = concat(result, sorted_greater)
+  return result
+}
+
+var array1 = [5, -1, -1, 5, 5, 24, 0]
+array1 = quick_sort_3partition(array1, 0, len(array1) - 1)
+print(str(array1))
+
+var array2 = [9, 0, 2, 6]
+array2 = quick_sort_3partition(array2, 0, len(array2) - 1)
+print(str(array2))
+
+var array3: list<int> = []
+array3 = quick_sort_3partition(array3, 0, len(array3) - 1)
+print(str(array3))
+
+var nums1 = [0, 5, 3, 1, 2]
+nums1 = quick_sort_lomuto_partition(nums1, 0, len(nums1) - 1)
+print(str(nums1))
+
+var nums2: list<int> = []
+nums2 = quick_sort_lomuto_partition(nums2, 0, len(nums2) - 1)
+print(str(nums2))
+
+var nums3 = [-2, 5, 0, -4]
+nums3 = quick_sort_lomuto_partition(nums3, 0, len(nums3) - 1)
+print(str(nums3))
+
+print(str(three_way_radix_quicksort([])))
+print(str(three_way_radix_quicksort([1])))
+print(str(three_way_radix_quicksort([-5, -2, 1, -2, 0, 1])))
+print(str(three_way_radix_quicksort([1, 2, 5, 1, 2, 0, 0, 5, 2, -1])))
