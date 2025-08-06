@@ -1,0 +1,12 @@
+. Q . . 
+. . . Q 
+Q . . . 
+. . Q . 
+
+. . Q . 
+Q . . . 
+. . . Q 
+. Q . . 
+
+The total number of solutions are: 2
+{"duration_us":20770, "memory_bytes":117984, "name":"main"}

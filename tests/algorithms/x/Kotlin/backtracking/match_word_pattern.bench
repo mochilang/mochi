@@ -1,0 +1,7 @@
+Exception in thread "main" kotlin.TypeCastException: null cannot be cast to non-null type kotlin.String
+	at Match_word_patternKt.get_value(match_word_pattern.kt:37)
+	at Match_word_patternKt.backtrack(match_word_pattern.kt:59)
+	at Match_word_patternKt.match_word_pattern(match_word_pattern.kt:86)
+	at Match_word_patternKt.user_main(match_word_pattern.kt:90)
+	at Match_word_patternKt.main(match_word_pattern.kt:100)
+	at Match_word_patternKt.main(match_word_pattern.kt)
