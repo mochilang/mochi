@@ -1059,25 +1059,33 @@ type StrBuiltin struct {
 }
 
 func (s *StrBuiltin) emit(w io.Writer) {
-	switch s.Typ {
-	case "float":
+	switch {
+	case s.Typ == "float":
 		io.WriteString(w, "(Printf.sprintf \"%.16g\" (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
-	case "bigint":
+	case s.Typ == "bigint":
 		usesBigInt = true
 		io.WriteString(w, "(Z.to_string (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
-	case "bigrat":
+	case s.Typ == "bigrat":
 		usesBigRat = true
 		io.WriteString(w, "(Q.to_string (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
-	case "bool":
+	case s.Typ == "bool":
 		io.WriteString(w, "(string_of_bool (")
 		s.Expr.emit(w)
 		io.WriteString(w, "))")
+	case strings.HasPrefix(s.Typ, "list"):
+		io.WriteString(w, "(__str (")
+		s.Expr.emit(w)
+		io.WriteString(w, "))")
+	case s.Typ == "string":
+		io.WriteString(w, "(")
+		s.Expr.emit(w)
+		io.WriteString(w, ")")
 	default:
 		io.WriteString(w, "(string_of_int (")
 		s.Expr.emit(w)
@@ -1570,27 +1578,35 @@ func (f *FuncCall) emit(w io.Writer) {
 }
 
 func (f *FuncCall) emitPrint(w io.Writer) {
-	switch f.Ret {
-	case "int":
+	switch {
+	case f.Ret == "int":
 		io.WriteString(w, "string_of_int (")
 		f.emit(w)
 		io.WriteString(w, ")")
-	case "float":
+	case f.Ret == "float":
 		io.WriteString(w, "string_of_float (")
 		f.emit(w)
 		io.WriteString(w, ")")
-	case "bool":
+	case f.Ret == "bool":
 		io.WriteString(w, "string_of_bool (")
 		f.emit(w)
 		io.WriteString(w, ")")
-	case "bigint":
+	case f.Ret == "string":
+		io.WriteString(w, "(")
+		f.emit(w)
+		io.WriteString(w, ")")
+	case f.Ret == "bigint":
 		usesBigInt = true
 		io.WriteString(w, "Z.to_string (")
 		f.emit(w)
 		io.WriteString(w, ")")
-	case "bigrat":
+	case f.Ret == "bigrat":
 		usesBigRat = true
 		io.WriteString(w, "Q.to_string (")
+		f.emit(w)
+		io.WriteString(w, ")")
+	case strings.HasPrefix(f.Ret, "list"):
+		io.WriteString(w, "__show_list (")
 		f.emit(w)
 		io.WriteString(w, ")")
 	default:
@@ -1658,7 +1674,7 @@ func (l *ListLit) emit(w io.Writer) {
 
 func (l *ListLit) emitPrint(w io.Writer) {
 	if l.Dynamic {
-		io.WriteString(w, "__show (")
+		io.WriteString(w, "__show_list (")
 		l.emit(w)
 		io.WriteString(w, ")")
 	} else {
@@ -2459,11 +2475,11 @@ func (c *CastExpr) emitPrint(w io.Writer) {
 		io.WriteString(w, "string_of_float ")
 		c.Expr.emit(w)
 	case "list_to_obj":
-		io.WriteString(w, "__show (")
+		io.WriteString(w, "__show_list (")
 		c.emit(w)
 		io.WriteString(w, ")")
 	case "list_to_any":
-		io.WriteString(w, "__show (")
+		io.WriteString(w, "__show_list (")
 		c.emit(w)
 		io.WriteString(w, ")")
 	case "obj_to_int":
@@ -2586,19 +2602,23 @@ func (n *Name) emitPrint(w io.Writer) {
 	if n.Ref {
 		ident = "!" + n.Ident
 	}
-	switch n.Typ {
-	case "int":
+	switch {
+	case n.Typ == "int":
 		fmt.Fprintf(w, "string_of_int %s", ident)
-	case "bool":
+	case n.Typ == "bool":
 		fmt.Fprintf(w, "string_of_bool %s", ident)
-	case "float":
+	case n.Typ == "float":
 		fmt.Fprintf(w, "Printf.sprintf \"%%.15f\" (%s)", ident)
-	case "bigint":
+	case n.Typ == "string":
+		io.WriteString(w, ident)
+	case n.Typ == "bigint":
 		usesBigInt = true
 		fmt.Fprintf(w, "Z.to_string %s", ident)
-	case "bigrat":
+	case n.Typ == "bigrat":
 		usesBigRat = true
 		fmt.Fprintf(w, "Q.to_string %s", ident)
+	case strings.HasPrefix(n.Typ, "list"):
+		fmt.Fprintf(w, "__show_list %s", ident)
 	default:
 		fmt.Fprintf(w, "__show %s", ident)
 	}
@@ -3123,22 +3143,34 @@ let _len v =
 const helperShow = `
 let rec __show v =
   let open Obj in
-  let rec list_aux o =
-    if is_int o && (magic (obj o) : int) = 0 then "" else
-      let hd = field o 0 in
-      let tl = field o 1 in
-      let rest = list_aux tl in
-      if rest = "" then __show (obj hd) else __show (obj hd) ^ " " ^ rest
-  in
   let r = repr v in
   if is_int r then
     string_of_int (magic v : int)
   else
-  match tag r with
-  | 0 -> if size r = 0 then "[]" else "[" ^ list_aux r ^ "]"
-  | 252 -> (magic v : string)
-  | 253 -> string_of_float (magic v)
-  | _ -> "<value>"
+    match tag r with
+    | 0 -> __show_list (Obj.magic v)
+    | 252 -> Printf.sprintf "%S" (magic v : string)
+    | 253 -> string_of_float (magic v)
+    | _ -> "<value>"
+and __show_list l =
+  match l with
+  | [] -> "[]"
+  | _ -> "[" ^ String.concat ", " (List.map __show l) ^ "]"
+and __str v =
+  let open Obj in
+  let r = repr v in
+  if is_int r then
+    string_of_int (magic v : int)
+  else
+    match tag r with
+    | 0 -> __str_list (Obj.magic v)
+    | 252 -> (magic v : string)
+    | 253 -> string_of_float (magic v)
+    | _ -> "<value>"
+and __str_list l =
+  match l with
+  | [] -> "[]"
+  | _ -> "[" ^ String.concat " " (List.map __str l) ^ "]"
 `
 
 func gitTimestamp() string {
@@ -5539,8 +5571,8 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 		if err != nil {
 			return nil, "", err
 		}
-		switch typ {
-		case "int", "float", "bigint", "bigrat", "bool":
+		switch {
+		case typ == "int", typ == "float", typ == "bigint", typ == "bigrat", typ == "bool", typ == "string", strings.HasPrefix(typ, "list"):
 			return &StrBuiltin{Expr: arg, Typ: typ}, "string", nil
 		default:
 			return &FuncCall{Name: "__show", Args: []Expr{arg}, Ret: "string"}, "string", nil
@@ -5662,6 +5694,20 @@ func convertCall(c *parser.CallExpr, env *types.Env, vars map[string]VarInfo) (E
 			return nil, "", fmt.Errorf("padStart expects string,int,string")
 		}
 		return &PadStartBuiltin{Str: strArg, Len: lenArg, Pad: padArg}, "string", nil
+	}
+	if c.Func == "concat" && len(c.Args) == 2 {
+		leftArg, ltyp, err := convertExpr(c.Args[0], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		rightArg, rtyp, err := convertExpr(c.Args[1], env, vars)
+		if err != nil {
+			return nil, "", err
+		}
+		if !strings.HasPrefix(ltyp, "list") || ltyp != rtyp {
+			return nil, "", fmt.Errorf("concat expects lists of same type")
+		}
+		return &BinaryExpr{Left: leftArg, Op: "@", Right: rightArg, Typ: ltyp, Ltyp: ltyp, Rtyp: rtyp}, ltyp, nil
 	}
 	if c.Func == "append" && len(c.Args) == 2 {
 		listArg, typ, err := convertExpr(c.Args[0], env, vars)
