@@ -1,0 +1,23 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/algorithms/x/Kotlin/ciphers/rail_fence_cipher.kt:50:64: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@SinceKotlin @InlineOnly public inline fun Int.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun Long.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(): BigInteger defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(radix: Int): BigInteger defined in kotlin.text
+        var alt = ((lowest * 2)).toBigInteger().subtract((num).toBigInteger())
+                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/ciphers/rail_fence_cipher.kt:90:64: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@SinceKotlin @InlineOnly public inline fun Int.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun Long.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(): BigInteger defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(radix: Int): BigInteger defined in kotlin.text
+        var alt = ((lowest * 2)).toBigInteger().subtract((num).toBigInteger())
+                                                               ^
+/workspace/mochi/tests/algorithms/x/Kotlin/ciphers/rail_fence_cipher.kt:123:64: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@SinceKotlin @InlineOnly public inline fun Int.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun Long.toBigInteger(): BigInteger defined in kotlin
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(): BigInteger defined in kotlin.text
+@SinceKotlin @InlineOnly public inline fun String.toBigInteger(radix: Int): BigInteger defined in kotlin.text
+        var alt = ((lowest * 2)).toBigInteger().subtract((num).toBigInteger())
+                                                               ^

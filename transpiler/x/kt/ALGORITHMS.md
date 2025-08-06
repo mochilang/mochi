@@ -2,9 +2,9 @@
 
 This checklist is auto-generated.
 Generated Kotlin code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Kotlin`.
-Last updated: 2025-08-06 23:14 GMT+7
+Last updated: 2025-08-06 23:47 GMT+7
 
-## Algorithms Golden Test Checklist (74/1077)
+## Algorithms Golden Test Checklist (83/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
 | 1 | backtracking/all_combinations | ✓ | 30.54ms | 124.45KiB |
@@ -95,18 +95,18 @@ Last updated: 2025-08-06 23:14 GMT+7
 | 86 | ciphers/gronsfeld_cipher | ✓ | 15.71ms | 122.26KiB |
 | 87 | ciphers/hill_cipher | ✓ | 23.81ms | 82.16KiB |
 | 88 | ciphers/mixed_keyword_cypher | ✓ | 31.83ms | 123.28KiB |
-| 89 | ciphers/mono_alphabetic_ciphers |   |  |  |
-| 90 | ciphers/morse_code |   |  |  |
-| 91 | ciphers/onepad_cipher |   |  |  |
-| 92 | ciphers/permutation_cipher |   |  |  |
-| 93 | ciphers/playfair_cipher |   |  |  |
-| 94 | ciphers/polybius |   |  |  |
-| 95 | ciphers/porta_cipher |   |  |  |
-| 96 | ciphers/rabin_miller |   |  |  |
-| 97 | ciphers/rail_fence_cipher |   |  |  |
-| 98 | ciphers/rot13 |   |  |  |
-| 99 | ciphers/rsa_cipher |   |  |  |
-| 100 | ciphers/rsa_factorization |   |  |  |
+| 89 | ciphers/mono_alphabetic_ciphers | ✓ | 11.56ms | 130.83KiB |
+| 90 | ciphers/morse_code | ✓ | 11.40ms | 131.91KiB |
+| 91 | ciphers/onepad_cipher | ✓ | 23.82ms | 123.57KiB |
+| 92 | ciphers/permutation_cipher | ✓ | 8.76ms | 134.02KiB |
+| 93 | ciphers/playfair_cipher | ✓ | 49.40ms | 115.25KiB |
+| 94 | ciphers/polybius | ✓ | 13.80ms | 132.88KiB |
+| 95 | ciphers/porta_cipher | ✓ | 23.04ms | 123.53KiB |
+| 96 | ciphers/rabin_miller | error |  |  |
+| 97 | ciphers/rail_fence_cipher | error |  |  |
+| 98 | ciphers/rot13 | ✓ | 17.21ms | 131.19KiB |
+| 99 | ciphers/rsa_cipher | error |  |  |
+| 100 | ciphers/rsa_factorization | ✓ | 32.38ms | 114.70KiB |
 | 101 | ciphers/rsa_key_generator |   |  |  |
 | 102 | ciphers/running_key_cipher |   |  |  |
 | 103 | ciphers/shuffled_shift_cipher |   |  |  |
