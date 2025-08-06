@@ -1219,7 +1219,8 @@ func isFloatExpr(e Expr, env *types.Env, ctx *context) bool {
 		return isFloatExpr(v.Left, env, ctx) || isFloatExpr(v.Right, env, ctx)
 	case *CallExpr:
 		switch v.Func {
-		case "float", "avg", "sqrt", "sin", "cos", "tan", "pow":
+		case "float", "avg", "sqrt", "sin", "cos", "tan", "pow",
+			"mochi_safe_mul", "mochi_safe_div", "mochi_safe_fmod":
 			return true
 		}
 		if env != nil {
@@ -1461,6 +1462,8 @@ func exprType(e Expr, env *types.Env, ctx *context) types.Type {
 		switch v.Func {
 		case "mochi_bigrat", "mochi_add", "mochi_sub", "mochi_mul", "mochi_div":
 			return types.BigRatType{}
+		case "mochi_safe_mul", "mochi_safe_div", "mochi_safe_fmod":
+			return types.FloatType{}
 		}
 	}
 	return nil
