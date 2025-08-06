@@ -1,0 +1,42 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:54: error: method concat in class Main cannot be applied to given types;
+                        left = ((double[])(concat(left, new double[]{residuals[j]})));
+                                           ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:56: error: method concat in class Main cannot be applied to given types;
+                        right = ((double[])(concat(right, new double[]{residuals[j]})));
+                                            ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:91: error: method concat in class Main cannot be applied to given types;
+            preds = ((double[])(concat(preds, new double[]{0.0})));
+                                ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden525_xgboost_classifier149400511/001/Main.java:99: error: method concat in class Main cannot be applied to given types;
+                residuals = ((double[])(concat(residuals, new double[]{targets[j_1] - preds[j_1]})));
+                                        ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+4 errors

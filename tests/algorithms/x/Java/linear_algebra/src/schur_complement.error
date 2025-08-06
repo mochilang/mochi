@@ -1,0 +1,16 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden493_schur_complement189406028/001/Main.java:103: error: method concat in class Main cannot be applied to given types;
+            Object row_4 = concat(mat[i_4], id[i_4]);
+                           ^
+  required: T[],T[]
+  found:    double[],double[]
+  reason: inference variable T has incompatible bounds
+    equality constraints: double
+    upper bounds: Object
+  where T is a type-variable:
+    T extends Object declared in method <T>concat(T[],T[])
+/tmp/TestJavaTranspiler_Algorithms_Golden493_schur_complement189406028/001/Main.java:182: error: incompatible types: double[] cannot be converted to Object[]
+                line = line + _p(_geto(row_6, j_5));
+                                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

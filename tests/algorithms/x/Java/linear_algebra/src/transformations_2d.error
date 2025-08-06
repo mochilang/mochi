@@ -1,0 +1,9 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden495_transformations_2d185930160/001/Main.java:60: error: incompatible types: double[] cannot be converted to Object[]
+                s = s + _p(_geto(row, j));
+                                 ^
+/tmp/TestJavaTranspiler_Algorithms_Golden495_transformations_2d185930160/001/Main.java:77: error: incompatible types: Object[][] cannot be converted to double[][]
+        return new Object[][]{new Object[]{f, 0.0}, new Object[]{0.0, f}};
+               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: sqrt of max int incorrect
+	at Main.test_integer_square_root(Main.java:41)
+	at Main.main(Main.java:46)
+	at Main.main(Main.java:53)

@@ -1,0 +1,5 @@
+Text input in binary is '010011010110010101110011011100110110000101100111011001010000000000000000'
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 4
+	at Main.hamming_encode(Main.java:207)
+	at Main.main(Main.java:251)
+	at Main.main(Main.java:271)

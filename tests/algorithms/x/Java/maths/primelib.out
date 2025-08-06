@@ -1,0 +1,12 @@
+true
+[2, 3, 5, 7, 11, 13, 17, 19]
+[2, 3, 5, 7, 11, 13, 17, 19]
+[7, 41]
+41
+7
+40
+[5, 23]
+23
+Exception in thread "main" java.lang.RuntimeException: arguments must be prime and p1 < p2
+	at Main.get_primes_between(Main.java:185)
+	at Main.main(Main.java:287)

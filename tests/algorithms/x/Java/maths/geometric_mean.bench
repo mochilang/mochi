@@ -1,0 +1,4 @@
+Exception in thread "main" java.lang.RuntimeException: test4 failed
+	at Main.test_compute_geometric_mean(Main.java:83)
+	at Main.main(Main.java:92)
+	at Main.main(Main.java:99)

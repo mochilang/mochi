@@ -1,0 +1,20 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java:19: error: array required, but BiFunction<Double,Double,Double> found
+            double k1 = f[0].apply(x, y[k]);
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java:20: error: array required, but BiFunction<Double,Double,Double> found
+            double k2 = f[0].apply(x + 0.5 * h, y[k] + 0.5 * h * k1);
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java:21: error: array required, but BiFunction<Double,Double,Double> found
+            double k3 = f[0].apply(x + 0.5 * h, y[k] + 0.5 * h * k2);
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java:22: error: array required, but BiFunction<Double,Double,Double> found
+            double k4 = f[0].apply(x + h, y[k] + h * k3);
+                         ^
+/tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java:50: error: incompatible types: double[] cannot be converted to Object[]
+        System.out.println(_p(_geto(r, r.length - 1)));
+                                    ^
+Note: /tmp/TestJavaTranspiler_Algorithms_Golden616_runge_kutta586105378/001/Main.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

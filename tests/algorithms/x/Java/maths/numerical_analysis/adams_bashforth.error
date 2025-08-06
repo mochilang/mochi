@@ -1,0 +1,18 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden606_adams_bashforth3467818128/001/Main.java:36: error: incompatible types: double[] cannot be converted to Object[]
+            s = s + _p(_geto(xs, i_1));
+                             ^
+/tmp/TestJavaTranspiler_Algorithms_Golden606_adams_bashforth3467818128/001/Main.java:170: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(y3, 3)));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden606_adams_bashforth3467818128/001/Main.java:172: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(y4, 4)));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden606_adams_bashforth3467818128/001/Main.java:173: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(y4, 5)));
+                                        ^
+/tmp/TestJavaTranspiler_Algorithms_Golden606_adams_bashforth3467818128/001/Main.java:175: error: incompatible types: double[] cannot be converted to Object[]
+            System.out.println(_p(_geto(y5, y5.length - 1)));
+                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

@@ -1,0 +1,45 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:165: error: method appendObj in class Main cannot be applied to given types;
+            itemset = ((String[][])(appendObj(itemset, t)));
+                                    ^
+  required: T[],T
+  found:    Object,String[]
+  reason: cannot infer type-variable(s) T
+    (argument mismatch; Object cannot be converted to T[])
+  where T is a type-variable:
+    T extends Object declared in method <T>appendObj(T[],T)
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:169: error: cannot find symbol
+        while (itemset.length > 0) {
+                      ^
+  symbol:   variable length
+  location: variable itemset of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:172: error: cannot find symbol
+            while (idx < itemset.length) {
+                                ^
+  symbol:   variable length
+  location: variable itemset of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:178: error: cannot find symbol
+                while (j_1 < itemset.length) {
+                                    ^
+  symbol:   variable length
+  location: variable itemset of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:179: error: array required, but Object found
+                    String[] candidate = ((String[])(itemset[j_1]));
+                                                            ^
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:188: error: cannot find symbol
+            while (k < itemset.length) {
+                              ^
+  symbol:   variable length
+  location: variable itemset of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:190: error: array required, but Object found
+                    new_itemset = ((String[][])(appendObj(new_itemset, itemset[k])));
+                                                                              ^
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:196: error: cannot find symbol
+            while (m < itemset.length) {
+                              ^
+  symbol:   variable length
+  location: variable itemset of type Object
+/tmp/TestJavaTranspiler_Algorithms_Golden497_apriori_algorithm3378569427/001/Main.java:197: error: array required, but Object found
+                String[] sorted_item = ((String[])(sort_strings(((String[])(itemset[m])))));
+                                                                                   ^
+9 errors

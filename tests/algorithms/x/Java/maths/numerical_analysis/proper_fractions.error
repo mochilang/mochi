@@ -1,0 +1,5 @@
+compile: exit status 1
+/tmp/TestJavaTranspiler_Algorithms_Golden615_proper_fractions4039769575/001/Main.java:42: error: incompatible types: Object[] cannot be converted to Number
+        if (c != ((Number)(new Object[]{})).intValue()) {
+                          ^
+1 error
