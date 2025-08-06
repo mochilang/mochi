@@ -1,0 +1,7 @@
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      floor (file:///workspace/mochi/tests/algorithms/x/Dart/maths/maclaurin_series.dart:18:13)
+#1      maclaurin_sin (file:///workspace/mochi/tests/algorithms/x/Dart/maths/maclaurin_series.dart:47:16)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/maclaurin_series.dart:76:10)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

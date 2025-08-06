@@ -1,0 +1,12 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      fft (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:100:32)
+#1      fft (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:98:22)
+#2      fft (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:98:22)
+#3      multiply_poly (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:176:8)
+#4      product (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:199:24)
+#5      product (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart)
+#6      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/radix2_fft.dart:201:24)
+#7      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#8      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

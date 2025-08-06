@@ -1,0 +1,7 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      average_absolute_deviation (file:///workspace/mochi/tests/algorithms/x/Dart/maths/average_absolute_deviation.dart:31:26)
+#1      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/average_absolute_deviation.dart:41:10)
+#2      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#3      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

@@ -1,0 +1,9 @@
+Unhandled exception:
+RangeError (length): Invalid value: Not in inclusive range 0..4: -1
+#0      List.[] (dart:core-patch/growable_array.dart)
+#1      is_safe (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/count_islands_in_matrix.dart:19:30)
+#2      dfs (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/count_islands_in_matrix.dart:33:9)
+#3      count_islands (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/count_islands_in_matrix.dart:61:5)
+#4      main (file:///workspace/mochi/tests/algorithms/x/Dart/matrix/count_islands_in_matrix.dart:73:9)
+#5      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#6      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

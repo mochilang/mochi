@@ -1,0 +1,10 @@
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      exp_approx (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:21:26)
+#1      softmax (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:32:22)
+#2      test_softmax (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:62:21)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:83:3)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:88:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/softmax.dart:91:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

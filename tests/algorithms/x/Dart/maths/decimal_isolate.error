@@ -1,0 +1,9 @@
+run: exit status 255
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      decimal_isolate (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:40:22)
+#1      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:49:10)
+#2      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:61:3)
+#3      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/decimal_isolate.dart:64:16)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

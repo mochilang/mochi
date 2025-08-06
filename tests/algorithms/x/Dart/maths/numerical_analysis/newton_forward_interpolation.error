@@ -1,0 +1,8 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      ucal (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/newton_forward_interpolation.dart:20:27)
+#1      newton_forward_interpolation (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/newton_forward_interpolation.dart:68:17)
+#2      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/numerical_analysis/newton_forward_interpolation.dart:77:10)
+#3      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#4      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

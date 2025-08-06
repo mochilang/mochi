@@ -1,0 +1,40 @@
+run: exit status 254
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:24:20: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double sub = 1 + [right, diagonal, down].reduce((a, b) => a < b ? a : b);
+                   ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:26:102: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    while (largest_square_area.length <= 0) { largest_square_area.add(0); } largest_square_area[0] = sub;
+                                                                                                     ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:28:12: Error: A value of type 'double' can't be returned from a function with return type 'int'.
+    return sub;
+           ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:51:20: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double sub = 1 + [right, diagonal, down].reduce((a, b) => a < b ? a : b);
+                   ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:53:102: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    while (largest_square_area.length <= 0) { largest_square_area.add(0); } largest_square_area[0] = sub;
+                                                                                                     ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:55:91: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    while (dp_array[row]!.length <= col) { dp_array[row]!.add(0); } dp_array[row]![col] = sub;
+                                                                                          ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:56:12: Error: A value of type 'double' can't be returned from a function with return type 'int'.
+    return sub;
+           ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:103:22: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double value = 1 + [right, diagonal, bottom].reduce((a, b) => a < b ? a : b);
+                     ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:104:91: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    while (dp_array[row]!.length <= col) { dp_array[row]!.add(0); } dp_array[row]![col] = value;
+                                                                                          ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:106:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    largest = value;
+              ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:140:22: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+    double value = 1 + [right, diagonal, bottom].reduce((a, b) => a < b ? a : b);
+                     ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:141:82: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    while (current_row.length <= col) { current_row.add(0); } current_row[col] = value;
+                                                                                 ^
+../../../tests/algorithms/x/Dart/matrix/largest_square_area_in_matrix.dart:143:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    largest = value;
+              ^

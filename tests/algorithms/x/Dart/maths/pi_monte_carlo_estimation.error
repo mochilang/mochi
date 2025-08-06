@@ -1,0 +1,11 @@
+run: exit status 255
+Unhandled exception:
+type 'int' is not a subtype of type 'double' in type cast
+#0      rand_unit (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:30:16)
+#1      random_unit_square (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:38:19)
+#2      estimate_pi (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:48:15)
+#3      _main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:66:18)
+#4      _start (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:72:3)
+#5      main (file:///workspace/mochi/tests/algorithms/x/Dart/maths/pi_monte_carlo_estimation.dart:75:16)
+#6      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#7      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)
