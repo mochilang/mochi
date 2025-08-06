@@ -1,0 +1,18 @@
+/*
+Project Euler Problem 6: Sum square difference
+
+Compute the difference between the square of the sum and the sum of the squares
+for the first n natural numbers.  Using the formulas
+  sum_{i=1}^n i = n(n + 1) / 2
+  sum_{i=1}^n i^2 = n(n + 1)(2n + 1) / 6
+we avoid iteration and compute the result in constant time.
+*/
+
+fun solution(n: int): int {
+  let sum: int = n * (n + 1) / 2
+  let sum_cubes: int = sum * sum
+  let sum_squares: int = n * (n + 1) * (2 * n + 1) / 6
+  return sum_cubes - sum_squares
+}
+
+print("solution() = " + str(solution(100)))
