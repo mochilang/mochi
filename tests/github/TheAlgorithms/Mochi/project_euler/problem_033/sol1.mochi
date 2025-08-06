@@ -1,0 +1,79 @@
+/*
+Project Euler Problem 33: Digit Cancelling Fractions
+
+Find the denominator of the product of all non-trivial two-digit
+fractions less than one which incorrectly simplify by cancelling a
+common digit. A fraction like 49/98 is considered because cancelling
+the 9s yields 4/8 = 1/2, the same value as the original fraction.
+Fractions where cancelling results in a true equivalence are searched
+and their numerators and denominators are multiplied together. The
+final denominator is the denominator of this product in lowest terms.
+The search iterates over all numerator and denominator pairs between
+10 and 99, verifies the digit-cancelling property via cross-multiplying
+numerator and denominator after removing the shared digit, then reduces
+the overall product using the greatest common divisor (GCD).
+*/
+
+type FractionPair {
+  num: int,
+  den: int,
+}
+
+fun gcd(a: int, b: int): int {
+  var x = if a < 0 { -a } else { a }
+  var y = if b < 0 { -b } else { b }
+  while y != 0 {
+    let t = x % y
+    x = y
+    y = t
+  }
+  return x
+}
+
+fun is_digit_cancelling(num: int, den: int): bool {
+  if num >= den { return false }
+  let num_unit = num % 10
+  let num_tens = num / 10
+  let den_unit = den % 10
+  let den_tens = den / 10
+  if num_unit != den_tens { return false }
+  if den_unit == 0 { return false }
+  return num * den_unit == num_tens * den
+}
+
+fun find_fractions(): list<FractionPair> {
+  var sols: list<FractionPair> = []
+  var num = 10
+  while num < 100 {
+    var den = num + 1
+    while den < 100 {
+      if is_digit_cancelling(num, den) {
+        sols = append(sols, FractionPair { num: num, den: den })
+      }
+      den = den + 1
+    }
+    num = num + 1
+  }
+  return sols
+}
+
+fun solution(): int {
+  let fracs = find_fractions()
+  var num_prod = 1
+  var den_prod = 1
+  var i = 0
+  while i < len(fracs) {
+    let f = fracs[i]
+    num_prod = num_prod * f.num
+    den_prod = den_prod * f.den
+    i = i + 1
+  }
+  let g = gcd(num_prod, den_prod)
+  return den_prod / g
+}
+
+fun main() {
+  print(str(solution()))
+}
+
+main()
