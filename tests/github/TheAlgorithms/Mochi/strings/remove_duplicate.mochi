@@ -1,0 +1,101 @@
+/*
+Remove duplicate words from a sentence.
+
+Given a sentence string, this program splits the text into words based on
+whitespace, removes duplicate words, sorts the unique words lexicographically,
+and joins them back together separated by single spaces.
+
+This mirrors the behavior of Python's:
+
+    " ".join(sorted(set(sentence.split())))
+
+The implementation avoids using external libraries or the `any` type by
+manually tokenizing, deduplicating with linear search, performing insertion
+sort, and joining the results. Complexity is O(n^2) due to insertion sort and
+duplicate checks, with O(n) additional space.
+*/
+
+fun split_ws(s: string): list<string> {
+  var res: list<string> = []
+  var word = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " {
+      if word != "" {
+        res = append(res, word)
+        word = ""
+      }
+    } else {
+      word = word + ch
+    }
+    i = i + 1
+  }
+  if word != "" {
+    res = append(res, word)
+  }
+  return res
+}
+
+fun contains(xs: list<string>, x: string): bool {
+  var i = 0
+  while i < len(xs) {
+    if xs[i] == x {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun unique(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var i = 0
+  while i < len(xs) {
+    let w = xs[i]
+    if !contains(res, w) {
+      res = append(res, w)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun insertion_sort(arr: list<string>): list<string> {
+  var a = arr
+  var i = 1
+  while i < len(a) {
+    let key = a[i]
+    var j = i - 1
+    while j >= 0 && a[j] > key {
+      a[j + 1] = a[j]
+      j = j - 1
+    }
+    a[j + 1] = key
+    i = i + 1
+  }
+  return a
+}
+
+fun join_with_space(xs: list<string>): string {
+  var s = ""
+  var i = 0
+  while i < len(xs) {
+    if i > 0 {
+      s = s + " "
+    }
+    s = s + xs[i]
+    i = i + 1
+  }
+  return s
+}
+
+fun remove_duplicates(sentence: string): string {
+  let words = split_ws(sentence)
+  let uniq = unique(words)
+  let sorted_words = insertion_sort(uniq)
+  return join_with_space(sorted_words)
+}
+
+print(remove_duplicates("Python is great and Java is also great"))
+print(remove_duplicates("Python   is      great and Java is also great"))
