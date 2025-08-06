@@ -1,0 +1,67 @@
+/*
+Quick Select and Median
+-----------------------
+Quickselect is a selection algorithm that returns the value that would occupy
+a given index if the input list were sorted.  It partitions the data around a
+pivot into elements less than, equal to, and greater than the pivot and only
+recurses into the partition that contains the desired index.  This gives an
+average time complexity of O(n).  Here the pivot is chosen deterministically as
+the middle element to avoid randomness.  A median function is also included
+which applies quickselect to compute the middle value of an integer list.
+*/
+
+fun partition(data: list<int>, pivot: int): list<list<int>> {
+  var less: list<int> = []
+  var equal: list<int> = []
+  var greater: list<int> = []
+  for i in 0..len(data) {
+    let v = data[i]
+    if v < pivot {
+      less = append(less, v)
+    } else if v > pivot {
+      greater = append(greater, v)
+    } else {
+      equal = append(equal, v)
+    }
+  }
+  return [less, equal, greater]
+}
+
+fun quick_select(items: list<int>, index: int): int {
+  if index < 0 || index >= len(items) {
+    return -1
+  }
+  let pivot = items[len(items) / 2]
+  let parts = partition(items, pivot)
+  let smaller = parts[0]
+  let equal = parts[1]
+  let larger = parts[2]
+  let count = len(equal)
+  let m = len(smaller)
+  if m <= index && index < m + count {
+    return pivot
+  } else if index < m {
+    return quick_select(smaller, index)
+  } else {
+    return quick_select(larger, index - (m + count))
+  }
+}
+
+fun median(items: list<int>): float {
+  let n = len(items)
+  let mid = n / 2
+  if n % 2 != 0 {
+    return 1.0 * quick_select(items, mid)
+  } else {
+    let low = quick_select(items, mid - 1)
+    let high = quick_select(items, mid)
+    return (1.0 * (low + high)) / 2.0
+  }
+}
+
+print(str(quick_select([2, 4, 5, 7, 899, 54, 32], 5)))
+print(str(quick_select([2, 4, 5, 7, 899, 54, 32], 1)))
+print(str(quick_select([5, 4, 3, 2], 2)))
+print(str(quick_select([3, 5, 7, 10, 2, 12], 3)))
+print(str(median([3, 2, 2, 9, 9])))
+print(str(median([2, 2, 9, 9, 9, 3])))
