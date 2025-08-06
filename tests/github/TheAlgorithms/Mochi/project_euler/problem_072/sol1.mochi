@@ -1,0 +1,64 @@
+/*
+Project Euler Problem 72: Counting fractions
+
+Count the number of reduced proper fractions n/d for 1 <= n < d <= 1,000,000.
+A reduced proper fraction has numerator and denominator coprime.
+
+Algorithm:
+- Use a linear sieve to compute Euler's totient \u03c6(n) for all n <= limit.
+  * Maintain arrays `is_prime`, `phi`, and list of discovered `primes`.
+  * For each i from 2..limit:
+      - If i is marked prime, append to prime list.
+      - For each prime p in list:
+          - Stop if i * p > limit.
+          - Mark i*p composite.
+          - If p divides i, set phi[i*p] = phi[i] * p and break.
+          - Else set phi[i*p] = phi[i] * (p - 1).
+- Sum phi[2..limit] to count reduced proper fractions with denominator up to limit.
+This runs in O(n) time and uses only Mochi primitives, so it works with runtime/vm.
+*/
+
+fun totients(limit: int): list<int> {
+  var is_prime: list<bool> = []
+  var phi: list<int> = []
+  var primes: list<int> = []
+  var i = 0
+  while i <= limit {
+    is_prime = append(is_prime, true)
+    phi = append(phi, i - 1)
+    i = i + 1
+  }
+  i = 2
+  while i <= limit {
+    if is_prime[i] {
+      primes = append(primes, i)
+    }
+    var j = 0
+    while j < len(primes) {
+      let p = primes[j]
+      if i * p > limit { break }
+      is_prime[i * p] = false
+      if i % p == 0 {
+        phi[i * p] = phi[i] * p
+        break
+      }
+      phi[i * p] = phi[i] * (p - 1)
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return phi
+}
+
+fun solution(limit: int): int {
+  let phi = totients(limit)
+  var total = 0
+  var k = 2
+  while k <= limit {
+    total = total + phi[k]
+    k = k + 1
+  }
+  return total
+}
+
+print(str(solution(1000000)))
