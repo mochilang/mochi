@@ -2,21 +2,21 @@
 
 This checklist is auto-generated.
 Generated Clojure code from programs in `tests/github/TheAlgorithms/Mochi` lives in `tests/algorithms/x/Clojure`.
-Last updated: 2025-08-06 16:05 GMT+7
+Last updated: 2025-08-06 16:31 GMT+7
 
-## Algorithms Golden Test Checklist (1/1077)
+## Algorithms Golden Test Checklist (10/1077)
 | Index | Name | Status | Duration | Memory |
 |------:|------|:-----:|---------:|-------:|
-| 1 | backtracking/all_combinations | ✓ | 66.898ms | 19.54MB |
-| 2 | backtracking/all_permutations |   |  |  |
-| 3 | backtracking/all_subsequences |   |  |  |
-| 4 | backtracking/coloring |   |  |  |
-| 5 | backtracking/combination_sum |   |  |  |
-| 6 | backtracking/crossword_puzzle_solver |   |  |  |
-| 7 | backtracking/hamiltonian_cycle |   |  |  |
-| 8 | backtracking/knight_tour |   |  |  |
-| 9 | backtracking/match_word_pattern |   |  |  |
-| 10 | backtracking/minimax |   |  |  |
+| 1 | backtracking/all_combinations | ✓ | 50.25ms | 19.66MB |
+| 2 | backtracking/all_permutations | ✓ | 70.354ms | 20.50MB |
+| 3 | backtracking/all_subsequences | ✓ | 50.083ms | 18.92MB |
+| 4 | backtracking/coloring | ✓ | 53.736ms | 20.05MB |
+| 5 | backtracking/combination_sum | ✓ | 54.599ms | 19.62MB |
+| 6 | backtracking/crossword_puzzle_solver | ✓ | 51.637ms | 22.30MB |
+| 7 | backtracking/hamiltonian_cycle | ✓ | 37.79ms | 20.67MB |
+| 8 | backtracking/knight_tour | ✓ | 37.789ms | 22.69MB |
+| 9 | backtracking/match_word_pattern | ✓ | 61.392ms | 21.23MB |
+| 10 | backtracking/minimax | ✓ | 33.902ms | 20.10MB |
 | 11 | backtracking/n_queens |   |  |  |
 | 12 | backtracking/n_queens_math |   |  |  |
 | 13 | backtracking/power_sum |   |  |  |

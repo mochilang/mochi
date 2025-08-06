@@ -1793,8 +1793,16 @@ func transpilePostfix(p *parser.PostfixExpr) (Node, error) {
 				} else {
 					end = &List{Elems: []Node{Symbol("count"), n}}
 				}
+				if start == nil {
+					start = IntLit(0)
+				}
 				if isStringNode(n) {
-					n = &List{Elems: []Node{Symbol("subs"), n, start, end}}
+					// Clamp end index to string length to emulate Mochi/Python slicing
+					endNode := end
+					if endNode != nil {
+						endNode = &List{Elems: []Node{Symbol("min"), endNode, &List{Elems: []Node{Symbol("count"), n}}}}
+					}
+					n = &List{Elems: []Node{Symbol("subs"), n, start, endNode}}
 				} else {
 					n = &List{Elems: []Node{Symbol("subvec"), n, start, end}}
 				}
@@ -2196,7 +2204,33 @@ func transpileCall(c *parser.CallExpr) (Node, error) {
 		case "max":
 			elems = append(elems, Symbol("apply"), Symbol("max"))
 		case "substring":
-			elems = append(elems, Symbol("subs"))
+			if len(c.Args) != 3 {
+				return nil, fmt.Errorf("substring expects 3 args")
+			}
+			strArg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			startArg, err := transpileExpr(c.Args[1])
+			if err != nil {
+				return nil, err
+			}
+			endArg, err := transpileExpr(c.Args[2])
+			if err != nil {
+				return nil, err
+			}
+			endNode := &List{Elems: []Node{Symbol("min"), endArg, &List{Elems: []Node{Symbol("count"), strArg}}}}
+			return &List{Elems: []Node{Symbol("subs"), strArg, startArg, endNode}}, nil
+		case "panic":
+			if len(c.Args) != 1 {
+				return nil, fmt.Errorf("panic expects 1 arg")
+			}
+			msg, err := transpileExpr(c.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			ex := &List{Elems: []Node{Symbol("Exception."), msg}}
+			return &List{Elems: []Node{Symbol("throw"), ex}}, nil
 		case "lower":
 			if len(c.Args) != 1 {
 				return nil, fmt.Errorf("lower expects 1 arg")
