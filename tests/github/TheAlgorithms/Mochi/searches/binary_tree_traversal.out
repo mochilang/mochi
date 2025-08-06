@@ -1,0 +1,18 @@
+Pre Order:
+1,2,4,5,3,6,7,
+In Order:
+4,2,5,1,6,3,7,
+Post Order:
+4,5,2,6,7,3,1,
+Level Order:
+1,2,3,4,5,6,7,
+Level Order Actual:
+1,
+2,3,
+4,5,6,7,
+Pre Order Iter:
+1,2,4,5,3,6,7,
+In Order Iter:
+4,2,5,1,6,3,7,
+Post Order Iter:
+4,5,2,6,7,3,1,
