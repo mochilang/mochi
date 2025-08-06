@@ -1,0 +1,42 @@
+/*
+Problem 12: Highly divisible triangular numbers.
+
+Generate triangular numbers sequentially and find the first one with more than
+five hundred divisors. Each triangular number T_n = n * (n + 1) / 2 is tested by
+counting its positive divisors using prime factorization. The algorithm factors
+n by trial division, accumulating multiplicities of each prime factor. The number
+of divisors is the product over (multiplicity + 1) for all factors; if a prime
+factor greater than 1 remains after the loop, it contributes a factor of 2. The
+first triangular number whose divisor count exceeds 500 is returned.
+*/
+
+fun countDivisors(n: int): int {
+    var num: int = n;
+    var total: int = 1;
+    var i: int = 2;
+    while i * i <= num {
+        var multiplicity: int = 0;
+        while num % i == 0 {
+            num = num / i;
+            multiplicity = multiplicity + 1;
+        }
+        total = total * (multiplicity + 1);
+        i = i + 1;
+    }
+    if num > 1 {
+        total = total * 2;
+    }
+    return total;
+}
+
+fun solution(): int {
+    var n: int = 1;
+    var tri: int = 1;
+    while countDivisors(tri) <= 500 {
+        n = n + 1;
+        tri = tri + n;
+    }
+    return tri;
+}
+
+print(solution());
