@@ -64,6 +64,7 @@ var forceMap map[*parser.MapLiteral]bool
 var useLazy bool
 var useRefCell bool
 var useFetch bool
+var useKeys bool
 var currentStructFields map[string]bool
 var topLevelNonConstLet bool
 
@@ -251,6 +252,7 @@ type Program struct {
 	UseRefCell  bool
 	UseFetch    bool
 	UseMD5      bool
+	UseKeys     bool
 	Types       []TypeDecl
 	Globals     []*VarDecl
 }
@@ -310,7 +312,16 @@ func (c *CallExpr) emit(w io.Writer) {
 		io.WriteString(w, ")")
 		return
 	}
-	io.WriteString(w, rustIdent(c.Func))
+	if strings.HasSuffix(c.Func, "_clone") && len(c.Args) == 1 {
+		c.Args[0].emit(w)
+		io.WriteString(w, ".clone()")
+		return
+	}
+	if strings.Contains(c.Func, "::") {
+		io.WriteString(w, c.Func)
+	} else {
+		io.WriteString(w, rustIdent(c.Func))
+	}
 	io.WriteString(w, "(")
 	pts, hasPts := funParamTypes[c.Func]
 	for i, a := range c.Args {
@@ -1215,7 +1226,7 @@ func (m *MethodCallExpr) emit(w io.Writer) {
 		return
 	}
 	if rt := inferType(m.Receiver); rt != "" {
-		if _, ok := structTypes[rt]; ok {
+		if _, ok := structTypes[rt]; ok && m.Name != "clone" {
 			fmt.Fprintf(w, "%s_%s(", rustIdent(rt), rustIdent(m.Name))
 			m.Receiver.emit(w)
 			for _, a := range m.Args {
@@ -2737,6 +2748,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	useRefCell = false
 	useFetch = false
 	useMD5 = false
+	useKeys = false
 	mapVars = make(map[string]bool)
 	stringVars = make(map[string]bool)
 	groupVars = make(map[string]bool)
@@ -2815,6 +2827,7 @@ func Transpile(p *parser.Program, env *types.Env, benchMain bool) (*Program, err
 	prog.UseRefCell = useRefCell
 	prog.UseFetch = useFetch
 	prog.UseMD5 = useMD5
+	prog.UseKeys = useKeys
 	return prog, nil
 }
 
@@ -4153,6 +4166,19 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 	if err != nil {
 		return nil, err
 	}
+	start := 0
+	if fe, ok := expr.(*FieldExpr); ok {
+		if nr, ok2 := fe.Receiver.(*NameRef); ok2 && nr.Name == "Object" && fe.Name == "keys" && len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
+			arg, err := compileExpr(p.Ops[0].Call.Args[0])
+			if err != nil {
+				return nil, err
+			}
+			useKeys = true
+			funReturns["_keys"] = "Vec<String>"
+			expr = &CallExpr{Func: "_keys", Args: []Expr{arg}}
+			start = 1
+		}
+	}
 	if p.Target != nil && p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && len(p.Ops) == 1 && p.Ops[0].Call != nil {
 		alias := p.Target.Selector.Root
 		method := p.Target.Selector.Tail[0]
@@ -4201,7 +4227,7 @@ func compilePostfix(p *parser.PostfixExpr) (Expr, error) {
 			}
 		}
 	}
-	for _, op := range p.Ops {
+	for _, op := range p.Ops[start:] {
 		switch {
 		case op.Index != nil:
 			if op.Index.Colon != nil || op.Index.End != nil || op.Index.Colon2 != nil || op.Index.Step != nil {
@@ -5626,6 +5652,8 @@ func inferType(e Expr) string {
 			return "Vec<String>"
 		case "clone":
 			return inferType(ex.Receiver)
+		case "join":
+			return "String"
 		}
 		if nr, ok := ex.Receiver.(*NameRef); ok && nr.Name == "math" {
 			return "f64"
@@ -6211,6 +6239,11 @@ func Emit(prog *Program) []byte {
 		buf.WriteString("        }\n")
 		buf.WriteString("    }\n")
 		buf.WriteString("    0\n")
+		buf.WriteString("}\n")
+	}
+	if prog.UseKeys {
+		buf.WriteString("fn _keys<K: std::cmp::Eq + std::hash::Hash + Clone, V>(m: HashMap<K, V>) -> Vec<K> {\n")
+		buf.WriteString("    m.keys().cloned().collect()\n")
 		buf.WriteString("}\n")
 	}
 	if prog.UseInput {
